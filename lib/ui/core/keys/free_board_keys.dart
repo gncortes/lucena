@@ -13,6 +13,8 @@ abstract final class FreeBoardKeys {
   /// O lance de índice [index] na lista (0 é o primeiro da partida).
   static Key move(int index) => Key('freeBoard.moves.$index');
 
+  static const flipButton = Key('freeBoard.flip');
+
   /// Botão da barra superior, sempre visível.
   static const newGameButton = Key('freeBoard.newGame');
 

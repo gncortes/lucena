@@ -82,6 +82,17 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsBoardAppearance),
           ),
+          ListTile(
+            key: SettingsKeys.boardBehaviorTile,
+            leading: const Icon(Icons.touch_app_outlined),
+            title: Text(context.l10n.settingsBoardBehavior),
+            subtitle: Text(
+              board.moveMethod.label(context.l10n),
+              key: SettingsKeys.boardBehaviorValue,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsBoardBehavior),
+          ),
         ],
       ),
     );

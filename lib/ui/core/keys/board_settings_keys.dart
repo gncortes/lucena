@@ -16,4 +16,25 @@ abstract final class BoardSettingsKeys {
 
   static const coordinatesSwitch = Key('boardSettings.appearance.coordinates');
   static const resetButton = Key('boardSettings.appearance.reset');
+
+  static const behaviorScreen = Key('boardSettings.behavior.screen');
+  static const moveMethodTile = Key('boardSettings.behavior.moveMethod');
+  static const moveMethodValue = Key('boardSettings.behavior.moveMethod.value');
+
+  static Key moveMethodOption(MoveMethod method) =>
+      Key('boardSettings.behavior.moveMethod.${method.code}');
+
+  static const legalMovesSwitch = Key('boardSettings.behavior.legalMoves');
+  static const lastMoveSwitch = Key('boardSettings.behavior.lastMove');
+  static const animationSwitch = Key('boardSettings.behavior.animation');
+  static const premovesSwitch = Key('boardSettings.behavior.premoves');
+  static const notationTile = Key('boardSettings.behavior.notation');
+  static const notationValue = Key('boardSettings.behavior.notation.value');
+
+  static Key notationOption(MoveNotation notation) =>
+      Key('boardSettings.behavior.notation.${notation.code}');
+
+  /// O painel de opções aberto e o botão que confirma a opção marcada.
+  static const choiceSheet = Key('boardSettings.choice.sheet');
+  static const choiceConfirmButton = Key('boardSettings.choice.confirm');
 }

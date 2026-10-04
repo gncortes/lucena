@@ -20,6 +20,12 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// O último lance, para o tabuleiro destacar.
     Move? lastMove,
+
+    /// O lado que aparece embaixo no tabuleiro.
+    @Default(Side.white) Side orientation,
+
+    /// O lado que o jogador move. Nulo: ele move os dois.
+    Side? playerSide,
   }) = _FreeBoardState;
 
   const FreeBoardState._();

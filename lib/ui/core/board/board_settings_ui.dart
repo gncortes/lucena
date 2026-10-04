@@ -1,6 +1,6 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
@@ -95,13 +95,59 @@ extension PieceStyleUi on PieceStyle {
   };
 }
 
+/// Como cada jeito de mover as peças aparece nas telas e no `chessground`.
+extension MoveMethodUi on MoveMethod {
+  PieceShiftMethod get shiftMethod => switch (this) {
+    MoveMethod.either => PieceShiftMethod.either,
+    MoveMethod.drag => PieceShiftMethod.drag,
+    MoveMethod.tap => PieceShiftMethod.tapTwoSquares,
+  };
+
+  String label(AppLocalizations l10n) => switch (this) {
+    MoveMethod.either => l10n.boardMoveMethodEither,
+    MoveMethod.drag => l10n.boardMoveMethodDrag,
+    MoveMethod.tap => l10n.boardMoveMethodTap,
+  };
+
+  IconData get icon => switch (this) {
+    MoveMethod.either => Icons.touch_app_outlined,
+    MoveMethod.drag => Icons.pan_tool_alt_outlined,
+    MoveMethod.tap => Icons.ads_click,
+  };
+}
+
+extension MoveNotationUi on MoveNotation {
+  String label(AppLocalizations l10n) => switch (this) {
+    MoveNotation.figurine => l10n.boardNotationFigurine,
+    MoveNotation.letters => l10n.boardNotationLetters,
+  };
+
+  /// A letra de cada peça nos lances (`K`, `Q`, `R`, `B`, `N` da notação
+  /// algébrica) trocada pela do idioma. Nulo na notação com desenhos.
+  Map<String, String>? pieceLetters(AppLocalizations l10n) => switch (this) {
+    MoveNotation.figurine => null,
+    MoveNotation.letters => {
+      'K': l10n.pieceLetterKing,
+      'Q': l10n.pieceLetterQueen,
+      'R': l10n.pieceLetterRook,
+      'B': l10n.pieceLetterBishop,
+      'N': l10n.pieceLetterKnight,
+    },
+  };
+}
+
 /// As preferências do app no formato do `chessground`.
 extension BoardSettingsUi on BoardSettings {
+  static const _animationDuration = Duration(milliseconds: 250);
+
   ChessboardSettings get chessground => ChessboardSettings(
     colorScheme: colors.scheme,
     pieceAssets: pieces.assets,
     enableCoordinates: coordinates,
-    // O jogador faz os dois lados: não há lance antecipado.
-    enablePremoves: false,
+    pieceShiftMethod: moveMethod.shiftMethod,
+    showValidMoves: showLegalMoves,
+    showLastMove: highlightLastMove,
+    animationDuration: animation ? _animationDuration : Duration.zero,
+    enablePremoves: premoves,
   );
 }

@@ -74,4 +74,20 @@ void main() {
 
     expect(await reopen().load(), settings);
   });
+
+  test('o comportamento do tabuleiro volta ao reabrir', () async {
+    const settings = AppSettings(
+      board: BoardSettings(
+        moveMethod: MoveMethod.tap,
+        showLegalMoves: false,
+        highlightLastMove: false,
+        animation: false,
+        premoves: false,
+        notation: MoveNotation.letters,
+      ),
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
+  });
 }
