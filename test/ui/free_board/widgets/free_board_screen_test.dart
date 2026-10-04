@@ -8,6 +8,9 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/domain/models/game_mode.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
@@ -18,6 +21,8 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../../testing/board_gestures.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_opponent_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
@@ -26,6 +31,8 @@ void main() {
   late FreeBoardCubit cubit;
   late FakeNow now;
   late FakeOngoingGameRepository games;
+  late FakeOpponentRepository opponent;
+  late FakeProgressRepository progress;
 
   Future<void> pumpScreen(
     WidgetTester tester, {
@@ -36,6 +43,7 @@ void main() {
     ClockConfig? clock,
     ClockSettings clockSettings = const ClockSettings(),
     GameSnapshot? saved,
+    GameMode mode = const GameMode(),
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = const Size(1080, 2400);
@@ -52,11 +60,15 @@ void main() {
     addTearDown(settings.close);
     await settings.load();
     games = FakeOngoingGameRepository(saved);
+    opponent = FakeOpponentRepository(now: now);
+    progress = FakeProgressRepository();
     cubit = FreeBoardCubit(
       now: now,
       haptics: FakeHapticsRepository(),
       settings: repository,
       games: games,
+      opponent: opponent,
+      progress: progress,
       // Com partida gravada, a tela abre para continuar essa partida.
       start: saved != null
           ? null
@@ -65,6 +77,7 @@ void main() {
           : GameRules.fromFen(fen)!,
       playerSide: playerSide,
       clock: clock,
+      mode: mode,
     );
     addTearDown(cubit.close);
     await tester.pumpWidget(
@@ -775,6 +788,94 @@ void main() {
       expect(textOf(tester, FreeBoardKeys.clockTime(Side.white)), '3:30');
       expect(textOf(tester, FreeBoardKeys.clockTime(Side.black)), '5:00');
       expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+    });
+  });
+
+  group('treino', () {
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+      goal: PositionGoal.win,
+      positionId: 'basic.queen.0001',
+    );
+
+    testWidgets('o título mostra o objetivo', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        locale: const Locale('pt'),
+      );
+
+      expect(
+        find.descendant(of: find.byType(AppBar), matching: find.text('Ganhar')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('desistir pede confirmação e termina como não cumprido', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+      );
+
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.resignSheet), findsOneWidget);
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pumpAndSettle();
+
+      expect(textOf(tester, FreeBoardKeys.endReason), 'Resignation');
+      expect(textOf(tester, FreeBoardKeys.endGoal), 'Goal not achieved');
+      expect(find.text('Play again'), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.resignButton), findsNothing);
+    });
+
+    testWidgets('fechar o painel de desistir não muda nada', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+      );
+
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pumpAndSettle();
+
+      expect(cubit.state.end, isNull);
+    });
+
+    testWidgets('mate na posição de ganhar: objetivo cumprido', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine,
+      );
+
+      await move(tester, 'h1', 'h8');
+
+      expect(textOf(tester, FreeBoardKeys.endGoal), 'Goal achieved!');
+      expect(progress.attempts.single.fulfilled, isTrue);
+    });
+
+    testWidgets('a máquina responde e o jogador não move as peças dela', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+      );
+
+      await move(tester, 'c1', 'g5');
+      await tester.pumpAndSettle();
+
+      expect(cubit.state.moves, hasLength(2));
+      expect(cubit.state.position.turn, Side.white);
     });
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/repositories/positions/positions_repository.dart';
+import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/training/training_repository.dart';
 import '../../../domain/models/endgame_position.dart';
 
@@ -17,6 +18,9 @@ abstract class CatalogState with _$CatalogState {
     /// lista de posições ou enquanto ela é lida.
     List<EndgamePosition>? positions,
     @Default(GoalFilter.all) GoalFilter filter,
+
+    /// As posições em que o objetivo já foi cumprido.
+    @Default(<String>{}) Set<String> fulfilled,
   }) = _CatalogState;
 
   const CatalogState._();
@@ -29,10 +33,12 @@ abstract class CatalogState with _$CatalogState {
 /// O catálogo: categorias, subcategorias e posições, com o filtro por
 /// objetivo (gravado: volta igual na próxima vez).
 class CatalogCubit extends Cubit<CatalogState> {
-  CatalogCubit(this._positions, this._training) : super(const CatalogState());
+  CatalogCubit(this._positions, this._training, this._progress)
+    : super(const CatalogState());
 
   final PositionsRepository _positions;
   final TrainingRepository _training;
+  final ProgressRepository _progress;
 
   /// Lê o catálogo e o filtro. Com [subcategory], lê também as posições dela.
   Future<void> load({String? subcategory}) async {
@@ -41,12 +47,14 @@ class CatalogCubit extends Cubit<CatalogState> {
     final positions = subcategory == null
         ? null
         : await _positions.bySubcategory(subcategory);
+    final fulfilled = await _progress.fulfilledPositions();
     if (isClosed) return;
     emit(
       CatalogState(
         categories: categories,
         positions: positions,
         filter: filter,
+        fulfilled: fulfilled,
       ),
     );
   }

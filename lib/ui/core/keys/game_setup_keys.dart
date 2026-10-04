@@ -20,5 +20,8 @@ abstract final class GameSetupKeys {
       Key('setup.$who.$field.increase');
 
   static const timeError = Key('setup.timeError');
+
+  /// Uma partida do histórico; 0 é a mais recente.
+  static Key attempt(int index) => Key('setup.attempt.$index');
   static const startButton = Key('setup.start');
 }

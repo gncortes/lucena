@@ -3,12 +3,17 @@ import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/catalog/view_models/catalog_cubit.dart';
 
 import '../../../../testing/fakes/fake_positions_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 
 void main() {
   late FakeTrainingRepository training;
 
-  CatalogCubit build() => CatalogCubit(FakePositionsRepository(), training);
+  CatalogCubit build() => CatalogCubit(
+    FakePositionsRepository(),
+    training,
+    FakeProgressRepository(),
+  );
 
   setUp(() => training = FakeTrainingRepository());
 

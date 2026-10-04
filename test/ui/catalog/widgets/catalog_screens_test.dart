@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/catalog/view_models/catalog_cubit.dart';
 import 'package:lucena/ui/catalog/widgets/catalog_screen.dart';
@@ -12,6 +14,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_positions_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
 
@@ -23,12 +26,26 @@ void main() {
     Widget screen, {
     String? subcategory,
     Locale locale = const Locale('en'),
+    Set<String> fulfilled = const {},
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     training = FakeTrainingRepository();
-    final cubit = CatalogCubit(FakePositionsRepository(), training);
+    final cubit = CatalogCubit(
+      FakePositionsRepository(),
+      training,
+      FakeProgressRepository([
+        for (final id in fulfilled)
+          Attempt(
+            positionId: id,
+            playedAt: DateTime.utc(2026),
+            outcome: AttemptOutcome.win,
+            fulfilled: true,
+            opponent: OpponentKind.stockfish,
+          ),
+      ]),
+    );
     addTearDown(cubit.close);
     await cubit.load(subcategory: subcategory);
     final settings = SettingsCubit(
@@ -116,5 +133,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(CatalogKeys.empty), findsOneWidget);
+  });
+
+  testWidgets('posição com o objetivo já cumprido ganha a marca', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const SubcategoryScreen(category: 'basic', subcategory: 'queen'),
+      subcategory: 'queen',
+      fulfilled: {'basic.queen.0001'},
+    );
+
+    expect(
+      find.byKey(CatalogKeys.fulfilled('basic.queen.0001')),
+      findsOneWidget,
+    );
   });
 }

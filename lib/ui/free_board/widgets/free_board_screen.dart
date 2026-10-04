@@ -8,10 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
@@ -26,7 +28,8 @@ class FreeBoardScreen extends StatefulWidget {
   State<FreeBoardScreen> createState() => _FreeBoardScreenState();
 }
 
-class _FreeBoardScreenState extends State<FreeBoardScreen> {
+class _FreeBoardScreenState extends State<FreeBoardScreen>
+    with WidgetsBindingObserver {
   // Altura reservada para o painel de cima e para a lista de lances.
   static const _statusHeight = 72.0;
   static const _minMovesHeight = 120.0;
@@ -42,14 +45,31 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
     super.initState();
     final cubit = context.read<FreeBoardCubit>();
     _board = ChessboardController(game: _gameData(cubit.state));
+    WidgetsBinding.instance.addObserver(this);
     _clockRefresh = Timer.periodic(
       const Duration(milliseconds: 100),
       (_) => cubit.tick(),
     );
   }
 
+  // Voltando do segundo plano ou da tela bloqueada: relógios refeitos e, se
+  // for a vez da máquina, ela volta a pensar.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<FreeBoardCubit>().resumed();
+    }
+  }
+
+  Future<void> _confirmResign() async {
+    final cubit = context.read<FreeBoardCubit>();
+    final confirmed = await showResignSheet(context);
+    if (confirmed ?? false) cubit.resign();
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _clockRefresh.cancel();
     _board.dispose();
     super.dispose();
@@ -116,7 +136,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
           !identical(previous.position, current.position) ||
           previous.moves.length != current.moves.length ||
           previous.end != current.end ||
-          previous.playerSide != current.playerSide,
+          previous.playerSide != current.playerSide ||
+          previous.machineThinking != current.machineThinking,
       listener: (context, state) => _onStateChanged(state),
       builder: (context, state) {
         // Sair da tela pela seta ou pelo botão de voltar para o relógio e
@@ -146,11 +167,35 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
         appBar: AppBar(title: Text(context.l10n.freeBoardTitle)),
       );
     }
+    final goal = state.mode.goal;
+    final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
       appBar: AppBar(
-        title: Text(context.l10n.freeBoardTitle),
+        // No treino, o objetivo no lugar do título: ícone e uma palavra, que
+        // cabem junto dos botões em qualquer idioma.
+        title: goal == null
+            ? Text(context.l10n.freeBoardTitle)
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    goal == PositionGoal.win
+                        ? Icons.emoji_events_outlined
+                        : Icons.shield_outlined,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text(goalLabel(context.l10n, goal))),
+                ],
+              ),
         actions: [
+          if (training && state.end == null)
+            IconButton(
+              key: FreeBoardKeys.resignButton,
+              icon: const Icon(Icons.flag_outlined),
+              tooltip: context.l10n.gameResign,
+              onPressed: _confirmResign,
+            ),
           IconButton(
             key: FreeBoardKeys.flipButton,
             icon: const Icon(Icons.swap_vert),
@@ -196,6 +241,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                   state: state,
                   onNewGame: cubit.newGame,
                 ),
+                if (state.machineThinking && state.clock == null)
+                  const _Thinking(),
                 if (clocks == ClockPosition.top)
                   ClockRow(sides: both, state: state, board: boardSettings),
                 if (clocks == ClockPosition.sides)
@@ -284,7 +331,11 @@ class _Status extends StatelessWidget {
             minHeight: end != null || showsTurn ? minHeight : 0,
           ),
           child: switch (end) {
-            final end? => _End(end: end, onNewGame: onNewGame),
+            final end? => _End(
+              end: end,
+              fulfilled: state.fulfilled,
+              onNewGame: onNewGame,
+            ),
             null when showsTurn => _Turn(side: state.position.turn),
             null => const SizedBox(width: double.infinity),
           },
@@ -333,9 +384,16 @@ class _Turn extends StatelessWidget {
 }
 
 class _End extends StatelessWidget {
-  const _End({required this.end, required this.onNewGame});
+  const _End({
+    required this.end,
+    required this.fulfilled,
+    required this.onNewGame,
+  });
 
   final GameEnd end;
+
+  /// No treino: o objetivo foi cumprido. Nulo fora do treino.
+  final bool? fulfilled;
   final VoidCallback onNewGame;
 
   @override
@@ -349,6 +407,7 @@ class _End extends StatelessWidget {
       GameEndReason.timeout => l10n.freeBoardTimeout,
       GameEndReason.timeoutVsInsufficientMaterial =>
         l10n.freeBoardTimeoutVsInsufficientMaterial,
+      GameEndReason.resign => l10n.gameResigned,
     };
     final result = switch (end.winner) {
       Side.white => l10n.freeBoardWhiteWins,
@@ -387,6 +446,36 @@ class _End extends StatelessWidget {
                       color: theme.colorScheme.onSecondaryContainer,
                     ),
                   ),
+                  if (fulfilled case final done?)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            done ? Icons.check_circle : Icons.cancel_outlined,
+                            size: 18,
+                            color: done
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.error,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              done
+                                  ? l10n.resultFulfilled
+                                  : l10n.resultNotFulfilled,
+                              key: FreeBoardKeys.endGoal,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: done
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -394,11 +483,96 @@ class _End extends StatelessWidget {
             FilledButton(
               key: FreeBoardKeys.endNewGameButton,
               onPressed: onNewGame,
-              child: Text(l10n.freeBoardNewGame),
+              // No treino, a mesma posição com a mesma configuração.
+              child: Text(
+                fulfilled == null
+                    ? l10n.freeBoardNewGame
+                    : l10n.resultPlayAgain,
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+/// A máquina está escolhendo o lance (partida sem relógio; com relógio, o
+/// relógio dela correndo já mostra).
+class _Thinking extends StatelessWidget {
+  const _Thinking();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      key: FreeBoardKeys.machineThinking,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Row(
+        children: [
+          // Ícone parado: a tela não fica animando enquanto a máquina pensa.
+          Icon(
+            Icons.hourglass_top,
+            size: 18,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              context.l10n.gameMachineThinking,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Pergunta antes de desistir. Devolve verdadeiro se o jogador confirmou.
+Future<bool?> showResignSheet(BuildContext context) {
+  return showModalBottomSheet<bool>(
+    context: context,
+    showDragHandle: true,
+    useSafeArea: true,
+    builder: (context) {
+      final theme = Theme.of(context);
+      final l10n = context.l10n;
+      return SafeArea(
+        top: false,
+        child: Padding(
+          key: FreeBoardKeys.resignSheet,
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.gameResignTitle, style: theme.textTheme.titleLarge),
+              const SizedBox(height: 4),
+              Text(
+                l10n.gameResignHint,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 20),
+              FilledButton.icon(
+                key: FreeBoardKeys.resignConfirmButton,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: theme.colorScheme.onError,
+                ),
+                icon: const Icon(Icons.flag),
+                onPressed: () => Navigator.of(context).pop(true),
+                label: Text(l10n.gameResign),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

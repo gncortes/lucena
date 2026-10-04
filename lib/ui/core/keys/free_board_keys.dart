@@ -16,6 +16,17 @@ abstract final class FreeBoardKeys {
 
   static const flipButton = Key('freeBoard.flip');
 
+  /// Desistir (só no treino) e o painel que confirma.
+  static const resignButton = Key('freeBoard.resign');
+  static const resignSheet = Key('freeBoard.resign.sheet');
+  static const resignConfirmButton = Key('freeBoard.resign.confirm');
+
+  /// A máquina está pensando.
+  static const machineThinking = Key('freeBoard.machineThinking');
+
+  /// O resultado do treino no painel do fim: objetivo cumprido ou não.
+  static const endGoal = Key('freeBoard.end.goal');
+
   /// O relógio de um lado e o tempo escrito nele.
   static Key clock(Side side) => Key('freeBoard.clock.${side.name}');
   static Key clockTime(Side side) => Key('freeBoard.clock.${side.name}.time');

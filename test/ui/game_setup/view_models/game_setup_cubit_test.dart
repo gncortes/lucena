@@ -1,11 +1,13 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 
 void main() {
@@ -14,6 +16,7 @@ void main() {
   GameSetupCubit build({String fen = '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1'}) {
     return GameSetupCubit(
       training,
+      progress: FakeProgressRepository(),
       position: GameRules.fromFen(fen)!,
       goal: PositionGoal.win,
     );
@@ -92,4 +95,53 @@ void main() {
     );
     expect(cubit.state.setup.userTime.increment, Duration.zero);
   });
+
+  test(
+    'a partida abre contra o Stockfish por padrão, com o lado do jogador',
+    () async {
+      final cubit = GameSetupCubit(
+        training,
+        progress: FakeProgressRepository(),
+        position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+        goal: PositionGoal.win,
+        positionId: 'basic.queen.0001',
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      final query = Uri.parse(cubit.state.gameRoute).queryParameters;
+      expect(query['opponent'], 'stockfish');
+      expect(query['user'], 'white');
+      expect(query['goal'], 'win');
+      expect(query['position'], 'basic.queen.0001');
+    },
+  );
+
+  test(
+    'carrega o histórico da posição, da mais recente para a mais antiga',
+    () async {
+      final progress = FakeProgressRepository([
+        for (final minute in [1, 2])
+          Attempt(
+            positionId: 'basic.queen.0001',
+            playedAt: DateTime.utc(2026, 1, 1, 12, minute),
+            outcome: AttemptOutcome.win,
+            fulfilled: true,
+            opponent: OpponentKind.stockfish,
+          ),
+      ]);
+      final cubit = GameSetupCubit(
+        training,
+        progress: progress,
+        position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+        goal: PositionGoal.win,
+        positionId: 'basic.queen.0001',
+      );
+      addTearDown(cubit.close);
+
+      await cubit.load();
+
+      expect(cubit.state.attempts.map((a) => a.playedAt.minute), [2, 1]);
+    },
+  );
 }

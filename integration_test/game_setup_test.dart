@@ -76,6 +76,7 @@ void main() {
 
     await board.expectVisible();
     board.expectOrientation(Side.black);
-    board.expectFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1');
+    // A máquina ficou com as brancas, que jogam na posição: ela começa.
+    await board.expectMoves(['Qa1']);
   });
 }

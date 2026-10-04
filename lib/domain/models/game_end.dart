@@ -14,6 +14,9 @@ enum GameEndReason {
   /// O tempo de um lado acabou, mas o outro não tem material para dar mate:
   /// empate.
   timeoutVsInsufficientMaterial,
+
+  /// O jogador desistiu.
+  resign,
 }
 
 /// Como a partida terminou. [winner] nulo é empate.

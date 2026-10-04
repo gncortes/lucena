@@ -1,8 +1,11 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
+import '../../../domain/models/game_mode.dart';
 import '../../../domain/use_cases/game_rules.dart';
 
 part 'free_board_state.freezed.dart';
@@ -42,14 +45,43 @@ abstract class FreeBoardState with _$FreeBoardState {
     @Default(Duration.zero) Duration whiteTime,
     @Default(Duration.zero) Duration blackTime,
 
-    /// O fim por tempo, quando a bandeira de um lado cai.
-    GameEnd? timeEnd,
+    /// O fim que não vem do tabuleiro: bandeira ou desistência.
+    GameEnd? forcedEnd,
+
+    /// Contra quem, de que lado e, num treino, com que objetivo.
+    @Default(GameMode()) GameMode mode,
+
+    /// A máquina está escolhendo o lance.
+    @Default(false) bool machineThinking,
   }) = _FreeBoardState;
 
   const FreeBoardState._();
 
   /// Como a partida terminou. Nulo enquanto ela continua.
-  GameEnd? get end => timeEnd ?? GameRules.endOf(position);
+  GameEnd? get end => forcedEnd ?? GameRules.endOf(position);
+
+  /// Como a partida terminou para o jogador. Nulo enquanto ela continua ou
+  /// fora do treino.
+  AttemptOutcome? get outcome {
+    final end = this.end;
+    final user = mode.userSide;
+    if (end == null || user == null) return null;
+    final winner = end.winner;
+    if (winner == null) return AttemptOutcome.draw;
+    return winner == user ? AttemptOutcome.win : AttemptOutcome.loss;
+  }
+
+  /// O objetivo do treino foi cumprido. Nulo enquanto a partida continua ou
+  /// fora do treino.
+  bool? get fulfilled {
+    final outcome = this.outcome;
+    final goal = mode.goal;
+    if (outcome == null || goal == null) return null;
+    return switch (goal) {
+      PositionGoal.win => outcome == AttemptOutcome.win,
+      PositionGoal.draw => outcome != AttemptOutcome.loss,
+    };
+  }
 
   /// Quanto falta para [side], como aparece na tela.
   Duration timeOf(Side side) => side == Side.white ? whiteTime : blackTime;

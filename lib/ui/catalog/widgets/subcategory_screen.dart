@@ -32,6 +32,9 @@ class SubcategoryScreen extends StatelessWidget {
     final positions = context.select(
       (CatalogCubit cubit) => cubit.state.visiblePositions,
     );
+    final fulfilled = context.select(
+      (CatalogCubit cubit) => cubit.state.fulfilled,
+    );
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -55,8 +58,11 @@ class SubcategoryScreen extends StatelessWidget {
                     key: CatalogKeys.positionList,
                     itemExtent: _PositionTile.height,
                     itemCount: positions.length,
-                    itemBuilder: (context, index) =>
-                        _PositionTile(position: positions[index], board: board),
+                    itemBuilder: (context, index) => _PositionTile(
+                      position: positions[index],
+                      board: board,
+                      fulfilled: fulfilled.contains(positions[index].id),
+                    ),
                   ),
           ),
         ],
@@ -66,12 +72,19 @@ class SubcategoryScreen extends StatelessWidget {
 }
 
 class _PositionTile extends StatelessWidget {
-  const _PositionTile({required this.position, required this.board});
+  const _PositionTile({
+    required this.position,
+    required this.board,
+    required this.fulfilled,
+  });
 
   static const height = 96.0;
 
   final EndgamePosition position;
   final BoardSettings board;
+
+  /// O objetivo já foi cumprido nesta posição.
+  final bool fulfilled;
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +94,13 @@ class _PositionTile extends StatelessWidget {
     final turn = position.fen.split(' ')[1] == 'b' ? Side.black : Side.white;
     return InkWell(
       key: CatalogKeys.position(position.id),
-      onTap: () =>
-          context.push(Routes.setup(position.fen, goal: position.goal.code)),
+      onTap: () => context.push(
+        Routes.setup(
+          position.fen,
+          goal: position.goal.code,
+          position: position.id,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
@@ -142,6 +160,16 @@ class _PositionTile extends StatelessWidget {
                 ],
               ),
             ),
+            if (fulfilled)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 4),
+                child: Icon(
+                  Icons.check_circle,
+                  key: CatalogKeys.fulfilled(position.id),
+                  color: colors.primary,
+                  semanticLabel: l10n.catalogFulfilled,
+                ),
+              ),
             const Icon(Icons.chevron_right),
           ],
         ),

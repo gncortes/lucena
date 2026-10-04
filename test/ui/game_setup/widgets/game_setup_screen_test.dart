@@ -12,6 +12,7 @@ import 'package:lucena/ui/game_setup/widgets/game_setup_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
 
@@ -27,6 +28,7 @@ void main() {
     addTearDown(tester.view.reset);
     cubit = GameSetupCubit(
       FakeTrainingRepository(),
+      progress: FakeProgressRepository(),
       position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
       goal: PositionGoal.win,
     );
@@ -49,7 +51,12 @@ void main() {
   }
 
   Future<void> tap(WidgetTester tester, Key key, {int times = 1}) async {
-    await tester.ensureVisible(find.byKey(key));
+    // A lista só monta o que está perto da tela: rola até o botão.
+    await tester.scrollUntilVisible(
+      find.byKey(key),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     for (var i = 0; i < times; i++) {
       await tester.tap(find.byKey(key));
