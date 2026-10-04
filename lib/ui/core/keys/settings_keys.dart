@@ -29,6 +29,8 @@ abstract final class SettingsKeys {
   static const boardAppearanceTile = Key('settings.boardAppearance');
   static const boardAppearanceValue = Key('settings.boardAppearance.value');
 
+  static const clockTile = Key('settings.clock');
+  static const clockValue = Key('settings.clock.value');
   static const boardBehaviorTile = Key('settings.boardBehavior');
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 }

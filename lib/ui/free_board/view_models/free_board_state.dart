@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/game_rules.dart';
 
@@ -26,10 +27,24 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// O lado que o jogador move. Nulo: ele move os dois.
     Side? playerSide,
+
+    /// O relógio da partida. Nulo: partida sem relógio.
+    ClockState? clock,
+
+    /// Quanto falta para cada lado, já arredondado como aparece na tela. Só
+    /// valem com [clock].
+    @Default(Duration.zero) Duration whiteTime,
+    @Default(Duration.zero) Duration blackTime,
+
+    /// O fim por tempo, quando a bandeira de um lado cai.
+    GameEnd? timeEnd,
   }) = _FreeBoardState;
 
   const FreeBoardState._();
 
   /// Como a partida terminou. Nulo enquanto ela continua.
-  GameEnd? get end => GameRules.endOf(position);
+  GameEnd? get end => timeEnd ?? GameRules.endOf(position);
+
+  /// Quanto falta para [side], como aparece na tela.
+  Duration timeOf(Side side) => side == Side.white ? whiteTime : blackTime;
 }

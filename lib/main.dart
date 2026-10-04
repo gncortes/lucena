@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/settings/settings_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
@@ -37,8 +39,16 @@ class _LucenaAppState extends State<LucenaApp> {
   @override
   Widget build(BuildContext context) {
     final dependencies = widget.dependencies;
-    return RepositoryProvider<Now>.value(
-      value: dependencies.now,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<Now>.value(value: dependencies.now),
+        RepositoryProvider<SettingsRepository>.value(
+          value: dependencies.settingsRepository,
+        ),
+        RepositoryProvider<HapticsRepository>.value(
+          value: dependencies.hapticsRepository,
+        ),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(

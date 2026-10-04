@@ -88,6 +88,58 @@
   "@boardShowLegalMoves": {
     "description": "Switch: when a piece is selected, mark the squares it can go to."
   },
+  "clockBothSides": "Both sides",
+  "@clockBothSides": {
+    "description": "Section title of the time options when white and black get the same time."
+  },
+  "clockIncrement": "Increment (seconds)",
+  "@clockIncrement": {
+    "description": "Label above the options for the time added after each move, in seconds."
+  },
+  "clockLowTimeVibration": "Vibrate when time is low",
+  "@clockLowTimeVibration": {
+    "description": "Switch: the phone vibrates when the clock is running out."
+  },
+  "clockLowTimeVibrationHint": "A short vibration when your clock drops below 10 seconds",
+  "@clockLowTimeVibrationHint": {
+    "description": "Short explanation under the low time vibration switch."
+  },
+  "clockMinutes": "Minutes",
+  "@clockMinutes": {
+    "description": "Label above the options for the starting time of a side, in minutes."
+  },
+  "clockPosition": "Clock position",
+  "@clockPosition": {
+    "description": "Setting that picks where the chess clocks appear on the game screen."
+  },
+  "clockPositionBottom": "Both below the board",
+  "@clockPositionBottom": {
+    "description": "Option: the two clocks together below the board."
+  },
+  "clockPositionSides": "One on each side of the board",
+  "@clockPositionSides": {
+    "description": "Option: each clock next to its own side, one above and one below the board."
+  },
+  "clockPositionTop": "Both above the board",
+  "@clockPositionTop": {
+    "description": "Option: the two clocks together above the board."
+  },
+  "clockSameForBoth": "Same time for both sides",
+  "@clockSameForBoth": {
+    "description": "Switch: white and black get the same thinking time."
+  },
+  "clockSheetHint": "The game starts over with the time you choose.",
+  "@clockSheetHint": {
+    "description": "Explanation at the top of the chess clock panel."
+  },
+  "clockStartGame": "Start game",
+  "@clockStartGame": {
+    "description": "Button that confirms the clock panel and starts a new game."
+  },
+  "clockUse": "Play with a clock",
+  "@clockUse": {
+    "description": "Switch that turns the chess clock on or off for the game."
+  },
   "commonConfirm": "Confirm",
   "@commonConfirm": {
     "description": "Button that confirms the option marked in a selection panel."
@@ -103,6 +155,10 @@
   "freeBoardCheckmate": "Checkmate",
   "@freeBoardCheckmate": {
     "description": "Game over reason: checkmate."
+  },
+  "freeBoardClock": "Clock",
+  "@freeBoardClock": {
+    "description": "Tooltip of the button that opens the chess clock panel on the board screen, and title of that panel."
   },
   "freeBoardDraw": "Draw",
   "@freeBoardDraw": {
@@ -127,6 +183,14 @@
   "freeBoardStalemate": "Stalemate",
   "@freeBoardStalemate": {
     "description": "Game over reason: stalemate (the side to move has no legal move and is not in check)."
+  },
+  "freeBoardTimeout": "Time out",
+  "@freeBoardTimeout": {
+    "description": "Reason the game ended: one side ran out of time on the clock."
+  },
+  "freeBoardTimeoutVsInsufficientMaterial": "Time out vs. insufficient material",
+  "@freeBoardTimeoutVsInsufficientMaterial": {
+    "description": "Reason the game ended in a draw: one side ran out of time, but the other does not have enough pieces to checkmate."
   },
   "freeBoardTitle": "Free board",
   "@freeBoardTitle": {
@@ -254,6 +318,10 @@
   "@settingsBoardBehavior": {
     "description": "Settings entry and title of the screen with how the board reacts: moving pieces, legal move hints, animation, premoves and notation."
   },
+  "settingsClock": "Clock",
+  "@settingsClock": {
+    "description": "Settings entry and title of the chess clock settings screen."
+  },
   "settingsLanguage": "Language",
   "@settingsLanguage": {
     "description": "Settings item and screen title for choosing the app language."
@@ -285,5 +353,13 @@
   "settingsTitle": "Settings",
   "@settingsTitle": {
     "description": "Title of the settings screen; also the tooltip of the button that opens it."
+  },
+  "sideBlack": "Black",
+  "@sideBlack": {
+    "description": "Name of the black side (the player with the black pieces)."
+  },
+  "sideWhite": "White",
+  "@sideWhite": {
+    "description": "Name of the white side (the player with the white pieces)."
   }
 }

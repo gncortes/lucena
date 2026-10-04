@@ -1,6 +1,7 @@
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock_settings.dart';
 import '../../services/preferences_service.dart';
 import 'settings_repository.dart';
 
@@ -19,6 +20,8 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _boardAnimationKey = 'board.animation';
   static const _boardPremovesKey = 'board.premoves';
   static const _boardNotationKey = 'board.notation';
+  static const _clockPositionKey = 'clock.position';
+  static const _clockVibrationKey = 'clock.lowTimeVibration';
 
   final PreferencesService _preferences;
 
@@ -28,6 +31,14 @@ class LocalSettingsRepository implements SettingsRepository {
       languageCode: await _preferences.getString(_languageKey),
       themeMode: AppThemeMode.fromCode(await _preferences.getString(_themeKey)),
       board: await _loadBoard(),
+      clock: ClockSettings(
+        position: ClockPosition.fromCode(
+          await _preferences.getString(_clockPositionKey),
+        ),
+        lowTimeVibration:
+            await _preferences.getBool(_clockVibrationKey) ??
+            const ClockSettings().lowTimeVibration,
+      ),
     );
   }
 
@@ -73,6 +84,14 @@ class LocalSettingsRepository implements SettingsRepository {
     }
     await _preferences.setString(_themeKey, settings.themeMode.code);
     await _saveBoard(settings.board);
+    await _preferences.setString(
+      _clockPositionKey,
+      settings.clock.position.code,
+    );
+    await _preferences.setBool(
+      _clockVibrationKey,
+      value: settings.clock.lowTimeVibration,
+    );
   }
 
   Future<void> _saveBoard(BoardSettings board) async {
