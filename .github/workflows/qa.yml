@@ -80,6 +80,12 @@ jobs:
           device_args=()
           while IFS= read -r d; do [[ -n "$d" ]] && device_args+=(--device "$d"); done <<< "$TEST_LAB_DEVICES"
 
+          # Bucket próprio para os resultados: o padrão do Test Lab exigiria o papel Editor no projeto inteiro.
+          bucket_args=()
+          if [[ -n "${TEST_LAB_RESULTS_BUCKET:-}" ]]; then
+            bucket_args=(--results-bucket "$TEST_LAB_RESULTS_BUCKET")
+          fi
+
           # Uma repetição automática cobre instabilidade do aparelho; falha de teste de verdade reprova.
           set +e
           gcloud firebase test android run \
@@ -89,6 +95,7 @@ jobs:
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             "${device_args[@]}" \
+            "${bucket_args[@]}" \
             --timeout "$TEST_LAB_TIMEOUT" \
             --num-flaky-test-attempts 1 \
             --record-video \

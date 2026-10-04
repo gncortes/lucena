@@ -56,12 +56,18 @@ echo "GCP_WORKLOAD_IDENTITY_PROVIDER=\"projects/$PROJECT_NUMBER/locations/global
 echo "GCP_SERVICE_ACCOUNT=\"$SA\""
 ```
 
-O Test Lab grava os resultados num bucket padrão do projeto (`gs://test-lab-...`), que a conta de serviço não enxerga só com os papéis acima. Na primeira execução o log do workflow mostra o nome do bucket no erro 403; liberar só esse bucket:
+O bucket padrão de resultados do Test Lab é gerenciado pelo Google: não dá para liberar só ele, e usá-lo exigiria o papel Editor no projeto inteiro. Por isso o workflow grava num bucket próprio, o único que a conta de serviço enxerga:
 
 ```bash
-gcloud storage buckets add-iam-policy-binding gs://test-lab-xxxxxxxx \
-  --member "serviceAccount:$SA" --role roles/storage.objectAdmin --project "$PROJECT_ID"
+BUCKET="$PROJECT_ID-test-lab"
+gcloud storage buckets create "gs://$BUCKET" --project "$PROJECT_ID" --location us-central1 --uniform-bucket-level-access
+for role in roles/storage.objectAdmin roles/storage.legacyBucketReader; do
+  gcloud storage buckets add-iam-policy-binding "gs://$BUCKET" --member "serviceAccount:$SA" --role "$role"
+done
+echo "TEST_LAB_RESULTS_BUCKET=\"$BUCKET\""   # valor para o config.env
 ```
+
+Criar bucket exige faturamento ativo no projeto (plano Blaze). Sem isso, a alternativa é deixar `TEST_LAB_RESULTS_BUCKET` vazio e dar `roles/editor` à conta de serviço, que é bem mais amplo.
 
 ## 3. Assinatura do APK de release
 1. Criar a keystore uma vez, fora do repositório:
