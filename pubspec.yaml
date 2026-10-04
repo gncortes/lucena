@@ -42,6 +42,7 @@ flutter:
   assets:
     - assets/branding/mascot_light.png
     - assets/branding/mascot_dark.png
+    - assets/positions/positions.json
 
   fonts:
     # Peças de xadrez para a notação figurina (tools/make_figurine_font.py)

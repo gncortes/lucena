@@ -12,6 +12,17 @@ import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
+import '../data/repositories/positions/positions_repository.dart';
+import '../data/repositories/training/training_repository.dart';
+import '../domain/models/endgame_position.dart';
+import '../ui/catalog/view_models/catalog_cubit.dart';
+import '../ui/catalog/widgets/catalog_screen.dart';
+import '../ui/catalog/widgets/category_screen.dart';
+import '../ui/catalog/widgets/subcategory_screen.dart';
+import '../ui/custom_position/view_models/custom_position_cubit.dart';
+import '../ui/custom_position/widgets/custom_position_screen.dart';
+import '../ui/game_setup/view_models/game_setup_cubit.dart';
+import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
@@ -40,6 +51,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               // `?side=` deixa o jogador mover só as peças de um lado.
               final fen = state.uri.queryParameters['fen'];
               final side = state.uri.queryParameters['side'];
+              final view = state.uri.queryParameters['view'];
               // `?white=` e `?black=` (tempo de cada lado) ligam o relógio.
               final white = TimeControl.tryParse(
                 state.uri.queryParameters['white'],
@@ -58,6 +70,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   games: context.read<OngoingGameRepository>(),
                   start: isNewGame ? start ?? GameRules.initial : null,
                   playerSide: Side.values.asNameMap()[side],
+                  orientation: Side.values.asNameMap()[view],
                   clock: white == null || black == null
                       ? null
                       : ClockConfig(white: white, black: black),
@@ -65,6 +78,69 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 child: const FreeBoardScreen(),
               );
             },
+          ),
+          GoRoute(
+            path: 'catalog',
+            builder: (context, state) => BlocProvider(
+              create: (context) => _catalogCubit(context)..load(),
+              child: const CatalogScreen(),
+            ),
+            routes: [
+              GoRoute(
+                path: ':category',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => _catalogCubit(context)..load(),
+                  child: CategoryScreen(
+                    category: state.pathParameters['category']!,
+                  ),
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':subcategory',
+                    builder: (context, state) {
+                      final subcategory = state.pathParameters['subcategory']!;
+                      return BlocProvider(
+                        create: (context) =>
+                            _catalogCubit(context)
+                              ..load(subcategory: subcategory),
+                        child: SubcategoryScreen(
+                          category: state.pathParameters['category']!,
+                          subcategory: subcategory,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'setup',
+            builder: (context, state) {
+              final query = state.uri.queryParameters;
+              // FEN inválido aqui só viria de um link quebrado: cai na inicial.
+              final position =
+                  GameRules.fromFen(query['fen'] ?? '') ?? GameRules.initial;
+              return BlocProvider(
+                key: ValueKey(state.uri),
+                create: (context) => GameSetupCubit(
+                  context.read<TrainingRepository>(),
+                  position: position,
+                  goal:
+                      PositionGoal.fromCode(query['goal']) ?? PositionGoal.win,
+                )..load(),
+                child: const GameSetupScreen(),
+              );
+            },
+          ),
+          GoRoute(
+            path: 'custom',
+            builder: (context, state) => BlocProvider(
+              create: (context) =>
+                  CustomPositionCubit(context.read<TrainingRepository>())
+                    ..load(),
+              child: const CustomPositionScreen(),
+            ),
           ),
           GoRoute(
             path: 'settings',
@@ -101,3 +177,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
     ],
   );
 }
+
+CatalogCubit _catalogCubit(BuildContext context) => CatalogCubit(
+  context.read<PositionsRepository>(),
+  context.read<TrainingRepository>(),
+);

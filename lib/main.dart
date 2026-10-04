@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'config/dependencies.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
+import 'data/repositories/positions/positions_repository.dart';
 import 'data/repositories/settings/settings_repository.dart';
+import 'data/repositories/training/training_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
@@ -72,6 +74,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<OngoingGameRepository>.value(
           value: dependencies.ongoingGameRepository,
+        ),
+        RepositoryProvider<PositionsRepository>.value(
+          value: dependencies.positionsRepository,
+        ),
+        RepositoryProvider<TrainingRepository>.value(
+          value: dependencies.trainingRepository,
         ),
       ],
       child: MultiBlocProvider(
