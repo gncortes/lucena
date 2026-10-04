@@ -29,12 +29,9 @@ jobs:
       - name: Formatação
         run: dart format --output=none --set-exit-if-changed .
 
-      # Só roda quando o script de checagem existir (entra na T00).
+      # Reprova se algum idioma estiver sem chave do inglês ou se houver texto fixo em widget.
       - name: Traduções
-        if: hashFiles('tools/check_l10n.py') != ''
-        run: |
-          flutter gen-l10n
-          python3 tools/check_l10n.py
+        run: python3 tools/check_l10n.py
 
       - name: Análise
         run: flutter analyze

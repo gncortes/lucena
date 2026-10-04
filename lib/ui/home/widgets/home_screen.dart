@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/keys/home_keys.dart';
+import '../../core/l10n/l10n.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,7 @@ class HomeScreen extends StatelessWidget {
                   ? 'assets/branding/mascot_dark.png'
                   : 'assets/branding/mascot_light.png',
               key: HomeKeys.mascot,
-              excludeFromSemantics: true,
+              semanticLabel: context.l10n.homeMascotLabel,
             ),
           ),
         ),
