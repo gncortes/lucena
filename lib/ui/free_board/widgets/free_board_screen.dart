@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -13,6 +15,8 @@ import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
+import 'clock_row.dart';
+import 'clock_sheet.dart';
 import 'move_list.dart';
 
 class FreeBoardScreen extends StatefulWidget {
@@ -31,10 +35,34 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
     game: _gameData(context.read<FreeBoardCubit>().state),
   );
 
+  // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
+  // os tempos sejam refeitos pelo instante atual.
+  late final Timer _clockRefresh;
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<FreeBoardCubit>();
+    _clockRefresh = Timer.periodic(
+      const Duration(milliseconds: 100),
+      (_) => cubit.tick(),
+    );
+  }
+
   @override
   void dispose() {
+    _clockRefresh.cancel();
     _board.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickClock() async {
+    final cubit = context.read<FreeBoardCubit>();
+    final choice = await showClockSheet(
+      context,
+      current: cubit.state.clock?.config,
+    );
+    if (choice != null) cubit.newGameWithClock(choice.config);
   }
 
   GameData _gameData(FreeBoardState state) {
@@ -78,6 +106,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
+    final clockPosition = context.select(
+      (SettingsCubit cubit) =>
+          (cubit.state?.clock ?? const ClockSettings()).position,
+    );
     return BlocConsumer<FreeBoardCubit, FreeBoardState>(
       listener: (context, state) => _onStateChanged(state),
       builder: (context, state) {
@@ -93,6 +125,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                 onPressed: cubit.flip,
               ),
               IconButton(
+                key: FreeBoardKeys.clockButton,
+                icon: const Icon(Icons.timer_outlined),
+                tooltip: context.l10n.freeBoardClock,
+                onPressed: _pickClock,
+              ),
+              IconButton(
                 key: FreeBoardKeys.newGameButton,
                 icon: const Icon(Icons.restart_alt),
                 tooltip: context.l10n.freeBoardNewGame,
@@ -103,10 +141,21 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
+                // Sem relógio na partida, nenhuma fileira de relógio aparece.
+                final clocks = state.clock == null ? null : clockPosition;
+                final clockRows = switch (clocks) {
+                  null => 0,
+                  ClockPosition.sides => 2,
+                  ClockPosition.top || ClockPosition.bottom => 1,
+                };
                 final boardSize = math.min(
                   constraints.maxWidth,
-                  constraints.maxHeight - _statusHeight - _minMovesHeight,
+                  constraints.maxHeight -
+                      _statusHeight -
+                      clockRows * ClockRow.height -
+                      _minMovesHeight,
                 );
+                const both = [Side.white, Side.black];
                 return Column(
                   children: [
                     _Status(
@@ -114,6 +163,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                       state: state,
                       onNewGame: cubit.newGame,
                     ),
+                    if (clocks == ClockPosition.top)
+                      ClockRow(sides: both, state: state),
+                    if (clocks == ClockPosition.sides)
+                      ClockRow(
+                        sides: [state.orientation.opposite],
+                        state: state,
+                      ),
                     // O tabuleiro não espelha em idiomas da direita para a esquerda.
                     Directionality(
                       textDirection: TextDirection.ltr,
@@ -126,6 +182,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                         onMove: (move, {viaDragAndDrop}) => cubit.play(move),
                       ),
                     ),
+                    if (clocks == ClockPosition.sides)
+                      ClockRow(sides: [state.orientation], state: state),
+                    if (clocks == ClockPosition.bottom)
+                      ClockRow(sides: both, state: state),
                     Expanded(
                       child: MoveList(
                         moves: state.moves,
@@ -243,6 +303,9 @@ class _End extends StatelessWidget {
       GameEndReason.checkmate => l10n.freeBoardCheckmate,
       GameEndReason.stalemate => l10n.freeBoardStalemate,
       GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
+      GameEndReason.timeout => l10n.freeBoardTimeout,
+      GameEndReason.timeoutVsInsufficientMaterial =>
+        l10n.freeBoardTimeoutVsInsufficientMaterial,
     };
     final result = switch (end.winner) {
       Side.white => l10n.freeBoardWhiteWins,

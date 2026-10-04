@@ -45,6 +45,14 @@ class AppRobot {
     await $.pumpAndSettle();
   }
 
+  /// Faz o relógio do app andar [duration] de uma vez. O relógio dos cenários
+  /// não anda sozinho: o tempo só passa aqui.
+  Future<void> advanceTime(Duration duration) async {
+    e2eNow.advance(duration);
+    // A tela refaz os tempos no tique seguinte.
+    await $.pump(const Duration(milliseconds: 300));
+  }
+
   Future<void> sendToBackgroundAndReturn() async {
     await $.platform.mobile.pressHome();
     await $.platform.mobile.openApp();

@@ -5,6 +5,7 @@ import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock_settings.dart';
 
 /// Preferências do app. O estado é nulo até a primeira leitura terminar.
 class SettingsCubit extends Cubit<AppSettings?> {
@@ -34,6 +35,11 @@ class SettingsCubit extends Cubit<AppSettings?> {
   /// Troca as preferências do tabuleiro.
   Future<void> setBoard(BoardSettings board) {
     return _update((state ?? const AppSettings()).copyWith(board: board));
+  }
+
+  /// Troca as preferências do relógio.
+  Future<void> setClock(ClockSettings clock) {
+    return _update((state ?? const AppSettings()).copyWith(clock: clock));
   }
 
   /// Cores, peças e coordenadas de fábrica; o resto do tabuleiro não muda.

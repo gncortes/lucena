@@ -4,6 +4,7 @@ import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -84,6 +85,20 @@ void main() {
         animation: false,
         premoves: false,
         notation: MoveNotation.letters,
+      ),
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
+  });
+
+  test('as preferências do relógio voltam ao reabrir', () async {
+    expect((await reopen().load()).clock, const ClockSettings());
+
+    const settings = AppSettings(
+      clock: ClockSettings(
+        position: ClockPosition.bottom,
+        lowTimeVibration: false,
       ),
     );
     await reopen().save(settings);

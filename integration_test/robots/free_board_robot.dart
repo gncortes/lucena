@@ -28,10 +28,18 @@ class FreeBoardRobot {
   }
 
   /// A partir da tela inicial, já numa posição preparada (FEN). Com [side], o
-  /// jogador só move as peças desse lado.
-  Future<void> openAt(String fen, {Side? side}) async {
+  /// jogador só move as peças desse lado. Com [white] e [black] (tempo de cada
+  /// lado, `segundos+incremento`), a partida abre com relógio.
+  Future<void> openAt(
+    String fen, {
+    Side? side,
+    String? white,
+    String? black,
+  }) async {
     final context = $.tester.element(find.byKey(HomeKeys.screen));
-    GoRouter.of(context).go(Routes.freeBoardAt(fen, side: side?.name));
+    GoRouter.of(
+      context,
+    ).go(Routes.freeBoardAt(fen, side: side?.name, white: white, black: black));
     await $.pumpAndSettle();
     await expectVisible();
   }
@@ -61,6 +69,58 @@ class FreeBoardRobot {
     final context = $.tester.element(find.byKey(FreeBoardKeys.board));
     context.read<FreeBoardCubit>().play(NormalMove.fromUci(uci));
     await $.pumpAndSettle();
+  }
+
+  /// Abre o painel do relógio, escolhe o mesmo tempo para os dois lados e
+  /// começa a partida.
+  Future<void> startClock({
+    required int minutes,
+    required int increment,
+  }) async {
+    await $(FreeBoardKeys.clockButton).tap();
+    await $(FreeBoardKeys.clockSheet).waitUntilVisible();
+    await $(FreeBoardKeys.clockEnabledSwitch).tap();
+    await $(FreeBoardKeys.clockMinutes(Side.white, minutes)).scrollTo().tap();
+    await $(FreeBoardKeys.clockIncrement(Side.white, increment))
+        .scrollTo()
+        .tap();
+    await $(FreeBoardKeys.clockStartButton).tap();
+    await $.pumpAndSettle();
+    expect(find.byKey(FreeBoardKeys.clockSheet), findsNothing);
+  }
+
+  /// Abre o painel do relógio e deixa o relógio ligado, sem confirmar.
+  Future<void> openClockSheet() async {
+    await $(FreeBoardKeys.clockButton).tap();
+    await $(FreeBoardKeys.clockSheet).waitUntilVisible();
+    await $(FreeBoardKeys.clockEnabledSwitch).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O tempo escrito no relógio de um lado (`3:02`, `0:09.5`).
+  Future<void> expectClock(Side side, String time) async {
+    await $(
+      find.descendant(
+        of: find.byKey(FreeBoardKeys.clock(side)),
+        matching: find.text(time),
+      ),
+    ).waitUntilVisible();
+  }
+
+  void expectNoClock() {
+    expect(find.byKey(FreeBoardKeys.clock(Side.white)), findsNothing);
+    expect(find.byKey(FreeBoardKeys.clock(Side.black)), findsNothing);
+  }
+
+  /// O relógio de [side] está acima ou abaixo do tabuleiro.
+  void expectClockAbove(Side side) {
+    final clock = $.tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
+    expect(clock.bottom, lessThanOrEqualTo(_board.top));
+  }
+
+  void expectClockBelow(Side side) {
+    final clock = $.tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
+    expect(clock.top, greaterThanOrEqualTo(_board.bottom));
   }
 
   Future<void> flip() async {

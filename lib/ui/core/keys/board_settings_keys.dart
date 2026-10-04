@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock_settings.dart';
 
 abstract final class BoardSettingsKeys {
   static const appearanceScreen = Key('boardSettings.appearance.screen');
@@ -33,6 +34,15 @@ abstract final class BoardSettingsKeys {
 
   static Key notationOption(MoveNotation notation) =>
       Key('boardSettings.behavior.notation.${notation.code}');
+
+  static const clockScreen = Key('boardSettings.clock.screen');
+  static const clockPositionTile = Key('boardSettings.clock.position');
+  static const clockPositionValue = Key('boardSettings.clock.position.value');
+
+  static Key clockPositionOption(ClockPosition position) =>
+      Key('boardSettings.clock.position.${position.code}');
+
+  static const clockVibrationSwitch = Key('boardSettings.clock.vibration');
 
   /// O painel de opções aberto e o botão que confirma a opção marcada.
   static const choiceSheet = Key('boardSettings.choice.sheet');
