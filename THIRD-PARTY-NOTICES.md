@@ -51,4 +51,4 @@ package bundled in the app is also available inside the app (licenses page).
 
 | Component | License | Source |
 | --- | --- | --- |
-| Maia-3 | AGPL-3.0 | https://github.com/CSSLab/maia3 |
+| Maia-3 (5M) by the University of Toronto CSSLab: the weights are already in the repository (`assets/models/maia3-5m.bin`, converted to float16 by `tools/maia/export_weights.py`) and `lib/data/services/maia/` is a Dart port of its inference code; the app starts using them in a later release | AGPL-3.0 | https://github.com/CSSLab/maia3 |
