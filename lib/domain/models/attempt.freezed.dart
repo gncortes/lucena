@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$Attempt {
 
  String get positionId; DateTime get playedAt; AttemptOutcome get outcome;/// O objetivo da posição foi cumprido.
- bool get fulfilled; OpponentKind get opponent;
+ bool get fulfilled; OpponentKind get opponent;/// O nível do Maia, quando ele foi o adversário.
+ int? get opponentLevel;
 /// Create a copy of Attempt
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $AttemptCopyWith<Attempt> get copyWith => _$AttemptCopyWithImpl<Attempt>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Attempt;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Attempt&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.playedAt, _this.playedAt) || other.playedAt == _this.playedAt)&&(identical(other.outcome, _this.outcome) || other.outcome == _this.outcome)&&(identical(other.fulfilled, _this.fulfilled) || other.fulfilled == _this.fulfilled)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Attempt&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.playedAt, _this.playedAt) || other.playedAt == _this.playedAt)&&(identical(other.outcome, _this.outcome) || other.outcome == _this.outcome)&&(identical(other.fulfilled, _this.fulfilled) || other.fulfilled == _this.fulfilled)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.opponentLevel, _this.opponentLevel) || other.opponentLevel == _this.opponentLevel));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Attempt;
-  return Object.hash(runtimeType,_this.positionId,_this.playedAt,_this.outcome,_this.fulfilled,_this.opponent);
+  return Object.hash(runtimeType,_this.positionId,_this.playedAt,_this.outcome,_this.fulfilled,_this.opponent,_this.opponentLevel);
 }
 
 @override
 String toString() {
   final _this = this as Attempt;
-  return 'Attempt(positionId: ${_this.positionId}, playedAt: ${_this.playedAt}, outcome: ${_this.outcome}, fulfilled: ${_this.fulfilled}, opponent: ${_this.opponent})';
+  return 'Attempt(positionId: ${_this.positionId}, playedAt: ${_this.playedAt}, outcome: ${_this.outcome}, fulfilled: ${_this.fulfilled}, opponent: ${_this.opponent}, opponentLevel: ${_this.opponentLevel})';
 }
 
 
@@ -52,7 +53,7 @@ abstract mixin class $AttemptCopyWith<$Res>  {
   factory $AttemptCopyWith(Attempt value, $Res Function(Attempt) _then) = _$AttemptCopyWithImpl;
 @useResult
 $Res call({
- String positionId, DateTime playedAt, AttemptOutcome outcome, bool fulfilled, OpponentKind opponent
+ String positionId, DateTime playedAt, AttemptOutcome outcome, bool fulfilled, OpponentKind opponent, int? opponentLevel
 });
 
 
@@ -69,14 +70,15 @@ class _$AttemptCopyWithImpl<$Res>
 
 /// Create a copy of Attempt
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? positionId = null,Object? playedAt = null,Object? outcome = null,Object? fulfilled = null,Object? opponent = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? positionId = null,Object? playedAt = null,Object? outcome = null,Object? fulfilled = null,Object? opponent = null,Object? opponentLevel = freezed,}) {
   return _then(Attempt(
 positionId: null == positionId ? _self.positionId : positionId // ignore: cast_nullable_to_non_nullable
 as String,playedAt: null == playedAt ? _self.playedAt : playedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,outcome: null == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
 as AttemptOutcome,fulfilled: null == fulfilled ? _self.fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as bool,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
-as OpponentKind,
+as OpponentKind,opponentLevel: freezed == opponentLevel ? _self.opponentLevel : opponentLevel // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -161,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent,  int? opponentLevel)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Attempt() when $default != null:
-return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent);case _:
+return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent,_that.opponentLevel);case _:
   return orElse();
 
 }
@@ -182,10 +184,10 @@ return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent,  int? opponentLevel)  $default,) {final _that = this;
 switch (_that) {
 case _Attempt():
-return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent);case _:
+return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent,_that.opponentLevel);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +204,10 @@ return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String positionId,  DateTime playedAt,  AttemptOutcome outcome,  bool fulfilled,  OpponentKind opponent,  int? opponentLevel)?  $default,) {final _that = this;
 switch (_that) {
 case _Attempt() when $default != null:
-return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent);case _:
+return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_that.opponent,_that.opponentLevel);case _:
   return null;
 
 }
@@ -217,7 +219,7 @@ return $default(_that.positionId,_that.playedAt,_that.outcome,_that.fulfilled,_t
 
 
 class _Attempt implements Attempt {
-  const _Attempt({required this.positionId, required this.playedAt, required this.outcome, required this.fulfilled, required this.opponent});
+  const _Attempt({required this.positionId, required this.playedAt, required this.outcome, required this.fulfilled, required this.opponent, this.opponentLevel});
   
 
 @override final  String positionId;
@@ -226,6 +228,8 @@ class _Attempt implements Attempt {
 /// O objetivo da posição foi cumprido.
 @override final  bool fulfilled;
 @override final  OpponentKind opponent;
+/// O nível do Maia, quando ele foi o adversário.
+@override final  int? opponentLevel;
 
 /// Create a copy of Attempt
 /// with the given fields replaced by the non-null parameter values.
@@ -237,18 +241,18 @@ _$AttemptCopyWith<_Attempt> get copyWith => __$AttemptCopyWithImpl<_Attempt>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Attempt&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.playedAt, playedAt) || other.playedAt == playedAt)&&(identical(other.outcome, outcome) || other.outcome == outcome)&&(identical(other.fulfilled, fulfilled) || other.fulfilled == fulfilled)&&(identical(other.opponent, opponent) || other.opponent == opponent));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Attempt&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.playedAt, playedAt) || other.playedAt == playedAt)&&(identical(other.outcome, outcome) || other.outcome == outcome)&&(identical(other.fulfilled, fulfilled) || other.fulfilled == fulfilled)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.opponentLevel, opponentLevel) || other.opponentLevel == opponentLevel));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,positionId,playedAt,outcome,fulfilled,opponent);
+    return Object.hash(runtimeType,positionId,playedAt,outcome,fulfilled,opponent,opponentLevel);
 }
 
 @override
 String toString() {
-    return 'Attempt(positionId: $positionId, playedAt: $playedAt, outcome: $outcome, fulfilled: $fulfilled, opponent: $opponent)';
+    return 'Attempt(positionId: $positionId, playedAt: $playedAt, outcome: $outcome, fulfilled: $fulfilled, opponent: $opponent, opponentLevel: $opponentLevel)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$AttemptCopyWith<$Res> implements $AttemptCopyWith<$Res> {
   factory _$AttemptCopyWith(_Attempt value, $Res Function(_Attempt) _then) = __$AttemptCopyWithImpl;
 @override @useResult
 $Res call({
- String positionId, DateTime playedAt, AttemptOutcome outcome, bool fulfilled, OpponentKind opponent
+ String positionId, DateTime playedAt, AttemptOutcome outcome, bool fulfilled, OpponentKind opponent, int? opponentLevel
 });
 
 
@@ -276,14 +280,15 @@ class __$AttemptCopyWithImpl<$Res>
 
 /// Create a copy of Attempt
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? positionId = null,Object? playedAt = null,Object? outcome = null,Object? fulfilled = null,Object? opponent = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? positionId = null,Object? playedAt = null,Object? outcome = null,Object? fulfilled = null,Object? opponent = null,Object? opponentLevel = freezed,}) {
   return _then(_Attempt(
 positionId: null == positionId ? _self.positionId : positionId // ignore: cast_nullable_to_non_nullable
 as String,playedAt: null == playedAt ? _self.playedAt : playedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,outcome: null == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
 as AttemptOutcome,fulfilled: null == fulfilled ? _self.fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as bool,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
-as OpponentKind,
+as OpponentKind,opponentLevel: freezed == opponentLevel ? _self.opponentLevel : opponentLevel // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

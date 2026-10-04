@@ -13,6 +13,9 @@ abstract class GameMode with _$GameMode {
   const factory GameMode({
     @Default(OpponentKind.twoPlayers) OpponentKind opponent,
 
+    /// O nível do Maia, quando ele é o adversário.
+    int? level,
+
     /// O lado do jogador. Nulo no tabuleiro livre.
     Side? userSide,
 

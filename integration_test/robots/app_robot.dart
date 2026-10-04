@@ -107,6 +107,17 @@ class AppRobot {
   /// [open]).
   void useRealStockfish() => e2eOpponent.useStockfish = true;
 
+  /// O Maia passa a ser o modelo de verdade (volta ao falso no próximo
+  /// [open]). O sorteio dele é fixo e, em vez de esperar, o relógio do
+  /// cenário anda o tempo que ele pensou.
+  void useRealMaia() => e2eOpponent.useMaia = true;
+
+  /// Quanto o Maia de verdade pensou em cada lance, em ordem.
+  List<Duration> get maiaThinkTimes => List.of(e2eOpponent.maiaThinkTimes);
+
+  /// Os pedidos que chegaram à máquina falsa (FEN), em ordem.
+  List<String> get fakeMachineRequests => List.of(e2eOpponent.fake.requests);
+
   Future<void> sendToBackgroundAndReturn() async {
     await $.platform.mobile.pressHome();
     await $.platform.mobile.openApp();

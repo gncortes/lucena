@@ -48,6 +48,7 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
       'onScreen': snapshot.onScreen,
       'mode': {
         'opponent': snapshot.mode.opponent.code,
+        'level': snapshot.mode.level,
         'userSide': snapshot.mode.userSide?.name,
         'goal': snapshot.mode.goal?.code,
         'positionId': snapshot.mode.positionId,
@@ -83,6 +84,7 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
           ? const GameMode()
           : GameMode(
               opponent: OpponentKind.fromCode(mode['opponent'] as String?),
+              level: mode['level'] as int?,
               userSide: sides[mode['userSide']],
               goal: PositionGoal.fromCode(mode['goal'] as String?),
               positionId: mode['positionId'] as String?,

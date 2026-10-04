@@ -52,4 +52,17 @@ void main() {
     expect(draft?.fen, '4k3/8/8/8/8/8/4P3/4K3 w - - 0 1');
     expect(draft?.goal, PositionGoal.draw);
   });
+
+  test('o adversário e o nível do Maia voltam ao reabrir', () async {
+    expect((await reopen().loadSetup()).opponent, OpponentKind.maia);
+    expect((await reopen().loadSetup()).maiaLevel, isNull);
+
+    await reopen().saveSetup(
+      const GameSetup(opponent: OpponentKind.stockfish, maiaLevel: 1800),
+    );
+
+    final setup = await reopen().loadSetup();
+    expect(setup.opponent, OpponentKind.stockfish);
+    expect(setup.maiaLevel, 1800);
+  });
 }

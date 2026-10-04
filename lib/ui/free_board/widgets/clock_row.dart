@@ -7,6 +7,7 @@ import '../../../domain/use_cases/clock_format.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/opponent/opponent_ui.dart';
 import '../view_models/free_board_state.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
@@ -59,9 +60,14 @@ class ClockRow extends StatelessWidget {
     bool mirrored = false,
   }) {
     final theme = Theme.of(context);
-    final name = side == Side.white
-        ? context.l10n.sideWhite
-        : context.l10n.sideBlack;
+    final l10n = context.l10n;
+    final mode = state.mode;
+    // O lado da máquina leva o nome dela (`Maia 1400`, `Stockfish`).
+    final name = side == mode.machineSide
+        ? mode.opponent.label(l10n, level: mode.level)
+        : side == Side.white
+        ? l10n.sideWhite
+        : l10n.sideBlack;
     final children = [
       _Portrait(side: side, board: board),
       const SizedBox(width: 12),

@@ -17,7 +17,8 @@ mixin _$GameSetup {
 
  bool get clock;/// O tempo do jogador.
  TimeControl get userTime;/// O tempo do adversário (a máquina, quando houver).
- TimeControl get opponentTime; OpponentKind get opponent;
+ TimeControl get opponentTime; OpponentKind get opponent;/// O nível do Maia. Nulo: o sugerido pelo rating do perfil.
+ int? get maiaLevel;
 /// Create a copy of GameSetup
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +30,20 @@ $GameSetupCopyWith<GameSetup> get copyWith => _$GameSetupCopyWithImpl<GameSetup>
 @override
 bool operator ==(Object other) {
   final _this = this as GameSetup;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSetup&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.userTime, _this.userTime) || other.userTime == _this.userTime)&&(identical(other.opponentTime, _this.opponentTime) || other.opponentTime == _this.opponentTime)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSetup&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.userTime, _this.userTime) || other.userTime == _this.userTime)&&(identical(other.opponentTime, _this.opponentTime) || other.opponentTime == _this.opponentTime)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.maiaLevel, _this.maiaLevel) || other.maiaLevel == _this.maiaLevel));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GameSetup;
-  return Object.hash(runtimeType,_this.clock,_this.userTime,_this.opponentTime,_this.opponent);
+  return Object.hash(runtimeType,_this.clock,_this.userTime,_this.opponentTime,_this.opponent,_this.maiaLevel);
 }
 
 @override
 String toString() {
   final _this = this as GameSetup;
-  return 'GameSetup(clock: ${_this.clock}, userTime: ${_this.userTime}, opponentTime: ${_this.opponentTime}, opponent: ${_this.opponent})';
+  return 'GameSetup(clock: ${_this.clock}, userTime: ${_this.userTime}, opponentTime: ${_this.opponentTime}, opponent: ${_this.opponent}, maiaLevel: ${_this.maiaLevel})';
 }
 
 
@@ -53,7 +54,7 @@ abstract mixin class $GameSetupCopyWith<$Res>  {
   factory $GameSetupCopyWith(GameSetup value, $Res Function(GameSetup) _then) = _$GameSetupCopyWithImpl;
 @useResult
 $Res call({
- bool clock, TimeControl userTime, TimeControl opponentTime, OpponentKind opponent
+ bool clock, TimeControl userTime, TimeControl opponentTime, OpponentKind opponent, int? maiaLevel
 });
 
 
@@ -70,13 +71,14 @@ class _$GameSetupCopyWithImpl<$Res>
 
 /// Create a copy of GameSetup
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? clock = null,Object? userTime = null,Object? opponentTime = null,Object? opponent = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? clock = null,Object? userTime = null,Object? opponentTime = null,Object? opponent = null,Object? maiaLevel = freezed,}) {
   return _then(GameSetup(
 clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as bool,userTime: null == userTime ? _self.userTime : userTime // ignore: cast_nullable_to_non_nullable
 as TimeControl,opponentTime: null == opponentTime ? _self.opponentTime : opponentTime // ignore: cast_nullable_to_non_nullable
 as TimeControl,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
-as OpponentKind,
+as OpponentKind,maiaLevel: freezed == maiaLevel ? _self.maiaLevel : maiaLevel // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 /// Create a copy of GameSetup
@@ -179,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent,  int? maiaLevel)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameSetup() when $default != null:
-return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);case _:
+return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent,_that.maiaLevel);case _:
   return orElse();
 
 }
@@ -200,10 +202,10 @@ return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent,  int? maiaLevel)  $default,) {final _that = this;
 switch (_that) {
 case _GameSetup():
-return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);case _:
+return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent,_that.maiaLevel);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -220,10 +222,10 @@ return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool clock,  TimeControl userTime,  TimeControl opponentTime,  OpponentKind opponent,  int? maiaLevel)?  $default,) {final _that = this;
 switch (_that) {
 case _GameSetup() when $default != null:
-return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);case _:
+return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent,_that.maiaLevel);case _:
   return null;
 
 }
@@ -235,7 +237,7 @@ return $default(_that.clock,_that.userTime,_that.opponentTime,_that.opponent);ca
 
 
 class _GameSetup implements GameSetup {
-  const _GameSetup({this.clock = true, this.userTime = GameSetup.defaultTime, this.opponentTime = GameSetup.defaultTime, this.opponent = OpponentKind.fallback});
+  const _GameSetup({this.clock = true, this.userTime = GameSetup.defaultTime, this.opponentTime = GameSetup.defaultTime, this.opponent = OpponentKind.fallback, this.maiaLevel});
   
 
 @override@JsonKey() final  bool clock;
@@ -244,6 +246,8 @@ class _GameSetup implements GameSetup {
 /// O tempo do adversário (a máquina, quando houver).
 @override@JsonKey() final  TimeControl opponentTime;
 @override@JsonKey() final  OpponentKind opponent;
+/// O nível do Maia. Nulo: o sugerido pelo rating do perfil.
+@override final  int? maiaLevel;
 
 /// Create a copy of GameSetup
 /// with the given fields replaced by the non-null parameter values.
@@ -255,18 +259,18 @@ _$GameSetupCopyWith<_GameSetup> get copyWith => __$GameSetupCopyWithImpl<_GameSe
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSetup&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.userTime, userTime) || other.userTime == userTime)&&(identical(other.opponentTime, opponentTime) || other.opponentTime == opponentTime)&&(identical(other.opponent, opponent) || other.opponent == opponent));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSetup&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.userTime, userTime) || other.userTime == userTime)&&(identical(other.opponentTime, opponentTime) || other.opponentTime == opponentTime)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.maiaLevel, maiaLevel) || other.maiaLevel == maiaLevel));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,clock,userTime,opponentTime,opponent);
+    return Object.hash(runtimeType,clock,userTime,opponentTime,opponent,maiaLevel);
 }
 
 @override
 String toString() {
-    return 'GameSetup(clock: $clock, userTime: $userTime, opponentTime: $opponentTime, opponent: $opponent)';
+    return 'GameSetup(clock: $clock, userTime: $userTime, opponentTime: $opponentTime, opponent: $opponent, maiaLevel: $maiaLevel)';
 }
 
 
@@ -277,7 +281,7 @@ abstract mixin class _$GameSetupCopyWith<$Res> implements $GameSetupCopyWith<$Re
   factory _$GameSetupCopyWith(_GameSetup value, $Res Function(_GameSetup) _then) = __$GameSetupCopyWithImpl;
 @override @useResult
 $Res call({
- bool clock, TimeControl userTime, TimeControl opponentTime, OpponentKind opponent
+ bool clock, TimeControl userTime, TimeControl opponentTime, OpponentKind opponent, int? maiaLevel
 });
 
 
@@ -294,13 +298,14 @@ class __$GameSetupCopyWithImpl<$Res>
 
 /// Create a copy of GameSetup
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? clock = null,Object? userTime = null,Object? opponentTime = null,Object? opponent = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? clock = null,Object? userTime = null,Object? opponentTime = null,Object? opponent = null,Object? maiaLevel = freezed,}) {
   return _then(_GameSetup(
 clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as bool,userTime: null == userTime ? _self.userTime : userTime // ignore: cast_nullable_to_non_nullable
 as TimeControl,opponentTime: null == opponentTime ? _self.opponentTime : opponentTime // ignore: cast_nullable_to_non_nullable
 as TimeControl,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
-as OpponentKind,
+as OpponentKind,maiaLevel: freezed == maiaLevel ? _self.maiaLevel : maiaLevel // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

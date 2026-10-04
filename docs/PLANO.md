@@ -596,8 +596,8 @@ Frente: D · Maia · Dificuldade: muito alta · Modelo sugerido: Fable 5.1
 
 Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] `MaiaService`
-- [ ] Tela de depuração (só em build de desenvolvimento)
+- [x] `MaiaService`
+- [x] Tela de depuração (só em build de desenvolvimento)
 
 **Cenários Patrol:**
 
@@ -613,9 +613,9 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
 Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] Níveis de 1000 a 2600 (degraus de 200; piso 1000 pela visão de gamificação), temperatura por nível
-- [ ] Maia por nível ou Stockfish máximo
-- [ ] Rating do perfil sugere o nível
+- [x] Níveis de 1000 a 2600 (degraus de 200; piso 1000 pela visão de gamificação), temperatura por nível
+- [x] Maia por nível ou Stockfish máximo
+- [x] Rating do perfil sugere o nível
 
 **Cenários Patrol:**
 
@@ -632,7 +632,7 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
 Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] `ThinkTimePolicy`
+- [x] `ThinkTimePolicy`
 
 **Cenários Patrol:**
 

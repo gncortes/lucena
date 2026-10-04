@@ -6,13 +6,16 @@ part 'game_setup.freezed.dart';
 
 /// Contra quem o jogador joga.
 enum OpponentKind {
+  /// O Maia joga o outro lado como uma pessoa do nível escolhido.
+  maia,
+
   /// O Stockfish, na força máxima, joga o outro lado.
   stockfish,
 
   /// O próprio jogador move os dois lados.
   twoPlayers;
 
-  static const fallback = OpponentKind.stockfish;
+  static const fallback = OpponentKind.maia;
 
   /// A máquina joga o outro lado.
   bool get isMachine => this != twoPlayers;
@@ -37,6 +40,9 @@ abstract class GameSetup with _$GameSetup {
     /// O tempo do adversário (a máquina, quando houver).
     @Default(GameSetup.defaultTime) TimeControl opponentTime,
     @Default(OpponentKind.fallback) OpponentKind opponent,
+
+    /// O nível do Maia. Nulo: o sugerido pelo rating do perfil.
+    int? maiaLevel,
   }) = _GameSetup;
 
   static const defaultTime = TimeControl(initial: Duration(minutes: 5));

@@ -7,9 +7,9 @@ abstract final class Routes {
   /// Com [white] e [black] (tempo de cada lado, `segundos+incremento`), a
   /// partida abre com relógio.
   ///
-  /// No treino, [opponent] (`stockfish`, `twoPlayers`), [user] (o lado do
-  /// jogador), [goal] e [position] (id no catálogo) dizem de que partida se
-  /// trata.
+  /// No treino, [opponent] (`maia`, `stockfish`, `twoPlayers`), [level] (o
+  /// nível do Maia), [user] (o lado do jogador), [goal] e [position] (id no
+  /// catálogo) dizem de que partida se trata.
   static String freeBoardAt(
     String fen, {
     String? side,
@@ -17,6 +17,7 @@ abstract final class Routes {
     String? white,
     String? black,
     String? opponent,
+    String? level,
     String? user,
     String? goal,
     String? position,
@@ -29,6 +30,7 @@ abstract final class Routes {
       'white': ?white,
       'black': ?black,
       'opponent': ?opponent,
+      'level': ?level,
       'user': ?user,
       'goal': ?goal,
       'position': ?position,
@@ -57,4 +59,7 @@ abstract final class Routes {
   static const settingsBoardAppearance = '/settings/board-appearance';
   static const settingsBoardBehavior = '/settings/board-behavior';
   static const settingsClock = '/settings/clock';
+
+  /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
+  static const settingsMaia = '/settings/maia';
 }

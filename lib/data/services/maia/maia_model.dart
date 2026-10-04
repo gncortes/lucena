@@ -14,6 +14,7 @@ class MaiaEvaluation {
     required this.draw,
     required this.loss,
     required this.ponder,
+    this.elapsed = Duration.zero,
   });
 
   /// A chance de um jogador humano fazer cada lance legal (UCI, como `e2e4`,
@@ -27,6 +28,9 @@ class MaiaEvaluation {
 
   /// Saída bruta da cabeça de tempo de reflexão do modelo.
   final double ponder;
+
+  /// Quanto a conta levou (preenchido pelo `MaiaService`).
+  final Duration elapsed;
 }
 
 /// O Maia-3 pronto para avaliar posições: monta a entrada a partir das
