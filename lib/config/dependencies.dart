@@ -2,10 +2,15 @@ import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository_local.dart';
+import '../data/repositories/positions/positions_repository.dart';
+import '../data/repositories/positions/positions_repository_asset.dart';
 import '../data/repositories/profile/profile_repository.dart';
 import '../data/repositories/profile/profile_repository_local.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/settings/settings_repository_local.dart';
+import '../data/repositories/training/training_repository.dart';
+import '../data/repositories/training/training_repository_local.dart';
+import '../data/services/asset_service.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/vibration_service.dart';
@@ -26,6 +31,8 @@ class Dependencies {
     required this.profileRepository,
     required this.hapticsRepository,
     required this.ongoingGameRepository,
+    required this.positionsRepository,
+    required this.trainingRepository,
     required this.languages,
   });
 
@@ -37,6 +44,8 @@ class Dependencies {
       profileRepository: LocalProfileRepository(AppDatabase()),
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
+      positionsRepository: AssetPositionsRepository(const AssetService()),
+      trainingRepository: LocalTrainingRepository(preferences),
       languages: AppLanguage.selectable,
     );
   }
@@ -46,6 +55,8 @@ class Dependencies {
   final ProfileRepository profileRepository;
   final HapticsRepository hapticsRepository;
   final OngoingGameRepository ongoingGameRepository;
+  final PositionsRepository positionsRepository;
+  final TrainingRepository trainingRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

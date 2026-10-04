@@ -134,15 +134,42 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(height: 40),
             _Entrance(
               animation: _actions,
-              child: FilledButton.icon(
-                key: HomeKeys.freeBoardButton,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size(220, 52),
-                  textStyle: theme.textTheme.titleMedium,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 12,
+                  children: [
+                    FilledButton.icon(
+                      key: HomeKeys.catalogButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 52),
+                        textStyle: theme.textTheme.titleMedium,
+                      ),
+                      icon: const Icon(Icons.play_arrow_rounded),
+                      label: Text(context.l10n.homeTrain),
+                      onPressed: () => context.go(Routes.catalog),
+                    ),
+                    FilledButton.tonalIcon(
+                      key: HomeKeys.customPositionButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 48),
+                      ),
+                      icon: const Icon(Icons.edit_outlined),
+                      label: Text(context.l10n.customPositionTitle),
+                      onPressed: () => context.go(Routes.customPosition),
+                    ),
+                    OutlinedButton.icon(
+                      key: HomeKeys.freeBoardButton,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(220, 48),
+                      ),
+                      icon: const Icon(Icons.grid_on_outlined),
+                      label: Text(context.l10n.freeBoardTitle),
+                      onPressed: () => context.go(Routes.freeBoard),
+                    ),
+                  ],
                 ),
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text(context.l10n.freeBoardTitle),
-                onPressed: () => context.go(Routes.freeBoard),
               ),
             ),
           ],

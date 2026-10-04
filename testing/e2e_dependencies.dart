@@ -1,7 +1,10 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
+import 'package:lucena/data/repositories/positions/positions_repository_asset.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
+import 'package:lucena/data/repositories/training/training_repository_local.dart';
+import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -31,6 +34,9 @@ Future<Dependencies> e2eDependencies() async {
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: FakeHapticsRepository(),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
+    // O catálogo de verdade: os cenários abrem posições conhecidas dele.
+    positionsRepository: AssetPositionsRepository(const AssetService()),
+    trainingRepository: LocalTrainingRepository(PreferencesService()),
     languages: AppLanguage.values,
   );
 }

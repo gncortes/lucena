@@ -28,6 +28,7 @@ package bundled in the app is also available inside the app (licenses page).
 | Chess pieces "pixel" by therealqtpi (shipped with chessground, selectable in the app) | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Chess pieces "letter" by usolando (shipped with chessground, selectable in the app) | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Lucena Figurine font: chess pieces from Noto Sans Symbols 2 (`assets/fonts/`, license in `assets/fonts/OFL.txt`) | OFL-1.1 | https://github.com/notofonts/symbols |
+| Endgame positions (`assets/positions/positions.json`, a selection made by `tools/import_positions.py`) from supertorpe/chessendgametraining; its checkmate database comes from calebjcourtney/chess-endgame-training and the original endgame list from the "ECO Chess Opening Codes" blog | GPL-3.0 | https://github.com/supertorpe/chessendgametraining |
 | drift, drift_flutter | MIT | https://pub.dev/packages/drift |
 | sqlite3 (Dart package) | MIT | https://pub.dev/packages/sqlite3 |
 | SQLite | Public domain | https://www.sqlite.org/copyright.html |
