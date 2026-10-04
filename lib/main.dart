@@ -8,6 +8,8 @@ import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
+import 'ui/core/theme/app_theme_mode_ui.dart';
+import 'ui/profile/view_models/profile_cubit.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 
 void main() {
@@ -37,11 +39,19 @@ class _LucenaAppState extends State<LucenaApp> {
     final dependencies = widget.dependencies;
     return RepositoryProvider<Now>.value(
       value: dependencies.now,
-      child: BlocProvider(
-        create: (context) => SettingsCubit(
-          dependencies.settingsRepository,
-          languages: dependencies.languages,
-        )..load(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => SettingsCubit(
+              dependencies.settingsRepository,
+              languages: dependencies.languages,
+            )..load(),
+          ),
+          BlocProvider(
+            create: (context) =>
+                ProfileCubit(dependencies.profileRepository)..load(),
+          ),
+        ],
         child: BlocBuilder<SettingsCubit, AppSettings?>(
           builder: (context, settings) {
             // Até as preferências chegarem, só o fundo: o app nunca aparece
@@ -52,6 +62,7 @@ class _LucenaAppState extends State<LucenaApp> {
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light,
               darkTheme: AppTheme.dark,
+              themeMode: settings.themeMode.material,
               locale: localeFromCode(settings.languageCode),
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: appSupportedLocales,

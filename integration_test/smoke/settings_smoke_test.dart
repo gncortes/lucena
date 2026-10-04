@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -6,7 +6,8 @@ import '../robots/app_robot.dart';
 import '../robots/home_robot.dart';
 import '../robots/settings_robot.dart';
 
-/// Fumaça de Configurações e da tela de idioma: tema escuro, árabe, segundo plano.
+/// Fumaça de Configurações e das telas de idioma e de tema: tema escuro, árabe,
+/// segundo plano.
 void main() {
   patrolTest('configurações e idioma em tema escuro', ($) async {
     final app = AppRobot($);
@@ -21,6 +22,11 @@ void main() {
 
     await settings.openLanguages();
     await settings.expectLanguagesVisible();
+    await settings.back();
+
+    await settings.openThemes();
+    await settings.expectThemesVisible();
+    app.expectBrightness(Brightness.dark);
   });
 
   patrolTest('configurações e idioma em árabe', ($) async {
@@ -36,6 +42,11 @@ void main() {
     await settings.openLanguages();
     await settings.expectLanguagesVisible();
     app.expectNoClippedText();
+    await settings.back();
+
+    await settings.openThemes();
+    await settings.expectThemesVisible();
+    app.expectNoClippedText();
   });
 
   patrolTest('tela de idioma volta do segundo plano no mesmo lugar', ($) async {
@@ -48,5 +59,17 @@ void main() {
     await app.sendToBackgroundAndReturn();
 
     await settings.expectLanguagesVisible();
+  });
+
+  patrolTest('tela de tema volta do segundo plano no mesmo lugar', ($) async {
+    final app = AppRobot($);
+    final settings = SettingsRobot($);
+    await app.open(systemLocale: const Locale('en', 'US'));
+    await HomeRobot($).openSettings();
+    await settings.openThemes();
+
+    await app.sendToBackgroundAndReturn();
+
+    await settings.expectThemesVisible();
   });
 }

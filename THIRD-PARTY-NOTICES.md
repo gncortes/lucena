@@ -16,6 +16,13 @@ package bundled in the app is also available inside the app (licenses page).
 | provider, nested (used by flutter_bloc) | MIT | https://pub.dev/packages/provider |
 | shared_preferences | BSD-3-Clause | https://pub.dev/packages/shared_preferences |
 | freezed_annotation | MIT | https://pub.dev/packages/freezed_annotation |
+| chessground, dartchess (Lichess) | GPL-3.0 | https://github.com/lichess-org |
+| Chess pieces "cburnett" by Colin M.L. Burnett (shipped with chessground) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Lucena Figurine font: chess pieces from Noto Sans Symbols 2 (`assets/fonts/`, license in `assets/fonts/OFL.txt`) | OFL-1.1 | https://github.com/notofonts/symbols |
+| drift, drift_flutter | MIT | https://pub.dev/packages/drift |
+| sqlite3 (Dart package) | MIT | https://pub.dev/packages/sqlite3 |
+| SQLite | Public domain | https://www.sqlite.org/copyright.html |
+| path_provider (used by drift_flutter) | BSD-3-Clause | https://pub.dev/packages/path_provider |
 
 ## Development and testing only (not shipped)
 
@@ -27,6 +34,7 @@ package bundled in the app is also available inside the app (licenses page).
 | freezed | MIT | https://pub.dev/packages/freezed |
 | build_runner | BSD-3-Clause | https://pub.dev/packages/build_runner |
 | bloc_test | MIT | https://pub.dev/packages/bloc_test |
+| drift_dev | MIT | https://pub.dev/packages/drift_dev |
 
 ## Planned (added to this file when they enter the app)
 
@@ -34,5 +42,4 @@ package bundled in the app is also available inside the app (licenses page).
 | --- | --- | --- |
 | Maia-3 | AGPL-3.0 | https://github.com/CSSLab/maia3 |
 | Stockfish | GPL-3.0 | https://stockfishchess.org/ |
-| chessground, dartchess (Lichess) | GPL-3.0 | https://github.com/lichess-org |
 | Chess Endgame Training positions | GPL-3.0 | https://github.com/supertorpe/chessendgametraining |

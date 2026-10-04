@@ -240,32 +240,28 @@ O "Depende de" de cada tarefa lista só o que ela usa de verdade. Tarefas de fre
 | D · Maia | T15 → T16 | referência, runtime e serviço do Maia |
 | Convergência | T11 → T12 → T13 → T14 → T17 → T18 → T19 | junta as frentes: partida, Stockfish, progresso, Maia como adversário |
 
-Rodadas possíveis, cada uma depois do merge da anterior:
+**Entregas (uma PR para várias tarefas).** Cada PR custa uns 15 minutos de verificação automática mais a sua validação no celular, então as tarefas saem agrupadas por marco: uma branch, uma candidata de QA, uma PR e uma validação sua.
 
-1. T01 ‖ T04 ‖ T15 (mais o script de importação da T09, que é só Python)
-2. T02 + T03 ‖ T05 + T06 ‖ T16 ‖ T09
-3. T07 + T08
-4. T10 + T11 → T12 → T13 → T14 → T17 + T18 → T19
+| Entrega | Tarefas | O que você recebe | Tag | Modelo |
+| --- | --- | --- | --- | --- |
+| A | T02 + T03 + T04 | tema, perfil e tabuleiro livre | `v0.1.0` | Opus 5.5 |
+| B | T05 + T06 + T07 + T08 | tabuleiro completo, relógio e restauração | `v0.1.4` | Opus 5.5 |
+| C | T09 + T10 + T11 | catálogo, posição customizada e configuração da partida | `v0.1.7` | Opus 5.5 |
+| D | T12 + T13 + T14 | Stockfish, resultado e progresso | `v0.2.2` | Opus 5.5 |
+| T15 | sozinha | decisão do runtime do Maia (precisa da sua leitura) | `v0.3.0-alpha` | Fable 5.1 |
+| E | T16 + T17 + T18 | Maia dentro do app, como adversário | `v0.3.2` | Fable 5.1 |
+| T19 | sozinha | calibração no seu celular | `v1.0.0-mvp` | Fable 5.1 |
 
-**Lotes (uma PR para mais de uma tarefa).** Tarefas vizinhas da mesma frente, que mexem nas mesmas telas, vão juntas: uma branch, uma candidata de QA, uma PR e uma validação sua no celular.
+Ordem: A → B → C → D → E → T19. A T15 não depende de tela nenhuma e pode rodar a qualquer momento, em paralelo. As T09 e T10 só dependem da A: se a B atrasar, elas podem ser adiantadas em outra cópia de trabalho, e a T11 entra quando a B chegar na `main`.
 
-| Lote | O que junta | Por que juntas | Modelo |
-| --- | --- | --- | --- |
-| T02 + T03 | tema e perfil | as duas moram em Configurações | Sonnet 5.5 |
-| T05 + T06 | aparência e comportamento do tabuleiro | mesma tela de ajustes do tabuleiro | Opus 5.5 |
-| T07 + T08 | relógio e restauração | a T08 é o relógio da T07 sobrevivendo ao segundo plano | Opus 5.5 |
-| T10 + T11 | posição customizada e configuração da partida | as duas preparam a partida | Sonnet 5.5 |
-| T17 + T18 | Maia como adversário e tempo de pensar | a T18 só faz sentido com o adversário pronto | Fable 5.1 |
+Regras da entrega:
 
-Regras do lote:
-
-- branch `tarefa/TXX-TYY-nome-curto`, um commit por tarefa (`TXX: ...`) e PR com título `TXX + TYY: ...`;
-- a candidata usa a tag da última tarefa do lote (`T02 + T03` sai como `v0.0.4-rc.N`); a tag final também é só essa;
+- branch `tarefa/TXX-TYY-nome-curto` (primeira e última tarefa), um commit por tarefa (`TXX: ...`) e PR com título `TXX + ... + TYY: ...`;
+- a candidata usa a tag da última tarefa da entrega (a Entrega A sai como `v0.1.0-rc.N`); a tag final também é só essa;
 - a PR traz os passos de teste e a demonstração de cada tarefa, e o checklist de cada uma é marcado no seu arquivo;
-- o modelo é o da tarefa mais difícil do lote;
-- se uma tarefa emperrar, o lote se desfaz: a que está pronta segue sozinha.
-
-Ficam sozinhas as tarefas grandes ou com uma decisão sua no meio: T01, T04, T09, T12, T13, T14, T15, T16 e T19.
+- antes de abrir a PR, o vídeo da entrega rodando no emulador vai para o Gabriel na conversa; a candidata de QA só sai depois do ok dele;
+- o modelo é o da tarefa mais difícil da entrega;
+- se uma tarefa emperrar, a entrega se desfaz: o que está pronto segue sozinho.
 
 **Dificuldade e modelo.** Baixa e média: telas e persistência que seguem um padrão já existente (Sonnet 5.5). Alta: tarefa que cria padrão novo ou mexe com tempo, estado em segundo plano ou código nativo (Opus 5.5). Muito alta: porte e calibração do Maia (Fable 5.1). É estimativa: se uma tarefa precisar de várias rodadas de correção no modelo sugerido, sobe um degrau.
 
@@ -281,7 +277,7 @@ Ficam sozinhas as tarefas grandes ou com uma decisão sua no meio: T01, T04, T09
 - [ ] `versionCode` global e crescente (hoje é o número de commits da branch: duas frentes geram números fora de ordem e o celular recusa a candidata "mais antiga")
 - [ ] Liberar o merge da `main` para dentro da branch de tarefa (hoje `git merge` é bloqueado nas permissões do Claude)
 - [ ] Cópia de trabalho por frente com `.env` (emulador próprio) e `.claude/settings.json` copiados, já que não são versionados
-- [ ] Cota do Test Lab: um aparelho por candidata, ou Test Lab só na candidata final de cada tarefa
+- [ ] Cota do Test Lab: um aparelho por candidata, ou Test Lab só na candidata final de cada entrega
 - [x] Dividir a fumaça em um arquivo por tela
 
 **Pronto quando:** testes unitários e de BLoC passando · todos os cenários Patrol da tarefa passando · suíte Patrol anterior passando · CI verde · tag criada · APK na Release do GitHub · você validou no celular.
@@ -332,7 +328,7 @@ Depende de: T01 · Tag: `v0.0.3`
 
 Frente: A · Configurações · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
-Lote: T02 + T03 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega A · T02 + T03 + T04 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Claro, escuro, sistema
 - [ ] Persistência
@@ -349,15 +345,15 @@ Depende de: T01 · Tag: `v0.0.4`
 
 Frente: A · Configurações · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 
-Lote: T02 + T03 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega A · T02 + T03 + T04 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] Apelido e rating aproximado no banco local
+- [ ] Apelido e rating aproximado (por faixas) no banco local
 - [ ] Validação dos campos
 
 **Cenários Patrol:**
 
 1. Editar apelido e rating → reiniciar → mantidos
-2. Rating fora da faixa (ex.: 5000) → erro traduzido, nada salvo
+2. Rating escolhido num painel de faixas com nome (iniciante, casual... mestre), traduzido; fechar o painel sem confirmar → nada muda
 3. Apelido vazio → usa o padrão
 4. Editar e sair sem salvar → nada muda
 
@@ -366,6 +362,8 @@ Lote: T02 + T03 (mesma branch, mesma candidata de QA e uma PR só)
 Depende de: T00 · Tag: `v0.1.0`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
+Lote: Entrega A · T02 + T03 + T04 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Tabuleiro na posição inicial, lances legais pelos dois lados
 - [ ] Promoção, roque, en passant
@@ -386,7 +384,7 @@ Depende de: T04, T01 · Tag: `v0.1.1`
 
 Frente: B · Tabuleiro · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
-Lote: T05 + T06 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega B · T05 + T06 + T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Tema de cores, conjunto de peças (licença compatível), coordenadas
 - [ ] Pré-visualização ao vivo
@@ -405,7 +403,7 @@ Depende de: T05 · Tag: `v0.1.2`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
-Lote: T05 + T06 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega B · T05 + T06 + T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Arrastar/tocar, mostrar lances legais, destacar último lance
 - [ ] Animação, virar tabuleiro, pré-lances
@@ -426,7 +424,7 @@ Depende de: T04, T01 · Tag: `v0.1.3`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
-Lote: T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega B · T05 + T06 + T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Tempo e incremento separados por lado
 - [ ] Décimos abaixo de 10 s, posição do relógio, vibração
@@ -447,7 +445,7 @@ Depende de: T07 · Tag: `v0.1.4`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
-Lote: T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega B · T05 + T06 + T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Relógio baseado em instantes
 - [ ] Partida salva a cada lance
@@ -466,6 +464,8 @@ Lote: T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 Depende de: T04 · Tag: `v0.1.5`
 
 Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Opus 5.5 (o script de importação pode ser adiantado com Sonnet 5.5)
+
+Lote: Entrega C · T09 + T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Script de importação e verificação (seção 4)
 - [ ] Catálogo: categoria → subcategoria → lista de posições (carregamento sob demanda)
@@ -486,7 +486,7 @@ Depende de: T09 · Tag: `v0.1.6`
 
 Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 
-Lote: T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega C · T09 + T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Colar FEN ou montar no editor
 - [ ] Validação com mensagens traduzidas
@@ -506,7 +506,7 @@ Depende de: T07, T10 · Tag: `v0.1.7`
 
 Frente: Convergência · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
-Lote: T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega C · T09 + T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Lado do usuário, tempo do usuário, tempo da máquina
 - [ ] Adversário (só "dois jogadores" nesta tarefa)
@@ -525,6 +525,8 @@ Depende de: T11 · Tag: `v0.2.0`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
+Lote: Entrega D · T12 + T13 + T14 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] `OpponentRepository`
 - [ ] Stockfish no aparelho, força máxima
 - [ ] Tempo por lance tirado do relógio da máquina
@@ -541,6 +543,8 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Opus 5.5
 Depende de: T12, T03 · Tag: `v0.2.1`
 
 Frente: Convergência · Dificuldade: média · Modelo sugerido: Sonnet 5.5
+
+Lote: Entrega D · T12 + T13 + T14 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Objetivo cumprido ou não
 - [ ] Tentativa salva e histórico por posição
@@ -559,6 +563,8 @@ Frente: Convergência · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 Depende de: T12, T08 · Tag: `v0.2.2`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
+Lote: Entrega D · T12 + T13 + T14 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Estado e relógios consistentes durante a vez da máquina
 
@@ -588,6 +594,8 @@ Depende de: T15 · Tag: `v0.3.0`
 
 Frente: D · Maia · Dificuldade: muito alta · Modelo sugerido: Fable 5.1
 
+Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] `MaiaService`
 - [ ] Tela de depuração (só em build de desenvolvimento)
 
@@ -603,7 +611,7 @@ Depende de: T16, T12, T03 · Tag: `v0.3.1`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
-Lote: T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Níveis de 600 a 2600 (degraus de 200), temperatura por nível
 - [ ] Maia por nível ou Stockfish máximo
@@ -622,7 +630,7 @@ Depende de: T17 · Tag: `v0.3.2`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
-Lote: T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
+Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] `ThinkTimePolicy`
 

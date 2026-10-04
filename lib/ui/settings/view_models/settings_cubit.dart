@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_settings.dart';
+import '../../../domain/models/app_theme_mode.dart';
 
 /// Preferências do app. O estado é nulo até a primeira leitura terminar.
 class SettingsCubit extends Cubit<AppSettings?> {
@@ -16,10 +17,21 @@ class SettingsCubit extends Cubit<AppSettings?> {
   Future<void> load() async => emit(await _repository.load());
 
   /// Troca o idioma do app. Nulo volta a seguir o idioma do sistema.
-  Future<void> setLanguage(AppLanguage? language) async {
-    final settings = (state ?? const AppSettings()).copyWith(
-      languageCode: language?.code,
+  Future<void> setLanguage(AppLanguage? language) {
+    return _update(
+      (state ?? const AppSettings()).copyWith(languageCode: language?.code),
     );
+  }
+
+  /// Troca o tema do app.
+  Future<void> setThemeMode(AppThemeMode themeMode) {
+    return _update(
+      (state ?? const AppSettings()).copyWith(themeMode: themeMode),
+    );
+  }
+
+  // O estado muda na hora; a gravação vem em seguida.
+  Future<void> _update(AppSettings settings) async {
     emit(settings);
     await _repository.save(settings);
   }

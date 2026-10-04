@@ -61,3 +61,6 @@ lib/l10n/app_localizations*.dart
 
 # Patrol (gerado a cada execução)
 integration_test/test_bundle.dart
+
+# Python
+__pycache__/

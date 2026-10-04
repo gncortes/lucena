@@ -4,6 +4,50 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "freeBoardBlackToMove": "Black to move",
+  "@freeBoardBlackToMove": {
+    "description": "Status above the board: it is Black's turn."
+  },
+  "freeBoardBlackWins": "Black wins",
+  "@freeBoardBlackWins": {
+    "description": "Game result: Black won."
+  },
+  "freeBoardCheckmate": "Checkmate",
+  "@freeBoardCheckmate": {
+    "description": "Game over reason: checkmate."
+  },
+  "freeBoardDraw": "Draw",
+  "@freeBoardDraw": {
+    "description": "Game result: draw."
+  },
+  "freeBoardInsufficientMaterial": "Insufficient material",
+  "@freeBoardInsufficientMaterial": {
+    "description": "Game over reason: neither side has enough pieces to checkmate."
+  },
+  "freeBoardNewGame": "New game",
+  "@freeBoardNewGame": {
+    "description": "Button that puts the board back in its starting position."
+  },
+  "freeBoardNoMoves": "Move a piece to start",
+  "@freeBoardNoMoves": {
+    "description": "Shown in place of the move list while no move has been played."
+  },
+  "freeBoardStalemate": "Stalemate",
+  "@freeBoardStalemate": {
+    "description": "Game over reason: stalemate (the side to move has no legal move and is not in check)."
+  },
+  "freeBoardTitle": "Free board",
+  "@freeBoardTitle": {
+    "description": "Home screen button and screen title: a board where the player moves both sides freely."
+  },
+  "freeBoardWhiteToMove": "White to move",
+  "@freeBoardWhiteToMove": {
+    "description": "Status above the board: it is White's turn."
+  },
+  "freeBoardWhiteWins": "White wins",
+  "@freeBoardWhiteWins": {
+    "description": "Game result: White won."
+  },
   "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
   "@homeMascotLabel": {
     "description": "Screen reader label for the mascot image on the home screen."
@@ -12,9 +56,83 @@
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
   },
-  "settingsTitle": "Settings",
-  "@settingsTitle": {
-    "description": "Title of the settings screen; also the tooltip of the button that opens it."
+  "profileLevelAbove": "{min} or more",
+  "@profileLevelAbove": {
+    "description": "Rating range of the highest level, e.g. '2200 or more'.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "profileLevelAdvanced": "Advanced",
+  "@profileLevelAdvanced": {
+    "description": "Name of the playing level for advanced players (rating 1600 to 1899)."
+  },
+  "profileLevelBeginner": "Beginner",
+  "@profileLevelBeginner": {
+    "description": "Name of the lowest playing level (rating below 1000)."
+  },
+  "profileLevelBelow": "Below {max}",
+  "@profileLevelBelow": {
+    "description": "Rating range of the lowest level, e.g. 'Below 1000'.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "profileLevelCasual": "Casual",
+  "@profileLevelCasual": {
+    "description": "Name of the playing level for casual players (rating 1000 to 1299)."
+  },
+  "profileLevelConfirm": "Confirm",
+  "@profileLevelConfirm": {
+    "description": "Button at the bottom of the rating range panel that applies the highlighted range and closes the panel."
+  },
+  "profileLevelExpert": "Expert",
+  "@profileLevelExpert": {
+    "description": "Name of the playing level for expert players (rating 1900 to 2199)."
+  },
+  "profileLevelIntermediate": "Intermediate",
+  "@profileLevelIntermediate": {
+    "description": "Name of the playing level for intermediate players (rating 1300 to 1599)."
+  },
+  "profileLevelMaster": "Master",
+  "@profileLevelMaster": {
+    "description": "Name of the highest playing level (rating 2200 or more)."
+  },
+  "profileLevelRange": "{min}–{max}",
+  "@profileLevelRange": {
+    "description": "Rating range of a level, e.g. '1300–1599'.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "profileNickname": "Nickname",
+  "@profileNickname": {
+    "description": "Label of the text field with the player's nickname."
+  },
+  "profileNicknameDefault": "Player",
+  "@profileNicknameDefault": {
+    "description": "Nickname shown when the player leaves the nickname empty."
+  },
+  "profileRating": "Approximate rating",
+  "@profileRating": {
+    "description": "Label of the profile field with the player's approximate chess rating; also the title of the panel where the range is picked."
+  },
+  "profileRatingSheetHint": "Pick the range closest to your rating, online or over the board.",
+  "@profileRatingSheetHint": {
+    "description": "Explanation at the top of the panel where the player picks a rating range."
+  },
+  "profileSave": "Save",
+  "@profileSave": {
+    "description": "Button that saves the profile."
   },
   "settingsLanguage": "Language",
   "@settingsLanguage": {
@@ -23,5 +141,29 @@
   "settingsLanguageSystem": "System default",
   "@settingsLanguageSystem": {
     "description": "Language option that follows the language of the device."
+  },
+  "settingsProfile": "Profile",
+  "@settingsProfile": {
+    "description": "Settings item and screen title for the player's nickname and rating."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Settings item and screen title for choosing light or dark appearance."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme option: dark appearance."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme option: light appearance."
+  },
+  "settingsThemeSystem": "System default",
+  "@settingsThemeSystem": {
+    "description": "Theme option that follows the light or dark mode of the device."
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Title of the settings screen; also the tooltip of the button that opens it."
   }
 }

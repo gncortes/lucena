@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$AppSettings {
 
 /// Código do idioma escolhido (`es`, `pt_PT`...). Nulo segue o sistema.
- String? get languageCode;
+ String? get languageCode;/// Tema claro, escuro ou o do aparelho.
+ AppThemeMode get themeMode;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 @override
 bool operator ==(Object other) {
   final _this = this as AppSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AppSettings;
-  return Object.hash(runtimeType,_this.languageCode);
+  return Object.hash(runtimeType,_this.languageCode,_this.themeMode);
 }
 
 @override
 String toString() {
   final _this = this as AppSettings;
-  return 'AppSettings(languageCode: ${_this.languageCode})';
+  return 'AppSettings(languageCode: ${_this.languageCode}, themeMode: ${_this.themeMode})';
 }
 
 
@@ -52,7 +53,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- String? languageCode
+ String? languageCode, AppThemeMode themeMode
 });
 
 
@@ -69,10 +70,11 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? themeMode = null,}) {
   return _then(AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+as AppThemeMode,
   ));
 }
 
@@ -157,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode);case _:
+return $default(_that.languageCode,_that.themeMode);case _:
   return orElse();
 
 }
@@ -178,10 +180,10 @@ return $default(_that.languageCode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.languageCode);case _:
+return $default(_that.languageCode,_that.themeMode);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +200,10 @@ return $default(_that.languageCode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode,  AppThemeMode themeMode)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode);case _:
+return $default(_that.languageCode,_that.themeMode);case _:
   return null;
 
 }
@@ -213,11 +215,13 @@ return $default(_that.languageCode);case _:
 
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.languageCode});
+  const _AppSettings({this.languageCode, this.themeMode = AppThemeMode.system});
   
 
 /// Código do idioma escolhido (`es`, `pt_PT`...). Nulo segue o sistema.
 @override final  String? languageCode;
+/// Tema claro, escuro ou o do aparelho.
+@override@JsonKey() final  AppThemeMode themeMode;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -229,18 +233,18 @@ _$AppSettingsCopyWith<_AppSettings> get copyWith => __$AppSettingsCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,languageCode);
+    return Object.hash(runtimeType,languageCode,themeMode);
 }
 
 @override
 String toString() {
-    return 'AppSettings(languageCode: $languageCode)';
+    return 'AppSettings(languageCode: $languageCode, themeMode: $themeMode)';
 }
 
 
@@ -251,7 +255,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- String? languageCode
+ String? languageCode, AppThemeMode themeMode
 });
 
 
@@ -268,10 +272,11 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? themeMode = null,}) {
   return _then(_AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
+as AppThemeMode,
   ));
 }
 
