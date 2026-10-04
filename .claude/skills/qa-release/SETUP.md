@@ -56,7 +56,12 @@ echo "GCP_WORKLOAD_IDENTITY_PROVIDER=\"projects/$PROJECT_NUMBER/locations/global
 echo "GCP_SERVICE_ACCOUNT=\"$SA\""
 ```
 
-Se o Test Lab reclamar de permissão no bucket de resultados, o log do workflow diz qual papel falta.
+O Test Lab grava os resultados num bucket padrão do projeto (`gs://test-lab-...`), que a conta de serviço não enxerga só com os papéis acima. Na primeira execução o log do workflow mostra o nome do bucket no erro 403; liberar só esse bucket:
+
+```bash
+gcloud storage buckets add-iam-policy-binding gs://test-lab-xxxxxxxx \
+  --member "serviceAccount:$SA" --role roles/storage.objectAdmin --project "$PROJECT_ID"
+```
 
 ## 3. Assinatura do APK de release
 1. Criar a keystore uma vez, fora do repositório:
