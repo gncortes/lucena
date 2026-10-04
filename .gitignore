@@ -56,5 +56,8 @@ android/app/google-services.json
 # QA: a configuração real fica no segredo QA_CONFIG_ENV do GitHub (modelo: config.env.example)
 .claude/skills/qa-release/config.env
 
+# Traduções geradas pelo gen-l10n (o `flutter pub get` recria)
+lib/l10n/app_localizations*.dart
+
 # Patrol (gerado a cada execução)
 integration_test/test_bundle.dart

@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "Lucena",
+  "@appTitle": {
+    "description": "Name of the app, shown by the system (task switcher)."
+  },
+  "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
+  "@homeMascotLabel": {
+    "description": "Screen reader label for the mascot image on the home screen."
+  }
+}
