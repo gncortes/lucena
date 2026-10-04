@@ -32,7 +32,7 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
 
 ## Versão e tag
 
-- Versão base vem da tarefa: a tag listada em `docs/tasks/TXX.md` (ex.: `v0.1.3`). Num lote (linha "Lote" da tarefa), vale a tag da última tarefa do lote, e o PR sai com título `TXX + TYY: ...` e os passos de teste e a demonstração de cada tarefa.
+- Versão base vem da tarefa: a tag listada em `docs/tasks/TXX.md` (ex.: `v0.1.3`). Numa entrega com várias tarefas (linha "Lote" da tarefa), vale a tag da última tarefa, e o PR sai com título `TXX + ... + TYY: ...` e os passos de teste e a demonstração de cada tarefa.
 - Cada envio para QA é uma candidata: `v0.1.3-rc.1`, `v0.1.3-rc.2`...
 - O script calcula o próximo `rc.N` olhando as tags existentes. Candidata reprovada gasta o número: a próxima é `rc.N+1`.
 - `versionName` no app = `0.1.3-rc.N`; `versionCode` = número de commits do repositório (sempre cresce, então o celular aceita a atualização).

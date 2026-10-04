@@ -4,7 +4,7 @@ App offline: o usuário joga finais contra o Maia-3 (níveis humanos 600–2600)
 Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill `/tarefa TXX`).
 
 ## Regras fixas
-- Uma tarefa (ou um lote do plano) por sessão. Leia só `CLAUDE.md`, o arquivo da tarefa e os arquivos que ela citar.
+- Uma entrega do plano (uma tarefa ou um lote de tarefas) por sessão. Leia só `CLAUDE.md`, o arquivo da tarefa e os arquivos que ela citar.
 - Arquitetura do guia oficial do Flutter (skill `arquitetura`): `ui/<feature>/view_models` (Cubit/Bloc) e `widgets` → `data/repositories` → `data/services`; `domain/models` e `domain/use_cases` em Dart puro.
 - View model nunca usa serviço direto, só repositórios e use cases. Fakes ficam em `testing/`.
 - Tempo sempre via `Now` injetado. Nunca `DateTime.now()` direto.
