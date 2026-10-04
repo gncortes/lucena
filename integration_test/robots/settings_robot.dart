@@ -63,6 +63,14 @@ class SettingsRobot {
     await $(SettingsKeys.themeOption(mode)).tap();
   }
 
+  Future<void> expectBoardAppearanceValue(String text) async {
+    await $(SettingsKeys.boardAppearanceValue).scrollTo();
+    expect(
+      $.tester.widget<Text>(find.byKey(SettingsKeys.boardAppearanceValue)).data,
+      text,
+    );
+  }
+
   /// Volta uma tela pela seta da barra superior.
   Future<void> back() async {
     await $(BackButton).tap();

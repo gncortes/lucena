@@ -1,9 +1,14 @@
+import '../data/repositories/haptics/haptics_repository.dart';
+import '../data/repositories/haptics/haptics_repository_device.dart';
+import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
+import '../data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import '../data/repositories/profile/profile_repository.dart';
 import '../data/repositories/profile/profile_repository_local.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/settings/settings_repository_local.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/preferences_service.dart';
+import '../data/services/vibration_service.dart';
 import '../domain/models/app_language.dart';
 import '../domain/use_cases/now.dart';
 
@@ -19,14 +24,19 @@ class Dependencies {
     required this.now,
     required this.settingsRepository,
     required this.profileRepository,
+    required this.hapticsRepository,
+    required this.ongoingGameRepository,
     required this.languages,
   });
 
   factory Dependencies.normal() {
+    final preferences = PreferencesService();
     return Dependencies(
       now: const SystemNow(),
-      settingsRepository: LocalSettingsRepository(PreferencesService()),
+      settingsRepository: LocalSettingsRepository(preferences),
       profileRepository: LocalProfileRepository(AppDatabase()),
+      hapticsRepository: const DeviceHapticsRepository(VibrationService()),
+      ongoingGameRepository: LocalOngoingGameRepository(preferences),
       languages: AppLanguage.selectable,
     );
   }
@@ -34,6 +44,8 @@ class Dependencies {
   final Now now;
   final SettingsRepository settingsRepository;
   final ProfileRepository profileRepository;
+  final HapticsRepository hapticsRepository;
+  final OngoingGameRepository ongoingGameRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

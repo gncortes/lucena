@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
@@ -28,7 +27,8 @@ class AppRobot {
     await _pumpApp();
   }
 
-  /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho.
+  /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
+  /// ao fechar à força: nenhuma tela é avisada de que o app vai fechar.
   Future<void> restart() async {
     await $.pumpWidgetAndSettle(const SizedBox());
     await _pumpApp();
@@ -41,7 +41,49 @@ class AppRobot {
     await $.pumpWidgetAndSettle(
       LucenaApp(key: UniqueKey(), dependencies: await e2eDependencies()),
     );
-    await $(HomeKeys.screen).waitUntilVisible();
+    // O app abre na tela inicial ou, com partida em andamento, no tabuleiro.
+    await $(Scaffold).waitUntilVisible();
+    await $.pumpAndSettle();
+  }
+
+  /// Faz o relógio do app andar [duration] de uma vez. O relógio dos cenários
+  /// não anda sozinho: o tempo só passa aqui.
+  Future<void> advanceTime(Duration duration) async {
+    e2eNow.advance(duration);
+    // A tela refaz os tempos no tique seguinte.
+    await $.pump(const Duration(milliseconds: 300));
+  }
+
+  /// Vai para a tela inicial do celular, deixa passar [duration] no relógio
+  /// do app e volta.
+  Future<void> sendToBackgroundFor(Duration duration) async {
+    await $.platform.mobile.pressHome();
+    e2eNow.advance(duration);
+    await $.platform.mobile.openApp();
+    await $.pumpAndSettle();
+  }
+
+  /// O que o app recebe quando a tela é bloqueada e desbloqueada [duration]
+  /// depois. O Patrol não bloqueia a tela de verdade: aqui o app passa pelos
+  /// mesmos estados (pausado e retomado) que o bloqueio provoca.
+  Future<void> lockScreenFor(Duration duration) async {
+    final binding = $.tester.binding;
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      binding.handleAppLifecycleStateChanged(state);
+    }
+    e2eNow.advance(duration);
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      binding.handleAppLifecycleStateChanged(state);
+    }
+    await $.pump(const Duration(milliseconds: 300));
     await $.pumpAndSettle();
   }
 

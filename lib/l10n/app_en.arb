@@ -4,6 +4,146 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "boardAnimation": "Piece animation",
+  "@boardAnimation": {
+    "description": "Switch: pieces slide to the new square instead of jumping."
+  },
+  "boardColors": "Board colors",
+  "@boardColors": {
+    "description": "Section title above the list of chessboard color themes."
+  },
+  "boardColorsBlue": "Blue",
+  "@boardColorsBlue": {
+    "description": "Name of the blue chessboard color theme."
+  },
+  "boardColorsBrown": "Brown",
+  "@boardColorsBrown": {
+    "description": "Name of the brown chessboard color theme."
+  },
+  "boardColorsGray": "Gray",
+  "@boardColorsGray": {
+    "description": "Name of the gray chessboard color theme."
+  },
+  "boardColorsGreen": "Green",
+  "@boardColorsGreen": {
+    "description": "Name of the green chessboard color theme."
+  },
+  "boardColorsPurple": "Purple",
+  "@boardColorsPurple": {
+    "description": "Name of the purple chessboard color theme."
+  },
+  "boardCoordinates": "Coordinates",
+  "@boardCoordinates": {
+    "description": "Switch that shows or hides the letters and numbers of the squares on the edge of the board."
+  },
+  "boardHighlightLastMove": "Highlight last move",
+  "@boardHighlightLastMove": {
+    "description": "Switch: color the origin and destination squares of the last move played."
+  },
+  "boardMoveMethod": "How to move pieces",
+  "@boardMoveMethod": {
+    "description": "Setting that picks how pieces are moved on the board: dragging, tapping or both."
+  },
+  "boardMoveMethodDrag": "Drag only",
+  "@boardMoveMethodDrag": {
+    "description": "Option: pieces can only be moved by dragging them to the square."
+  },
+  "boardMoveMethodEither": "Drag or tap",
+  "@boardMoveMethodEither": {
+    "description": "Option: pieces can be moved by dragging them or by tapping the piece and then the square."
+  },
+  "boardMoveMethodTap": "Tap only",
+  "@boardMoveMethodTap": {
+    "description": "Option: pieces can only be moved by tapping the piece and then the destination square."
+  },
+  "boardNotation": "Move notation",
+  "@boardNotation": {
+    "description": "Setting that picks how moves are written in the move list."
+  },
+  "boardNotationFigurine": "Piece symbols",
+  "@boardNotationFigurine": {
+    "description": "Option: moves are written with the drawing of the piece, like ♘f3."
+  },
+  "boardNotationLetters": "Letters",
+  "@boardNotationLetters": {
+    "description": "Option: moves are written with the letter of the piece in the app language, like Nf3."
+  },
+  "boardPieces": "Pieces",
+  "@boardPieces": {
+    "description": "Section title above the list of chess piece sets (drawing styles)."
+  },
+  "boardPremoves": "Premoves",
+  "@boardPremoves": {
+    "description": "Switch for premoves: playing your move in advance during the opponent's turn."
+  },
+  "boardPremovesHint": "Play your move in advance, during the opponent's turn",
+  "@boardPremovesHint": {
+    "description": "Short explanation under the premoves switch."
+  },
+  "boardRestoreDefault": "Restore default",
+  "@boardRestoreDefault": {
+    "description": "Button that puts board colors, pieces and coordinates back to the original values."
+  },
+  "boardShowLegalMoves": "Show legal moves",
+  "@boardShowLegalMoves": {
+    "description": "Switch: when a piece is selected, mark the squares it can go to."
+  },
+  "clockBothSides": "Both sides",
+  "@clockBothSides": {
+    "description": "Section title of the time options when white and black get the same time."
+  },
+  "clockIncrement": "Increment (seconds)",
+  "@clockIncrement": {
+    "description": "Label above the options for the time added after each move, in seconds."
+  },
+  "clockLowTimeVibration": "Vibrate when time is low",
+  "@clockLowTimeVibration": {
+    "description": "Switch: the phone vibrates when the clock is running out."
+  },
+  "clockLowTimeVibrationHint": "A short vibration when your clock drops below 10 seconds",
+  "@clockLowTimeVibrationHint": {
+    "description": "Short explanation under the low time vibration switch."
+  },
+  "clockMinutes": "Minutes",
+  "@clockMinutes": {
+    "description": "Label above the options for the starting time of a side, in minutes."
+  },
+  "clockPosition": "Clock position",
+  "@clockPosition": {
+    "description": "Setting that picks where the chess clocks appear on the game screen."
+  },
+  "clockPositionBottom": "Both below the board",
+  "@clockPositionBottom": {
+    "description": "Option: the two clocks together below the board."
+  },
+  "clockPositionSides": "One on each side of the board",
+  "@clockPositionSides": {
+    "description": "Option: each clock next to its own side, one above and one below the board."
+  },
+  "clockPositionTop": "Both above the board",
+  "@clockPositionTop": {
+    "description": "Option: the two clocks together above the board."
+  },
+  "clockSameForBoth": "Same time for both sides",
+  "@clockSameForBoth": {
+    "description": "Switch: white and black get the same thinking time."
+  },
+  "clockSheetHint": "The game starts over with the time you choose.",
+  "@clockSheetHint": {
+    "description": "Explanation at the top of the chess clock panel."
+  },
+  "clockStartGame": "Start game",
+  "@clockStartGame": {
+    "description": "Button that confirms the clock panel and starts a new game."
+  },
+  "clockUse": "Play with a clock",
+  "@clockUse": {
+    "description": "Switch that turns the chess clock on or off for the game."
+  },
+  "commonConfirm": "Confirm",
+  "@commonConfirm": {
+    "description": "Button that confirms the option marked in a selection panel."
+  },
   "freeBoardBlackToMove": "Black to move",
   "@freeBoardBlackToMove": {
     "description": "Status above the board: it is Black's turn."
@@ -16,9 +156,17 @@
   "@freeBoardCheckmate": {
     "description": "Game over reason: checkmate."
   },
+  "freeBoardClock": "Clock",
+  "@freeBoardClock": {
+    "description": "Tooltip of the button that opens the chess clock panel on the board screen, and title of that panel."
+  },
   "freeBoardDraw": "Draw",
   "@freeBoardDraw": {
     "description": "Game result: draw."
+  },
+  "freeBoardFlip": "Flip board",
+  "@freeBoardFlip": {
+    "description": "Tooltip of the button that turns the board around to see it from the other side."
   },
   "freeBoardInsufficientMaterial": "Insufficient material",
   "@freeBoardInsufficientMaterial": {
@@ -35,6 +183,14 @@
   "freeBoardStalemate": "Stalemate",
   "@freeBoardStalemate": {
     "description": "Game over reason: stalemate (the side to move has no legal move and is not in check)."
+  },
+  "freeBoardTimeout": "Time out",
+  "@freeBoardTimeout": {
+    "description": "Reason the game ended: one side ran out of time on the clock."
+  },
+  "freeBoardTimeoutVsInsufficientMaterial": "Time out vs. insufficient material",
+  "@freeBoardTimeoutVsInsufficientMaterial": {
+    "description": "Reason the game ended in a draw: one side ran out of time, but the other does not have enough pieces to checkmate."
   },
   "freeBoardTitle": "Free board",
   "@freeBoardTitle": {
@@ -55,6 +211,26 @@
   "homeTagline": "Chess endgame training",
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
+  },
+  "pieceLetterBishop": "B",
+  "@pieceLetterBishop": {
+    "description": "Letter of the bishop in chess move notation in this language."
+  },
+  "pieceLetterKing": "K",
+  "@pieceLetterKing": {
+    "description": "Letter of the king in chess move notation in this language."
+  },
+  "pieceLetterKnight": "N",
+  "@pieceLetterKnight": {
+    "description": "Letter of the knight in chess move notation in this language."
+  },
+  "pieceLetterQueen": "Q",
+  "@pieceLetterQueen": {
+    "description": "Letter of the queen in chess move notation in this language."
+  },
+  "pieceLetterRook": "R",
+  "@pieceLetterRook": {
+    "description": "Letter of the rook in chess move notation in this language."
   },
   "profileLevelAbove": "{min} or more",
   "@profileLevelAbove": {
@@ -134,6 +310,18 @@
   "@profileSave": {
     "description": "Button that saves the profile."
   },
+  "settingsBoardAppearance": "Board appearance",
+  "@settingsBoardAppearance": {
+    "description": "Settings entry and title of the screen where the player picks board colors, piece set and coordinates."
+  },
+  "settingsBoardBehavior": "Board behavior",
+  "@settingsBoardBehavior": {
+    "description": "Settings entry and title of the screen with how the board reacts: moving pieces, legal move hints, animation, premoves and notation."
+  },
+  "settingsClock": "Clock",
+  "@settingsClock": {
+    "description": "Settings entry and title of the chess clock settings screen."
+  },
   "settingsLanguage": "Language",
   "@settingsLanguage": {
     "description": "Settings item and screen title for choosing the app language."
@@ -165,5 +353,13 @@
   "settingsTitle": "Settings",
   "@settingsTitle": {
     "description": "Title of the settings screen; also the tooltip of the button that opens it."
+  },
+  "sideBlack": "Black",
+  "@sideBlack": {
+    "description": "Name of the black side (the player with the black pieces)."
+  },
+  "sideWhite": "White",
+  "@sideWhite": {
+    "description": "Name of the white side (the player with the white pieces)."
   }
 }
