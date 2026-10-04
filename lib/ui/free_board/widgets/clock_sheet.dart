@@ -214,11 +214,11 @@ class _TimePicker extends StatelessWidget {
             spacing: 8,
             children: [
               for (final value in minutes)
-                ChoiceChip(
+                _TimeChip(
                   key: FreeBoardKeys.clockMinutes(side, value),
-                  label: Text(value.toString()),
+                  value: value,
                   selected: time.initial == Duration(minutes: value),
-                  onSelected: (_) => onChanged(
+                  onSelected: () => onChanged(
                     time.copyWith(initial: Duration(minutes: value)),
                   ),
                 ),
@@ -230,11 +230,11 @@ class _TimePicker extends StatelessWidget {
             spacing: 8,
             children: [
               for (final value in increments)
-                ChoiceChip(
+                _TimeChip(
                   key: FreeBoardKeys.clockIncrement(side, value),
-                  label: Text(value.toString()),
+                  value: value,
                   selected: time.increment == Duration(seconds: value),
-                  onSelected: (_) => onChanged(
+                  onSelected: () => onChanged(
                     time.copyWith(increment: Duration(seconds: value)),
                   ),
                 ),
@@ -242,6 +242,40 @@ class _TimePicker extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Ficha de um valor de tempo. A escolhida fica na cor principal, sem marca
+/// dentro: todas têm a mesma largura, escolhidas ou não.
+class _TimeChip extends StatelessWidget {
+  const _TimeChip({
+    required this.value,
+    required this.selected,
+    required this.onSelected,
+    super.key,
+  });
+
+  final int value;
+  final bool selected;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return ChoiceChip(
+      label: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 24),
+        child: Text(value.toString(), textAlign: TextAlign.center),
+      ),
+      showCheckmark: false,
+      selected: selected,
+      selectedColor: colors.primary,
+      labelStyle: TextStyle(
+        color: selected ? colors.onPrimary : colors.onSurface,
+        fontWeight: FontWeight.w600,
+      ),
+      onSelected: (_) => onSelected(),
     );
   }
 }
