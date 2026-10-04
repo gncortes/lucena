@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 
@@ -56,55 +58,78 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       key: HomeKeys.screen,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _Entrance(
-                  animation: _mascot,
-                  scaleFrom: 0.9,
-                  child: FractionallySizedBox(
-                    widthFactor: 0.6,
-                    child: Image.asset(
-                      isDark
-                          ? 'assets/branding/mascot_dark.png'
-                          : 'assets/branding/mascot_light.png',
-                      key: HomeKeys.mascot,
-                      semanticLabel: context.l10n.homeMascotLabel,
-                    ),
+        child: Stack(
+          children: [
+            _content(context, theme, isDark),
+            Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: FadeTransition(
+                  opacity: _tagline,
+                  child: IconButton(
+                    key: HomeKeys.settingsButton,
+                    icon: const Icon(Icons.settings_outlined),
+                    tooltip: context.l10n.settingsTitle,
+                    onPressed: () => context.go(Routes.settings),
                   ),
                 ),
-                const SizedBox(height: 32),
-                _Entrance(
-                  animation: _title,
-                  child: Text(
-                    context.l10n.appTitle,
-                    key: HomeKeys.title,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _Entrance(
-                  animation: _tagline,
-                  child: Text(
-                    context.l10n.homeTagline,
-                    key: HomeKeys.tagline,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _content(BuildContext context, ThemeData theme, bool isDark) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _Entrance(
+              animation: _mascot,
+              scaleFrom: 0.9,
+              child: FractionallySizedBox(
+                widthFactor: 0.6,
+                child: Image.asset(
+                  isDark
+                      ? 'assets/branding/mascot_dark.png'
+                      : 'assets/branding/mascot_light.png',
+                  key: HomeKeys.mascot,
+                  semanticLabel: context.l10n.homeMascotLabel,
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            _Entrance(
+              animation: _title,
+              child: Text(
+                context.l10n.appTitle,
+                key: HomeKeys.title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            _Entrance(
+              animation: _tagline,
+              child: Text(
+                context.l10n.homeTagline,
+                key: HomeKeys.tagline,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

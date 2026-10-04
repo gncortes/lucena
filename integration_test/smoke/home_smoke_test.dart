@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-import 'robots/app_robot.dart';
-import 'robots/home_robot.dart';
+import '../robots/app_robot.dart';
+import '../robots/home_robot.dart';
 
-/// Fumaça: toda tela nova abre em tema escuro, em árabe, e volta do segundo plano.
+/// Fumaça da tela inicial: tema escuro, árabe, segundo plano e volta.
 void main() {
   patrolTest('tela inicial em tema escuro', ($) async {
     final app = AppRobot($);
@@ -19,11 +19,14 @@ void main() {
     home.expectMascot(dark: true);
   });
 
-  // O árabe entra na T01; até lá o app cai no inglês e precisa abrir sem erro.
   patrolTest('tela inicial em árabe', ($) async {
-    await AppRobot($).open(locale: const Locale('ar'));
+    final app = AppRobot($);
+    final home = HomeRobot($);
+    await app.open(systemLocale: const Locale('ar'));
 
-    await HomeRobot($).expectVisible();
+    await home.expectVisible();
+    app.expectDirection(TextDirection.rtl);
+    home.expectSettingsButtonOnLeft();
   });
 
   patrolTest('tela inicial volta do segundo plano', ($) async {

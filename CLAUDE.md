@@ -4,7 +4,7 @@ App offline: o usuário joga finais contra o Maia-3 (níveis humanos 600–2600)
 Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill `/tarefa TXX`).
 
 ## Regras fixas
-- Uma tarefa por sessão. Leia só `CLAUDE.md`, o arquivo da tarefa e os arquivos que ela citar.
+- Uma tarefa (ou um lote do plano) por sessão. Leia só `CLAUDE.md`, o arquivo da tarefa e os arquivos que ela citar.
 - Arquitetura do guia oficial do Flutter (skill `arquitetura`): `ui/<feature>/view_models` (Cubit/Bloc) e `widgets` → `data/repositories` → `data/services`; `domain/models` e `domain/use_cases` em Dart puro.
 - View model nunca usa serviço direto, só repositórios e use cases. Fakes ficam em `testing/`.
 - Tempo sempre via `Now` injetado. Nunca `DateTime.now()` direto.
@@ -24,7 +24,7 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - Analisar: `flutter analyze`
 - Testes: `flutter test`
 - Gerar código: `dart run build_runner build --delete-conflicting-outputs`
-- Traduções: `flutter gen-l10n` e `python3 tools/check_l10n.py`
+- Traduções: `python3 tools/gen_pseudo_l10n.py`, `flutter gen-l10n` e `python3 tools/check_l10n.py`
 - Patrol (suíte): `patrol test --dart-define=E2E=true`
 - Patrol (um arquivo): `patrol test -t integration_test/<arquivo>_test.dart --dart-define=E2E=true`
 - Patrol: sempre com `-d <ANDROID_DEVICE do .env>` (sem `-d` ele pergunta o aparelho e trava); o CLI fica em `~/.pub-cache/bin`.

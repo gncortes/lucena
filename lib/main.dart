@@ -3,22 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
+import 'ui/settings/view_models/settings_cubit.dart';
 
 void main() {
-  runApp(const LucenaApp(dependencies: Dependencies.normal()));
+  runApp(LucenaApp(dependencies: Dependencies.normal()));
 }
 
 class LucenaApp extends StatefulWidget {
-  const LucenaApp({required this.dependencies, this.locale, super.key});
+  const LucenaApp({required this.dependencies, super.key});
 
   final Dependencies dependencies;
-
-  /// Força um idioma (testes). Nulo segue o idioma do sistema.
-  final Locale? locale;
 
   @override
   State<LucenaApp> createState() => _LucenaAppState();
@@ -35,18 +34,44 @@ class _LucenaAppState extends State<LucenaApp> {
 
   @override
   Widget build(BuildContext context) {
+    final dependencies = widget.dependencies;
     return RepositoryProvider<Now>.value(
-      value: widget.dependencies.now,
-      child: MaterialApp.router(
-        onGenerateTitle: (context) => context.l10n.appTitle,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        locale: widget.locale,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: _router,
+      value: dependencies.now,
+      child: BlocProvider(
+        create: (context) => SettingsCubit(
+          dependencies.settingsRepository,
+          languages: dependencies.languages,
+        )..load(),
+        child: BlocBuilder<SettingsCubit, AppSettings?>(
+          builder: (context, settings) {
+            // Até as preferências chegarem, só o fundo: o app nunca aparece
+            // no idioma errado.
+            if (settings == null) return const _LaunchBackground();
+            return MaterialApp.router(
+              onGenerateTitle: (context) => context.l10n.appTitle,
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              locale: localeFromCode(settings.languageCode),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: appSupportedLocales,
+              routerConfig: _router,
+            );
+          },
+        ),
       ),
     );
+  }
+}
+
+/// O mesmo fundo da abertura nativa e da tela inicial.
+class _LaunchBackground extends StatelessWidget {
+  const _LaunchBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final theme = isDark ? AppTheme.dark : AppTheme.light;
+    return ColoredBox(color: theme.scaffoldBackgroundColor);
   }
 }

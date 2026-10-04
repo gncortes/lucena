@@ -11,5 +11,17 @@
   "homeTagline": "Chess endgame training",
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Title of the settings screen; also the tooltip of the button that opens it."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Settings item and screen title for choosing the app language."
+  },
+  "settingsLanguageSystem": "System default",
+  "@settingsLanguageSystem": {
+    "description": "Language option that follows the language of the device."
   }
 }
