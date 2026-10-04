@@ -1,6 +1,6 @@
 ---
 name: tarefa
-description: Executa uma tarefa do plano (T00–T19). Use quando o usuário pedir "/tarefa TXX" ou mandar trabalhar numa tarefa específica.
+description: Executa uma tarefa do plano (T00–T27). Use quando o usuário pedir "/tarefa TXX" ou mandar trabalhar numa tarefa específica.
 ---
 
 # Executar uma tarefa
