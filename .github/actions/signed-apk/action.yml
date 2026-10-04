@@ -1,0 +1,83 @@
+name: APK de release assinado
+description: >
+  Gera o APK de release assinado com a keystore dos segredos do ambiente `release`.
+  versionName = tag sem o `v`; versionCode = número de commits (precisa de fetch-depth 0).
+
+inputs:
+  tag:
+    description: Tag da versão (vX.Y.Z ou vX.Y.Z-rc.N).
+    required: true
+  keystore-base64:
+    description: Keystore em base64 (segredo ANDROID_KEYSTORE_BASE64).
+    required: true
+  keystore-password:
+    description: Senha da keystore (segredo ANDROID_KEYSTORE_PASSWORD).
+    required: true
+  key-alias:
+    description: Alias da chave (segredo ANDROID_KEY_ALIAS).
+    required: true
+  key-password:
+    description: Senha da chave (segredo ANDROID_KEY_PASSWORD).
+    required: true
+
+outputs:
+  apk:
+    description: Caminho do APK gerado.
+    value: build/app/outputs/flutter-apk/app-release.apk
+  version-name:
+    description: versionName usado no build.
+    value: ${{ steps.build.outputs.version-name }}
+  version-code:
+    description: versionCode usado no build.
+    value: ${{ steps.build.outputs.version-code }}
+
+runs:
+  using: composite
+  steps:
+    - name: Keystore
+      shell: bash
+      env:
+        KEYSTORE_BASE64: ${{ inputs.keystore-base64 }}
+        KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        KEY_ALIAS: ${{ inputs.key-alias }}
+        KEY_PASSWORD: ${{ inputs.key-password }}
+      run: |
+        if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+          echo "::error::Segredos de assinatura ausentes no ambiente release (ver .claude/skills/qa-release/SETUP.md)"
+          exit 1
+        fi
+        umask 077
+        mkdir -p "$RUNNER_TEMP/assinatura"
+        printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/assinatura/upload.jks"
+
+    # As senhas só existem no ambiente deste passo; o build.gradle.kts lê as variáveis.
+    - name: Build
+      id: build
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/assinatura/upload.jks
+        ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
+        ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
+      run: |
+        version_name="${TAG#v}"
+        version_code="$(git rev-list --count HEAD)"
+        flutter build apk --release --build-name="$version_name" --build-number="$version_code"
+        echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
+        echo "version-code=$version_code" >> "$GITHUB_OUTPUT"
+
+    - name: Apagar keystore
+      if: always()
+      shell: bash
+      run: rm -rf "$RUNNER_TEMP/assinatura"
+
+    - name: Conferir assinatura
+      shell: bash
+      run: |
+        apksigner="$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
+        certs="$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-release.apk)"
+        if echo "$certs" | grep -q 'CN=Android Debug'; then
+          echo "::error::O APK saiu assinado com a chave de debug"
+          exit 1
+        fi
