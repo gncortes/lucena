@@ -22,7 +22,8 @@ export 'free_board_state.dart';
 class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// Com [start], começa uma partida nova nessa posição; [playerSide] faz o
   /// jogador mover só as peças de um lado (e ver o tabuleiro por ele) e
-  /// [clock] liga o relógio, já correndo.
+  /// [clock] liga o relógio, já correndo. [orientation] é o lado que fica
+  /// embaixo (sem ele, o do jogador ou as brancas).
   ///
   /// Sem [start], a tela espera [open] trazer a partida em andamento.
   FreeBoardCubit({
@@ -32,6 +33,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._games,
     Position? start,
     Side? playerSide,
+    Side? orientation,
     ClockConfig? clock,
   }) : _now = now,
        super(
@@ -44,7 +46,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
              : _fresh(
                  start: start,
                  playerSide: playerSide,
-                 orientation: playerSide ?? Side.white,
+                 orientation: orientation ?? playerSide ?? Side.white,
                  clock: clock,
                  now: now(),
                ),

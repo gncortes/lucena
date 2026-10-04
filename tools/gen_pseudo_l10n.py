@@ -22,18 +22,73 @@ FILLER = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
 GROWTH = 0.4
 
 
-def pseudo(text: str) -> str:
-    # Mantém os marcadores ICU ({count}, {name}) como estão.
-    parts = re.split(r"(\{[^{}]*\})", text)
-    accented = "".join(p if p.startswith("{") else p.translate(ACCENTS) for p in parts)
+def _closing(text: str, start: int) -> int:
+    """A posição da chave que fecha a aberta em [start]."""
+    depth = 0
+    for index in range(start, len(text)):
+        if text[index] == "{":
+            depth += 1
+        elif text[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+    raise ValueError(f"chaves desbalanceadas: {text}")
+
+
+def _padding(text: str) -> str:
     extra = math.ceil(len(text) * GROWTH)
-    padding = []
+    words = []
     for word in FILLER * 10:
         if extra <= 0:
             break
-        padding.append(word)
+        words.append(word)
         extra -= len(word) + 1
-    return f"[{' '.join([accented, *padding])}]"
+    return " ".join(words)
+
+
+PLURAL = re.compile(r"^\s*(\w+)\s*,\s*(plural|select)\s*,(.*)$", re.S)
+
+
+def _accent(text: str, pad: bool = False) -> str:
+    """Acentua o texto fora das chaves. Marcadores (`{count}`) ficam como estão;
+    em plural e select (`{count, plural, =1{...} other{...}}`) as palavras-chave
+    ficam e só o texto de cada caso muda (com [pad], cada caso ganha o enchimento)."""
+    out, index = [], 0
+    while index < len(text):
+        if text[index] != "{":
+            out.append(text[index].translate(ACCENTS))
+            index += 1
+            continue
+        end = _closing(text, index)
+        inner = text[index + 1 : end]
+        match = PLURAL.match(inner)
+        if not match:
+            out.append(text[index : end + 1])
+        else:
+            name, kind, rest = match.groups()
+            cases, position = [], 0
+            while position < len(rest):
+                brace = rest.find("{", position)
+                if brace == -1:
+                    break
+                selector = rest[position:brace].strip()
+                close = _closing(rest, brace)
+                body = _accent(rest[brace + 1 : close])
+                if pad:
+                    body = f"[{body} {_padding(body)}]"
+                cases.append(f"{selector}{{{body}}}")
+                position = close + 1
+            out.append(f"{{{name}, {kind}, {' '.join(cases)}}}")
+        index = end + 1
+    return "".join(out)
+
+
+def pseudo(text: str) -> str:
+    # Mensagem que é um plural inteiro: o enchimento entra em cada caso, para o
+    # ICU continuar válido.
+    if text.startswith("{") and _closing(text, 0) == len(text) - 1 and PLURAL.match(text[1:-1]):
+        return _accent(text, pad=True)
+    return f"[{' '.join(filter(None, [_accent(text), _padding(text)]))}]"
 
 
 def generate(base: dict) -> dict:

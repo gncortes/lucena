@@ -8,7 +8,11 @@ import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
+import 'package:chessground/chessground.dart';
+import 'package:dartchess/dartchess.dart';
+import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
@@ -343,5 +347,38 @@ void main() {
       expect(find.byKey(FreeBoardKeys.move(0)), findsOneWidget);
       expect(games.snapshot?.onScreen, isTrue);
     });
+  });
+
+  testWidgets('catálogo → posição → configuração → partida, e voltar cai na '
+      'lista', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    await pumpApp(tester);
+
+    Future<void> tap(Key key) async {
+      await tester.ensureVisible(find.byKey(key));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(key));
+      await tester.pumpAndSettle();
+    }
+
+    await tap(HomeKeys.catalogButton);
+    await tap(CatalogKeys.category('rookPawn'));
+    await tap(CatalogKeys.subcategory('rookPawnVsRook'));
+    await tap(CatalogKeys.position('rookPawn.rookPawnVsRook.0001'));
+    expect(find.byKey(GameSetupKeys.screen), findsOneWidget);
+
+    await tap(GameSetupKeys.startButton);
+
+    final board = tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
+    expect(board.controller.fen, '8/8/8/4k3/8/r7/4P3/4K2R b - - 0 1');
+    // A posição é das pretas: o tabuleiro abre virado para elas.
+    expect(board.orientation, Side.black);
+    expect(find.byKey(FreeBoardKeys.clock(Side.black)), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byKey(CatalogKeys.subcategoryScreen), findsOneWidget);
   });
 }

@@ -88,6 +88,52 @@
   "@boardShowLegalMoves": {
     "description": "Switch: when a piece is selected, mark the squares it can go to."
   },
+  "catalogCategoryBasic": "Basic mates",
+  "@catalogCategoryBasic": {
+    "description": "Catalog category: checkmating a lone king with queen or rooks."
+  },
+  "catalogCategoryPawn": "Pawn endings",
+  "@catalogCategoryPawn": {
+    "description": "Catalog category: endgames with only kings and pawns."
+  },
+  "catalogCategoryQueen": "Queen endings",
+  "@catalogCategoryQueen": {
+    "description": "Catalog category: endgames with a queen against other pieces."
+  },
+  "catalogCategoryRookPawn": "Rook endings",
+  "@catalogCategoryRookPawn": {
+    "description": "Catalog category: endgames with rooks and pawns."
+  },
+  "catalogEmpty": "No positions with this goal here.",
+  "@catalogEmpty": {
+    "description": "Shown when the goal filter leaves no positions in the list."
+  },
+  "catalogFilterAll": "All",
+  "@catalogFilterAll": {
+    "description": "Catalog filter option: show positions with any goal."
+  },
+  "catalogPositionCount": "{count, plural, =1{1 position} other{{count} positions}}",
+  "@catalogPositionCount": {
+    "description": "How many positions a catalog category or group has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogPositionNumber": "Position {number}",
+  "@catalogPositionNumber": {
+    "description": "Name of a position in the catalog list, by its number in the group.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogTitle": "Endgames",
+  "@catalogTitle": {
+    "description": "Title of the catalog screen with the categories of endgame positions."
+  },
   "clockBothSides": "Both sides",
   "@clockBothSides": {
     "description": "Section title of the time options when white and black get the same time."
@@ -143,6 +189,38 @@
   "commonConfirm": "Confirm",
   "@commonConfirm": {
     "description": "Button that confirms the option marked in a selection panel."
+  },
+  "customClear": "Clear board",
+  "@customClear": {
+    "description": "Tooltip of the button that removes all pieces except the two kings."
+  },
+  "customContinue": "Continue",
+  "@customContinue": {
+    "description": "Button that takes the custom position to the game setup screen."
+  },
+  "customFen": "FEN",
+  "@customFen": {
+    "description": "Label of the text field with the position in FEN notation (the chess standard, not translated)."
+  },
+  "customFenHint": "Paste or type a FEN, or set up the board above",
+  "@customFenHint": {
+    "description": "Help text under the FEN field."
+  },
+  "customPaste": "Paste",
+  "@customPaste": {
+    "description": "Tooltip of the button that pastes a FEN from the clipboard."
+  },
+  "customPositionTitle": "Custom position",
+  "@customPositionTitle": {
+    "description": "Home screen button and screen title: set up your own position (board editor or FEN) to play."
+  },
+  "customToolErase": "Erase",
+  "@customToolErase": {
+    "description": "Board editor tool: tap a square to remove its piece."
+  },
+  "customToolMove": "Move pieces",
+  "@customToolMove": {
+    "description": "Board editor tool: drag pieces around the board."
   },
   "freeBoardBlackToMove": "Black to move",
   "@freeBoardBlackToMove": {
@@ -204,6 +282,14 @@
   "@freeBoardWhiteWins": {
     "description": "Game result: White won."
   },
+  "goalDraw": "Defend",
+  "@goalDraw": {
+    "description": "Goal of a position: the player must hold the draw (a draw or a win counts). Also a catalog filter option."
+  },
+  "goalWin": "Win",
+  "@goalWin": {
+    "description": "Goal of a position: the player must win. Also a catalog filter option."
+  },
   "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
   "@homeMascotLabel": {
     "description": "Screen reader label for the mascot image on the home screen."
@@ -211,6 +297,22 @@
   "homeTagline": "Chess endgame training",
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
+  },
+  "homeTrain": "Train endgames",
+  "@homeTrain": {
+    "description": "Main home screen button: opens the catalog of endgame positions to practice."
+  },
+  "pieceBishop": "Bishop",
+  "@pieceBishop": {
+    "description": "Chess piece name."
+  },
+  "pieceKing": "King",
+  "@pieceKing": {
+    "description": "Chess piece name."
+  },
+  "pieceKnight": "Knight",
+  "@pieceKnight": {
+    "description": "Chess piece name."
   },
   "pieceLetterBishop": "B",
   "@pieceLetterBishop": {
@@ -231,6 +333,66 @@
   "pieceLetterRook": "R",
   "@pieceLetterRook": {
     "description": "Letter of the rook in chess move notation in this language."
+  },
+  "pieceOfSide": "{piece}, {side}",
+  "@pieceOfSide": {
+    "description": "A piece in the board editor palette, with its color. For example 'Queen, White'.",
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      },
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "piecePawn": "Pawn",
+  "@piecePawn": {
+    "description": "Chess piece name."
+  },
+  "pieceQueen": "Queen",
+  "@pieceQueen": {
+    "description": "Chess piece name."
+  },
+  "pieceRook": "Rook",
+  "@pieceRook": {
+    "description": "Chess piece name."
+  },
+  "positionErrorAlreadyOver": "The game is already over in this position.",
+  "@positionErrorAlreadyOver": {
+    "description": "Error: the position is checkmate, stalemate or insufficient material."
+  },
+  "positionErrorEmpty": "The board is empty.",
+  "@positionErrorEmpty": {
+    "description": "Error: there are no pieces on the board."
+  },
+  "positionErrorImpossibleCheck": "This check cannot happen in a real game.",
+  "@positionErrorImpossibleCheck": {
+    "description": "Error: the check in the position cannot be reached by legal moves."
+  },
+  "positionErrorInvalidFen": "This is not a valid FEN.",
+  "@positionErrorInvalidFen": {
+    "description": "Error: the text is not a position in FEN notation."
+  },
+  "positionErrorMissingBlackKing": "The black king is missing.",
+  "@positionErrorMissingBlackKing": {
+    "description": "Error: the position has no black king."
+  },
+  "positionErrorMissingWhiteKing": "The white king is missing.",
+  "@positionErrorMissingWhiteKing": {
+    "description": "Error: the position has no white king."
+  },
+  "positionErrorOppositeCheck": "The side that is not to move is in check.",
+  "@positionErrorOppositeCheck": {
+    "description": "Error: the player who just moved left their king in check, which is impossible."
+  },
+  "positionErrorPawnsOnBackrank": "Pawns cannot be on the first or the last rank.",
+  "@positionErrorPawnsOnBackrank": {
+    "description": "Error: a pawn is on rank 1 or rank 8."
+  },
+  "positionErrorTooManyKings": "Each side must have exactly one king.",
+  "@positionErrorTooManyKings": {
+    "description": "Error: a side has more than one king."
   },
   "profileLevelAbove": "{min} or more",
   "@profileLevelAbove": {
@@ -353,6 +515,46 @@
   "settingsTitle": "Settings",
   "@settingsTitle": {
     "description": "Title of the settings screen; also the tooltip of the button that opens it."
+  },
+  "setupDecrease": "Decrease",
+  "@setupDecrease": {
+    "description": "Tooltip of the minus button of a time selector."
+  },
+  "setupIncrease": "Increase",
+  "@setupIncrease": {
+    "description": "Tooltip of the plus button of a time selector."
+  },
+  "setupOpponent": "Opponent",
+  "@setupOpponent": {
+    "description": "Section title: who the player plays against."
+  },
+  "setupOpponentTime": "Opponent's time",
+  "@setupOpponentTime": {
+    "description": "Title of the card with the opponent's clock time."
+  },
+  "setupOpponentTwoPlayers": "Two players",
+  "@setupOpponentTwoPlayers": {
+    "description": "Opponent option: there is no computer opponent, the player moves both sides."
+  },
+  "setupOpponentTwoPlayersHint": "You move the pieces of both sides",
+  "@setupOpponentTwoPlayersHint": {
+    "description": "Explanation under the two players opponent option."
+  },
+  "setupTimeZero": "The starting time must be more than zero.",
+  "@setupTimeZero": {
+    "description": "Error shown when a clock is set to zero minutes."
+  },
+  "setupTitle": "New game",
+  "@setupTitle": {
+    "description": "Title of the screen where the player sets up a game before starting: side, opponent and clock."
+  },
+  "setupYourSide": "Your side",
+  "@setupYourSide": {
+    "description": "Section title: which color the player plays with."
+  },
+  "setupYourTime": "Your time",
+  "@setupYourTime": {
+    "description": "Title of the card with the player's clock time."
   },
   "sideBlack": "Black",
   "@sideBlack": {
