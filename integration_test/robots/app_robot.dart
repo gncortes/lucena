@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/config/dependencies.dart';
@@ -6,17 +7,36 @@ import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
 
-/// Ações do app inteiro e do aparelho: abrir, segundo plano, rede, tema do sistema.
+/// Ações do app inteiro e do aparelho: abrir, reiniciar, segundo plano, rede,
+/// tema e idioma do sistema.
 class AppRobot {
   const AppRobot(this.$);
 
   final PatrolIntegrationTester $;
 
-  /// Abre o app com a composição E2E (fakes de `testing/`).
-  Future<void> open({Locale? locale}) async {
+  /// Abre o app com a composição E2E, sem nenhum dado gravado.
+  ///
+  /// [systemLocale] faz o app enxergar o aparelho nesse idioma.
+  Future<void> open({Locale? systemLocale}) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
-    await $.pumpWidgetAndSettle(
-      LucenaApp(dependencies: e2eDependencies(), locale: locale),
+    await resetE2EData();
+    if (systemLocale != null) {
+      $.tester.platformDispatcher.localesTestValue = [systemLocale];
+      addTearDown($.tester.platformDispatcher.clearLocalesTestValue);
+    }
+    await _pumpApp();
+  }
+
+  /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho.
+  Future<void> restart() async {
+    await $.pumpWidgetAndSettle(const SizedBox());
+    await _pumpApp();
+  }
+
+  // A key nova a cada abertura garante um app do zero, sem estado em memória.
+  Future<void> _pumpApp() {
+    return $.pumpWidgetAndSettle(
+      LucenaApp(key: UniqueKey(), dependencies: e2eDependencies()),
     );
   }
 
@@ -56,5 +76,24 @@ class AppRobot {
       greaterThan(size.width),
       reason: 'a tela do app deveria estar em retrato, mas mede $size',
     );
+  }
+
+  void expectDirection(TextDirection direction) {
+    final context = $.tester.element(find.byType(Navigator).first);
+    expect(Directionality.of(context), direction);
+  }
+
+  /// Nenhum texto da tela atual foi cortado nem encurtado com reticências.
+  void expectNoClippedText() {
+    final paragraphs = find.byType(RichText).evaluate();
+    expect(paragraphs, isNotEmpty);
+    for (final element in paragraphs) {
+      final paragraph = element.renderObject! as RenderParagraph;
+      expect(
+        paragraph.didExceedMaxLines,
+        isFalse,
+        reason: 'texto cortado: "${paragraph.text.toPlainText()}"',
+      );
+    }
   }
 }

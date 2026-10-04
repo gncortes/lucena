@@ -262,7 +262,7 @@ Rodadas possíveis, cada uma depois do merge da anterior:
 - [ ] Liberar o merge da `main` para dentro da branch de tarefa (hoje `git merge` é bloqueado nas permissões do Claude)
 - [ ] Cópia de trabalho por frente com `.env` (emulador próprio) e `.claude/settings.json` copiados, já que não são versionados
 - [ ] Cota do Test Lab: um aparelho por candidata, ou Test Lab só na candidata final de cada tarefa
-- [ ] Dividir a fumaça em um arquivo por tela
+- [x] Dividir a fumaça em um arquivo por tela
 
 **Pronto quando:** testes unitários e de BLoC passando · todos os cenários Patrol da tarefa passando · suíte Patrol anterior passando · CI verde · tag criada · APK na Release do GitHub · você validou no celular.
 
