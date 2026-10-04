@@ -12,7 +12,7 @@ O app é construído em **entregas pequenas**. Cada entrega é uma fatia que fun
 4. CI verde → tag de versão → APK publicado como Release no GitHub.
 5. Você instala o APK e valida usando.
 
-Só depois disso começa a próxima entrega.
+Uma entrega só começa quando as entregas de que ela depende já estão na `main`. Entregas de frentes diferentes podem andar ao mesmo tempo (seção 6, "Frentes paralelas").
 
 Requisitos que valem para **todas** as entregas, desde a primeira:
 
@@ -207,7 +207,7 @@ Formato no app (`assets/positions/positions.json`):
 - Uma entrega por sessão, contexto novo. Ler só `CLAUDE.md`, este plano e os arquivos citados.
 - Cada entrega termina com: `dart format`, `flutter analyze`, testes unitários, cenário Patrol novo + suíte Patrol completa, PR com resumo curto.
 - Estourou o escopo: parar e relatar.
-- Modelo mais forte só para as entregas do Maia.
+- Modelo por entrega: o da linha "Modelo sugerido" de cada tarefa. O mais forte fica só para as entregas do Maia.
 
 O `CLAUDE.md` e as skills completos estão no kit do repositório (seção 0).
 
@@ -226,7 +226,43 @@ Se você já tem esse padrão (keys, robôs, helpers) em outro projeto, ele subs
 
 ## 6. Tarefas
 
-Cada tarefa é um entregável. Só começa a próxima quando a anterior está pronta.
+Cada tarefa é um entregável. Só começa quando as tarefas de "Depende de" já estão na `main`; dentro de uma frente, uma por vez.
+
+### Frentes paralelas
+
+O "Depende de" de cada tarefa lista só o que ela usa de verdade. Tarefas de frentes diferentes podem rodar ao mesmo tempo, cada uma na sua cópia de trabalho, com o seu emulador e o seu modelo.
+
+| Frente | Tarefas, em ordem | O que a frente constrói |
+| --- | --- | --- |
+| A · Configurações | T01 → T02 → T03 | idiomas, tema, perfil e banco local |
+| B · Tabuleiro | T04 → T05 → T06 → T07 → T08 | tabuleiro, relógio e restauração |
+| C · Conteúdo | T09 → T10 | catálogo e posição customizada |
+| D · Maia | T15 → T16 | referência, runtime e serviço do Maia |
+| Convergência | T11 → T12 → T13 → T14 → T17 → T18 → T19 | junta as frentes: partida, Stockfish, progresso, Maia como adversário |
+
+Rodadas possíveis, cada uma depois do merge da anterior:
+
+1. T01 ‖ T04 ‖ T15 (mais o script de importação da T09, que é só Python)
+2. T02 ‖ T05 ‖ T16 ‖ T09
+3. T03 ‖ T06 ‖ T10
+4. T07 → T08, e daí a convergência
+
+**Dificuldade e modelo.** Baixa e média: telas e persistência que seguem um padrão já existente (Sonnet 5.5). Alta: tarefa que cria padrão novo ou mexe com tempo, estado em segundo plano ou código nativo (Opus 5.5). Muito alta: porte e calibração do Maia (Fable 5.1). É estimativa: se uma tarefa precisar de várias rodadas de correção no modelo sugerido, sobe um degrau.
+
+**Arquivos disputados.** Quase toda tarefa toca `pubspec.yaml`, os `.arb`, `router.dart`, `dependencies.dart` com `e2e_dependencies.dart`, a tela inicial e a fumaça. Para os conflitos ficarem pequenos:
+
+- chaves de tradução agrupadas por tela e em ordem alfabética, não sempre no fim do arquivo;
+- um arquivo de fumaça por tela (`integration_test/smoke/<tela>_smoke_test.dart`);
+- quem entra na `main` depois da T01 traduz as chaves novas para todos os idiomas do Grupo 1;
+- depois de cada merge, as outras frentes trazem a `main` para a sua branch antes de continuar.
+
+**Antes de paralelizar** (ainda não feito):
+
+- [ ] `versionCode` global e crescente (hoje é o número de commits da branch: duas frentes geram números fora de ordem e o celular recusa a candidata "mais antiga")
+- [ ] Liberar o merge da `main` para dentro da branch de tarefa (hoje `git merge` é bloqueado nas permissões do Claude)
+- [ ] Cópia de trabalho por frente com `.env` (emulador próprio) e `.claude/settings.json` copiados, já que não são versionados
+- [ ] Cota do Test Lab: um aparelho por candidata, ou Test Lab só na candidata final de cada tarefa
+- [ ] Dividir a fumaça em um arquivo por tela
 
 **Pronto quando:** testes unitários e de BLoC passando · todos os cenários Patrol da tarefa passando · suíte Patrol anterior passando · CI verde · tag criada · APK na Release do GitHub · você validou no celular.
 
@@ -235,6 +271,8 @@ Cada tarefa é um entregável. Só começa a próxima quando a anterior está pr
 ### T00 · Esqueleto do projeto
 
 Depende de: — · Tag: `v0.0.1`
+
+Frente: Base · Dificuldade: média · Modelo sugerido: Fable 5.1
 
 - [ ] Projeto Flutter com as pastas da seção 1, `go_router` e composição normal/E2E em `config/`
 - [ ] `CLAUDE.md`, LICENSE (AGPL-3.0), `THIRD-PARTY-NOTICES.md`
@@ -253,6 +291,8 @@ Depende de: — · Tag: `v0.0.1`
 
 Depende de: T00 · Tag: `v0.0.2`
 
+Frente: A · Configurações · Dificuldade: média · Modelo sugerido: Opus 5.5
+
 - [ ] Idioma padrão = idioma do sistema
 - [ ] Troca manual em Configurações, com persistência
 - [ ] Tradução inicial dos idiomas do Grupo 1
@@ -270,6 +310,8 @@ Depende de: T00 · Tag: `v0.0.2`
 
 Depende de: T01 · Tag: `v0.0.3`
 
+Frente: A · Configurações · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
+
 - [ ] Claro, escuro, sistema
 - [ ] Persistência
 
@@ -281,7 +323,9 @@ Depende de: T01 · Tag: `v0.0.3`
 
 ### T03 · Perfil local
 
-Depende de: T02 · Tag: `v0.0.4`
+Depende de: T01 · Tag: `v0.0.4`
+
+Frente: A · Configurações · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 
 - [ ] Apelido e rating aproximado no banco local
 - [ ] Validação dos campos
@@ -295,7 +339,9 @@ Depende de: T02 · Tag: `v0.0.4`
 
 ### T04 · Tabuleiro livre
 
-Depende de: T03 · Tag: `v0.1.0`
+Depende de: T00 · Tag: `v0.1.0`
+
+Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
 - [ ] Tabuleiro na posição inicial, lances legais pelos dois lados
 - [ ] Promoção, roque, en passant
@@ -312,7 +358,9 @@ Depende de: T03 · Tag: `v0.1.0`
 
 ### T05 · Aparência do tabuleiro
 
-Depende de: T04 · Tag: `v0.1.1`
+Depende de: T04, T01 · Tag: `v0.1.1`
+
+Frente: B · Tabuleiro · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
 - [ ] Tema de cores, conjunto de peças (licença compatível), coordenadas
 - [ ] Pré-visualização ao vivo
@@ -329,6 +377,8 @@ Depende de: T04 · Tag: `v0.1.1`
 
 Depende de: T05 · Tag: `v0.1.2`
 
+Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
 - [ ] Arrastar/tocar, mostrar lances legais, destacar último lance
 - [ ] Animação, virar tabuleiro, pré-lances
 - [ ] Notação figurina ou por letras
@@ -344,7 +394,9 @@ Depende de: T05 · Tag: `v0.1.2`
 
 ### T07 · Relógio
 
-Depende de: T06 · Tag: `v0.1.3`
+Depende de: T04, T01 · Tag: `v0.1.3`
+
+Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
 - [ ] Tempo e incremento separados por lado
 - [ ] Décimos abaixo de 10 s, posição do relógio, vibração
@@ -363,6 +415,8 @@ Depende de: T06 · Tag: `v0.1.3`
 
 Depende de: T07 · Tag: `v0.1.4`
 
+Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
 - [ ] Relógio baseado em instantes
 - [ ] Partida salva a cada lance
 - [ ] Restauração após o sistema fechar o app
@@ -377,7 +431,9 @@ Depende de: T07 · Tag: `v0.1.4`
 
 ### T09 · Catálogo de posições
 
-Depende de: T08 · Tag: `v0.1.5`
+Depende de: T04 · Tag: `v0.1.5`
+
+Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Opus 5.5 (o script de importação pode ser adiantado com Sonnet 5.5)
 
 - [ ] Script de importação e verificação (seção 4)
 - [ ] Catálogo: categoria → subcategoria → lista de posições (carregamento sob demanda)
@@ -396,6 +452,8 @@ Depende de: T08 · Tag: `v0.1.5`
 
 Depende de: T09 · Tag: `v0.1.6`
 
+Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Sonnet 5.5
+
 - [ ] Colar FEN ou montar no editor
 - [ ] Validação com mensagens traduzidas
 - [ ] Escolha do objetivo
@@ -410,7 +468,9 @@ Depende de: T09 · Tag: `v0.1.6`
 
 ### T11 · Configuração da partida
 
-Depende de: T10 · Tag: `v0.1.7`
+Depende de: T07, T10 · Tag: `v0.1.7`
+
+Frente: Convergência · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
 - [ ] Lado do usuário, tempo do usuário, tempo da máquina
 - [ ] Adversário (só "dois jogadores" nesta tarefa)
@@ -427,6 +487,8 @@ Depende de: T10 · Tag: `v0.1.7`
 
 Depende de: T11 · Tag: `v0.2.0`
 
+Frente: Convergência · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
 - [ ] `OpponentRepository`
 - [ ] Stockfish no aparelho, força máxima
 - [ ] Tempo por lance tirado do relógio da máquina
@@ -440,7 +502,9 @@ Depende de: T11 · Tag: `v0.2.0`
 
 ### T13 · Resultado e progresso
 
-Depende de: T12 · Tag: `v0.2.1`
+Depende de: T12, T03 · Tag: `v0.2.1`
+
+Frente: Convergência · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 
 - [ ] Objetivo cumprido ou não
 - [ ] Tentativa salva e histórico por posição
@@ -456,7 +520,9 @@ Depende de: T12 · Tag: `v0.2.1`
 
 ### T14 · Segundo plano com a máquina pensando
 
-Depende de: T13 · Tag: `v0.2.2`
+Depende de: T12, T08 · Tag: `v0.2.2`
+
+Frente: Convergência · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
 - [ ] Estado e relógios consistentes durante a vez da máquina
 
@@ -468,7 +534,9 @@ Depende de: T13 · Tag: `v0.2.2`
 
 ### T15 · Referência e decisão de runtime do Maia
 
-Depende de: T14 · Tag: `v0.3.0-alpha`
+Depende de: T00 · Tag: `v0.3.0-alpha`
+
+Frente: D · Maia · Dificuldade: muito alta · Modelo sugerido: Fable 5.1
 
 - [ ] Fixtures do PyTorch oficial
 - [ ] Spike: ONNX ou porte para Dart
@@ -482,6 +550,8 @@ Depende de: T14 · Tag: `v0.3.0-alpha`
 
 Depende de: T15 · Tag: `v0.3.0`
 
+Frente: D · Maia · Dificuldade: muito alta · Modelo sugerido: Fable 5.1
+
 - [ ] `MaiaService`
 - [ ] Tela de depuração (só em build de desenvolvimento)
 
@@ -493,7 +563,9 @@ Depende de: T15 · Tag: `v0.3.0`
 
 ### T17 · Maia como adversário e níveis
 
-Depende de: T16 · Tag: `v0.3.1`
+Depende de: T16, T12, T03 · Tag: `v0.3.1`
+
+Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
 - [ ] Níveis de 600 a 2600 (degraus de 200), temperatura por nível
 - [ ] Maia por nível ou Stockfish máximo
@@ -510,6 +582,8 @@ Depende de: T16 · Tag: `v0.3.1`
 
 Depende de: T17 · Tag: `v0.3.2`
 
+Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
+
 - [ ] `ThinkTimePolicy`
 
 **Cenários Patrol:**
@@ -521,6 +595,8 @@ Depende de: T17 · Tag: `v0.3.2`
 ### T19 · Calibração e fechamento do MVP
 
 Depende de: T18 · Tag: `v1.0.0-mvp`
+
+Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
 - [ ] Medir ms por lance no celular
 - [ ] Ajustar temperatura e tempo por nível (`docs/calibracao.md`)
