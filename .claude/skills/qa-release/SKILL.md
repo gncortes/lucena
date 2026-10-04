@@ -115,6 +115,7 @@ Para conferir: <1–3 passos>
 ## Erros comuns
 
 - **Falta segredo ou configuração no GitHub:** parar e pedir ao Gabriel (`SETUP.md`); nunca criar segredo.
+- **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
 - **Cota do Test Lab esgotada:** relatar; não abrir PR sem o Test Lab (a menos que o Gabriel autorize explicitamente no chat).
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.

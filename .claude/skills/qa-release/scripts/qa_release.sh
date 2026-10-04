@@ -7,7 +7,7 @@ set -euo pipefail
 
 TASK="${1:?informe a tarefa, ex.: T05}"
 BASE_TAG="${2:?informe a tag base, ex.: v0.1.3}"
-WORKFLOW="qa.yml"
+WORKFLOW="QA" # `name:` do .github/workflows/qa.yml
 OUT_DIR="build/qa-release"
 RESULT="$OUT_DIR/result.json"
 mkdir -p "$OUT_DIR"
@@ -47,8 +47,9 @@ git push --quiet origin "$RC_TAG" || fail "push da tag falhou" "tag"
 log "Esperando o workflow QA começar"
 RUN_ID=""
 for _ in $(seq 1 24); do
-  RUN_ID="$(gh run list --workflow "$WORKFLOW" --commit "$SHA" --json databaseId,headBranch \
-    --jq "map(select(.headBranch == \"$RC_TAG\"))[0].databaseId // empty")"
+  # Filtra pelo nome: `--workflow` só acha workflows que já estão na branch padrão.
+  RUN_ID="$(gh run list --commit "$SHA" --json databaseId,headBranch,workflowName \
+    --jq "map(select(.headBranch == \"$RC_TAG\" and .workflowName == \"$WORKFLOW\"))[0].databaseId // empty" || true)"
   [[ -n "$RUN_ID" ]] && break
   sleep 5
 done
