@@ -74,21 +74,21 @@ void main() {
   String profileValue(WidgetTester tester) =>
       tester.widget<Text>(find.byKey(SettingsKeys.profileValue)).data!;
 
-  testWidgets('sem apelido, o perfil mostra o apelido padrão e o rating', (
+  testWidgets('sem apelido, o perfil mostra o apelido padrão e a faixa', (
     tester,
   ) async {
     await pumpScreen(tester, const AppSettings());
 
-    expect(profileValue(tester), 'Player · 1200');
+    expect(profileValue(tester), 'Player · Casual');
   });
 
-  testWidgets('mostra o apelido e o rating gravados', (tester) async {
+  testWidgets('mostra o apelido e a faixa do rating gravado', (tester) async {
     await pumpScreen(
       tester,
       const AppSettings(),
       profile: const UserProfile(nickname: 'Ana', rating: 1850),
     );
 
-    expect(profileValue(tester), 'Ana · 1850');
+    expect(profileValue(tester), 'Ana · Advanced');
   });
 }

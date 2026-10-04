@@ -10,6 +10,7 @@ import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
 import '../../profile/view_models/profile_cubit.dart';
+import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/settings_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -24,7 +25,7 @@ class SettingsScreen extends StatelessWidget {
     final themeMode = context.select(
       (SettingsCubit cubit) => cubit.state?.themeMode ?? AppThemeMode.system,
     );
-    final profile = context.select((ProfileCubit cubit) => cubit.state.profile);
+    final profile = context.select((ProfileCubit cubit) => cubit.state);
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: AppBar(
@@ -70,11 +71,11 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  /// "Apelido · rating", com o apelido padrão quando o jogador não escolheu um.
+  /// "Apelido · faixa", com o apelido padrão quando o jogador não escolheu um.
   String _profileSummary(BuildContext context, UserProfile profile) {
     final nickname = profile.nickname.isEmpty
         ? context.l10n.profileNicknameDefault
         : profile.nickname;
-    return '$nickname · ${profile.rating}';
+    return '$nickname · ${profile.level.name(context.l10n)}';
   }
 }

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/profile_cubit.dart';
+import 'rating_level_sheet.dart';
+import 'rating_level_ui.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,45 +19,50 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _nickname = TextEditingController();
-  final _rating = TextEditingController();
-  bool _filled = false;
+
+  // A faixa confirmada no painel; só é gravada ao salvar.
+  RatingLevel? _level;
 
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<ProfileCubit>()..clearError();
-    _fill(cubit.state.profile);
+    _fill(context.read<ProfileCubit>().state);
   }
 
   @override
   void dispose() {
     _nickname.dispose();
-    _rating.dispose();
     super.dispose();
   }
 
-  // Os campos recebem o perfil gravado uma vez só; depois valem as edições.
+  // A tela recebe o perfil gravado uma vez só; depois valem as edições.
   void _fill(UserProfile? profile) {
-    if (_filled || profile == null) return;
-    _filled = true;
+    if (_level != null || profile == null) return;
     _nickname.text = profile.nickname;
-    _rating.text = '${profile.rating}';
+    _level = profile.level;
   }
 
-  Future<void> _save() async {
-    final saved = await context.read<ProfileCubit>().save(
+  Future<void> _pickLevel(RatingLevel current) async {
+    FocusScope.of(context).unfocus();
+    final picked = await showRatingLevelSheet(context, selected: current);
+    if (picked != null && mounted) setState(() => _level = picked);
+  }
+
+  Future<void> _save(RatingLevel level) async {
+    await context.read<ProfileCubit>().save(
       nickname: _nickname.text,
-      rating: _rating.text,
+      level: level,
     );
-    if (saved && mounted) await Navigator.of(context).maybePop();
+    if (mounted) await Navigator.of(context).maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return BlocConsumer<ProfileCubit, ProfileState>(
-      listener: (context, state) => _fill(state.profile),
-      builder: (context, state) {
+    return BlocConsumer<ProfileCubit, UserProfile?>(
+      listener: (context, profile) => setState(() => _fill(profile)),
+      builder: (context, profile) {
+        final level = _level;
         return Scaffold(
           key: ProfileKeys.screen,
           appBar: AppBar(title: Text(l10n.settingsProfile)),
@@ -65,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextField(
                   key: ProfileKeys.nicknameField,
                   controller: _nickname,
-                  textInputAction: TextInputAction.next,
+                  textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(
@@ -75,40 +83,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.profileNickname,
                     hintText: l10n.profileNicknameDefault,
+                    // O apelido padrão fica à vista enquanto o campo está vazio.
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     prefixIcon: const Icon(Icons.person_outline),
                     border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 24),
-                TextField(
-                  key: ProfileKeys.ratingField,
-                  controller: _rating,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.done,
-                  onChanged: (_) => context.read<ProfileCubit>().clearError(),
-                  onSubmitted: (_) => _save(),
-                  decoration: InputDecoration(
-                    labelText: l10n.profileRating,
-                    helperText: l10n.profileRatingHint(
-                      UserProfile.minRating,
-                      UserProfile.maxRating,
-                    ),
-                    helperMaxLines: 3,
-                    errorText: state.ratingInvalid
-                        ? l10n.profileRatingError(
-                            UserProfile.minRating,
-                            UserProfile.maxRating,
-                          )
-                        : null,
-                    errorMaxLines: 3,
-                    prefixIcon: const Icon(Icons.emoji_events_outlined),
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
+                if (level != null)
+                  _LevelField(level: level, onTap: () => _pickLevel(level)),
                 const SizedBox(height: 32),
                 FilledButton(
                   key: ProfileKeys.saveButton,
-                  onPressed: state.profile == null ? null : _save,
+                  onPressed: level == null ? null : () => _save(level),
                   child: Text(l10n.profileSave),
                 ),
               ],
@@ -116,6 +103,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Parece um campo de formulário, mas abre o painel de escolha da faixa.
+class _LevelField extends StatelessWidget {
+  const _LevelField({required this.level, required this.onTap});
+
+  final RatingLevel level;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      child: InkWell(
+        key: ProfileKeys.levelField,
+        borderRadius: BorderRadius.circular(4),
+        onTap: onTap,
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: l10n.profileRating,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            contentPadding: const EdgeInsetsDirectional.fromSTEB(12, 12, 4, 12),
+            suffixIcon: const Icon(Icons.expand_more),
+            border: const OutlineInputBorder(),
+          ),
+          child: Row(
+            children: [
+              LevelBadge(level: level),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      level.name(l10n),
+                      key: ProfileKeys.levelName,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    Text(
+                      level.range(l10n),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

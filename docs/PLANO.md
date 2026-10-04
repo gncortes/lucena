@@ -347,13 +347,13 @@ Frente: A · Configurações · Dificuldade: média · Modelo sugerido: Sonnet 5
 
 Lote: Entrega A · T02 + T03 + T04 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] Apelido e rating aproximado no banco local
+- [ ] Apelido e rating aproximado (por faixas) no banco local
 - [ ] Validação dos campos
 
 **Cenários Patrol:**
 
 1. Editar apelido e rating → reiniciar → mantidos
-2. Rating fora da faixa (ex.: 5000) → erro traduzido, nada salvo
+2. Rating escolhido num painel de faixas com nome (iniciante, casual... mestre), traduzido; fechar o painel sem confirmar → nada muda
 3. Apelido vazio → usa o padrão
 4. Editar e sair sem salvar → nada muda
 

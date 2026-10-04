@@ -1,41 +1,28 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/profile_rules.dart';
-import 'profile_state.dart';
 
-export 'profile_state.dart';
-
-/// Perfil do jogador: leitura, validação e gravação.
-class ProfileCubit extends Cubit<ProfileState> {
-  ProfileCubit(this._repository) : super(const ProfileState());
+/// Perfil do jogador. O estado é nulo até a primeira leitura terminar.
+class ProfileCubit extends Cubit<UserProfile?> {
+  ProfileCubit(this._repository) : super(null);
 
   final ProfileRepository _repository;
 
-  Future<void> load() async {
-    emit(state.copyWith(profile: await _repository.load()));
-  }
+  Future<void> load() async => emit(await _repository.load());
 
-  /// Valida o que foi digitado e grava. Devolve se gravou; com rating fora da
-  /// faixa, nada é gravado e o estado passa a apontar o erro.
-  Future<bool> save({required String nickname, required String rating}) async {
-    final parsedRating = ProfileRules.parseRating(rating);
-    if (parsedRating == null) {
-      emit(state.copyWith(ratingInvalid: true));
-      return false;
-    }
+  /// Grava o apelido digitado (já limpo) e o rating da faixa escolhida.
+  Future<void> save({
+    required String nickname,
+    required RatingLevel level,
+  }) async {
     final profile = UserProfile(
       nickname: ProfileRules.cleanNickname(nickname),
-      rating: parsedRating,
+      rating: level.rating,
     );
     await _repository.save(profile);
-    emit(ProfileState(profile: profile));
-    return true;
-  }
-
-  /// O erro some quando o jogador volta a editar ou sai da tela.
-  void clearError() {
-    if (state.ratingInvalid) emit(state.copyWith(ratingInvalid: false));
+    emit(profile);
   }
 }

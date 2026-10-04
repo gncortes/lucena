@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$UserProfile {
 
 /// Apelido escolhido. Vazio usa o apelido padrão, traduzido na tela.
- String get nickname;/// Rating aproximado, informado pelo próprio jogador.
+ String get nickname;/// Rating aproximado: o da faixa que o jogador escolheu.
  int get rating;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -214,13 +214,13 @@ return $default(_that.nickname,_that.rating);case _:
 /// @nodoc
 
 
-class _UserProfile implements UserProfile {
-  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating});
+class _UserProfile extends UserProfile {
+  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating}): super._();
   
 
 /// Apelido escolhido. Vazio usa o apelido padrão, traduzido na tela.
 @override@JsonKey() final  String nickname;
-/// Rating aproximado, informado pelo próprio jogador.
+/// Rating aproximado: o da faixa que o jogador escolheu.
 @override@JsonKey() final  int rating;
 
 /// Create a copy of UserProfile

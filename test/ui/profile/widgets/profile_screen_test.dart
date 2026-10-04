@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
@@ -29,73 +30,151 @@ void main() {
     );
   }
 
-  TextField field(WidgetTester tester, Key key) =>
-      tester.widget<TextField>(find.byKey(key));
+  TextField nicknameField(WidgetTester tester) =>
+      tester.widget<TextField>(find.byKey(ProfileKeys.nicknameField));
+
+  String levelName(WidgetTester tester) =>
+      tester.widget<Text>(find.byKey(ProfileKeys.levelName)).data!;
+
+  Future<void> pickLevel(WidgetTester tester, RatingLevel level) async {
+    await tester.tap(find.byKey(ProfileKeys.levelField));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(ProfileKeys.levelOption(level)));
+    await tester.tap(find.byKey(ProfileKeys.levelOption(level)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
+    await tester.pumpAndSettle();
+  }
+
+  bool isMarked(WidgetTester tester, RatingLevel level) {
+    final tile = tester.widget<ListTile>(
+      find.descendant(
+        of: find.byKey(ProfileKeys.levelOption(level)),
+        matching: find.byType(ListTile),
+      ),
+    );
+    return tile.selected;
+  }
 
   Future<void> save(WidgetTester tester) async {
     await tester.tap(find.byKey(ProfileKeys.saveButton));
     await tester.pumpAndSettle();
   }
 
-  testWidgets('os campos abrem com o perfil gravado', (tester) async {
+  testWidgets('a tela abre com o perfil gravado', (tester) async {
     await pumpScreen(
       tester,
-      profile: const UserProfile(nickname: 'Ana', rating: 1500),
+      profile: const UserProfile(nickname: 'Ana', rating: 1450),
     );
 
-    expect(field(tester, ProfileKeys.nicknameField).controller!.text, 'Ana');
-    expect(field(tester, ProfileKeys.ratingField).controller!.text, '1500');
+    expect(nicknameField(tester).controller!.text, 'Ana');
+    expect(levelName(tester), 'Intermediate');
+    expect(find.text('1300–1599'), findsOneWidget);
   });
 
   testWidgets('sem apelido, o campo sugere o apelido padrão', (tester) async {
     await pumpScreen(tester);
 
-    final nickname = field(tester, ProfileKeys.nicknameField);
-    expect(nickname.controller!.text, isEmpty);
-    expect(nickname.decoration!.hintText, 'Player');
+    expect(nicknameField(tester).controller!.text, isEmpty);
+    expect(nicknameField(tester).decoration!.hintText, 'Player');
   });
 
-  testWidgets('salvar grava o que foi digitado', (tester) async {
-    await pumpScreen(tester);
-
-    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Bia');
-    await tester.enterText(find.byKey(ProfileKeys.ratingField), '1800');
-    await save(tester);
-
-    expect(repository.saved, [
-      const UserProfile(nickname: 'Bia', rating: 1800),
-    ]);
-  });
-
-  testWidgets('rating fora da faixa mostra o erro traduzido e não grava', (
-    tester,
-  ) async {
+  testWidgets('o painel lista todas as faixas, com nome e intervalo, e marca '
+      'a atual', (tester) async {
     await pumpScreen(tester, locale: const Locale('pt'));
 
-    await tester.enterText(find.byKey(ProfileKeys.ratingField), '5000');
-    await save(tester);
+    await tester.tap(find.byKey(ProfileKeys.levelField));
+    await tester.pumpAndSettle();
 
+    final sheet = find.byKey(ProfileKeys.levelSheet);
+    for (final text in [
+      'Iniciante',
+      'Abaixo de 1000',
+      'Intermediário',
+      '1300 a 1599',
+      'Mestre',
+      '2200 ou mais',
+    ]) {
+      expect(find.descendant(of: sheet, matching: find.text(text)), findsOne);
+    }
+    for (final level in RatingLevel.values) {
+      expect(isMarked(tester, level), level == RatingLevel.casual);
+    }
     expect(
-      field(tester, ProfileKeys.ratingField).decoration!.errorText,
-      'Digite um número de 100 a 3500',
+      find.descendant(
+        of: find.byKey(ProfileKeys.levelConfirmButton),
+        matching: find.text('Confirmar'),
+      ),
+      findsOne,
     );
+  });
+
+  testWidgets('tocar numa faixa só marca; a escolha vale ao confirmar', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.tap(find.byKey(ProfileKeys.levelField));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(
+      find.byKey(ProfileKeys.levelOption(RatingLevel.expert)),
+    );
+    await tester.tap(find.byKey(ProfileKeys.levelOption(RatingLevel.expert)));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ProfileKeys.levelSheet), findsOneWidget);
+    expect(isMarked(tester, RatingLevel.expert), isTrue);
+    expect(isMarked(tester, RatingLevel.casual), isFalse);
+    expect(levelName(tester), 'Casual');
+
+    await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ProfileKeys.levelSheet), findsNothing);
+    expect(levelName(tester), 'Expert');
+  });
+
+  testWidgets('confirmar uma faixa fecha o painel e mostra a escolha, ainda '
+      'sem gravar', (tester) async {
+    await pumpScreen(tester);
+
+    await pickLevel(tester, RatingLevel.expert);
+
+    expect(find.byKey(ProfileKeys.levelSheet), findsNothing);
+    expect(levelName(tester), 'Expert');
     expect(repository.saved, isEmpty);
   });
 
-  testWidgets('o erro some quando o rating volta a ser editado', (
+  testWidgets('fechar o painel sem confirmar mantém a faixa, mesmo com outra '
+      'marcada', (tester) async {
+    await pumpScreen(tester);
+
+    await tester.tap(find.byKey(ProfileKeys.levelField));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.byKey(ProfileKeys.levelOption(RatingLevel.master)),
+    );
+    await tester.tap(find.byKey(ProfileKeys.levelOption(RatingLevel.master)));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ProfileKeys.levelSheet), findsNothing);
+    expect(levelName(tester), 'Casual');
+  });
+
+  testWidgets('salvar grava o apelido e o rating da faixa escolhida', (
     tester,
   ) async {
     await pumpScreen(tester);
-    await tester.enterText(find.byKey(ProfileKeys.ratingField), '5000');
+
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Bia');
+    await pickLevel(tester, RatingLevel.advanced);
     await save(tester);
 
-    await tester.enterText(find.byKey(ProfileKeys.ratingField), '500');
-    await tester.pump();
-
-    expect(
-      field(tester, ProfileKeys.ratingField).decoration!.errorText,
-      isNull,
-    );
+    expect(repository.saved, [
+      UserProfile(nickname: 'Bia', rating: RatingLevel.advanced.rating),
+    ]);
   });
 
   testWidgets('o apelido não passa do tamanho máximo', (tester) async {
@@ -107,7 +186,7 @@ void main() {
     );
 
     expect(
-      field(tester, ProfileKeys.nicknameField).controller!.text,
+      nicknameField(tester).controller!.text,
       hasLength(UserProfile.maxNicknameLength),
     );
   });
