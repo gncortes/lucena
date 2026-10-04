@@ -1,0 +1,40 @@
+name: lucena
+description: "Chess endgame trainer: play endgames against Maia-3 or Stockfish."
+publish_to: 'none'
+
+version: 0.0.1+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  patrol: ^4.10.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/branding/mascot_light.png
+    - assets/branding/mascot_dark.png
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/branding/launcher_icon.png
+  adaptive_icon_background: "#14211B"
+  adaptive_icon_foreground: assets/branding/launcher_icon_foreground.png
+
+patrol:
+  app_name: Lucena
+  test_directory: integration_test
+  android:
+    package_name: com.gncortes.lucena
