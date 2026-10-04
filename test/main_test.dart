@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
+import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
@@ -258,5 +259,25 @@ void main() {
     );
     expect(rating.decoration!.errorText, isNull);
     expect(rating.controller!.text, '1200');
+  });
+
+  testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {
+    useSystemLocale(tester, const Locale('pt', 'BR'));
+    await pumpApp(tester);
+
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.freeBoardButton),
+        matching: find.text('Tabuleiro livre'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+    await tester.tap(find.byKey(HomeKeys.freeBoardButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    expect(textOf(tester, FreeBoardKeys.turn), 'Brancas jogam');
   });
 }
