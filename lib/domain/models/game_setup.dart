@@ -6,10 +6,16 @@ part 'game_setup.freezed.dart';
 
 /// Contra quem o jogador joga.
 enum OpponentKind {
+  /// O Stockfish, na força máxima, joga o outro lado.
+  stockfish,
+
   /// O próprio jogador move os dois lados.
   twoPlayers;
 
-  static const fallback = OpponentKind.twoPlayers;
+  static const fallback = OpponentKind.stockfish;
+
+  /// A máquina joga o outro lado.
+  bool get isMachine => this != twoPlayers;
 
   /// Valor gravado nas preferências.
   String get code => name;

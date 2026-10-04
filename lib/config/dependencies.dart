@@ -2,9 +2,13 @@ import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository_local.dart';
+import '../data/repositories/opponent/opponent_repository.dart';
+import '../data/repositories/opponent/opponent_repository_stockfish.dart';
 import '../data/repositories/positions/positions_repository.dart';
 import '../data/repositories/positions/positions_repository_asset.dart';
 import '../data/repositories/profile/profile_repository.dart';
+import '../data/repositories/progress/progress_repository.dart';
+import '../data/repositories/progress/progress_repository_local.dart';
 import '../data/repositories/profile/profile_repository_local.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/settings/settings_repository_local.dart';
@@ -13,6 +17,7 @@ import '../data/repositories/training/training_repository_local.dart';
 import '../data/services/asset_service.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/preferences_service.dart';
+import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../domain/models/app_language.dart';
 import '../domain/use_cases/now.dart';
@@ -33,19 +38,24 @@ class Dependencies {
     required this.ongoingGameRepository,
     required this.positionsRepository,
     required this.trainingRepository,
+    required this.opponentRepository,
+    required this.progressRepository,
     required this.languages,
   });
 
   factory Dependencies.normal() {
     final preferences = PreferencesService();
+    final database = AppDatabase();
     return Dependencies(
       now: const SystemNow(),
       settingsRepository: LocalSettingsRepository(preferences),
-      profileRepository: LocalProfileRepository(AppDatabase()),
+      profileRepository: LocalProfileRepository(database),
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       positionsRepository: AssetPositionsRepository(const AssetService()),
       trainingRepository: LocalTrainingRepository(preferences),
+      opponentRepository: StockfishOpponentRepository(StockfishService()),
+      progressRepository: LocalProgressRepository(database),
       languages: AppLanguage.selectable,
     );
   }
@@ -57,6 +67,8 @@ class Dependencies {
   final OngoingGameRepository ongoingGameRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
+  final OpponentRepository opponentRepository;
+  final ProgressRepository progressRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

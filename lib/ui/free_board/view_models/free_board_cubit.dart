@@ -5,25 +5,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/haptics/haptics_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
+import '../../../data/repositories/opponent/opponent_repository.dart';
+import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/game_end.dart';
+import '../../../domain/models/game_mode.dart';
 import '../../../domain/models/game_snapshot.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/think_time_policy.dart';
 import 'free_board_state.dart';
 
 export 'free_board_state.dart';
 
-/// Tabuleiro livre: o jogador faz os lances dos dois lados, com ou sem relógio.
-/// A partida é gravada a cada mudança e continua de onde parou se o app for
-/// fechado.
+/// A partida: no tabuleiro livre o jogador faz os lances dos dois lados; no
+/// treino, joga contra a máquina ou sozinho, com um objetivo. A partida é
+/// gravada a cada mudança e continua de onde parou se o app for fechado; a
+/// tentativa de treino é gravada quando a partida termina.
 class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// Com [start], começa uma partida nova nessa posição; [playerSide] faz o
   /// jogador mover só as peças de um lado (e ver o tabuleiro por ele) e
   /// [clock] liga o relógio, já correndo. [orientation] é o lado que fica
   /// embaixo (sem ele, o do jogador ou as brancas).
+  ///
+  /// [mode] diz contra quem e, num treino, com que objetivo; contra a máquina
+  /// o jogador só move as peças do lado dele.
   ///
   /// Sem [start], a tela espera [open] trazer a partida em andamento.
   FreeBoardCubit({
@@ -31,10 +41,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._haptics,
     required this._settings,
     required this._games,
+    required this._opponent,
+    required this._progress,
     Position? start,
     Side? playerSide,
     Side? orientation,
     ClockConfig? clock,
+    GameMode mode = const GameMode(),
   }) : _now = now,
        super(
          start == null
@@ -45,9 +58,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
                )
              : _fresh(
                  start: start,
-                 playerSide: playerSide,
-                 orientation: orientation ?? playerSide ?? Side.white,
+                 playerSide: mode.opponent.isMachine
+                     ? mode.userSide ?? playerSide
+                     : playerSide,
+                 orientation:
+                     orientation ?? mode.userSide ?? playerSide ?? Side.white,
                  clock: clock,
+                 mode: mode,
                  now: now(),
                ),
        );
@@ -56,6 +73,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   final HapticsRepository _haptics;
   final SettingsRepository _settings;
   final OngoingGameRepository _games;
+  final OpponentRepository _opponent;
+  final ProgressRepository _progress;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -65,6 +84,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   // As gravações em fila: uma termina antes de a próxima começar.
   Future<void> _saving = Future.value();
+
+  // A tentativa desta partida já foi gravada.
+  bool _recorded = false;
+
+  // Quando o motor falhou pela última vez, para não pedir de novo sem parar.
+  DateTime? _machineFailedAt;
+  static const _machineRetry = Duration(seconds: 2);
 
   /// A tela abriu. Partida nova (criada com posição) é só gravada; sem ela,
   /// continua a partida em andamento ou, se não há, começa uma do início.
@@ -80,14 +106,42 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
               playerSide: null,
               orientation: Side.white,
               clock: null,
+              mode: const GameMode(),
               now: now,
             ),
       );
       // A bandeira pode ter caído com o app fechado.
       tick();
     }
-    _persist();
+    _changed();
     await _saving;
+  }
+
+  /// O app voltou do segundo plano (ou a tela foi desbloqueada): os relógios
+  /// são refeitos e, se for a vez da máquina sem pedido em andamento, ela
+  /// volta a pensar.
+  void resumed() {
+    tick();
+    _askMachine();
+  }
+
+  /// O jogador desiste: a partida termina na hora, mesmo na vez da máquina.
+  void resign() {
+    final user = state.mode.userSide;
+    if (!_active || state.end != null || user == null) return;
+    final now = _now();
+    final clock = state.clock;
+    emit(
+      _timed(
+        state.copyWith(
+          clock: clock == null ? null : ClockEngine.stop(clock, now),
+          forcedEnd: GameEnd(GameEndReason.resign, winner: user.opposite),
+          machineThinking: false,
+        ),
+        now,
+      ),
+    );
+    _changed();
   }
 
   /// Joga um lance de quem está na vez, seja do jogador ou do adversário.
@@ -118,13 +172,15 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         now,
       ),
     );
-    _persist();
+    _changed();
   }
 
   /// Atualiza os tempos pelo relógio do aparelho e confere a bandeira. A tela
   /// chama várias vezes por segundo; o resultado só depende do instante atual,
   /// então vale igual depois de o app ficar em segundo plano.
   void tick() {
+    // O motor falhou há pouco: tenta de novo, com intervalo.
+    if (_machineFailedAt != null) _askMachine();
     final clock = state.clock;
     if (clock == null || clock.running == null) return;
     final now = _now();
@@ -134,12 +190,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         _timed(
           state.copyWith(
             clock: ClockEngine.stop(clock, now),
-            timeEnd: GameRules.timeoutEnd(state.position, flagged),
+            forcedEnd: GameRules.timeoutEnd(state.position, flagged),
+            machineThinking: false,
           ),
           now,
         ),
       );
-      _persist();
+      _changed();
       return;
     }
     _warnLowTime(clock, now);
@@ -180,16 +237,85 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   void _restart(ClockConfig? clock) {
     if (!_active) return;
     _lowTimeWarned.clear();
+    _recorded = false;
     emit(
       _fresh(
         start: state.start,
         playerSide: state.playerSide,
         orientation: state.orientation,
         clock: clock,
+        mode: state.mode,
         now: _now(),
       ),
     );
+    _changed();
+  }
+
+  // Depois de cada mudança da partida: grava, registra a tentativa se ela
+  // terminou e, se for a vez da máquina, pede o lance.
+  void _changed() {
     _persist();
+    _record();
+    _askMachine();
+  }
+
+  void _record() {
+    final positionId = state.mode.positionId;
+    final outcome = state.outcome;
+    final fulfilled = state.fulfilled;
+    if (_recorded || positionId == null || outcome == null) return;
+    if (fulfilled == null) return;
+    _recorded = true;
+    final attempt = Attempt(
+      positionId: positionId,
+      playedAt: _now(),
+      outcome: outcome,
+      fulfilled: fulfilled,
+      opponent: state.mode.opponent,
+    );
+    _saving = _saving.whenComplete(() => _progress.addAttempt(attempt));
+  }
+
+  // Pede o lance à máquina quando é a vez dela. O relógio dela corre enquanto
+  // ela pensa, pelos instantes, como o do jogador.
+  void _askMachine() {
+    final side = state.mode.machineSide;
+    if (side == null || !_active || isClosed) return;
+    if (state.end != null || state.position.turn != side) return;
+    if (state.machineThinking) return;
+    final failedAt = _machineFailedAt;
+    final now = _now();
+    if (failedAt != null && now.difference(failedAt) < _machineRetry) return;
+    final clock = state.clock;
+    final thinkTime = ThinkTimePolicy.of(
+      remaining: clock == null ? null : ClockEngine.remaining(clock, side, now),
+      increment: clock?.config.of(side).increment ?? Duration.zero,
+    );
+    final asked = state.position;
+    emit(state.copyWith(machineThinking: true));
+    _opponent
+        .pickMove(asked, thinkTime: thinkTime)
+        .then(
+          (move) => _machineAnswered(asked, move),
+          onError: (Object _) => _machineFailed(asked),
+        );
+  }
+
+  void _machineAnswered(Position asked, Move? move) {
+    if (isClosed) return;
+    _machineFailedAt = null;
+    // A partida mudou enquanto a máquina pensava (desistência, bandeira, nova
+    // partida): a resposta não vale mais.
+    final stillAsked = identical(state.position, asked) && state.end == null;
+    if (state.machineThinking) emit(state.copyWith(machineThinking: false));
+    if (!stillAsked || move == null) return;
+    play(move);
+  }
+
+  void _machineFailed(Position asked) {
+    if (isClosed) return;
+    _machineFailedAt = _now();
+    if (state.machineThinking) emit(state.copyWith(machineThinking: false));
   }
 
   // Grava a partida como está. Partida terminada sai da gravação: não há o
@@ -204,6 +330,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
             orientation: current.orientation,
             playerSide: current.playerSide,
             clock: current.clock,
+            mode: current.mode,
             onScreen: onScreen,
           );
     _saving = _saving.whenComplete(
@@ -244,6 +371,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         orientation: snapshot.orientation,
         playerSide: snapshot.playerSide,
         clock: clock,
+        mode: snapshot.mode,
       ),
       now,
     );
@@ -254,6 +382,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required Side? playerSide,
     required Side orientation,
     required ClockConfig? clock,
+    required GameMode mode,
     required DateTime now,
   }) {
     return _timed(
@@ -262,6 +391,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         position: start,
         playerSide: playerSide,
         orientation: orientation,
+        mode: mode,
         // Posição que já abre terminada (mate, afogado) não liga o relógio.
         clock: clock == null || GameRules.endOf(start) != null
             ? null

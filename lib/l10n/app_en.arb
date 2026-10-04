@@ -4,6 +4,18 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "attemptDraw": "Draw",
+  "@attemptDraw": {
+    "description": "Result of a past game in the history: the game was drawn."
+  },
+  "attemptLoss": "Loss",
+  "@attemptLoss": {
+    "description": "Result of a past game in the history: the player lost."
+  },
+  "attemptWin": "Win",
+  "@attemptWin": {
+    "description": "Result of a past game in the history: the player won."
+  },
   "boardAnimation": "Piece animation",
   "@boardAnimation": {
     "description": "Switch: pieces slide to the new square instead of jumping."
@@ -111,6 +123,10 @@
   "catalogFilterAll": "All",
   "@catalogFilterAll": {
     "description": "Catalog filter option: show positions with any goal."
+  },
+  "catalogFulfilled": "Goal achieved",
+  "@catalogFulfilled": {
+    "description": "Screen reader label of the check mark on positions already solved."
   },
   "catalogPositionCount": "{count, plural, =1{1 position} other{{count} positions}}",
   "@catalogPositionCount": {
@@ -281,6 +297,26 @@
   "freeBoardWhiteWins": "White wins",
   "@freeBoardWhiteWins": {
     "description": "Game result: White won."
+  },
+  "gameMachineThinking": "Stockfish is thinking…",
+  "@gameMachineThinking": {
+    "description": "Shown while the computer opponent chooses its move."
+  },
+  "gameResign": "Resign",
+  "@gameResign": {
+    "description": "Button (and its tooltip) that ends the game by giving up."
+  },
+  "gameResignHint": "The game ends now and counts as a loss.",
+  "@gameResignHint": {
+    "description": "Explanation in the resign confirmation panel."
+  },
+  "gameResignTitle": "Resign this game?",
+  "@gameResignTitle": {
+    "description": "Title of the panel that asks to confirm resigning."
+  },
+  "gameResigned": "Resignation",
+  "@gameResigned": {
+    "description": "Reason the game ended: the player resigned."
   },
   "goalDraw": "Defend",
   "@goalDraw": {
@@ -472,6 +508,18 @@
   "@profileSave": {
     "description": "Button that saves the profile."
   },
+  "resultFulfilled": "Goal achieved!",
+  "@resultFulfilled": {
+    "description": "End of a training game: the player did what the position asked."
+  },
+  "resultNotFulfilled": "Goal not achieved",
+  "@resultNotFulfilled": {
+    "description": "End of a training game: the player did not do what the position asked."
+  },
+  "resultPlayAgain": "Play again",
+  "@resultPlayAgain": {
+    "description": "Button at the end of a training game: start the same position with the same setup."
+  },
   "settingsBoardAppearance": "Board appearance",
   "@settingsBoardAppearance": {
     "description": "Settings entry and title of the screen where the player picks board colors, piece set and coordinates."
@@ -520,6 +568,10 @@
   "@setupDecrease": {
     "description": "Tooltip of the minus button of a time selector."
   },
+  "setupHistory": "Your attempts",
+  "@setupHistory": {
+    "description": "Section title: the games already played in this position."
+  },
   "setupIncrease": "Increase",
   "@setupIncrease": {
     "description": "Tooltip of the plus button of a time selector."
@@ -527,6 +579,14 @@
   "setupOpponent": "Opponent",
   "@setupOpponent": {
     "description": "Section title: who the player plays against."
+  },
+  "setupOpponentStockfish": "Stockfish",
+  "@setupOpponentStockfish": {
+    "description": "Opponent option: the Stockfish chess engine (a proper name, usually not translated)."
+  },
+  "setupOpponentStockfishHint": "The strongest engine plays the other side",
+  "@setupOpponentStockfishHint": {
+    "description": "Explanation under the Stockfish opponent option."
   },
   "setupOpponentTime": "Opponent's time",
   "@setupOpponentTime": {

@@ -19,6 +19,12 @@ class AppRobot {
   /// [systemLocale] faz o app enxergar o aparelho nesse idioma.
   Future<void> open({Locale? systemLocale}) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
+    // O app do cenário anterior sai da tela e as gravações que ele deixou na
+    // fila terminam antes da limpeza: nada dele chega ao cenário novo.
+    await $.pumpWidgetAndSettle(const SizedBox());
+    await $.tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
+    );
     await resetE2EData();
     if (systemLocale != null) {
       $.tester.platformDispatcher.localesTestValue = [systemLocale];
@@ -86,6 +92,20 @@ class AppRobot {
     await $.pump(const Duration(milliseconds: 300));
     await $.pumpAndSettle();
   }
+
+  /// A máquina dos cenários segura a resposta até [releaseMachine]: é a
+  /// máquina "pensando" pelo tempo que o cenário quiser.
+  void holdMachine() => e2eOpponent.fake.hold();
+
+  Future<void> releaseMachine() async {
+    e2eOpponent.fake.release();
+    await $.pump(const Duration(milliseconds: 300));
+    await $.pumpAndSettle();
+  }
+
+  /// A máquina passa a ser o Stockfish de verdade (volta ao falso no próximo
+  /// [open]).
+  void useRealStockfish() => e2eOpponent.useStockfish = true;
 
   Future<void> sendToBackgroundAndReturn() async {
     await $.platform.mobile.pressHome();
