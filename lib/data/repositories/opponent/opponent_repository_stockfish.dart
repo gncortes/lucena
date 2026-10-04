@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 
+import '../../../domain/models/game_setup.dart';
 import '../../services/stockfish_service.dart';
 import 'opponent_repository.dart';
 
@@ -13,6 +14,9 @@ class StockfishOpponentRepository implements OpponentRepository {
   Future<Move?> pickMove(
     Position position, {
     required Duration thinkTime,
+    OpponentKind kind = OpponentKind.stockfish,
+    int? level,
+    List<Position> history = const [],
   }) async {
     final uci = await _stockfish.bestMove(position.fen, thinkTime);
     if (uci == null) return null;

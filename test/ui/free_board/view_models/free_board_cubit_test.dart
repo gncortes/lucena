@@ -730,6 +730,48 @@ void main() {
       expect(opponent.requests.single, contains(' b '));
     });
 
+    test(
+      'contra o Maia, o pedido leva o nível e as posições da partida',
+      () async {
+        final cubit = build(
+          start: queenMate,
+          mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1400),
+        );
+        addTearDown(cubit.close);
+        await cubit.open();
+
+        cubit.play(NormalMove.fromUci('c1g5'));
+        await settle();
+        cubit.play(NormalMove.fromUci('g5h6'));
+        await settle();
+
+        expect(opponent.kinds, [OpponentKind.maia, OpponentKind.maia]);
+        expect(opponent.levels, [1400, 1400]);
+        // Primeiro pedido: a posição inicial e a de depois do lance. Segundo:
+        // mais a resposta da máquina e o novo lance.
+        expect(opponent.histories.map((history) => history.length), [2, 4]);
+        expect(opponent.histories.last.first.fen, queenMate.fen);
+        expect(opponent.histories.last.last.fen, opponent.requests.last);
+      },
+    );
+
+    test('a tentativa contra o Maia guarda o nível', () async {
+      // Mate em um: Dc8.
+      final mateInOne = GameRules.fromFen('k7/8/1K6/8/8/8/8/2Q5 w - - 0 1')!;
+      final cubit = build(
+        start: mateInOne,
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1800),
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.play(NormalMove.fromUci('c1c8'));
+      await settle();
+
+      expect(progress.attempts.single.opponent, OpponentKind.maia);
+      expect(progress.attempts.single.opponentLevel, 1800);
+    });
+
     test('o jogador só move o lado dele', () {
       final cubit = build(start: queenMate, mode: vsMachine);
       addTearDown(cubit.close);

@@ -30,6 +30,7 @@ package bundled in the app is also available inside the app (licenses page).
 | Lucena Figurine font: chess pieces from Noto Sans Symbols 2 (`assets/fonts/`, license in `assets/fonts/OFL.txt`) | OFL-1.1 | https://github.com/notofonts/symbols |
 | Endgame positions (`assets/positions/positions.json`, a selection made by `tools/import_positions.py`) from supertorpe/chessendgametraining; its checkmate database comes from calebjcourtney/chess-endgame-training and the original endgame list from the "ECO Chess Opening Codes" blog | GPL-3.0 | https://github.com/supertorpe/chessendgametraining |
 | Stockfish 19 chess engine, through multistockfish (Lichess); only the "light" flavor with its small embedded NNUE is shipped | GPL-3.0 | https://github.com/lichess-org/dart-multistockfish |
+| Maia-3 (5M) by the University of Toronto CSSLab: the model weights (`assets/models/maia3-5m.bin`, converted to float16 by `tools/maia/export_weights.py`) and a Dart port of its inference code (`lib/data/services/maia/`) | AGPL-3.0 | https://github.com/CSSLab/maia3 |
 | drift, drift_flutter | MIT | https://pub.dev/packages/drift |
 | sqlite3 (Dart package) | MIT | https://pub.dev/packages/sqlite3 |
 | SQLite | Public domain | https://www.sqlite.org/copyright.html |
@@ -46,9 +47,3 @@ package bundled in the app is also available inside the app (licenses page).
 | build_runner | BSD-3-Clause | https://pub.dev/packages/build_runner |
 | bloc_test | MIT | https://pub.dev/packages/bloc_test |
 | drift_dev | MIT | https://pub.dev/packages/drift_dev |
-
-## Planned (added to this file when they enter the app)
-
-| Component | License | Source |
-| --- | --- | --- |
-| Maia-3 (5M) by the University of Toronto CSSLab: the weights are already in the repository (`assets/models/maia3-5m.bin`, converted to float16 by `tools/maia/export_weights.py`) and `lib/data/services/maia/` is a Dart port of its inference code; the app starts using them in a later release | AGPL-3.0 | https://github.com/CSSLab/maia3 |

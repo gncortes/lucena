@@ -31,14 +31,16 @@ class FreeBoardRobot {
   /// jogador só move as peças desse lado. Com [white] e [black] (tempo de cada
   /// lado, `segundos+incremento`), a partida abre com relógio.
   ///
-  /// No treino, [opponent] (`stockfish`), [user] (o lado do jogador), [goal]
-  /// (`win`, `draw`) e [position] (id no catálogo).
+  /// No treino, [opponent] (`maia`, `stockfish`), [level] (o nível do Maia),
+  /// [user] (o lado do jogador), [goal] (`win`, `draw`) e [position] (id no
+  /// catálogo).
   Future<void> openAt(
     String fen, {
     Side? side,
     String? white,
     String? black,
     String? opponent,
+    int? level,
     Side? user,
     String? goal,
     String? position,
@@ -52,6 +54,7 @@ class FreeBoardRobot {
         white: white,
         black: black,
         opponent: opponent,
+        level: level?.toString(),
         user: user?.name,
         goal: goal,
         position: position,
@@ -244,6 +247,24 @@ class FreeBoardRobot {
     await $(FreeBoardKeys.move(moves.length - 1)).waitUntilVisible();
     expect($.tester.widget<MoveList>(find.byType(MoveList)).moves, moves);
     expect(find.byKey(FreeBoardKeys.move(moves.length)), findsNothing);
+  }
+
+  /// Espera a lista chegar a [count] lances (a máquina de verdade responde
+  /// fora do ritmo dos quadros) e devolve os lances.
+  Future<List<String>> waitForMoves(int count) async {
+    await $(FreeBoardKeys.move(count - 1)).waitUntilVisible();
+    await $.pumpAndSettle();
+    return $.tester.widget<MoveList>(find.byType(MoveList)).moves;
+  }
+
+  /// O nome que aparece ao lado de um relógio (`White`, `Maia 1400`).
+  Future<void> expectPlayerName(String name) async {
+    await $(find.text(name)).waitUntilVisible();
+  }
+
+  /// A partida continua: ninguém perdeu por tempo nem por outro motivo.
+  void expectStillPlaying() {
+    expect(find.byKey(FreeBoardKeys.endPanel), findsNothing);
   }
 
   void expectTurn(String text) {

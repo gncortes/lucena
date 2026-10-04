@@ -4,9 +4,11 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 
+import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 
@@ -17,6 +19,7 @@ void main() {
     return GameSetupCubit(
       training,
       progress: FakeProgressRepository(),
+      profile: FakeProfileRepository(),
       position: GameRules.fromFen(fen)!,
       goal: PositionGoal.win,
     );
@@ -97,11 +100,12 @@ void main() {
   });
 
   test(
-    'a partida abre contra o Stockfish por padrão, com o lado do jogador',
+    'a partida abre contra o Maia por padrão, com o lado do jogador',
     () async {
       final cubit = GameSetupCubit(
         training,
         progress: FakeProgressRepository(),
+        profile: FakeProfileRepository(),
         position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
         goal: PositionGoal.win,
         positionId: 'basic.queen.0001',
@@ -110,7 +114,9 @@ void main() {
       await cubit.load();
 
       final query = Uri.parse(cubit.state.gameRoute).queryParameters;
-      expect(query['opponent'], 'stockfish');
+      expect(query['opponent'], 'maia');
+      // Perfil padrão (rating 1150): o nível mais próximo.
+      expect(query['level'], '1200');
       expect(query['user'], 'white');
       expect(query['goal'], 'win');
       expect(query['position'], 'basic.queen.0001');
@@ -133,6 +139,7 @@ void main() {
       final cubit = GameSetupCubit(
         training,
         progress: progress,
+        profile: FakeProfileRepository(),
         position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
         goal: PositionGoal.win,
         positionId: 'basic.queen.0001',
@@ -144,4 +151,52 @@ void main() {
       expect(cubit.state.attempts.map((a) => a.playedAt.minute), [2, 1]);
     },
   );
+
+  group('nível do Maia', () {
+    GameSetupCubit withRating(int rating) => GameSetupCubit(
+      training,
+      progress: FakeProgressRepository(),
+      profile: FakeProfileRepository(UserProfile(rating: rating)),
+      position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+      goal: PositionGoal.win,
+    );
+
+    test('o rating do perfil sugere o nível', () async {
+      final cubit = withRating(1750);
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      expect(cubit.state.suggestedLevel, 1800);
+      expect(cubit.state.maiaLevel, 1800);
+      expect(Uri.parse(cubit.state.gameRoute).queryParameters['level'], '1800');
+    });
+
+    test('o nível escolhido vale mais que o sugerido e fica gravado', () async {
+      final cubit = withRating(1750);
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      await cubit.setMaiaLevel(1400);
+
+      expect(cubit.state.maiaLevel, 1400);
+      expect(cubit.state.suggestedLevel, 1800);
+      expect(training.setup.maiaLevel, 1400);
+      final reopened = withRating(1750);
+      addTearDown(reopened.close);
+      await reopened.load();
+      expect(reopened.state.maiaLevel, 1400);
+    });
+
+    test('contra o Stockfish, a partida abre sem nível', () async {
+      final cubit = withRating(1750);
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      await cubit.setOpponent(OpponentKind.stockfish);
+
+      final query = Uri.parse(cubit.state.gameRoute).queryParameters;
+      expect(query['opponent'], 'stockfish');
+      expect(query.containsKey('level'), isFalse);
+    });
+  });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart';
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
@@ -109,6 +110,15 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsClock),
           ),
+          // Só em build de desenvolvimento e de teste.
+          if (showsDevTools)
+            ListTile(
+              key: SettingsKeys.maiaDebugTile,
+              leading: const Icon(Icons.bug_report_outlined),
+              title: Text(context.l10n.maiaDebugTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go(Routes.settingsMaia),
+            ),
         ],
       ),
     );

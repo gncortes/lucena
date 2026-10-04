@@ -27,5 +27,8 @@ abstract class Attempt with _$Attempt {
     /// O objetivo da posição foi cumprido.
     required bool fulfilled,
     required OpponentKind opponent,
+
+    /// O nível do Maia, quando ele foi o adversário.
+    int? opponentLevel,
   }) = _Attempt;
 }

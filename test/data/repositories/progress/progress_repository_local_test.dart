@@ -63,4 +63,22 @@ void main() {
 
     expect(await repository.fulfilledPositions(), isEmpty);
   });
+
+  test('o nível do Maia fica gravado com a tentativa', () async {
+    await repository.addAttempt(
+      attempt(
+        'basic.queen.0001',
+        1,
+        fulfilled: true,
+      ).copyWith(opponent: OpponentKind.maia, opponentLevel: 1400),
+    );
+    await repository.addAttempt(
+      attempt('basic.queen.0001', 2, fulfilled: true),
+    );
+
+    final attempts = await repository.attemptsFor('basic.queen.0001');
+    expect(attempts.last.opponent, OpponentKind.maia);
+    expect(attempts.last.opponentLevel, 1400);
+    expect(attempts.first.opponentLevel, isNull);
+  });
 }

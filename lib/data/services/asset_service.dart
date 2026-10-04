@@ -9,4 +9,10 @@ class AssetService {
   /// O texto de um arquivo do app (`assets/positions/positions.json`).
   Future<String> loadString(String path) =>
       (_bundle ?? rootBundle).loadString(path, cache: false);
+
+  /// Os bytes de um arquivo do app (`assets/models/maia3-5m.bin`).
+  Future<Uint8List> loadBytes(String path) async {
+    final data = await (_bundle ?? rootBundle).load(path);
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  }
 }

@@ -877,5 +877,38 @@ void main() {
       expect(cubit.state.moves, hasLength(2));
       expect(cubit.state.position.turn, Side.white);
     });
+    testWidgets('contra o Maia, o lado dele leva o nome e o nível', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1400),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+      );
+
+      expect(find.text('Maia 1400'), findsOneWidget);
+      expect(find.text('White'), findsOneWidget);
+      expect(find.text('Black'), findsNothing);
+    });
+
+    testWidgets('sem relógio, avisa que o Maia está pensando', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1400),
+      );
+      opponent.hold();
+
+      await move(tester, 'c1', 'g5');
+      await tester.pump();
+
+      expect(find.text('Maia 1400 is thinking…'), findsOneWidget);
+      opponent.release();
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
+    });
   });
 }

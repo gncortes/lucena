@@ -6,13 +6,16 @@ import 'package:go_router/go_router.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
+import '../config/dependencies.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
+import '../data/repositories/maia/maia_repository.dart';
 import '../data/repositories/opponent/opponent_repository.dart';
+import '../data/repositories/profile/profile_repository.dart';
 import '../data/repositories/positions/positions_repository.dart';
 import '../data/repositories/progress/progress_repository.dart';
 import '../data/repositories/training/training_repository.dart';
@@ -30,6 +33,8 @@ import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
+import '../ui/maia_debug/widgets/maia_debug_screen.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
@@ -71,6 +76,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 opponent: opponent == null
                     ? OpponentKind.twoPlayers
                     : OpponentKind.fromCode(opponent),
+                level: int.tryParse(query['level'] ?? ''),
                 userSide: sides[query['user']],
                 goal: PositionGoal.fromCode(query['goal']),
                 positionId: query['position'],
@@ -145,6 +151,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   context.read<TrainingRepository>(),
                   position: position,
                   progress: context.read<ProgressRepository>(),
+                  profile: context.read<ProfileRepository>(),
                   goal:
                       PositionGoal.fromCode(query['goal']) ?? PositionGoal.win,
                   positionId: query['position'],
@@ -189,6 +196,17 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               GoRoute(
                 path: 'clock',
                 builder: (context, state) => const ClockSettingsScreen(),
+              ),
+              GoRoute(
+                path: 'maia',
+                // Só existe em build de desenvolvimento e de teste.
+                redirect: (context, state) =>
+                    showsDevTools ? null : Routes.settings,
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      MaiaDebugCubit(context.read<MaiaRepository>()),
+                  child: const MaiaDebugScreen(),
+                ),
               ),
             ],
           ),

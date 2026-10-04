@@ -63,7 +63,7 @@ runs:
       run: |
         version_name="${TAG#v}"
         version_code="$(git rev-list --count HEAD)"
-        flutter build apk --release --build-name="$version_name" --build-number="$version_code"
+        flutter build apk --release --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
         echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
         echo "version-code=$version_code" >> "$GITHUB_OUTPUT"
 
