@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
@@ -81,5 +82,43 @@ void main() {
     expect: () => [
       const AppSettings(languageCode: 'es', themeMode: AppThemeMode.dark),
     ],
+  );
+
+  blocTest<SettingsCubit, AppSettings?>(
+    'trocar as peças muda o estado na hora, grava e mantém o resto',
+    setUp: () => repository.settings = const AppSettings(languageCode: 'ar'),
+    build: build,
+    act: (cubit) async {
+      await cubit.load();
+      await cubit.setBoard(const BoardSettings(pieces: PieceStyle.merida));
+    },
+    skip: 1,
+    expect: () => [
+      const AppSettings(
+        languageCode: 'ar',
+        board: BoardSettings(pieces: PieceStyle.merida),
+      ),
+    ],
+    verify: (cubit) => expect(repository.saved, [cubit.state]),
+  );
+
+  blocTest<SettingsCubit, AppSettings?>(
+    'restaurar a aparência do tabuleiro volta ao padrão e grava',
+    setUp: () => repository.settings = const AppSettings(
+      themeMode: AppThemeMode.dark,
+      board: BoardSettings(
+        colors: BoardColors.brown,
+        pieces: PieceStyle.pixel,
+        coordinates: false,
+      ),
+    ),
+    build: build,
+    act: (cubit) async {
+      await cubit.load();
+      await cubit.resetBoardAppearance();
+    },
+    skip: 1,
+    expect: () => [const AppSettings(themeMode: AppThemeMode.dark)],
+    verify: (cubit) => expect(repository.saved, [cubit.state]),
   );
 }

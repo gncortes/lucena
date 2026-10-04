@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../domain/use_cases/game_rules.dart';
+import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
@@ -49,6 +50,10 @@ GoRouter buildRouter() {
               GoRoute(
                 path: 'profile',
                 builder: (context, state) => const ProfileScreen(),
+              ),
+              GoRoute(
+                path: 'board-appearance',
+                builder: (context, state) => const BoardAppearanceScreen(),
               ),
             ],
           ),

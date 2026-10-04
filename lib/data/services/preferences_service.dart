@@ -12,6 +12,11 @@ class PreferencesService {
   Future<void> setString(String key, String value) =>
       _preferences.setString(key, value);
 
+  Future<bool?> getBool(String key) => _preferences.getBool(key);
+
+  Future<void> setBool(String key, {required bool value}) =>
+      _preferences.setBool(key, value);
+
   Future<void> remove(String key) => _preferences.remove(key);
 
   Future<void> clear() => _preferences.clear();

@@ -10,4 +10,5 @@ abstract final class Routes {
   static const settingsLanguage = '/settings/language';
   static const settingsTheme = '/settings/theme';
   static const settingsProfile = '/settings/profile';
+  static const settingsBoardAppearance = '/settings/board-appearance';
 }
