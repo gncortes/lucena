@@ -243,9 +243,29 @@ O "Depende de" de cada tarefa lista só o que ela usa de verdade. Tarefas de fre
 Rodadas possíveis, cada uma depois do merge da anterior:
 
 1. T01 ‖ T04 ‖ T15 (mais o script de importação da T09, que é só Python)
-2. T02 ‖ T05 ‖ T16 ‖ T09
-3. T03 ‖ T06 ‖ T10
-4. T07 → T08, e daí a convergência
+2. T02 + T03 ‖ T05 + T06 ‖ T16 ‖ T09
+3. T07 + T08
+4. T10 + T11 → T12 → T13 → T14 → T17 + T18 → T19
+
+**Lotes (uma PR para mais de uma tarefa).** Tarefas vizinhas da mesma frente, que mexem nas mesmas telas, vão juntas: uma branch, uma candidata de QA, uma PR e uma validação sua no celular.
+
+| Lote | O que junta | Por que juntas | Modelo |
+| --- | --- | --- | --- |
+| T02 + T03 | tema e perfil | as duas moram em Configurações | Sonnet 5.5 |
+| T05 + T06 | aparência e comportamento do tabuleiro | mesma tela de ajustes do tabuleiro | Opus 5.5 |
+| T07 + T08 | relógio e restauração | a T08 é o relógio da T07 sobrevivendo ao segundo plano | Opus 5.5 |
+| T10 + T11 | posição customizada e configuração da partida | as duas preparam a partida | Sonnet 5.5 |
+| T17 + T18 | Maia como adversário e tempo de pensar | a T18 só faz sentido com o adversário pronto | Fable 5.1 |
+
+Regras do lote:
+
+- branch `tarefa/TXX-TYY-nome-curto`, um commit por tarefa (`TXX: ...`) e PR com título `TXX + TYY: ...`;
+- a candidata usa a tag da última tarefa do lote (`T02 + T03` sai como `v0.0.4-rc.N`); a tag final também é só essa;
+- a PR traz os passos de teste e a demonstração de cada tarefa, e o checklist de cada uma é marcado no seu arquivo;
+- o modelo é o da tarefa mais difícil do lote;
+- se uma tarefa emperrar, o lote se desfaz: a que está pronta segue sozinha.
+
+Ficam sozinhas as tarefas grandes ou com uma decisão sua no meio: T01, T04, T09, T12, T13, T14, T15, T16 e T19.
 
 **Dificuldade e modelo.** Baixa e média: telas e persistência que seguem um padrão já existente (Sonnet 5.5). Alta: tarefa que cria padrão novo ou mexe com tempo, estado em segundo plano ou código nativo (Opus 5.5). Muito alta: porte e calibração do Maia (Fable 5.1). É estimativa: se uma tarefa precisar de várias rodadas de correção no modelo sugerido, sobe um degrau.
 
@@ -312,6 +332,8 @@ Depende de: T01 · Tag: `v0.0.3`
 
 Frente: A · Configurações · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
+Lote: T02 + T03 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] Claro, escuro, sistema
 - [ ] Persistência
 
@@ -326,6 +348,8 @@ Frente: A · Configurações · Dificuldade: baixa · Modelo sugerido: Sonnet 5.
 Depende de: T01 · Tag: `v0.0.4`
 
 Frente: A · Configurações · Dificuldade: média · Modelo sugerido: Sonnet 5.5
+
+Lote: T02 + T03 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Apelido e rating aproximado no banco local
 - [ ] Validação dos campos
@@ -362,6 +386,8 @@ Depende de: T04, T01 · Tag: `v0.1.1`
 
 Frente: B · Tabuleiro · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 
+Lote: T05 + T06 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] Tema de cores, conjunto de peças (licença compatível), coordenadas
 - [ ] Pré-visualização ao vivo
 - [ ] Persistência
@@ -378,6 +404,8 @@ Frente: B · Tabuleiro · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
 Depende de: T05 · Tag: `v0.1.2`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
+Lote: T05 + T06 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Arrastar/tocar, mostrar lances legais, destacar último lance
 - [ ] Animação, virar tabuleiro, pré-lances
@@ -398,6 +426,8 @@ Depende de: T04, T01 · Tag: `v0.1.3`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 
+Lote: T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] Tempo e incremento separados por lado
 - [ ] Décimos abaixo de 10 s, posição do relógio, vibração
 - [ ] Perda por tempo
@@ -416,6 +446,8 @@ Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
 Depende de: T07 · Tag: `v0.1.4`
 
 Frente: B · Tabuleiro · Dificuldade: alta · Modelo sugerido: Opus 5.5
+
+Lote: T07 + T08 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Relógio baseado em instantes
 - [ ] Partida salva a cada lance
@@ -454,6 +486,8 @@ Depende de: T09 · Tag: `v0.1.6`
 
 Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 
+Lote: T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] Colar FEN ou montar no editor
 - [ ] Validação com mensagens traduzidas
 - [ ] Escolha do objetivo
@@ -471,6 +505,8 @@ Frente: C · Conteúdo · Dificuldade: média · Modelo sugerido: Sonnet 5.5
 Depende de: T07, T10 · Tag: `v0.1.7`
 
 Frente: Convergência · Dificuldade: baixa · Modelo sugerido: Sonnet 5.5
+
+Lote: T10 + T11 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] Lado do usuário, tempo do usuário, tempo da máquina
 - [ ] Adversário (só "dois jogadores" nesta tarefa)
@@ -567,6 +603,8 @@ Depende de: T16, T12, T03 · Tag: `v0.3.1`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
+Lote: T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
+
 - [ ] Níveis de 600 a 2600 (degraus de 200), temperatura por nível
 - [ ] Maia por nível ou Stockfish máximo
 - [ ] Rating do perfil sugere o nível
@@ -583,6 +621,8 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 Depende de: T17 · Tag: `v0.3.2`
 
 Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
+
+Lote: T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
 - [ ] `ThinkTimePolicy`
 
