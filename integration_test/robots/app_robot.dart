@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
@@ -34,10 +35,14 @@ class AppRobot {
   }
 
   // A key nova a cada abertura garante um app do zero, sem estado em memória.
-  Future<void> _pumpApp() {
-    return $.pumpWidgetAndSettle(
+  // A leitura das preferências vem do aparelho e não agenda quadros: só o
+  // pumpAndSettle não basta, é preciso esperar a primeira tela aparecer.
+  Future<void> _pumpApp() async {
+    await $.pumpWidgetAndSettle(
       LucenaApp(key: UniqueKey(), dependencies: e2eDependencies()),
     );
+    await $(HomeKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
   }
 
   Future<void> sendToBackgroundAndReturn() async {

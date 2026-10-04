@@ -27,5 +27,6 @@ description: Como escrever e rodar cenários Patrol (ponta a ponta) com keys, ro
 
 ## Regras
 - Sem `Future.delayed` para esperar: usar `$.pumpAndSettle()` ou as esperas do Patrol.
+- Depois de abrir uma tela, esperar com `waitUntilVisible()` antes de conferir: `expect($(key).visible, isTrue)` olha só aquele instante e falha em aparelho lento (leitura do aparelho e carga de imagem não agendam quadros, então o `pumpAndSettle` volta antes).
 - Cada cenário termina verificando estado visível (texto, key, posição do tabuleiro).
 - Captura de tela em falha habilitada.

@@ -8,9 +8,11 @@ class HomeRobot {
 
   final PatrolIntegrationTester $;
 
+  /// Espera a tela pronta: em aparelho lento a imagem do mascote demora a carregar.
   Future<void> expectVisible() async {
     await $(HomeKeys.screen).waitUntilVisible();
-    expect($(HomeKeys.mascot).visible, isTrue);
+    await $(HomeKeys.mascot).waitUntilVisible();
+    await $(HomeKeys.tagline).waitUntilVisible();
   }
 
   void expectMascot({required bool dark}) {
