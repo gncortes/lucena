@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 
 import '../testing/fakes/fake_now.dart';
+import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/test_dependencies.dart';
 
@@ -21,11 +24,16 @@ void main() {
   Future<void> pumpApp(
     WidgetTester tester, {
     FakeSettingsRepository? settings,
+    FakeProfileRepository? profile,
     FakeNow? now,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
-        dependencies: testDependencies(now: now, settingsRepository: settings),
+        dependencies: testDependencies(
+          now: now,
+          settingsRepository: settings,
+          profileRepository: profile,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -178,5 +186,77 @@ void main() {
     final context = tester.element(find.byKey(SettingsKeys.themeScreen));
     expect(Theme.of(context).brightness, Brightness.dark);
     expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
+  });
+
+  Future<void> openProfile(WidgetTester tester) async {
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.profileTile));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('salvar o perfil volta para Configurações com os dados novos', (
+    tester,
+  ) async {
+    useSystemLocale(tester, const Locale('en', 'US'));
+    final profile = FakeProfileRepository();
+    await pumpApp(tester, profile: profile);
+    await openProfile(tester);
+
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Ana');
+    await tester.enterText(find.byKey(ProfileKeys.ratingField), '1850');
+    await tester.tap(find.byKey(ProfileKeys.saveButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ProfileKeys.screen), findsNothing);
+    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · 1850');
+    expect(profile.saved, [const UserProfile(nickname: 'Ana', rating: 1850)]);
+  });
+
+  testWidgets('editar o perfil e sair sem salvar não muda nada', (
+    tester,
+  ) async {
+    useSystemLocale(tester, const Locale('en', 'US'));
+    final profile = FakeProfileRepository(
+      const UserProfile(nickname: 'Ana', rating: 1850),
+    );
+    await pumpApp(tester, profile: profile);
+    await openProfile(tester);
+
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Outro');
+    await tester.enterText(find.byKey(ProfileKeys.ratingField), '900');
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · 1850');
+    expect(profile.saved, isEmpty);
+
+    await tester.tap(find.byKey(SettingsKeys.profileTile));
+    await tester.pumpAndSettle();
+    final nickname = tester.widget<TextField>(
+      find.byKey(ProfileKeys.nicknameField),
+    );
+    expect(nickname.controller!.text, 'Ana');
+  });
+
+  testWidgets('um erro de rating não fica na tela ao voltar ao perfil', (
+    tester,
+  ) async {
+    await pumpApp(tester);
+    await openProfile(tester);
+    await tester.enterText(find.byKey(ProfileKeys.ratingField), '5000');
+    await tester.tap(find.byKey(ProfileKeys.saveButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(SettingsKeys.profileTile));
+    await tester.pumpAndSettle();
+
+    final rating = tester.widget<TextField>(
+      find.byKey(ProfileKeys.ratingField),
+    );
+    expect(rating.decoration!.errorText, isNull);
+    expect(rating.controller!.text, '1200');
   });
 }
