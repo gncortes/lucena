@@ -33,5 +33,5 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 `build/`, `.dart_tool/`, `assets/models/`, `tools/.cache/`, `android/app/build/`, arquivos `*.g.dart` e `*.freezed.dart` (só se a tarefa pedir).
 
 ## Ao terminar a tarefa
-Siga a skill `entrega` e depois `qa-release` (PR com resumo curto + link do app para QA).
+Siga a skill `entrega` e depois `qa-release` (PR com resumo curto, GIF da feature rodando no emulador e link do app para QA).
 Nunca fazer merge, push na `main` nem tag final: só o Gabriel.

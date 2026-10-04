@@ -1,33 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import 'ui/home/widgets/home_screen.dart';
+import 'config/dependencies.dart';
+import 'domain/use_cases/now.dart';
+import 'routing/router.dart';
+import 'ui/core/l10n/l10n.dart';
+import 'ui/core/theme/app_theme.dart';
 
 void main() {
-  runApp(const LucenaApp());
+  runApp(const LucenaApp(dependencies: Dependencies.normal()));
 }
 
-class LucenaApp extends StatelessWidget {
-  const LucenaApp({super.key});
+class LucenaApp extends StatefulWidget {
+  const LucenaApp({required this.dependencies, this.locale, super.key});
 
-  static const _seed = Color(0xFFFF7A1A);
+  final Dependencies dependencies;
+
+  /// Força um idioma (testes). Nulo segue o idioma do sistema.
+  final Locale? locale;
+
+  @override
+  State<LucenaApp> createState() => _LucenaAppState();
+}
+
+class _LucenaAppState extends State<LucenaApp> {
+  late final GoRouter _router = buildRouter();
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lucena',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: _seed),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F4),
+    return RepositoryProvider<Now>.value(
+      value: widget.dependencies.now,
+      child: MaterialApp.router(
+        onGenerateTitle: (context) => context.l10n.appTitle,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        locale: widget.locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: _router,
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _seed,
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF14211B),
-      ),
-      home: const HomeScreen(),
     );
   }
 }

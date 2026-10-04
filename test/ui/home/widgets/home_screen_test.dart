@@ -1,12 +1,96 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/main.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/home/widgets/home_screen.dart';
+
+import '../../../../testing/test_app.dart';
 
 void main() {
-  testWidgets('abre na tela inicial com o mascote', (tester) async {
-    await tester.pumpWidget(const LucenaApp());
+  String mascotAsset(WidgetTester tester) {
+    final image = tester.widget<Image>(find.byKey(HomeKeys.mascot));
+    return (image.image as AssetImage).assetName;
+  }
+
+  double opacityOf(WidgetTester tester, Key key) {
+    final fade = tester.widget<FadeTransition>(
+      find
+          .ancestor(of: find.byKey(key), matching: find.byType(FadeTransition))
+          .first,
+    );
+    return fade.opacity.value;
+  }
+
+  testWidgets('mostra o mascote claro no tema claro', (tester) async {
+    await tester.pumpWidget(const TestApp(child: HomeScreen()));
 
     expect(find.byKey(HomeKeys.screen), findsOneWidget);
-    expect(find.byKey(HomeKeys.mascot), findsOneWidget);
+    expect(mascotAsset(tester), 'assets/branding/mascot_light.png');
+  });
+
+  testWidgets('mostra o mascote escuro no tema escuro', (tester) async {
+    await tester.pumpWidget(
+      const TestApp(themeMode: ThemeMode.dark, child: HomeScreen()),
+    );
+
+    expect(mascotAsset(tester), 'assets/branding/mascot_dark.png');
+  });
+
+  testWidgets('descreve o mascote para o leitor de tela', (tester) async {
+    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.bySemanticsLabel('Lucena mascot: a chess pawn lifting dumbbells'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('mostra o nome do app e a frase no idioma da tela', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const TestApp(locale: Locale('pt'), child: HomeScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Text>(find.byKey(HomeKeys.title)).data, 'Lucena');
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.tagline)).data,
+      'Treino de finais de xadrez',
+    );
+  });
+
+  testWidgets('entra em sequência: mascote, depois nome, depois frase', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+
+    expect(opacityOf(tester, HomeKeys.mascot), 0);
+    expect(opacityOf(tester, HomeKeys.title), 0);
+    expect(opacityOf(tester, HomeKeys.tagline), 0);
+
+    await tester.pump(const Duration(milliseconds: 450));
+
+    expect(opacityOf(tester, HomeKeys.mascot), greaterThan(0));
+    expect(opacityOf(tester, HomeKeys.tagline), 0);
+
+    await tester.pumpAndSettle();
+
+    expect(opacityOf(tester, HomeKeys.mascot), 1);
+    expect(opacityOf(tester, HomeKeys.title), 1);
+    expect(opacityOf(tester, HomeKeys.tagline), 1);
+  });
+
+  testWidgets('com animações reduzidas no sistema a tela já abre pronta', (
+    tester,
+  ) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+
+    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+
+    expect(opacityOf(tester, HomeKeys.mascot), 1);
+    expect(opacityOf(tester, HomeKeys.tagline), 1);
   });
 }

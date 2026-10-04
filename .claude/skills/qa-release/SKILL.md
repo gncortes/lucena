@@ -19,6 +19,7 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
 - Nunca fazer merge, nunca dar push na `main`, nunca criar tag final (`vX.Y.Z`). Só tags de candidata (`vX.Y.Z-rc.N`) e só no branch da tarefa.
 - Se qualquer etapa falhar, **não** abrir nem atualizar o PR com link. Corrigir, ou parar e relatar.
 - Nunca imprimir, ler ou commitar segredos (keystore, senhas, chave de conta de serviço) nem mexer nos segredos do GitHub (`gh secret`).
+- Todo PR e todo comentário de correção leva um **GIF da feature rodando no emulador** (seção "Demonstração"). Sem GIF, o PR não está pronto.
 - Rodar pelo script (`scripts/qa_release.sh`), não comando por comando: economiza tokens e evita erro de digitação.
 - O workflow já repete o Test Lab **uma vez** sozinho em caso de instabilidade do aparelho. Se reprovou mesmo assim, é falha de teste de verdade: corrigir o código, não rodar de novo.
 
@@ -54,10 +55,18 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
       3. envia o APK para o App Distribution, com notas de versão, para o grupo de testadores;
    5. baixa e imprime o `result.json` (links, versão, aparelhos, status).
 3. Usar **só** o `result.json` que o script imprime no fim da saída (a leitura de `build/` é bloqueada). Se `status` não for `ok`, o script imprime também as últimas 50 linhas dos passos que falharam no workflow: corrigir ou relatar.
-4. PR:
+4. Gravar o GIF da feature no emulador local:
+   ```bash
+   bash .claude/skills/qa-release/scripts/qa_gif.sh TXX v0.1.3-rc.1 -- <comando>
+   ```
+   O script grava a tela enquanto `<comando>` roda, salva o GIF em `docs/qa/TXX/<rótulo>.gif` e imprime a linha de Markdown para o PR. Depois: commit do GIF (`TXX: GIF da <rótulo>`), push e trocar `<sha>` na linha pelo commit do GIF. O `<comando>` deve mostrar o que a tarefa mudou, do jeito que o Gabriel vai ver:
+   - telas e fluxos: o cenário Patrol da tarefa (`patrol test -t integration_test/<feature>_test.dart -d <aparelho> --dart-define=E2E=true`);
+   - abertura, animação ou tema: um roteiro curto com `adb` no build de release instalado (abrir o app, trocar o tema, esperar).
+   Manter o GIF curto (até uns 20 s; o script recusa acima de 4 MB, porque ele entra no histórico do repositório) e conferir alguns quadros antes de colocar no PR.
+5. PR:
    - **Não existe PR para o branch:** criar com `gh pr create` usando o modelo abaixo.
    - **PR já existe (correção):** adicionar um comentário com `gh pr comment` usando o modelo de correção. Não editar o resumo original.
-5. Responder ao Gabriel com o link do PR e o link do app, em duas linhas.
+6. Responder ao Gabriel com o link do PR e o link do app, em duas linhas.
 
 ## Modelo do PR (novo)
 
@@ -66,6 +75,9 @@ Título: `TXX: <título da tarefa>`
 ```markdown
 ## Resumo
 <até 3 linhas: o que mudou para o usuário, sem jargão de código>
+
+## Demonstração
+<linha de Markdown impressa pelo qa_gif.sh: GIF da feature no emulador>
 
 ## Testar no celular
 📲 **[Instalar v0.1.3-rc.1](<testerLink>)**
@@ -99,6 +111,8 @@ Regras do resumo: português, no máximo 3 linhas, foco no que o Gabriel vai ver
 ## Correção: v0.1.3-rc.2
 <1–2 linhas: o que foi corrigido, citando o comentário que pediu>
 
+<GIF novo, mostrando a correção>
+
 📲 **[Instalar v0.1.3-rc.2](<testerLink>)**
 
 Para conferir: <1–3 passos>
@@ -118,4 +132,5 @@ Para conferir: <1–3 passos>
 - **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
 - **Cota do Test Lab esgotada:** relatar; não abrir PR sem o Test Lab (a menos que o Gabriel autorize explicitamente no chat).
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
+- **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 4 MB; encurtar o roteiro em vez de baixar a qualidade.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.
