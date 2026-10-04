@@ -3,6 +3,14 @@
 .env.*
 !.env.example
 
+# Segredos (nunca sobem): keystores, senhas e chaves de conta de serviço
+*.jks
+*.keystore
+key.properties
+*service-account*.json
+*-firebase-adminsdk-*.json
+gha-creds-*.json
+
 # Dart / Flutter
 .dart_tool/
 .packages
@@ -13,6 +21,7 @@ coverage/
 .flutter-plugins
 .flutter-plugins-dependencies
 doc/api/
+android/.kotlin/
 *.dart.js
 *.info.json
 *.js.deps
@@ -35,7 +44,17 @@ tools/.cache/
 assets/models/
 
 # Claude Code (configuração pessoal)
+.claude/settings.json
 .claude/settings.local.json
+
+# Rascunho local do plano (a versão do repositório é docs/PLANO.md)
+PLANO-MVP-finais.md
+
+# Firebase: o app não usa o SDK (só Test Lab e App Distribution, pelo CI)
+android/app/google-services.json
+
+# QA: a configuração real fica no segredo QA_CONFIG_ENV do GitHub (modelo: config.env.example)
+.claude/skills/qa-release/config.env
 
 # Patrol (gerado a cada execução)
 integration_test/test_bundle.dart
