@@ -33,6 +33,8 @@ class GameSetupRobot {
   }
 
   Future<void> _stepTo(String who, String field, int target) async {
+    // A tela é mais alta que o aparelho: o campo pode estar fora da vista.
+    await $(GameSetupKeys.value(who, field)).scrollTo();
     for (var guard = 0; guard < 200; guard++) {
       final current = int.parse(_text(GameSetupKeys.value(who, field)));
       if (current == target) return;
@@ -44,7 +46,12 @@ class GameSetupRobot {
     fail('não chegou em $target em $who.$field');
   }
 
-  void expectTime(String who, {required int minutes, required int increment}) {
+  Future<void> expectTime(
+    String who, {
+    required int minutes,
+    required int increment,
+  }) async {
+    await $(GameSetupKeys.value(who, 'increment')).scrollTo();
     expect(_text(GameSetupKeys.value(who, 'minutes')), '$minutes');
     expect(_text(GameSetupKeys.value(who, 'increment')), '$increment');
   }
