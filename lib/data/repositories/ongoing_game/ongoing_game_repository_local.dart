@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:dartchess/dartchess.dart';
 
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/endgame_position.dart';
+import '../../../domain/models/game_mode.dart';
+import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/game_snapshot.dart';
 import '../../services/preferences_service.dart';
 import 'ongoing_game_repository.dart';
@@ -43,6 +46,12 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
       'orientation': snapshot.orientation.name,
       'playerSide': snapshot.playerSide?.name,
       'onScreen': snapshot.onScreen,
+      'mode': {
+        'opponent': snapshot.mode.opponent.code,
+        'userSide': snapshot.mode.userSide?.name,
+        'goal': snapshot.mode.goal?.code,
+        'positionId': snapshot.mode.positionId,
+      },
       'clock': clock == null
           ? null
           : {
@@ -62,12 +71,22 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
     final sides = Side.values.asNameMap();
     final clock = json['clock'] as Map<String, dynamic>?;
     final turnStartedAt = clock?['turnStartedAt'] as int?;
+    // Gravações de antes do treino não têm modo: tabuleiro livre.
+    final mode = json['mode'] as Map<String, dynamic>?;
     return GameSnapshot(
       startFen: json['startFen'] as String,
       moves: (json['moves'] as List).cast<String>(),
       orientation: sides[json['orientation']]!,
       playerSide: sides[json['playerSide']],
       onScreen: json['onScreen'] as bool,
+      mode: mode == null
+          ? const GameMode()
+          : GameMode(
+              opponent: OpponentKind.fromCode(mode['opponent'] as String?),
+              userSide: sides[mode['userSide']],
+              goal: PositionGoal.fromCode(mode['goal'] as String?),
+              positionId: mode['positionId'] as String?,
+            ),
       clock: clock == null
           ? null
           : ClockState(

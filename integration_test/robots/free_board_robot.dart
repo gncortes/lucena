@@ -30,16 +30,33 @@ class FreeBoardRobot {
   /// A partir da tela inicial, já numa posição preparada (FEN). Com [side], o
   /// jogador só move as peças desse lado. Com [white] e [black] (tempo de cada
   /// lado, `segundos+incremento`), a partida abre com relógio.
+  ///
+  /// No treino, [opponent] (`stockfish`), [user] (o lado do jogador), [goal]
+  /// (`win`, `draw`) e [position] (id no catálogo).
   Future<void> openAt(
     String fen, {
     Side? side,
     String? white,
     String? black,
+    String? opponent,
+    Side? user,
+    String? goal,
+    String? position,
   }) async {
     final context = $.tester.element(find.byKey(HomeKeys.screen));
-    GoRouter.of(
-      context,
-    ).go(Routes.freeBoardAt(fen, side: side?.name, white: white, black: black));
+    GoRouter.of(context).go(
+      Routes.freeBoardAt(
+        fen,
+        side: side?.name,
+        view: user?.name,
+        white: white,
+        black: black,
+        opponent: opponent,
+        user: user?.name,
+        goal: goal,
+        position: position,
+      ),
+    );
     await $.pumpAndSettle();
     await expectVisible();
   }
@@ -131,6 +148,26 @@ class FreeBoardRobot {
   void expectClockBelow(Side side) {
     final clock = $.tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
     expect(clock.top, greaterThanOrEqualTo(_board.bottom));
+  }
+
+  /// Desiste pelo botão da barra e confirma no painel.
+  Future<void> resign() async {
+    await $(FreeBoardKeys.resignButton).tap();
+    await $(FreeBoardKeys.resignConfirmButton).waitUntilVisible();
+    await $(FreeBoardKeys.resignConfirmButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O resultado do treino no painel do fim.
+  Future<void> expectGoalResult(String text) async {
+    await $(FreeBoardKeys.endGoal).waitUntilVisible();
+    expect(_text(FreeBoardKeys.endGoal), text);
+  }
+
+  /// "Jogar de novo" (no treino) ou "Nova partida", no painel do fim.
+  Future<void> playAgain() async {
+    await $(FreeBoardKeys.endNewGameButton).tap();
+    await $.pumpAndSettle();
   }
 
   Future<void> flip() async {

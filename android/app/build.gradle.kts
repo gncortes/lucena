@@ -44,6 +44,18 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
+    // O multistockfish embute três motores; o app só usa o Stockfish "light" (rede
+    // neural pequena embutida, joga offline). Cada motor é carregado só quando é
+    // usado, então os outros dois saem do APK sem quebrar nada.
+    packaging {
+        jniLibs {
+            excludes += listOf(
+                "**/libmultistockfish_chess.so",
+                "**/libmultistockfish_variant.so",
+            )
+        }
+    }
+
     signingConfigs {
         if (releaseKeystorePath != null) {
             create("release") {

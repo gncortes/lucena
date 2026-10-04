@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clock.dart';
+import 'game_mode.dart';
 
 part 'game_snapshot.freezed.dart';
 
@@ -24,6 +25,9 @@ abstract class GameSnapshot with _$GameSnapshot {
 
     /// O relógio, em instantes. Nulo: partida sem relógio.
     ClockState? clock,
+
+    /// Contra quem, de que lado e, num treino, com que objetivo.
+    @Default(GameMode()) GameMode mode,
 
     /// Se a tela da partida estava aberta quando isto foi gravado. Falso
     /// quando o jogador saiu da partida por conta própria.
