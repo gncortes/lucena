@@ -94,6 +94,10 @@ void main() {
     settings.expectTitle('[Šéttîñĝš one]');
     app.expectNoClippedText();
 
+    await settings.openThemes();
+    app.expectNoClippedText();
+    await settings.back();
+
     await settings.back();
     await home.expectVisible();
     app.expectNoClippedText();

@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
@@ -81,6 +81,12 @@ class AppRobot {
       greaterThan(size.width),
       reason: 'a tela do app deveria estar em retrato, mas mede $size',
     );
+  }
+
+  /// O tema que a tela atual está usando de fato.
+  void expectBrightness(Brightness brightness) {
+    final context = $.tester.element(find.byType(Scaffold).last);
+    expect(Theme.of(context).brightness, brightness);
   }
 
   void expectDirection(TextDirection direction) {

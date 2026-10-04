@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -125,5 +126,57 @@ void main() {
     expect(textOf(tester, SettingsKeys.title), 'Ajustes');
     expect(textOf(tester, SettingsKeys.languageValue), 'Español');
     expect(settings.saved, [const AppSettings(languageCode: 'es')]);
+  });
+
+  void useSystemBrightness(WidgetTester tester, Brightness brightness) {
+    tester.platformDispatcher.platformBrightnessTestValue = brightness;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+  }
+
+  Brightness appBrightness(WidgetTester tester) =>
+      Theme.of(tester.element(find.byKey(HomeKeys.screen))).brightness;
+
+  testWidgets('sem tema escolhido, o app acompanha o tema do aparelho', (
+    tester,
+  ) async {
+    useSystemBrightness(tester, Brightness.dark);
+    await pumpApp(tester);
+    expect(appBrightness(tester), Brightness.dark);
+
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+    await tester.pumpAndSettle();
+
+    expect(appBrightness(tester), Brightness.light);
+  });
+
+  testWidgets('o tema escolhido vence o tema do aparelho', (tester) async {
+    useSystemBrightness(tester, Brightness.light);
+    await pumpApp(
+      tester,
+      settings: FakeSettingsRepository(
+        const AppSettings(themeMode: AppThemeMode.dark),
+      ),
+    );
+
+    expect(appBrightness(tester), Brightness.dark);
+  });
+
+  testWidgets('trocar o tema em Configurações muda o app na hora e grava', (
+    tester,
+  ) async {
+    useSystemBrightness(tester, Brightness.light);
+    final settings = FakeSettingsRepository();
+    await pumpApp(tester, settings: settings);
+
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeOption(AppThemeMode.dark)));
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byKey(SettingsKeys.themeScreen));
+    expect(Theme.of(context).brightness, Brightness.dark);
+    expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
   });
 }
