@@ -2,6 +2,7 @@ name: QA
 
 # A tag de candidata (vX.Y.Z-rc.N), criada pela skill qa-release no branch da tarefa, dispara:
 # Patrol no Firebase Test Lab -> APK de release assinado -> Firebase App Distribution.
+# Sem cota no Test Lab, a candidata ainda é distribuída, marcada como "sem Test Lab".
 # Só quem tem permissão de escrita no repositório cria tags: PRs de forks não chegam aqui.
 on:
   push:
@@ -107,6 +108,16 @@ jobs:
           # O gcloud imprime o link entre colchetes: "...streamed to [https://console.firebase.google.com/project/<id>/testlab/...]."
           link="$(grep -oE 'https://console\.firebase\.google\.com/[^] ]*testlab[^] ]*' "$RUNNER_TEMP/test_lab.log" | tail -1 || true)"
           echo "link=$link" >> "$GITHUB_OUTPUT"
+
+          # Sem cota no Test Lab (o plano gratuito tem limite diário), os testes nem começam:
+          # a candidata segue para o App Distribution marcada como "sem Test Lab", e a skill
+          # qa-release só abre o PR com autorização do Gabriel. Falha de teste continua reprovando.
+          if [[ "$status" -ne 0 ]] && grep -q 'TEST_QUOTA_EXCEEDED' "$RUNNER_TEMP/test_lab.log"; then
+            echo "::warning::Cota do Test Lab esgotada: candidata distribuída sem Test Lab"
+            echo "result=sem-cota" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "result=ok" >> "$GITHUB_OUTPUT"
           exit "$status"
 
       - uses: ./.github/actions/signed-apk
@@ -155,19 +166,28 @@ jobs:
           TESTER_LINK: ${{ steps.dist.outputs.tester }}
           CONSOLE_LINK: ${{ steps.dist.outputs.console }}
           TEST_LAB_LINK: ${{ steps.testlab.outputs.link }}
+          TEST_LAB_RESULT: ${{ steps.testlab.outputs.result }}
         run: |
           source "$QA_CONFIG"
+          # "ok-sem-test-lab": o link existe, mas o Test Lab não rodou (cota esgotada).
+          status=ok
+          [[ "$TEST_LAB_RESULT" == ok ]] || status=ok-sem-test-lab
           jq -n \
+            --arg status "$status" --arg testlabresult "$TEST_LAB_RESULT" \
             --arg version "$VERSION_NAME" --arg code "$VERSION_CODE" --arg tag "$GITHUB_REF_NAME" \
             --arg tester "$TESTER_LINK" --arg console "$CONSOLE_LINK" --arg testlab "$TEST_LAB_LINK" \
             --arg devices "$TEST_LAB_DEVICES" \
-            '{status:"ok", version:$version, versionCode:$code, tag:$tag,
-              testerLink:$tester, consoleLink:$console, testLabLink:$testlab,
+            '{status:$status, version:$version, versionCode:$code, tag:$tag,
+              testerLink:$tester, consoleLink:$console, testLab:$testlabresult, testLabLink:$testlab,
               devices:($devices|split("\n")|map(select(length>0)))}' > result.json
           {
             echo "### QA $GITHUB_REF_NAME"
             echo "- [Instalar]($TESTER_LINK)"
-            echo "- [Resultado do Test Lab]($TEST_LAB_LINK)"
+            if [[ "$TEST_LAB_RESULT" == ok ]]; then
+              echo "- [Resultado do Test Lab]($TEST_LAB_LINK)"
+            else
+              echo "- Test Lab não rodou: cota diária esgotada"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v7
