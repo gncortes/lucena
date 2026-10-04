@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'config/dependencies.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
+import 'data/repositories/maia/maia_repository.dart';
 import 'data/repositories/opponent/opponent_repository.dart';
+import 'data/repositories/profile/profile_repository.dart';
 import 'data/repositories/positions/positions_repository.dart';
 import 'data/repositories/progress/progress_repository.dart';
 import 'data/repositories/settings/settings_repository.dart';
@@ -88,6 +90,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<ProgressRepository>.value(
           value: dependencies.progressRepository,
+        ),
+        RepositoryProvider<MaiaRepository>.value(
+          value: dependencies.maiaRepository,
+        ),
+        RepositoryProvider<ProfileRepository>.value(
+          value: dependencies.profileRepository,
         ),
       ],
       child: MultiBlocProvider(

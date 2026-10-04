@@ -10,11 +10,13 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
+import '../../../domain/models/game_mode.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
 import 'clock_row.dart';
@@ -242,7 +244,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   onNewGame: cubit.newGame,
                 ),
                 if (state.machineThinking && state.clock == null)
-                  const _Thinking(),
+                  _Thinking(mode: state.mode),
                 if (clocks == ClockPosition.top)
                   ClockRow(sides: both, state: state, board: boardSettings),
                 if (clocks == ClockPosition.sides)
@@ -500,7 +502,9 @@ class _End extends StatelessWidget {
 /// A máquina está escolhendo o lance (partida sem relógio; com relógio, o
 /// relógio dela correndo já mostra).
 class _Thinking extends StatelessWidget {
-  const _Thinking();
+  const _Thinking({required this.mode});
+
+  final GameMode mode;
 
   @override
   Widget build(BuildContext context) {
@@ -519,7 +523,9 @@ class _Thinking extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              context.l10n.gameMachineThinking,
+              context.l10n.gameMachineThinking(
+                mode.opponent.label(context.l10n, level: mode.level),
+              ),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

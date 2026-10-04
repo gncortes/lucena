@@ -323,6 +323,17 @@ class $AttemptsTable extends Attempts
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _opponentLevelMeta = const VerificationMeta(
+    'opponentLevel',
+  );
+  @override
+  late final GeneratedColumn<int> opponentLevel = GeneratedColumn<int>(
+    'opponent_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -331,6 +342,7 @@ class $AttemptsTable extends Attempts
     outcome,
     fulfilled,
     opponent,
+    opponentLevel,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -387,6 +399,15 @@ class $AttemptsTable extends Attempts
     } else if (isInserting) {
       context.missing(_opponentMeta);
     }
+    if (data.containsKey('opponent_level')) {
+      context.handle(
+        _opponentLevelMeta,
+        opponentLevel.isAcceptableOrUnknown(
+          data['opponent_level']!,
+          _opponentLevelMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -420,6 +441,10 @@ class $AttemptsTable extends Attempts
         DriftSqlType.string,
         data['${effectivePrefix}opponent'],
       )!,
+      opponentLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}opponent_level'],
+      ),
     );
   }
 
@@ -438,6 +463,9 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
   final String outcome;
   final bool fulfilled;
   final String opponent;
+
+  /// O nível do Maia, quando ele foi o adversário.
+  final int? opponentLevel;
   const AttemptRow({
     required this.id,
     required this.positionId,
@@ -445,6 +473,7 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     required this.outcome,
     required this.fulfilled,
     required this.opponent,
+    this.opponentLevel,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -455,6 +484,9 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     map['outcome'] = Variable<String>(outcome);
     map['fulfilled'] = Variable<bool>(fulfilled);
     map['opponent'] = Variable<String>(opponent);
+    if (!nullToAbsent || opponentLevel != null) {
+      map['opponent_level'] = Variable<int>(opponentLevel);
+    }
     return map;
   }
 
@@ -466,6 +498,9 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       outcome: Value(outcome),
       fulfilled: Value(fulfilled),
       opponent: Value(opponent),
+      opponentLevel: opponentLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(opponentLevel),
     );
   }
 
@@ -481,6 +516,7 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       outcome: serializer.fromJson<String>(json['outcome']),
       fulfilled: serializer.fromJson<bool>(json['fulfilled']),
       opponent: serializer.fromJson<String>(json['opponent']),
+      opponentLevel: serializer.fromJson<int?>(json['opponentLevel']),
     );
   }
   @override
@@ -493,6 +529,7 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       'outcome': serializer.toJson<String>(outcome),
       'fulfilled': serializer.toJson<bool>(fulfilled),
       'opponent': serializer.toJson<String>(opponent),
+      'opponentLevel': serializer.toJson<int?>(opponentLevel),
     };
   }
 
@@ -503,6 +540,7 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     String? outcome,
     bool? fulfilled,
     String? opponent,
+    Value<int?> opponentLevel = const Value.absent(),
   }) => AttemptRow(
     id: id ?? this.id,
     positionId: positionId ?? this.positionId,
@@ -510,6 +548,9 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     outcome: outcome ?? this.outcome,
     fulfilled: fulfilled ?? this.fulfilled,
     opponent: opponent ?? this.opponent,
+    opponentLevel: opponentLevel.present
+        ? opponentLevel.value
+        : this.opponentLevel,
   );
   AttemptRow copyWithCompanion(AttemptsCompanion data) {
     return AttemptRow(
@@ -521,6 +562,9 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       outcome: data.outcome.present ? data.outcome.value : this.outcome,
       fulfilled: data.fulfilled.present ? data.fulfilled.value : this.fulfilled,
       opponent: data.opponent.present ? data.opponent.value : this.opponent,
+      opponentLevel: data.opponentLevel.present
+          ? data.opponentLevel.value
+          : this.opponentLevel,
     );
   }
 
@@ -532,14 +576,22 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
           ..write('playedAt: $playedAt, ')
           ..write('outcome: $outcome, ')
           ..write('fulfilled: $fulfilled, ')
-          ..write('opponent: $opponent')
+          ..write('opponent: $opponent, ')
+          ..write('opponentLevel: $opponentLevel')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, positionId, playedAt, outcome, fulfilled, opponent);
+  int get hashCode => Object.hash(
+    id,
+    positionId,
+    playedAt,
+    outcome,
+    fulfilled,
+    opponent,
+    opponentLevel,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -549,7 +601,8 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
           other.playedAt == this.playedAt &&
           other.outcome == this.outcome &&
           other.fulfilled == this.fulfilled &&
-          other.opponent == this.opponent);
+          other.opponent == this.opponent &&
+          other.opponentLevel == this.opponentLevel);
 }
 
 class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
@@ -559,6 +612,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
   final Value<String> outcome;
   final Value<bool> fulfilled;
   final Value<String> opponent;
+  final Value<int?> opponentLevel;
   const AttemptsCompanion({
     this.id = const Value.absent(),
     this.positionId = const Value.absent(),
@@ -566,6 +620,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     this.outcome = const Value.absent(),
     this.fulfilled = const Value.absent(),
     this.opponent = const Value.absent(),
+    this.opponentLevel = const Value.absent(),
   });
   AttemptsCompanion.insert({
     this.id = const Value.absent(),
@@ -574,6 +629,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     required String outcome,
     required bool fulfilled,
     required String opponent,
+    this.opponentLevel = const Value.absent(),
   }) : positionId = Value(positionId),
        playedAt = Value(playedAt),
        outcome = Value(outcome),
@@ -586,6 +642,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     Expression<String>? outcome,
     Expression<bool>? fulfilled,
     Expression<String>? opponent,
+    Expression<int>? opponentLevel,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -594,6 +651,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
       if (outcome != null) 'outcome': outcome,
       if (fulfilled != null) 'fulfilled': fulfilled,
       if (opponent != null) 'opponent': opponent,
+      if (opponentLevel != null) 'opponent_level': opponentLevel,
     });
   }
 
@@ -604,6 +662,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     Value<String>? outcome,
     Value<bool>? fulfilled,
     Value<String>? opponent,
+    Value<int?>? opponentLevel,
   }) {
     return AttemptsCompanion(
       id: id ?? this.id,
@@ -612,6 +671,7 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
       outcome: outcome ?? this.outcome,
       fulfilled: fulfilled ?? this.fulfilled,
       opponent: opponent ?? this.opponent,
+      opponentLevel: opponentLevel ?? this.opponentLevel,
     );
   }
 
@@ -636,6 +696,9 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     if (opponent.present) {
       map['opponent'] = Variable<String>(opponent.value);
     }
+    if (opponentLevel.present) {
+      map['opponent_level'] = Variable<int>(opponentLevel.value);
+    }
     return map;
   }
 
@@ -647,7 +710,8 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
           ..write('playedAt: $playedAt, ')
           ..write('outcome: $outcome, ')
           ..write('fulfilled: $fulfilled, ')
-          ..write('opponent: $opponent')
+          ..write('opponent: $opponent, ')
+          ..write('opponentLevel: $opponentLevel')
           ..write(')'))
         .toString();
   }
@@ -824,6 +888,7 @@ typedef $$AttemptsTableCreateCompanionBuilder = AttemptsCompanion Function({
   required String outcome,
   required bool fulfilled,
   required String opponent,
+  Value<int?> opponentLevel,
 });
 typedef $$AttemptsTableUpdateCompanionBuilder = AttemptsCompanion Function({
   Value<int> id,
@@ -832,6 +897,7 @@ typedef $$AttemptsTableUpdateCompanionBuilder = AttemptsCompanion Function({
   Value<String> outcome,
   Value<bool> fulfilled,
   Value<String> opponent,
+  Value<int?> opponentLevel,
 });
 
 class $$AttemptsTableFilterComposer
@@ -870,6 +936,11 @@ class $$AttemptsTableFilterComposer
 
   ColumnFilters<String> get opponent => $composableBuilder(
     column: $table.opponent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get opponentLevel => $composableBuilder(
+    column: $table.opponentLevel,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -912,6 +983,11 @@ class $$AttemptsTableOrderingComposer
     column: $table.opponent,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get opponentLevel => $composableBuilder(
+    column: $table.opponentLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AttemptsTableAnnotationComposer
@@ -942,6 +1018,11 @@ class $$AttemptsTableAnnotationComposer
 
   GeneratedColumn<String> get opponent =>
       $composableBuilder(column: $table.opponent, builder: (column) => column);
+
+  GeneratedColumn<int> get opponentLevel => $composableBuilder(
+    column: $table.opponentLevel,
+    builder: (column) => column,
+  );
 }
 
 class $$AttemptsTableTableManager
@@ -981,6 +1062,7 @@ class $$AttemptsTableTableManager
                 Value<String> outcome = const Value.absent(),
                 Value<bool> fulfilled = const Value.absent(),
                 Value<String> opponent = const Value.absent(),
+                Value<int?> opponentLevel = const Value.absent(),
               }) => AttemptsCompanion(
                 id: id,
                 positionId: positionId,
@@ -988,6 +1070,7 @@ class $$AttemptsTableTableManager
                 outcome: outcome,
                 fulfilled: fulfilled,
                 opponent: opponent,
+                opponentLevel: opponentLevel,
               ),
           createCompanionCallback:
               ({
@@ -997,6 +1080,7 @@ class $$AttemptsTableTableManager
                 required String outcome,
                 required bool fulfilled,
                 required String opponent,
+                Value<int?> opponentLevel = const Value.absent(),
               }) => AttemptsCompanion.insert(
                 id: id,
                 positionId: positionId,
@@ -1004,6 +1088,7 @@ class $$AttemptsTableTableManager
                 outcome: outcome,
                 fulfilled: fulfilled,
                 opponent: opponent,
+                opponentLevel: opponentLevel,
               ),
           withReferenceMapper: (p0) => p0
               .map(

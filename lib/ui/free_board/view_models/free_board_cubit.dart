@@ -12,6 +12,7 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
+import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/game_snapshot.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
@@ -272,6 +273,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       outcome: outcome,
       fulfilled: fulfilled,
       opponent: state.mode.opponent,
+      opponentLevel: state.mode.opponent == OpponentKind.maia
+          ? state.mode.level
+          : null,
     );
     _saving = _saving.whenComplete(() => _progress.addAttempt(attempt));
   }
@@ -294,12 +298,39 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final asked = state.position;
     emit(state.copyWith(machineThinking: true));
     _opponent
-        .pickMove(asked, thinkTime: thinkTime)
+        .pickMove(
+          asked,
+          thinkTime: thinkTime,
+          kind: state.mode.opponent,
+          level: state.mode.level,
+          history: _recentPositions(),
+        )
         .then(
           (move) => _machineAnswered(asked, move),
           onError: (Object _) => _machineFailed(asked),
         );
   }
+
+  // As últimas posições da partida, da mais antiga para a atual: o Maia joga
+  // olhando também as anteriores.
+  List<Position> _recentPositions() {
+    var position = state.start;
+    final positions = [position];
+    for (final uci in state.ucis) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : GameRules.play(position, move);
+      if (played == null) break;
+      position = played.position;
+      positions.add(position);
+    }
+    // A posição do estado é a mesma instância que a máquina recebe.
+    positions.last = state.position;
+    return positions.length > _historyLength
+        ? positions.sublist(positions.length - _historyLength)
+        : positions;
+  }
+
+  static const _historyLength = 8;
 
   void _machineAnswered(Position asked, Move? move) {
     if (isClosed) return;

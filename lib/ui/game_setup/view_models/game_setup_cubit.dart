@@ -2,12 +2,14 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/training/training_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../domain/models/maia_level.dart';
 import '../../../routing/routes.dart';
 
 part 'game_setup_cubit.freezed.dart';
@@ -36,6 +38,9 @@ abstract class GameSetupState with _$GameSetupState {
     required Side userSide,
     @Default(GameSetup()) GameSetup setup,
 
+    /// O nível do Maia mais próximo do rating do perfil.
+    @Default(MaiaLevels.min) int suggestedLevel,
+
     /// Falso até a última configuração ser lida.
     @Default(false) bool ready,
   }) = _GameSetupState;
@@ -50,6 +55,9 @@ abstract class GameSetupState with _$GameSetupState {
 
   bool get canStart => ready && !hasZeroTime;
 
+  /// O nível do Maia: o escolhido ou, sem escolha, o sugerido pelo perfil.
+  int get maiaLevel => setup.maiaLevel ?? suggestedLevel;
+
   /// Onde a partida abre: a posição, o lado, o adversário, o relógio e, no
   /// treino, o objetivo.
   String get gameRoute {
@@ -60,6 +68,7 @@ abstract class GameSetupState with _$GameSetupState {
       white: clocks.white,
       black: clocks.black,
       opponent: setup.opponent.code,
+      level: setup.opponent == OpponentKind.maia ? '$maiaLevel' : null,
       user: userSide.name,
       goal: goal.code,
       position: positionId,
@@ -84,6 +93,7 @@ class GameSetupCubit extends Cubit<GameSetupState> {
   GameSetupCubit(
     this._training, {
     required this._progress,
+    required this._profile,
     required Position position,
     required PositionGoal goal,
     String? positionId,
@@ -98,15 +108,24 @@ class GameSetupCubit extends Cubit<GameSetupState> {
 
   final TrainingRepository _training;
   final ProgressRepository _progress;
+  final ProfileRepository _profile;
 
   Future<void> load() async {
     final setup = await _training.loadSetup();
+    final profile = await _profile.load();
     final positionId = state.positionId;
     final attempts = positionId == null
         ? const <Attempt>[]
         : await _progress.attemptsFor(positionId);
     if (isClosed) return;
-    emit(state.copyWith(setup: setup, attempts: attempts, ready: true));
+    emit(
+      state.copyWith(
+        setup: setup,
+        attempts: attempts,
+        suggestedLevel: MaiaLevels.nearest(profile.rating),
+        ready: true,
+      ),
+    );
   }
 
   void setUserSide(Side side) => emit(state.copyWith(userSide: side));
@@ -116,6 +135,10 @@ class GameSetupCubit extends Cubit<GameSetupState> {
 
   Future<void> setOpponent(OpponentKind opponent) =>
       _update(state.setup.copyWith(opponent: opponent));
+
+  /// Escolhe o nível do Maia (um dos [MaiaLevels.all]).
+  Future<void> setMaiaLevel(int level) =>
+      _update(state.setup.copyWith(maiaLevel: MaiaLevels.nearest(level)));
 
   Future<void> setUserTime({int? minutes, int? increment}) => _update(
     state.setup.copyWith(

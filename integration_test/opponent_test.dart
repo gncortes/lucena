@@ -21,7 +21,8 @@ void main() {
     await catalog.openCategory('basic');
     await catalog.openSubcategory('queen');
     await catalog.openPosition('basic.queen.0001');
-    // De fábrica: contra o Stockfish, 5 min para cada lado.
+    // De fábrica: contra o Maia (a máquina falsa dos cenários), 5 min para
+    // cada lado.
     await setup.start();
     await board.expectVisible();
 

@@ -10,6 +10,13 @@ abstract final class GameSetupKeys {
 
   static Key side(Side side) => Key('setup.side.${side.name}');
   static Key opponent(OpponentKind kind) => Key('setup.opponent.${kind.code}');
+
+  /// Os níveis do Maia, um por rating (`setup.level.1400`).
+  static const levels = Key('setup.levels');
+  static Key level(int level) => Key('setup.level.$level');
+
+  /// O aviso de qual nível combina com o rating do perfil.
+  static const suggestedLevel = Key('setup.level.suggested');
   static const clockSwitch = Key('setup.clock');
 
   /// Os seletores de tempo: `user` ou `opponent`, `minutes` ou `increment`.

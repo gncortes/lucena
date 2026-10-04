@@ -22,6 +22,7 @@ class LocalProgressRepository implements ProgressRepository {
             outcome: attempt.outcome.code,
             fulfilled: attempt.fulfilled,
             opponent: attempt.opponent.code,
+            opponentLevel: Value(attempt.opponentLevel),
           ),
         );
   }
@@ -43,6 +44,7 @@ class LocalProgressRepository implements ProgressRepository {
           outcome: AttemptOutcome.fromCode(row.outcome),
           fulfilled: row.fulfilled,
           opponent: OpponentKind.fromCode(row.opponent),
+          opponentLevel: row.opponentLevel,
         ),
     ];
   }

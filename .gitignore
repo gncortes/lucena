@@ -41,7 +41,6 @@ android/.kotlin/
 
 # Ferramentas do projeto
 tools/.cache/
-assets/models/
 
 # Claude Code (configuração pessoal)
 .claude/settings.json

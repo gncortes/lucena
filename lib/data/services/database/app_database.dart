@@ -24,6 +24,9 @@ class Attempts extends Table {
   TextColumn get outcome => text()();
   BoolColumn get fulfilled => boolean()();
   TextColumn get opponent => text()();
+
+  /// O nível do Maia, quando ele foi o adversário.
+  IntColumn get opponentLevel => integer().nullable()();
 }
 
 /// Banco local do app (SQLite). Só os repositórios falam com ele.
@@ -34,13 +37,18 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (migrator, from, to) async {
       // 1 -> 2: histórico das partidas nas posições.
-      if (from < 2) await migrator.createTable(attempts);
+      if (from < 2) {
+        await migrator.createTable(attempts);
+        return;
+      }
+      // 2 -> 3: o nível do Maia em cada partida.
+      if (from < 3) await migrator.addColumn(attempts, attempts.opponentLevel);
     },
   );
 
