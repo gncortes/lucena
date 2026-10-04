@@ -19,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _nickname = TextEditingController();
+  final _nicknameFocus = FocusNode();
 
   // A faixa confirmada no painel; só é gravada ao salvar.
   RatingLevel? _level;
@@ -32,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     _nickname.dispose();
+    _nicknameFocus.dispose();
     super.dispose();
   }
 
@@ -43,9 +45,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickLevel(RatingLevel current) async {
-    FocusScope.of(context).unfocus();
+    // Fecha o teclado e não deixa o foco voltar ao apelido quando o painel
+    // fechar (o teclado abriria de novo sozinho).
+    _nicknameFocus.unfocus();
+    _nicknameFocus.canRequestFocus = false;
     final picked = await showRatingLevelSheet(context, selected: current);
-    if (picked != null && mounted) setState(() => _level = picked);
+    if (!mounted) return;
+    if (picked != null) setState(() => _level = picked);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _nicknameFocus.canRequestFocus = true;
+    });
   }
 
   Future<void> _save(RatingLevel level) async {
@@ -73,6 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextField(
                   key: ProfileKeys.nicknameField,
                   controller: _nickname,
+                  focusNode: _nicknameFocus,
                   textInputAction: TextInputAction.done,
                   textCapitalization: TextCapitalization.words,
                   inputFormatters: [

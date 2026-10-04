@@ -177,6 +177,24 @@ void main() {
     ]);
   });
 
+  testWidgets('depois de confirmar a faixa, o teclado não volta a abrir no '
+      'apelido', (tester) async {
+    await pumpScreen(tester);
+    await tester.tap(find.byKey(ProfileKeys.nicknameField));
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Bia');
+    await tester.pump();
+    expect(nicknameField(tester).focusNode!.hasFocus, isTrue);
+
+    await pickLevel(tester, RatingLevel.advanced);
+
+    expect(nicknameField(tester).focusNode!.hasFocus, isFalse);
+
+    // Mas o campo continua editável: tocar nele traz o foco de volta.
+    await tester.tap(find.byKey(ProfileKeys.nicknameField));
+    await tester.pump();
+    expect(nicknameField(tester).focusNode!.hasFocus, isTrue);
+  });
+
   testWidgets('o apelido não passa do tamanho máximo', (tester) async {
     await pumpScreen(tester);
 
