@@ -72,6 +72,27 @@ flutter {
     source = "../.."
 }
 
+// O chessground embute 40 conjuntos de peças e os tabuleiros com imagem. O app só oferece
+// os conjuntos de licença livre (`PieceStyle`, em lib/domain/models/board_settings.dart) e
+// tabuleiros de cor lisa: o resto fica fora do APK, pelo tamanho e pela licença.
+val unusedChessgroundAssets = listOf(
+    "boards",
+    "piece_sets/alpha", "piece_sets/anarcandy", "piece_sets/caliente",
+    "piece_sets/california", "piece_sets/cardinal", "piece_sets/chess7",
+    "piece_sets/companion", "piece_sets/cooke", "piece_sets/disguised",
+    "piece_sets/dubrovny", "piece_sets/fresca", "piece_sets/gioco",
+    "piece_sets/governor", "piece_sets/horsey", "piece_sets/icpieces",
+    "piece_sets/kiwen-suwi", "piece_sets/kosal", "piece_sets/leipzig",
+    "piece_sets/maestro", "piece_sets/monarchy", "piece_sets/reillycraig",
+    "piece_sets/riohacha", "piece_sets/shapes", "piece_sets/staunty",
+    "piece_sets/symmetric", "piece_sets/tatiana", "piece_sets/totoy",
+    "piece_sets/xkcd",
+)
+
+tasks.withType<Copy>().matching { it.name.startsWith("copyFlutterAssets") }.configureEach {
+    unusedChessgroundAssets.forEach { exclude("**/packages/chessground/assets/$it/**") }
+}
+
 dependencies {
     androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
