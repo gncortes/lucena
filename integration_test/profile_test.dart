@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:lucena/domain/models/rating_level.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -16,41 +17,45 @@ void main() {
     await home.openSettings();
     await profile.open();
     await profile.enterNickname('Ana');
-    await profile.enterRating('1850');
+    await profile.chooseLevel(RatingLevel.advanced);
     await profile.save();
-    await profile.expectSummary('Ana · 1850');
+    await profile.expectSummary('Ana · Advanced');
 
     await app.restart();
 
     await home.openSettings();
-    await profile.expectSummary('Ana · 1850');
+    await profile.expectSummary('Ana · Advanced');
     await profile.open();
-    profile.expectFields(nickname: 'Ana', rating: '1850');
+    profile.expectFields(nickname: 'Ana', level: 'Advanced');
   });
 
-  patrolTest('rating fora da faixa: erro traduzido e nada salvo', ($) async {
+  patrolTest('rating: faixas traduzidas no painel; fechar sem confirmar não '
+      'muda nada', ($) async {
     final app = AppRobot($);
     final home = HomeRobot($);
     final profile = ProfileRobot($);
-    final settings = SettingsRobot($);
     await app.open(systemLocale: const Locale('pt', 'BR'));
 
     await home.openSettings();
+    await profile.expectSummary('Jogador · Casual');
     await profile.open();
-    await profile.enterNickname('Ana');
-    await profile.enterRating('5000');
+
+    await profile.openLevels();
+    profile.expectInLevels('Iniciante');
+    profile.expectInLevels('Abaixo de 1000');
+    profile.expectInLevels('Intermediário');
+    profile.expectInLevels('1300 a 1599');
+    profile.expectInLevels('Mestre');
+    profile.expectInLevels('2200 ou mais');
+    await profile.markLevel(RatingLevel.expert);
+    await profile.dismissLevels();
+    profile.expectFields(nickname: '', level: 'Casual');
+
+    await profile.chooseLevel(RatingLevel.master);
+    profile.expectFields(nickname: '', level: 'Mestre');
     await profile.save();
 
-    await profile.expectVisible();
-    profile.expectRatingError('Digite um número de 100 a 3500');
-
-    await settings.back();
-    await profile.expectSummary('Jogador · 1200');
-
-    await app.restart();
-
-    await home.openSettings();
-    await profile.expectSummary('Jogador · 1200');
+    await profile.expectSummary('Jogador · Mestre');
   });
 
   patrolTest('apelido vazio: usa o apelido padrão', ($) async {
@@ -63,13 +68,13 @@ void main() {
     await profile.open();
     await profile.enterNickname('Ana');
     await profile.save();
-    await profile.expectSummary('Ana · 1200');
+    await profile.expectSummary('Ana · Casual');
 
     await profile.open();
     await profile.enterNickname('');
     await profile.save();
 
-    await profile.expectSummary('Player · 1200');
+    await profile.expectSummary('Player · Casual');
   });
 
   patrolTest('editar e sair sem salvar: nada muda', ($) async {
@@ -82,16 +87,16 @@ void main() {
     await home.openSettings();
     await profile.open();
     await profile.enterNickname('Ana');
-    await profile.enterRating('1850');
+    await profile.chooseLevel(RatingLevel.advanced);
     await profile.save();
 
     await profile.open();
     await profile.enterNickname('Outro');
-    await profile.enterRating('900');
+    await profile.chooseLevel(RatingLevel.beginner);
     await settings.back();
 
-    await profile.expectSummary('Ana · 1850');
+    await profile.expectSummary('Ana · Advanced');
     await profile.open();
-    profile.expectFields(nickname: 'Ana', rating: '1850');
+    profile.expectFields(nickname: 'Ana', level: 'Advanced');
   });
 }

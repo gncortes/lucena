@@ -56,6 +56,64 @@
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
   },
+  "profileLevelAbove": "{min} or more",
+  "@profileLevelAbove": {
+    "description": "Rating range of the highest level, e.g. '2200 or more'.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "profileLevelAdvanced": "Advanced",
+  "@profileLevelAdvanced": {
+    "description": "Name of the playing level for advanced players (rating 1600 to 1899)."
+  },
+  "profileLevelBeginner": "Beginner",
+  "@profileLevelBeginner": {
+    "description": "Name of the lowest playing level (rating below 1000)."
+  },
+  "profileLevelBelow": "Below {max}",
+  "@profileLevelBelow": {
+    "description": "Rating range of the lowest level, e.g. 'Below 1000'.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "profileLevelCasual": "Casual",
+  "@profileLevelCasual": {
+    "description": "Name of the playing level for casual players (rating 1000 to 1299)."
+  },
+  "profileLevelConfirm": "Confirm",
+  "@profileLevelConfirm": {
+    "description": "Button at the bottom of the rating range panel that applies the highlighted range and closes the panel."
+  },
+  "profileLevelExpert": "Expert",
+  "@profileLevelExpert": {
+    "description": "Name of the playing level for expert players (rating 1900 to 2199)."
+  },
+  "profileLevelIntermediate": "Intermediate",
+  "@profileLevelIntermediate": {
+    "description": "Name of the playing level for intermediate players (rating 1300 to 1599)."
+  },
+  "profileLevelMaster": "Master",
+  "@profileLevelMaster": {
+    "description": "Name of the highest playing level (rating 2200 or more)."
+  },
+  "profileLevelRange": "{min}–{max}",
+  "@profileLevelRange": {
+    "description": "Rating range of a level, e.g. '1300–1599'.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "profileNickname": "Nickname",
   "@profileNickname": {
     "description": "Label of the text field with the player's nickname."
@@ -66,31 +124,11 @@
   },
   "profileRating": "Approximate rating",
   "@profileRating": {
-    "description": "Label of the number field with the player's approximate chess rating (Elo)."
+    "description": "Label of the profile field with the player's approximate chess rating; also the title of the panel where the range is picked."
   },
-  "profileRatingError": "Enter a number from {min} to {max}",
-  "@profileRatingError": {
-    "description": "Error under the rating field when the value is not a number in the accepted range.",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "profileRatingHint": "From {min} to {max}",
-  "@profileRatingHint": {
-    "description": "Helper text under the rating field with the accepted range.",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
+  "profileRatingSheetHint": "Pick the range closest to your rating, online or over the board.",
+  "@profileRatingSheetHint": {
+    "description": "Explanation at the top of the panel where the player picks a rating range."
   },
   "profileSave": "Save",
   "@profileSave": {
