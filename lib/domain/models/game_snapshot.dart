@@ -29,4 +29,11 @@ abstract class GameSnapshot with _$GameSnapshot {
     /// quando o jogador saiu da partida por conta própria.
     @Default(true) bool onScreen,
   }) = _GameSnapshot;
+
+  const GameSnapshot._();
+
+  /// Se o app deve reabrir direto nesta partida: ela estava na tela e tem
+  /// algo a perder (lances ou relógio correndo). Tabuleiro aberto e intocado
+  /// não prende o jogador na tela da partida.
+  bool get reopensOnLaunch => onScreen && (moves.isNotEmpty || clock != null);
 }

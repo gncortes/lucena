@@ -309,6 +309,19 @@ void main() {
       expect(games.snapshot?.onScreen, isFalse);
     });
 
+    testWidgets('tabuleiro aberto e intocado ao fechar: o app abre na tela '
+        'inicial', (tester) async {
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(startFen: startFen),
+        ),
+      );
+
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    });
+
     testWidgets('partida de que o jogador saiu: abre na tela inicial e o botão '
         'continua a partida', (tester) async {
       final games = FakeOngoingGameRepository(

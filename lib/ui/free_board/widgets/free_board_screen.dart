@@ -110,6 +110,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
           (cubit.state?.clock ?? const ClockSettings()).position,
     );
     return BlocConsumer<FreeBoardCubit, FreeBoardState>(
+      // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+      // relógio.
+      listenWhen: (previous, current) =>
+          !identical(previous.position, current.position) ||
+          previous.moves.length != current.moves.length ||
+          previous.end != current.end ||
+          previous.playerSide != current.playerSide,
       listener: (context, state) => _onStateChanged(state),
       builder: (context, state) {
         // Sair da tela pela seta ou pelo botão de voltar para o relógio e
