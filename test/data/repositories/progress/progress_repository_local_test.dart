@@ -1,0 +1,66 @@
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
+import 'package:lucena/data/services/database/app_database.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+
+void main() {
+  late AppDatabase database;
+  late LocalProgressRepository repository;
+
+  setUp(() {
+    database = AppDatabase(NativeDatabase.memory());
+    repository = LocalProgressRepository(database);
+  });
+  tearDown(() => database.close());
+
+  Attempt attempt(String id, int minute, {required bool fulfilled}) => Attempt(
+    positionId: id,
+    playedAt: DateTime.utc(2026, 1, 1, 12, minute),
+    outcome: fulfilled ? AttemptOutcome.win : AttemptOutcome.draw,
+    fulfilled: fulfilled,
+    opponent: OpponentKind.stockfish,
+  );
+
+  test('sem partidas, histórico vazio e nada cumprido', () async {
+    expect(await repository.attemptsFor('basic.queen.0001'), isEmpty);
+    expect(await repository.fulfilledPositions(), isEmpty);
+  });
+
+  test('as tentativas voltam da mais recente para a mais antiga', () async {
+    await repository.addAttempt(
+      attempt('basic.queen.0001', 1, fulfilled: false),
+    );
+    await repository.addAttempt(
+      attempt('basic.queen.0001', 5, fulfilled: true),
+    );
+    await repository.addAttempt(attempt('basic.rook.0001', 3, fulfilled: true));
+
+    final history = await repository.attemptsFor('basic.queen.0001');
+
+    expect(history.map((a) => a.playedAt.minute), [5, 1]);
+    expect(history.first.outcome, AttemptOutcome.win);
+    expect(history.first.opponent, OpponentKind.stockfish);
+  });
+
+  test('cumprida uma vez, a posição fica marcada', () async {
+    await repository.addAttempt(
+      attempt('basic.queen.0001', 1, fulfilled: false),
+    );
+    await repository.addAttempt(attempt('basic.rook.0001', 2, fulfilled: true));
+    await repository.addAttempt(
+      attempt('basic.rook.0001', 3, fulfilled: false),
+    );
+
+    expect(await repository.fulfilledPositions(), {'basic.rook.0001'});
+  });
+
+  test('apagar tudo esquece o histórico', () async {
+    await repository.addAttempt(attempt('basic.rook.0001', 2, fulfilled: true));
+
+    await database.deleteEverything();
+
+    expect(await repository.fulfilledPositions(), isEmpty);
+  });
+}

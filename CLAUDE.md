@@ -1,6 +1,6 @@
 # Lucena — treino de finais de xadrez (Flutter, AGPL-3.0)
 
-App offline: o usuário joga finais contra o Maia-3 (níveis humanos 600–2600) ou o Stockfish (máximo).
+App offline: o usuário joga finais contra o Maia-3 (níveis humanos 1000–2600) ou o Stockfish (máximo).
 Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill `/tarefa TXX`).
 
 ## Regras fixas

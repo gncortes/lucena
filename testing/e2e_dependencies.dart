@@ -1,6 +1,11 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
+import 'package:dartchess/dartchess.dart';
+import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
+import 'package:lucena/data/repositories/opponent/opponent_repository_stockfish.dart';
 import 'package:lucena/data/repositories/positions/positions_repository_asset.dart';
+import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
+import 'package:lucena/data/services/stockfish_service.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/repositories/training/training_repository_local.dart';
@@ -11,11 +16,36 @@ import 'package:lucena/domain/models/app_language.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_now.dart';
+import 'fakes/fake_opponent_repository.dart';
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
 
 final _e2eStart = DateTime.utc(2026, 1, 1, 12);
+
+/// O adversário dos cenários: previsível e controlado pelo cenário (o relógio
+/// dele anda o tempo que ele pensa). Com [E2EOpponent.useStockfish], quem joga
+/// é o Stockfish de verdade.
+final e2eOpponent = E2EOpponent();
+
+class E2EOpponent implements OpponentRepository {
+  final fake = FakeOpponentRepository(now: e2eNow);
+  bool useStockfish = false;
+  late final _stockfish = StockfishOpponentRepository(StockfishService());
+
+  @override
+  Future<Move?> pickMove(Position position, {required Duration thinkTime}) =>
+      useStockfish
+      ? _stockfish.pickMove(position, thinkTime: thinkTime)
+      : fake.pickMove(position, thinkTime: thinkTime);
+
+  void reset() {
+    useStockfish = false;
+    fake.release();
+    fake.requests.clear();
+    fake.thinkTimes.clear();
+  }
+}
 
 // O banco aberto pelo app em execução: fechado antes de abrir o próximo.
 AppDatabase? _database;
@@ -37,6 +67,8 @@ Future<Dependencies> e2eDependencies() async {
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: AssetPositionsRepository(const AssetService()),
     trainingRepository: LocalTrainingRepository(PreferencesService()),
+    opponentRepository: e2eOpponent,
+    progressRepository: LocalProgressRepository(database),
     languages: AppLanguage.values,
   );
 }
@@ -44,6 +76,7 @@ Future<Dependencies> e2eDependencies() async {
 /// Apaga o que os cenários anteriores gravaram: cada cenário começa do zero.
 Future<void> resetE2EData() async {
   e2eNow.value = _e2eStart;
+  e2eOpponent.reset();
   await PreferencesService().clear();
   await _database?.close();
   _database = null;

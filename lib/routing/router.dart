@@ -12,9 +12,13 @@ import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
+import '../data/repositories/opponent/opponent_repository.dart';
 import '../data/repositories/positions/positions_repository.dart';
+import '../data/repositories/progress/progress_repository.dart';
 import '../data/repositories/training/training_repository.dart';
 import '../domain/models/endgame_position.dart';
+import '../domain/models/game_mode.dart';
+import '../domain/models/game_setup.dart';
 import '../ui/catalog/view_models/catalog_cubit.dart';
 import '../ui/catalog/widgets/catalog_screen.dart';
 import '../ui/catalog/widgets/category_screen.dart';
@@ -60,6 +64,17 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 state.uri.queryParameters['black'],
               );
               final isNewGame = state.uri.queryParameters.isNotEmpty;
+              final query = state.uri.queryParameters;
+              final sides = Side.values.asNameMap();
+              final opponent = query['opponent'];
+              final mode = GameMode(
+                opponent: opponent == null
+                    ? OpponentKind.twoPlayers
+                    : OpponentKind.fromCode(opponent),
+                userSide: sides[query['user']],
+                goal: PositionGoal.fromCode(query['goal']),
+                positionId: query['position'],
+              );
               final start = fen == null ? null : GameRules.fromFen(fen);
               return BlocProvider(
                 key: ValueKey(state.uri),
@@ -68,6 +83,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   haptics: context.read<HapticsRepository>(),
                   settings: context.read<SettingsRepository>(),
                   games: context.read<OngoingGameRepository>(),
+                  opponent: context.read<OpponentRepository>(),
+                  progress: context.read<ProgressRepository>(),
+                  mode: mode,
                   start: isNewGame ? start ?? GameRules.initial : null,
                   playerSide: Side.values.asNameMap()[side],
                   orientation: Side.values.asNameMap()[view],
@@ -126,8 +144,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 create: (context) => GameSetupCubit(
                   context.read<TrainingRepository>(),
                   position: position,
+                  progress: context.read<ProgressRepository>(),
                   goal:
                       PositionGoal.fromCode(query['goal']) ?? PositionGoal.win,
+                  positionId: query['position'],
                 )..load(),
                 child: const GameSetupScreen(),
               );
@@ -181,4 +201,5 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
 CatalogCubit _catalogCubit(BuildContext context) => CatalogCubit(
   context.read<PositionsRepository>(),
   context.read<TrainingRepository>(),
+  context.read<ProgressRepository>(),
 );

@@ -131,7 +131,7 @@ Para conferir: <1–3 passos>
 
 - **Falta segredo ou configuração no GitHub:** parar e pedir ao Gabriel (`SETUP.md`); nunca criar segredo.
 - **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
-- **Cota do Test Lab esgotada:** o workflow distribui o app mesmo assim e o `result.json` vem com `status: "ok-sem-test-lab"`. Relatar e só abrir o PR se o Gabriel autorizar explicitamente no chat; no PR, a linha do Test Lab vira "⏳ pendente (cota diária esgotada)". Quando a cota voltar (vira à meia-noite do Pacífico, perto das 4h de Brasília), rodar de novo com `gh run rerun <id>` e atualizar o PR com o resultado.
+- **Cota do Test Lab esgotada:** o workflow distribui o app mesmo assim e o `result.json` vem com `status: "ok-sem-test-lab"`. Abrir o PR mesmo assim, sem perguntar (decisão do Gabriel em 2026-10-04: "se a cota diária acabar não tem problema, deve abrir sem o Test Lab"); no PR, a linha do Test Lab vira "⏳ pendente (cota diária esgotada)". Quando a cota voltar (vira à meia-noite do Pacífico, perto das 4h de Brasília), rodar de novo com `gh run rerun <id>` e atualizar o PR com o resultado.
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
 - **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 4 MB; encurtar o roteiro em vez de baixar a qualidade.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.

@@ -56,8 +56,9 @@ void main() {
 
     await board.expectVisible();
     board.expectFen('4k3/8/8/8/8/8/8/3QK3 w - - 0 1');
-    await board.move('d1', 'd7');
-    await board.expectMoves(['Qd7+']);
+    // De fábrica, a máquina joga o outro lado e responde.
+    await board.move('d1', 'd4');
+    await board.expectMoves(['Qd4', 'Ke7']);
   });
 
   patrolTest('colar FEN válido: a partida começa no lado certo', ($) async {

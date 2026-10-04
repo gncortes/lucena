@@ -4,14 +4,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/game_end.dart';
+import 'package:lucena/domain/models/game_mode.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/clock_engine.dart';
+import 'package:lucena/domain/use_cases/think_time_policy.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_opponent_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 
@@ -20,12 +27,16 @@ void main() {
   late FakeHapticsRepository haptics;
   late FakeSettingsRepository settings;
   late FakeOngoingGameRepository games;
+  late FakeOpponentRepository opponent;
+  late FakeProgressRepository progress;
 
   setUp(() {
     now = FakeNow(DateTime.utc(2026, 1, 1, 12));
     haptics = FakeHapticsRepository();
     settings = FakeSettingsRepository();
     games = FakeOngoingGameRepository();
+    opponent = FakeOpponentRepository(now: now);
+    progress = FakeProgressRepository();
   });
 
   /// Partida nova. Com [start] nulo, a tela que continua a partida gravada.
@@ -33,15 +44,19 @@ void main() {
     Position? start = GameRules.initial,
     Side? playerSide,
     ClockConfig? clock,
+    GameMode mode = const GameMode(),
   }) {
     return FreeBoardCubit(
       now: now,
       haptics: haptics,
       settings: settings,
       games: games,
+      opponent: opponent,
+      progress: progress,
       start: start,
       playerSide: playerSide,
       clock: clock,
+      mode: mode,
     );
   }
 
@@ -687,6 +702,227 @@ void main() {
           ClockEngine.remaining(saved, Side.white, later),
           const Duration(minutes: 2, seconds: 27),
         );
+      },
+    );
+  });
+
+  group('contra a máquina', () {
+    // Dama e rei contra rei: as brancas dão mate em poucos lances.
+    final queenMate = GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!;
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+      goal: PositionGoal.win,
+      positionId: 'basic.queen.0001',
+    );
+
+    test('a máquina responde ao lance do jogador', () async {
+      final cubit = build(start: queenMate, mode: vsMachine);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.play(NormalMove.fromUci('c1g5'));
+      await settle();
+
+      expect(cubit.state.moves, hasLength(2));
+      expect(cubit.state.position.turn, Side.white);
+      expect(cubit.state.machineThinking, isFalse);
+      expect(opponent.requests.single, contains(' b '));
+    });
+
+    test('o jogador só move o lado dele', () {
+      final cubit = build(start: queenMate, mode: vsMachine);
+      addTearDown(cubit.close);
+
+      expect(cubit.state.playerSide, Side.white);
+      expect(cubit.state.orientation, Side.white);
+    });
+
+    test('se a máquina começa, ela joga assim que a partida abre', () async {
+      final blackToMove = GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 b - - 0 1')!;
+      final cubit = build(start: blackToMove, mode: vsMachine);
+      addTearDown(cubit.close);
+
+      await cubit.open();
+      await settle();
+
+      expect(cubit.state.moves, hasLength(1));
+      expect(cubit.state.position.turn, Side.white);
+    });
+
+    test('o relógio da máquina desconta o tempo que ela pensou', () async {
+      final cubit = build(
+        start: queenMate,
+        mode: vsMachine,
+        clock: ClockConfig.same(threeTwo),
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.play(NormalMove.fromUci('c1g5'));
+      await settle();
+
+      final thought = opponent.thinkTimes.single;
+      expect(thought, ThinkTimePolicy.max);
+      // Ela pensou e ganhou o incremento.
+      expect(
+        cubit.state.blackTime,
+        const Duration(minutes: 3, seconds: 2) - thought,
+      );
+    });
+
+    test(
+      'desistir na vez da máquina termina na hora e a resposta é ignorada',
+      () async {
+        final cubit = build(start: queenMate, mode: vsMachine);
+        addTearDown(cubit.close);
+        await cubit.open();
+        opponent.hold();
+
+        cubit.play(NormalMove.fromUci('c1g5'));
+        await settle();
+        expect(cubit.state.machineThinking, isTrue);
+
+        cubit.resign();
+        expect(
+          cubit.state.end,
+          const GameEnd(GameEndReason.resign, winner: Side.black),
+        );
+
+        opponent.release();
+        await settle();
+        expect(cubit.state.moves, ['Qg5']);
+      },
+    );
+
+    test(
+      'mate do jogador numa posição de ganhar: tentativa cumprida',
+      () async {
+        final mateInOne = GameRules.fromFen('3k4/8/3K4/8/8/8/8/7Q w - - 0 1')!;
+        final cubit = build(start: mateInOne, mode: vsMachine);
+        addTearDown(cubit.close);
+        await cubit.open();
+
+        cubit.play(NormalMove.fromUci('h1h8'));
+        await cubit.open();
+
+        expect(cubit.state.fulfilled, isTrue);
+        expect(progress.attempts.single.outcome, AttemptOutcome.win);
+        expect(progress.attempts.single.fulfilled, isTrue);
+        expect(progress.attempts.single.positionId, 'basic.queen.0001');
+      },
+    );
+
+    test('desistir numa posição de ganhar: tentativa não cumprida', () async {
+      final cubit = build(start: queenMate, mode: vsMachine);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.resign();
+      await cubit.open();
+
+      expect(cubit.state.fulfilled, isFalse);
+      expect(progress.attempts.single.outcome, AttemptOutcome.loss);
+    });
+
+    test('empate numa posição de defender: cumprido', () async {
+      // As brancas tomam o último peão: só os reis sobram.
+      final cubit = build(
+        start: GameRules.fromFen('k7/8/8/8/8/8/3p4/4K3 w - - 0 1')!,
+        mode: const GameMode(
+          opponent: OpponentKind.twoPlayers,
+          userSide: Side.white,
+          goal: PositionGoal.draw,
+          positionId: 'pawn.pawnVsKing.0039',
+        ),
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.play(NormalMove.fromUci('e1d2'));
+      await cubit.open();
+
+      expect(cubit.state.end?.reason, GameEndReason.insufficientMaterial);
+      expect(cubit.state.fulfilled, isTrue);
+      expect(progress.attempts.single.outcome, AttemptOutcome.draw);
+    });
+
+    test(
+      'jogar de novo: mesma posição e configuração, nova tentativa',
+      () async {
+        final cubit = build(
+          start: queenMate,
+          mode: vsMachine,
+          clock: ClockConfig.same(threeTwo),
+        );
+        addTearDown(cubit.close);
+        await cubit.open();
+        cubit.resign();
+
+        cubit.newGame();
+        cubit.resign();
+        await cubit.open();
+
+        expect(cubit.state.start, queenMate);
+        expect(cubit.state.mode, vsMachine);
+        expect(cubit.state.clock?.config, ClockConfig.same(threeTwo));
+        expect(progress.attempts, hasLength(2));
+      },
+    );
+
+    test('fora do treino nada é gravado no histórico', () async {
+      final cubit = build(
+        start: GameRules.fromFen('3k4/8/3K4/8/8/8/8/7Q w - - 0 1')!,
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      cubit.play(NormalMove.fromUci('h1h8'));
+      await cubit.open();
+
+      expect(cubit.state.end?.reason, GameEndReason.checkmate);
+      expect(progress.attempts, isEmpty);
+    });
+
+    test('reabrir na vez da máquina: a partida volta e ela joga', () async {
+      final first = build(start: queenMate, mode: vsMachine);
+      await first.open();
+      opponent.hold();
+      first.play(NormalMove.fromUci('c1g5'));
+      await settle();
+      // O app é fechado com a máquina pensando.
+      await first.close();
+      opponent.release();
+      await settle();
+      expect(games.snapshot?.moves, ['c1g5']);
+
+      final cubit = build(start: null);
+      addTearDown(cubit.close);
+      await cubit.open();
+      await settle();
+
+      expect(cubit.state.mode, vsMachine);
+      expect(cubit.state.moves, hasLength(2));
+    });
+
+    test(
+      'voltar do segundo plano sem resposta pendente: a máquina pensa de novo',
+      () async {
+        final cubit = build(start: queenMate, mode: vsMachine);
+        addTearDown(cubit.close);
+        await cubit.open();
+        opponent.failNext = true;
+
+        cubit.play(NormalMove.fromUci('c1g5'));
+        await settle();
+        expect(cubit.state.moves, ['Qg5']);
+        expect(cubit.state.machineThinking, isFalse);
+
+        now.advance(const Duration(seconds: 3));
+        cubit.resumed();
+        await settle();
+
+        expect(cubit.state.moves, hasLength(2));
       },
     );
   });
