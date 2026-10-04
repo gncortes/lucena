@@ -3,12 +3,17 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
+import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
@@ -18,7 +23,14 @@ void main() {
     WidgetTester tester, {
     String? fen,
     Locale locale = const Locale('en'),
+    BoardSettings board = const BoardSettings(),
   }) async {
+    final settings = SettingsCubit(
+      FakeSettingsRepository(AppSettings(board: board)),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
     cubit = FreeBoardCubit(
       start: fen == null ? GameRules.initial : GameRules.fromFen(fen)!,
     );
@@ -26,6 +38,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         locale: locale,
+        settingsCubit: settings,
         child: BlocProvider.value(value: cubit, child: const FreeBoardScreen()),
       ),
     );
@@ -58,6 +71,27 @@ void main() {
     expect(textOf(tester, FreeBoardKeys.turn), 'White to move');
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
   });
+
+  testWidgets(
+    'o tabuleiro usa as cores, as peças e as coordenadas escolhidas',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        board: const BoardSettings(
+          colors: BoardColors.green,
+          pieces: PieceStyle.merida,
+          coordinates: false,
+        ),
+      );
+
+      final settings = tester
+          .widget<Chessboard>(find.byKey(FreeBoardKeys.board))
+          .settings;
+      expect(settings.colorScheme, ChessboardColorScheme.green);
+      expect(settings.pieceAssets, PieceSet.meridaAssets);
+      expect(settings.enableCoordinates, isFalse);
+    },
+  );
 
   testWidgets('tocar na peça e no destino joga o lance e passa a vez', (
     tester,

@@ -4,6 +4,42 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "boardColors": "Board colors",
+  "@boardColors": {
+    "description": "Section title above the list of chessboard color themes."
+  },
+  "boardColorsBlue": "Blue",
+  "@boardColorsBlue": {
+    "description": "Name of the blue chessboard color theme."
+  },
+  "boardColorsBrown": "Brown",
+  "@boardColorsBrown": {
+    "description": "Name of the brown chessboard color theme."
+  },
+  "boardColorsGray": "Gray",
+  "@boardColorsGray": {
+    "description": "Name of the gray chessboard color theme."
+  },
+  "boardColorsGreen": "Green",
+  "@boardColorsGreen": {
+    "description": "Name of the green chessboard color theme."
+  },
+  "boardColorsPurple": "Purple",
+  "@boardColorsPurple": {
+    "description": "Name of the purple chessboard color theme."
+  },
+  "boardCoordinates": "Coordinates",
+  "@boardCoordinates": {
+    "description": "Switch that shows or hides the letters and numbers of the squares on the edge of the board."
+  },
+  "boardPieces": "Pieces",
+  "@boardPieces": {
+    "description": "Section title above the list of chess piece sets (drawing styles)."
+  },
+  "boardRestoreDefault": "Restore default",
+  "@boardRestoreDefault": {
+    "description": "Button that puts board colors, pieces and coordinates back to the original values."
+  },
   "freeBoardBlackToMove": "Black to move",
   "@freeBoardBlackToMove": {
     "description": "Status above the board: it is Black's turn."
@@ -133,6 +169,10 @@
   "profileSave": "Save",
   "@profileSave": {
     "description": "Button that saves the profile."
+  },
+  "settingsBoardAppearance": "Board appearance",
+  "@settingsBoardAppearance": {
+    "description": "Settings entry and title of the screen where the player picks board colors, piece set and coordinates."
   },
   "settingsLanguage": "Language",
   "@settingsLanguage": {

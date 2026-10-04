@@ -3,7 +3,9 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
@@ -66,6 +68,18 @@ class FreeBoardRobot {
   void expectFen(String fen) {
     final board = $.tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
     expect(board.controller.fen, fen);
+  }
+
+  /// A aparência com que o tabuleiro de jogo está desenhado.
+  void expectAppearance({
+    required BoardColors colors,
+    required PieceStyle pieces,
+    required bool coordinates,
+  }) {
+    final board = $.tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
+    expect(board.settings.colorScheme, colors.scheme);
+    expect(board.settings.pieceAssets, pieces.assets);
+    expect(board.settings.enableCoordinates, coordinates);
   }
 
   /// A lista de lances, em notação algébrica, com cada lance visível na tela.

@@ -5,10 +5,13 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
 import 'move_list.dart';
 
@@ -20,9 +23,6 @@ class FreeBoardScreen extends StatefulWidget {
 }
 
 class _FreeBoardScreenState extends State<FreeBoardScreen> {
-  // O jogador faz os dois lados: não há lance antecipado.
-  static const _settings = ChessboardSettings(enablePremoves: false);
-
   // Altura reservada para o painel de cima e para a lista de lances.
   static const _statusHeight = 72.0;
   static const _minMovesHeight = 120.0;
@@ -53,6 +53,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<FreeBoardCubit>();
+    final boardSettings = context.select(
+      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
+    );
     return BlocConsumer<FreeBoardCubit, FreeBoardState>(
       listener: (context, state) =>
           _board.updatePosition(_gameData(state), resetPremove: true),
@@ -91,7 +94,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                         key: FreeBoardKeys.board,
                         size: boardSize,
                         controller: _board,
-                        settings: _settings,
+                        settings: boardSettings.chessground,
                         orientation: Side.white,
                         onMove: (move, {viaDragAndDrop}) => cubit.play(move),
                       ),

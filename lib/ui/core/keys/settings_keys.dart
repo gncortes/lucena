@@ -25,4 +25,7 @@ abstract final class SettingsKeys {
   /// Opção de um tema na tela de tema.
   static Key themeOption(AppThemeMode mode) =>
       Key('settings.theme.option.${mode.code}');
+
+  static const boardAppearanceTile = Key('settings.boardAppearance');
+  static const boardAppearanceValue = Key('settings.boardAppearance.value');
 }
