@@ -8,9 +8,11 @@ class HomeRobot {
 
   final PatrolIntegrationTester $;
 
+  /// Espera a tela pronta: em aparelho lento a imagem do mascote demora a carregar.
   Future<void> expectVisible() async {
     await $(HomeKeys.screen).waitUntilVisible();
-    expect($(HomeKeys.mascot).visible, isTrue);
+    await $(HomeKeys.mascot).waitUntilVisible();
+    await $(HomeKeys.tagline).waitUntilVisible();
   }
 
   void expectMascot({required bool dark}) {
@@ -21,5 +23,20 @@ class HomeRobot {
           ? 'assets/branding/mascot_dark.png'
           : 'assets/branding/mascot_light.png',
     );
+  }
+
+  void expectTagline(String text) {
+    expect($.tester.widget<Text>(find.byKey(HomeKeys.tagline)).data, text);
+  }
+
+  /// Com a tela espelhada (direita para a esquerda), o botão fica à esquerda.
+  void expectSettingsButtonOnLeft() {
+    final button = $.tester.getCenter(find.byKey(HomeKeys.settingsButton));
+    final width = $.tester.getSize(find.byKey(HomeKeys.screen)).width;
+    expect(button.dx, lessThan(width / 2));
+  }
+
+  Future<void> openSettings() async {
+    await $(HomeKeys.settingsButton).tap();
   }
 }

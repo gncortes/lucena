@@ -1,3 +1,7 @@
+import '../data/repositories/settings/settings_repository.dart';
+import '../data/repositories/settings/settings_repository_local.dart';
+import '../data/services/preferences_service.dart';
+import '../domain/models/app_language.dart';
 import '../domain/use_cases/now.dart';
 
 /// Ligado por `--dart-define=E2E=true` nos cenários Patrol.
@@ -5,12 +9,26 @@ const isE2E = bool.fromEnvironment('E2E');
 
 /// As implementações que entram no app.
 ///
-/// A composição E2E, com os fakes, fica em `testing/e2e_dependencies.dart`:
-/// código de `lib/` não importa `testing/`.
+/// As composições de teste ficam em `testing/`: código de `lib/` não importa
+/// `testing/`.
 class Dependencies {
-  const Dependencies({required this.now});
+  const Dependencies({
+    required this.now,
+    required this.settingsRepository,
+    required this.languages,
+  });
 
-  const Dependencies.normal() : now = const SystemNow();
+  factory Dependencies.normal() {
+    return Dependencies(
+      now: const SystemNow(),
+      settingsRepository: LocalSettingsRepository(PreferencesService()),
+      languages: AppLanguage.selectable,
+    );
+  }
 
   final Now now;
+  final SettingsRepository settingsRepository;
+
+  /// Idiomas oferecidos em Configurações.
+  final List<AppLanguage> languages;
 }

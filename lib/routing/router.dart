@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/settings/widgets/language_screen.dart';
+import '../ui/settings/widgets/settings_screen.dart';
 import 'routes.dart';
 
 GoRouter buildRouter() {
@@ -10,6 +12,18 @@ GoRouter buildRouter() {
       GoRoute(
         path: Routes.home,
         builder: (context, state) => const HomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+            routes: [
+              GoRoute(
+                path: 'language',
+                builder: (context, state) => const LanguageScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
