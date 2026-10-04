@@ -5,6 +5,9 @@ import '../../../domain/models/app_theme_mode.dart';
 abstract final class SettingsKeys {
   static const screen = Key('settings.screen');
   static const title = Key('settings.title');
+  static const profileTile = Key('settings.profile');
+  static const profileValue = Key('settings.profile.value');
+
   static const languageTile = Key('settings.language');
   static const languageValue = Key('settings.language.value');
 

@@ -4,6 +4,7 @@ import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
 import 'robots/home_robot.dart';
+import 'robots/profile_robot.dart';
 import 'robots/settings_robot.dart';
 
 void main() {
@@ -83,6 +84,7 @@ void main() {
     final app = AppRobot($);
     final home = HomeRobot($);
     final settings = SettingsRobot($);
+    final profile = ProfileRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
 
     await home.openSettings();
@@ -95,6 +97,10 @@ void main() {
     app.expectNoClippedText();
 
     await settings.openThemes();
+    app.expectNoClippedText();
+    await settings.back();
+
+    await profile.open();
     app.expectNoClippedText();
     await settings.back();
 

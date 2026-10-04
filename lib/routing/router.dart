@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/theme_screen.dart';
@@ -25,6 +26,10 @@ GoRouter buildRouter() {
               GoRoute(
                 path: 'theme',
                 builder: (context, state) => const ThemeScreen(),
+              ),
+              GoRoute(
+                path: 'profile',
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),

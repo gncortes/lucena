@@ -39,7 +39,7 @@ class AppRobot {
   // pumpAndSettle não basta, é preciso esperar a primeira tela aparecer.
   Future<void> _pumpApp() async {
     await $.pumpWidgetAndSettle(
-      LucenaApp(key: UniqueKey(), dependencies: e2eDependencies()),
+      LucenaApp(key: UniqueKey(), dependencies: await e2eDependencies()),
     );
     await $(HomeKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
