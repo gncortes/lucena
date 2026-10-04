@@ -2,10 +2,13 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/training/training_repository.dart';
+import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../routing/routes.dart';
 
 part 'game_setup_cubit.freezed.dart';
 
@@ -21,6 +24,13 @@ abstract class GameSetupState with _$GameSetupState {
     /// A posição de início.
     required Position position,
     required PositionGoal goal,
+
+    /// A posição do catálogo. Nula na posição personalizada.
+    String? positionId,
+
+    /// As partidas já jogadas nesta posição, da mais recente para a mais
+    /// antiga.
+    @Default(<Attempt>[]) List<Attempt> attempts,
 
     /// O lado do jogador. Começa no lado que joga na posição.
     required Side userSide,
@@ -40,6 +50,22 @@ abstract class GameSetupState with _$GameSetupState {
 
   bool get canStart => ready && !hasZeroTime;
 
+  /// Onde a partida abre: a posição, o lado, o adversário, o relógio e, no
+  /// treino, o objetivo.
+  String get gameRoute {
+    final clocks = clockCodes;
+    return Routes.freeBoardAt(
+      position.fen,
+      view: userSide.name,
+      white: clocks.white,
+      black: clocks.black,
+      opponent: setup.opponent.code,
+      user: userSide.name,
+      goal: goal.code,
+      position: positionId,
+    );
+  }
+
   /// O tempo das brancas e o das pretas, como o tabuleiro recebe
   /// (`segundos+incremento`). Nulos sem relógio.
   ({String? white, String? black}) get clockCodes {
@@ -57,22 +83,30 @@ abstract class GameSetupState with _$GameSetupState {
 class GameSetupCubit extends Cubit<GameSetupState> {
   GameSetupCubit(
     this._training, {
+    required this._progress,
     required Position position,
     required PositionGoal goal,
+    String? positionId,
   }) : super(
          GameSetupState(
            position: position,
            goal: goal,
+           positionId: positionId,
            userSide: position.turn,
          ),
        );
 
   final TrainingRepository _training;
+  final ProgressRepository _progress;
 
   Future<void> load() async {
     final setup = await _training.loadSetup();
+    final positionId = state.positionId;
+    final attempts = positionId == null
+        ? const <Attempt>[]
+        : await _progress.attemptsFor(positionId);
     if (isClosed) return;
-    emit(state.copyWith(setup: setup, ready: true));
+    emit(state.copyWith(setup: setup, attempts: attempts, ready: true));
   }
 
   void setUserSide(Side side) => emit(state.copyWith(userSide: side));

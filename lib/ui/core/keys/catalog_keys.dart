@@ -15,6 +15,9 @@ abstract final class CatalogKeys {
   static Key subcategory(String key) => Key('catalog.subcategory.$key');
   static Key position(String id) => Key('catalog.position.$id');
 
+  /// A marca de objetivo cumprido de uma posição.
+  static Key fulfilled(String id) => Key('catalog.position.$id.fulfilled');
+
   static const positionList = Key('catalog.positions');
   static const empty = Key('catalog.empty');
 }

@@ -75,6 +75,21 @@ class GameSetupRobot {
     );
   }
 
+  /// Os resultados do histórico, de cima para baixo (`Win`, `Draw`).
+  Future<void> expectAttempts(List<String> outcomes) async {
+    for (final (index, outcome) in outcomes.indexed) {
+      await $(GameSetupKeys.attempt(index)).scrollTo();
+      expect(
+        find.descendant(
+          of: find.byKey(GameSetupKeys.attempt(index)),
+          matching: find.text(outcome),
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(find.byKey(GameSetupKeys.attempt(outcomes.length)), findsNothing);
+  }
+
   Future<void> start() async {
     await $(GameSetupKeys.startButton).tap();
     await $.pumpAndSettle();
