@@ -3,6 +3,8 @@ import 'package:lucena/data/repositories/settings/settings_repository_local.dart
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -52,5 +54,55 @@ void main() {
     await reopen().save(const AppSettings());
 
     expect(await reopen().load(), const AppSettings());
+  });
+
+  test(
+    'sem nada gravado, o tabuleiro vem com a aparência de fábrica',
+    () async {
+      expect((await reopen().load()).board, const BoardSettings());
+    },
+  );
+
+  test('cores, peças e coordenadas do tabuleiro voltam ao reabrir', () async {
+    const settings = AppSettings(
+      board: BoardSettings(
+        colors: BoardColors.green,
+        pieces: PieceStyle.merida,
+        coordinates: false,
+      ),
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
+  });
+
+  test('o comportamento do tabuleiro volta ao reabrir', () async {
+    const settings = AppSettings(
+      board: BoardSettings(
+        moveMethod: MoveMethod.tap,
+        showLegalMoves: false,
+        highlightLastMove: false,
+        animation: false,
+        premoves: false,
+        notation: MoveNotation.letters,
+      ),
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
+  });
+
+  test('as preferências do relógio voltam ao reabrir', () async {
+    expect((await reopen().load()).clock, const ClockSettings());
+
+    const settings = AppSettings(
+      clock: ClockSettings(
+        position: ClockPosition.bottom,
+        lowTimeVibration: false,
+      ),
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
   });
 }

@@ -4,8 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_theme_mode.dart';
+import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
+import '../../core/board/board_settings_ui.dart';
+import '../../core/board/clock_settings_ui.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
@@ -24,6 +28,12 @@ class SettingsScreen extends StatelessWidget {
     final language = AppLanguage.fromCode(languageCode);
     final themeMode = context.select(
       (SettingsCubit cubit) => cubit.state?.themeMode ?? AppThemeMode.system,
+    );
+    final board = context.select(
+      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
+    );
+    final clock = context.select(
+      (SettingsCubit cubit) => cubit.state?.clock ?? const ClockSettings(),
     );
     final profile = context.select((ProfileCubit cubit) => cubit.state);
     return Scaffold(
@@ -65,6 +75,39 @@ class SettingsScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsTheme),
+          ),
+          ListTile(
+            key: SettingsKeys.boardAppearanceTile,
+            leading: const Icon(Icons.palette_outlined),
+            title: Text(context.l10n.settingsBoardAppearance),
+            subtitle: Text(
+              '${board.colors.label(context.l10n)} · ${board.pieces.label}',
+              key: SettingsKeys.boardAppearanceValue,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsBoardAppearance),
+          ),
+          ListTile(
+            key: SettingsKeys.boardBehaviorTile,
+            leading: const Icon(Icons.touch_app_outlined),
+            title: Text(context.l10n.settingsBoardBehavior),
+            subtitle: Text(
+              board.moveMethod.label(context.l10n),
+              key: SettingsKeys.boardBehaviorValue,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsBoardBehavior),
+          ),
+          ListTile(
+            key: SettingsKeys.clockTile,
+            leading: const Icon(Icons.timer_outlined),
+            title: Text(context.l10n.settingsClock),
+            subtitle: Text(
+              clock.position.label(context.l10n),
+              key: SettingsKeys.clockValue,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsClock),
           ),
         ],
       ),

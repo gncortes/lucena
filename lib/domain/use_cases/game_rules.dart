@@ -40,6 +40,16 @@ abstract final class GameRules {
   static Square? checkedKing(Position position) =>
       position.isCheck ? position.board.kingOf(position.turn) : null;
 
+  /// O fim de partida quando o tempo de [flagged] acaba: vence o outro lado,
+  /// a não ser que ele não tenha material para dar mate (aí é empate).
+  static GameEnd timeoutEnd(Position position, Side flagged) {
+    final opponent = flagged.opposite;
+    if (position.hasInsufficientMaterial(opponent)) {
+      return const GameEnd(GameEndReason.timeoutVsInsufficientMaterial);
+    }
+    return GameEnd(GameEndReason.timeout, winner: opponent);
+  }
+
   /// Como a partida terminou. Nulo enquanto ela continua.
   static GameEnd? endOf(Position position) {
     if (position.isCheckmate) {

@@ -1,14 +1,20 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 
-/// O centro de uma casa (`e4`) na tela, dado o retângulo do tabuleiro visto
-/// pelo lado das brancas. Usado pelos testes de widget e pelos robôs do Patrol.
-Offset squareCenter(Rect board, String square) {
+/// O centro de uma casa (`e4`) na tela, dado o retângulo do tabuleiro e o lado
+/// que está embaixo. Usado pelos testes de widget e pelos robôs do Patrol.
+Offset squareCenter(
+  Rect board,
+  String square, {
+  Side orientation = Side.white,
+}) {
   final parsed = Square.fromName(square);
   final size = board.width / 8;
+  final column = orientation == Side.white ? parsed.file : 7 - parsed.file;
+  final row = orientation == Side.white ? 7 - parsed.rank : parsed.rank;
   return Offset(
-    board.left + (parsed.file + 0.5) * size,
-    board.top + (7 - parsed.rank + 0.5) * size,
+    board.left + (column + 0.5) * size,
+    board.top + (row + 0.5) * size,
   );
 }
 

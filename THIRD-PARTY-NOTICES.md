@@ -17,7 +17,16 @@ package bundled in the app is also available inside the app (licenses page).
 | shared_preferences | BSD-3-Clause | https://pub.dev/packages/shared_preferences |
 | freezed_annotation | MIT | https://pub.dev/packages/freezed_annotation |
 | chessground, dartchess (Lichess) | GPL-3.0 | https://github.com/lichess-org |
-| Chess pieces "cburnett" by Colin M.L. Burnett (shipped with chessground) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "cburnett" by Colin M.L. Burnett (shipped with chessground, selectable in the app) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "merida" by Armando Hernandez Marroquin (shipped with chessground, selectable in the app) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "chessnut" by Alexis Luengas (shipped with chessground, selectable in the app) | Apache-2.0 | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "pirouetti" by pirouetti (shipped with chessground, selectable in the app) | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "mpchess" by Maxime Chupin (shipped with chessground, selectable in the app) | GPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "firi" by James Faure (shipped with chessground, selectable in the app) | CC-BY-4.0 | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "rhosgfx" by RhosGFX (shipped with chessground, selectable in the app) | CC0-1.0 | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "fantasy", "celtic" and "spatial" by Maurizio Monge (shipped with chessground, selectable in the app) | MIT | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "pixel" by therealqtpi (shipped with chessground, selectable in the app) | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
+| Chess pieces "letter" by usolando (shipped with chessground, selectable in the app) | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Lucena Figurine font: chess pieces from Noto Sans Symbols 2 (`assets/fonts/`, license in `assets/fonts/OFL.txt`) | OFL-1.1 | https://github.com/notofonts/symbols |
 | drift, drift_flutter | MIT | https://pub.dev/packages/drift |
 | sqlite3 (Dart package) | MIT | https://pub.dev/packages/sqlite3 |

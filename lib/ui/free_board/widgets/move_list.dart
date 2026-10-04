@@ -5,14 +5,15 @@ import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/figurine.dart';
 
-/// Lista de lances em notação figurina (♘f3): a letra da peça vira o desenho
-/// dela, que vale em qualquer idioma. Uma linha por lance completo: número,
-/// brancas, pretas.
+/// Lista de lances. Na notação figurina (♘f3) a letra da peça vira o desenho
+/// dela, que vale em qualquer idioma; na notação por letras, vira a letra do
+/// idioma do app (Cf3). Uma linha por lance completo: número, brancas, pretas.
 class MoveList extends StatefulWidget {
   const MoveList({
     required this.moves,
     required this.firstMoveNumber,
     required this.firstSide,
+    this.pieceLetters,
     super.key,
   });
 
@@ -24,6 +25,10 @@ class MoveList extends StatefulWidget {
 
   /// Quem fez o primeiro lance da lista.
   final Side firstSide;
+
+  /// A letra de cada peça no idioma do app, pela letra da notação algébrica
+  /// (`N` → `C`). Nulo: os lances aparecem com o desenho da peça.
+  final Map<String, String>? pieceLetters;
 
   @override
   State<MoveList> createState() => _MoveListState();
@@ -127,6 +132,7 @@ class _MoveListState extends State<MoveList> {
       key: FreeBoardKeys.move(index),
       san: widget.moves[index],
       isLast: index == widget.moves.length - 1,
+      pieceLetters: widget.pieceLetters,
     );
   }
 }
@@ -136,10 +142,16 @@ class _MoveListState extends State<MoveList> {
 const moveStrut = StrutStyle(fontSize: 16, height: 1.5, forceStrutHeight: true);
 
 class _MoveCell extends StatelessWidget {
-  const _MoveCell({required this.san, required this.isLast, super.key});
+  const _MoveCell({
+    required this.san,
+    required this.isLast,
+    this.pieceLetters,
+    super.key,
+  });
 
   final String san;
   final bool isLast;
+  final Map<String, String>? pieceLetters;
 
   // O traço do desenho é fino: maior que as letras, ele pesa como elas.
   static const _figurineScale = 1.3;
@@ -156,10 +168,16 @@ class _MoveCell extends StatelessWidget {
       fontWeight: FontWeight.w400,
       fontSize: (style?.fontSize ?? 16) * _figurineScale,
     );
+    final pieceLetters = this.pieceLetters;
+    // O lance com as letras do idioma, para o leitor de tela e para a notação
+    // por letras.
+    final spoken = pieceLetters == null
+        ? san
+        : san.split('').map((char) => pieceLetters[char] ?? char).join();
     return Semantics(
       // Cada lance é um item próprio para o leitor de tela, com a letra da peça.
       container: true,
-      label: san,
+      label: spoken,
       excludeSemantics: true,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -175,11 +193,14 @@ class _MoveCell extends StatelessWidget {
         child: Text.rich(
           TextSpan(
             children: [
-              for (final char in san.split(''))
-                if (Figurine.ofLetter[char] case final figurine?)
-                  TextSpan(text: figurine, style: figurineStyle)
-                else
-                  TextSpan(text: char),
+              if (pieceLetters != null)
+                TextSpan(text: spoken)
+              else
+                for (final char in san.split(''))
+                  if (Figurine.ofLetter[char] case final figurine?)
+                    TextSpan(text: figurine, style: figurineStyle)
+                  else
+                    TextSpan(text: char),
             ],
           ),
           style: style,

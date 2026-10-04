@@ -3,29 +3,74 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
+import '../../../../testing/fakes/fake_haptics_repository.dart';
+import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
+import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
   late FreeBoardCubit cubit;
+  late FakeNow now;
+  late FakeOngoingGameRepository games;
 
   Future<void> pumpScreen(
     WidgetTester tester, {
     String? fen,
     Locale locale = const Locale('en'),
+    BoardSettings board = const BoardSettings(),
+    Side? playerSide,
+    ClockConfig? clock,
+    ClockSettings clockSettings = const ClockSettings(),
+    GameSnapshot? saved,
   }) async {
+    // Tela de celular em retrato, como no app.
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final repository = FakeSettingsRepository(
+      AppSettings(board: board, clock: clockSettings),
+    );
+    final settings = SettingsCubit(
+      repository,
+      languages: AppLanguage.selectable,
+    );
+    now = FakeNow(DateTime.utc(2026, 1, 1, 12));
+    addTearDown(settings.close);
+    await settings.load();
+    games = FakeOngoingGameRepository(saved);
     cubit = FreeBoardCubit(
-      start: fen == null ? GameRules.initial : GameRules.fromFen(fen)!,
+      now: now,
+      haptics: FakeHapticsRepository(),
+      settings: repository,
+      games: games,
+      // Com partida gravada, a tela abre para continuar essa partida.
+      start: saved != null
+          ? null
+          : fen == null
+          ? GameRules.initial
+          : GameRules.fromFen(fen)!,
+      playerSide: playerSide,
+      clock: clock,
     );
     addTearDown(cubit.close);
     await tester.pumpWidget(
       TestApp(
         locale: locale,
+        settingsCubit: settings,
         child: BlocProvider.value(value: cubit, child: const FreeBoardScreen()),
       ),
     );
@@ -37,10 +82,34 @@ void main() {
 
   /// Toca na casa de origem e depois na de destino.
   Future<void> move(WidgetTester tester, String from, String to) async {
-    await tester.tapAt(squareCenter(boardRect(tester), from));
+    final orientation = cubit.state.orientation;
+    final board = boardRect(tester);
+    await tester.tapAt(squareCenter(board, from, orientation: orientation));
     await tester.pump();
-    await tester.tapAt(squareCenter(boardRect(tester), to));
+    await tester.tapAt(squareCenter(board, to, orientation: orientation));
     await tester.pumpAndSettle();
+  }
+
+  Future<void> drag(WidgetTester tester, String from, String to) async {
+    final board = boardRect(tester);
+    await tester.dragFrom(
+      squareCenter(board, from),
+      squareCenter(board, to) - squareCenter(board, from),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Chessboard boardWidget(WidgetTester tester) =>
+      tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
+
+  String moveText(WidgetTester tester, int index) {
+    final text = tester.widget<RichText>(
+      find.descendant(
+        of: find.byKey(FreeBoardKeys.move(index)),
+        matching: find.byType(RichText),
+      ),
+    );
+    return text.text.toPlainText();
   }
 
   String boardFen(WidgetTester tester) =>
@@ -58,6 +127,27 @@ void main() {
     expect(textOf(tester, FreeBoardKeys.turn), 'White to move');
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
   });
+
+  testWidgets(
+    'o tabuleiro usa as cores, as peças e as coordenadas escolhidas',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        board: const BoardSettings(
+          colors: BoardColors.green,
+          pieces: PieceStyle.merida,
+          coordinates: false,
+        ),
+      );
+
+      final settings = tester
+          .widget<Chessboard>(find.byKey(FreeBoardKeys.board))
+          .settings;
+      expect(settings.colorScheme, ChessboardColorScheme.green);
+      expect(settings.pieceAssets, PieceSet.meridaAssets);
+      expect(settings.enableCoordinates, isFalse);
+    },
+  );
 
   testWidgets('tocar na peça e no destino joga o lance e passa a vez', (
     tester,
@@ -227,5 +317,464 @@ void main() {
     expect(cubit.state.moves, ['e4']);
     final list = tester.element(find.byKey(FreeBoardKeys.move(0)));
     expect(Directionality.of(list), TextDirection.ltr);
+  });
+
+  testWidgets('só tocar: arrastar não move a peça, tocar move', (tester) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(moveMethod: MoveMethod.tap),
+    );
+
+    await drag(tester, 'e2', 'e4');
+    expect(cubit.state.moves, isEmpty);
+
+    await move(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['Nf3']);
+  });
+
+  testWidgets('só arrastar: tocar não move a peça, arrastar move', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(moveMethod: MoveMethod.drag),
+    );
+
+    await move(tester, 'e2', 'e4');
+    expect(cubit.state.moves, isEmpty);
+
+    await drag(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['Nf3']);
+  });
+
+  testWidgets('ajudas visuais e animação seguem as preferências', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(
+        showLegalMoves: false,
+        highlightLastMove: false,
+        animation: false,
+      ),
+    );
+
+    final settings = boardWidget(tester).settings;
+    expect(settings.showValidMoves, isFalse);
+    expect(settings.showLastMove, isFalse);
+    expect(settings.animationDuration, Duration.zero);
+  });
+
+  testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e7', 'e5');
+
+    await tester.tap(find.byKey(FreeBoardKeys.flipButton));
+    await tester.pumpAndSettle();
+
+    expect(boardWidget(tester).orientation, Side.black);
+    expect(cubit.state.moves, ['e4', 'e5']);
+
+    // Com o tabuleiro virado, as casas trocam de lugar na tela.
+    await move(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['e4', 'e5', 'Nf3']);
+  });
+
+  testWidgets('notação por letras em português mostra C, B, T, D e R', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      fen: '4k3/8/8/8/8/8/8/R1BQKBN1 w - - 0 1',
+      locale: const Locale('pt'),
+      board: const BoardSettings(notation: MoveNotation.letters),
+    );
+
+    await move(tester, 'g1', 'f3');
+    await move(tester, 'e8', 'e7');
+    await move(tester, 'f1', 'c4');
+    await move(tester, 'e7', 'f6');
+    await move(tester, 'd1', 'd4');
+    await move(tester, 'f6', 'e7');
+    await move(tester, 'a1', 'a7');
+
+    expect(
+      [for (var i = 0; i < 7; i++) moveText(tester, i)],
+      ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
+    );
+    expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (
+    tester,
+  ) async {
+    await pumpScreen(tester, playerSide: Side.white);
+    await move(tester, 'e2', 'e4');
+
+    // Vez das pretas: o lance das brancas fica só marcado.
+    await move(tester, 'd2', 'd4');
+    expect(cubit.state.moves, ['e4']);
+    expect(boardWidget(tester).controller.premove, NormalMove.fromUci('d2d4'));
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.moves, ['e4', 'e5', 'd4']);
+    expect(boardWidget(tester).controller.premove, isNull);
+  });
+
+  testWidgets('pré-lance que deixou de ser legal é descartado', (tester) async {
+    await pumpScreen(tester, playerSide: Side.white);
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e4', 'e5');
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.moves, ['e4', 'e5']);
+    expect(boardWidget(tester).controller.premove, isNull);
+  });
+
+  testWidgets('com os pré-lances desligados, nada fica marcado', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      playerSide: Side.white,
+      board: const BoardSettings(premoves: false),
+    );
+    await move(tester, 'e2', 'e4');
+
+    await move(tester, 'd2', 'd4');
+    expect(boardWidget(tester).controller.premove, isNull);
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+    expect(cubit.state.moves, ['e4', 'e5']);
+  });
+
+  testWidgets('o jogador de um lado só não move as peças do adversário', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      playerSide: Side.white,
+      board: const BoardSettings(premoves: false),
+    );
+    await move(tester, 'e2', 'e4');
+
+    await move(tester, 'e7', 'e5');
+
+    expect(cubit.state.moves, ['e4']);
+  });
+
+  group('relógio', () {
+    const fiveMinutes = TimeControl(initial: Duration(minutes: 5));
+    const threeTwo = TimeControl(
+      initial: Duration(minutes: 3),
+      increment: Duration(seconds: 2),
+    );
+    const oneZero = TimeControl(initial: Duration(minutes: 1));
+
+    String clockText(WidgetTester tester, Side side) =>
+        textOf(tester, FreeBoardKeys.clockTime(side));
+
+    Rect clockRect(WidgetTester tester, Side side) =>
+        tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
+
+    /// O relógio do aparelho anda e a tela refaz os tempos no próximo tique.
+    Future<void> elapse(WidgetTester tester, Duration duration) async {
+      now.advance(duration);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump();
+    }
+
+    Future<void> tap(WidgetTester tester, Key key) async {
+      await tester.ensureVisible(find.byKey(key));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(key));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('partida sem relógio não mostra relógio nenhum', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      expect(find.byKey(FreeBoardKeys.clock(Side.white)), findsNothing);
+      expect(find.byKey(FreeBoardKeys.clock(Side.black)), findsNothing);
+    });
+
+    testWidgets('cada lado mostra o seu tempo', (tester) async {
+      await pumpScreen(
+        tester,
+        clock: const ClockConfig(white: oneZero, black: threeTwo),
+      );
+
+      expect(clockText(tester, Side.white), '1:00');
+      expect(clockText(tester, Side.black), '3:00');
+    });
+
+    testWidgets('o tempo de quem joga desconta sozinho na tela', (
+      tester,
+    ) async {
+      await pumpScreen(tester, clock: ClockConfig.same(fiveMinutes));
+
+      await elapse(tester, const Duration(seconds: 7));
+
+      expect(clockText(tester, Side.white), '4:53');
+      expect(clockText(tester, Side.black), '5:00');
+    });
+
+    testWidgets('incremento de 2 s: depois do lance o relógio soma 2 s', (
+      tester,
+    ) async {
+      await pumpScreen(tester, clock: ClockConfig.same(threeTwo));
+
+      await move(tester, 'e2', 'e4');
+
+      expect(clockText(tester, Side.white), '3:02');
+      expect(clockText(tester, Side.black), '3:00');
+    });
+
+    testWidgets('abaixo de 10 s aparecem os décimos', (tester) async {
+      await pumpScreen(
+        tester,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(seconds: 15)),
+        ),
+      );
+      expect(clockText(tester, Side.white), '0:15');
+
+      await elapse(tester, const Duration(seconds: 5, milliseconds: 500));
+
+      expect(clockText(tester, Side.white), '0:09.5');
+      expect(clockText(tester, Side.black), '0:15');
+    });
+
+    testWidgets('tempo esgotado: tela de fim e tabuleiro travado', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(seconds: 5)),
+        ),
+      );
+
+      await elapse(tester, const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      expect(textOf(tester, FreeBoardKeys.endReason), 'Time out');
+      expect(textOf(tester, FreeBoardKeys.endResult), 'Black wins');
+      expect(clockText(tester, Side.white), '0:00.0');
+
+      await move(tester, 'e2', 'e4');
+      expect(cubit.state.moves, isEmpty);
+    });
+
+    testWidgets('bandeira contra rei sozinho: empate', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: 'k7/8/8/8/8/8/P7/K7 w - - 0 1',
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(seconds: 5)),
+        ),
+      );
+
+      await elapse(tester, const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      expect(
+        textOf(tester, FreeBoardKeys.endReason),
+        'Time out vs. insufficient material',
+      );
+      expect(textOf(tester, FreeBoardKeys.endResult), 'Draw');
+    });
+
+    testWidgets(
+      'um de cada lado: pretas em cima, brancas embaixo; vira junto',
+      (tester) async {
+        await pumpScreen(tester, clock: ClockConfig.same(fiveMinutes));
+        final board = boardRect(tester);
+
+        expect(
+          clockRect(tester, Side.black).bottom,
+          lessThanOrEqualTo(board.top),
+        );
+        expect(
+          clockRect(tester, Side.white).top,
+          greaterThanOrEqualTo(board.bottom),
+        );
+
+        await tester.tap(find.byKey(FreeBoardKeys.flipButton));
+        await tester.pumpAndSettle();
+
+        expect(
+          clockRect(tester, Side.white).bottom,
+          lessThanOrEqualTo(board.top),
+        );
+        expect(
+          clockRect(tester, Side.black).top,
+          greaterThanOrEqualTo(board.bottom),
+        );
+      },
+    );
+
+    testWidgets('os dois em cima: os relógios ficam acima do tabuleiro', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        clock: ClockConfig.same(fiveMinutes),
+        clockSettings: const ClockSettings(position: ClockPosition.top),
+      );
+      final board = boardRect(tester);
+
+      for (final side in Side.values) {
+        expect(clockRect(tester, side).bottom, lessThanOrEqualTo(board.top));
+      }
+      expect(
+        clockRect(tester, Side.white).top,
+        clockRect(tester, Side.black).top,
+      );
+    });
+
+    testWidgets('os dois embaixo: os relógios ficam abaixo do tabuleiro', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        clock: ClockConfig.same(fiveMinutes),
+        clockSettings: const ClockSettings(position: ClockPosition.bottom),
+      );
+      final board = boardRect(tester);
+
+      for (final side in Side.values) {
+        expect(clockRect(tester, side).top, greaterThanOrEqualTo(board.bottom));
+      }
+    });
+
+    testWidgets('painel do relógio: escolher 3 min + 2 s começa a partida', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await move(tester, 'e2', 'e4');
+
+      await tap(tester, FreeBoardKeys.clockButton);
+      expect(find.byKey(FreeBoardKeys.clockSheet), findsOneWidget);
+      await tap(tester, FreeBoardKeys.clockEnabledSwitch);
+      await tap(tester, FreeBoardKeys.clockMinutes(Side.white, 3));
+      await tap(tester, FreeBoardKeys.clockIncrement(Side.white, 2));
+      await tap(tester, FreeBoardKeys.clockStartButton);
+
+      expect(find.byKey(FreeBoardKeys.clockSheet), findsNothing);
+      expect(cubit.state.clock?.config, ClockConfig.same(threeTwo));
+      expect(cubit.state.moves, isEmpty);
+      expect(clockText(tester, Side.white), '3:00');
+      expect(clockText(tester, Side.black), '3:00');
+    });
+
+    testWidgets('painel do relógio: tempos diferentes para cada lado', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tap(tester, FreeBoardKeys.clockButton);
+      await tap(tester, FreeBoardKeys.clockEnabledSwitch);
+      await tap(tester, FreeBoardKeys.clockSameSwitch);
+      await tap(tester, FreeBoardKeys.clockMinutes(Side.white, 1));
+      await tap(tester, FreeBoardKeys.clockMinutes(Side.black, 3));
+      await tap(tester, FreeBoardKeys.clockIncrement(Side.black, 2));
+      await tap(tester, FreeBoardKeys.clockStartButton);
+
+      expect(
+        cubit.state.clock?.config,
+        const ClockConfig(white: oneZero, black: threeTwo),
+      );
+      expect(clockText(tester, Side.white), '1:00');
+      expect(clockText(tester, Side.black), '3:00');
+    });
+
+    testWidgets('painel do relógio fechado sem confirmar não muda a partida', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await move(tester, 'e2', 'e4');
+
+      await tap(tester, FreeBoardKeys.clockButton);
+      await tap(tester, FreeBoardKeys.clockEnabledSwitch);
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.clockSheet), findsNothing);
+      expect(cubit.state.clock, isNull);
+      expect(cubit.state.moves, ['e4']);
+    });
+
+    testWidgets('painel do relógio: desligar o relógio tira os relógios', (
+      tester,
+    ) async {
+      await pumpScreen(tester, clock: ClockConfig.same(fiveMinutes));
+
+      await tap(tester, FreeBoardKeys.clockButton);
+      await tap(tester, FreeBoardKeys.clockEnabledSwitch);
+      await tap(tester, FreeBoardKeys.clockStartButton);
+
+      expect(cubit.state.clock, isNull);
+      expect(find.byKey(FreeBoardKeys.clock(Side.white)), findsNothing);
+    });
+  });
+
+  group('restauração', () {
+    testWidgets('enquanto a partida gravada é lida, o tabuleiro não aparece', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        saved: GameSnapshot(
+          startFen: GameRules.initial.fen,
+          moves: const ['e2e4', 'e7e5'],
+        ),
+      );
+
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.board), findsNothing);
+    });
+
+    testWidgets('a partida gravada volta com a posição, a lista e o relógio', (
+      tester,
+    ) async {
+      const time = TimeControl(initial: Duration(minutes: 5));
+      await pumpScreen(
+        tester,
+        saved: GameSnapshot(
+          startFen: GameRules.initial.fen,
+          moves: const ['e2e4', 'e7e5'],
+          orientation: Side.black,
+          clock: ClockState(
+            config: ClockConfig.same(time),
+            white: const Duration(minutes: 4),
+            black: const Duration(minutes: 5),
+            running: Side.white,
+            // A vez começou 30 s antes de o app reabrir.
+            turnStartedAt: DateTime.utc(2026, 1, 1, 11, 59, 30),
+          ),
+        ),
+      );
+
+      await cubit.open();
+      await tester.pumpAndSettle();
+
+      expect(cubit.state.moves, ['e4', 'e5']);
+      expect(boardFen(tester), cubit.state.position.fen);
+      expect(boardWidget(tester).orientation, Side.black);
+      expect(textOf(tester, FreeBoardKeys.clockTime(Side.white)), '3:30');
+      expect(textOf(tester, FreeBoardKeys.clockTime(Side.black)), '5:00');
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+    });
   });
 }

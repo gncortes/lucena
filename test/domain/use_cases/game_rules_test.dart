@@ -123,4 +123,25 @@ void main() {
     expect(GameRules.fromFen('isto não é um FEN'), isNull);
     expect(GameRules.fromFen('8/8/8/8/8/8/8/8 w - - 0 1'), isNull);
   });
+
+  test('tempo esgotado: vence quem ainda pode dar mate', () {
+    expect(
+      GameRules.timeoutEnd(GameRules.initial, Side.white),
+      const GameEnd(GameEndReason.timeout, winner: Side.black),
+    );
+  });
+
+  test('tempo esgotado contra rei sozinho é empate', () {
+    final position = GameRules.fromFen('k7/8/8/8/8/8/P7/K7 w - - 0 1')!;
+
+    expect(
+      GameRules.timeoutEnd(position, Side.white),
+      const GameEnd(GameEndReason.timeoutVsInsufficientMaterial),
+    );
+    // O lado com o peão ainda pode dar mate: se a bandeira é das pretas, ele vence.
+    expect(
+      GameRules.timeoutEnd(position, Side.black),
+      const GameEnd(GameEndReason.timeout, winner: Side.white),
+    );
+  });
 }
