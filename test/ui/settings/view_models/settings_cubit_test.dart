@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
@@ -48,5 +49,37 @@ void main() {
     },
     expect: () => [const AppSettings(languageCode: 'ar'), const AppSettings()],
     verify: (_) => expect(repository.saved, [const AppSettings()]),
+  );
+
+  blocTest<SettingsCubit, AppSettings?>(
+    'trocar o tema muda o estado na hora, grava e mantém o idioma',
+    setUp: () => repository.settings = const AppSettings(languageCode: 'ar'),
+    build: build,
+    act: (cubit) async {
+      await cubit.load();
+      await cubit.setThemeMode(AppThemeMode.dark);
+    },
+    expect: () => [
+      const AppSettings(languageCode: 'ar'),
+      const AppSettings(languageCode: 'ar', themeMode: AppThemeMode.dark),
+    ],
+    verify: (_) => expect(repository.saved, [
+      const AppSettings(languageCode: 'ar', themeMode: AppThemeMode.dark),
+    ]),
+  );
+
+  blocTest<SettingsCubit, AppSettings?>(
+    'trocar o idioma mantém o tema escolhido',
+    setUp: () =>
+        repository.settings = const AppSettings(themeMode: AppThemeMode.dark),
+    build: build,
+    act: (cubit) async {
+      await cubit.load();
+      await cubit.setLanguage(AppLanguage.spanish);
+    },
+    skip: 1,
+    expect: () => [
+      const AppSettings(languageCode: 'es', themeMode: AppThemeMode.dark),
+    ],
   );
 }

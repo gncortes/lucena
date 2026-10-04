@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -27,6 +28,27 @@ void main() {
 
   test('voltar para o idioma do sistema apaga o idioma gravado', () async {
     await reopen().save(const AppSettings(languageCode: 'ar'));
+    await reopen().save(const AppSettings());
+
+    expect(await reopen().load(), const AppSettings());
+  });
+
+  test('sem nada gravado, o tema segue o aparelho', () async {
+    expect((await reopen().load()).themeMode, AppThemeMode.system);
+  });
+
+  test('o tema gravado volta ao reabrir, junto com o idioma', () async {
+    const settings = AppSettings(
+      languageCode: 'ar',
+      themeMode: AppThemeMode.dark,
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
+  });
+
+  test('voltar o tema para o do aparelho também é gravado', () async {
+    await reopen().save(const AppSettings(themeMode: AppThemeMode.dark));
     await reopen().save(const AppSettings());
 
     expect(await reopen().load(), const AppSettings());

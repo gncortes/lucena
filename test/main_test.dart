@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
+import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 
 import '../testing/fakes/fake_now.dart';
+import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/test_dependencies.dart';
 
@@ -20,11 +26,16 @@ void main() {
   Future<void> pumpApp(
     WidgetTester tester, {
     FakeSettingsRepository? settings,
+    FakeProfileRepository? profile,
     FakeNow? now,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
-        dependencies: testDependencies(now: now, settingsRepository: settings),
+        dependencies: testDependencies(
+          now: now,
+          settingsRepository: settings,
+          profileRepository: profile,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -125,5 +136,141 @@ void main() {
     expect(textOf(tester, SettingsKeys.title), 'Ajustes');
     expect(textOf(tester, SettingsKeys.languageValue), 'Español');
     expect(settings.saved, [const AppSettings(languageCode: 'es')]);
+  });
+
+  void useSystemBrightness(WidgetTester tester, Brightness brightness) {
+    tester.platformDispatcher.platformBrightnessTestValue = brightness;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+  }
+
+  Brightness appBrightness(WidgetTester tester) =>
+      Theme.of(tester.element(find.byKey(HomeKeys.screen))).brightness;
+
+  testWidgets('sem tema escolhido, o app acompanha o tema do aparelho', (
+    tester,
+  ) async {
+    useSystemBrightness(tester, Brightness.dark);
+    await pumpApp(tester);
+    expect(appBrightness(tester), Brightness.dark);
+
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+    await tester.pumpAndSettle();
+
+    expect(appBrightness(tester), Brightness.light);
+  });
+
+  testWidgets('o tema escolhido vence o tema do aparelho', (tester) async {
+    useSystemBrightness(tester, Brightness.light);
+    await pumpApp(
+      tester,
+      settings: FakeSettingsRepository(
+        const AppSettings(themeMode: AppThemeMode.dark),
+      ),
+    );
+
+    expect(appBrightness(tester), Brightness.dark);
+  });
+
+  testWidgets('trocar o tema em Configurações muda o app na hora e grava', (
+    tester,
+  ) async {
+    useSystemBrightness(tester, Brightness.light);
+    final settings = FakeSettingsRepository();
+    await pumpApp(tester, settings: settings);
+
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeOption(AppThemeMode.dark)));
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byKey(SettingsKeys.themeScreen));
+    expect(Theme.of(context).brightness, Brightness.dark);
+    expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
+  });
+
+  Future<void> openProfile(WidgetTester tester) async {
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.profileTile));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> pickLevel(WidgetTester tester, RatingLevel level) async {
+    await tester.tap(find.byKey(ProfileKeys.levelField));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(ProfileKeys.levelOption(level)));
+    await tester.tap(find.byKey(ProfileKeys.levelOption(level)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('salvar o perfil volta para Configurações com os dados novos', (
+    tester,
+  ) async {
+    useSystemLocale(tester, const Locale('en', 'US'));
+    final profile = FakeProfileRepository();
+    await pumpApp(tester, profile: profile);
+    await openProfile(tester);
+
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Ana');
+    await pickLevel(tester, RatingLevel.advanced);
+    await tester.tap(find.byKey(ProfileKeys.saveButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ProfileKeys.screen), findsNothing);
+    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
+    expect(profile.saved, [
+      UserProfile(nickname: 'Ana', rating: RatingLevel.advanced.rating),
+    ]);
+  });
+
+  testWidgets('editar o perfil e sair sem salvar não muda nada', (
+    tester,
+  ) async {
+    useSystemLocale(tester, const Locale('en', 'US'));
+    final profile = FakeProfileRepository(
+      const UserProfile(nickname: 'Ana', rating: 1750),
+    );
+    await pumpApp(tester, profile: profile);
+    await openProfile(tester);
+
+    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Outro');
+    await pickLevel(tester, RatingLevel.beginner);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
+    expect(profile.saved, isEmpty);
+
+    await tester.tap(find.byKey(SettingsKeys.profileTile));
+    await tester.pumpAndSettle();
+    final nickname = tester.widget<TextField>(
+      find.byKey(ProfileKeys.nicknameField),
+    );
+    expect(nickname.controller!.text, 'Ana');
+    expect(textOf(tester, ProfileKeys.levelName), 'Advanced');
+  });
+
+  testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {
+    useSystemLocale(tester, const Locale('pt', 'BR'));
+    await pumpApp(tester);
+
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.freeBoardButton),
+        matching: find.text('Tabuleiro livre'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+    await tester.tap(find.byKey(HomeKeys.freeBoardButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    expect(textOf(tester, FreeBoardKeys.turn), 'Brancas jogam');
   });
 }

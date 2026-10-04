@@ -5,5 +5,6 @@ abstract final class HomeKeys {
   static const mascot = Key('home.mascot');
   static const title = Key('home.title');
   static const tagline = Key('home.tagline');
+  static const freeBoardButton = Key('home.freeBoard');
   static const settingsButton = Key('home.settings');
 }

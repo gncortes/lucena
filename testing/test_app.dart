@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 /// Envolve um widget com tema e idiomas do app, para testes de widget.
@@ -11,6 +12,7 @@ class TestApp extends StatelessWidget {
     this.locale = const Locale('en'),
     this.themeMode = ThemeMode.light,
     this.settingsCubit,
+    this.profileCubit,
     super.key,
   });
 
@@ -20,6 +22,9 @@ class TestApp extends StatelessWidget {
 
   /// View model das telas de Configurações, quando a tela testada precisa dele.
   final SettingsCubit? settingsCubit;
+
+  /// View model do perfil, quando a tela testada precisa dele.
+  final ProfileCubit? profileCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +37,15 @@ class TestApp extends StatelessWidget {
       supportedLocales: appSupportedLocales,
       home: child,
     );
-    final cubit = settingsCubit;
-    if (cubit == null) return app;
-    return BlocProvider.value(value: cubit, child: app);
+    final settingsCubit = this.settingsCubit;
+    final profileCubit = this.profileCubit;
+    final providers = [
+      if (settingsCubit != null)
+        BlocProvider<SettingsCubit>.value(value: settingsCubit),
+      if (profileCubit != null)
+        BlocProvider<ProfileCubit>.value(value: profileCubit),
+    ];
+    if (providers.isEmpty) return app;
+    return MultiBlocProvider(providers: providers, child: app);
   }
 }

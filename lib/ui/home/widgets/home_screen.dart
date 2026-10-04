@@ -19,10 +19,11 @@ class _HomeScreenState extends State<HomeScreen>
     duration: const Duration(milliseconds: 1400),
   );
 
-  // Entrada em sequência: o mascote primeiro, depois o nome e a frase.
-  late final _mascot = _stage(0, 0.6);
-  late final _title = _stage(0.35, 0.8);
-  late final _tagline = _stage(0.55, 1);
+  // Entrada em sequência: o mascote primeiro, depois o nome, a frase e o botão.
+  late final _mascot = _stage(0, 0.55);
+  late final _title = _stage(0.3, 0.75);
+  late final _tagline = _stage(0.45, 0.9);
+  late final _actions = _stage(0.6, 1);
 
   CurvedAnimation _stage(double begin, double end) {
     return CurvedAnimation(
@@ -47,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
     _mascot.dispose();
     _title.dispose();
     _tagline.dispose();
+    _actions.dispose();
     _entrance.dispose();
     super.dispose();
   }
@@ -66,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: FadeTransition(
-                  opacity: _tagline,
+                  opacity: _actions,
                   child: IconButton(
                     key: HomeKeys.settingsButton,
                     icon: const Icon(Icons.settings_outlined),
@@ -127,6 +129,20 @@ class _HomeScreenState extends State<HomeScreen>
                   color: theme.colorScheme.onSurfaceVariant,
                   letterSpacing: 0.4,
                 ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            _Entrance(
+              animation: _actions,
+              child: FilledButton.icon(
+                key: HomeKeys.freeBoardButton,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(220, 52),
+                  textStyle: theme.textTheme.titleMedium,
+                ),
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text(context.l10n.freeBoardTitle),
+                onPressed: () => context.go(Routes.freeBoard),
               ),
             ),
           ],
