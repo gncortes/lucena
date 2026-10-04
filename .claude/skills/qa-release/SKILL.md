@@ -61,7 +61,8 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
    ```
    O script grava a tela enquanto `<comando>` roda, salva o GIF em `docs/qa/TXX/<rótulo>.gif` e imprime a linha de Markdown para o PR. Depois: commit do GIF (`TXX: GIF da <rótulo>`), push e trocar `<sha>` na linha pelo commit do GIF. O `<comando>` deve mostrar o que a tarefa mudou, do jeito que o Gabriel vai ver:
    - telas e fluxos: o cenário Patrol da tarefa (`patrol test -t integration_test/<feature>_test.dart -d <aparelho> --dart-define=E2E=true`);
-   - abertura, animação ou tema: um roteiro curto com `adb` no build de release instalado (abrir o app, trocar o tema, esperar).
+   - abertura, animação, tema ou navegação em ritmo de gente: um roteiro curto com `adb` no build de release instalado. Para tocar nos elementos, `python3 .claude/skills/qa-release/scripts/ui_tap.py "<rótulo>"` acha o elemento pelo texto, dica ou descrição (`--list` mostra os rótulos da tela); voltar é `adb shell input keyevent KEYCODE_BACK`. Deixar 1 a 2 s entre as ações.
+   - o Gabriel acompanha pelo celular, onde GIF não anima na conversa: para mostrar uma prévia antes do PR, mandar o vídeo MP4 (`ffmpeg -i x.gif -pix_fmt yuv420p x.mp4`) e uma imagem com os quadros principais.
    Manter o GIF curto (até uns 20 s; o script recusa acima de 4 MB, porque ele entra no histórico do repositório) e conferir alguns quadros antes de colocar no PR.
 5. PR:
    - **Não existe PR para o branch:** criar com `gh pr create` usando o modelo abaixo.
