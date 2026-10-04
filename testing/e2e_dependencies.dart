@@ -1,4 +1,5 @@
 import 'package:lucena/config/dependencies.dart';
+import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
@@ -29,6 +30,7 @@ Future<Dependencies> e2eDependencies() async {
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: FakeHapticsRepository(),
+    ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     languages: AppLanguage.values,
   );
 }

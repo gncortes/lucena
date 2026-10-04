@@ -8,6 +8,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
@@ -17,12 +18,14 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../../testing/board_gestures.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
   late FreeBoardCubit cubit;
   late FakeNow now;
+  late FakeOngoingGameRepository games;
 
   Future<void> pumpScreen(
     WidgetTester tester, {
@@ -32,6 +35,7 @@ void main() {
     Side? playerSide,
     ClockConfig? clock,
     ClockSettings clockSettings = const ClockSettings(),
+    GameSnapshot? saved,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = const Size(1080, 2400);
@@ -47,11 +51,18 @@ void main() {
     now = FakeNow(DateTime.utc(2026, 1, 1, 12));
     addTearDown(settings.close);
     await settings.load();
+    games = FakeOngoingGameRepository(saved);
     cubit = FreeBoardCubit(
       now: now,
       haptics: FakeHapticsRepository(),
       settings: repository,
-      start: fen == null ? GameRules.initial : GameRules.fromFen(fen)!,
+      games: games,
+      // Com partida gravada, a tela abre para continuar essa partida.
+      start: saved != null
+          ? null
+          : fen == null
+          ? GameRules.initial
+          : GameRules.fromFen(fen)!,
       playerSide: playerSide,
       clock: clock,
     );
@@ -715,6 +726,55 @@ void main() {
 
       expect(cubit.state.clock, isNull);
       expect(find.byKey(FreeBoardKeys.clock(Side.white)), findsNothing);
+    });
+  });
+
+  group('restauração', () {
+    testWidgets('enquanto a partida gravada é lida, o tabuleiro não aparece', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        saved: GameSnapshot(
+          startFen: GameRules.initial.fen,
+          moves: const ['e2e4', 'e7e5'],
+        ),
+      );
+
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.board), findsNothing);
+    });
+
+    testWidgets('a partida gravada volta com a posição, a lista e o relógio', (
+      tester,
+    ) async {
+      const time = TimeControl(initial: Duration(minutes: 5));
+      await pumpScreen(
+        tester,
+        saved: GameSnapshot(
+          startFen: GameRules.initial.fen,
+          moves: const ['e2e4', 'e7e5'],
+          orientation: Side.black,
+          clock: ClockState(
+            config: ClockConfig.same(time),
+            white: const Duration(minutes: 4),
+            black: const Duration(minutes: 5),
+            running: Side.white,
+            // A vez começou 30 s antes de o app reabrir.
+            turnStartedAt: DateTime.utc(2026, 1, 1, 11, 59, 30),
+          ),
+        ),
+      );
+
+      await cubit.open();
+      await tester.pumpAndSettle();
+
+      expect(cubit.state.moves, ['e4', 'e5']);
+      expect(boardFen(tester), cubit.state.position.fen);
+      expect(boardWidget(tester).orientation, Side.black);
+      expect(textOf(tester, FreeBoardKeys.clockTime(Side.white)), '3:30');
+      expect(textOf(tester, FreeBoardKeys.clockTime(Side.black)), '5:00');
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
     });
   });
 }

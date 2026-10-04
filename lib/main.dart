@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/settings/settings_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
+import 'routing/routes.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
@@ -28,17 +30,37 @@ class LucenaApp extends StatefulWidget {
 }
 
 class _LucenaAppState extends State<LucenaApp> {
-  late final GoRouter _router = buildRouter();
+  // Nulo até saber em que tela o app abre.
+  GoRouter? _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _openRouter();
+  }
+
+  // Partida que estava na tela quando o app foi fechado: o app reabre nela.
+  Future<void> _openRouter() async {
+    final game = await widget.dependencies.ongoingGameRepository.load();
+    if (!mounted) return;
+    final resume = game != null && game.onScreen;
+    setState(() {
+      _router = buildRouter(
+        initialLocation: resume ? Routes.freeBoard : Routes.home,
+      );
+    });
+  }
 
   @override
   void dispose() {
-    _router.dispose();
+    _router?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final dependencies = widget.dependencies;
+    final router = _router;
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<Now>.value(value: dependencies.now),
@@ -47,6 +69,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
+        ),
+        RepositoryProvider<OngoingGameRepository>.value(
+          value: dependencies.ongoingGameRepository,
         ),
       ],
       child: MultiBlocProvider(
@@ -65,8 +90,10 @@ class _LucenaAppState extends State<LucenaApp> {
         child: BlocBuilder<SettingsCubit, AppSettings?>(
           builder: (context, settings) {
             // Até as preferências chegarem, só o fundo: o app nunca aparece
-            // no idioma errado.
-            if (settings == null) return const _LaunchBackground();
+            // no idioma errado nem na tela errada.
+            if (settings == null || router == null) {
+              return const _LaunchBackground();
+            }
             return MaterialApp.router(
               onGenerateTitle: (context) => context.l10n.appTitle,
               debugShowCheckedModeBanner: false,
@@ -76,7 +103,7 @@ class _LucenaAppState extends State<LucenaApp> {
               locale: localeFromCode(settings.languageCode),
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: appSupportedLocales,
-              routerConfig: _router,
+              routerConfig: router,
             );
           },
         ),

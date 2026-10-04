@@ -31,9 +31,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
   static const _statusHeight = 72.0;
   static const _minMovesHeight = 120.0;
 
-  late final _board = ChessboardController(
-    game: _gameData(context.read<FreeBoardCubit>().state),
-  );
+  late final ChessboardController _board;
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
   // os tempos sejam refeitos pelo instante atual.
@@ -43,6 +41,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
   void initState() {
     super.initState();
     final cubit = context.read<FreeBoardCubit>();
+    _board = ChessboardController(game: _gameData(cubit.state));
     _clockRefresh = Timer.periodic(
       const Duration(milliseconds: 100),
       (_) => cubit.tick(),
@@ -113,96 +112,118 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
     return BlocConsumer<FreeBoardCubit, FreeBoardState>(
       listener: (context, state) => _onStateChanged(state),
       builder: (context, state) {
-        return Scaffold(
-          key: FreeBoardKeys.screen,
-          appBar: AppBar(
-            title: Text(context.l10n.freeBoardTitle),
-            actions: [
-              IconButton(
-                key: FreeBoardKeys.flipButton,
-                icon: const Icon(Icons.swap_vert),
-                tooltip: context.l10n.freeBoardFlip,
-                onPressed: cubit.flip,
-              ),
-              IconButton(
-                key: FreeBoardKeys.clockButton,
-                icon: const Icon(Icons.timer_outlined),
-                tooltip: context.l10n.freeBoardClock,
-                onPressed: _pickClock,
-              ),
-              IconButton(
-                key: FreeBoardKeys.newGameButton,
-                icon: const Icon(Icons.restart_alt),
-                tooltip: context.l10n.freeBoardNewGame,
-                onPressed: cubit.newGame,
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // Sem relógio na partida, nenhuma fileira de relógio aparece.
-                final clocks = state.clock == null ? null : clockPosition;
-                final clockRows = switch (clocks) {
-                  null => 0,
-                  ClockPosition.sides => 2,
-                  ClockPosition.top || ClockPosition.bottom => 1,
-                };
-                final boardSize = math.min(
-                  constraints.maxWidth,
-                  constraints.maxHeight -
-                      _statusHeight -
-                      clockRows * ClockRow.height -
-                      _minMovesHeight,
-                );
-                const both = [Side.white, Side.black];
-                return Column(
-                  children: [
-                    _Status(
-                      minHeight: _statusHeight,
-                      state: state,
-                      onNewGame: cubit.newGame,
-                    ),
-                    if (clocks == ClockPosition.top)
-                      ClockRow(sides: both, state: state),
-                    if (clocks == ClockPosition.sides)
-                      ClockRow(
-                        sides: [state.orientation.opposite],
-                        state: state,
-                      ),
-                    // O tabuleiro não espelha em idiomas da direita para a esquerda.
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Chessboard(
-                        key: FreeBoardKeys.board,
-                        size: boardSize,
-                        controller: _board,
-                        settings: boardSettings.chessground,
-                        orientation: state.orientation,
-                        onMove: (move, {viaDragAndDrop}) => cubit.play(move),
-                      ),
-                    ),
-                    if (clocks == ClockPosition.sides)
-                      ClockRow(sides: [state.orientation], state: state),
-                    if (clocks == ClockPosition.bottom)
-                      ClockRow(sides: both, state: state),
-                    Expanded(
-                      child: MoveList(
-                        moves: state.moves,
-                        firstMoveNumber: state.start.fullmoves,
-                        firstSide: state.start.turn,
-                        pieceLetters: boardSettings.notation.pieceLetters(
-                          context.l10n,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
+        // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+        // guarda a partida.
+        return PopScope(
+          onPopInvokedWithResult: (didPop, _) {
+            if (didPop) unawaited(cubit.leave());
+          },
+          child: _scaffold(context, cubit, state, boardSettings, clockPosition),
         );
       },
+    );
+  }
+
+  Widget _scaffold(
+    BuildContext context,
+    FreeBoardCubit cubit,
+    FreeBoardState state,
+    BoardSettings boardSettings,
+    ClockPosition clockPosition,
+  ) {
+    // Enquanto a partida em andamento é lida do aparelho, só a barra de cima:
+    // o tabuleiro não pisca na posição errada.
+    if (!state.ready) {
+      return Scaffold(
+        key: FreeBoardKeys.screen,
+        appBar: AppBar(title: Text(context.l10n.freeBoardTitle)),
+      );
+    }
+    return Scaffold(
+      key: FreeBoardKeys.screen,
+      appBar: AppBar(
+        title: Text(context.l10n.freeBoardTitle),
+        actions: [
+          IconButton(
+            key: FreeBoardKeys.flipButton,
+            icon: const Icon(Icons.swap_vert),
+            tooltip: context.l10n.freeBoardFlip,
+            onPressed: cubit.flip,
+          ),
+          IconButton(
+            key: FreeBoardKeys.clockButton,
+            icon: const Icon(Icons.timer_outlined),
+            tooltip: context.l10n.freeBoardClock,
+            onPressed: _pickClock,
+          ),
+          IconButton(
+            key: FreeBoardKeys.newGameButton,
+            icon: const Icon(Icons.restart_alt),
+            tooltip: context.l10n.freeBoardNewGame,
+            onPressed: cubit.newGame,
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Sem relógio na partida, nenhuma fileira de relógio aparece.
+            final clocks = state.clock == null ? null : clockPosition;
+            final clockRows = switch (clocks) {
+              null => 0,
+              ClockPosition.sides => 2,
+              ClockPosition.top || ClockPosition.bottom => 1,
+            };
+            final boardSize = math.min(
+              constraints.maxWidth,
+              constraints.maxHeight -
+                  _statusHeight -
+                  clockRows * ClockRow.height -
+                  _minMovesHeight,
+            );
+            const both = [Side.white, Side.black];
+            return Column(
+              children: [
+                _Status(
+                  minHeight: _statusHeight,
+                  state: state,
+                  onNewGame: cubit.newGame,
+                ),
+                if (clocks == ClockPosition.top)
+                  ClockRow(sides: both, state: state),
+                if (clocks == ClockPosition.sides)
+                  ClockRow(sides: [state.orientation.opposite], state: state),
+                // O tabuleiro não espelha em idiomas da direita para a esquerda.
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Chessboard(
+                    key: FreeBoardKeys.board,
+                    size: boardSize,
+                    controller: _board,
+                    settings: boardSettings.chessground,
+                    orientation: state.orientation,
+                    onMove: (move, {viaDragAndDrop}) => cubit.play(move),
+                  ),
+                ),
+                if (clocks == ClockPosition.sides)
+                  ClockRow(sides: [state.orientation], state: state),
+                if (clocks == ClockPosition.bottom)
+                  ClockRow(sides: both, state: state),
+                Expanded(
+                  child: MoveList(
+                    moves: state.moves,
+                    firstMoveNumber: state.start.fullmoves,
+                    firstSide: state.start.turn,
+                    pieceLetters: boardSettings.notation.pieceLetters(
+                      context.l10n,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

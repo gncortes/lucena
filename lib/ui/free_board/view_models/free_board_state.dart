@@ -16,8 +16,14 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// A posição atual.
     required Position position,
 
+    /// Falso enquanto a partida em andamento ainda está sendo lida do aparelho.
+    @Default(true) bool ready,
+
     /// Os lances jogados, em notação algébrica (`e4`, `Nf3`, `O-O`).
     @Default(<String>[]) List<String> moves,
+
+    /// Os mesmos lances em UCI (`e2e4`, `g1f3`), como são gravados.
+    @Default(<String>[]) List<String> ucis,
 
     /// O último lance, para o tabuleiro destacar.
     Move? lastMove,

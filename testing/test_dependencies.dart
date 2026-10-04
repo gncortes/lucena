@@ -1,11 +1,13 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/data/repositories/settings/settings_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_now.dart';
+import 'fakes/fake_ongoing_game_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_settings_repository.dart';
 
@@ -15,6 +17,7 @@ Dependencies testDependencies({
   SettingsRepository? settingsRepository,
   ProfileRepository? profileRepository,
   HapticsRepository? hapticsRepository,
+  OngoingGameRepository? ongoingGameRepository,
   List<AppLanguage>? languages,
 }) {
   return Dependencies(
@@ -22,6 +25,7 @@ Dependencies testDependencies({
     settingsRepository: settingsRepository ?? FakeSettingsRepository(),
     profileRepository: profileRepository ?? FakeProfileRepository(),
     hapticsRepository: hapticsRepository ?? FakeHapticsRepository(),
+    ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }
