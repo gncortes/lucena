@@ -43,7 +43,7 @@ class _LucenaAppState extends State<LucenaApp> {
   Future<void> _openRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
     if (!mounted) return;
-    final resume = game != null && game.onScreen;
+    final resume = game != null && game.reopensOnLaunch;
     setState(() {
       _router = buildRouter(
         initialLocation: resume ? Routes.freeBoard : Routes.home,

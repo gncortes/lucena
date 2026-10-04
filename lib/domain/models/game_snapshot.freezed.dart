@@ -235,8 +235,8 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 /// @nodoc
 
 
-class _GameSnapshot implements GameSnapshot {
-  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.onScreen = true}): _moves = moves;
+class _GameSnapshot extends GameSnapshot {
+  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.onScreen = true}): _moves = moves,super._();
   
 
 /// A posição em que a partida começou (FEN).
