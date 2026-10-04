@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
-/// Telas de Configurações e de idioma.
+/// Telas de Configurações, de idioma e de tema.
 class SettingsRobot {
   const SettingsRobot(this.$);
 
@@ -40,6 +41,26 @@ class SettingsRobot {
 
   Future<void> chooseSystemLanguage() async {
     await $(SettingsKeys.languageSystem).scrollTo().tap();
+  }
+
+  void expectThemeValue(String text) {
+    expect(
+      $.tester.widget<Text>(find.byKey(SettingsKeys.themeValue)).data,
+      text,
+    );
+  }
+
+  Future<void> openThemes() async {
+    await $(SettingsKeys.themeTile).tap();
+    await $(SettingsKeys.themeScreen).waitUntilVisible();
+  }
+
+  Future<void> expectThemesVisible() async {
+    await $(SettingsKeys.themeScreen).waitUntilVisible();
+  }
+
+  Future<void> chooseTheme(AppThemeMode mode) async {
+    await $(SettingsKeys.themeOption(mode)).tap();
   }
 
   /// Volta uma tela pela seta da barra superior.

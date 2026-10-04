@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/settings/widgets/settings_screen.dart';
@@ -39,5 +40,20 @@ void main() {
     await pumpScreen(tester, const AppSettings(languageCode: 'de'));
 
     expect(languageValue(tester), 'Deutsch');
+  });
+
+  String themeValue(WidgetTester tester) =>
+      tester.widget<Text>(find.byKey(SettingsKeys.themeValue)).data!;
+
+  testWidgets('sem tema escolhido, mostra "padrão do sistema"', (tester) async {
+    await pumpScreen(tester, const AppSettings());
+
+    expect(themeValue(tester), 'System default');
+  });
+
+  testWidgets('mostra o tema escolhido', (tester) async {
+    await pumpScreen(tester, const AppSettings(themeMode: AppThemeMode.dark));
+
+    expect(themeValue(tester), 'Dark');
   });
 }

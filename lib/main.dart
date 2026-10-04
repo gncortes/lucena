@@ -8,6 +8,7 @@ import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
+import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 
 void main() {
@@ -52,6 +53,7 @@ class _LucenaAppState extends State<LucenaApp> {
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light,
               darkTheme: AppTheme.dark,
+              themeMode: settings.themeMode.material,
               locale: localeFromCode(settings.languageCode),
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: appSupportedLocales,

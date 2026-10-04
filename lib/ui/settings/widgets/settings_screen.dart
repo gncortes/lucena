@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/app_language.dart';
+import '../../../domain/models/app_theme_mode.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_theme_mode_ui.dart';
 import '../view_models/settings_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -17,6 +19,9 @@ class SettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state?.languageCode,
     );
     final language = AppLanguage.fromCode(languageCode);
+    final themeMode = context.select(
+      (SettingsCubit cubit) => cubit.state?.themeMode ?? AppThemeMode.system,
+    );
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: AppBar(
@@ -34,6 +39,17 @@ class SettingsScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsLanguage),
+          ),
+          ListTile(
+            key: SettingsKeys.themeTile,
+            leading: Icon(themeMode.icon),
+            title: Text(context.l10n.settingsTheme),
+            subtitle: Text(
+              themeMode.label(context.l10n),
+              key: SettingsKeys.themeValue,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsTheme),
           ),
         ],
       ),
