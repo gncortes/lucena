@@ -4,6 +4,10 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "boardAnimation": "Piece animation",
+  "@boardAnimation": {
+    "description": "Switch: pieces slide to the new square instead of jumping."
+  },
   "boardColors": "Board colors",
   "@boardColors": {
     "description": "Section title above the list of chessboard color themes."
@@ -32,13 +36,61 @@
   "@boardCoordinates": {
     "description": "Switch that shows or hides the letters and numbers of the squares on the edge of the board."
   },
+  "boardHighlightLastMove": "Highlight last move",
+  "@boardHighlightLastMove": {
+    "description": "Switch: color the origin and destination squares of the last move played."
+  },
+  "boardMoveMethod": "How to move pieces",
+  "@boardMoveMethod": {
+    "description": "Setting that picks how pieces are moved on the board: dragging, tapping or both."
+  },
+  "boardMoveMethodDrag": "Drag only",
+  "@boardMoveMethodDrag": {
+    "description": "Option: pieces can only be moved by dragging them to the square."
+  },
+  "boardMoveMethodEither": "Drag or tap",
+  "@boardMoveMethodEither": {
+    "description": "Option: pieces can be moved by dragging them or by tapping the piece and then the square."
+  },
+  "boardMoveMethodTap": "Tap only",
+  "@boardMoveMethodTap": {
+    "description": "Option: pieces can only be moved by tapping the piece and then the destination square."
+  },
+  "boardNotation": "Move notation",
+  "@boardNotation": {
+    "description": "Setting that picks how moves are written in the move list."
+  },
+  "boardNotationFigurine": "Piece symbols",
+  "@boardNotationFigurine": {
+    "description": "Option: moves are written with the drawing of the piece, like ♘f3."
+  },
+  "boardNotationLetters": "Letters",
+  "@boardNotationLetters": {
+    "description": "Option: moves are written with the letter of the piece in the app language, like Nf3."
+  },
   "boardPieces": "Pieces",
   "@boardPieces": {
     "description": "Section title above the list of chess piece sets (drawing styles)."
   },
+  "boardPremoves": "Premoves",
+  "@boardPremoves": {
+    "description": "Switch for premoves: playing your move in advance during the opponent's turn."
+  },
+  "boardPremovesHint": "Play your move in advance, during the opponent's turn",
+  "@boardPremovesHint": {
+    "description": "Short explanation under the premoves switch."
+  },
   "boardRestoreDefault": "Restore default",
   "@boardRestoreDefault": {
     "description": "Button that puts board colors, pieces and coordinates back to the original values."
+  },
+  "boardShowLegalMoves": "Show legal moves",
+  "@boardShowLegalMoves": {
+    "description": "Switch: when a piece is selected, mark the squares it can go to."
+  },
+  "commonConfirm": "Confirm",
+  "@commonConfirm": {
+    "description": "Button that confirms the option marked in a selection panel."
   },
   "freeBoardBlackToMove": "Black to move",
   "@freeBoardBlackToMove": {
@@ -55,6 +107,10 @@
   "freeBoardDraw": "Draw",
   "@freeBoardDraw": {
     "description": "Game result: draw."
+  },
+  "freeBoardFlip": "Flip board",
+  "@freeBoardFlip": {
+    "description": "Tooltip of the button that turns the board around to see it from the other side."
   },
   "freeBoardInsufficientMaterial": "Insufficient material",
   "@freeBoardInsufficientMaterial": {
@@ -91,6 +147,26 @@
   "homeTagline": "Chess endgame training",
   "@homeTagline": {
     "description": "Short phrase under the app name on the home screen."
+  },
+  "pieceLetterBishop": "B",
+  "@pieceLetterBishop": {
+    "description": "Letter of the bishop in chess move notation in this language."
+  },
+  "pieceLetterKing": "K",
+  "@pieceLetterKing": {
+    "description": "Letter of the king in chess move notation in this language."
+  },
+  "pieceLetterKnight": "N",
+  "@pieceLetterKnight": {
+    "description": "Letter of the knight in chess move notation in this language."
+  },
+  "pieceLetterQueen": "Q",
+  "@pieceLetterQueen": {
+    "description": "Letter of the queen in chess move notation in this language."
+  },
+  "pieceLetterRook": "R",
+  "@pieceLetterRook": {
+    "description": "Letter of the rook in chess move notation in this language."
   },
   "profileLevelAbove": "{min} or more",
   "@profileLevelAbove": {
@@ -173,6 +249,10 @@
   "settingsBoardAppearance": "Board appearance",
   "@settingsBoardAppearance": {
     "description": "Settings entry and title of the screen where the player picks board colors, piece set and coordinates."
+  },
+  "settingsBoardBehavior": "Board behavior",
+  "@settingsBoardBehavior": {
+    "description": "Settings entry and title of the screen with how the board reacts: moving pieces, legal move hints, animation, premoves and notation."
   },
   "settingsLanguage": "Language",
   "@settingsLanguage": {

@@ -8,11 +8,20 @@ export 'free_board_state.dart';
 
 /// Tabuleiro livre: o jogador faz os lances dos dois lados.
 class FreeBoardCubit extends Cubit<FreeBoardState> {
-  /// Sem [start], abre na posição inicial do xadrez.
-  FreeBoardCubit({Position start = GameRules.initial})
-    : super(FreeBoardState(start: start, position: start));
+  /// Sem [start], abre na posição inicial do xadrez. Com [playerSide], o
+  /// jogador só move as peças desse lado e vê o tabuleiro por ele.
+  FreeBoardCubit({Position start = GameRules.initial, Side? playerSide})
+    : super(
+        FreeBoardState(
+          start: start,
+          position: start,
+          playerSide: playerSide,
+          orientation: playerSide ?? Side.white,
+        ),
+      );
 
-  /// Joga um lance. Lance ilegal ou com a partida terminada é ignorado.
+  /// Joga um lance de quem está na vez, seja do jogador ou do adversário.
+  /// Lance ilegal ou com a partida terminada é ignorado.
   void play(Move move) {
     if (state.end != null) return;
     final played = GameRules.play(state.position, move);
@@ -26,8 +35,21 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     );
   }
 
-  /// Volta à posição em que o tabuleiro abriu, sem lances.
+  /// Vira o tabuleiro: o lado de cima passa para baixo.
+  void flip() {
+    emit(state.copyWith(orientation: state.orientation.opposite));
+  }
+
+  /// Volta à posição em que o tabuleiro abriu, sem lances. O tabuleiro
+  /// continua virado como estava.
   void newGame() {
-    emit(FreeBoardState(start: state.start, position: state.start));
+    emit(
+      FreeBoardState(
+        start: state.start,
+        position: state.start,
+        playerSide: state.playerSide,
+        orientation: state.orientation,
+      ),
+    );
   }
 }

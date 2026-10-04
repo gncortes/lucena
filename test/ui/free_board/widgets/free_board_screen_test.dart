@@ -24,7 +24,12 @@ void main() {
     String? fen,
     Locale locale = const Locale('en'),
     BoardSettings board = const BoardSettings(),
+    Side? playerSide,
   }) async {
+    // Tela de celular em retrato, como no app.
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
     final settings = SettingsCubit(
       FakeSettingsRepository(AppSettings(board: board)),
       languages: AppLanguage.selectable,
@@ -33,6 +38,7 @@ void main() {
     await settings.load();
     cubit = FreeBoardCubit(
       start: fen == null ? GameRules.initial : GameRules.fromFen(fen)!,
+      playerSide: playerSide,
     );
     addTearDown(cubit.close);
     await tester.pumpWidget(
@@ -50,10 +56,34 @@ void main() {
 
   /// Toca na casa de origem e depois na de destino.
   Future<void> move(WidgetTester tester, String from, String to) async {
-    await tester.tapAt(squareCenter(boardRect(tester), from));
+    final orientation = cubit.state.orientation;
+    final board = boardRect(tester);
+    await tester.tapAt(squareCenter(board, from, orientation: orientation));
     await tester.pump();
-    await tester.tapAt(squareCenter(boardRect(tester), to));
+    await tester.tapAt(squareCenter(board, to, orientation: orientation));
     await tester.pumpAndSettle();
+  }
+
+  Future<void> drag(WidgetTester tester, String from, String to) async {
+    final board = boardRect(tester);
+    await tester.dragFrom(
+      squareCenter(board, from),
+      squareCenter(board, to) - squareCenter(board, from),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Chessboard boardWidget(WidgetTester tester) =>
+      tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
+
+  String moveText(WidgetTester tester, int index) {
+    final text = tester.widget<RichText>(
+      find.descendant(
+        of: find.byKey(FreeBoardKeys.move(index)),
+        matching: find.byType(RichText),
+      ),
+    );
+    return text.text.toPlainText();
   }
 
   String boardFen(WidgetTester tester) =>
@@ -261,5 +291,157 @@ void main() {
     expect(cubit.state.moves, ['e4']);
     final list = tester.element(find.byKey(FreeBoardKeys.move(0)));
     expect(Directionality.of(list), TextDirection.ltr);
+  });
+
+  testWidgets('só tocar: arrastar não move a peça, tocar move', (tester) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(moveMethod: MoveMethod.tap),
+    );
+
+    await drag(tester, 'e2', 'e4');
+    expect(cubit.state.moves, isEmpty);
+
+    await move(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['Nf3']);
+  });
+
+  testWidgets('só arrastar: tocar não move a peça, arrastar move', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(moveMethod: MoveMethod.drag),
+    );
+
+    await move(tester, 'e2', 'e4');
+    expect(cubit.state.moves, isEmpty);
+
+    await drag(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['Nf3']);
+  });
+
+  testWidgets('ajudas visuais e animação seguem as preferências', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      board: const BoardSettings(
+        showLegalMoves: false,
+        highlightLastMove: false,
+        animation: false,
+      ),
+    );
+
+    final settings = boardWidget(tester).settings;
+    expect(settings.showValidMoves, isFalse);
+    expect(settings.showLastMove, isFalse);
+    expect(settings.animationDuration, Duration.zero);
+  });
+
+  testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e7', 'e5');
+
+    await tester.tap(find.byKey(FreeBoardKeys.flipButton));
+    await tester.pumpAndSettle();
+
+    expect(boardWidget(tester).orientation, Side.black);
+    expect(cubit.state.moves, ['e4', 'e5']);
+
+    // Com o tabuleiro virado, as casas trocam de lugar na tela.
+    await move(tester, 'g1', 'f3');
+    expect(cubit.state.moves, ['e4', 'e5', 'Nf3']);
+  });
+
+  testWidgets('notação por letras em português mostra C, B, T, D e R', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      fen: '4k3/8/8/8/8/8/8/R1BQKBN1 w - - 0 1',
+      locale: const Locale('pt'),
+      board: const BoardSettings(notation: MoveNotation.letters),
+    );
+
+    await move(tester, 'g1', 'f3');
+    await move(tester, 'e8', 'e7');
+    await move(tester, 'f1', 'c4');
+    await move(tester, 'e7', 'f6');
+    await move(tester, 'd1', 'd4');
+    await move(tester, 'f6', 'e7');
+    await move(tester, 'a1', 'a7');
+
+    expect(
+      [for (var i = 0; i < 7; i++) moveText(tester, i)],
+      ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
+    );
+    expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (
+    tester,
+  ) async {
+    await pumpScreen(tester, playerSide: Side.white);
+    await move(tester, 'e2', 'e4');
+
+    // Vez das pretas: o lance das brancas fica só marcado.
+    await move(tester, 'd2', 'd4');
+    expect(cubit.state.moves, ['e4']);
+    expect(boardWidget(tester).controller.premove, NormalMove.fromUci('d2d4'));
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.moves, ['e4', 'e5', 'd4']);
+    expect(boardWidget(tester).controller.premove, isNull);
+  });
+
+  testWidgets('pré-lance que deixou de ser legal é descartado', (tester) async {
+    await pumpScreen(tester, playerSide: Side.white);
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e4', 'e5');
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.moves, ['e4', 'e5']);
+    expect(boardWidget(tester).controller.premove, isNull);
+  });
+
+  testWidgets('com os pré-lances desligados, nada fica marcado', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      playerSide: Side.white,
+      board: const BoardSettings(premoves: false),
+    );
+    await move(tester, 'e2', 'e4');
+
+    await move(tester, 'd2', 'd4');
+    expect(boardWidget(tester).controller.premove, isNull);
+
+    cubit.play(NormalMove.fromUci('e7e5'));
+    await tester.pumpAndSettle();
+    expect(cubit.state.moves, ['e4', 'e5']);
+  });
+
+  testWidgets('o jogador de um lado só não move as peças do adversário', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      playerSide: Side.white,
+      board: const BoardSettings(premoves: false),
+    );
+    await move(tester, 'e2', 'e4');
+
+    await move(tester, 'e7', 'e5');
+
+    expect(cubit.state.moves, ['e4']);
   });
 }

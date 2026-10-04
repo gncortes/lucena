@@ -41,13 +41,35 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
     final position = state.position;
     return GameData(
       fen: position.fen,
-      // Com a partida terminada, o tabuleiro trava.
-      playerSide: state.end == null ? PlayerSide.both : PlayerSide.none,
+      playerSide: _playerSide(state),
       sideToMove: position.turn,
       validMoves: GameRules.legalMoves(position),
       lastMove: state.lastMove,
       kingSquareInCheck: GameRules.checkedKing(position),
     );
+  }
+
+  PlayerSide _playerSide(FreeBoardState state) {
+    // Com a partida terminada, o tabuleiro trava.
+    if (state.end != null) return PlayerSide.none;
+    return switch (state.playerSide) {
+      null => PlayerSide.both,
+      Side.white => PlayerSide.white,
+      Side.black => PlayerSide.black,
+    };
+  }
+
+  void _onStateChanged(FreeBoardState state) {
+    final isPlayerTurn = state.playerSide == state.position.turn;
+    final premove = _board.premove;
+    // O pré-lance só sobrevive enquanto espera a resposta do adversário.
+    final keepPremove = state.end == null && state.moves.isNotEmpty;
+    _board.updatePosition(_gameData(state), resetPremove: !keepPremove);
+    if (!keepPremove || premove == null || !isPlayerTurn) return;
+    // O adversário respondeu: o lance marcado antes é jogado em seguida. Se
+    // ele deixou de ser legal, é só descartado.
+    _board.premove = null;
+    context.read<FreeBoardCubit>().play(premove);
   }
 
   @override
@@ -57,14 +79,19 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
     return BlocConsumer<FreeBoardCubit, FreeBoardState>(
-      listener: (context, state) =>
-          _board.updatePosition(_gameData(state), resetPremove: true),
+      listener: (context, state) => _onStateChanged(state),
       builder: (context, state) {
         return Scaffold(
           key: FreeBoardKeys.screen,
           appBar: AppBar(
             title: Text(context.l10n.freeBoardTitle),
             actions: [
+              IconButton(
+                key: FreeBoardKeys.flipButton,
+                icon: const Icon(Icons.swap_vert),
+                tooltip: context.l10n.freeBoardFlip,
+                onPressed: cubit.flip,
+              ),
               IconButton(
                 key: FreeBoardKeys.newGameButton,
                 icon: const Icon(Icons.restart_alt),
@@ -95,7 +122,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                         size: boardSize,
                         controller: _board,
                         settings: boardSettings.chessground,
-                        orientation: Side.white,
+                        orientation: state.orientation,
                         onMove: (move, {viaDragAndDrop}) => cubit.play(move),
                       ),
                     ),
@@ -104,6 +131,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                         moves: state.moves,
                         firstMoveNumber: state.start.fullmoves,
                         firstSide: state.start.turn,
+                        pieceLetters: boardSettings.notation.pieceLetters(
+                          context.l10n,
+                        ),
                       ),
                     ),
                   ],

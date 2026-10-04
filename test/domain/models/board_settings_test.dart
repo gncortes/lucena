@@ -35,4 +35,44 @@ void main() {
 
     expect(changed.withDefaultAppearance(), const BoardSettings());
   });
+
+  test('jeito de mover e notação voltam do código gravado', () {
+    for (final method in MoveMethod.values) {
+      expect(MoveMethod.fromCode(method.code), method);
+    }
+    for (final notation in MoveNotation.values) {
+      expect(MoveNotation.fromCode(notation.code), notation);
+    }
+    expect(MoveMethod.fromCode('voz'), MoveMethod.either);
+    expect(MoveNotation.fromCode(null), MoveNotation.figurine);
+  });
+
+  test('de fábrica: arrastar ou tocar, ajudas ligadas e notação figurina', () {
+    const settings = BoardSettings();
+
+    expect(settings.moveMethod, MoveMethod.either);
+    expect(settings.showLegalMoves, isTrue);
+    expect(settings.highlightLastMove, isTrue);
+    expect(settings.animation, isTrue);
+    expect(settings.premoves, isTrue);
+    expect(settings.notation, MoveNotation.figurine);
+  });
+
+  test('restaurar a aparência não mexe no comportamento', () {
+    const changed = BoardSettings(
+      colors: BoardColors.green,
+      moveMethod: MoveMethod.tap,
+      showLegalMoves: false,
+      notation: MoveNotation.letters,
+    );
+
+    expect(
+      changed.withDefaultAppearance(),
+      const BoardSettings(
+        moveMethod: MoveMethod.tap,
+        showLegalMoves: false,
+        notation: MoveNotation.letters,
+      ),
+    );
+  });
 }

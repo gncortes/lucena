@@ -91,4 +91,50 @@ void main() {
     expect(cubit.state.position, start);
     expect(cubit.state.moves, isEmpty);
   });
+
+  test('sem lado escolhido, o jogador move os dois e vê pelas brancas', () {
+    final state = FreeBoardCubit().state;
+
+    expect(state.playerSide, isNull);
+    expect(state.orientation, Side.white);
+  });
+
+  test('jogando de pretas, o tabuleiro abre virado para as pretas', () {
+    final state = FreeBoardCubit(playerSide: Side.black).state;
+
+    expect(state.playerSide, Side.black);
+    expect(state.orientation, Side.black);
+  });
+
+  blocTest<FreeBoardCubit, FreeBoardState>(
+    'virar o tabuleiro inverte a orientação e não mexe na partida',
+    build: FreeBoardCubit.new,
+    act: (cubit) {
+      playAll(cubit, ['e2e4', 'e7e5']);
+      cubit.flip();
+    },
+    skip: 2,
+    verify: (cubit) {
+      expect(cubit.state.orientation, Side.black);
+      expect(cubit.state.moves, ['e4', 'e5']);
+      expect(cubit.state.position.turn, Side.white);
+    },
+  );
+
+  blocTest<FreeBoardCubit, FreeBoardState>(
+    'nova partida mantém o tabuleiro virado e o lado do jogador',
+    build: () => FreeBoardCubit(playerSide: Side.white),
+    act: (cubit) {
+      cubit
+        ..flip()
+        ..play(NormalMove.fromUci('e2e4'))
+        ..newGame();
+    },
+    skip: 2,
+    verify: (cubit) {
+      expect(cubit.state.moves, isEmpty);
+      expect(cubit.state.orientation, Side.black);
+      expect(cubit.state.playerSide, Side.white);
+    },
+  );
 }
