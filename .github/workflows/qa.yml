@@ -1,0 +1,170 @@
+name: QA
+
+# A tag de candidata (vX.Y.Z-rc.N), criada pela skill qa-release no branch da tarefa, dispara:
+# Patrol no Firebase Test Lab -> APK de release assinado -> Firebase App Distribution.
+# Só quem tem permissão de escrita no repositório cria tags: PRs de forks não chegam aqui.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+']
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # com pipefail: falha em `comando | tee` reprova o passo
+
+jobs:
+  qa:
+    name: Test Lab e App Distribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Os segredos (assinatura e configuração do QA) só existem neste ambiente, restrito a tags `v*`.
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # login no Google Cloud sem chave (Workload Identity Federation)
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # versionCode = número de commits
+
+      # Falha cedo, antes de gastar cota do Test Lab.
+      - name: Configuração
+        id: cfg
+        env:
+          # Projeto, app e aparelhos: o config.env não é versionado, vem do ambiente `release`.
+          QA_CONFIG_ENV: ${{ secrets.QA_CONFIG_ENV }}
+          TEM_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          if [[ -z "$QA_CONFIG_ENV" ]]; then
+            echo "::error::Segredo QA_CONFIG_ENV ausente no ambiente release (ver SETUP.md da skill qa-release)"
+            exit 1
+          fi
+          QA_CONFIG="$RUNNER_TEMP/qa_config.env"
+          (umask 077 && printf '%s\n' "$QA_CONFIG_ENV" > "$QA_CONFIG")
+          echo "QA_CONFIG=$QA_CONFIG" >> "$GITHUB_ENV" # os próximos passos fazem `source "$QA_CONFIG"`
+          source "$QA_CONFIG"
+          if [[ "$FIREBASE_PROJECT_ID" == *xxxxx* || -z "$GCP_WORKLOAD_IDENTITY_PROVIDER" || -z "$GCP_SERVICE_ACCOUNT" ]]; then
+            echo "::error::O segredo QA_CONFIG_ENV ainda não foi preenchido (ver SETUP.md da skill qa-release)"
+            exit 1
+          fi
+          if [[ "$TEM_KEYSTORE" != true ]]; then
+            echo "::error::Segredos de assinatura ausentes no ambiente release (ver SETUP.md da skill qa-release)"
+            exit 1
+          fi
+          {
+            echo "provider=$GCP_WORKLOAD_IDENTITY_PROVIDER"
+            echo "service-account=$GCP_SERVICE_ACCOUNT"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: ./.github/actions/setup-flutter
+
+      - name: Build do Patrol
+        run: |
+          dart pub global activate patrol_cli 4.8.0
+          export PATH="$PATH:${PUB_CACHE:-$HOME/.pub-cache}/bin"
+          patrol build android --dart-define=E2E=true
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ steps.cfg.outputs.provider }}
+          service_account: ${{ steps.cfg.outputs.service-account }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Patrol no Test Lab
+        id: testlab
+        run: |
+          source "$QA_CONFIG"
+          device_args=()
+          while IFS= read -r d; do [[ -n "$d" ]] && device_args+=(--device "$d"); done <<< "$TEST_LAB_DEVICES"
+
+          # Uma repetição automática cobre instabilidade do aparelho; falha de teste de verdade reprova.
+          set +e
+          gcloud firebase test android run \
+            --project "$FIREBASE_PROJECT_ID" \
+            --type instrumentation \
+            --use-orchestrator \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            "${device_args[@]}" \
+            --timeout "$TEST_LAB_TIMEOUT" \
+            --num-flaky-test-attempts 1 \
+            --record-video \
+            --environment-variables clearPackageData=true \
+            2>&1 | tee "$RUNNER_TEMP/test_lab.log"
+          status=${PIPESTATUS[0]}
+          set -e
+
+          # O gcloud imprime o link entre colchetes: "...streamed to [https://console.firebase.google.com/project/<id>/testlab/...]."
+          link="$(grep -oE 'https://console\.firebase\.google\.com/[^] ]*testlab[^] ]*' "$RUNNER_TEMP/test_lab.log" | tail -1 || true)"
+          echo "link=$link" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - uses: ./.github/actions/signed-apk
+        id: apk
+        with:
+          tag: ${{ github.ref_name }}
+          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: App Distribution
+        id: dist
+        env:
+          APK: ${{ steps.apk.outputs.apk }}
+        run: |
+          source "$QA_CONFIG"
+          npm install --global --no-fund --no-audit firebase-tools@15.32.1
+
+          notes="$RUNNER_TEMP/release_notes.txt"
+          {
+            echo "$GITHUB_REF_NAME"
+            git log -1 --pretty=%s
+          } > "$notes"
+
+          firebase appdistribution:distribute "$APK" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --app "$FIREBASE_ANDROID_APP_ID" \
+            --groups "$TESTER_GROUP" \
+            --release-notes-file "$notes" \
+            2>&1 | tee "$RUNNER_TEMP/distribution.log"
+
+          tester="$(grep -oE 'https://appdistribution\.firebase\.google\.com/testerapps/[^ ]+' "$RUNNER_TEMP/distribution.log" | tail -1 || true)"
+          console="$(grep -oE 'https://console\.firebase\.google\.com/project/[^ ]*appdistribution[^ ]*' "$RUNNER_TEMP/distribution.log" | tail -1 || true)"
+          if [ -z "$tester" ]; then
+            echo "::error::Link do testador não encontrado na saída do Firebase CLI"
+            exit 1
+          fi
+          echo "tester=$tester" >> "$GITHUB_OUTPUT"
+          echo "console=$console" >> "$GITHUB_OUTPUT"
+
+      - name: Resultado
+        env:
+          VERSION_NAME: ${{ steps.apk.outputs.version-name }}
+          VERSION_CODE: ${{ steps.apk.outputs.version-code }}
+          TESTER_LINK: ${{ steps.dist.outputs.tester }}
+          CONSOLE_LINK: ${{ steps.dist.outputs.console }}
+          TEST_LAB_LINK: ${{ steps.testlab.outputs.link }}
+        run: |
+          source "$QA_CONFIG"
+          jq -n \
+            --arg version "$VERSION_NAME" --arg code "$VERSION_CODE" --arg tag "$GITHUB_REF_NAME" \
+            --arg tester "$TESTER_LINK" --arg console "$CONSOLE_LINK" --arg testlab "$TEST_LAB_LINK" \
+            --arg devices "$TEST_LAB_DEVICES" \
+            '{status:"ok", version:$version, versionCode:$code, tag:$tag,
+              testerLink:$tester, consoleLink:$console, testLabLink:$testlab,
+              devices:($devices|split("\n")|map(select(length>0)))}' > result.json
+          {
+            echo "### QA $GITHUB_REF_NAME"
+            echo "- [Instalar]($TESTER_LINK)"
+            echo "- [Resultado do Test Lab]($TEST_LAB_LINK)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: qa-result
+          path: result.json
+          if-no-files-found: error
