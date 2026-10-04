@@ -1,0 +1,51 @@
+name: Release
+
+# A tag final (`git tag vX.Y.Z && git push --tags`, feita pelo Gabriel depois do merge)
+# roda o CI e publica o APK assinado como Release. Tags de candidata (-rc.N) vão para o qa.yml.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  publicar:
+    name: Publicar Release
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Os segredos de assinatura só existem neste ambiente, restrito a tags `v*`.
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # versionCode = número de commits
+
+      - uses: ./.github/actions/setup-flutter
+
+      - uses: ./.github/actions/signed-apk
+        id: apk
+        with:
+          tag: ${{ github.ref_name }}
+          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Criar Release com o APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APK: ${{ steps.apk.outputs.apk }}
+        run: |
+          destino="lucena-$GITHUB_REF_NAME.apk"
+          mv "$APK" "$destino"
+          gh release create "$GITHUB_REF_NAME" "$destino" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
