@@ -43,6 +43,12 @@ flutter:
     - assets/branding/mascot_light.png
     - assets/branding/mascot_dark.png
 
+  fonts:
+    # Peças de xadrez para a notação figurina (tools/make_figurine_font.py)
+    - family: LucenaFigurine
+      fonts:
+        - asset: assets/fonts/LucenaFigurine.ttf
+
 flutter_launcher_icons:
   android: true
   ios: false
