@@ -54,7 +54,7 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
       2. gera o APK de release assinado (sem `E2E`);
       3. envia o APK para o App Distribution, com notas de versão, para o grupo de testadores;
    5. baixa e imprime o `result.json` (links, versão, aparelhos, status).
-3. Usar **só** o `result.json` que o script imprime no fim da saída (a leitura de `build/` é bloqueada). Se `status` não for `ok`, o script imprime também as últimas 50 linhas dos passos que falharam no workflow: corrigir ou relatar.
+3. Usar **só** o `result.json` que o script imprime no fim da saída (a leitura de `build/` é bloqueada). `ok-sem-test-lab` quer dizer que o link existe mas o Test Lab não rodou por falta de cota (ver "Erros comuns"). Se `status` não for `ok` nem `ok-sem-test-lab`, o script imprime também as últimas 50 linhas dos passos que falharam no workflow: corrigir ou relatar.
 4. Gravar o GIF da feature no emulador local:
    ```bash
    bash .claude/skills/qa-release/scripts/qa_gif.sh TXX v0.1.3-rc.1 -- <comando>
@@ -131,7 +131,7 @@ Para conferir: <1–3 passos>
 
 - **Falta segredo ou configuração no GitHub:** parar e pedir ao Gabriel (`SETUP.md`); nunca criar segredo.
 - **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
-- **Cota do Test Lab esgotada:** relatar; não abrir PR sem o Test Lab (a menos que o Gabriel autorize explicitamente no chat).
+- **Cota do Test Lab esgotada:** o workflow distribui o app mesmo assim e o `result.json` vem com `status: "ok-sem-test-lab"`. Relatar e só abrir o PR se o Gabriel autorizar explicitamente no chat; no PR, a linha do Test Lab vira "⏳ pendente (cota diária esgotada)". Quando a cota voltar (vira à meia-noite do Pacífico, perto das 4h de Brasília), rodar de novo com `gh run rerun <id>` e atualizar o PR com o resultado.
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
 - **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 4 MB; encurtar o roteiro em vez de baixar a qualidade.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.
