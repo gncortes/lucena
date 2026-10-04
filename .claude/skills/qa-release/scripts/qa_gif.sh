@@ -2,9 +2,9 @@
 # Uso: qa_gif.sh TXX <rótulo> -- <comando que exercita a feature no emulador>
 # Ex.:  qa_gif.sh T05 v0.1.1-rc.1 -- patrol test -t integration_test/board_settings_test.dart -d emulator-5554 --dart-define=E2E=true
 #
-# Grava a tela do emulador enquanto o comando roda, converte em GIF, publica no branch
-# `qa-media` (fora da main, para não pesar o histórico do código) e imprime a linha de
-# Markdown que vai na seção "Demonstração" do PR.
+# Grava a tela do emulador enquanto o comando roda, converte em GIF e salva em
+# docs/qa/TXX/<rótulo>.gif. O commit e o push do GIF ficam com quem chamou; no fim o
+# script imprime a linha de Markdown que vai na seção "Demonstração" do PR.
 set -euo pipefail
 
 TASK="${1:?informe a tarefa, ex.: T05}"
@@ -12,13 +12,12 @@ LABEL="${2:?informe o rótulo, ex.: v0.1.3-rc.1}"
 [[ "${3:-}" == "--" && $# -gt 3 ]] || { echo "uso: qa_gif.sh TXX <rótulo> -- <comando>"; exit 2; }
 shift 3
 
-MEDIA_BRANCH="qa-media"
-MAX_BYTES=$((8 * 1024 * 1024))
+MAX_BYTES=$((4 * 1024 * 1024))
 OUT_DIR="build/qa-release"
 MP4="$OUT_DIR/demo.mp4"
-GIF="$OUT_DIR/demo.gif"
+GIF="docs/qa/$TASK/$LABEL.gif"
 REMOTE_MP4="/sdcard/qa_gif.mp4"
-mkdir -p "$OUT_DIR"
+mkdir -p "$OUT_DIR" "$(dirname "$GIF")"
 
 fail() { echo "ERRO: $1"; exit 1; }
 
@@ -56,30 +55,11 @@ ffmpeg -y -loglevel error -i "$MP4" \
   -vf "fps=12,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
   "$GIF"
 SIZE="$(stat -c %s "$GIF")"
-[[ "$SIZE" -le "$MAX_BYTES" ]] || fail "GIF com $((SIZE / 1024)) KB passa de 8 MB: grave um trecho menor"
+# O GIF entra no histórico do repositório: manter pequeno.
+[[ "$SIZE" -le "$MAX_BYTES" ]] || { rm -f "$GIF"; fail "GIF com $((SIZE / 1024)) KB passa de 4 MB: grave um trecho menor"; }
 
-# 3. Publicar no branch de mídia, sem tocar na árvore de trabalho nem no branch atual
-FILE_PATH="$TASK/$LABEL.gif"
-BLOB="$(git hash-object -w "$GIF")"
-COMMIT=""
-for _ in 1 2 3; do
-  INDEX="$(mktemp -u)"
-  PARENT=()
-  if git fetch --quiet origin "$MEDIA_BRANCH" 2>/dev/null; then
-    PARENT=(-p "$(git rev-parse FETCH_HEAD)")
-    GIT_INDEX_FILE="$INDEX" git read-tree FETCH_HEAD
-  fi
-  GIT_INDEX_FILE="$INDEX" git update-index --add --cacheinfo "100644,$BLOB,$FILE_PATH"
-  TREE="$(GIT_INDEX_FILE="$INDEX" git write-tree)"
-  rm -f "$INDEX"
-  COMMIT="$(git commit-tree "$TREE" "${PARENT[@]}" -m "QA $TASK $LABEL")"
-  # Outra sessão pode ter publicado ao mesmo tempo: refaz em cima do branch novo.
-  git push --quiet origin "$COMMIT:refs/heads/$MEDIA_BRANCH" && break
-  COMMIT=""
-done
-[[ -n "$COMMIT" ]] || fail "push do GIF para o branch $MEDIA_BRANCH falhou"
-
-# 4. Markdown para o PR (link preso ao commit: não muda se o branch andar)
+# 3. Markdown para o PR. O link fica preso ao commit do GIF, então só vale depois do push.
 REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
 echo "GIF: $GIF ($((SIZE / 1024)) KB)"
-echo "![$TASK $LABEL no emulador](https://raw.githubusercontent.com/$REPO/$COMMIT/$FILE_PATH)"
+echo "Faça o commit e o push do GIF e troque <sha> pelo commit dele:"
+echo "![$TASK $LABEL no emulador](https://raw.githubusercontent.com/$REPO/<sha>/$GIF)"

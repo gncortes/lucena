@@ -59,10 +59,10 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
    ```bash
    bash .claude/skills/qa-release/scripts/qa_gif.sh TXX v0.1.3-rc.1 -- <comando>
    ```
-   O script grava a tela enquanto `<comando>` roda, publica o GIF no branch `qa-media` (fora da `main`) e imprime a linha de Markdown para o PR. O `<comando>` deve mostrar o que a tarefa mudou, do jeito que o Gabriel vai ver:
+   O script grava a tela enquanto `<comando>` roda, salva o GIF em `docs/qa/TXX/<rótulo>.gif` e imprime a linha de Markdown para o PR. Depois: commit do GIF (`TXX: GIF da <rótulo>`), push e trocar `<sha>` na linha pelo commit do GIF. O `<comando>` deve mostrar o que a tarefa mudou, do jeito que o Gabriel vai ver:
    - telas e fluxos: o cenário Patrol da tarefa (`patrol test -t integration_test/<feature>_test.dart -d <aparelho> --dart-define=E2E=true`);
    - abertura, animação ou tema: um roteiro curto com `adb` no build de release instalado (abrir o app, trocar o tema, esperar).
-   Manter o GIF curto (até uns 20 s). Antes de colocar no PR, baixar o GIF pelo link publicado e conferir alguns quadros (a leitura de `build/` é bloqueada).
+   Manter o GIF curto (até uns 20 s; o script recusa acima de 4 MB, porque ele entra no histórico do repositório) e conferir alguns quadros antes de colocar no PR.
 5. PR:
    - **Não existe PR para o branch:** criar com `gh pr create` usando o modelo abaixo.
    - **PR já existe (correção):** adicionar um comentário com `gh pr comment` usando o modelo de correção. Não editar o resumo original.
@@ -132,5 +132,5 @@ Para conferir: <1–3 passos>
 - **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
 - **Cota do Test Lab esgotada:** relatar; não abrir PR sem o Test Lab (a menos que o Gabriel autorize explicitamente no chat).
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
-- **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 8 MB; encurtar o roteiro em vez de baixar a qualidade.
+- **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 4 MB; encurtar o roteiro em vez de baixar a qualidade.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.
