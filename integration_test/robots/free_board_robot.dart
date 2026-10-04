@@ -1,6 +1,6 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -47,6 +47,16 @@ class FreeBoardRobot {
   Future<void> expectVisible() async {
     await $(FreeBoardKeys.screen).waitUntilVisible();
     await $(FreeBoardKeys.board).waitUntilVisible();
+  }
+
+  void expectNotOpen() {
+    expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+  }
+
+  /// Sai da partida pela seta da barra superior.
+  Future<void> leave() async {
+    await $(BackButton).tap();
+    await $.pumpAndSettle();
   }
 
   /// Toca na casa de origem e depois na de destino (`e2`, `e4`).

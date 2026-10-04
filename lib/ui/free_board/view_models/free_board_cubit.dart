@@ -4,8 +4,10 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/haptics/haptics_repository.dart';
+import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/game_snapshot.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -15,41 +17,83 @@ import 'free_board_state.dart';
 export 'free_board_state.dart';
 
 /// Tabuleiro livre: o jogador faz os lances dos dois lados, com ou sem relógio.
+/// A partida é gravada a cada mudança e continua de onde parou se o app for
+/// fechado.
 class FreeBoardCubit extends Cubit<FreeBoardState> {
-  /// Sem [start], abre na posição inicial do xadrez. Com [playerSide], o
-  /// jogador só move as peças desse lado e vê o tabuleiro por ele. Com
-  /// [clock], a partida abre com o relógio já correndo.
+  /// Com [start], começa uma partida nova nessa posição; [playerSide] faz o
+  /// jogador mover só as peças de um lado (e ver o tabuleiro por ele) e
+  /// [clock] liga o relógio, já correndo.
+  ///
+  /// Sem [start], a tela espera [open] trazer a partida em andamento.
   FreeBoardCubit({
     required Now now,
     required this._haptics,
     required this._settings,
-    Position start = GameRules.initial,
+    required this._games,
+    Position? start,
     Side? playerSide,
     ClockConfig? clock,
   }) : _now = now,
        super(
-         _fresh(
-           start: start,
-           playerSide: playerSide,
-           orientation: playerSide ?? Side.white,
-           clock: clock,
-           now: now(),
-         ),
+         start == null
+             ? const FreeBoardState(
+                 start: GameRules.initial,
+                 position: GameRules.initial,
+                 ready: false,
+               )
+             : _fresh(
+                 start: start,
+                 playerSide: playerSide,
+                 orientation: playerSide ?? Side.white,
+                 clock: clock,
+                 now: now(),
+               ),
        );
 
   final Now _now;
   final HapticsRepository _haptics;
   final SettingsRepository _settings;
+  final OngoingGameRepository _games;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
+
+  // Depois que o jogador sai da tela, nada mais mexe na partida.
+  bool _left = false;
+
+  // As gravações em fila: uma termina antes de a próxima começar.
+  Future<void> _saving = Future.value();
+
+  /// A tela abriu. Partida nova (criada com posição) é só gravada; sem ela,
+  /// continua a partida em andamento ou, se não há, começa uma do início.
+  Future<void> open() async {
+    if (!state.ready) {
+      final snapshot = await _games.load();
+      if (isClosed) return;
+      final now = _now();
+      emit(
+        _restored(snapshot, now) ??
+            _fresh(
+              start: GameRules.initial,
+              playerSide: null,
+              orientation: Side.white,
+              clock: null,
+              now: now,
+            ),
+      );
+      // A bandeira pode ter caído com o app fechado.
+      tick();
+    }
+    _persist();
+    await _saving;
+  }
 
   /// Joga um lance de quem está na vez, seja do jogador ou do adversário.
   /// Lance ilegal ou com a partida terminada é ignorado.
   void play(Move move) {
     // A bandeira vale antes do lance: tempo esgotado não joga.
     tick();
-    if (state.end != null) return;
+    if (!_active || state.end != null) return;
     final played = GameRules.play(state.position, move);
     if (played == null) return;
     final now = _now();
@@ -65,16 +109,19 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         state.copyWith(
           position: played.position,
           moves: [...state.moves, played.san],
+          ucis: [...state.ucis, move.uci],
           lastMove: move,
           clock: clock,
         ),
         now,
       ),
     );
+    _persist();
   }
 
   /// Atualiza os tempos pelo relógio do aparelho e confere a bandeira. A tela
-  /// chama várias vezes por segundo; o resultado só depende do instante atual.
+  /// chama várias vezes por segundo; o resultado só depende do instante atual,
+  /// então vale igual depois de o app ficar em segundo plano.
   void tick() {
     final clock = state.clock;
     if (clock == null || clock.running == null) return;
@@ -90,6 +137,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
           now,
         ),
       );
+      _persist();
       return;
     }
     _warnLowTime(clock, now);
@@ -98,7 +146,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   /// Vira o tabuleiro: o lado de cima passa para baixo.
   void flip() {
+    if (!_active) return;
     emit(state.copyWith(orientation: state.orientation.opposite));
+    _persist();
   }
 
   /// Volta à posição em que o tabuleiro abriu, sem lances. O tabuleiro
@@ -108,7 +158,25 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// Recomeça a partida com o relógio [clock]. Nulo: sem relógio.
   void newGameWithClock(ClockConfig? clock) => _restart(clock);
 
+  /// O jogador saiu da tela por conta própria: o relógio para e a partida fica
+  /// guardada para quando ele voltar.
+  Future<void> leave() async {
+    if (!_active) return;
+    _left = true;
+    final clock = state.clock;
+    if (clock != null) {
+      final now = _now();
+      emit(_timed(state.copyWith(clock: ClockEngine.stop(clock, now)), now));
+    }
+    _persist(onScreen: false);
+    await _saving;
+  }
+
+  // A partida já foi lida do aparelho e o jogador continua na tela.
+  bool get _active => state.ready && !_left;
+
   void _restart(ClockConfig? clock) {
+    if (!_active) return;
     _lowTimeWarned.clear();
     emit(
       _fresh(
@@ -118,6 +186,64 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         clock: clock,
         now: _now(),
       ),
+    );
+    _persist();
+  }
+
+  // Grava a partida como está. Partida terminada sai da gravação: não há o
+  // que continuar.
+  void _persist({bool onScreen = true}) {
+    final current = state;
+    final snapshot = current.end != null
+        ? null
+        : GameSnapshot(
+            startFen: current.start.fen,
+            moves: current.ucis,
+            orientation: current.orientation,
+            playerSide: current.playerSide,
+            clock: current.clock,
+            onScreen: onScreen,
+          );
+    _saving = _saving.whenComplete(
+      () => snapshot == null ? _games.clear() : _games.save(snapshot),
+    );
+  }
+
+  // A partida gravada, refeita lance a lance. Nulo se não há gravação ou se
+  // ela não fecha com as regras (aí a tela começa uma partida do início).
+  static FreeBoardState? _restored(GameSnapshot? snapshot, DateTime now) {
+    if (snapshot == null) return null;
+    final start = GameRules.fromFen(snapshot.startFen);
+    if (start == null) return null;
+    var position = start;
+    final moves = <String>[];
+    Move? lastMove;
+    for (final uci in snapshot.moves) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : GameRules.play(position, move);
+      if (played == null) return null;
+      position = played.position;
+      moves.add(played.san);
+      lastMove = move;
+    }
+    var clock = snapshot.clock;
+    // Relógio parado numa partida em andamento: o jogador tinha saído da tela.
+    // Ao voltar, o relógio retoma do ponto em que parou.
+    if (clock != null && GameRules.endOf(position) == null) {
+      clock = ClockEngine.resume(clock, turn: position.turn, now: now);
+    }
+    return _timed(
+      FreeBoardState(
+        start: start,
+        position: position,
+        moves: moves,
+        ucis: snapshot.moves,
+        lastMove: lastMove,
+        orientation: snapshot.orientation,
+        playerSide: snapshot.playerSide,
+        clock: clock,
+      ),
+      now,
     );
   }
 

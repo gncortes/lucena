@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/repositories/haptics/haptics_repository.dart';
+import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
@@ -20,9 +21,11 @@ import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/theme_screen.dart';
 import 'routes.dart';
 
-GoRouter buildRouter() {
+/// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
+/// árvore de rotas entram junto, para o botão de voltar funcionar.
+GoRouter buildRouter({String initialLocation = Routes.home}) {
   return GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: initialLocation,
     routes: [
       GoRoute(
         path: Routes.home,
@@ -31,6 +34,8 @@ GoRouter buildRouter() {
           GoRoute(
             path: 'board',
             builder: (context, state) {
+              // Sem parâmetros, a tela continua a partida em andamento (ou
+              // começa uma do início). Com parâmetros, começa uma partida nova:
               // `?fen=` abre numa posição preparada; FEN inválido cai na inicial.
               // `?side=` deixa o jogador mover só as peças de um lado.
               final fen = state.uri.queryParameters['fen'];
@@ -42,6 +47,7 @@ GoRouter buildRouter() {
               final black = TimeControl.tryParse(
                 state.uri.queryParameters['black'],
               );
+              final isNewGame = state.uri.queryParameters.isNotEmpty;
               final start = fen == null ? null : GameRules.fromFen(fen);
               return BlocProvider(
                 key: ValueKey(state.uri),
@@ -49,12 +55,13 @@ GoRouter buildRouter() {
                   now: context.read<Now>(),
                   haptics: context.read<HapticsRepository>(),
                   settings: context.read<SettingsRepository>(),
-                  start: start ?? GameRules.initial,
+                  games: context.read<OngoingGameRepository>(),
+                  start: isNewGame ? start ?? GameRules.initial : null,
                   playerSide: Side.values.asNameMap()[side],
                   clock: white == null || black == null
                       ? null
                       : ClockConfig(white: white, black: black),
-                ),
+                )..open(),
                 child: const FreeBoardScreen(),
               );
             },

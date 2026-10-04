@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
@@ -13,6 +14,7 @@ import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 
 import '../testing/fakes/fake_now.dart';
+import '../testing/fakes/fake_ongoing_game_repository.dart';
 import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/test_dependencies.dart';
@@ -28,6 +30,7 @@ void main() {
     FakeSettingsRepository? settings,
     FakeProfileRepository? profile,
     FakeNow? now,
+    FakeOngoingGameRepository? games,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -35,6 +38,7 @@ void main() {
           now: now,
           settingsRepository: settings,
           profileRepository: profile,
+          ongoingGameRepository: games,
         ),
       ),
     );
@@ -272,5 +276,59 @@ void main() {
 
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
     expect(textOf(tester, FreeBoardKeys.turn), 'Brancas jogam');
+  });
+
+  group('partida em andamento', () {
+    const startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+    testWidgets('sem partida gravada, o app abre na tela inicial', (
+      tester,
+    ) async {
+      await pumpApp(tester, games: FakeOngoingGameRepository());
+
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    });
+
+    testWidgets('partida que estava na tela ao fechar: o app reabre nela', (
+      tester,
+    ) async {
+      final games = FakeOngoingGameRepository(
+        const GameSnapshot(startFen: startFen, moves: ['e2e4', 'e7e5']),
+      );
+
+      await pumpApp(tester, games: games);
+
+      expect(find.byKey(FreeBoardKeys.board), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+
+      // A tela inicial está embaixo: voltar cai nela.
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(games.snapshot?.onScreen, isFalse);
+    });
+
+    testWidgets('partida de que o jogador saiu: abre na tela inicial e o botão '
+        'continua a partida', (tester) async {
+      final games = FakeOngoingGameRepository(
+        const GameSnapshot(
+          startFen: startFen,
+          moves: ['e2e4'],
+          onScreen: false,
+        ),
+      );
+
+      await pumpApp(tester, games: games);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+
+      await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+      await tester.tap(find.byKey(HomeKeys.freeBoardButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.move(0)), findsOneWidget);
+      expect(games.snapshot?.onScreen, isTrue);
+    });
   });
 }
