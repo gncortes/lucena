@@ -1,0 +1,10 @@
+{
+  "@@locale": "es",
+  "@@x-review": "pending",
+  "appTitle": "Lucena",
+  "homeMascotLabel": "Mascota de Lucena: un peón de ajedrez levantando pesas",
+  "homeTagline": "Entrenamiento de finales de ajedrez",
+  "settingsTitle": "Ajustes",
+  "settingsLanguage": "Idioma",
+  "settingsLanguageSystem": "Predeterminado del sistema"
+}

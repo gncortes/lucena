@@ -24,7 +24,7 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - Analisar: `flutter analyze`
 - Testes: `flutter test`
 - Gerar código: `dart run build_runner build --delete-conflicting-outputs`
-- Traduções: `flutter gen-l10n` e `python3 tools/check_l10n.py`
+- Traduções: `python3 tools/gen_pseudo_l10n.py`, `flutter gen-l10n` e `python3 tools/check_l10n.py`
 - Patrol (suíte): `patrol test --dart-define=E2E=true`
 - Patrol (um arquivo): `patrol test -t integration_test/<arquivo>_test.dart --dart-define=E2E=true`
 - Patrol: sempre com `-d <ANDROID_DEVICE do .env>` (sem `-d` ele pergunta o aparelho e trava); o CLI fica em `~/.pub-cache/bin`.

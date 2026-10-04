@@ -4,7 +4,8 @@
 Reprova quando:
 - algum idioma não tem exatamente as mesmas chaves do inglês (`app_en.arb`);
 - alguma chave do inglês está sem `@chave` com `description`;
-- há texto fixo em widget de `lib/ui/` (o texto deve vir de `context.l10n`).
+- há texto fixo em widget de `lib/ui/` (o texto deve vir de `context.l10n`);
+- o pseudo-idioma (`app_en_XA.arb`) está desatualizado em relação ao inglês.
 
 Uso: python3 tools/check_l10n.py [raiz do projeto]
 """
@@ -14,7 +15,10 @@ import re
 import sys
 from pathlib import Path
 
+from gen_pseudo_l10n import render as render_pseudo
+
 BASE = "app_en.arb"
+PSEUDO = "app_en_XA.arb"
 
 # Parâmetros e widgets que mostram texto ao usuário.
 HARDCODED = re.compile(
@@ -62,9 +66,22 @@ def check_hardcoded_text(ui_dir: Path) -> list[str]:
     return errors
 
 
+def check_pseudo(root: Path) -> list[str]:
+    path = root / "lib" / "l10n" / PSEUDO
+    if not path.exists():
+        return []
+    if path.read_text(encoding="utf-8") != render_pseudo(root):
+        return [f"{PSEUDO}: desatualizado, rode python3 tools/gen_pseudo_l10n.py"]
+    return []
+
+
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent
-    errors = check_arb_files(root / "lib" / "l10n") + check_hardcoded_text(root / "lib" / "ui")
+    errors = (
+        check_arb_files(root / "lib" / "l10n")
+        + check_pseudo(root)
+        + check_hardcoded_text(root / "lib" / "ui")
+    )
 
     for error in errors:
         print(error)
