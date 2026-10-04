@@ -44,6 +44,8 @@ flutter:
     - assets/branding/mascot_light.png
     - assets/branding/mascot_dark.png
     - assets/positions/positions.json
+    # Pesos do Maia-3 (tools/maia/export_weights.py)
+    - assets/models/maia3-5m.bin
 
   fonts:
     # Peças de xadrez para a notação figurina (tools/make_figurine_font.py)

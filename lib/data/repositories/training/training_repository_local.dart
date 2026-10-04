@@ -13,6 +13,7 @@ class LocalTrainingRepository implements TrainingRepository {
   static const _userTimeKey = 'setup.userTime';
   static const _opponentTimeKey = 'setup.opponentTime';
   static const _opponentKey = 'setup.opponent';
+  static const _maiaLevelKey = 'setup.maiaLevel';
   static const _draftFenKey = 'custom.fen';
   static const _draftGoalKey = 'custom.goal';
 
@@ -42,6 +43,9 @@ class LocalTrainingRepository implements TrainingRepository {
       opponent: OpponentKind.fromCode(
         await _preferences.getString(_opponentKey),
       ),
+      maiaLevel: int.tryParse(
+        await _preferences.getString(_maiaLevelKey) ?? '',
+      ),
     );
   }
 
@@ -51,6 +55,8 @@ class LocalTrainingRepository implements TrainingRepository {
     await _preferences.setString(_userTimeKey, setup.userTime.code);
     await _preferences.setString(_opponentTimeKey, setup.opponentTime.code);
     await _preferences.setString(_opponentKey, setup.opponent.code);
+    final level = setup.maiaLevel;
+    if (level != null) await _preferences.setString(_maiaLevelKey, '$level');
   }
 
   @override

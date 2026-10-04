@@ -4,6 +4,18 @@
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
+  "attemptDetails": "{opponent} · {date}",
+  "@attemptDetails": {
+    "description": "Second line of a past game in the history: opponent and date, e.g. 'Maia 1400 · 10/4/2026 18:30'.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "attemptDraw": "Draw",
   "@attemptDraw": {
     "description": "Result of a past game in the history: the game was drawn."
@@ -298,9 +310,14 @@
   "@freeBoardWhiteWins": {
     "description": "Game result: White won."
   },
-  "gameMachineThinking": "Stockfish is thinking…",
+  "gameMachineThinking": "{name} is thinking…",
   "@gameMachineThinking": {
-    "description": "Shown while the computer opponent chooses its move."
+    "description": "Shown while the computer opponent chooses its move; {name} is the opponent, e.g. 'Maia 1400' or 'Stockfish'.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "gameResign": "Resign",
   "@gameResign": {
@@ -337,6 +354,64 @@
   "homeTrain": "Train endgames",
   "@homeTrain": {
     "description": "Main home screen button: opens the catalog of endgame positions to practice."
+  },
+  "maiaDebugElapsed": "Computed in {ms} ms",
+  "@maiaDebugElapsed": {
+    "description": "How long the model took, in milliseconds.",
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "maiaDebugEvaluate": "Evaluate",
+  "@maiaDebugEvaluate": {
+    "description": "Button that runs the Maia model on the position."
+  },
+  "maiaDebugFailed": "The model did not respond.",
+  "@maiaDebugFailed": {
+    "description": "Shown when the Maia model fails to answer."
+  },
+  "maiaDebugOutcome": "Win {win}% · Draw {draw}% · Loss {loss}%",
+  "@maiaDebugOutcome": {
+    "description": "Predicted result for the side to move, in percent.",
+    "placeholders": {
+      "win": {
+        "type": "String"
+      },
+      "draw": {
+        "type": "String"
+      },
+      "loss": {
+        "type": "String"
+      }
+    }
+  },
+  "maiaDebugPercent": "{value}%",
+  "@maiaDebugPercent": {
+    "description": "A probability in percent, e.g. '37.6%'.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "maiaDebugPosition": "Position (FEN)",
+  "@maiaDebugPosition": {
+    "description": "Label of the text field with the position to evaluate, in FEN."
+  },
+  "maiaDebugTitle": "Maia diagnostics",
+  "@maiaDebugTitle": {
+    "description": "Title of the developer screen that shows what the Maia model answers (development builds only)."
+  },
+  "opponentMaiaLevel": "Maia {level}",
+  "@opponentMaiaLevel": {
+    "description": "The Maia opponent with its level, e.g. 'Maia 1400'.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
   },
   "pieceBishop": "Bishop",
   "@pieceBishop": {
@@ -576,9 +651,30 @@
   "@setupIncrease": {
     "description": "Tooltip of the plus button of a time selector."
   },
+  "setupMaiaLevel": "Level",
+  "@setupMaiaLevel": {
+    "description": "Title of the Maia level picker (a rating from 1000 to 2600)."
+  },
+  "setupMaiaSuggested": "Suggested for your rating: {level}",
+  "@setupMaiaSuggested": {
+    "description": "Tells which Maia level matches the rating in the player's profile.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
   "setupOpponent": "Opponent",
   "@setupOpponent": {
     "description": "Section title: who the player plays against."
+  },
+  "setupOpponentMaia": "Maia",
+  "@setupOpponentMaia": {
+    "description": "Name of the Maia opponent (a neural network that plays like a human). Proper noun: do not translate."
+  },
+  "setupOpponentMaiaHint": "Plays like a person at the level you choose",
+  "@setupOpponentMaiaHint": {
+    "description": "Explains the Maia opponent option on the game setup screen."
   },
   "setupOpponentStockfish": "Stockfish",
   "@setupOpponentStockfish": {

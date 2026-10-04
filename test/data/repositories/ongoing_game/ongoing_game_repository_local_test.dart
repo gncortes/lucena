@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/game_mode.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
@@ -21,6 +23,21 @@ void main() {
 
   test('sem nada gravado, não há partida em andamento', () async {
     expect(await reopen().load(), isNull);
+  });
+
+  test('a partida contra o Maia volta com o nível', () async {
+    const snapshot = GameSnapshot(
+      startFen: startFen,
+      moves: ['e2e4'],
+      mode: GameMode(
+        opponent: OpponentKind.maia,
+        level: 1600,
+        userSide: Side.white,
+      ),
+    );
+    await reopen().save(snapshot);
+
+    expect(await reopen().load(), snapshot);
   });
 
   test('a partida sem relógio volta igual ao reabrir', () async {

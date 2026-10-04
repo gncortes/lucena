@@ -12,10 +12,12 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../domain/models/maia_level.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_setup_cubit.dart';
 
@@ -236,18 +238,9 @@ class _OpponentPicker extends StatelessWidget {
                 selected: state.setup.opponent == kind,
                 selectedTileColor: colors.secondaryContainer,
                 selectedColor: colors.onSecondaryContainer,
-                leading: Icon(switch (kind) {
-                  OpponentKind.stockfish => Icons.memory,
-                  OpponentKind.twoPlayers => Icons.people_outline,
-                }),
-                title: Text(switch (kind) {
-                  OpponentKind.stockfish => l10n.setupOpponentStockfish,
-                  OpponentKind.twoPlayers => l10n.setupOpponentTwoPlayers,
-                }),
-                subtitle: Text(switch (kind) {
-                  OpponentKind.stockfish => l10n.setupOpponentStockfishHint,
-                  OpponentKind.twoPlayers => l10n.setupOpponentTwoPlayersHint,
-                }),
+                leading: Icon(kind.icon),
+                title: Text(kind.label(l10n)),
+                subtitle: Text(kind.hint(l10n)),
                 trailing: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   child: state.setup.opponent == kind
@@ -260,6 +253,87 @@ class _OpponentPicker extends StatelessWidget {
                 onTap: () => cubit.setOpponent(kind),
               ),
             ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: state.setup.opponent == OpponentKind.maia
+                ? _LevelPicker(state: state)
+                : const SizedBox(width: double.infinity),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O nível do Maia: um rating de 1000 a 2600. O que combina com o rating do
+/// perfil vem marcado.
+class _LevelPicker extends StatelessWidget {
+  const _LevelPicker({required this.state});
+
+  final GameSetupState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final cubit = context.read<GameSetupCubit>();
+    return Padding(
+      key: GameSetupKeys.levels,
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 4, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.setupMaiaLevel,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              for (final level in MaiaLevels.all)
+                ChoiceChip(
+                  key: GameSetupKeys.level(level),
+                  showCheckmark: false,
+                  avatar: level == state.suggestedLevel
+                      ? const Icon(Icons.star_rounded, size: 18)
+                      : null,
+                  label: Text(
+                    level.toString(),
+                    style: const TextStyle(
+                      fontFeatures: [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  selected: level == state.maiaLevel,
+                  onSelected: (_) => cubit.setMaiaLevel(level),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(
+                Icons.star_rounded,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.setupMaiaSuggested(state.suggestedLevel),
+                  key: GameSetupKeys.suggestedLevel,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -502,7 +576,12 @@ class _History extends StatelessWidget {
                 AttemptOutcome.draw => l10n.attemptDraw,
                 AttemptOutcome.loss => l10n.attemptLoss,
               }),
-              subtitle: Text(date.format(attempt.playedAt.toLocal())),
+              subtitle: Text(
+                l10n.attemptDetails(
+                  attempt.opponent.label(l10n, level: attempt.opponentLevel),
+                  date.format(attempt.playedAt.toLocal()),
+                ),
+              ),
             ),
         ],
       ),

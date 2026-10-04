@@ -2,6 +2,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -88,6 +89,43 @@ class GameSetupRobot {
       );
     }
     expect(find.byKey(GameSetupKeys.attempt(outcomes.length)), findsNothing);
+  }
+
+  Future<void> chooseOpponent(OpponentKind kind) async {
+    await $(GameSetupKeys.opponent(kind)).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  Future<void> expectOpponent(OpponentKind kind) async {
+    await $(GameSetupKeys.opponent(kind)).scrollTo();
+    for (final other in OpponentKind.values) {
+      final tile = $.tester.widget<ListTile>(
+        find.byKey(GameSetupKeys.opponent(other)),
+      );
+      expect(tile.selected, other == kind, reason: other.name);
+    }
+  }
+
+  Future<void> chooseLevel(int level) async {
+    await $(GameSetupKeys.level(level)).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O nível do Maia marcado e o aviso do nível sugerido pelo perfil.
+  Future<void> expectLevel(int level, {String? suggestion}) async {
+    await $(GameSetupKeys.level(level)).scrollTo();
+    final chip = $.tester.widget<ChoiceChip>(
+      find.byKey(GameSetupKeys.level(level)),
+    );
+    expect(chip.selected, isTrue);
+    if (suggestion != null) {
+      await $(GameSetupKeys.suggestedLevel).scrollTo();
+      expect(_text(GameSetupKeys.suggestedLevel), suggestion);
+    }
+  }
+
+  void expectNoLevels() {
+    expect(find.byKey(GameSetupKeys.levels), findsNothing);
   }
 
   Future<void> start() async {
