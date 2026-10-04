@@ -602,7 +602,7 @@ Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR
 **Cenários Patrol:**
 
 1. Posição conhecida → lance mais provável igual ao das fixtures
-2. Mesma posição em 600 e 2600 → distribuições diferentes
+2. Mesma posição em 1000 e 2600 → distribuições diferentes
 3. Modo avião → funciona
 
 ### T17 · Maia como adversário e níveis
@@ -613,7 +613,7 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 
 Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR só)
 
-- [ ] Níveis de 600 a 2600 (degraus de 200), temperatura por nível
+- [ ] Níveis de 1000 a 2600 (degraus de 200; piso 1000 pela visão de gamificação), temperatura por nível
 - [ ] Maia por nível ou Stockfish máximo
 - [ ] Rating do perfil sugere o nível
 
@@ -622,7 +622,7 @@ Lote: Entrega E · T16 + T17 + T18 (mesma branch, mesma candidata de QA e uma PR
 1. Maia 1400 → responde lances legais
 2. Perfil com rating 1800 → nível sugerido 1800
 3. Trocar para Stockfish → reiniciar → mantido
-4. Posição de `draw` contra Maia 600 → partida termina normalmente
+4. Posição de `draw` contra Maia 1000 → partida termina normalmente
 
 ### T18 · Tempo de pensar humano
 
@@ -658,3 +658,24 @@ Frente: Convergência · Dificuldade: alta · Modelo sugerido: Fable 5.1
 ## 7. Depois do MVP
 
 Idiomas do Grupo 2, doação pelo Google Play Billing, modelo 23M opcional (2000–2600), textos explicativos por tema, posições geradas por tablebase, ficha da Play Store traduzida e publicação.
+
+---
+
+## 8. Depois do MVP: progressão e gamificação (T20–T27)
+
+Visão completa em `docs/VISAO-GAMIFICACAO.md`. Cada tarefa é uma entrega inteira (uma PR, sem lote), com o detalhe em `docs/tasks/TXX.md`. A T20 fecha as decisões em `docs/arquitetura-gamificacao.md` e precisa da leitura do Gabriel antes da T21.
+
+| Tarefa | Entrega | Depende de | Tag | Modelo |
+| --- | --- | --- | --- | --- |
+| T20 | Arquitetura e regras (speedrun, rating, falas, arte) | T15 | — | Fable 5.1 |
+| T21 | Jornada: escada 1000 → Stockfish, finais do iniciante, domínio e histórico | T20, T17 | `v1.1.0` | Opus 5.5 |
+| T22 | Maia no ritmo humano (bullet a clássico) e rating do jogador | T20, T19, T21 | `v1.2.0` | Fable 5.1 |
+| T23 | Speedrun de nível e de final, com parciais, recordes e histórico | T21 | `v1.3.0` | Opus 5.5 |
+| T24 | Speedrun de exercícios e completo, conquistas e feedback | T22, T23 | `v1.4.0` | Opus 5.5 |
+| T25 | Personagens: avaliação, eventos, emoção e banco de falas | T20, T22 | `v1.5.0` | Fable 5.1 |
+| T26 | Personagens: avatares e animações | T25 | `v1.6.0` | Opus 5.5 |
+| T27 | Primeira abertura: tour e nível inicial | T24, T26 | `v1.7.0` | Sonnet 5.5 |
+
+Ordem: T20 → T21 → (T22 e T23 em paralelo) → T24 → T25 → T26 → T27. A T23 só precisa da Jornada, então pode sair antes da T22.
+
+Princípios (visão, seção 34): rating, progressão, domínio e speedrun são coisas separadas; o Maia não vira engine artificialmente fraca, nem no bullet; personagens têm comportamento, não só imagem; falas dependem do contexto; speedrun não pune demais; tudo dirigido por dados.
