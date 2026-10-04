@@ -49,8 +49,8 @@ void main() {
     await app.restart();
     await openSetup($);
 
-    setup.expectTime('user', minutes: 3, increment: 2);
-    setup.expectTime('opponent', minutes: 1, increment: 0);
+    await setup.expectTime('user', minutes: 3, increment: 2);
+    await setup.expectTime('opponent', minutes: 1, increment: 0);
   });
 
   patrolTest('tempo zero: bloqueado com erro', ($) async {
