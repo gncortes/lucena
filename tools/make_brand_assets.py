@@ -33,6 +33,16 @@ dark, dark_rgb = cut(tile_bbox(1340, 2540), 'mascot_dark')
 side = dark.size[0]
 full = Image.new('RGBA', dark.size, dark_rgb + (255,))
 full.alpha_composite(dark)
+# The dark tile has the same colour as the dark app background: the in-app mascot
+# is saved full-bleed, with the tile edge (anti-aliased border and rounded corners)
+# painted over, so no outline shows on screen. The corner squares hold nothing else.
+on_screen = full.copy()
+draw = ImageDraw.Draw(on_screen)
+radius = next(x for x in range(side) if dark.getpixel((x, 0))[3] == 255) + 8
+for x0, y0 in [(0, 0), (side - radius, 0), (0, side - radius), (side - radius, side - radius)]:
+    draw.rectangle((x0, y0, x0 + radius - 1, y0 + radius - 1), fill=dark_rgb + (255,))
+draw.rectangle((0, 0, side - 1, side - 1), outline=dark_rgb + (255,), width=8)
+on_screen.resize((1024, 1024), Image.LANCZOS).save('assets/branding/mascot_dark.png')
 full.convert('RGB').resize((1024, 1024), Image.LANCZOS).save('assets/branding/launcher_icon.png')
 pad = int(side * 1.5)
 fg = Image.new('RGBA', (pad, pad), dark_rgb + (255,))
