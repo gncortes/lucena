@@ -5,12 +5,13 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
+import '../../../domain/models/attempt.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
-import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_setup_keys.dart';
@@ -23,18 +24,9 @@ import '../view_models/game_setup_cubit.dart';
 class GameSetupScreen extends StatelessWidget {
   const GameSetupScreen({super.key});
 
-  void _start(BuildContext context, GameSetupState state) {
-    final clocks = state.clockCodes;
-    // A partida substitui esta tela: voltar dela cai de onde a posição veio.
-    context.pushReplacement(
-      Routes.freeBoardAt(
-        state.position.fen,
-        view: state.userSide.name,
-        white: clocks.white,
-        black: clocks.black,
-      ),
-    );
-  }
+  // A partida substitui esta tela: voltar dela cai de onde a posição veio.
+  void _start(BuildContext context, GameSetupState state) =>
+      context.pushReplacement(state.gameRoute);
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +50,7 @@ class GameSetupScreen extends StatelessWidget {
                       _OpponentPicker(state: state),
                       const Divider(height: 24),
                       _ClockSection(state: state),
+                      if (state.attempts.isNotEmpty) _History(state: state),
                     ],
                   ),
                 ),
@@ -232,23 +225,40 @@ class _OpponentPicker extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
-          // Só "dois jogadores" por enquanto; Stockfish e Maia entram depois.
           for (final kind in OpponentKind.values)
-            ListTile(
-              key: GameSetupKeys.opponent(kind),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: ListTile(
+                key: GameSetupKeys.opponent(kind),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                selected: state.setup.opponent == kind,
+                selectedTileColor: colors.secondaryContainer,
+                selectedColor: colors.onSecondaryContainer,
+                leading: Icon(switch (kind) {
+                  OpponentKind.stockfish => Icons.memory,
+                  OpponentKind.twoPlayers => Icons.people_outline,
+                }),
+                title: Text(switch (kind) {
+                  OpponentKind.stockfish => l10n.setupOpponentStockfish,
+                  OpponentKind.twoPlayers => l10n.setupOpponentTwoPlayers,
+                }),
+                subtitle: Text(switch (kind) {
+                  OpponentKind.stockfish => l10n.setupOpponentStockfishHint,
+                  OpponentKind.twoPlayers => l10n.setupOpponentTwoPlayersHint,
+                }),
+                trailing: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: state.setup.opponent == kind
+                      ? const Icon(Icons.check_circle, key: ValueKey('on'))
+                      : const SizedBox.square(
+                          dimension: 24,
+                          key: ValueKey('off'),
+                        ),
+                ),
+                onTap: () => cubit.setOpponent(kind),
               ),
-              selected: state.setup.opponent == kind,
-              selectedTileColor: colors.secondaryContainer,
-              selectedColor: colors.onSecondaryContainer,
-              leading: const Icon(Icons.people_outline),
-              title: Text(l10n.setupOpponentTwoPlayers),
-              subtitle: Text(l10n.setupOpponentTwoPlayersHint),
-              trailing: state.setup.opponent == kind
-                  ? const Icon(Icons.check_circle)
-                  : null,
-              onTap: () => cubit.setOpponent(kind),
             ),
         ],
       ),
@@ -448,6 +458,54 @@ class _Stepper extends StatelessWidget {
           onPressed: value < max ? () => onChanged(value + 1) : null,
         ),
       ],
+    );
+  }
+}
+
+/// As partidas já jogadas nesta posição, da mais recente para a mais antiga.
+class _History extends StatelessWidget {
+  const _History({required this.state});
+
+  final GameSetupState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
+    final date = DateFormat.yMd(locale).add_Hm();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 12, 4),
+            child: Text(
+              l10n.setupHistory,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.primary,
+              ),
+            ),
+          ),
+          for (final (index, attempt) in state.attempts.indexed)
+            ListTile(
+              key: GameSetupKeys.attempt(index),
+              dense: true,
+              leading: Icon(
+                attempt.fulfilled ? Icons.check_circle : Icons.cancel_outlined,
+                color: attempt.fulfilled ? colors.primary : colors.error,
+              ),
+              title: Text(switch (attempt.outcome) {
+                AttemptOutcome.win => l10n.attemptWin,
+                AttemptOutcome.draw => l10n.attemptDraw,
+                AttemptOutcome.loss => l10n.attemptLoss,
+              }),
+              subtitle: Text(date.format(attempt.playedAt.toLocal())),
+            ),
+        ],
+      ),
     );
   }
 }

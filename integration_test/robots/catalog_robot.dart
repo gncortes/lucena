@@ -38,6 +38,13 @@ class CatalogRobot {
         .tap();
   }
 
+  /// A posição tem a marca de objetivo cumprido.
+  Future<void> expectFulfilled(String id) async {
+    await $(CatalogKeys.position(id))
+        .scrollTo(view: find.byKey(CatalogKeys.positionList));
+    await $(CatalogKeys.fulfilled(id)).waitUntilVisible();
+  }
+
   Future<void> filter(GoalFilter filter) async {
     await $(CatalogKeys.filter(filter)).tap();
     await $.pumpAndSettle();
