@@ -197,9 +197,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                   onNewGame: cubit.newGame,
                 ),
                 if (clocks == ClockPosition.top)
-                  ClockRow(sides: both, state: state),
+                  ClockRow(sides: both, state: state, board: boardSettings),
                 if (clocks == ClockPosition.sides)
-                  ClockRow(sides: [state.orientation.opposite], state: state),
+                  ClockRow(
+                    sides: [state.orientation.opposite],
+                    state: state,
+                    board: boardSettings,
+                  ),
                 // O tabuleiro não espelha em idiomas da direita para a esquerda.
                 Directionality(
                   textDirection: TextDirection.ltr,
@@ -213,9 +217,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen> {
                   ),
                 ),
                 if (clocks == ClockPosition.sides)
-                  ClockRow(sides: [state.orientation], state: state),
+                  ClockRow(
+                    sides: [state.orientation],
+                    state: state,
+                    board: boardSettings,
+                  ),
                 if (clocks == ClockPosition.bottom)
-                  ClockRow(sides: both, state: state),
+                  ClockRow(sides: both, state: state, board: boardSettings),
                 Expanded(
                   child: MoveList(
                     moves: state.moves,
@@ -251,6 +259,8 @@ class _Status extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final end = state.end;
+    // Com relógio, quem está na vez é o relógio aceso: a linha "vez de" sai.
+    final showsTurn = state.clock == null;
     return AnimatedSize(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOutCubic,
@@ -268,11 +278,16 @@ class _Status extends StatelessWidget {
           ),
         ),
         child: ConstrainedBox(
-          key: ValueKey<Object>(end ?? state.position.turn),
-          constraints: BoxConstraints(minHeight: minHeight),
-          child: end == null
-              ? _Turn(side: state.position.turn)
-              : _End(end: end, onNewGame: onNewGame),
+          key: ValueKey<Object>(end ?? (showsTurn ? state.position.turn : 0)),
+          // Sem nada a mostrar, o painel some e o espaço fica para a lista.
+          constraints: BoxConstraints(
+            minHeight: end != null || showsTurn ? minHeight : 0,
+          ),
+          child: switch (end) {
+            final end? => _End(end: end, onNewGame: onNewGame),
+            null when showsTurn => _Turn(side: state.position.turn),
+            null => const SizedBox(width: double.infinity),
+          },
         ),
       ),
     );
