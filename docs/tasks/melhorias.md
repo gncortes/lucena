@@ -19,9 +19,12 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 - [x] **Cartão animado de vitória/derrota, como no chess.com.** Pedido do Gabriel (2026-10-05): abre por cima da partida no fim, neutro (só o ícone com a cor do resultado), com o rating contando do valor antigo ao novo e a variação em texto verde/vermelho; fechado, o resultado fica no painel embaixo do tabuleiro.
 - [x] **Personagem e relógio em linhas separadas.** Pedido do Gabriel (2026-10-05): retrato e balão (alinhados pela base) numa linha; o relógio do adversário numa linha própria, como a do jogador.
 
+- [x] **Tela da partida rola inteira.** Pedido do Gabriel (2026-10-05): como nos apps de xadrez; com o dedo no tabuleiro, a rolagem trava.
+- [x] **Rating no ritmo do chess.com.** Pedido do Gabriel (2026-10-05): o desvio do Glicko-2 fica no teto de 50; contra um igual, uns 7 pontos por partida, sem saltos nas primeiras.
+
 ## Tela do desafio (Jornada)
 
-- [ ] **Refazer o layout, hoje está feio e vazio.** ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:
+- [x] **Refazer o layout, hoje está feio e vazio.** (Feito, menos a variação do rating em cada partida do histórico: a tentativa ainda não guarda o rating dela.) ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:
   - prévia do tabuleiro minúscula no canto, com o material (♕ – ♚) solto ao lado;
   - o adversário aparece como "Contra Maia 1000", sem o personagem (o Coco);
   - metade de baixo da tela vazia; o histórico é uma lista crua (ícone, "Vitória", data).
@@ -95,11 +98,11 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Nomes no app
 
-- [ ] **Revisar a palavra "degrau" em todas as telas.** Usar o personagem ("Contra o Coco") ou "nível" onde "degrau" aparece para o jogador (Jornada, tour, conquistas, mensagens do fim da partida). Manter "degrau" só no código.
+- [x] **Revisar a palavra "degrau" em todas as telas.** (Jornada, tour e conquistas; as do speedrun saem no lote do speedrun.) Usar o personagem ("Contra o Coco") ou "nível" onde "degrau" aparece para o jogador (Jornada, tour, conquistas, mensagens do fim da partida). Manter "degrau" só no código.
 
 ## Tela da Jornada
 
-- [ ] **Refazer a lista de degraus.** ([print](../qa/melhorias/c26d2730.jpg)) O que incomoda no print:
+- [x] **Refazer a lista de degraus.** (Pedido do Gabriel em 2026-10-05: a trilha vai do mais fraco ao mais forte, com o Stockfish no fim.) ([print](../qa/melhorias/c26d2730.jpg)) O que incomoda no print:
   - o cartão de cima fala "Maia 1000" e "Próximo: Maia 1200" em vez dos personagens, e é um bloco verde só de texto;
   - os degraus são uma lista plana igual à de configurações: não parece um caminho a subir;
   - os trancados só ficam um pouco apagados; o cadeado e a seta repetem em todos;
@@ -110,7 +113,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Tela do degrau (Jornada)
 
-- [ ] **Refazer a lista dos desafios do degrau.** ([print](../qa/melhorias/6167f3c6.jpg)) O que incomoda no print:
+- [x] **Refazer a lista dos desafios do degrau.** ([print](../qa/melhorias/6167f3c6.jpg)) O que incomoda no print:
   - título "Maia 1000" sem o personagem; o progresso é só um texto ("1 de 9 desafios");
   - nove linhas iguais (tabuleiro pequeno, material, "Ganhar" verde e uma seta): nada diz qual é o próximo nem separa feito de por fazer;
   - "Ganhar" repetido em todas, ocupando o espaço da informação útil;

@@ -42,7 +42,9 @@ class JourneyRobot {
     await $.pumpAndSettle();
   }
 
-  void expectCurrent(String text) {
+  /// O adversário atual, no cartão do alto (a lista volta para o topo).
+  Future<void> expectCurrent(String text) async {
+    await $(JourneyKeys.current).scrollTo(scrollDirection: AxisDirection.up);
     expectText(_text(JourneyKeys.current), text);
   }
 

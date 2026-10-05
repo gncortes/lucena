@@ -96,15 +96,7 @@ class TalkCubit extends Cubit<TalkState> {
   bool _ended = false;
 
   /// O Stockfish na fileira de cima: o logo e nenhuma emoção.
-  static const stockfish = Character(
-    id: 'stockfish',
-    level: 3000,
-    name: 'Stockfish',
-    tagline: {},
-    personality: {},
-    traits: [],
-    avatar: 'assets/branding/stockfish.png',
-  );
+  static const stockfish = Character.stockfish;
 
   // Quantas falas em binário o Stockfish já disse (o id de cada uma).
   int _beeps = 0;

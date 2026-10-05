@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../domain/models/attempt.dart';
+import '../../../domain/use_cases/clock_format.dart';
 import '../l10n/l10n.dart';
 import '../opponent/opponent_ui.dart';
+import 'goal_style.dart';
 
 /// Partidas agrupadas por mês, da mais recente para a mais antiga, com o
 /// título de cada mês.
@@ -49,23 +51,86 @@ class AttemptHistory extends StatelessWidget {
           ),
         );
       }
+      final (color, icon, result) = switch (attempt.outcome) {
+        AttemptOutcome.win => (
+          ChangeColors.of(context, up: true),
+          Icons.emoji_events_rounded,
+          l10n.attemptWin,
+        ),
+        AttemptOutcome.draw => (
+          colors.onSurfaceVariant,
+          Icons.handshake_rounded,
+          l10n.attemptDraw,
+        ),
+        AttemptOutcome.loss => (
+          ChangeColors.of(context, up: false),
+          Icons.flag_rounded,
+          l10n.attemptLoss,
+        ),
+      };
+      final clock = attempt.userClock;
       children.add(
-        ListTile(
+        Card(
           key: attemptKey(index),
-          dense: true,
-          leading: Icon(
-            attempt.fulfilled ? Icons.check_circle : Icons.cancel_outlined,
-            color: attempt.fulfilled ? colors.primary : colors.error,
-          ),
-          title: Text(switch (attempt.outcome) {
-            AttemptOutcome.win => l10n.attemptWin,
-            AttemptOutcome.draw => l10n.attemptDraw,
-            AttemptOutcome.loss => l10n.attemptLoss,
-          }),
-          subtitle: Text(
-            l10n.attemptDetails(
-              attempt.opponent.label(l10n, level: attempt.opponentLevel),
-              date.format(playedAt),
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+          color: colors.surfaceContainerLow,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                // O resultado em destaque, na cor dele.
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        result,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        l10n.attemptDetails(
+                          attempt.opponent.label(
+                            l10n,
+                            level: attempt.opponentLevel,
+                          ),
+                          date.format(playedAt),
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (clock != null)
+                  Text(
+                    l10n.attemptClock(ClockFormat.format(clock)),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                const SizedBox(width: 4),
+                Icon(
+                  attempt.fulfilled
+                      ? Icons.check_circle
+                      : Icons.cancel_outlined,
+                  size: 20,
+                  color: ChangeColors.of(context, up: attempt.fulfilled),
+                ),
+              ],
             ),
           ),
         ),
