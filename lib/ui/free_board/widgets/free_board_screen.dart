@@ -473,7 +473,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   ) async {
     await cubit.saved();
     if (!context.mounted) return;
-    context.pushReplacement(Routes.challengeGame(next.challenge));
+    // O próximo desafio no mesmo ritmo desta partida.
+    final time = cubit.state.clock?.config.white;
+    context.pushReplacement(
+      Routes.challengeGame(next.challenge.copyWith(time: time)),
+    );
   }
 }
 

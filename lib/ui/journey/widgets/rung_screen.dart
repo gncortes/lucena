@@ -1,22 +1,18 @@
-import 'package:chessground/chessground.dart';
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
-import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
 
@@ -272,7 +268,7 @@ class _NextChallenge extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              _Board(position: position, size: 120),
+              PositionBoard(fen: position.fen, size: 120),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -292,7 +288,7 @@ class _NextChallenge extends StatelessWidget {
                       icon: const Icon(Icons.play_arrow_rounded),
                       label: Text(l10n.journeyPlay),
                       onPressed: () async {
-                        await context.push(Routes.challengeGame(challenge));
+                        if (!await playChallenge(context, challenge)) return;
                         if (context.mounted) {
                           await context.read<JourneyCubit>().load();
                         }
@@ -342,7 +338,10 @@ class _ChallengeCell extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) => Stack(
                   children: [
-                    _Board(position: position, size: constraints.maxWidth),
+                    PositionBoard(
+                      fen: position.fen,
+                      size: constraints.maxWidth,
+                    ),
                     if (done)
                       PositionedDirectional(
                         top: 4,
@@ -406,36 +405,6 @@ class _GoalIfSpecial extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A miniatura da posição, vista pelo lado que joga.
-class _Board extends StatelessWidget {
-  const _Board({required this.position, required this.size});
-
-  final EndgamePosition position;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final board = context.select(
-      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
-    );
-    final turn = position.fen.split(' ')[1] == 'b' ? Side.black : Side.white;
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: StaticChessboard(
-        size: size,
-        orientation: turn,
-        fen: position.fen,
-        settings: StaticChessboardSettings(
-          colorScheme: board.colors.scheme,
-          pieceAssets: board.pieces.assets,
-          borderRadius: const BorderRadius.all(Radius.circular(6)),
-          animationDuration: Duration.zero,
-        ),
       ),
     );
   }

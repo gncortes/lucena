@@ -1,9 +1,17 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
+import '../../../routing/routes.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/pace/pace_ui.dart';
+import '../../settings/view_models/settings_cubit.dart';
 
 /// O nome de um adversário de desafio ou degrau (`Maia 1000`, `Stockfish`).
 String opponentRefLabel(AppLocalizations l10n, OpponentRef opponent) =>
@@ -27,3 +35,23 @@ String opponentName(
 ) =>
     opponentCharacter(characters, opponent)?.name ??
     opponentRefLabel(l10n, opponent);
+
+/// Joga o desafio: abre o painel do ritmo (com "sem relógio"), grava a
+/// escolha e abre a partida nesse ritmo. Falso se o painel foi fechado sem
+/// confirmar.
+Future<bool> playChallenge(BuildContext context, Challenge challenge) async {
+  final settings = context.read<SettingsCubit>();
+  final clock = settings.state?.clock ?? const ClockSettings();
+  final choice = await showPaceSheet(
+    context,
+    current: clock.journeyTime,
+    allowNoClock: true,
+  );
+  if (choice == null || !context.mounted) return false;
+  await settings.setClock(clock.copyWith(journeyTime: choice.time));
+  if (!context.mounted) return false;
+  await context.push(
+    Routes.challengeGame(challenge.copyWith(time: choice.time)),
+  );
+  return true;
+}

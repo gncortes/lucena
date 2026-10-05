@@ -12,6 +12,7 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/mastery.dart';
@@ -82,8 +83,14 @@ class GameReporter {
     );
     final games = await _progress.allAttempts();
     final ladder = await _journey.ladder();
+    // Cada ritmo é um speedrun próprio, com os seus recordes.
     final speedruns = {
-      for (final speedrun in await _journey.speedruns()) speedrun.id: speedrun,
+      for (final base in await _journey.speedruns())
+        for (final time in SpeedrunPaces.all)
+          SpeedrunPaces.idFor(base.id, time): SpeedrunPaces.withTime(
+            base,
+            time,
+          ),
     };
     final feedback = [
       ...GameFeedbackRules.afterGame(
