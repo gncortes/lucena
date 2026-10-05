@@ -304,7 +304,6 @@
   "speedrunVersusRecord": "기록 {record} 대비 {difference}초",
   "teacherName": "{name} 선생님",
   "tourBack": "이전",
-  "tourBoardBody": "색상과 기물은 앱의 모든 체스판에 적용됩니다. 설정에서 언제든지 바꿀 수 있습니다.",
   "tourBoardTitle": "체스판을 고르세요",
   "tourEndgamesBody": "기본 메이트, 폰·룩·퀸 엔드게임: 각 포지션에는 승리 또는 무승부 지키기라는 목표가 있습니다.",
   "tourEndgamesTitle": "엔드게임",

@@ -304,7 +304,6 @@
   "speedrunVersusRecord": "比纪录 {record} {difference} 秒",
   "teacherName": "{name}老师",
   "tourBack": "上一步",
-  "tourBoardBody": "颜色和棋子适用于应用内的所有棋盘。之后可以随时在设置中更改。",
   "tourBoardTitle": "选择你的棋盘",
   "tourEndgamesBody": "基本杀法、兵残局、车残局和后残局：每个局面都有一个目标，取胜或守和。",
   "tourEndgamesTitle": "残局",

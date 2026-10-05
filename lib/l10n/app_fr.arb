@@ -304,7 +304,6 @@
   "speedrunVersusRecord": "{difference} s par rapport au record {record}",
   "teacherName": "Maître {name}",
   "tourBack": "Retour",
-  "tourBoardBody": "Les couleurs et les pièces s'appliquent à tous les échiquiers de l'appli. Vous pouvez les changer à tout moment dans les Paramètres.",
   "tourBoardTitle": "Choisissez votre échiquier",
   "tourEndgamesBody": "Mats élémentaires, finales de pions, de tours et de dames : chaque position a un objectif, gagner ou tenir la nulle.",
   "tourEndgamesTitle": "Finales",
