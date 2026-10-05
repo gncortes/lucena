@@ -26,6 +26,11 @@ abstract final class RatingRules {
   static const minRating = 100.0;
   static const maxRating = 3500.0;
 
+  /// Teto do desvio do jogador, como o de quem já tem rating firmado no
+  /// chess.com: contra um adversário igual, uns 7 pontos por partida, e nem
+  /// as primeiras partidas dão saltos grandes.
+  static const maxDeviation = 50.0;
+
   /// Restrição da volatilidade no tempo (τ).
   static const tau = 0.5;
 
@@ -77,10 +82,21 @@ abstract final class RatingRules {
       expected: expected,
     );
     if (stockfish) opponent += stockfishBonus;
-    return update(
-      player,
+    // O desvio fica no teto, antes e depois: desvios antigos, gravados mais
+    // altos, também não pesam mais.
+    final rated = update(
+      PlayerRating(
+        rating: player.rating,
+        deviation: math.min(player.deviation, maxDeviation),
+        volatility: player.volatility,
+      ),
       opponentRating: opponent,
       score: score(fulfilled: fulfilled, draw: draw),
+    );
+    return PlayerRating(
+      rating: rated.rating,
+      deviation: math.min(rated.deviation, maxDeviation),
+      volatility: rated.volatility,
     );
   }
 
@@ -129,7 +145,7 @@ abstract final class RatingRules {
   static PlayerRating _finish(double rating, double deviation, double sigma) =>
       PlayerRating(
         rating: rating.clamp(minRating, maxRating),
-        deviation: math.min(deviation, PlayerRating.initialDeviation),
+        deviation: math.min(deviation, 350),
         volatility: sigma,
       );
 

@@ -123,18 +123,30 @@ void main() {
       expect(stockfish.rating, greaterThan(maia.rating));
     });
 
-    test('com mais incerteza, o rating anda mais', () {
-      final unsure = RatingRules.rate(
+    test('como no chess.com: contra um igual, uns 7 pontos por partida', () {
+      final win = RatingRules.rate(player, expected: 0.5, fulfilled: true);
+      final loss = RatingRules.rate(player, expected: 0.5, fulfilled: false);
+      expect(win.rounded - 1500, inInclusiveRange(5, 10));
+      expect(1500 - loss.rounded, inInclusiveRange(5, 10));
+    });
+
+    test('nem as primeiras partidas dão saltos grandes', () {
+      // Jogador novo (desvio inicial) perdendo uma posição ganha.
+      final first = RatingRules.rate(
+        PlayerRating.start(1150),
+        expected: 0.98,
+        fulfilled: false,
+      );
+      expect(1150 - first.rounded, lessThanOrEqualTo(16));
+      // Um desvio antigo, gravado alto, também não pesa mais.
+      final old = RatingRules.rate(
         const PlayerRating(rating: 1500, deviation: 300),
         expected: 0.5,
         fulfilled: true,
       );
-      final sure = RatingRules.rate(
-        const PlayerRating(rating: 1500, deviation: 50),
-        expected: 0.5,
-        fulfilled: true,
-      );
-      expect(unsure.rating - 1500, greaterThan(sure.rating - 1500));
+      final win = RatingRules.rate(player, expected: 0.5, fulfilled: true);
+      expect(old.rounded, win.rounded);
+      expect(old.deviation, lessThanOrEqualTo(RatingRules.maxDeviation));
     });
   });
 

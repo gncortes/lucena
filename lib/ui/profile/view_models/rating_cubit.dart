@@ -19,9 +19,11 @@ class RatingState {
       : history.last.rating.rounded -
             history[history.length - 2].rating.rounded;
 
-  /// Poucas partidas: o rating ainda pode mudar muito.
-  bool get provisional =>
-      (current?.deviation ?? PlayerRating.initialDeviation) > 110;
+  /// Poucas partidas: o rating ainda não diz muito.
+  bool get provisional => history.length < provisionalGames;
+
+  /// Até quantas partidas o rating é provisório.
+  static const provisionalGames = 5;
 }
 
 class RatingCubit extends Cubit<RatingState> {
