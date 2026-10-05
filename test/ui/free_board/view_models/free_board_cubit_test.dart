@@ -89,6 +89,44 @@ void main() {
     expect(state.end, isNull);
   });
 
+  test('rever um lance mostra a posição daquele momento sem mexer na partida; '
+      'lance novo volta para ela', () {
+    final cubit = build();
+    addTearDown(cubit.close);
+    playAll(cubit, ['e2e4', 'e7e5', 'g1f3']);
+    final live = cubit.state.position;
+
+    cubit.view(1);
+    expect(cubit.state.browsing, isTrue);
+    expect(cubit.state.shownPly, 1);
+    expect(cubit.state.shownMove, NormalMove.fromUci('e2e4'));
+    expect(cubit.state.shownPosition.board.pieceAt(Square.e5), isNull);
+    expect(cubit.state.position, live);
+
+    // A posição de início, e nada antes dela.
+    cubit.viewPrevious();
+    cubit.viewPrevious();
+    expect(cubit.state.viewedPly, 0);
+    expect(cubit.state.shownPosition, GameRules.initial);
+    expect(cubit.state.shownMove, isNull);
+
+    // No último lance (ou além), o tabuleiro volta para a partida.
+    cubit.view(99);
+    expect(cubit.state.browsing, isFalse);
+    expect(cubit.state.shownPosition, live);
+
+    cubit.view(2);
+    cubit.viewNext();
+    expect(cubit.state.browsing, isFalse);
+
+    // Um lance jogado enquanto se revê (o do adversário, por exemplo) traz o
+    // tabuleiro de volta.
+    cubit.view(1);
+    cubit.play(NormalMove.fromUci('b8c6'));
+    expect(cubit.state.browsing, isFalse);
+    expect(cubit.state.moves, ['e4', 'e5', 'Nf3', 'Nc6']);
+  });
+
   blocTest<FreeBoardCubit, FreeBoardState>(
     'e4 e5 Cf3: a lista ganha os três lances e a vez passa',
     build: build,

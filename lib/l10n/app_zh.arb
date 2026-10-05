@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "完成一次速通，从第一个对手到Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "以{pace}用时完成这个残局的速通",
-  "journeyIntro": "上完维克多的课之后的下一步：练习学到的内容，迎接新的挑战，一次面对一个对手。"
+  "journeyIntro": "上完维克多的课之后的下一步：练习学到的内容，迎接新的挑战，一次面对一个对手。",
+  "gameMoveBack": "上一步",
+  "gameMoveForward": "下一步",
+  "statsGamesTitle": "对局记录",
+  "statsGamesEmpty": "你下过的对局会显示在这里，最新的排在最前。"
 }

@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 
 import '../../../../testing/fakes/fake_achievements_repository.dart';
+import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -114,6 +115,43 @@ void main() {
       expect(numbers.achievementsUnlocked, 0);
       expect(numbers.achievementsTotal, greaterThan(0));
       expect(numbers.bestSpeedrun, const Duration(minutes: 1));
+    });
+
+    test('o histórico geral: todas as partidas, da mais recente para a mais '
+        'antiga, e o rating nas que contaram', () async {
+      final rating = FakeRatingRepository();
+      final progress = FakeProgressRepository();
+      // Uma partida que contou e, depois, duas que não (sem rating).
+      final rated = game(AttemptOutcome.win);
+      final id = await progress.addAttempt(rated);
+      await rating.rate(
+        rated,
+        userSide: Side.white,
+        drawGoal: false,
+        gameId: id,
+      );
+      final later = game(AttemptOutcome.loss).copyWith(
+        playedAt: at.add(const Duration(hours: 1)),
+        opponent: OpponentKind.twoPlayers,
+        opponentLevel: null,
+      );
+      final latest = game(AttemptOutcome.draw)
+          .copyWith(playedAt: at.add(const Duration(hours: 2)));
+      await progress.addAttempt(latest);
+      await progress.addAttempt(later);
+      final cubit = RatingCubit(
+        rating,
+        progress: progress,
+        characters: FakeCharacterRepository(),
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      final log = cubit.state.log;
+      expect(log.map((entry) => entry.attempt), [latest, later, rated]);
+      expect(log.map((entry) => entry.rated != null), [false, false, true]);
+      expect(log.last.rated!.entry, cubit.state.history.single);
+      expect(cubit.state.characters, isNotEmpty);
     });
 
     test('sem o histórico das partidas, só os pontos do rating', () async {

@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Пройдіть спідран від першого суперника до Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Пройдіть спідран цього ендшпілю з контролем часу {pace}",
-  "journeyIntro": "Наступний крок після уроків з Віктором: закріплюйте вивчене й беріться за нові завдання, суперник за суперником."
+  "journeyIntro": "Наступний крок після уроків з Віктором: закріплюйте вивчене й беріться за нові завдання, суперник за суперником.",
+  "gameMoveBack": "Назад",
+  "gameMoveForward": "Вперед",
+  "statsGamesTitle": "Історія партій",
+  "statsGamesEmpty": "Зіграні партії з'являються тут, спочатку найновіші."
 }

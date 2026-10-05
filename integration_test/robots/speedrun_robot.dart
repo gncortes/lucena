@@ -83,6 +83,19 @@ class SpeedrunRobot {
     expectTextIn(find.byKey(SpeedrunKeys.run(index)), text);
   }
 
+  /// Toca na tentativa [index] do histórico: abre os detalhes dela.
+  Future<void> openHistory(int index) async {
+    await $(SpeedrunKeys.run(index)).scrollTo().tap();
+    await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
+  }
+
+  /// Nos detalhes de uma tentativa abandonada: o aviso e o tempo da etapa.
+  Future<void> expectAbandonedDetails({required String firstStage}) async {
+    await $(SpeedrunKeys.abandoned).waitUntilVisible();
+    await $(SpeedrunKeys.stageTime(0)).scrollTo();
+    expectStageTime(0, firstStage);
+  }
+
   /// Na tela do speedrun, sem tentativa em andamento: "Começar".
   Future<void> expectCanStart() async {
     await $(SpeedrunKeys.start).waitUntilExists();

@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "पहले प्रतिद्वंद्वी से Stockfish तक, एक स्पीडरन पूरा करें",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "इस एंडगेम का स्पीडरन {pace} समय नियंत्रण में पूरा करें",
-  "journeyIntro": "विक्टर के पाठों के बाद अगला क़दम: जो सीखा उसका अभ्यास करें और नई चुनौतियों का सामना करें, एक-एक प्रतिद्वंद्वी करके।"
+  "journeyIntro": "विक्टर के पाठों के बाद अगला क़दम: जो सीखा उसका अभ्यास करें और नई चुनौतियों का सामना करें, एक-एक प्रतिद्वंद्वी करके।",
+  "gameMoveBack": "पीछे",
+  "gameMoveForward": "आगे",
+  "statsGamesTitle": "बाज़ियों का इतिहास",
+  "statsGamesEmpty": "आपकी खेली हुई बाज़ियाँ यहाँ दिखती हैं, सबसे नई सबसे पहले।"
 }

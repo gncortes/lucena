@@ -2102,5 +2102,21 @@
   "journeyIntro": "The next step after Viktor's lessons: practice what you learned and take on new challenges, one opponent at a time.",
   "@journeyIntro": {
     "description": "Journey screen: one-sentence note at the top saying the Journey comes after the lessons."
+  },
+  "gameMoveBack": "Back",
+  "@gameMoveBack": {
+    "description": "Game screen: button that steps one move back to review the game (the board only shows the position)."
+  },
+  "gameMoveForward": "Forward",
+  "@gameMoveForward": {
+    "description": "Game screen: button that steps one move forward while reviewing the game."
+  },
+  "statsGamesTitle": "Game history",
+  "@statsGamesTitle": {
+    "description": "Statistics screen: title of the list of all games played, most recent first."
+  },
+  "statsGamesEmpty": "The games you play show up here, most recent first.",
+  "@statsGamesEmpty": {
+    "description": "Statistics screen: shown in place of the game history while no game was played."
   }
 }

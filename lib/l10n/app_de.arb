@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Schaffe einen Speedrun, vom ersten Gegner bis zu Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Schaffe den Speedrun dieses Endspiels mit der Bedenkzeit {pace}",
-  "journeyIntro": "Der nächste Schritt nach Viktors Unterricht: Übe, was du gelernt hast, und stelle dich neuen Aufgaben, ein Gegner nach dem anderen."
+  "journeyIntro": "Der nächste Schritt nach Viktors Unterricht: Übe, was du gelernt hast, und stelle dich neuen Aufgaben, ein Gegner nach dem anderen.",
+  "gameMoveBack": "Zurück",
+  "gameMoveForward": "Vor",
+  "statsGamesTitle": "Partienverlauf",
+  "statsGamesEmpty": "Deine gespielten Partien erscheinen hier, die neueste zuerst."
 }

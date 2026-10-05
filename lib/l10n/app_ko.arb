@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "첫 상대부터 Stockfish까지 스피드런을 완료하세요",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "이 엔드게임 스피드런을 {pace} 시간 제한으로 완료하세요",
-  "journeyIntro": "빅토르의 수업 다음 단계: 배운 것을 연습하고, 한 번에 한 상대씩 새로운 도전에 나서세요."
+  "journeyIntro": "빅토르의 수업 다음 단계: 배운 것을 연습하고, 한 번에 한 상대씩 새로운 도전에 나서세요.",
+  "gameMoveBack": "이전",
+  "gameMoveForward": "다음",
+  "statsGamesTitle": "대국 기록",
+  "statsGamesEmpty": "플레이한 대국이 최신순으로 여기에 표시됩니다."
 }

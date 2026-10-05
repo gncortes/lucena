@@ -16,6 +16,10 @@ abstract final class FreeBoardKeys {
   /// O lance de índice [index] na lista (0 é o primeiro da partida).
   static Key move(int index) => Key('freeBoard.moves.$index');
 
+  /// Rever a partida: um lance para trás e um para a frente.
+  static const movePrevious = Key('freeBoard.moves.previous');
+  static const moveNext = Key('freeBoard.moves.next');
+
   static const flipButton = Key('freeBoard.flip');
 
   /// Desistir (só no treino) e o painel que confirma.

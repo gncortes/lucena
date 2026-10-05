@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "İlk rakipten Stockfish'e kadar bir speedrun tamamla",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Bu oyun sonunun speedrun'ını {pace} temposunda tamamla",
-  "journeyIntro": "Viktor'un derslerinden sonraki adım: öğrendiklerini uygula ve her seferinde bir rakiple yeni görevlerin üstesinden gel."
+  "journeyIntro": "Viktor'un derslerinden sonraki adım: öğrendiklerini uygula ve her seferinde bir rakiple yeni görevlerin üstesinden gel.",
+  "gameMoveBack": "Geri",
+  "gameMoveForward": "İleri",
+  "statsGamesTitle": "Oyun geçmişi",
+  "statsGamesEmpty": "Oynadığın oyunlar burada görünür, en yenisi en üstte."
 }

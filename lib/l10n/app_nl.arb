@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Voltooi een speedrun, van de eerste tegenstander tot Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Voltooi de speedrun van dit eindspel in het tempo {pace}",
-  "journeyIntro": "De volgende stap na de lessen van Viktor: oefen wat je hebt geleerd en ga nieuwe uitdagingen aan, één tegenstander tegelijk."
+  "journeyIntro": "De volgende stap na de lessen van Viktor: oefen wat je hebt geleerd en ga nieuwe uitdagingen aan, één tegenstander tegelijk.",
+  "gameMoveBack": "Terug",
+  "gameMoveForward": "Vooruit",
+  "statsGamesTitle": "Partijgeschiedenis",
+  "statsGamesEmpty": "De partijen die je speelt verschijnen hier, de nieuwste eerst."
 }

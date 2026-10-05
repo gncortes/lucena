@@ -403,6 +403,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 achievements: context.read<AchievementsRepository>(),
                 speedruns: context.read<SpeedrunRepository>(),
                 journey: context.read<JourneyRepository>(),
+                characters: context.read<CharacterRepository>(),
                 now: context.read<Now>(),
               )..load(),
               child: const RatingScreen(),

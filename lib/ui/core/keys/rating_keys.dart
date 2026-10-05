@@ -18,8 +18,14 @@ abstract final class RatingKeys {
 
   static const emptyHistory = Key('rating.history.empty');
 
-  /// Uma partida do histórico, da mais recente (0) para a mais antiga, o
-  /// rating depois dela e quanto ela mudou.
+  /// Quantas partidas há no histórico.
+  static const gamesCount = Key('rating.history.count');
+
+  /// Uma partida do histórico, da mais recente (0) para a mais antiga: o
+  /// adversário, o resultado e, nas que contaram, o rating depois dela e
+  /// quanto ela mudou.
+  static Key entryOpponent(int index) => Key('rating.history.$index.opponent');
+  static Key entryResult(int index) => Key('rating.history.$index.result');
   static Key entry(int index) => Key('rating.history.$index');
   static Key entryRating(int index) => Key('rating.history.$index.rating');
   static Key entryChange(int index) => Key('rating.history.$index.change');
