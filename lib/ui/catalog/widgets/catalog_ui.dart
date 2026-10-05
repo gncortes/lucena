@@ -50,6 +50,10 @@ String goalLabel(AppLocalizations l10n, PositionGoal goal) => switch (goal) {
   PositionGoal.draw => l10n.goalDraw,
 };
 
+/// A marca do tabuleiro de uma posição do catálogo, que voa do cartão dela na
+/// tela da categoria para a amostra da configuração da partida.
+String catalogBoardTag(String positionId) => 'catalog.board.$positionId';
+
 /// O material de uma subcategoria em figurino: as peças de um lado em
 /// contorno, as do outro cheias (`♕ – ♜♟`). Vale em qualquer idioma.
 class SubcategoryMaterialText extends StatelessWidget {

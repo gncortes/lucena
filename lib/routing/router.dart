@@ -27,7 +27,6 @@ import '../domain/models/game_setup.dart';
 import '../ui/catalog/view_models/catalog_cubit.dart';
 import '../ui/catalog/widgets/catalog_screen.dart';
 import '../ui/catalog/widgets/category_screen.dart';
-import '../ui/catalog/widgets/subcategory_screen.dart';
 import '../ui/custom_position/view_models/custom_position_cubit.dart';
 import '../ui/custom_position/widgets/custom_position_screen.dart';
 import '../ui/game_setup/view_models/game_setup_cubit.dart';
@@ -332,29 +331,14 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             routes: [
               _route(
                 path: ':category',
-                builder: (context, state) => BlocProvider(
-                  create: (context) => _catalogCubit(context)..load(),
-                  child: CategoryScreen(
-                    category: state.pathParameters['category']!,
-                  ),
-                ),
-                routes: [
-                  _route(
-                    path: ':subcategory',
-                    builder: (context, state) {
-                      final subcategory = state.pathParameters['subcategory']!;
-                      return BlocProvider(
-                        create: (context) =>
-                            _catalogCubit(context)
-                              ..load(subcategory: subcategory),
-                        child: SubcategoryScreen(
-                          category: state.pathParameters['category']!,
-                          subcategory: subcategory,
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                builder: (context, state) {
+                  final category = state.pathParameters['category']!;
+                  return BlocProvider(
+                    create: (context) =>
+                        _catalogCubit(context)..load(category: category),
+                    child: CategoryScreen(category: category),
+                  );
+                },
               ),
             ],
           ),

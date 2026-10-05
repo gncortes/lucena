@@ -364,7 +364,7 @@ void main() {
 
     await tap(HomeKeys.catalogButton);
     await tap(CatalogKeys.category('rookPawn'));
-    await tap(CatalogKeys.subcategory('rookPawnVsRook'));
+    // As posições já estão abertas na tela da categoria.
     await tap(CatalogKeys.position('rookPawn.rookPawnVsRook.0001'));
     expect(find.byKey(GameSetupKeys.screen), findsOneWidget);
 
@@ -378,7 +378,7 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.byKey(CatalogKeys.subcategoryScreen), findsOneWidget);
+    expect(find.byKey(CatalogKeys.categoryScreen), findsOneWidget);
   });
 }
 
