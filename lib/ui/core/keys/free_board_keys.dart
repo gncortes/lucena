@@ -72,7 +72,7 @@ abstract final class FreeBoardKeys {
   static const ratingValue = Key('freeBoard.report.rating.value');
   static const ratingDelta = Key('freeBoard.report.rating.delta');
   static const endNextButton = Key('freeBoard.end.next');
-  static const bottomArea = Key('freeBoard.bottom');
+  static const scrollArea = Key('freeBoard.scroll');
   static const characterName = Key('freeBoard.character.name');
   static const resultCard = Key('freeBoard.result');
   static const resultTitle = Key('freeBoard.result.title');

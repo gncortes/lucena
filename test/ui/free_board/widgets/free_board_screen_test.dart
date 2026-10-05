@@ -945,7 +945,7 @@ void main() {
       expect(find.byKey(FreeBoardKeys.resultCard), findsNothing);
       expect(
         find.descendant(
-          of: find.byKey(FreeBoardKeys.bottomArea),
+          of: find.byKey(FreeBoardKeys.scrollArea),
           matching: find.byKey(FreeBoardKeys.endPanel),
         ),
         findsOneWidget,
@@ -1008,7 +1008,7 @@ void main() {
         40,
         scrollable: find
             .descendant(
-              of: find.byKey(FreeBoardKeys.bottomArea),
+              of: find.byKey(FreeBoardKeys.scrollArea),
               matching: find.byType(Scrollable),
             )
             .first,
@@ -1017,6 +1017,61 @@ void main() {
         find.byKey(FreeBoardKeys.endNewGameButton).hitTestable(),
         findsOneWidget,
       );
+    });
+
+    testWidgets('a tela inteira rola, mas arrastar uma peça não rola', (
+      tester,
+    ) async {
+      // Celular baixo: personagem, dois relógios e o tabuleiro não cabem.
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+        board: const BoardSettings(moveMethod: MoveMethod.drag),
+        // 360 x 600 na densidade do teste.
+        screen: const Size(945, 1575),
+      );
+      // A posição é refeita quando a rolagem trava e destrava: lida de novo
+      // a cada conferência.
+      ScrollPosition scroll() => tester
+          .state<ScrollableState>(
+            find
+                .descendant(
+                  of: find.byKey(FreeBoardKeys.scrollArea),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          )
+          .position;
+      expect(scroll().maxScrollExtent, greaterThan(0));
+
+      // Arrastar a dama no tabuleiro joga o lance e não mexe na tela.
+      opponent.hold();
+      final board = boardRect(tester);
+      final gesture = await tester.startGesture(squareCenter(board, 'c1'));
+      await tester.pump();
+      for (var step = 1; step <= 6; step++) {
+        await gesture.moveBy(
+          (squareCenter(board, 'g5') - squareCenter(board, 'c1')) / 6,
+        );
+        await tester.pump();
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(cubit.state.moves, ['Qg5']);
+      expect(scroll().pixels, 0);
+
+      // Arrastar fora do tabuleiro (na linha do jogador) rola a tela.
+      await tester.drag(
+        find.byKey(FreeBoardKeys.clock(Side.white)),
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
+      expect(scroll().pixels, greaterThan(0));
+      opponent.release();
     });
 
     testWidgets('fechar o painel de desistir não muda nada', (tester) async {

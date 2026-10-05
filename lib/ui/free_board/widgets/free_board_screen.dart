@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -21,6 +20,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/rating_value.dart';
+import '../../core/widgets/scroll_padding.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
 import '../view_models/talk_cubit.dart';
@@ -53,6 +53,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // O cartão do resultado, aberto quando a partida termina nesta tela. Fechado,
   // o resultado fica no painel embaixo do tabuleiro.
   bool _resultOpen = false;
+
+  // O dedo está no tabuleiro: a tela não rola enquanto isso.
+  bool _touchingBoard = false;
 
   @override
   void initState() {
@@ -292,8 +295,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 clockRows * ClockRow.height +
                 (state.machineThinking && state.clock == null ? 28 : 0) +
                 _minBottom;
-            // O tabuleiro ocupa sempre a largura da tela; o retrato do
-            // personagem encolhe para caber e a parte de baixo rola.
+            // O retrato do personagem encolhe para a partida caber na tela
+            // sem rolar, quando dá.
             final width = constraints.maxWidth;
             final avatar = character == null
                 ? 0.0
@@ -303,101 +306,104 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           CharacterBar.heightFor(0))
                       .clamp(CharacterBar.minAvatar, CharacterBar.maxAvatar)
                       .toDouble();
-            final barHeight = character == null
-                ? 0.0
-                : CharacterBar.heightFor(avatar);
-            // Só numa tela muito baixa o tabuleiro cede.
-            final boardSize = math.min(
-              width,
-              constraints.maxHeight - fixed - barHeight,
-            );
+            // O tabuleiro ocupa sempre a largura toda; se não couber tudo, a
+            // tela rola.
+            final boardSize = width;
             const both = [Side.white, Side.black];
             final end = state.end;
             return Stack(
               children: [
-                Column(
-                  children: [
-                    if (turnHeight > 0)
-                      SizedBox(
-                        height: turnHeight,
-                        child: _Turn(side: state.position.turn),
-                      ),
-                    if (state.machineThinking && state.clock == null)
-                      _Thinking(mode: state.mode),
-                    if (character != null)
-                      CharacterBar(
-                        talk: talk,
-                        avatarSize: avatar,
-                        // A linha do relógio dos lados já tem o nome dele.
-                        showName: clocks != ClockPosition.sides,
-                      ),
-                    if (clocks == ClockPosition.top)
-                      ClockRow(
-                        sides: both,
-                        state: state,
-                        board: boardSettings,
-                        talk: talk,
-                      ),
-                    if (clocks == ClockPosition.sides)
-                      ClockRow(
-                        sides: [state.orientation.opposite],
-                        state: state,
-                        board: boardSettings,
-                        talk: talk,
-                      ),
-                    // O tabuleiro não espelha em idiomas da direita para a esquerda.
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Chessboard(
-                        key: FreeBoardKeys.board,
-                        size: boardSize,
-                        controller: _board,
-                        settings: boardSettings.chessground,
-                        orientation: state.orientation,
-                        onMove: (move, {viaDragAndDrop}) => cubit.play(move),
-                      ),
-                    ),
-                    if (clocks == ClockPosition.sides)
-                      ClockRow(
-                        sides: [state.orientation],
-                        state: state,
-                        board: boardSettings,
-                        talk: talk,
-                      ),
-                    if (clocks == ClockPosition.bottom)
-                      ClockRow(
-                        sides: both,
-                        state: state,
-                        board: boardSettings,
-                        talk: talk,
-                      ),
-                    // Embaixo do tabuleiro: o fim da partida (com o rating e as
-                    // mensagens) e a faixa de lances. Tudo rola, com um respiro
-                    // depois do último item.
-                    Expanded(
-                      child: SingleChildScrollView(
-                        key: FreeBoardKeys.bottomArea,
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (end != null && !_resultOpen)
-                              _end(context, cubit, state, end, card: false),
-                            MoveList(
-                              moves: state.moves,
-                              firstMoveNumber: state.start.fullmoves,
-                              firstSide: state.start.turn,
-                              pieceLetters: boardSettings.notation.pieceLetters(
-                                context.l10n,
-                              ),
-                            ),
-                            if (state.report case final report?)
-                              ReportPanel(report: report),
-                          ],
+                // A tela inteira rola, como nos apps de xadrez; com o dedo no
+                // tabuleiro, a rolagem para e o lance (ou o arrastar da peça)
+                // fica só com ele.
+                SingleChildScrollView(
+                  key: FreeBoardKeys.scrollArea,
+                  physics: _touchingBoard
+                      ? const NeverScrollableScrollPhysics()
+                      : null,
+                  padding: scrollPadding(context),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (turnHeight > 0)
+                        SizedBox(
+                          height: turnHeight,
+                          child: _Turn(side: state.position.turn),
+                        ),
+                      if (state.machineThinking && state.clock == null)
+                        _Thinking(mode: state.mode),
+                      if (character != null)
+                        CharacterBar(
+                          talk: talk,
+                          avatarSize: avatar,
+                          // A linha do relógio dos lados já tem o nome dele.
+                          showName: clocks != ClockPosition.sides,
+                        ),
+                      if (clocks == ClockPosition.top)
+                        ClockRow(
+                          sides: both,
+                          state: state,
+                          board: boardSettings,
+                          talk: talk,
+                        ),
+                      if (clocks == ClockPosition.sides)
+                        ClockRow(
+                          sides: [state.orientation.opposite],
+                          state: state,
+                          board: boardSettings,
+                          talk: talk,
+                        ),
+                      // O tabuleiro não espelha em idiomas da direita para a esquerda.
+                      Listener(
+                        onPointerDown: (_) =>
+                            setState(() => _touchingBoard = true),
+                        onPointerUp: (_) =>
+                            setState(() => _touchingBoard = false),
+                        onPointerCancel: (_) =>
+                            setState(() => _touchingBoard = false),
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Chessboard(
+                            key: FreeBoardKeys.board,
+                            size: boardSize,
+                            controller: _board,
+                            settings: boardSettings.chessground,
+                            orientation: state.orientation,
+                            onMove: (move, {viaDragAndDrop}) =>
+                                cubit.play(move),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      if (clocks == ClockPosition.sides)
+                        ClockRow(
+                          sides: [state.orientation],
+                          state: state,
+                          board: boardSettings,
+                          talk: talk,
+                        ),
+                      if (clocks == ClockPosition.bottom)
+                        ClockRow(
+                          sides: both,
+                          state: state,
+                          board: boardSettings,
+                          talk: talk,
+                        ),
+                      // Embaixo do tabuleiro: o fim da partida (com o rating e
+                      // as mensagens) e a faixa de lances.
+                      if (end != null && !_resultOpen)
+                        _end(context, cubit, state, end, card: false),
+                      MoveList(
+                        moves: state.moves,
+                        firstMoveNumber: state.start.fullmoves,
+                        firstSide: state.start.turn,
+                        pieceLetters: boardSettings.notation.pieceLetters(
+                          context.l10n,
+                        ),
+                      ),
+                      if (state.report case final report?)
+                        ReportPanel(report: report),
+                    ],
+                  ),
                 ),
                 if (end != null && _resultOpen)
                   Positioned.fill(
