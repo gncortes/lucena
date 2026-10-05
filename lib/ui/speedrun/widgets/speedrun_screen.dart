@@ -12,6 +12,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/step_progress.dart';
+import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
@@ -177,17 +178,7 @@ class SpeedrunScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Text(
-                            runTime(context, best),
-                            key: SpeedrunKeys.best,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              color: colors.onPrimaryContainer,
-                              fontWeight: FontWeight.w800,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
-                          ),
+                          RunClock(best, textKey: SpeedrunKeys.best),
                         ],
                       ),
                     ),
@@ -222,18 +213,13 @@ class SpeedrunScreen extends StatelessWidget {
                   ? SpeedrunStageStatus.current
                   : SpeedrunStageStatus.ahead,
               // O melhor tempo da etapa, em qualquer tentativa concluída.
-              trailing: Text(
-                switch (records.bestStages[index]) {
-                  final best? => runTime(context, best),
-                  null => '',
-                },
-                key: SpeedrunKeys.stageRecord(index),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w800,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+              trailing: switch (records.bestStages[index]) {
+                final best? => RunClock(
+                  best,
+                  textKey: SpeedrunKeys.stageRecord(index),
                 ),
-              ),
+                null => null,
+              },
             ),
           if (records.completed.isNotEmpty || summary.abandoned.isNotEmpty) ...[
             _header(context, l10n.speedrunHistory),

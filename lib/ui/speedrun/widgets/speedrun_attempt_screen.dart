@@ -8,6 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/step_progress.dart';
 import '../view_models/speedrun_cubit.dart';
@@ -64,12 +65,13 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                     color: colors.onSurfaceVariant,
                   ),
                 ),
-                Text(
-                  runTime(context, run.total),
-                  key: SpeedrunKeys.total,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+                const SizedBox(height: 6),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: RunClock(
+                    run.total,
+                    large: true,
+                    textKey: SpeedrunKeys.total,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -114,16 +116,9 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                   // A etapa em que a tentativa parou.
                   ? SpeedrunStageStatus.idle
                   : SpeedrunStageStatus.ahead,
-              trailing: Text(
-                stage.done || stage.losses > 0
-                    ? runTime(context, stage.time)
-                    : '',
-                key: SpeedrunKeys.stageTime(index),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-              ),
+              trailing: stage.done || stage.losses > 0
+                  ? RunClock(stage.time, textKey: SpeedrunKeys.stageTime(index))
+                  : null,
             ),
         ],
       ),

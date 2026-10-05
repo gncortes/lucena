@@ -18,3 +18,4 @@ String runTime(BuildContext context, Duration time) =>
 /// A diferença para o recorde, em segundos com sinal (`+3,2`).
 String runTimeDifference(BuildContext context, Duration difference) =>
     RunTimeFormat.difference(difference, decimal: _decimal(context));
+
