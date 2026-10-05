@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/draw/draw_offer_repository.dart';
 import '../../../data/repositories/haptics/haptics_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
@@ -10,6 +11,7 @@ import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
 import '../../../domain/models/game_setup.dart';
@@ -20,8 +22,10 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/think_time_policy.dart';
 import 'free_board_state.dart';
+import 'game_reporter.dart';
 
 export 'free_board_state.dart';
+export 'game_reporter.dart';
 
 /// A partida: no tabuleiro livre o jogador faz os lances dos dois lados; no
 /// treino, joga contra a máquina ou sozinho, com um objetivo. A partida é
@@ -44,6 +48,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._games,
     required this._opponent,
     required this._progress,
+    this._reporter,
+    this._draws,
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -76,6 +82,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   final OngoingGameRepository _games;
   final OpponentRepository _opponent;
   final ProgressRepository _progress;
+
+  // Conta a partida terminada no rating, nas mensagens e nas conquistas. Nulo:
+  // só grava o histórico.
+  final GameReporter? _reporter;
+
+  // Quem responde as propostas de empate. Nulo: a máquina sempre recusa.
+  final DrawOfferRepository? _draws;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -140,6 +153,57 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         state.copyWith(
           clock: clock == null ? null : ClockEngine.stop(clock, now),
           forcedEnd: GameEnd(GameEndReason.resign, winner: user.opposite),
+          machineThinking: false,
+        ),
+        now,
+      ),
+    );
+    _changed();
+  }
+
+  /// O jogador propõe empate. A máquina só aceita quando está bem pior; se
+  /// aceitar, a partida termina empatada na hora.
+  Future<void> offerDraw() async {
+    final machine = state.mode.machineSide;
+    if (!_active || !state.canOfferDraw || machine == null) return;
+    final startedAt = state.startedAt;
+    emit(state.copyWith(drawOffer: DrawOffer.pending));
+    var accepted = false;
+    try {
+      accepted =
+          await _draws?.accepts(
+            state.position,
+            machine: machine,
+            kind: state.mode.opponent,
+            level: state.mode.level,
+          ) ??
+          false;
+    } on Object {
+      accepted = false;
+    }
+    // A partida acabou ou recomeçou enquanto a máquina pensava.
+    if (isClosed || state.startedAt != startedAt) return;
+    if (state.end != null) {
+      emit(state.copyWith(drawOffer: DrawOffer.none));
+      return;
+    }
+    if (!accepted) {
+      emit(
+        state.copyWith(
+          drawOffer: DrawOffer.declined,
+          drawDeclinedAt: state.ucis.length,
+        ),
+      );
+      return;
+    }
+    final now = _now();
+    final clock = state.clock;
+    emit(
+      _timed(
+        state.copyWith(
+          clock: clock == null ? null : ClockEngine.stop(clock, now),
+          forcedEnd: const GameEnd(GameEndReason.drawAgreed),
+          drawOffer: DrawOffer.accepted,
           machineThinking: false,
         ),
         now,
@@ -290,7 +354,33 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       speedrunAttemptId: mode.speedrunAttemptId,
       speedrunStage: mode.speedrunStage,
     );
-    _saving = _saving.whenComplete(() => _progress.addAttempt(attempt));
+    _saving = _saving.whenComplete(() async {
+      final gameId = await _progress.addAttempt(attempt);
+      await _report(attempt, gameId: gameId, userSide: user);
+    });
+  }
+
+  Future<void> _report(
+    Attempt attempt, {
+    required int gameId,
+    required Side userSide,
+  }) async {
+    final reporter = _reporter;
+    if (reporter == null) return;
+    final startedAt = state.startedAt;
+    try {
+      final report = await reporter.report(
+        attempt,
+        gameId: gameId,
+        userSide: userSide,
+        drawGoal: state.mode.goal == PositionGoal.draw,
+      );
+      // A partida recomeçou enquanto a conta era feita: o resumo é da outra.
+      if (isClosed || state.startedAt != startedAt) return;
+      emit(state.copyWith(report: report));
+    } on Object {
+      // Sem o resumo a partida continua valendo: o histórico já foi gravado.
+    }
   }
 
   // Quanto o relógio de [side] gastou na partida: o tempo inicial mais os
@@ -329,6 +419,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
           kind: state.mode.opponent,
           level: state.mode.level,
           history: _recentPositions(),
+          time: clock?.config.of(side),
         )
         .then(
           (move) => _machineAnswered(asked, move),

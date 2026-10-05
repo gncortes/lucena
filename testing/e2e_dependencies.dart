@@ -30,6 +30,19 @@ import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 
+import 'package:lucena/data/repositories/achievements/achievements_repository_local.dart';
+import 'package:lucena/data/repositories/characters/character_repository_asset.dart';
+import 'package:lucena/data/repositories/characters/talk_repository.dart';
+import 'package:lucena/data/repositories/maia/maia_repository.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/pace/pace_repository.dart';
+import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
+import 'package:lucena/domain/models/move_prediction.dart';
+import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/domain/use_cases/position_assessment.dart';
+
+import 'fakes/fake_draw_offer_repository.dart';
+import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_opponent_repository.dart';
@@ -64,6 +77,7 @@ class E2EOpponent implements OpponentRepository {
   late final _realMaia = MaiaOpponentRepository(
     _maia,
     now: e2eNow,
+    pace: AssetPaceRepository(const AssetService()),
     random: Random(7),
     wait: (duration) async {
       maiaThinkTimes.add(duration);
@@ -78,6 +92,7 @@ class E2EOpponent implements OpponentRepository {
     OpponentKind kind = OpponentKind.stockfish,
     int? level,
     List<Position> history = const [],
+    TimeControl? time,
   }) {
     final OpponentRepository engine;
     if (kind == OpponentKind.maia && useMaia) {
@@ -93,6 +108,7 @@ class E2EOpponent implements OpponentRepository {
       kind: kind,
       level: level,
       history: history,
+      time: time,
     );
   }
 
@@ -106,6 +122,7 @@ class E2EOpponent implements OpponentRepository {
     fake.kinds.clear();
     fake.levels.clear();
     fake.histories.clear();
+    fake.times.clear();
   }
 }
 
@@ -132,22 +149,88 @@ Future<Dependencies> e2eDependencies() async {
     trainingRepository: LocalTrainingRepository(PreferencesService()),
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
-    maiaRepository: DeviceMaiaRepository(_maia),
+    maiaRepository: e2eMaia,
     progressRepository: LocalProgressRepository(database),
     // A Jornada e os speedruns de verdade.
     journeyRepository: E2EJourneyRepository(
       AssetJourneyRepository(const AssetService(), positions),
     ),
     speedrunRepository: LocalSpeedrunRepository(database),
+    ratingRepository: LocalRatingRepository(
+      database,
+      maia: e2eMaia,
+      profile: LocalProfileRepository(database),
+      now: e2eNow,
+    ),
+    achievementsRepository: LocalAchievementsRepository(
+      const AssetService(),
+      database,
+    ),
+    // Os personagens e as falas de verdade.
+    characterRepository: AssetCharacterRepository(const AssetService()),
+    evaluationRepository: e2eEvaluation,
+    talkRepository: LocalTalkRepository(PreferencesService()),
+    onboardingRepository: LocalOnboardingRepository(PreferencesService()),
+    paceRepository: AssetPaceRepository(const AssetService()),
+    drawOfferRepository: e2eDraws,
     languages: AppLanguage.values,
   );
+}
+
+/// A resposta da máquina às propostas de empate, combinada pelo cenário.
+final e2eDraws = FakeDrawOfferRepository();
+
+/// A avaliação da posição para os personagens, combinada pelo cenário.
+final e2eEvaluation = FakeEvaluationRepository();
+
+/// O Maia do rating: a chance de cada partida é a combinada pelo cenário
+/// (meio a meio), sem esperar o modelo. As outras previsões são as do modelo.
+final e2eMaia = E2EMaia();
+
+class E2EMaia implements MaiaRepository {
+  final _real = DeviceMaiaRepository(_maia);
+
+  /// A chance de quem joga ganhar, empatar e perder, em toda partida.
+  MovePrediction match = _even;
+
+  static const _even = MovePrediction(
+    moves: {},
+    win: 0.5,
+    draw: 0,
+    loss: 0.5,
+    elapsed: Duration.zero,
+  );
+
+  @override
+  Future<MovePrediction> predict(Position position, {required int level}) =>
+      _real.predict(position, level: level);
+
+  @override
+  Future<MovePrediction> predictMatch(
+    Position position, {
+    required int selfElo,
+    required int oppoElo,
+  }) async => match;
+
+  void reset() => match = _even;
 }
 
 /// Apaga o que os cenários anteriores gravaram: cada cenário começa do zero.
 Future<void> resetE2EData() async {
   e2eNow.value = _e2eStart;
   e2eOpponent.reset();
+  e2eMaia.reset();
+  e2eDraws
+    ..accept = false
+    ..offers = 0;
+  e2eEvaluation
+    ..next.clear()
+    ..requests.clear()
+    ..fallback = const Evaluation(centipawns: 0);
   await PreferencesService().clear();
+  // O tour da primeira abertura só aparece nos cenários dele.
+  await LocalOnboardingRepository(PreferencesService())
+      .save(const Onboarding(done: true));
   await _database?.close();
   _database = null;
   final database = AppDatabase();
@@ -218,6 +301,35 @@ class E2EJourneyRepository implements JourneyRepository {
             ),
         ],
       ),
+      // A campanha inteira e os exercícios, em três e duas etapas.
+      Speedrun(
+        id: 'e2e.full',
+        kind: SpeedrunKind.full,
+        time: time,
+        stages: [
+          for (final rung in opponents)
+            Challenge(
+              id: 'e2e.full/${rung.id}',
+              position: mateInOne,
+              opponent: rung.opponent,
+              time: time,
+            ),
+        ],
+      ),
+      Speedrun(
+        id: 'e2e.exercises',
+        kind: SpeedrunKind.exercises,
+        time: time,
+        stages: [
+          for (var index = 0; index < 2; index++)
+            Challenge(
+              id: 'e2e.exercises/$index',
+              position: mateInOne,
+              opponent: ladder[index].opponent,
+              time: time,
+            ),
+        ],
+      ),
       ...await _real.speedruns(),
     ];
   }
@@ -250,7 +362,13 @@ class _Version3 extends QueryExecutorUser {
   ) async {
     // O executor recebido aqui também precisa ser aberto antes de usar.
     await executor.ensureOpen(this);
-    for (final table in ['games', 'speedrun_attempts', 'attempts']) {
+    for (final table in [
+      'games',
+      'speedrun_attempts',
+      'rating_history',
+      'unlocked_achievements',
+      'attempts',
+    ]) {
       await executor.runCustom('DROP TABLE IF EXISTS $table');
     }
     await executor.runCustom(

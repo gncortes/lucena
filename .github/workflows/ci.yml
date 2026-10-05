@@ -33,6 +33,9 @@ jobs:
       - name: Traduções
         run: python3 tools/check_l10n.py
 
+      - name: Falas dos personagens
+        run: python3 tools/check_lines.py
+
       - name: Análise
         run: flutter analyze
 

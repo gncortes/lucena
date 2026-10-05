@@ -6,6 +6,8 @@ import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/character_avatar.dart';
+import '../../../data/repositories/characters/character_repository.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
 
@@ -107,24 +109,38 @@ class _RungTile extends StatelessWidget {
     final l10n = context.l10n;
     final id = rung.rung.id;
     final locked = rung.status == RungStatus.locked;
+    final character = context.select(
+      (JourneyCubit cubit) =>
+          cubit.state.characters.forLevel(rung.rung.opponent.level),
+    );
+    final status = switch (rung.status) {
+      RungStatus.locked => Icon(
+        Icons.lock_outline,
+        key: JourneyKeys.rungLocked(id),
+        color: colors.outline,
+        semanticLabel: l10n.journeyLockedLabel,
+      ),
+      RungStatus.completed => Icon(
+        Icons.check_circle,
+        key: JourneyKeys.rungCompleted(id),
+        color: colors.primary,
+        semanticLabel: l10n.journeyCompletedLabel,
+      ),
+      RungStatus.open => Icon(Icons.flag_outlined, color: colors.primary),
+    };
     return ListTile(
       key: JourneyKeys.rung(id),
-      leading: switch (rung.status) {
-        RungStatus.locked => Icon(
-          Icons.lock_outline,
-          key: JourneyKeys.rungLocked(id),
-          color: colors.outline,
-          semanticLabel: l10n.journeyLockedLabel,
-        ),
-        RungStatus.completed => Icon(
-          Icons.check_circle,
-          key: JourneyKeys.rungCompleted(id),
-          color: colors.primary,
-          semanticLabel: l10n.journeyCompletedLabel,
-        ),
-        RungStatus.open => Icon(Icons.flag_outlined, color: colors.primary),
-      },
-      title: Text(opponentRefLabel(l10n, rung.rung.opponent)),
+      leading: character == null
+          ? SizedBox.square(dimension: 44, child: Center(child: status))
+          : Opacity(
+              opacity: locked ? 0.45 : 1,
+              child: CharacterAvatar(character: character),
+            ),
+      title: Text(
+        character == null
+            ? opponentRefLabel(l10n, rung.rung.opponent)
+            : l10n.characterNameLevel(character.name, character.level),
+      ),
       subtitle: Text(
         l10n.journeyRungProgress(
           rung.completed.length,
@@ -132,7 +148,13 @@ class _RungTile extends StatelessWidget {
         ),
       ),
       textColor: locked ? colors.outline : null,
-      trailing: const Icon(Icons.chevron_right),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (character != null) status,
+          const Icon(Icons.chevron_right),
+        ],
+      ),
       onTap: () async {
         if (!locked) {
           await context.push(Routes.journeyRung(id));

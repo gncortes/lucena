@@ -1,0 +1,874 @@
+{
+  "character": "bodybuilder",
+  "language": "en",
+  "lines": [
+    {
+      "id": "bodybuilder.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Warm-up's done. Time for the main set!"
+    },
+    {
+      "id": "bodybuilder.gameStart.2",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Today is heavy day. Let's go!"
+    },
+    {
+      "id": "bodybuilder.gameStart.3",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Wristbands on. Bring it."
+    },
+    {
+      "id": "bodybuilder.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Endgames are like leg day: nobody loves them, everybody needs them."
+    },
+    {
+      "id": "bodybuilder.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Focus, load, form. Let's see what you can lift!"
+    },
+    {
+      "id": "bodybuilder.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Breathe, hydrate, let's do this."
+    },
+    {
+      "id": "bodybuilder.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "That's a PR right there! Personal record!"
+    },
+    {
+      "id": "bodybuilder.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I'm in the zone. A few more reps and we're done."
+    },
+    {
+      "id": "bodybuilder.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "No slacking. A good set ends with good form."
+    },
+    {
+      "id": "bodybuilder.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "This weight's feeling light for me, huh?"
+    },
+    {
+      "id": "bodybuilder.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Now I just ride it to the last rep. Let's go!"
+    },
+    {
+      "id": "bodybuilder.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Slightly ahead. Strict form, no cheating."
+    },
+    {
+      "id": "bodybuilder.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Feeling the pump. This position is paying off."
+    },
+    {
+      "id": "bodybuilder.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Progressive overload: one move at a time."
+    },
+    {
+      "id": "bodybuilder.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "We're climbing! Another set at this pace."
+    },
+    {
+      "id": "bodybuilder.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Small edge, but it's muscle, not water weight."
+    },
+    {
+      "id": "bodybuilder.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Even split, like benching with a spotter."
+    },
+    {
+      "id": "bodybuilder.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Dead even. Now it's about who has more gas."
+    },
+    {
+      "id": "bodybuilder.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Dead heat. Nobody skipped training today."
+    },
+    {
+      "id": "bodybuilder.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Same weight on both sides. Let's see who holds."
+    },
+    {
+      "id": "bodybuilder.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Max focus now. Zero distractions!"
+    },
+    {
+      "id": "bodybuilder.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "It's heavy, but heavy is good. Push!"
+    },
+    {
+      "id": "bodybuilder.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Loaded too much on this one. I'll hold it."
+    },
+    {
+      "id": "bodybuilder.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No pain, no gain. Part of the workout."
+    },
+    {
+      "id": "bodybuilder.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "It burns! But I'm not dropping the bar."
+    },
+    {
+      "id": "bodybuilder.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "I could really use a spotter right now..."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "This set broke me. But I'm going to failure."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Way too heavy! Someone take a plate off!"
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bad training days happen. It's not over yet."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "I'm going to be sore tomorrow after this..."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Respect. You're outlifting me today."
+    },
+    {
+      "id": "bodybuilder.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Whoa! You dropped the bar mid-set?"
+    },
+    {
+      "id": "bodybuilder.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "That's bad form, buddy. That's gonna hurt!"
+    },
+    {
+      "id": "bodybuilder.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It happens. But I'm cashing in on it."
+    },
+    {
+      "id": "bodybuilder.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Thanks for the free plates! Let's go!"
+    },
+    {
+      "id": "bodybuilder.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Lost focus! No rest between sets in here!"
+    },
+    {
+      "id": "bodybuilder.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Bad grip! Rookie mistake!"
+    },
+    {
+      "id": "bodybuilder.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ouch... that was like skipping the warm-up."
+    },
+    {
+      "id": "bodybuilder.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh? Who put that plate there?"
+    },
+    {
+      "id": "bodybuilder.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "That's a move from someone training on an empty stomach."
+    },
+    {
+      "id": "bodybuilder.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Unbelievable! I blew the whole set on that!"
+    },
+    {
+      "id": "bodybuilder.strongMove.1",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Whoa! That move's got some weight on it!"
+    },
+    {
+      "id": "bodybuilder.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Perfect form. Respect."
+    },
+    {
+      "id": "bodybuilder.strongMove.3",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Was that your PR? What a move!"
+    },
+    {
+      "id": "bodybuilder.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I love training with someone who pulls hard. Let's go!"
+    },
+    {
+      "id": "bodybuilder.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Athlete move. Now I have to load up."
+    },
+    {
+      "id": "bodybuilder.comeback.1",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "That's grit! I lifted what nobody could!"
+    },
+    {
+      "id": "bodybuilder.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Second set's always better. Turned it around!"
+    },
+    {
+      "id": "bodybuilder.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Consistency wins. One rep at a time."
+    },
+    {
+      "id": "bodybuilder.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Thought I'd failed? That was just my rest!"
+    },
+    {
+      "id": "bodybuilder.comeback.5",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "No pain, no gain! Now it's all gain!"
+    },
+    {
+      "id": "bodybuilder.collapse.1",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Had the bar locked out and dropped it!"
+    },
+    {
+      "id": "bodybuilder.collapse.2",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Relaxed too early. Beginner mistake."
+    },
+    {
+      "id": "bodybuilder.collapse.3",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Wait, where'd my edge go? Hit the showers?"
+    },
+    {
+      "id": "bodybuilder.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Celebrated on the second-to-last rep. Never again!"
+    },
+    {
+      "id": "bodybuilder.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Lost the whole pump. Come back, focus!"
+    },
+    {
+      "id": "bodybuilder.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "That piece goes on my bench!"
+    },
+    {
+      "id": "bodybuilder.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "One more plate on my bar."
+    },
+    {
+      "id": "bodybuilder.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Clean pull! Let's go!"
+    },
+    {
+      "id": "bodybuilder.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "That's pure protein for my game."
+    },
+    {
+      "id": "bodybuilder.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Heavy lift! Piece is mine!"
+    },
+    {
+      "id": "bodybuilder.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "They took my plate! Can't finish the set without it!"
+    },
+    {
+      "id": "bodybuilder.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lost some weight, but the workout goes on."
+    },
+    {
+      "id": "bodybuilder.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "That hurt more than heavy squats."
+    },
+    {
+      "id": "bodybuilder.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hey, that piece was my pre-workout!"
+    },
+    {
+      "id": "bodybuilder.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Come on! Piece gone, numbers dropping!"
+    },
+    {
+      "id": "bodybuilder.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Gains! My pawn just bulked into a queen!"
+    },
+    {
+      "id": "bodybuilder.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Trained from the first rank. There's the result!"
+    },
+    {
+      "id": "bodybuilder.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Consistency. That pawn never missed a session."
+    },
+    {
+      "id": "bodybuilder.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "From skinny to beast! Let's go!"
+    },
+    {
+      "id": "bodybuilder.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "That pawn finished the full transformation."
+    },
+    {
+      "id": "bodybuilder.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Your pawn's been hitting the protein!"
+    },
+    {
+      "id": "bodybuilder.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "A new queen on your side? Now it's heavy."
+    },
+    {
+      "id": "bodybuilder.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Respect the progress. That was a long walk."
+    },
+    {
+      "id": "bodybuilder.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Let it train unsupervised and look what happened."
+    },
+    {
+      "id": "bodybuilder.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Fine. More weight, more focus. Let's go!"
+    },
+    {
+      "id": "bodybuilder.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Your rest period is running out."
+    },
+    {
+      "id": "bodybuilder.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tick-tock! The HIIT timer's running!"
+    },
+    {
+      "id": "bodybuilder.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Final seconds! Time to explode!"
+    },
+    {
+      "id": "bodybuilder.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Clock's tight. Let's see that form now."
+    },
+    {
+      "id": "bodybuilder.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Breathe, but breathe fast!"
+    },
+    {
+      "id": "bodybuilder.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "My timer's in the red! Go, go!"
+    },
+    {
+      "id": "bodybuilder.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Speed set, no overthinking!"
+    },
+    {
+      "id": "bodybuilder.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Little time. Short, clean reps."
+    },
+    {
+      "id": "bodybuilder.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Spent too long at the mirror... I mean, thinking."
+    },
+    {
+      "id": "bodybuilder.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Drop-set mode on! Quick!"
+    },
+    {
+      "id": "bodybuilder.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I've got marathon lungs on the clock."
+    },
+    {
+      "id": "bodybuilder.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I'll do this set nice and slow. Time under tension!"
+    },
+    {
+      "id": "bodybuilder.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "My cardio's on point. How's your clock?"
+    },
+    {
+      "id": "bodybuilder.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Time for three more sets. Pressure's on!"
+    },
+    {
+      "id": "bodybuilder.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "I've got time for a slow sip of water."
+    },
+    {
+      "id": "bodybuilder.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Long rest, huh? Muscles are cooling down."
+    },
+    {
+      "id": "bodybuilder.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Writing up a whole workout plan over there?"
+    },
+    {
+      "id": "bodybuilder.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Take your time. Form beats speed."
+    },
+    {
+      "id": "bodybuilder.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I could knock out a set of push-ups meanwhile."
+    },
+    {
+      "id": "bodybuilder.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Let's go! A resting bar never built anyone!"
+    },
+    {
+      "id": "bodybuilder.win.1",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Workout complete! Let's go! Victory shake!"
+    },
+    {
+      "id": "bodybuilder.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Set's done. Come back tomorrow for more."
+    },
+    {
+      "id": "bodybuilder.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good session, buddy. You pulled hard."
+    },
+    {
+      "id": "bodybuilder.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Record smashed! Mirror selfie time!"
+    },
+    {
+      "id": "bodybuilder.win.5",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "No pain, no gain. Today the gain was mine."
+    },
+    {
+      "id": "bodybuilder.win.6",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Consistency beats talent. Train with me again!"
+    },
+    {
+      "id": "bodybuilder.loss.1",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Went to failure. You won. Respect."
+    },
+    {
+      "id": "bodybuilder.loss.2",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "The weight beat me today. I'll be back stronger!"
+    },
+    {
+      "id": "bodybuilder.loss.3",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good session. You outlifted me."
+    },
+    {
+      "id": "bodybuilder.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Losing to a strong player is quality training."
+    },
+    {
+      "id": "bodybuilder.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Gonna ask my coach for a new program..."
+    },
+    {
+      "id": "bodybuilder.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw. We both leave tired and happy."
+    },
+    {
+      "id": "bodybuilder.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "We shared the machine. Fair enough!"
+    },
+    {
+      "id": "bodybuilder.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I was one rep short. Next time!"
+    },
+    {
+      "id": "bodybuilder.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "A draw? I trained this hard for that? Rematch!"
+    },
+    {
+      "id": "bodybuilder.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Partner workouts pay off. Fist bump!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Accepted. Knowing when to rack the bar is technique too."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Deal! A tied session still counts as a workout."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew! Deal. That set was way too heavy."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Fair draw. Let's stretch and cool down."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Accepted! Thanks for the spot, buddy. I was about to drop it!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Respect the offer. You had the heavier lift today."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw? I haven't even hit failure yet. Let's go!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined! There are still reps left in this set."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Stop now? No way, the pump is just kicking in!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "No pain, no gain. And I want the gain."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thanks, buddy, but the workout goes on."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? That's skipping leg day! Declined!"
+    }
+  ]
+}

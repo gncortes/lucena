@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
+import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 
 import '../../../../testing/fakes/fake_profile_repository.dart';
+import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
   late FakeProfileRepository repository;
+  late FakeRatingRepository rating;
 
   Future<void> pumpScreen(
     WidgetTester tester, {
@@ -18,6 +22,7 @@ void main() {
     Locale locale = const Locale('en'),
   }) async {
     repository = FakeProfileRepository(profile);
+    rating = FakeRatingRepository();
     final cubit = ProfileCubit(repository);
     addTearDown(cubit.close);
     await cubit.load();
@@ -25,7 +30,10 @@ void main() {
       TestApp(
         profileCubit: cubit,
         locale: locale,
-        child: const ProfileScreen(),
+        child: BlocProvider(
+          create: (_) => RatingCubit(rating)..load(),
+          child: const ProfileScreen(),
+        ),
       ),
     );
   }

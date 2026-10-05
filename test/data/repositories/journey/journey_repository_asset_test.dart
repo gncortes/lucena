@@ -116,4 +116,37 @@ void main() {
     ];
     expect(stages.toSet(), hasLength(stages.length));
   });
+
+  test('speedrun de exercícios: as posições da lista, cada uma com o seu '
+      'adversário', () async {
+    final exercises = (await repository.speedruns())
+        .where((s) => s.kind == SpeedrunKind.exercises)
+        .toList();
+
+    expect(exercises, isNotEmpty);
+    for (final speedrun in exercises) {
+      expect(speedrun.stages, isNotEmpty);
+      for (final stage in speedrun.stages) {
+        expect(stage.opponent.kind, OpponentKind.maia);
+        expect(MaiaLevels.all, contains(stage.opponent.level));
+        expect(stage.time, speedrun.time);
+      }
+    }
+  });
+
+  test('speedrun completo: todos os desafios da Jornada, em ordem', () async {
+    final ladder = await repository.ladder();
+    final full = (await repository.speedruns()).singleWhere(
+      (s) => s.kind == SpeedrunKind.full,
+    );
+
+    final challenges = [for (final rung in ladder) ...rung.challenges];
+    expect(full.stages, hasLength(challenges.length));
+    expect(
+      full.stages.map((stage) => stage.position.id),
+      challenges.map((challenge) => challenge.position.id),
+    );
+    expect(full.stages.first.opponent.level, MaiaLevels.min);
+    expect(full.stages.last.opponent.kind, OpponentKind.stockfish);
+  });
 }

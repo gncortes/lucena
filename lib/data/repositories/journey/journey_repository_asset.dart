@@ -86,6 +86,23 @@ class AssetJourneyRepository implements JourneyRepository {
               time: time,
             ),
         ],
+        // As posições da lista, cada uma contra o seu adversário.
+        SpeedrunKind.exercises => [
+          for (final stage
+              in (item['stages'] as List).cast<Map<String, dynamic>>())
+            Challenge(
+              id: '$id/${stage['position']}',
+              position: await _position(stage['position'] as String),
+              opponent: OpponentRef.tryParse(stage['opponent'] as String)!,
+              time: time,
+            ),
+        ],
+        // Todos os desafios da Jornada, degrau por degrau.
+        SpeedrunKind.full => [
+          for (final rung in ladder)
+            for (final challenge in rung.challenges)
+              challenge.copyWith(id: '$id/${challenge.id}', time: time),
+        ],
       };
       speedruns.add(
         Speedrun(

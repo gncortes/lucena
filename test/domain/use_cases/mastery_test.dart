@@ -81,4 +81,33 @@ void main() {
       }
     });
   });
+
+  group('degrau escolhido no tour', () {
+    test('ele e os de baixo abrem; a Jornada começa nele', () {
+      final progress = Mastery.of(ladder, {}, startRung: '1200');
+
+      expect(progress.rungs.map((r) => r.status), [
+        RungStatus.open,
+        RungStatus.open,
+        RungStatus.locked,
+      ]);
+      expect(progress.current!.rung.id, '1200');
+    });
+
+    test('concluído o degrau de início, libera o seguinte', () {
+      final progress = Mastery.of(ladder, {rung1200}, startRung: '1200');
+
+      expect(progress.rungs[2].status, RungStatus.open);
+      // A Jornada segue para cima; os degraus de baixo continuam abertos.
+      expect(progress.current!.rung.id, ladder[2].id);
+      expect(progress.rungs[0].status, RungStatus.open);
+    });
+
+    test('degrau que não existe vale como sem escolha', () {
+      final progress = Mastery.of(ladder, {}, startRung: '9999');
+
+      expect(progress.current!.rung.id, '1000');
+      expect(progress.rungs[1].status, RungStatus.locked);
+    });
+  });
 }

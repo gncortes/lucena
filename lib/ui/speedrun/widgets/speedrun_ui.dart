@@ -27,6 +27,11 @@ class SpeedrunTitle extends StatelessWidget {
         speedrun.stages.first.position.subcategory,
         style: style,
       ),
+      SpeedrunKind.exercises => Text(
+        categoryName(l10n, speedrun.stages.first.position.category),
+        style: style,
+      ),
+      SpeedrunKind.full => Text(l10n.speedrunFullTitle, style: style),
     };
   }
 }
@@ -34,8 +39,10 @@ class SpeedrunTitle extends StatelessWidget {
 /// O que se faz no speedrun, numa linha.
 String speedrunDescription(AppLocalizations l10n, Speedrun speedrun) =>
     switch (speedrun.kind) {
-      SpeedrunKind.rung => l10n.speedrunRungDescription(speedrun.stages.length),
-      SpeedrunKind.ending => l10n.speedrunEndingDescription(
+      SpeedrunKind.rung || SpeedrunKind.exercises =>
+        l10n.speedrunRungDescription(speedrun.stages.length),
+      SpeedrunKind.ending ||
+      SpeedrunKind.full => l10n.speedrunEndingDescription(
         opponentRefLabel(l10n, speedrun.stages.first.opponent),
         opponentRefLabel(l10n, speedrun.stages.last.opponent),
       ),

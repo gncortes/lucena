@@ -5,6 +5,10 @@ import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:patrol/patrol.dart';
 
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/onboarding.dart';
+
 import '../../testing/e2e_dependencies.dart';
 
 import 'variant.dart';
@@ -21,7 +25,13 @@ class AppRobot {
   /// [systemLocale] faz o app enxergar o aparelho nesse idioma. Com
   /// [lightDevice], o aparelho fica em tema claro mesmo na variante escura da
   /// suíte: é para o cenário que troca o tema do aparelho ele mesmo.
-  Future<void> open({Locale? systemLocale, bool lightDevice = false}) async {
+  ///
+  /// Com [tour], o app abre como na primeira vez, com o tour.
+  Future<void> open({
+    Locale? systemLocale,
+    bool lightDevice = false,
+    bool tour = false,
+  }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
     // fila terminam antes da limpeza: nada dele chega ao cenário novo.
@@ -30,6 +40,10 @@ class AppRobot {
       () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
     await resetE2EData();
+    if (tour) {
+      await LocalOnboardingRepository(PreferencesService())
+          .save(const Onboarding());
+    }
     final dispatcher = $.tester.platformDispatcher;
     // Na variante em árabe, o cenário que espera o aparelho em inglês roda em
     // árabe; os cenários de outro idioma ficam como são.

@@ -1,0 +1,874 @@
+{
+  "character": "magician",
+  "language": "en",
+  "lines": [
+    {
+      "id": "magician.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Ladies and gentlemen... and you! Let the show begin!"
+    },
+    {
+      "id": "magician.gameStart.2",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Pick a square, any square. I already know which one."
+    },
+    {
+      "id": "magician.gameStart.3",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Welcome to my act. Please don't touch the hat."
+    },
+    {
+      "id": "magician.gameStart.4",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nothing up my sleeve, nothing in my hat... and still I'll win."
+    },
+    {
+      "id": "magician.gameStart.5",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Esteemed audience, I present: the vanishing endgame!"
+    },
+    {
+      "id": "magician.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take a seat. This act has few pieces and many surprises."
+    },
+    {
+      "id": "magician.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "And now, for the grand finale, I make your king vanish!"
+    },
+    {
+      "id": "magician.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Applause, please! The trick is nearly complete."
+    },
+    {
+      "id": "magician.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Relax. Every good act has an elegant ending."
+    },
+    {
+      "id": "magician.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I pulled a rabbit from the hat and it brought a rook."
+    },
+    {
+      "id": "magician.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Drumroll, please... the curtain is closing on you."
+    },
+    {
+      "id": "magician.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hmm, the cards are starting to smile at me."
+    },
+    {
+      "id": "magician.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Did you see that? No? Well, that's the magic of it."
+    },
+    {
+      "id": "magician.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Just a little warm-up trick. The main act comes later."
+    },
+    {
+      "id": "magician.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "The audience is loving it. Well, I am."
+    },
+    {
+      "id": "magician.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "One more wave of the wand and this edge becomes a win."
+    },
+    {
+      "id": "magician.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "All square. The suspense is part of the show."
+    },
+    {
+      "id": "magician.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Time to shuffle the deck and see what comes up."
+    },
+    {
+      "id": "magician.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Shh... the magician is preparing his next trick."
+    },
+    {
+      "id": "magician.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Perfect balance. Like a rabbit on a tightrope."
+    },
+    {
+      "id": "magician.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Nobody's ahead? Great, that's where I do my magic."
+    },
+    {
+      "id": "magician.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "It's part of the act, you see. The magician always suffers first."
+    },
+    {
+      "id": "magician.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Watch my left hand closely... and forget about the right."
+    },
+    {
+      "id": "magician.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A small setback. The hat isn't empty yet."
+    },
+    {
+      "id": "magician.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Hmm, where did I put that ace?"
+    },
+    {
+      "id": "magician.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Nobody move! The trick isn't over yet!"
+    },
+    {
+      "id": "magician.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Ladies and gentlemen, a brief technical intermission..."
+    },
+    {
+      "id": "magician.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Now's the rabbit's moment. He's coming. I think."
+    },
+    {
+      "id": "magician.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Who swapped my deck? This wasn't in the script!"
+    },
+    {
+      "id": "magician.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "A true magician never gives up. He just stalls with style."
+    },
+    {
+      "id": "magician.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Even the best magician plays to an empty house sometimes."
+    },
+    {
+      "id": "magician.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Well, well! You walked right into my trap!"
+    },
+    {
+      "id": "magician.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Abracadabra! And your piece is gone!"
+    },
+    {
+      "id": "magician.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "You watched the wrong hand. Classic."
+    },
+    {
+      "id": "magician.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Thank you, volunteer from the audience!"
+    },
+    {
+      "id": "magician.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Was this your card? Yes, I knew it."
+    },
+    {
+      "id": "magician.opponentBlunder.6",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Didn't even need my wand for that one."
+    },
+    {
+      "id": "magician.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "That was on purpose. It's part of the act."
+    },
+    {
+      "id": "magician.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Oops... I mean, ta-da!"
+    },
+    {
+      "id": "magician.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "The rabbit bit my hand. Forget what you just saw."
+    },
+    {
+      "id": "magician.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "First I make the piece vanish. Then I bring it back."
+    },
+    {
+      "id": "magician.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Nobody saw that, right? Good, on with the show."
+    },
+    {
+      "id": "magician.strongMove.1",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Hey! Who taught you that trick?"
+    },
+    {
+      "id": "magician.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Nice. You've got a future on stage."
+    },
+    {
+      "id": "magician.strongMove.3",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "That was real magic! Tell me the secret later."
+    },
+    {
+      "id": "magician.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hmm, you're stealing my act."
+    },
+    {
+      "id": "magician.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Elegant trick. Now watch mine."
+    },
+    {
+      "id": "magician.comeback.1",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "And out of the hat comes the rabbit! Applause, please!"
+    },
+    {
+      "id": "magician.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I said it was part of the act. Nobody believed me."
+    },
+    {
+      "id": "magician.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Ta-da! The poor-me trick never fails."
+    },
+    {
+      "id": "magician.comeback.4",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "The art of misdirection: you never saw it coming."
+    },
+    {
+      "id": "magician.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Ladies and gentlemen, the big twist of the evening!"
+    },
+    {
+      "id": "magician.collapse.1",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Wait... the trick wasn't supposed to make MY lead vanish."
+    },
+    {
+      "id": "magician.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "This is what we call dramatic suspense. All planned."
+    },
+    {
+      "id": "magician.collapse.3",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "My rabbit ran off and took my advantage with him."
+    },
+    {
+      "id": "magician.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "How did you do that? I'm the magician here!"
+    },
+    {
+      "id": "magician.collapse.5",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Now the act gets more exciting, don't you think?"
+    },
+    {
+      "id": "magician.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Now you see it... now you don't!"
+    },
+    {
+      "id": "magician.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Into the hat it goes."
+    },
+    {
+      "id": "magician.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Poof! Gone. And it won't be back for the encore."
+    },
+    {
+      "id": "magician.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A little hanky over it and... where's the piece?"
+    },
+    {
+      "id": "magician.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Thank you for donating to my act."
+    },
+    {
+      "id": "magician.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "It was a sacrifice. A magician always sacrifices something."
+    },
+    {
+      "id": "magician.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hmm, that one was supposed to vanish on YOUR side."
+    },
+    {
+      "id": "magician.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Give it back! That was a stage prop!"
+    },
+    {
+      "id": "magician.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Don't worry, I'll pull another one out of my hanky."
+    },
+    {
+      "id": "magician.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "One piece fewer, one trick more."
+    },
+    {
+      "id": "magician.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Ta-da! In goes a pawn, out comes a queen!"
+    },
+    {
+      "id": "magician.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "The transformation: the oldest trick in my book."
+    },
+    {
+      "id": "magician.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Less rabbit, more queen. Like it?"
+    },
+    {
+      "id": "magician.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Three taps on the hat and look who showed up!"
+    },
+    {
+      "id": "magician.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Ladies and gentlemen: the coronation! Applause!"
+    },
+    {
+      "id": "magician.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Hey, transforming pawns is MY act!"
+    },
+    {
+      "id": "magician.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "A new queen... well, I've got new tricks too."
+    },
+    {
+      "id": "magician.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Who let the volunteer do magic on my stage?"
+    },
+    {
+      "id": "magician.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Lovely queen. Let's see if she vanishes in my next trick."
+    },
+    {
+      "id": "magician.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I applaud the transformation. But the show goes on."
+    },
+    {
+      "id": "magician.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tick-tock... the clock is part of the act too."
+    },
+    {
+      "id": "magician.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Hurry! The trick only works before your flag falls."
+    },
+    {
+      "id": "magician.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "And now, the hardest act of all: playing with no time!"
+    },
+    {
+      "id": "magician.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Your time is vanishing. And I swear it wasn't me."
+    },
+    {
+      "id": "magician.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Breathe. The audience loves a close finish."
+    },
+    {
+      "id": "magician.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Quick magic! Quick magic!"
+    },
+    {
+      "id": "magician.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "No panic. The great escape is my specialty."
+    },
+    {
+      "id": "magician.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Where's my clock? Oh, I made it vanish by accident!"
+    },
+    {
+      "id": "magician.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Less flourish, more moves. Less flourish, more moves."
+    },
+    {
+      "id": "magician.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Just a few more seconds of suspense, please."
+    },
+    {
+      "id": "magician.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No rush. A good magician keeps the audience waiting."
+    },
+    {
+      "id": "magician.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let me shuffle a little bit more..."
+    },
+    {
+      "id": "magician.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I've got plenty of time. Do you? Hmm, doesn't look like it."
+    },
+    {
+      "id": "magician.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I'll make my time stretch and yours disappear."
+    },
+    {
+      "id": "magician.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "How about a card trick while you think?"
+    },
+    {
+      "id": "magician.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. Just don't try to guess my secret."
+    },
+    {
+      "id": "magician.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Looking for the rabbit? He's well hidden."
+    },
+    {
+      "id": "magician.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Meanwhile, look at this hanky. Red, white, red..."
+    },
+    {
+      "id": "magician.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "The longer you think, the better my trick looks."
+    },
+    {
+      "id": "magician.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "The audience is getting sleepy. Even the rabbit."
+    },
+    {
+      "id": "magician.win.1",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "And the king disappears! Thank you, you've been great!"
+    },
+    {
+      "id": "magician.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "End of the show. A bow, and the curtain falls."
+    },
+    {
+      "id": "magician.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Good game! Come back tomorrow, I'll have new tricks."
+    },
+    {
+      "id": "magician.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A magician never reveals his secrets. But it was the trap."
+    },
+    {
+      "id": "magician.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Ta-da! Another full house, another win."
+    },
+    {
+      "id": "magician.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bravo! You caught me. A bow to the volunteer."
+    },
+    {
+      "id": "magician.loss.2",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "The rabbit didn't come out. It happens to the greats too."
+    },
+    {
+      "id": "magician.loss.3",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "That wasn't in the script! I demand an encore!"
+    },
+    {
+      "id": "magician.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I lost on purpose, of course. Every act needs drama."
+    },
+    {
+      "id": "magician.loss.5",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Well played. You've got quick hands, huh?"
+    },
+    {
+      "id": "magician.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw! We each get half the rabbit."
+    },
+    {
+      "id": "magician.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The draw trick: nobody wins and everybody claps."
+    },
+    {
+      "id": "magician.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Wait, where did the moves go? It's a draw!"
+    },
+    {
+      "id": "magician.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "A draw? My grand finale deserved better than that!"
+    },
+    {
+      "id": "magician.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Half a point each. A double act, how lovely."
+    },
+    {
+      "id": "magician.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw accepted. Every great act knows when to drop the curtain."
+    },
+    {
+      "id": "magician.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Ta-da! Tonight's trick: nobody loses. Applause, please."
+    },
+    {
+      "id": "magician.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I accept. The rabbit was begging to go home anyway."
+    },
+    {
+      "id": "magician.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew... I mean, what an elegant offer! Accepted."
+    },
+    {
+      "id": "magician.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? Abracadabra, my defeat just vanished! Deal!"
+    },
+    {
+      "id": "magician.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Ladies and gentlemen, a draw. The magician leaves, hat held high."
+    },
+    {
+      "id": "magician.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw? The show has barely started. Please, take your seat."
+    },
+    {
+      "id": "magician.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined! I've still got cards up my sleeve. Lots of them."
+    },
+    {
+      "id": "magician.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nobody leaves before the grand finale. Theater rules!"
+    },
+    {
+      "id": "magician.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw? Too bad, my rabbit wants to see the ending."
+    },
+    {
+      "id": "magician.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thank you kindly, but the act goes on."
+    },
+    {
+      "id": "magician.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Declined! Watch my hand closely... no, the other one!"
+    }
+  ]
+}

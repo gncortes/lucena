@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 
+import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_journey_repository.dart';
+import '../../../../testing/fakes/fake_onboarding_repository.dart';
+import '../../../../testing/fakes/fake_progress_repository.dart';
+import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/test_app.dart';
+
+/// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
+class _Home extends StatelessWidget {
+  const _Home(this.child);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) => HomeCubit(
+      journey: FakeJourneyRepository(),
+      progress: FakeProgressRepository(),
+      onboarding: FakeOnboardingRepository(),
+      characters: FakeCharacterRepository(),
+      rating: FakeRatingRepository(),
+    )..load(),
+    child: child,
+  );
+}
 
 void main() {
   String mascotAsset(WidgetTester tester) {
@@ -21,7 +47,7 @@ void main() {
   }
 
   testWidgets('mostra o mascote claro no tema claro', (tester) async {
-    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
 
     expect(find.byKey(HomeKeys.screen), findsOneWidget);
     expect(mascotAsset(tester), 'assets/branding/mascot_light.png');
@@ -29,14 +55,14 @@ void main() {
 
   testWidgets('mostra o mascote escuro no tema escuro', (tester) async {
     await tester.pumpWidget(
-      const TestApp(themeMode: ThemeMode.dark, child: HomeScreen()),
+      TestApp(themeMode: ThemeMode.dark, child: _Home(HomeScreen())),
     );
 
     expect(mascotAsset(tester), 'assets/branding/mascot_dark.png');
   });
 
   testWidgets('descreve o mascote para o leitor de tela', (tester) async {
-    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
     await tester.pumpAndSettle();
 
     expect(
@@ -49,7 +75,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const TestApp(locale: Locale('pt'), child: HomeScreen()),
+      TestApp(locale: Locale('pt'), child: _Home(HomeScreen())),
     );
     await tester.pumpAndSettle();
 
@@ -63,7 +89,7 @@ void main() {
   testWidgets('entra em sequência: mascote, depois nome, depois frase', (
     tester,
   ) async {
-    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
 
     expect(opacityOf(tester, HomeKeys.mascot), 0);
     expect(opacityOf(tester, HomeKeys.title), 0);
@@ -88,7 +114,7 @@ void main() {
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
-    await tester.pumpWidget(const TestApp(child: HomeScreen()));
+    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
 
     expect(opacityOf(tester, HomeKeys.mascot), 1);
     expect(opacityOf(tester, HomeKeys.tagline), 1);
@@ -96,7 +122,7 @@ void main() {
 
   testWidgets('mostra a versão do app no pé da tela', (tester) async {
     await tester.pumpWidget(
-      const TestApp(child: HomeScreen(version: '0.3.2-rc.1')),
+      TestApp(child: _Home(HomeScreen(version: '0.3.2-rc.1'))),
     );
     await tester.pumpAndSettle();
 
@@ -109,7 +135,7 @@ void main() {
   testWidgets('build local, sem versão: não mostra nada no lugar', (
     tester,
   ) async {
-    await tester.pumpWidget(const TestApp(child: HomeScreen(version: '')));
+    await tester.pumpWidget(TestApp(child: _Home(HomeScreen(version: ''))));
     await tester.pumpAndSettle();
 
     expect(find.byKey(HomeKeys.version), findsNothing);

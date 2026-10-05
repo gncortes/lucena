@@ -37,6 +37,9 @@ class SettingsScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state?.clock ?? const ClockSettings(),
     );
     final profile = context.select((ProfileCubit cubit) => cubit.state);
+    final characterTalk = context.select(
+      (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
+    );
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: AppBar(
@@ -109,6 +112,22 @@ class SettingsScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsClock),
+          ),
+          SwitchListTile(
+            key: SettingsKeys.characterTalkSwitch,
+            secondary: const Icon(Icons.chat_bubble_outline),
+            title: Text(context.l10n.settingsCharacterTalk),
+            subtitle: Text(context.l10n.settingsCharacterTalkHint),
+            value: characterTalk,
+            onChanged: (value) =>
+                context.read<SettingsCubit>().setCharacterTalk(enabled: value),
+          ),
+          ListTile(
+            key: SettingsKeys.tourTile,
+            leading: const Icon(Icons.tour_outlined),
+            title: Text(context.l10n.settingsTour),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(Routes.tour),
           ),
           // Só em build de desenvolvimento e de teste.
           if (showsDevTools)

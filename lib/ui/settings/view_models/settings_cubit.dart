@@ -42,6 +42,13 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(clock: clock));
   }
 
+  /// Liga ou desliga as falas dos personagens.
+  Future<void> setCharacterTalk({required bool enabled}) {
+    return _update(
+      (state ?? const AppSettings()).copyWith(characterTalk: enabled),
+    );
+  }
+
   /// Cores, peças e coordenadas de fábrica; o resto do tabuleiro não muda.
   Future<void> resetBoardAppearance() {
     final settings = state ?? const AppSettings();

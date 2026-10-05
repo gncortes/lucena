@@ -7,6 +7,7 @@ import '../../../domain/models/user_profile.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/profile_cubit.dart';
+import 'rating_card.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
 
@@ -102,12 +103,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 24),
                 if (level != null)
                   _LevelField(level: level, onTap: () => _pickLevel(level)),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 FilledButton(
                   key: ProfileKeys.saveButton,
                   onPressed: level == null ? null : () => _save(level),
                   child: Text(l10n.profileSave),
                 ),
+                const SizedBox(height: 32),
+                const RatingCard(),
               ],
             ),
           ),

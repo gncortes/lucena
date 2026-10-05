@@ -1,6 +1,18 @@
 import 'package:flutter/foundation.dart';
 
+import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
+import '../data/repositories/rating/rating_repository.dart';
+import '../data/repositories/achievements/achievements_repository.dart';
+import '../data/repositories/characters/character_repository.dart';
+import '../data/repositories/evaluation/evaluation_repository.dart';
+import '../data/repositories/characters/talk_repository.dart';
+import '../data/repositories/onboarding/onboarding_repository.dart';
+import '../data/repositories/pace/pace_repository.dart';
+import '../data/repositories/rating/rating_repository_local.dart';
+import '../data/repositories/achievements/achievements_repository_local.dart';
+import '../data/repositories/characters/character_repository_asset.dart';
+import '../data/repositories/evaluation/evaluation_repository_stockfish.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/journey/journey_repository_asset.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
@@ -62,6 +74,14 @@ class Dependencies {
     required this.progressRepository,
     required this.journeyRepository,
     required this.speedrunRepository,
+    required this.ratingRepository,
+    required this.achievementsRepository,
+    required this.characterRepository,
+    required this.evaluationRepository,
+    required this.talkRepository,
+    required this.onboardingRepository,
+    required this.paceRepository,
+    required this.drawOfferRepository,
     required this.languages,
   });
 
@@ -72,22 +92,44 @@ class Dependencies {
     const assets = AssetService();
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
+    final stockfish = StockfishService();
+    final pace = AssetPaceRepository(assets);
+    final profile = LocalProfileRepository(database);
+    final maiaRepository = DeviceMaiaRepository(maia);
+    final evaluation = StockfishEvaluationRepository(stockfish);
     return Dependencies(
       now: now,
       settingsRepository: LocalSettingsRepository(preferences),
-      profileRepository: LocalProfileRepository(database),
+      profileRepository: profile,
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
       opponentRepository: DeviceOpponentRepository(
-        maia: MaiaOpponentRepository(maia, now: now),
-        stockfish: StockfishOpponentRepository(StockfishService()),
+        maia: MaiaOpponentRepository(maia, now: now, pace: pace),
+        stockfish: StockfishOpponentRepository(stockfish),
       ),
-      maiaRepository: DeviceMaiaRepository(maia),
+      maiaRepository: maiaRepository,
       progressRepository: LocalProgressRepository(database),
       journeyRepository: AssetJourneyRepository(assets, positions),
       speedrunRepository: LocalSpeedrunRepository(database),
+      ratingRepository: LocalRatingRepository(
+        database,
+        maia: maiaRepository,
+        profile: profile,
+        now: now,
+      ),
+      achievementsRepository: LocalAchievementsRepository(assets, database),
+      characterRepository: AssetCharacterRepository(assets),
+      // O mesmo Stockfish do adversário: contra o Maia ele está livre.
+      evaluationRepository: evaluation,
+      talkRepository: LocalTalkRepository(preferences),
+      onboardingRepository: LocalOnboardingRepository(preferences),
+      paceRepository: pace,
+      drawOfferRepository: DeviceDrawOfferRepository(
+        maia: maiaRepository,
+        evaluation: evaluation,
+      ),
       languages: AppLanguage.selectable,
     );
   }
@@ -104,6 +146,14 @@ class Dependencies {
   final ProgressRepository progressRepository;
   final JourneyRepository journeyRepository;
   final SpeedrunRepository speedrunRepository;
+  final RatingRepository ratingRepository;
+  final AchievementsRepository achievementsRepository;
+  final CharacterRepository characterRepository;
+  final EvaluationRepository evaluationRepository;
+  final TalkRepository talkRepository;
+  final OnboardingRepository onboardingRepository;
+  final PaceRepository paceRepository;
+  final DrawOfferRepository drawOfferRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

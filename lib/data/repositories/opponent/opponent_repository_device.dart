@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 
+import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_setup.dart';
 import 'opponent_repository.dart';
 
@@ -17,6 +18,7 @@ class DeviceOpponentRepository implements OpponentRepository {
     OpponentKind kind = OpponentKind.stockfish,
     int? level,
     List<Position> history = const [],
+    TimeControl? time,
   }) {
     final engine = kind == OpponentKind.maia ? _maia : _stockfish;
     return engine.pickMove(
@@ -25,6 +27,7 @@ class DeviceOpponentRepository implements OpponentRepository {
       kind: kind,
       level: level,
       history: history,
+      time: time,
     );
   }
 }

@@ -11,6 +11,25 @@ import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/data/repositories/settings/settings_repository.dart';
 import 'package:lucena/data/repositories/training/training_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/data/repositories/draw/draw_offer_repository.dart';
+
+import 'fakes/fake_draw_offer_repository.dart';
+
+import 'package:lucena/data/repositories/rating/rating_repository.dart';
+import 'package:lucena/data/repositories/achievements/achievements_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/evaluation/evaluation_repository.dart';
+import 'package:lucena/data/repositories/characters/talk_repository.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/pace/pace_repository.dart';
+
+import 'fakes/fake_rating_repository.dart';
+import 'fakes/fake_achievements_repository.dart';
+import 'fakes/fake_character_repository.dart';
+import 'fakes/fake_evaluation_repository.dart';
+import 'fakes/fake_talk_repository.dart';
+import 'fakes/fake_onboarding_repository.dart';
+import 'fakes/fake_pace_repository.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_journey_repository.dart';
@@ -39,6 +58,14 @@ Dependencies testDependencies({
   ProgressRepository? progressRepository,
   JourneyRepository? journeyRepository,
   SpeedrunRepository? speedrunRepository,
+  RatingRepository? ratingRepository,
+  AchievementsRepository? achievementsRepository,
+  CharacterRepository? characterRepository,
+  EvaluationRepository? evaluationRepository,
+  TalkRepository? talkRepository,
+  OnboardingRepository? onboardingRepository,
+  PaceRepository? paceRepository,
+  DrawOfferRepository? drawOfferRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -61,6 +88,15 @@ Dependencies testDependencies({
               ? progress
               : FakeProgressRepository(),
         ),
+    ratingRepository: ratingRepository ?? FakeRatingRepository(),
+    achievementsRepository:
+        achievementsRepository ?? FakeAchievementsRepository(),
+    characterRepository: characterRepository ?? FakeCharacterRepository(),
+    evaluationRepository: evaluationRepository ?? FakeEvaluationRepository(),
+    talkRepository: talkRepository ?? FakeTalkRepository(),
+    onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
+    paceRepository: paceRepository ?? FakePaceRepository(),
+    drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

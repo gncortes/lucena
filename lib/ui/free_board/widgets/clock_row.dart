@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/use_cases/clock_engine.dart';
@@ -8,7 +9,9 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/free_board_state.dart';
+import '../view_models/talk_cubit.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
 /// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro.
@@ -17,6 +20,7 @@ class ClockRow extends StatelessWidget {
     required this.sides,
     required this.state,
     required this.board,
+    this.talk,
     super.key,
   });
 
@@ -29,6 +33,9 @@ class ClockRow extends StatelessWidget {
   /// A aparência escolhida: o retrato de cada lado é o peão dele, numa casa
   /// do tabuleiro.
   final BoardSettings board;
+
+  /// O personagem do adversário: o nome dele no lado da máquina.
+  final TalkState? talk;
 
   @override
   Widget build(BuildContext context) {
@@ -63,12 +70,22 @@ class ClockRow extends StatelessWidget {
     final l10n = context.l10n;
     final mode = state.mode;
     // O lado da máquina leva o nome dela (`Maia 1400`, `Stockfish`).
-    final name = side == mode.machineSide
+    final character = side == mode.machineSide ? talk?.character : null;
+    final nickname = context.select(
+      (ProfileCubit cubit) => cubit.state?.nickname ?? '',
+    );
+    final name = character != null
+        ? character.name
+        : side == mode.machineSide
         ? mode.opponent.label(l10n, level: mode.level)
+        // Contra a máquina, o lado do jogador leva o apelido dele.
+        : side == mode.userSide && mode.opponent.isMachine
+        ? (nickname.isEmpty ? l10n.profileNicknameDefault : nickname)
         : side == Side.white
         ? l10n.sideWhite
         : l10n.sideBlack;
     final children = [
+      // O retrato do personagem fica só na fileira de cima, com o balão.
       _Portrait(side: side, board: board),
       const SizedBox(width: 12),
       if (showName)

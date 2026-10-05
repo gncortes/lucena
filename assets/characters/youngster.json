@@ -1,0 +1,24 @@
+{
+  "id": "youngster",
+  "level": 2400,
+  "name": "Kai",
+  "tagline": {
+    "pt": "O prodígio da blitz online: calmo, frio e sempre calculando.",
+    "en": "The online blitz prodigy: calm, cold and always calculating."
+  },
+  "personality": {
+    "pt": "Kai é o jovem talento que joga blitz online o dia inteiro e chegou aos finais com a cabeça de calculadora. Fala pouco, frases curtas, e confia na precisão mais do que em qualquer truque. Ganhando, fica frio e técnico, sem comemorar demais; perdendo, admite o erro na hora e pede revanche. Solta uma gíria de streamer de vez em quando, como GG, clipe e chat, mas sempre com respeito.",
+    "en": "Kai is the young talent who plays online blitz all day and reached endgames with a calculator for a brain. He talks little, in short sentences, and trusts precision over any trick. When winning he stays cold and technical, never over-celebrating; when losing he owns the mistake right away and asks for a rematch. He drops a bit of streamer slang now and then, like GG, clip and chat, but always respectfully."
+  },
+  "traits": [
+    "calm",
+    "cold",
+    "precise",
+    "laconic",
+    "blitz",
+    "online",
+    "confident",
+    "respectful"
+  ],
+  "avatar": "assets/characters/youngster/avatar.png"
+}

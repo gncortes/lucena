@@ -8,7 +8,13 @@ class FakeProgressRepository implements ProgressRepository {
   final List<Attempt> attempts;
 
   @override
-  Future<void> addAttempt(Attempt attempt) async => attempts.add(attempt);
+  Future<int> addAttempt(Attempt attempt) async {
+    attempts.add(attempt);
+    return attempts.length;
+  }
+
+  @override
+  Future<List<Attempt>> allAttempts() async => [...attempts];
 
   @override
   Future<List<Attempt>> attemptsFor(String positionId) async => attempts
