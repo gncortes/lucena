@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class JourneyKeys {
+  /// O cartão do Viktor reencontrando o ex-aluno, no degrau 2600.
+  static const reunion = Key('journey.reunion');
+
   static const screen = Key('journey.screen');
   static const rungScreen = Key('journey.rung.screen');
   static const challengeScreen = Key('journey.challenge.screen');

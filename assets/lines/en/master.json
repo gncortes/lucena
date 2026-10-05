@@ -35,7 +35,7 @@
       "category": "gameStart",
       "intensity": 3,
       "emotion": "focused",
-      "text": "Don't expect mercy. Expect a good lesson."
+      "text": "Do not expect me to go easy. Expect a good lesson."
     },
     {
       "id": "master.gameStart.6",
@@ -43,6 +43,117 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Tie straightened. We may begin."
+    },
+    {
+      "id": "master.gameStart.7",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Capablanca began with endgames. So shall we."
+    },
+    {
+      "id": "master.gameStart.8",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "My first teacher said: respect every piece. Let us play."
+    },
+    {
+      "id": "master.gameStart.9",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "How good to meet someone who studies endgames. There are few."
+    },
+    {
+      "id": "master.gameStart.10",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Play as if every move will be studied later. It will be."
+    },
+    {
+      "id": "master.gameStart.11",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I reached the top for this: to play those who want to learn."
+    },
+    {
+      "id": "master.gameStart.12",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Recall Tarrasch: before the endgame, the gods placed the middlegame."
+    },
+    {
+      "id": "master.gameStart.13",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "You climbed the whole ladder. I know what that costs."
+    },
+    {
+      "id": "master.gameStart.14",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I remember your first rook crossing the board. Look at you now.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.15",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "My student reached my rung. No joy is greater for a teacher.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.16",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Today I am not your teacher. I am your opponent. Honour what you learned.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.17",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "The ladder, the opposition, the square... Let us see if you remember.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.18",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I taught you all I know. Now try to beat me with it.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.19",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "This is the day every teacher waits for: facing the student.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.20",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Morphy played like no one in his century. Let us honour him."
+    },
+    {
+      "id": "master.gameStart.21",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I always think of club teachers. Without them, there would be no masters."
     },
     {
       "id": "master.bigAdvantage.1",
@@ -87,6 +198,58 @@
       "text": "I cut off your king and march mine. Textbook."
     },
     {
+      "id": "master.bigAdvantage.7",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Fischer said he didn't believe in psychology, only good moves."
+    },
+    {
+      "id": "master.bigAdvantage.8",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Now we convert. Move by move, no flash, no error."
+    },
+    {
+      "id": "master.bigAdvantage.9",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Notice: I am in no hurry. Haste is what loses won endgames."
+    },
+    {
+      "id": "master.bigAdvantage.10",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "That is how Capablanca played: simple, clean, inevitable."
+    },
+    {
+      "id": "master.bigAdvantage.11",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "You are watching the technique I taught you. From the other side now.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigAdvantage.12",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I will not go easy because you were my student. That would be disrespect.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigAdvantage.13",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Remember the lesson on cutting off with the rook? Watch.",
+      "audience": "student"
+    },
+    {
       "id": "master.better.1",
       "category": "better",
       "intensity": 1,
@@ -122,6 +285,43 @@
       "text": "Constant pressure. We'll see who blinks first."
     },
     {
+      "id": "master.better.6",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Rubinstein won endgames like this: one better square at a time."
+    },
+    {
+      "id": "master.better.7",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Every tempo counts. Today they are on my side."
+    },
+    {
+      "id": "master.better.8",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Improve your worst piece. Old advice, always true."
+    },
+    {
+      "id": "master.better.9",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Slightly better. You know what I would do now, don't you?",
+      "audience": "student"
+    },
+    {
+      "id": "master.better.10",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Remember what I taught: active king. I take it seriously.",
+      "audience": "student"
+    },
+    {
       "id": "master.equal.1",
       "category": "equal",
       "intensity": 1,
@@ -154,7 +354,51 @@
       "category": "equal",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Equal for now. I have more patience than you."
+      "text": "Equal for now. Patience is worth more than talent here."
+    },
+    {
+      "id": "master.equal.6",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lasker said: seen a good move? Look for a better one."
+    },
+    {
+      "id": "master.equal.7",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Balance is mutual respect. I like that."
+    },
+    {
+      "id": "master.equal.8",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Now small things decide. Squares, tempi, opposition."
+    },
+    {
+      "id": "master.equal.9",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Equal against me. I can already say I taught well.",
+      "audience": "student"
+    },
+    {
+      "id": "master.equal.10",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Remember the king's wall? It applies here too.",
+      "audience": "student"
+    },
+    {
+      "id": "master.equal.11",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Capablanca made endgames look simple. They are not."
     },
     {
       "id": "master.worse.1",
@@ -190,6 +434,36 @@
       "intensity": 3,
       "emotion": "nervous",
       "text": "Interesting. It's been a while since I was squeezed like this."
+    },
+    {
+      "id": "master.worse.6",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Great defenders never gave up a game without a fight."
+    },
+    {
+      "id": "master.worse.7",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "I am worse. Now every move of mine must be exact."
+    },
+    {
+      "id": "master.worse.8",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Well, well. You are playing the way I taught.",
+      "audience": "student"
+    },
+    {
+      "id": "master.worse.9",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "I am worse and I smile. The one squeezing me is my student.",
+      "audience": "student"
     },
     {
       "id": "master.bigDisadvantage.1",
@@ -234,6 +508,44 @@
       "text": "Prove you can win this. Many cannot."
     },
     {
+      "id": "master.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Lost, perhaps. But a master resigns only when fighting is useless."
+    },
+    {
+      "id": "master.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Many won games were drawn through haste. No haste."
+    },
+    {
+      "id": "master.bigDisadvantage.9",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "You have me against the wall. How proud I am, my student.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigDisadvantage.10",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Now I want to see the technique I taught you. Do not disappoint me.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigDisadvantage.11",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Remember stalemate? I will look for one. Careful.",
+      "audience": "student"
+    },
+    {
       "id": "master.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -273,7 +585,37 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "surprised",
-      "text": "My young friend, you forgot about my king."
+      "text": "My friend, you forgot about my king."
+    },
+    {
+      "id": "master.opponentBlunder.7",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "We all err. What matters is understanding why, afterwards."
+    },
+    {
+      "id": "master.opponentBlunder.8",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "A slip. It happens even in world championship endgames."
+    },
+    {
+      "id": "master.opponentBlunder.9",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I would correct that error in class. Today, I take it.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentBlunder.10",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Oh no! I taught you to check threats first!",
+      "audience": "student"
     },
     {
       "id": "master.ownBlunder.1",
@@ -318,6 +660,36 @@
       "text": "Unacceptable. My old teacher would have torn up my scoresheet."
     },
     {
+      "id": "master.ownBlunder.7",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Even world champions misplayed simple endings. Today it was me."
+    },
+    {
+      "id": "master.ownBlunder.8",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "My error. I breathe, and play seriously again."
+    },
+    {
+      "id": "master.ownBlunder.9",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I erred, and my student saw it. That makes me happy, you know?",
+      "audience": "student"
+    },
+    {
+      "id": "master.ownBlunder.10",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Right in front of my student! What an example I set.",
+      "audience": "student"
+    },
+    {
       "id": "master.strongMove.1",
       "category": "strongMove",
       "intensity": 1,
@@ -360,6 +732,58 @@
       "text": "Magnificent. Today the student taught the teacher."
     },
     {
+      "id": "master.strongMove.7",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "That move has the scent of Capablanca."
+    },
+    {
+      "id": "master.strongMove.8",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Precise. That is how an endgame is played."
+    },
+    {
+      "id": "master.strongMove.9",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Did you calculate that? My sincere congratulations."
+    },
+    {
+      "id": "master.strongMove.10",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "That is exactly what I taught in class. Exactly!",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.11",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I remember when that move was hard for you.",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.12",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good student. No, good player. You are no longer a student.",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.13",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A master's move. Fischer would have nodded at that."
+    },
+    {
       "id": "master.comeback.1",
       "category": "comeback",
       "intensity": 1,
@@ -393,6 +817,36 @@
       "intensity": 1,
       "emotion": "focused",
       "text": "Now then. I'm back to teaching the class."
+    },
+    {
+      "id": "master.comeback.6",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Great defenders knew: resisting gives the error its chance."
+    },
+    {
+      "id": "master.comeback.7",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It turned. Not by magic, by patience."
+    },
+    {
+      "id": "master.comeback.8",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "It turned. This was the last lesson left: never relax.",
+      "audience": "student"
+    },
+    {
+      "id": "master.comeback.9",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "The teacher still has a few cards up his sleeve.",
+      "audience": "student"
     },
     {
       "id": "master.collapse.1",
@@ -430,6 +884,36 @@
       "text": "Steady now. The game is not over yet."
     },
     {
+      "id": "master.collapse.6",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Even the greats let won endgames slip. Today, me."
+    },
+    {
+      "id": "master.collapse.7",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "I lost the thread. I must find it again, move by move."
+    },
+    {
+      "id": "master.collapse.8",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "You saved a lost position against me. What defence, my student.",
+      "audience": "student"
+    },
+    {
+      "id": "master.collapse.9",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "You learned to defend better than I taught.",
+      "audience": "student"
+    },
+    {
       "id": "master.pieceCaptured.1",
       "category": "pieceCaptured",
       "intensity": 1,
@@ -455,7 +939,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Loose pieces drop. First rule of the club."
+      "text": "An undefended piece falls. True for everyone, even me."
     },
     {
       "id": "master.pieceCaptured.5",
@@ -463,6 +947,36 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Accepted with pleasure. Guard the next ones better."
+    },
+    {
+      "id": "master.pieceCaptured.6",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "One piece up. Trading now makes everything simpler."
+    },
+    {
+      "id": "master.pieceCaptured.7",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Material is material. Now, technique."
+    },
+    {
+      "id": "master.pieceCaptured.8",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A loose piece. Remember what I said at school?",
+      "audience": "student"
+    },
+    {
+      "id": "master.pieceCaptured.9",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I will take it. Consider it today's lesson.",
+      "audience": "student"
     },
     {
       "id": "master.pieceLost.1",
@@ -500,6 +1014,36 @@
       "text": "Well played. I need a fortress, and quickly."
     },
     {
+      "id": "master.pieceLost.6",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Losing material is not losing the game. Not yet."
+    },
+    {
+      "id": "master.pieceLost.7",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "A piece down. Now I play for a draw with dignity."
+    },
+    {
+      "id": "master.pieceLost.8",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "You won material from me. I did not teach that; you learned it.",
+      "audience": "student"
+    },
+    {
+      "id": "master.pieceLost.9",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "My student took a piece from me! I will tell this for years.",
+      "audience": "student"
+    },
+    {
       "id": "master.ownPromotion.1",
       "category": "ownPromotion",
       "intensity": 1,
@@ -533,6 +1077,28 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "The king escorted, the pawn arrived. Teamwork."
+    },
+    {
+      "id": "master.ownPromotion.6",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Philidor called pawns the soul of chess. Here is why."
+    },
+    {
+      "id": "master.ownPromotion.7",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Nimzowitsch said: the passed pawn has a lust to expand."
+    },
+    {
+      "id": "master.ownPromotion.8",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I promoted. Remember the rule of the square? It does not forgive.",
+      "audience": "student"
     },
     {
       "id": "master.opponentPromotion.1",
@@ -570,6 +1136,29 @@
       "text": "Very well. Now don't stumble into stalemate."
     },
     {
+      "id": "master.opponentPromotion.6",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "King in front of the pawn, as it should be. Well done."
+    },
+    {
+      "id": "master.opponentPromotion.7",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A new queen. Now, the queen mate we practised so much.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentPromotion.8",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "You queened against me! That first school promotion paid off.",
+      "audience": "student"
+    },
+    {
       "id": "master.opponentLowTime.1",
       "category": "opponentLowTime",
       "intensity": 1,
@@ -603,6 +1192,21 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Don't panic. Panic loses more games than the clock."
+    },
+    {
+      "id": "master.opponentLowTime.6",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Short of time? Trust the patterns you already know."
+    },
+    {
+      "id": "master.opponentLowTime.7",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Short of time, play what we practised. Your hands remember.",
+      "audience": "student"
     },
     {
       "id": "master.ownLowTime.1",
@@ -640,11 +1244,26 @@
       "text": "A master plays endgames in his sleep. We'll see if it's true."
     },
     {
+      "id": "master.ownLowTime.6",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Little time. Now I play patterns I have known for decades."
+    },
+    {
+      "id": "master.ownLowTime.7",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "My student pressing me on the clock. Who would have thought.",
+      "audience": "student"
+    },
+    {
       "id": "master.timeAdvantage.1",
       "category": "timeAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "I have time to spare. I'll use it to squeeze you."
+      "text": "I have time to spare. I will use it to think well."
     },
     {
       "id": "master.timeAdvantage.2",
@@ -673,6 +1292,21 @@
       "intensity": 1,
       "emotion": "playful",
       "text": "One more king stroll. Just to admire the view."
+    },
+    {
+      "id": "master.timeAdvantage.6",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Time to spare. Use yours too: think about plans."
+    },
+    {
+      "id": "master.timeAdvantage.7",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Remember: at school the clock did not run. Here it does.",
+      "audience": "student"
     },
     {
       "id": "master.opponentThinking.1",
@@ -717,6 +1351,43 @@
       "text": "Silence. That's how good moves are born."
     },
     {
+      "id": "master.opponentThinking.7",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Morphy said: help your pieces so they can help you."
+    },
+    {
+      "id": "master.opponentThinking.8",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thinking? Good. But trust what you already know."
+    },
+    {
+      "id": "master.opponentThinking.9",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I know that look of concentration from school.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentThinking.10",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Think as I taught you: king, pawns, then the pieces.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentThinking.11",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. Botvinnik prepared everything, even his rest."
+    },
+    {
       "id": "master.win.1",
       "category": "win",
       "intensity": 1,
@@ -752,6 +1423,59 @@
       "text": "Shake my hand. Next time, more opposition."
     },
     {
+      "id": "master.win.6",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Every loss to a master is a free lesson. Make use of it."
+    },
+    {
+      "id": "master.win.7",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Thank you for the game. Come back anytime; my door is open."
+    },
+    {
+      "id": "master.win.8",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I won today. But a student who loses and returns wins one day.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.9",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "I won, but what a game! I am proud of you.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.10",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Not yet, my student. But you are very close.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.11",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Visit the school now and then. Masters review too.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.12",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I dedicate every win to my first teacher, at a small club."
+    },
+    {
       "id": "master.loss.1",
       "category": "loss",
       "intensity": 1,
@@ -785,6 +1509,67 @@
       "intensity": 1,
       "emotion": "frustrated",
       "text": "Hm. I straighten my tie and accept it. Well played."
+    },
+    {
+      "id": "master.loss.6",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Losing to someone who plays well is a privilege. Thank you."
+    },
+    {
+      "id": "master.loss.7",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Chess is bigger than both of us. Today it chose you."
+    },
+    {
+      "id": "master.loss.8",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "The student beat the teacher. The most beautiful thing in chess.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.9",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Remember the rook collecting stars? Look where you are now.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.10",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "I lost, and I was never so glad to lose. Thank you, my student.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.11",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "My teacher said the student must surpass the master. You did.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.12",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Now you will teach someone. Promise me you will.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.13",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "One day someone will learn from you. That is how chess lives on."
     },
     {
       "id": "master.draw.1",
@@ -827,6 +1612,29 @@
       "intensity": 2,
       "emotion": "happy",
       "text": "A worthy defense. Knowing how to draw is endgame knowledge too."
+    },
+    {
+      "id": "master.draw.7",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Half a point each. The board was fair today."
+    },
+    {
+      "id": "master.draw.8",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A draw. Teacher and student, side by side. I like that.",
+      "audience": "student"
+    },
+    {
+      "id": "master.draw.9",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Stalemate? Ah, my student, I taught that in the first week!",
+      "audience": "student"
     }
   ]
 }

@@ -2,7 +2,7 @@
 """Confere os personagens e as falas (assets/characters e assets/lines).
 
 Cada personagem tem ficha, avatar e falas em inglês e em português com os
-mesmos ids; pelo menos 100 falas e todas as categorias conhecidas, cada uma com
+mesmos ids; pelo menos 100 falas (o Viktor, 200) e todas as categorias conhecidas, cada uma com
 pelo menos 5; nenhuma fala repetida; nenhuma passa de 90 caracteres (o balão é
 pequeno). Sai com erro e lista os problemas.
 
@@ -33,6 +33,12 @@ EMOTIONS = {
 }
 LEVELS = [1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600]
 MIN_LINES = 100
+# O Viktor é o professor da escola e homenagem a todos os professores de
+# xadrez: tem pelo menos o dobro das falas dos outros (T31).
+MIN_LINES_BY_CHARACTER = {"master": 200}
+# Para quem a fala é, além de todo jogador: "student" só para quem fez aulas
+# com o personagem.
+AUDIENCES = {"student"}
 MIN_PER_CATEGORY = 5
 MAX_LENGTH = 90
 
@@ -71,14 +77,17 @@ def check() -> list[str]:
             texts = [line["text"] for line in lines]
             if len(set(texts)) != len(texts):
                 problems.append(f"{where} fala repetida em {lang}")
-            if len(lines) < MIN_LINES:
-                problems.append(f"{where} {len(lines)} falas em {lang} (mínimo {MIN_LINES})")
+            minimum = MIN_LINES_BY_CHARACTER.get(cid, MIN_LINES)
+            if len(lines) < minimum:
+                problems.append(f"{where} {len(lines)} falas em {lang} (mínimo {minimum})")
             for line in lines:
                 tag = f"{where} {line.get('id')}"
                 if line.get("category") not in CATEGORIES:
                     problems.append(f"{tag} categoria desconhecida")
                 if line.get("emotion") not in EMOTIONS:
                     problems.append(f"{tag} emoção desconhecida")
+                if "audience" in line and line["audience"] not in AUDIENCES:
+                    problems.append(f"{tag} audiência desconhecida")
                 if line.get("intensity") not in (1, 2, 3):
                     problems.append(f"{tag} intensidade fora de 1 a 3")
                 if not line.get("text") or len(line["text"]) > MAX_LENGTH:

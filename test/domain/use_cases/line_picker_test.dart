@@ -159,4 +159,54 @@ void main() {
     )!;
     expect(got.memory.onceFlags, {'opponentLowTime'});
   });
+
+  group('falas de ex-aluno', () {
+    final withStudent = [
+      line('start.1', LineCategory.gameStart),
+      const CharacterLine(
+        id: 'start.student',
+        category: LineCategory.gameStart,
+        intensity: 1,
+        emotion: Emotion.happy,
+        text: 'my student',
+        audience: LineAudience.student,
+      ),
+    ];
+    const start = GameEvent(LineCategory.gameStart);
+
+    test('quem não fez aulas nunca ouve a fala de ex-aluno', () {
+      for (final roll in [0.0, 0.5, 0.99]) {
+        final got = LinePicker.pick(
+          lines: withStudent,
+          events: const [start],
+          memory: TalkMemory.empty,
+          roll: roll,
+        );
+        expect(got!.line.id, 'start.1');
+      }
+    });
+
+    test('o ex-aluno ouve primeiro a fala dele', () {
+      final got = LinePicker.pick(
+        lines: withStudent,
+        events: const [start],
+        memory: TalkMemory.empty,
+        roll: 0.99,
+        student: true,
+      );
+      expect(got!.line.id, 'start.student');
+    });
+
+    test('a ficha lê a audiência do JSON', () {
+      final parsed = CharacterLine.fromJson({
+        'id': 'x',
+        'category': 'win',
+        'intensity': 1,
+        'emotion': 'calm',
+        'text': 'x',
+        'audience': 'student',
+      });
+      expect(parsed!.audience, LineAudience.student);
+    });
+  });
 }
