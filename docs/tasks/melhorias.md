@@ -72,7 +72,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - ao tocar em "Começar" (speedrun) ou "Jogar" (desafio), abre um painel com os ritmos em grade, agrupados como no chess.com: Bullet (1+0, 2+1), Blitz (3+0, 3+2, 5+3), Rápido (10+0, 15+10) e "Sem relógio" (só na Jornada);
   - o último ritmo escolhido vem marcado e fica gravado;
   - no speedrun, os recordes passam a ser **por ritmo** (o melhor tempo em 3+2 não se mistura com o de 5+3); a lista mostra o melhor tempo do ritmo selecionado;
-  - muda a regra da T20 (ritmo fixo por speedrun para os tempos serem comparáveis): os tempos continuam comparáveis dentro do mesmo ritmo. **Precisa do ok do Gabriel.**
+  - muda a regra da T20 (ritmo fixo por speedrun para os tempos serem comparáveis): os tempos continuam comparáveis dentro do mesmo ritmo. **Decisão do Gabriel (2026-10-05):** cada ritmo é um speedrun próprio (1+0 é um, 1+1 é outro), com recordes separados; o speedrun fica agrupado por ritmo (bullet, blitz, rápido) e, dentro de cada um, os vários ritmos.
 
 ## Animações
 
@@ -119,5 +119,5 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Notado nos mesmos prints (para confirmar com o Gabriel)
 
-- [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. Avaliar: empate aceito vale meio ponto no rating, ou não conta. ([print](../qa/melhorias/4c10dc0a.jpg))
+- [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. **Decisão do Gabriel (2026-10-05):** empate vale meio ponto no Glicko-2, contra o adversário equivalente: se ele for mais forte que o jogador, o rating sobe; se for mais fraco, desce (vale para empate combinado e para os empates do tabuleiro). ([print](../qa/melhorias/4c10dc0a.jpg))
 - [ ] **Parte de baixo cortada, sem espaço para rolar.** No fim da partida, a lista de lances fica cortada (uma linha e meia visível, a de baixo pela metade). A área de baixo precisa rolar até o fim, com um espaço (padding) depois do último lance para nada ficar colado na borda. Rever também a ordem: talvez o rating dentro do painel do fim. ([print](../qa/melhorias/4c10dc0a.jpg))
