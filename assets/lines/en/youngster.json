@@ -785,6 +785,90 @@
       "intensity": 3,
       "emotion": "frustrated",
       "text": "Half a point. I wanted the whole thing."
+    },
+    {
+      "id": "youngster.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Fine, draw. Makes sense."
+    },
+    {
+      "id": "youngster.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Accepted. Half a point works."
+    },
+    {
+      "id": "youngster.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ok, deal. I was calculating my own loss."
+    },
+    {
+      "id": "youngster.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "GG. You played better, I'll take it."
+    },
+    {
+      "id": "youngster.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Accepting fast. This clip isn't going to chat."
+    },
+    {
+      "id": "youngster.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Accepted. I messed up earlier, I own it. Rematch?"
+    },
+    {
+      "id": "youngster.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Nah, thanks. Still a game here."
+    },
+    {
+      "id": "youngster.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Declined. I ran the lines. I'm fine."
+    },
+    {
+      "id": "youngster.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A draw? I play this out every day in blitz."
+    },
+    {
+      "id": "youngster.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Chat, I just got a draw offer. Declined."
+    },
+    {
+      "id": "youngster.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "No. Precision to the end, and I've got more of it."
+    },
+    {
+      "id": "youngster.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Declined. This ending is becoming my clip."
     }
   ]
 }

@@ -785,6 +785,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "Treino em dupla rende. Bate aqui!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Saber a hora de largar a barra também é técnica."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Fechado! Treino empatado ainda conta como treino."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa! Aceito. Essa série tava pesada demais."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate justo. Bora alongar e descansar."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Aceito! Valeu pelo spot, parceiro. Tava quase caindo!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Respeito a proposta. Hoje a carga tava do seu lado."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate? Ainda nem cheguei na falha. Bora!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Recuso! Ainda tem repetição nessa série."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Parar agora? Nem pensar, o pump tá vindo!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Sem dor, sem ganho. E eu quero o ganho."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Valeu, parceiro, mas o treino continua."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Isso é pular dia de perna! Recusado!"
     }
   ]
 }

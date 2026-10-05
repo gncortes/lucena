@@ -820,6 +820,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "Empate também é aventura. Bora de novo?"
+    },
+    {
+      "id": "prodigy.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá bom, empate. Às vezes o explorador esperto volta pro acampamento."
+    },
+    {
+      "id": "prodigy.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Aceito! Meu mapa tava cheio de buracos mesmo."
+    },
+    {
+      "id": "prodigy.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Aceito. E já anotei no caderno: proposta de empate bem gentil."
+    },
+    {
+      "id": "prodigy.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa! Quer dizer... tá, pode ser. Empate."
+    },
+    {
+      "id": "prodigy.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Sim, sim, sim! Aceito antes que você mude de ideia!"
+    },
+    {
+      "id": "prodigy.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate aceito. Saber recuar também é coisa de quem joga bem."
+    },
+    {
+      "id": "prodigy.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Não, obrigada. Minha bússola ainda aponta pra vitória."
+    },
+    {
+      "id": "prodigy.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? Mas eu acabei de achar uma pista nova!"
+    },
+    {
+      "id": "prodigy.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nem pensar! O tesouro tá logo ali, eu sinto!"
+    },
+    {
+      "id": "prodigy.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Minha lupa diz que ainda tem trilha pra explorar. Recuso."
+    },
+    {
+      "id": "prodigy.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Obrigada, mas expedição boa vai até o fim."
+    },
+    {
+      "id": "prodigy.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Eu sou pequena, mas não sou boba!"
     }
   ]
 }

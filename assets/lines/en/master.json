@@ -1635,6 +1635,122 @@
       "emotion": "calm",
       "text": "Stalemate? Ah, my student, I taught that in the first week!",
       "audience": "student"
+    },
+    {
+      "id": "master.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I accept. Knowing when to offer a draw is technique too."
+    },
+    {
+      "id": "master.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw accepted. Your position deserved it, I admit."
+    },
+    {
+      "id": "master.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "I straighten my tie and accept. That was close."
+    },
+    {
+      "id": "master.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Gladly accepted. Today the student taught the lesson."
+    },
+    {
+      "id": "master.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Accepted, with thanks. My king was running out of squares."
+    },
+    {
+      "id": "master.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Half a point on a bad day is a small victory. Accepted."
+    },
+    {
+      "id": "master.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I decline, respectfully. There is still chess to play."
+    },
+    {
+      "id": "master.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "No. Active king first, then we can talk."
+    },
+    {
+      "id": "master.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A draw? This position still has a lesson to teach."
+    },
+    {
+      "id": "master.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Kind of you. But class is not dismissed."
+    },
+    {
+      "id": "master.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Declined. I hold the opposition and a passed pawn."
+    },
+    {
+      "id": "master.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I refuse. In endgames, patience beats haste."
+    },
+    {
+      "id": "master.drawAccepted.7",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I accept, my student. Teacher and student sharing the point. How fine.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawAccepted.8",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I accept. You even learned when to offer a draw.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.7",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw? No, my student. I want to see the rest of your technique.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.8",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I decline. At school I taught you: a living position is played out.",
+      "audience": "student"
     }
   ]
 }
