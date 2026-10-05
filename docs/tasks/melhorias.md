@@ -26,6 +26,11 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 - [x] **Tela inicial só com o título; versão nas Configurações.** Pedido do Gabriel (2026-10-05).
 - [x] **Catálogo com os finais por nome e o progresso.** Pedido do Gabriel (2026-10-05).
 
+## Aparência do app (tema, cor e tabuleiro)
+
+- [x] **Escolher a cor do app, como no Twitter.** Pedido do Gabriel (2026-10-05): além de claro/escuro, o jogador escolhe a cor predominante (azul, verde, roxo, rosa, laranja ou turquesa). Cada cor tem um tom para o tema claro e outro para o escuro, com o fundo puxado de leve para a mesma família. Sem escolha, fica como era: azul no claro e verde no escuro. Fica em Configurações → Tema.
+- [x] **Aparência já na primeira abertura.** Pedido do Gabriel (2026-10-05): logo depois das boas-vindas, o tour ganha dois passos, "Deixe o app com a sua cara" (tema e cor do app, valendo na hora) e "Escolha o seu tabuleiro" (cores e peças, com a amostra); os dois avisam que dá para mudar depois nas Configurações. O tour passa de 8 para 10 passos.
+
 ## Tela do desafio (Jornada)
 
 - [x] **Refazer o layout, hoje está feio e vazio.** (Feito, menos a variação do rating em cada partida do histórico: a tentativa ainda não guarda o rating dela.) ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:

@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
@@ -24,6 +25,13 @@ void main() {
   Future<void> walkThrough(PatrolIntegrationTester $, AppRobot app) async {
     final tour = TourRobot($);
     final progress = ProgressRobot($);
+    app.expectNoClippedText();
+    // Os passos de aparência: tema e cor do app, depois o tabuleiro.
+    await tour.next();
+    await tour.expectStep(TourStep.theme);
+    app.expectNoClippedText();
+    await tour.next();
+    await tour.expectStep(TourStep.board);
     app.expectNoClippedText();
     await tour.nextUntilLevel();
     app.expectNoClippedText();
@@ -99,8 +107,11 @@ void main() {
     final tour = TourRobot($);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
     await tour.next();
+    await tour.chooseAccent(AppAccent.orange);
     await app.sendToBackgroundAndReturn();
-    await tour.expectStep(TourStep.rating);
+    await tour.expectStep(TourStep.theme);
+    tour.expectAccentValue('Orange');
+    app.expectAccent(AppAccent.orange);
     await tour.skip();
 
     await ProgressRobot($).openAchievements();

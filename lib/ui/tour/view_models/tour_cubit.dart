@@ -10,9 +10,12 @@ import '../../../domain/models/maia_level.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 
-/// Os passos do tour, na ordem. O último pergunta o nível.
+/// Os passos do tour, na ordem. Depois das boas-vindas, a aparência do app
+/// e do tabuleiro; o último pergunta o nível.
 enum TourStep {
   goal,
+  theme,
+  board,
   rating,
   journey,
   endgames,

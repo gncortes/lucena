@@ -1,3 +1,4 @@
+import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
@@ -12,6 +13,7 @@ class LocalSettingsRepository implements SettingsRepository {
 
   static const _languageKey = 'settings.language';
   static const _themeKey = 'settings.theme';
+  static const _accentKey = 'settings.accent';
   static const _boardColorsKey = 'board.colors';
   static const _boardPiecesKey = 'board.pieces';
   static const _boardCoordinatesKey = 'board.coordinates';
@@ -34,6 +36,7 @@ class LocalSettingsRepository implements SettingsRepository {
     return AppSettings(
       languageCode: await _preferences.getString(_languageKey),
       themeMode: AppThemeMode.fromCode(await _preferences.getString(_themeKey)),
+      accent: AppAccent.fromCode(await _preferences.getString(_accentKey)),
       board: await _loadBoard(),
       clock: ClockSettings(
         position: ClockPosition.fromCode(
@@ -99,6 +102,12 @@ class LocalSettingsRepository implements SettingsRepository {
       await _preferences.setString(_languageKey, languageCode);
     }
     await _preferences.setString(_themeKey, settings.themeMode.code);
+    final accent = settings.accent;
+    if (accent == null) {
+      await _preferences.remove(_accentKey);
+    } else {
+      await _preferences.setString(_accentKey, accent.code);
+    }
     await _saveBoard(settings.board);
     await _preferences.setString(
       _clockPositionKey,

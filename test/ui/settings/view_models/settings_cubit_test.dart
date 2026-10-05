@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
@@ -26,6 +27,24 @@ void main() {
     build: build,
     act: (cubit) => cubit.load(),
     expect: () => [const AppSettings(languageCode: 'fr')],
+  );
+
+  blocTest<SettingsCubit, AppSettings?>(
+    'trocar a cor do app muda o estado na hora e grava, sem mexer no tema',
+    setUp: () =>
+        repository.settings = const AppSettings(themeMode: AppThemeMode.dark),
+    build: build,
+    act: (cubit) async {
+      await cubit.load();
+      await cubit.setAccent(AppAccent.purple);
+    },
+    expect: () => [
+      const AppSettings(themeMode: AppThemeMode.dark),
+      const AppSettings(themeMode: AppThemeMode.dark, accent: AppAccent.purple),
+    ],
+    verify: (_) => expect(repository.saved, [
+      const AppSettings(themeMode: AppThemeMode.dark, accent: AppAccent.purple),
+    ]),
   );
 
   blocTest<SettingsCubit, AppSettings?>(

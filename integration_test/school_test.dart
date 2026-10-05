@@ -22,7 +22,7 @@ void main() {
     await tour.expectStep(TourStep.goal);
     expect(find.byKey(TourKeys.speech), findsOneWidget);
     await tour.next();
-    await tour.expectStep(TourStep.rating);
+    await tour.expectStep(TourStep.theme);
     expect(find.byKey(TourKeys.speech), findsOneWidget);
 
     await tour.nextUntilLevel();

@@ -7,7 +7,9 @@ import 'package:patrol/patrol.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/ui/core/theme/app_theme.dart';
 
 import '../../testing/e2e_dependencies.dart';
 
@@ -202,6 +204,15 @@ class AppRobot {
   void expectBrightness(Brightness brightness) {
     final context = $.tester.element(find.byType(Scaffold).last);
     expect(Theme.of(context).brightness, brightness);
+  }
+
+  /// A tela atual está na cor do app [accent], no tom do tema dela (claro ou
+  /// escuro): a cor principal e o fundo.
+  void expectAccent(AppAccent accent) {
+    final theme = Theme.of($.tester.element(find.byType(Scaffold).last));
+    final expected = AppTheme.of(theme.brightness, accent: accent);
+    expect(theme.colorScheme.primary, expected.colorScheme.primary);
+    expect(theme.scaffoldBackgroundColor, expected.scaffoldBackgroundColor);
   }
 
   void expectDirection(TextDirection direction) {
