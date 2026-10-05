@@ -14,9 +14,10 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - APIs de pacotes: consultar Context7 ou o MCP do Dart antes de supor assinaturas. Não inventar API.
 
 ## Git
-- Uma branch por tarefa (`tarefa/TXX-nome-curto`), criada a partir da `main` atualizada. Commits e push só nela.
-- Nunca commitar nem dar push direto na `main`. A `main` só recebe código por PR com CI verde; o merge é do usuário.
-- CI em `.github/workflows/`: `ci.yml` (PR: formatação, analyze, traduções, testes, APK), `qa.yml` (tag `vX.Y.Z-rc.N`: Test Lab + App Distribution) e `release.yml` (tag `vX.Y.Z`: publica o APK).
+- Uma branch por tarefa (`tarefa/TXX-nome-curto`), criada a partir da `develop` atualizada. Commits e push só nela; a PR vai para a `develop` (`--base develop`).
+- Nunca commitar nem dar push direto na `develop` nem na `main`. As duas só recebem código por PR com CI verde; o merge é do usuário. A `main` recebe da `develop`.
+- CI em `.github/workflows/`: `ci.yml` (PR para `develop` ou `main`: formatação, analyze, traduções, testes, APK), `qa.yml` (tag `vX.Y.Z-rc.N`: App Distribution, grupo de QA, sem Test Lab) e `release.yml` (tag `vX.Y.Z` na `main`: Patrol no Test Lab, Release com o APK e App Distribution, grupo `release`).
+- O Patrol não roda no CI da `develop`: a suíte local em paralelo é a validação antes da PR.
 - Segredos (keystore, credenciais) ficam só no GitHub. Nunca ler, criar ou imprimir segredo.
 
 ## Comandos

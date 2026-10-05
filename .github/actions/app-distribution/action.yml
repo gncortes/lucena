@@ -1,0 +1,57 @@
+name: Firebase App Distribution
+description: >
+  Envia o APK a um grupo de testadores do App Distribution (precisa do `qa-config` e do login no
+  Google Cloud antes) e devolve o link do testador.
+
+inputs:
+  apk:
+    description: Caminho do APK assinado.
+    required: true
+  group:
+    description: Alias do grupo de testadores. Vazio = TESTER_GROUP do config.env (grupo de QA).
+    required: false
+    default: ''
+
+outputs:
+  tester:
+    description: Link para instalar pelo app Firebase App Tester.
+    value: ${{ steps.dist.outputs.tester }}
+  console:
+    description: Link da versão no console do Firebase.
+    value: ${{ steps.dist.outputs.console }}
+
+runs:
+  using: composite
+  steps:
+    - name: App Distribution
+      id: dist
+      shell: bash
+      env:
+        APK: ${{ inputs.apk }}
+        GROUP: ${{ inputs.group }}
+      run: |
+        set -o pipefail
+        source "$QA_CONFIG"
+        npm install --global --no-fund --no-audit firebase-tools@15.32.1
+
+        notes="$RUNNER_TEMP/release_notes.txt"
+        {
+          echo "$GITHUB_REF_NAME"
+          git log -1 --pretty=%s
+        } > "$notes"
+
+        firebase appdistribution:distribute "$APK" \
+          --project "$FIREBASE_PROJECT_ID" \
+          --app "$FIREBASE_ANDROID_APP_ID" \
+          --groups "${GROUP:-$TESTER_GROUP}" \
+          --release-notes-file "$notes" \
+          2>&1 | tee "$RUNNER_TEMP/distribution.log"
+
+        tester="$(grep -oE 'https://appdistribution\.firebase\.google\.com/testerapps/[^ ]+' "$RUNNER_TEMP/distribution.log" | tail -1 || true)"
+        console="$(grep -oE 'https://console\.firebase\.google\.com/project/[^ ]*appdistribution[^ ]*' "$RUNNER_TEMP/distribution.log" | tail -1 || true)"
+        if [ -z "$tester" ]; then
+          echo "::error::Link do testador não encontrado na saída do Firebase CLI"
+          exit 1
+        fi
+        echo "tester=$tester" >> "$GITHUB_OUTPUT"
+        echo "console=$console" >> "$GITHUB_OUTPUT"
