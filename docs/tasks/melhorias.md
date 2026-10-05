@@ -18,6 +18,20 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta: tabuleiro grande no topo (largura da tela, como na configuração da partida); um cartão do adversário com retrato, nome, nível e a frase dele; o objetivo e o ritmo em selos; "Jogar" fixo embaixo; o histórico em cartões com o resultado colorido, o tempo gasto e a variação do rating de cada partida; e um estado vazio com convite para jogar.
 
+## Tela inicial
+
+- [ ] **Virar um painel do jogador.** ([print](../qa/melhorias/f566c19e.jpg)) O que incomoda no print:
+  - o mascote e o nome do app ocupam quase metade da tela toda vez que o app abre;
+  - o cartão de progresso fala "Maia 1000" em vez do personagem, e o rating fica num selo solto;
+  - cinco botões grandes empilhados com o mesmo peso visual.
+
+  Proposta:
+  - topo compacto: apelido e faixa do jogador, rating em destaque com a variação da última partida (verde/vermelho) e uma mini curva, troféu e configurações;
+  - cartão "Continuar": retrato do personagem atual, nome, barra de progresso do degrau e o próximo desafio com o tabuleiro em miniatura;
+  - números do progresso em blocos pequenos: partidas jogadas, vitórias, sequência de dias, conquistas (x de 15), melhor tempo de speedrun;
+  - atalhos menores em grade (Jornada, Treinar finais, Speedrun) e os de ferramenta (Posição personalizada, Tabuleiro livre) mais discretos;
+  - o mascote pequeno (ou só na primeira abertura, no tour).
+
 ## Tela da Jornada
 
 - [ ] **Refazer a lista de degraus.** ([print](../qa/melhorias/c26d2730.jpg)) O que incomoda no print:
