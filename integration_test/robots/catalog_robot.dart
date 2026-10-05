@@ -9,7 +9,8 @@ import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
 
-/// Telas do catálogo: categorias, subcategorias e posições.
+/// Telas do catálogo: as categorias e, na tela da categoria, os finais em
+/// seções já abertas com as posições em grade.
 class CatalogRobot {
   const CatalogRobot(this.$);
 
@@ -27,13 +28,26 @@ class CatalogRobot {
     await $(CatalogKeys.categoryScreen).waitUntilVisible();
   }
 
+  /// Rola até a seção do final. Ela já vem aberta: não há tela à parte.
   Future<void> openSubcategory(String subcategory) async {
-    await $(CatalogKeys.subcategory(subcategory)).scrollTo().tap();
-    await $(CatalogKeys.subcategoryScreen).waitUntilVisible();
     await $(CatalogKeys.positionList).waitUntilVisible();
+    await $(CatalogKeys.subcategory(subcategory))
+        .scrollTo(view: find.byKey(CatalogKeys.positionList));
   }
 
-  /// Rola a lista até a posição e toca nela.
+  /// Toca no cabeçalho da seção: fecha a seção aberta ou abre a fechada.
+  Future<void> toggleSubcategory(String subcategory) async {
+    await $(CatalogKeys.subcategory(subcategory))
+        .scrollTo(view: find.byKey(CatalogKeys.positionList))
+        .tap();
+    await $.pumpAndSettle();
+  }
+
+  void expectPositionHidden(String id) {
+    expect(find.byKey(CatalogKeys.position(id)), findsNothing);
+  }
+
+  /// Rola a lista até a posição e toca nela: abre a configuração da partida.
   Future<void> openPosition(String id) async {
     await $(CatalogKeys.position(id))
         .scrollTo(view: find.byKey(CatalogKeys.positionList))
@@ -74,8 +88,8 @@ class CatalogRobot {
     expect(find.byKey(CatalogKeys.category(category)), findsNothing);
   }
 
-  /// As posições que a lista mostra têm todas o objetivo [goal], e há pelo
-  /// menos uma.
+  /// As posições que a tela da categoria mostra têm todas o objetivo [goal],
+  /// e há pelo menos uma.
   void expectOnlyGoal(PositionGoal goal) {
     final context = $.tester.element(find.byKey(CatalogKeys.positionList));
     final positions = context.read<CatalogCubit>().state.visiblePositions!;
