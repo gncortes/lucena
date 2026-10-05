@@ -16,7 +16,7 @@ void main() {
     await app.open();
 
     await home.expectVisible();
-    home.expectMascot(dark: true);
+    home.expectDark(dark: true);
   });
 
   patrolTest('tela inicial em árabe', ($) async {

@@ -11,7 +11,8 @@ class PlayerRating {
   factory PlayerRating.start(int rating) =>
       PlayerRating(rating: rating.toDouble());
 
-  /// Desvio de quem ainda não jogou (e o teto do desvio).
+  /// Desvio de quem ainda não jogou (e o teto do Glicko-2). No Lucena, a
+  /// partida usa no máximo `RatingRules.maxDeviation`.
   static const initialDeviation = 350.0;
 
   /// Volatilidade inicial do Glicko-2.

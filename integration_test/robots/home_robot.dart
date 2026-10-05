@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -10,25 +10,34 @@ class HomeRobot {
 
   final PatrolIntegrationTester $;
 
-  /// Espera a tela pronta: em aparelho lento a imagem do mascote demora a carregar.
+  /// Espera a tela pronta: o nome do app e o botão da Jornada.
   Future<void> expectVisible() async {
     await $(HomeKeys.screen).waitUntilVisible();
-    await $(HomeKeys.mascot).waitUntilVisible();
-    await $(HomeKeys.tagline).waitUntilVisible();
+    await $(HomeKeys.title).waitUntilVisible();
+    await $(HomeKeys.journeyButton).waitUntilExists();
   }
 
-  void expectMascot({required bool dark}) {
-    final image = $.tester.widget<Image>(find.byKey(HomeKeys.mascot));
+  /// A tela no tema escuro (ou claro).
+  void expectDark({required bool dark}) {
+    final context = $.tester.element(find.byKey(HomeKeys.screen));
     expect(
-      (image.image as AssetImage).assetName,
-      dark
-          ? 'assets/branding/mascot_dark.png'
-          : 'assets/branding/mascot_light.png',
+      Theme.of(context).brightness,
+      dark ? Brightness.dark : Brightness.light,
     );
   }
 
-  void expectTagline(String text) {
-    expectText($.tester.widget<Text>(find.byKey(HomeKeys.tagline)).data, text);
+  /// O nome do botão da Jornada, no idioma da tela.
+  void expectJourneyLabel(String text) {
+    final label = $.tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(HomeKeys.journeyButton),
+            matching: find.byType(Text),
+          ),
+        )
+        .first
+        .data;
+    expectText(label, text);
   }
 
   /// Com a tela espelhada (direita para a esquerda), o botão fica à esquerda.

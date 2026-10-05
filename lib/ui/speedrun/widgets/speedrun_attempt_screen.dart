@@ -6,13 +6,19 @@ import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/speedrun_keys.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/position_board.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
-/// Uma tentativa: as etapas com o tempo e as derrotas de cada uma, o total e
-/// o botão da próxima etapa. No fim, a diferença para o recorde.
+/// Uma tentativa: o total e o progresso no alto, a etapa da vez em destaque
+/// (com o tabuleiro, o final e o adversário), as etapas com o tempo de cada
+/// uma e, no fim, a diferença para o recorde. "Desistir" fica no menu.
 class SpeedrunAttemptScreen extends StatelessWidget {
   const SpeedrunAttemptScreen({super.key});
 
@@ -20,6 +26,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final state = context.watch<SpeedrunCubit>().state;
     final summary = state.selected;
     final run = state.run;
@@ -33,17 +40,72 @@ class SpeedrunAttemptScreen extends StatelessWidget {
       );
     }
     final speedrun = summary.speedrun;
-    final tabular = theme.textTheme.titleMedium?.copyWith(
-      fontFeatures: const [FontFeature.tabularFigures()],
-    );
+    final characters = state.characters;
+    final total = speedrun.stages.length;
+    final done = run.stages.where((stage) => stage.done).length;
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
       appBar: AppBar(
-        title: SpeedrunTitle(speedrun, style: theme.textTheme.titleLarge),
+        title: Text(speedrunName(l10n, characters, speedrun)),
+        actions: [
+          if (run.inProgress)
+            PopupMenuButton<void>(
+              key: SpeedrunKeys.menu,
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  key: SpeedrunKeys.abandon,
+                  onTap: () => _confirmAbandon(context),
+                  child: Text(l10n.speedrunAbandon),
+                ),
+              ],
+            ),
+        ],
       ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: scrollPadding(context),
         children: [
+          // O total grande e quanto falta.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.speedrunTotal,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  RunTimeFormat.format(run.total),
+                  key: SpeedrunKeys.total,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: total == 0 ? 0 : done / total,
+                    minHeight: 8,
+                    backgroundColor: colors.surfaceContainerHighest,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.speedrunStageOf(
+                    run.inProgress ? run.currentStage + 1 : done,
+                    total,
+                  ),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (run.completed)
             _Finish(run: run, previousBest: state.previousBest),
           if (run.abandoned)
@@ -53,62 +115,38 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                 l10n.speedrunAbandoned,
                 key: SpeedrunKeys.abandoned,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.error,
+                  color: colors.error,
                 ),
               ),
             ),
-          for (var index = 0; index < speedrun.stages.length; index++)
-            _stageTile(context, speedrun, run, index, tabular),
-          const Divider(),
-          ListTile(
-            title: Text(l10n.speedrunTotal, style: theme.textTheme.titleMedium),
-            trailing: Text(
-              RunTimeFormat.format(run.total),
-              key: SpeedrunKeys.total,
-              style: theme.textTheme.titleLarge?.copyWith(
+          if (run.inProgress)
+            _Current(
+              speedrun: speedrun,
+              run: run,
+              state: state,
+              onPlay: () => _play(context, speedrun, run, state),
+            ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 4),
+            child: Text(
+              l10n.speedrunStages,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
           ),
-          if (run.inProgress) ...[
+          for (var index = 0; index < speedrun.stages.length; index++)
+            _stageTile(context, speedrun, run, index),
+          if (run.inProgress)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: FilledButton.icon(
-                key: SpeedrunKeys.play,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                ),
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text(
-                  state.gameOngoing
-                      ? l10n.speedrunContinueGame
-                      : run.stages[run.currentStage].losses > 0
-                      ? l10n.speedrunRetryStage(run.currentStage + 1)
-                      : l10n.speedrunPlayStage(run.currentStage + 1),
-                ),
-                onPressed: () => _play(context, speedrun, run, state),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Text(
                 l10n.speedrunPauseHint,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: colors.onSurfaceVariant,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: TextButton.icon(
-                key: SpeedrunKeys.abandon,
-                icon: const Icon(Icons.close),
-                label: Text(l10n.speedrunAbandon),
-                onPressed: () => _confirmAbandon(context),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -119,11 +157,13 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     Speedrun speedrun,
     SpeedrunRun run,
     int index,
-    TextStyle? style,
   ) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final characters = context.read<SpeedrunCubit>().state.characters;
     final stage = run.stages[index];
+    final challenge = speedrun.stages[index];
     final current = run.inProgress && index == run.currentStage;
     final played = stage.done || stage.losses > 0;
     return ListTile(
@@ -131,22 +171,43 @@ class SpeedrunAttemptScreen extends StatelessWidget {
       dense: true,
       selected: current,
       leading: stage.done
-          ? Icon(Icons.check_circle, color: colors.primary)
-          : current
-          ? Icon(Icons.play_circle_outline, color: colors.primary)
-          : Icon(Icons.radio_button_unchecked, color: colors.outline),
-      title: Text(opponentRefLabel(l10n, speedrun.stages[index].opponent)),
-      subtitle: stage.losses == 0
-          ? null
-          : Text(
+          ? Icon(Icons.check_circle, color: ChangeColors.of(context, up: true))
+          : CircleAvatar(
+              radius: 13,
+              backgroundColor: current
+                  ? colors.primary
+                  : colors.surfaceContainerHighest,
+              child: Text(
+                (index + 1).toString(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: current ? colors.onPrimary : colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+      title: Text(
+        endgameName(l10n, challenge.position.subcategory),
+        style: TextStyle(color: played || current ? null : colors.outline),
+      ),
+      subtitle: Text(opponentName(l10n, characters, challenge.opponent)),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            played ? RunTimeFormat.format(stage.time) : '',
+            key: SpeedrunKeys.stageTime(index),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          if (stage.losses > 0)
+            Text(
               l10n.speedrunLosses(stage.losses),
               key: SpeedrunKeys.stageLosses(index),
-              style: TextStyle(color: colors.error),
+              style: theme.textTheme.labelSmall?.copyWith(color: colors.error),
             ),
-      trailing: Text(
-        played ? RunTimeFormat.format(stage.time) : '',
-        key: SpeedrunKeys.stageTime(index),
-        style: style,
+        ],
       ),
     );
   }
@@ -264,6 +325,109 @@ class _Finish extends StatelessWidget {
                     ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A etapa da vez em destaque: a posição, o nome do final, o adversário e o
+/// botão de jogar (ou continuar a partida).
+class _Current extends StatelessWidget {
+  const _Current({
+    required this.speedrun,
+    required this.run,
+    required this.state,
+    required this.onPlay,
+  });
+
+  final Speedrun speedrun;
+  final SpeedrunRun run;
+  final SpeedrunState state;
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final index = run.currentStage;
+    final challenge = speedrun.stages[index];
+    final character = opponentCharacter(state.characters, challenge.opponent);
+    return Card(
+      key: SpeedrunKeys.current,
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.speedrunNow,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colors.onSecondaryContainer,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                PositionBoard(fen: challenge.position.fen, size: 112),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        endgameName(l10n, challenge.position.subcategory),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSecondaryContainer,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          if (character != null) ...[
+                            CharacterAvatar(character: character, size: 28),
+                            const SizedBox(width: 8),
+                          ],
+                          Flexible(
+                            child: Text(
+                              opponentName(
+                                l10n,
+                                state.characters,
+                                challenge.opponent,
+                              ),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              key: SpeedrunKeys.play,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: Text(
+                state.gameOngoing
+                    ? l10n.speedrunContinueGame
+                    : run.stages[index].losses > 0
+                    ? l10n.speedrunRetryStage(index + 1)
+                    : l10n.speedrunPlayStage(index + 1),
+              ),
+              onPressed: onPlay,
             ),
           ],
         ),

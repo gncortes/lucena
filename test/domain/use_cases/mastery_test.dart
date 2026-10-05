@@ -110,4 +110,38 @@ void main() {
       expect(progress.rungs[1].status, RungStatus.locked);
     });
   });
+
+  group('próximo desafio', () {
+    test('o seguinte do mesmo degrau, ainda não concluído', () {
+      final next = Mastery.nextChallenge(ladder, {}, queen);
+      expect(next!.challenge.id, rook);
+      expect(next.rungId, '1000');
+    });
+
+    test('depois do último do degrau, volta ao começo dele', () {
+      final next = Mastery.nextChallenge(ladder, {}, rook);
+      expect(next!.challenge.id, queen);
+    });
+
+    test('degrau concluído: o primeiro do degrau seguinte', () {
+      final next = Mastery.nextChallenge(ladder, {queen, rook}, rook);
+      expect(next!.challenge.id, rung1200);
+      expect(next.rungId, '1200');
+    });
+
+    test('degrau seguinte ainda trancado: nenhum', () {
+      // Perdeu o único que faltava: o 1200 continua trancado.
+      expect(Mastery.nextChallenge(ladder, {queen}, rook), isNull);
+    });
+
+    test('fora da Jornada ou no fim dela: nenhum', () {
+      expect(Mastery.nextChallenge(ladder, {}, 'outro'), isNull);
+      final all = {
+        for (final rung in ladder)
+          for (final challenge in rung.challenges) challenge.id,
+      };
+      final last = ladder.last.challenges.last.id;
+      expect(Mastery.nextChallenge(ladder, all, last), isNull);
+    });
+  });
 }

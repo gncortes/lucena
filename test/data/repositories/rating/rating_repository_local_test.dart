@@ -24,10 +24,11 @@ void main() {
     required bool fulfilled,
     OpponentKind opponent = OpponentKind.maia,
     int? level = 1600,
+    AttemptOutcome? outcome,
   }) => Attempt(
     positionId: 'basic.queen.0001',
     playedAt: now(),
-    outcome: fulfilled ? AttemptOutcome.win : AttemptOutcome.loss,
+    outcome: outcome ?? (fulfilled ? AttemptOutcome.win : AttemptOutcome.loss),
     fulfilled: fulfilled,
     opponent: opponent,
     opponentLevel: opponent == OpponentKind.maia ? level : null,
@@ -121,6 +122,45 @@ void main() {
       drawGoal: false,
     );
     expect(maia.matches.single.$3, 2600);
+  });
+
+  test('empate em posição ganha desce, mas menos que a derrota', () async {
+    maia.byLevel[1200] = const MovePrediction(
+      moves: {},
+      win: 0.95,
+      draw: 0.05,
+      loss: 0,
+      elapsed: Duration.zero,
+    );
+    final drawn = await repository.rate(
+      game(fulfilled: false, outcome: AttemptOutcome.draw),
+      userSide: Side.white,
+      drawGoal: false,
+    );
+    expect(drawn!.rating.rounded, lessThan(1150));
+    await database.delete(database.ratingHistory).go();
+    final lost = await repository.rate(
+      game(fulfilled: false),
+      userSide: Side.white,
+      drawGoal: false,
+    );
+    expect(lost!.rating.rounded, lessThan(drawn.rating.rounded));
+  });
+
+  test('empate em posição difícil sobe', () async {
+    maia.byLevel[1200] = const MovePrediction(
+      moves: {},
+      win: 0,
+      draw: 0.3,
+      loss: 0.7,
+      elapsed: Duration.zero,
+    );
+    final drawn = await repository.rate(
+      game(fulfilled: false, outcome: AttemptOutcome.draw),
+      userSide: Side.white,
+      drawGoal: false,
+    );
+    expect(drawn!.rating.rounded, greaterThan(1150));
   });
 
   test('partida sem máquina não conta', () async {

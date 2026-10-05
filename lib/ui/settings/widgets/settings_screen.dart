@@ -19,7 +19,11 @@ import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/settings_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.version = appVersion});
+
+  /// A versão do app, no rodapé, para quem relata um problema. Vazia (build
+  /// local, sem versão): não aparece.
+  final String version;
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +141,18 @@ class SettingsScreen extends StatelessWidget {
               title: Text(context.l10n.maiaDebugTitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.go(Routes.settingsMaia),
+            ),
+          if (version.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              child: Text(
+                context.l10n.homeVersion(version),
+                key: SettingsKeys.version,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
         ],
       ),

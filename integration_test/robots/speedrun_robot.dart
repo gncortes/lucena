@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -19,6 +20,20 @@ class SpeedrunRobot {
     await $(SpeedrunKeys.listScreen).waitUntilVisible();
   }
 
+  /// Troca o ritmo da lista pelo painel (`180+2` é o 3+2).
+  Future<void> choosePace(String code) async {
+    await $(SpeedrunKeys.pace).tap();
+    await $(PaceKeys.option(code)).waitUntilVisible();
+    await $(PaceKeys.option(code)).tap();
+    await $(PaceKeys.confirm).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O speedrun [id] está na lista (no ritmo dela).
+  Future<void> expectItem(String id) async {
+    await $(SpeedrunKeys.item(id)).scrollTo();
+  }
+
   Future<void> openSpeedrun(String id) async {
     await $(SpeedrunKeys.item(id)).scrollTo().tap();
     await $(SpeedrunKeys.screen).waitUntilVisible();
@@ -27,7 +42,10 @@ class SpeedrunRobot {
   /// "Começar": a tentativa abre.
   Future<void> start() async {
     await $(SpeedrunKeys.start).waitUntilExists();
-    await $(SpeedrunKeys.start).scrollTo().tap();
+    await $(SpeedrunKeys.start).tap();
+    // O painel do ritmo abre com o último escolhido marcado.
+    await $(PaceKeys.confirm).waitUntilVisible();
+    await $(PaceKeys.confirm).tap();
     await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
     await $(SpeedrunKeys.total).waitUntilVisible();
   }

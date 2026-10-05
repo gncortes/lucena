@@ -511,10 +511,6 @@
   "@freeBoardNewGame": {
     "description": "Button that puts the board back in its starting position."
   },
-  "freeBoardNoMoves": "Move a piece to start",
-  "@freeBoardNoMoves": {
-    "description": "Shown in place of the move list while no move has been played."
-  },
   "freeBoardRepetition": "Threefold repetition",
   "@freeBoardRepetition": {
     "description": "Reason the game ended in a draw: the same position appeared three times."
@@ -705,7 +701,7 @@
   "@journeyHistoryEmpty": {
     "description": "Shown in the history of a challenge that was never played."
   },
-  "journeyLocked": "{count, plural, =1{Complete 1 more challenge at {rung} to unlock} other{Complete {count} more challenges at {rung} to unlock}}",
+  "journeyLocked": "{count, plural, =1{Complete 1 more challenge against {rung} to unlock} other{Complete {count} more challenges against {rung} to unlock}}",
   "@journeyLocked": {
     "description": "Message when tapping a locked level: what is missing in the previous level.",
     "placeholders": {
@@ -1409,7 +1405,7 @@
   "@speedrunAbandoned": {
     "description": "Shown on an attempt the player gave up."
   },
-  "speedrunBest": "Personal record",
+  "speedrunBest": "Your best time",
   "@speedrunBest": {
     "description": "Label of the best total time of a speedrun."
   },
@@ -1433,21 +1429,21 @@
       }
     }
   },
-  "speedrunEndingSection": "Endgames",
+  "speedrunEndingSection": "One endgame, every opponent",
   "@speedrunEndingSection": {
-    "description": "Section of speedruns that play one endgame against every level."
+    "description": "Speedrun list section: one endgame against every opponent."
   },
-  "speedrunExercisesSection": "Exercises",
+  "speedrunExercisesSection": "Exercise sets",
   "@speedrunExercisesSection": {
-    "description": "Section of speedruns that play a fixed sequence of positions."
+    "description": "Speedrun list section: fixed series of exercises."
   },
   "speedrunFinished": "Speedrun complete",
   "@speedrunFinished": {
     "description": "Shown at the end of an attempt that did not beat the record."
   },
-  "speedrunFullSection": "Campaign",
+  "speedrunFullSection": "Full Journey",
   "@speedrunFullSection": {
-    "description": "Section with the big speedrun that covers the whole Journey."
+    "description": "Speedrun list section: the whole Journey."
   },
   "speedrunFullTitle": "Full Journey",
   "@speedrunFullTitle": {
@@ -1478,9 +1474,9 @@
   "@speedrunNewRecord": {
     "description": "Shown at the end of an attempt that beat the previous best time."
   },
-  "speedrunNoRecord": "No record",
+  "speedrunNoRecord": "No time yet",
   "@speedrunNoRecord": {
-    "description": "Shown instead of the best time when the speedrun was never completed."
+    "description": "Speedrun without a completed attempt yet."
   },
   "speedrunPauseHint": "Take a break whenever you want: the timer only runs during your games.",
   "@speedrunPauseHint": {
@@ -1525,13 +1521,13 @@
       }
     }
   },
-  "speedrunRungSection": "Levels",
+  "speedrunRungSection": "Challenges by opponent",
   "@speedrunRungSection": {
-    "description": "Section of speedruns that cover all the challenges of a Journey level."
+    "description": "Speedrun list section: all challenges against one opponent."
   },
-  "speedrunRungTitle": "Level {rung}",
+  "speedrunRungTitle": "Against {rung}",
   "@speedrunRungTitle": {
-    "description": "Name of the speedrun of a Journey level, e.g. 'Level Maia 1000'.",
+    "description": "Name of the speedrun with all challenges against one opponent.",
     "placeholders": {
       "rung": {
         "type": "String"
@@ -1689,6 +1685,237 @@
     "description": "Accessibility label of the tour progress dots.",
     "placeholders": {
       "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "resultNextChallenge": "Next challenge",
+  "@resultNextChallenge": {
+    "description": "End-of-game button: go straight to the next Journey challenge."
+  },
+  "reportRatingLabel": "Rating",
+  "@reportRatingLabel": {
+    "description": "Small label above the new rating number in the end-of-game panel."
+  },
+  "resultYouWon": "You won!",
+  "@resultYouWon": {
+    "description": "Title of the animated result card when the player wins."
+  },
+  "resultYouLost": "You lost",
+  "@resultYouLost": {
+    "description": "Title of the animated result card when the player loses."
+  },
+  "endgameQueen": "Queen mate",
+  "@endgameQueen": {
+    "description": "Name of the endgame: checkmate with king and queen against a lone king."
+  },
+  "endgameRook": "Rook mate",
+  "@endgameRook": {
+    "description": "Name of the endgame: checkmate with king and rook against a lone king."
+  },
+  "endgameTwoRooks": "Two-rook mate",
+  "@endgameTwoRooks": {
+    "description": "Name of the endgame: checkmate with two rooks against a lone king."
+  },
+  "endgamePawnVsKing": "Pawn against king",
+  "@endgamePawnVsKing": {
+    "description": "Name of the endgame: king and pawn against a lone king."
+  },
+  "endgameRookPawnVsRook": "Rook and pawn against rook",
+  "@endgameRookPawnVsRook": {
+    "description": "Name of the endgame: rook and pawn against rook."
+  },
+  "endgameQueenVsRook": "Queen against rook",
+  "@endgameQueenVsRook": {
+    "description": "Name of the endgame: queen against rook."
+  },
+  "endgameQueenVsPawn": "Queen against pawn",
+  "@endgameQueenVsPawn": {
+    "description": "Name of the endgame: queen against an advanced pawn."
+  },
+  "endgameRookVsPawn": "Rook against pawn",
+  "@endgameRookVsPawn": {
+    "description": "Name of the endgame: rook against a pawn."
+  },
+  "journeyNowFacing": "Your opponent now",
+  "@journeyNowFacing": {
+    "description": "Label above the current opponent on the Journey screen."
+  },
+  "journeyThen": "Then: {name}",
+  "@journeyThen": {
+    "description": "Who comes after the current opponent on the Journey.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyBoss": "Final boss",
+  "@journeyBoss": {
+    "description": "Badge on the last opponent of the Journey (Stockfish)."
+  },
+  "journeyDone": "Done",
+  "@journeyDone": {
+    "description": "Badge on an opponent whose challenges are all completed."
+  },
+  "journeyOpponentLevel": "Level {level}",
+  "@journeyOpponentLevel": {
+    "description": "Rating level of a Journey opponent, under the name.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyNextChallenge": "Your next challenge",
+  "@journeyNextChallenge": {
+    "description": "Title of the highlighted next challenge on an opponent's screen."
+  },
+  "journeyAllChallenges": "All challenges",
+  "@journeyAllChallenges": {
+    "description": "Title of the grid with all challenges against an opponent."
+  },
+  "challengeOpponent": "Your opponent",
+  "@challengeOpponent": {
+    "description": "Title of the opponent card on the challenge screen."
+  },
+  "challengeNoClock": "No clock",
+  "@challengeNoClock": {
+    "description": "Badge when the challenge is played without a clock."
+  },
+  "challengeHistoryInvite": "Your first game will show up here. Ready?",
+  "@challengeHistoryInvite": {
+    "description": "Empty state of the games history on the challenge screen."
+  },
+  "attemptClock": "{time} on the clock",
+  "@attemptClock": {
+    "description": "How long the player's clock ran in a past game.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunStagesCount": "{count, plural, =1{1 stage} other{{count} stages}}",
+  "@speedrunStagesCount": {
+    "description": "How many stages a speedrun has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunStartStages": "{count, plural, =1{Start · 1 stage} other{Start · {count} stages}}",
+  "@speedrunStartStages": {
+    "description": "Start button of a speedrun, with how many stages it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunFirstTimeInvite": "Your first time will show up here",
+  "@speedrunFirstTimeInvite": {
+    "description": "Shown on a speedrun without a best time yet."
+  },
+  "speedrunHelp": "How it works",
+  "@speedrunHelp": {
+    "description": "Tooltip of the button that explains how the speedrun works."
+  },
+  "speedrunStageOf": "Stage {stage} of {total}",
+  "@speedrunStageOf": {
+    "description": "Progress of a speedrun attempt.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunNow": "Up next",
+  "@speedrunNow": {
+    "description": "Title of the current stage card in a speedrun attempt."
+  },
+  "paceTitle": "Choose the time control",
+  "@paceTitle": {
+    "description": "Title of the sheet to choose the time control."
+  },
+  "paceShort": "{minutes}+{increment}",
+  "@paceShort": {
+    "description": "Short time control: minutes and increment in seconds, e.g. 3+2.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "increment": {
+        "type": "int"
+      }
+    }
+  },
+  "homeHello": "Hi, {name}",
+  "@homeHello": {
+    "description": "Greeting at the top of the home screen.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeStatGames": "Games",
+  "@homeStatGames": {
+    "description": "Home stat: games played."
+  },
+  "homeStatWins": "Wins",
+  "@homeStatWins": {
+    "description": "Home stat: games won."
+  },
+  "homeStatStreak": "Day streak",
+  "@homeStatStreak": {
+    "description": "Home stat: days in a row with at least one game."
+  },
+  "homeStatAchievements": "{unlocked} of {total}",
+  "@homeStatAchievements": {
+    "description": "Home stat: achievements unlocked out of total.",
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeStatBestRun": "Best speedrun",
+  "@homeStatBestRun": {
+    "description": "Home stat: best speedrun time."
+  },
+  "homeTools": "Tools",
+  "@homeTools": {
+    "description": "Home: title of the tools shortcuts (custom position, free board)."
+  },
+  "profileRatingPeriodGames": "Last {count}",
+  "@profileRatingPeriodGames": {
+    "description": "Rating chart period: the last N games.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileRatingPeriodAll": "All",
+  "@profileRatingPeriodAll": {
+    "description": "Rating chart period: every game."
+  },
+  "catalogDone": "{done} of {total} done",
+  "@catalogDone": {
+    "description": "Catalog category: how many positions were already solved, out of the total.",
+    "placeholders": {
+      "done": {
         "type": "int"
       },
       "total": {

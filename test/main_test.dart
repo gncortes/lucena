@@ -73,14 +73,14 @@ void main() {
     useSystemLocale(tester, const Locale('pt', 'BR'));
     await pumpApp(tester);
 
-    expect(textOf(tester, HomeKeys.tagline), 'Treino de finais de xadrez');
+    expect(journeyLabel(tester), 'Jornada');
   });
 
   testWidgets('idioma do sistema sem tradução cai no inglês', (tester) async {
     useSystemLocale(tester, const Locale('sw'));
     await pumpApp(tester);
 
-    expect(textOf(tester, HomeKeys.tagline), 'Chess endgame training');
+    expect(journeyLabel(tester), 'Journey');
   });
 
   testWidgets('português de Portugal usa a variante de Portugal', (
@@ -102,10 +102,7 @@ void main() {
       settings: FakeSettingsRepository(const AppSettings(languageCode: 'es')),
     );
 
-    expect(
-      textOf(tester, HomeKeys.tagline),
-      'Entrenamiento de finales de ajedrez',
-    );
+    expect(journeyLabel(tester), 'Recorrido');
   });
 
   testWidgets('em árabe a tela espelha: o botão de configurações vai para a '
@@ -121,7 +118,7 @@ void main() {
 
     expect(Directionality.of(context), TextDirection.rtl);
     expect(button.dx, lessThan(width / 2));
-    expect(textOf(tester, HomeKeys.tagline), 'تدريب نهايات الشطرنج');
+    expect(journeyLabel(tester), 'الرحلة');
   });
 
   testWidgets('trocar o idioma em Configurações muda os textos na hora e '
@@ -275,6 +272,7 @@ void main() {
     );
 
     await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(HomeKeys.freeBoardButton));
     await tester.pumpAndSettle();
 
@@ -341,6 +339,7 @@ void main() {
       expect(find.byKey(FreeBoardKeys.screen), findsNothing);
 
       await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(HomeKeys.freeBoardButton));
       await tester.pumpAndSettle();
 
@@ -382,3 +381,14 @@ void main() {
     expect(find.byKey(CatalogKeys.subcategoryScreen), findsOneWidget);
   });
 }
+
+/// O nome do botão da Jornada na tela inicial, no idioma da tela.
+String? journeyLabel(WidgetTester tester) => tester
+    .widgetList<Text>(
+      find.descendant(
+        of: find.byKey(HomeKeys.journeyButton),
+        matching: find.byType(Text),
+      ),
+    )
+    .first
+    .data;

@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -69,13 +70,13 @@ void main() {
     await journey.expectCompleted('1000');
     await journey.expectUnlocked('1200');
     await journey.expectLocked('1400');
-    journey.expectCurrent('You are at Maia 1200');
+    await journey.expectCurrent('Tito');
 
     await app.restart();
     await journey.open();
     await journey.expectCompleted('1000');
     await journey.expectUnlocked('1200');
-    journey.expectCurrent('You are at Maia 1200');
+    await journey.expectCurrent('Tito');
   });
 
   patrolTest('perder um desafio: nada concluído e a partida no histórico', (
@@ -98,8 +99,30 @@ void main() {
     await journey.back();
     await journey.expectChallengeDone('basic.queen.0001', done: false);
     await journey.back();
-    journey.expectCurrent('You are at Maia 1000');
+    await journey.expectCurrent('Coco');
     await journey.expectLocked('1200');
+  });
+
+  patrolTest('fim de um desafio: rating no painel e próximo desafio direto', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final journey = JourneyRobot($);
+    final board = FreeBoardRobot($);
+    await app.open(systemLocale: _english);
+
+    await journey.open();
+    await journey.openRung('1000');
+    await journey.openChallenge('basic.queen.0001');
+    await journey.play();
+    board.expectBoardFullWidth();
+    await board.resign();
+    await board.expectGoalResult('Goal not achieved');
+    await board.expectRatingInEndPanel();
+
+    await board.nextChallenge();
+    expect(board.challengeId, '1000/basic.queen.0002');
+    board.expectBoardFullWidth();
   });
 
   patrolTest('degrau trancado: tocar mostra o que falta', ($) async {
@@ -112,7 +135,7 @@ void main() {
 
     await journey.tapLockedAndExpectMessage(
       '1200',
-      'Complete 8 more challenges at Maia 1000 to unlock',
+      'Complete 8 more challenges against Coco to unlock',
     );
   });
 
@@ -159,6 +182,6 @@ void main() {
     // Partida antiga não era desafio: a Jornada começa do início.
     await app.restart();
     await journey.open();
-    journey.expectCurrent('You are at Maia 1000');
+    await journey.expectCurrent('Coco');
   });
 }

@@ -2,12 +2,13 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/keys/free_board_keys.dart';
-import '../../core/l10n/l10n.dart';
 import '../../core/widgets/figurine.dart';
 
-/// Lista de lances. Na notação figurina (♘f3) a letra da peça vira o desenho
-/// dela, que vale em qualquer idioma; na notação por letras, vira a letra do
-/// idioma do app (Cf3). Uma linha por lance completo: número, brancas, pretas.
+/// Lista de lances numa faixa horizontal logo abaixo do tabuleiro, como no
+/// chess.com e no Lichess: o número do lance e os lances das brancas e das
+/// pretas em seguida, rolando para o lado. Na notação figurina (♘f3) a letra
+/// da peça vira o desenho dela, que vale em qualquer idioma; na notação por
+/// letras, vira a letra do idioma do app (Cf3).
 class MoveList extends StatefulWidget {
   const MoveList({
     required this.moves,
@@ -16,6 +17,9 @@ class MoveList extends StatefulWidget {
     this.pieceLetters,
     super.key,
   });
+
+  /// Altura da faixa, para a tela reservar o espaço.
+  static const height = 44.0;
 
   /// Lances em notação algébrica (`e4`, `Nf3`, `O-O`).
   final List<String> moves;
@@ -35,20 +39,16 @@ class MoveList extends StatefulWidget {
 }
 
 class _MoveListState extends State<MoveList> {
-  static const _rowHeight = 40.0;
-
   final _scroll = ScrollController();
 
   // Com as pretas começando, o primeiro lance ocupa a coluna das pretas.
   int get _offset => widget.firstSide == Side.black ? 1 : 0;
 
-  int get _rowCount => (widget.moves.length + _offset + 1) ~/ 2;
-
   @override
   void didUpdateWidget(MoveList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.moves.length == oldWidget.moves.length) return;
-    // Lance novo: a lista rola até ele.
+    // Lance novo: a faixa rola até ele.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scroll.hasClients) return;
       _scroll.animateTo(
@@ -68,18 +68,42 @@ class _MoveListState extends State<MoveList> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Sem lances, a faixa só guarda o lugar: nenhuma instrução na tela.
     if (widget.moves.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            context.l10n.freeBoardNoMoves,
-            key: FreeBoardKeys.noMoves,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+      return const SizedBox(
+        key: FreeBoardKeys.noMoves,
+        height: MoveList.height,
+      );
+    }
+
+    final numberStyle = theme.textTheme.titleSmall?.copyWith(
+      fontWeight: FontWeight.w400,
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final items = <Widget>[];
+    for (var index = -_offset; index < widget.moves.length; index++) {
+      final ply = index + _offset;
+      // O número antes do lance das brancas (ou do primeiro, das pretas).
+      if (ply.isEven) {
+        final number = widget.firstMoveNumber + ply ~/ 2;
+        items.add(
+          Padding(
+            padding: const EdgeInsetsDirectional.only(start: 6),
+            child: Text(
+              index < 0 ? '$number…' : '$number.',
+              strutStyle: moveStrut,
+              style: numberStyle,
             ),
           ),
+        );
+      }
+      if (index < 0) continue;
+      items.add(
+        _MoveCell(
+          key: FreeBoardKeys.move(index),
+          san: widget.moves[index],
+          isLast: index == widget.moves.length - 1,
+          pieceLetters: widget.pieceLetters,
         ),
       );
     }
@@ -87,52 +111,19 @@ class _MoveListState extends State<MoveList> {
     // A notação de xadrez é sempre da esquerda para a direita.
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: ListView.builder(
-        key: FreeBoardKeys.moveList,
-        controller: _scroll,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        itemExtent: _rowHeight,
-        itemCount: _rowCount,
-        itemBuilder: (context, row) => _row(theme, row),
-      ),
-    );
-  }
-
-  Widget _row(ThemeData theme, int row) {
-    final number = '${widget.firstMoveNumber + row}';
-    return Row(
-      // Número e lances na mesma linha de base.
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        SizedBox(
-          width: 44,
-          child: Text(
-            number,
-            textAlign: TextAlign.center,
-            strutStyle: moveStrut,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w400,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+      child: SizedBox(
+        height: MoveList.height,
+        child: SingleChildScrollView(
+          key: FreeBoardKeys.moveList,
+          controller: _scroll,
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: items,
           ),
         ),
-        Expanded(child: _cell(row * 2 - _offset)),
-        Expanded(child: _cell(row * 2 + 1 - _offset)),
-      ],
-    );
-  }
-
-  /// A célula do lance de índice [index]; vazia se ele ainda não foi jogado.
-  Widget _cell(int index) {
-    if (index >= widget.moves.length) return const SizedBox.shrink();
-    // Só acontece na primeira linha, quando as pretas começam.
-    if (index < 0) return const _MoveCell(san: '…', isLast: false);
-    return _MoveCell(
-      key: FreeBoardKeys.move(index),
-      san: widget.moves[index],
-      isLast: index == widget.moves.length - 1,
-      pieceLetters: widget.pieceLetters,
+      ),
     );
   }
 }
@@ -159,7 +150,7 @@ class _MoveCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = theme.textTheme.titleMedium?.copyWith(
+    final style = theme.textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w600,
       color: isLast ? theme.colorScheme.onSecondaryContainer : null,
     );
@@ -182,7 +173,7 @@ class _MoveCell extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: isLast
               ? theme.colorScheme.secondaryContainer

@@ -6,6 +6,9 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_attempt_screen.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -13,6 +16,7 @@ import '../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
 
 void main() {
   late FakeNow now;
@@ -47,8 +51,15 @@ void main() {
 
   Future<void> pump(WidgetTester tester, int attempt) async {
     await cubit.load(speedrunId: 'rung.1000', attemptId: attempt);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings()),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
     await tester.pumpWidget(
       TestApp(
+        settingsCubit: settings,
         child: BlocProvider.value(
           value: cubit,
           child: const SpeedrunAttemptScreen(),
@@ -68,9 +79,26 @@ void main() {
     await pump(tester, id);
 
     expect(find.text('0:35.0'), findsWidgets);
-    expect(find.text('1 loss'), findsOneWidget);
+    // A etapa da vez em destaque, com o botão dela.
+    expect(find.byKey(SpeedrunKeys.current), findsOneWidget);
     expect(find.text('Play stage 2'), findsOneWidget);
+    expect(find.text('Stage 2 of 2'), findsOneWidget);
+    // As etapas embaixo, com o tempo e as derrotas de cada uma.
+    await tester.scrollUntilVisible(find.text('1 loss'), 100);
+    expect(find.text('1 loss'), findsOneWidget);
     expect(find.byKey(SpeedrunKeys.newRecord), findsNothing);
+  });
+
+  testWidgets('desistir fica no menu', (tester) async {
+    await cubit.load(speedrunId: 'rung.1000');
+    final id = (await cubit.start())!;
+
+    await pump(tester, id);
+    expect(find.byKey(SpeedrunKeys.abandon), findsNothing);
+    await tester.tap(find.byKey(SpeedrunKeys.menu));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(SpeedrunKeys.abandon), findsOneWidget);
   });
 
   testWidgets('a primeira concluída é recorde', (tester) async {

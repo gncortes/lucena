@@ -161,4 +161,20 @@ void main() {
     await speedrun.back();
     await speedrun.expectItemBest(_endingRun, '0:13.0');
   });
+
+  patrolTest('o ritmo da lista: cada ritmo tem os seus speedruns e a escolha '
+      'fica ao reabrir', ($) async {
+    final app = AppRobot($);
+    final speedrun = SpeedrunRobot($);
+    await app.open(systemLocale: _english);
+
+    await speedrun.open();
+    await speedrun.expectItem(_rungRun);
+    await speedrun.choosePace('180+2');
+    await speedrun.expectItem('$_rungRun@180+2');
+
+    await app.restart();
+    await speedrun.open();
+    await speedrun.expectItem('$_rungRun@180+2');
+  });
 }

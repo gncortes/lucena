@@ -147,6 +147,17 @@ class Character {
     this.images = const {},
   });
 
+  /// O Stockfish como personagem: o logo e nenhuma emoção nem fala.
+  static const stockfish = Character(
+    id: 'stockfish',
+    level: 3000,
+    name: 'Stockfish',
+    tagline: {},
+    personality: {},
+    traits: [],
+    avatar: 'assets/branding/stockfish.png',
+  );
+
   final String id;
 
   /// Nível do Maia que ele representa (1000 a 2600).

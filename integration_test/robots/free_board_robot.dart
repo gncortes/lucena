@@ -70,7 +70,9 @@ class FreeBoardRobot {
 
   Future<void> expectVisible() async {
     await $(FreeBoardKeys.screen).waitUntilVisible();
-    await $(FreeBoardKeys.board).waitUntilVisible();
+    // A partida pode terminar logo ao abrir (a máquina dá o mate): o cartão
+    // do resultado fica por cima do tabuleiro.
+    await $(FreeBoardKeys.board).waitUntilExists();
   }
 
   void expectNotOpen() {
@@ -171,6 +173,38 @@ class FreeBoardRobot {
     expectText(_text(FreeBoardKeys.endGoal), text);
   }
 
+  /// No painel do fim, o rating novo com a variação num selo.
+  Future<void> expectRatingInEndPanel() async {
+    await $(FreeBoardKeys.ratingDelta).waitUntilVisible();
+    expect(
+      find.descendant(
+        of: find.byKey(FreeBoardKeys.endPanel),
+        matching: find.byKey(FreeBoardKeys.ratingChange),
+      ),
+      findsOneWidget,
+    );
+  }
+
+  /// "Próximo desafio", no painel do fim de um desafio da Jornada.
+  Future<void> nextChallenge() async {
+    await $(FreeBoardKeys.endNextButton).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O desafio da Jornada da partida aberta.
+  String? get challengeId {
+    final context = $.tester.element(find.byKey(FreeBoardKeys.board));
+    return context.read<FreeBoardCubit>().state.mode.challengeId;
+  }
+
+  /// O tabuleiro ocupa a largura toda da tela.
+  void expectBoardFullWidth() {
+    expect(
+      _board.width,
+      $.tester.getSize(find.byKey(FreeBoardKeys.screen)).width,
+    );
+  }
+
   /// "Jogar de novo" (no treino) ou "Nova partida", no painel do fim.
   Future<void> playAgain() async {
     await $(FreeBoardKeys.endNewGameButton).tap();
@@ -244,8 +278,11 @@ class FreeBoardRobot {
 
   /// A lista de lances, em notação algébrica, com cada lance visível na tela.
   Future<void> expectMoves(List<String> moves) async {
+    // A partida pode ter acabado com o lance: o cartão sai da frente.
+    await closeResult();
     if (moves.isEmpty) {
-      await $(FreeBoardKeys.noMoves).waitUntilVisible();
+      await $(FreeBoardKeys.noMoves).waitUntilExists();
+      expect(find.byKey(FreeBoardKeys.move(0)), findsNothing);
       return;
     }
     await $(FreeBoardKeys.move(moves.length - 1)).waitUntilVisible();
@@ -287,6 +324,16 @@ class FreeBoardRobot {
     await $(FreeBoardKeys.endPanel).waitUntilVisible();
     expectText(_text(FreeBoardKeys.endReason), reason);
     expectText(_text(FreeBoardKeys.endResult), result);
+    // O cartão do resultado fecha: o tabuleiro, os relógios e os lances
+    // ficam à vista, com o resultado no painel de baixo.
+    await closeResult();
+  }
+
+  /// Fecha o cartão do resultado, se estiver aberto.
+  Future<void> closeResult() async {
+    if (find.byKey(FreeBoardKeys.resultClose).evaluate().isEmpty) return;
+    await $(FreeBoardKeys.resultClose).tap();
+    await $.pumpAndSettle();
   }
 
   String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;

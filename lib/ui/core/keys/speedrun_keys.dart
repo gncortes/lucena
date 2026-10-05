@@ -9,6 +9,22 @@ abstract final class SpeedrunKeys {
   static Key item(String id) => Key('speedrun.item.$id');
   static Key itemBest(String id) => Key('speedrun.item.$id.best');
 
+  /// Uma tentativa em andamento, no alto da lista.
+  static Key inProgress(String id) => Key('speedrun.inProgress.$id');
+
+  /// O ritmo da lista e a explicação do speedrun.
+  static const pace = Key('speedrun.pace');
+  static const help = Key('speedrun.help');
+  static const helpText = Key('speedrun.help.text');
+
+  /// Na tela do speedrun: o ritmo e a etapa na grade.
+  static const paceBadge = Key('speedrun.paceBadge');
+  static Key stageCard(int index) => Key('speedrun.stage.$index');
+
+  /// Na tentativa: a etapa da vez em destaque e o menu (desistir).
+  static const current = Key('speedrun.attempt.current');
+  static const menu = Key('speedrun.attempt.menu');
+
   /// O melhor tempo total e o melhor de cada etapa.
   static const best = Key('speedrun.best');
   static Key stageRecord(int index) => Key('speedrun.stage.$index.record');

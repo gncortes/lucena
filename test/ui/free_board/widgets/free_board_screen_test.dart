@@ -23,6 +23,11 @@ import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
+import '../../../../testing/fakes/fake_achievements_repository.dart';
+import '../../../../testing/fakes/fake_journey_repository.dart';
+import '../../../../testing/fakes/fake_positions_repository.dart';
+import '../../../../testing/fakes/fake_rating_repository.dart';
+import '../../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_evaluation_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
@@ -55,9 +60,11 @@ void main() {
     GameSnapshot? saved,
     GameMode mode = const GameMode(),
     AppSettings? appSettings,
+    bool withReporter = false,
+    Size screen = const Size(1080, 2400),
   }) async {
     // Tela de celular em retrato, como no app.
-    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     final repository = FakeSettingsRepository(
@@ -89,6 +96,17 @@ void main() {
       playerSide: playerSide,
       clock: clock,
       mode: mode,
+      reporter: withReporter
+          ? GameReporter(
+              rating: FakeRatingRepository(),
+              achievements: FakeAchievementsRepository(),
+              journey: FakeJourneyRepository(),
+              progress: progress,
+              speedruns: FakeSpeedrunRepository(progress),
+              positions: FakePositionsRepository(),
+              now: now,
+            )
+          : null,
     );
     addTearDown(cubit.close);
     evaluation = FakeEvaluationRepository();
@@ -244,25 +262,28 @@ void main() {
     expect(tester.getSemantics(chip).label, 'Nf3');
   });
 
-  testWidgets('cada linha tem o número, o lance das brancas e o das pretas', (
-    tester,
-  ) async {
-    await pumpScreen(tester);
+  testWidgets(
+    'a faixa de lances segue numa linha só: número, brancas, pretas',
+    (tester) async {
+      await pumpScreen(tester);
 
-    await move(tester, 'e2', 'e4');
-    await move(tester, 'e7', 'e5');
-    await move(tester, 'g1', 'f3');
+      await move(tester, 'e2', 'e4');
+      await move(tester, 'e7', 'e5');
+      await move(tester, 'g1', 'f3');
 
-    final white1 = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
-    final black1 = tester.getRect(find.byKey(FreeBoardKeys.move(1)));
-    final white2 = tester.getRect(find.byKey(FreeBoardKeys.move(2)));
-    expect(black1.top, white1.top);
-    expect(black1.left, greaterThan(white1.left));
-    expect(white2.left, white1.left);
-    expect(white2.top, greaterThan(white1.top));
-    expect(find.text('1'), findsOneWidget);
-    expect(find.text('2'), findsOneWidget);
-  });
+      final white1 = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
+      final black1 = tester.getRect(find.byKey(FreeBoardKeys.move(1)));
+      final white2 = tester.getRect(find.byKey(FreeBoardKeys.move(2)));
+      // Uma faixa horizontal logo abaixo do tabuleiro, como no chess.com.
+      expect(black1.center.dy, white1.center.dy);
+      expect(white2.center.dy, white1.center.dy);
+      expect(black1.left, greaterThan(white1.left));
+      expect(white2.left, greaterThan(black1.left));
+      expect(find.text('1.'), findsOneWidget);
+      expect(find.text('2.'), findsOneWidget);
+      expect(white1.top, greaterThanOrEqualTo(boardRect(tester).bottom));
+    },
+  );
 
   testWidgets('promoção: o seletor aparece e o cavalo escolhido entra', (
     tester,
@@ -292,9 +313,8 @@ void main() {
 
     await move(tester, 'e7', 'e5');
 
-    // A coluna das brancas fica com reticências; o lance vai na das pretas.
-    expect(find.text('…', findRichText: true), findsOneWidget);
-    expect(find.text('1'), findsOneWidget);
+    // O número do lance vem com reticências: o primeiro é das pretas.
+    expect(find.text('1…'), findsOneWidget);
     expect(cubit.state.moves, ['e5']);
   });
 
@@ -863,6 +883,197 @@ void main() {
       expect(find.byKey(FreeBoardKeys.resignButton), findsNothing);
     });
 
+    testWidgets('no fim de um desafio: rating com a variação e o próximo '
+        'desafio', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(
+          opponent: OpponentKind.maia,
+          level: 1000,
+          challengeId: '1000/basic.queen.0001',
+        ),
+        withReporter: true,
+      );
+
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pumpAndSettle();
+
+      // O rating fica dentro do painel do fim, com a variação num selo.
+      final panel = find.byKey(FreeBoardKeys.endPanel);
+      expect(
+        find.descendant(
+          of: panel,
+          matching: find.byKey(FreeBoardKeys.ratingChange),
+        ),
+        findsOneWidget,
+      );
+      final delta = find.descendant(
+        of: find.byKey(FreeBoardKeys.ratingDelta),
+        matching: find.byType(Text),
+      );
+      expect(tester.widget<Text>(delta).data, startsWith('\u2212'));
+      // Perdeu, mas a Jornada segue: o próximo desafio do degrau.
+      expect(find.byKey(FreeBoardKeys.endNextButton), findsOneWidget);
+      expect(find.text('Next challenge'), findsOneWidget);
+    });
+
+    testWidgets('fim: o cartão do resultado abre por cima e, fechado, vira o '
+        'painel embaixo do tabuleiro', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.resultCard), findsOneWidget);
+      expect(textOf(tester, FreeBoardKeys.resultTitle), 'You lost');
+      // O rating terminou de contar até o valor novo.
+      final value = tester.widget<Text>(find.byKey(FreeBoardKeys.ratingValue));
+      expect(int.parse(value.data!), lessThan(1150));
+
+      await tester.tap(find.byKey(FreeBoardKeys.resultClose));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.resultCard), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(FreeBoardKeys.scrollArea),
+          matching: find.byKey(FreeBoardKeys.endPanel),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('fora da Jornada, sem botão de próximo desafio', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.endNextButton), findsNothing);
+      expect(find.byKey(FreeBoardKeys.endNewGameButton), findsOneWidget);
+    });
+
+    testWidgets('celular pequeno: o tabuleiro ainda ocupa a largura toda e '
+        'a parte de baixo rola', (tester) async {
+      // 360 x 640, com o relógio dos lados e o personagem.
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+        screen: const Size(720, 1280),
+        withReporter: true,
+      );
+      tester.view.devicePixelRatio = 2;
+      await tester.pumpAndSettle();
+      await talk.settled();
+      await tester.pumpAndSettle();
+
+      expect(boardRect(tester).width, 360);
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      // O cartão do resultado cabe na tela pequena.
+      expect(
+        find.byKey(FreeBoardKeys.endNewGameButton).hitTestable(),
+        findsOneWidget,
+      );
+      // Fechado, o botão do fim é alcançável rolando a parte de baixo.
+      await tester.tap(find.byKey(FreeBoardKeys.resultClose));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(FreeBoardKeys.endNewGameButton),
+        40,
+        scrollable: find
+            .descendant(
+              of: find.byKey(FreeBoardKeys.scrollArea),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(
+        find.byKey(FreeBoardKeys.endNewGameButton).hitTestable(),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a tela inteira rola, mas arrastar uma peça não rola', (
+      tester,
+    ) async {
+      // Celular baixo: personagem, dois relógios e o tabuleiro não cabem.
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+        board: const BoardSettings(moveMethod: MoveMethod.drag),
+        // 360 x 600 na densidade do teste.
+        screen: const Size(945, 1575),
+      );
+      // A posição é refeita quando a rolagem trava e destrava: lida de novo
+      // a cada conferência.
+      ScrollPosition scroll() => tester
+          .state<ScrollableState>(
+            find
+                .descendant(
+                  of: find.byKey(FreeBoardKeys.scrollArea),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          )
+          .position;
+      expect(scroll().maxScrollExtent, greaterThan(0));
+
+      // Arrastar a dama no tabuleiro joga o lance e não mexe na tela.
+      opponent.hold();
+      final board = boardRect(tester);
+      final gesture = await tester.startGesture(squareCenter(board, 'c1'));
+      await tester.pump();
+      for (var step = 1; step <= 6; step++) {
+        await gesture.moveBy(
+          (squareCenter(board, 'g5') - squareCenter(board, 'c1')) / 6,
+        );
+        await tester.pump();
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(cubit.state.moves, ['Qg5']);
+      expect(scroll().pixels, 0);
+
+      // Arrastar fora do tabuleiro (na linha do jogador) rola a tela.
+      await tester.drag(
+        find.byKey(FreeBoardKeys.clock(Side.white)),
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
+      expect(scroll().pixels, greaterThan(0));
+      opponent.release();
+    });
+
     testWidgets('fechar o painel de desistir não muda nada', (tester) async {
       await pumpScreen(
         tester,
@@ -925,8 +1136,8 @@ void main() {
       expect(find.text('Black'), findsNothing);
     });
 
-    testWidgets('contra um personagem: retrato, nome e balão sem cobrir o '
-        'tabuleiro', (tester) async {
+    testWidgets('contra um personagem: retrato e balão numa linha, o relógio '
+        'na de baixo, sem cobrir o tabuleiro', (tester) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -939,15 +1150,27 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(FreeBoardKeys.characterBar), findsOneWidget);
-      // O retrato fica só em cima; o nome, ao lado do relógio da máquina.
+      // O retrato fica só em cima, com o nome para o leitor de tela.
       expect(find.byType(CharacterAvatar), findsOneWidget);
-      expect(find.text('Valdini'), findsOneWidget);
+      expect(find.bySemanticsLabel('Valdini'), findsOneWidget);
       expect(
         find.byKey(FreeBoardKeys.speechText('magician.gameStart.1')),
         findsOneWidget,
       );
+      final bar = tester.getRect(find.byKey(FreeBoardKeys.characterBar));
+      // O relógio da máquina fica numa linha própria, entre o personagem e o
+      // tabuleiro.
+      final clock = tester.getRect(find.byKey(FreeBoardKeys.clock(Side.black)));
+      final board = boardRect(tester);
+      expect(clock.top, greaterThanOrEqualTo(bar.bottom));
+      expect(clock.bottom, lessThanOrEqualTo(board.top));
       final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
-      expect(bubble.bottom, lessThanOrEqualTo(boardRect(tester).top));
+      expect(bubble.bottom, lessThanOrEqualTo(board.top));
+      // Um respiro entre o retrato e a linha de baixo.
+      final avatar = tester.getRect(find.byType(CharacterAvatar));
+      expect(bar.bottom - avatar.bottom, greaterThanOrEqualTo(8));
+      // O tabuleiro ocupa a largura toda.
+      expect(board.width, tester.getSize(find.byType(Scaffold)).width);
     });
 
     testWidgets('com as falas desligadas, o balão não aparece', (tester) async {
@@ -964,7 +1187,9 @@ void main() {
       expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
     });
 
-    testWidgets('sem relógio, avisa que o Maia está pensando', (tester) async {
+    testWidgets('contra a máquina, sem a linha de vez nem o "pensando"', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -972,13 +1197,14 @@ void main() {
       );
       opponent.hold();
 
+      expect(find.byKey(FreeBoardKeys.turn), findsNothing);
       await move(tester, 'c1', 'g5');
       await tester.pump();
 
-      expect(find.text('Maia 1400 is thinking…'), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
+      expect(find.text('Maia 1400 is thinking…'), findsNothing);
       opponent.release();
       await tester.pumpAndSettle();
-      expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
     });
   });
 }
