@@ -95,7 +95,6 @@ void main() {
     expect(home.state.stats.games, 2);
     expect(home.state.stats.wins, 1);
     expect(home.state.stats.streakDays, 1);
-    expect(home.state.ratingCurve, hasLength(2));
     expect(home.state.ratingChange, greaterThan(0));
     expect(home.state.achievementsTotal, greaterThan(0));
     expect(home.state.bestSpeedrun, isNull);

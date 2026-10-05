@@ -133,6 +133,27 @@ void main() {
     expect(await progress.rating(), lessThan(afterWin));
   });
 
+  patrolTest('detalhes do rating: sem partidas, o convite; depois, o gráfico '
+      'e o histórico com a variação de cada partida', ($) async {
+    final app = AppRobot($);
+    final progress = ProgressRobot($);
+    await app.open(systemLocale: _english);
+
+    await progress.openRatingDetails();
+    await progress.expectRatingHistoryEmpty();
+    await progress.closeRatingDetails();
+
+    await play($, won: true);
+    await play($, won: false);
+    await HomeRobot($).expectVisible();
+
+    await progress.openRatingDetails();
+    await progress.expectRatingHistory(2, latestChange: '−');
+    app.expectNoClippedText();
+    await progress.closeRatingDetails();
+    await HomeRobot($).expectVisible();
+  });
+
   patrolTest('a etapa de speedrun conta para o rating como a partida comum', (
     $,
   ) async {

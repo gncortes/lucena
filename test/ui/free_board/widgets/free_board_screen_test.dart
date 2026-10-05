@@ -263,7 +263,8 @@ void main() {
   });
 
   testWidgets(
-    'a faixa de lances segue numa linha só: número, brancas, pretas',
+    'a lista de lances é uma tabela: uma linha por lance, com o número, as '
+    'brancas e as pretas',
     (tester) async {
       await pumpScreen(tester);
 
@@ -274,11 +275,12 @@ void main() {
       final white1 = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
       final black1 = tester.getRect(find.byKey(FreeBoardKeys.move(1)));
       final white2 = tester.getRect(find.byKey(FreeBoardKeys.move(2)));
-      // Uma faixa horizontal logo abaixo do tabuleiro, como no chess.com.
+      // Como no chess.com: as pretas ao lado das brancas, e o lance seguinte
+      // na linha de baixo, na coluna das brancas.
       expect(black1.center.dy, white1.center.dy);
-      expect(white2.center.dy, white1.center.dy);
       expect(black1.left, greaterThan(white1.left));
-      expect(white2.left, greaterThan(black1.left));
+      expect(white2.top, greaterThanOrEqualTo(white1.bottom));
+      expect(white2.left, white1.left);
       expect(find.text('1.'), findsOneWidget);
       expect(find.text('2.'), findsOneWidget);
       expect(white1.top, greaterThanOrEqualTo(boardRect(tester).bottom));
@@ -313,8 +315,13 @@ void main() {
 
     await move(tester, 'e7', 'e5');
 
-    // O número do lance vem com reticências: o primeiro é das pretas.
-    expect(find.text('1…'), findsOneWidget);
+    // A coluna das brancas vem com reticências: o primeiro lance é das pretas.
+    expect(find.text('1.'), findsOneWidget);
+    expect(find.text('…'), findsOneWidget);
+    final gap = tester.getRect(find.text('…'));
+    final black = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
+    expect(black.center.dy, gap.center.dy);
+    expect(black.left, greaterThan(gap.left));
     expect(cubit.state.moves, ['e5']);
   });
 
@@ -1187,9 +1194,8 @@ void main() {
       expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
     });
 
-    testWidgets('contra a máquina, sem a linha de vez nem o "pensando"', (
-      tester,
-    ) async {
+    testWidgets('contra a máquina sem relógio, a linha de cada lado diz de '
+        'quem é a vez, sem o "pensando"', (tester) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -1197,9 +1203,21 @@ void main() {
       );
       opponent.hold();
 
-      expect(find.byKey(FreeBoardKeys.turn), findsNothing);
+      // A vez do jogador, na linha dele, embaixo do tabuleiro.
+      expect(textOf(tester, FreeBoardKeys.turn), 'Your turn');
+      expect(
+        tester.getCenter(find.byKey(FreeBoardKeys.turn)).dy,
+        greaterThan(boardRect(tester).bottom),
+      );
       await move(tester, 'c1', 'g5');
       await tester.pump();
+
+      // A vez da máquina, na linha dela, em cima do tabuleiro.
+      expect(textOf(tester, FreeBoardKeys.turn), 'Black to move');
+      expect(
+        tester.getCenter(find.byKey(FreeBoardKeys.turn)).dy,
+        lessThan(boardRect(tester).top),
+      );
 
       expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
       expect(find.text('Maia 1400 is thinking…'), findsNothing);

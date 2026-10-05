@@ -1,3 +1,4 @@
+import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
@@ -62,6 +63,51 @@ class ProgressRobot {
             .data!,
       );
     }
+  }
+
+  /// O aviso de conquista desbloqueada por cima da tela, com o nome dela;
+  /// depois ele some sozinho.
+  Future<void> expectAchievementToast(String title) async {
+    await $(AchievementsKeys.toast).waitUntilVisible();
+    expectText(
+      $.tester.widget<Text>(find.byKey(AchievementsKeys.toastTitle)).data,
+      title,
+    );
+    await $.pumpAndSettle();
+    expect(find.byKey(AchievementsKeys.toast), findsNothing);
+  }
+
+  /// Os detalhes do rating, a partir do cartão do jogador na tela inicial.
+  Future<void> openRatingDetails() async {
+    await $(HomeKeys.playerCard).scrollTo().tap();
+    await $(RatingKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+  }
+
+  /// Nos detalhes do rating: o gráfico e [games] partidas no histórico, a
+  /// mais recente com a variação [latestChange] (`+` ou `−`).
+  Future<void> expectRatingHistory(int games, {String? latestChange}) async {
+    await $(RatingKeys.chart).waitUntilVisible();
+    await $(RatingKeys.entry(games - 1)).scrollTo();
+    expect(find.byKey(RatingKeys.entry(games)), findsNothing);
+    if (latestChange != null) {
+      await $(RatingKeys.entryChange(0)).scrollTo();
+      expect(
+        $.tester.widget<Text>(find.byKey(RatingKeys.entryChange(0))).data,
+        startsWith(latestChange),
+      );
+    }
+  }
+
+  /// Sem partidas que contaram: o convite no lugar do histórico.
+  Future<void> expectRatingHistoryEmpty() async {
+    await $(RatingKeys.emptyHistory).scrollTo();
+    expect(find.byKey(RatingKeys.chart), findsNothing);
+  }
+
+  Future<void> closeRatingDetails() async {
+    await $(BackButton).tap();
+    await $.pumpAndSettle();
   }
 
   Future<void> openAchievements() async {
