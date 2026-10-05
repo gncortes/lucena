@@ -268,7 +268,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                             rungId: state.pathParameters['rung'],
                             positionId: state.pathParameters['position'],
                           ),
-                      child: const ChallengeScreen(),
+                      child: ChallengeScreen(
+                        rungId: state.pathParameters['rung']!,
+                      ),
                     ),
                   ),
                 ],

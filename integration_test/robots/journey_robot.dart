@@ -32,6 +32,16 @@ class JourneyRobot {
     await $(JourneyKeys.play).waitUntilVisible();
   }
 
+  /// A tela do desafio pronta: o cartão do adversário e o botão de jogar.
+  Future<void> expectChallengeOpen() async {
+    await $(JourneyKeys.challengeScreen).waitUntilVisible();
+    await $(JourneyKeys.opponentCard).waitUntilVisible();
+    await $(JourneyKeys.play).waitUntilVisible();
+  }
+
+  void expectChallengeClosed() =>
+      expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
+
   /// "Jogar" no desafio aberto: a partida abre no tabuleiro.
   Future<void> play() async {
     await $(JourneyKeys.play).tap();

@@ -30,6 +30,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 - [x] **Escolher a cor do app, como no Twitter.** Pedido do Gabriel (2026-10-05): além de claro/escuro, o jogador escolhe a cor predominante (azul, verde, roxo, rosa, laranja ou turquesa). Cada cor tem um tom para o tema claro e outro para o escuro, com o fundo puxado de leve para a mesma família. Sem escolha, fica como era: azul no claro e verde no escuro. Fica em Configurações → Tema.
 - [x] **Aparência já na primeira abertura.** Pedido do Gabriel (2026-10-05): logo depois das boas-vindas, o tour ganha dois passos, "Deixe o app com a sua cara" (tema e cor do app, valendo na hora) e "Escolha o seu tabuleiro" (cores e peças, com a amostra); os dois avisam que dá para mudar depois nas Configurações. O tour passa de 8 para 10 passos.
+- [x] **Voo do cartão "Continuar" até o desafio.** Pedido do Gabriel (2026-10-05): na tela inicial, o tabuleiro pequeno cresce até o da tela do desafio e o retrato do adversário voa até o cartão dele (o retrato também voa a partir da tela do adversário). O desafio abre por cima da tela inicial: voltar cai nela.
 
 ## Tela do desafio (Jornada)
 

@@ -1,3 +1,5 @@
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
+import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -227,6 +229,53 @@ void main() {
       colors(theme()),
       colors(AppTheme.of(Brightness.dark, accent: AppAccent.purple)),
     );
+  });
+
+  testWidgets('"Continuar" na tela inicial abre o desafio com o tabuleiro e o '
+      'retrato voando, e voltar cai na tela inicial', (tester) async {
+    // Tela de celular: o cartão do adversário cabe embaixo do tabuleiro.
+    tester.view.physicalSize = const Size(400, 860);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpApp(tester);
+    final small = tester.getSize(find.byKey(HomeKeys.whereBoard)).width;
+
+    await tester.ensureVisible(find.byKey(HomeKeys.whereContinue));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(HomeKeys.whereContinue));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 150));
+
+    // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
+    // retrato fora dos dois cartões.
+    final screen = tester.getSize(find.byType(MaterialApp)).width;
+    final flying = tester.getSize(find.byType(StaticChessboard)).width;
+    expect(flying, greaterThan(small));
+    expect(flying, lessThan(screen));
+    expect(
+      find.descendant(
+        of: find.byKey(JourneyKeys.opponentCard),
+        matching: find.byType(CharacterAvatar),
+      ),
+      findsNothing,
+    );
+    expect(find.byType(CharacterAvatar), findsOneWidget);
+
+    await tester.pumpAndSettle();
+    expect(find.byKey(JourneyKeys.challengeScreen), findsOneWidget);
+    expect(tester.getSize(find.byType(StaticChessboard)).width, screen);
+    expect(
+      find.descendant(
+        of: find.byKey(JourneyKeys.opponentCard),
+        matching: find.byType(CharacterAvatar),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
+    expect(find.byKey(HomeKeys.whereContinue), findsOneWidget);
   });
 
   Future<void> openProfile(WidgetTester tester) async {
