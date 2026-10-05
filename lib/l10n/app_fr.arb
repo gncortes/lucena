@@ -400,5 +400,13 @@
   "gameMoveBack": "Reculer",
   "gameMoveForward": "Avancer",
   "statsGamesTitle": "Historique des parties",
-  "statsGamesEmpty": "Les parties que vous jouez apparaissent ici, de la plus récente à la plus ancienne."
+  "statsGamesEmpty": "Les parties que vous jouez apparaissent ici, de la plus récente à la plus ancienne.",
+  "speedrunRetry": "Réessayer",
+  "speedrunQuitTitle": "Quitter le speedrun ?",
+  "ratingPeriodDays": "{count, plural, =1{1 jour} other{{count} jours}}",
+  "ratingPeriodYear": "1 an",
+  "ratingPeriodEmpty": "Aucune partie classée sur cette période.",
+  "ratingHighest": "Le plus haut",
+  "gameDetailsTitle": "Détails de la partie",
+  "gameDetailsNotFound": "Cette partie n'est plus enregistrée."
 }

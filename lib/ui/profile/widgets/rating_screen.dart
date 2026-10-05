@@ -193,7 +193,7 @@ class _RatingCardState extends State<_RatingCard> {
     final l10n = context.l10n;
     final state = widget.state;
     final current = state.current!;
-    final now = state.now ?? DateTime.now().toUtc();
+    final now = state.now ?? state.history.lastOrNull?.at ?? DateTime.utc(2000);
     final entries = _period.entries(state.history, now);
     final change = _period.change(state.history, now);
     final highest = highestRating(state.history);

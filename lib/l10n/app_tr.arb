@@ -400,5 +400,13 @@
   "gameMoveBack": "Geri",
   "gameMoveForward": "İleri",
   "statsGamesTitle": "Oyun geçmişi",
-  "statsGamesEmpty": "Oynadığın oyunlar burada görünür, en yenisi en üstte."
+  "statsGamesEmpty": "Oynadığın oyunlar burada görünür, en yenisi en üstte.",
+  "speedrunRetry": "Tekrar dene",
+  "speedrunQuitTitle": "Speedrun'dan çıkılsın mı?",
+  "ratingPeriodDays": "{count, plural, =1{1 gün} other{{count} gün}}",
+  "ratingPeriodYear": "1 yıl",
+  "ratingPeriodEmpty": "Bu dönemde puanlı oyun yok.",
+  "ratingHighest": "En yüksek",
+  "gameDetailsTitle": "Oyun ayrıntıları",
+  "gameDetailsNotFound": "Bu oyun artık kayıtlı değil."
 }

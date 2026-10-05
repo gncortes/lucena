@@ -400,5 +400,13 @@
   "gameMoveBack": "قبلی",
   "gameMoveForward": "بعدی",
   "statsGamesTitle": "تاریخچهٔ بازی‌ها",
-  "statsGamesEmpty": "بازی‌هایی که انجام می‌دهید اینجا نمایش داده می‌شوند، جدیدترین در ابتدا."
+  "statsGamesEmpty": "بازی‌هایی که انجام می‌دهید اینجا نمایش داده می‌شوند، جدیدترین در ابتدا.",
+  "speedrunRetry": "دوباره",
+  "speedrunQuitTitle": "از اسپیدران خارج می‌شوید؟",
+  "ratingPeriodDays": "{count, plural, =1{۱ روز} other{{count} روز}}",
+  "ratingPeriodYear": "۱ سال",
+  "ratingPeriodEmpty": "در این بازه بازی ریتینگ‌داری وجود ندارد.",
+  "ratingHighest": "بالاترین",
+  "gameDetailsTitle": "جزئیات بازی",
+  "gameDetailsNotFound": "این بازی دیگر ذخیره نشده است."
 }

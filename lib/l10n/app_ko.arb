@@ -400,5 +400,13 @@
   "gameMoveBack": "이전",
   "gameMoveForward": "다음",
   "statsGamesTitle": "대국 기록",
-  "statsGamesEmpty": "플레이한 대국이 최신순으로 여기에 표시됩니다."
+  "statsGamesEmpty": "플레이한 대국이 최신순으로 여기에 표시됩니다.",
+  "speedrunRetry": "다시 하기",
+  "speedrunQuitTitle": "스피드런을 그만둘까요?",
+  "ratingPeriodDays": "{count, plural, =1{1일} other{{count}일}}",
+  "ratingPeriodYear": "1년",
+  "ratingPeriodEmpty": "이 기간에 레이팅이 반영된 대국이 없습니다.",
+  "ratingHighest": "최고",
+  "gameDetailsTitle": "대국 상세",
+  "gameDetailsNotFound": "이 대국은 더 이상 저장되어 있지 않습니다."
 }

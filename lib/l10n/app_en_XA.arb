@@ -399,5 +399,13 @@
   "gameMoveBack": "[Båçk one]",
   "gameMoveForward": "[Föŕwåŕd one]",
   "statsGamesTitle": "[Ĝåmé hîštöŕý one two]",
-  "statsGamesEmpty": "[Thé ĝåméš ýöû plåý šhöw ûp héŕé, möšt ŕéçéñt fîŕšt. one two three four five]"
+  "statsGamesEmpty": "[Thé ĝåméš ýöû plåý šhöw ûp héŕé, möšt ŕéçéñt fîŕšt. one two three four five]",
+  "speedrunRetry": "[Tŕý åĝåîñ one]",
+  "speedrunQuitTitle": "[Léåvé thé špéédŕûñ? one two]",
+  "ratingPeriodDays": "{count, plural, =1{[1 dåý one]} other{[{count} dåýš one two]}}",
+  "ratingPeriodYear": "[1 ýéåŕ one]",
+  "ratingPeriodEmpty": "[Ñö ŕåtéd ĝåméš îñ thîš péŕîöd. one two three]",
+  "ratingHighest": "[Hîĝhéšt one]",
+  "gameDetailsTitle": "[Ĝåmé détåîlš one two]",
+  "gameDetailsNotFound": "[Thîš ĝåmé îš ñö löñĝéŕ šåvéd. one two three]"
 }
