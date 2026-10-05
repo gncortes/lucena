@@ -16,6 +16,9 @@ abstract final class FreeBoardKeys {
   /// O lance de índice [index] na lista (0 é o primeiro da partida).
   static Key move(int index) => Key('freeBoard.moves.$index');
 
+  /// A confirmação de sair no meio de um speedrun.
+  static const speedrunQuitConfirm = Key('freeBoard.speedrun.quit.confirm');
+
   /// Rever a partida: um lance para trás e um para a frente.
   static const movePrevious = Key('freeBoard.moves.previous');
   static const moveNext = Key('freeBoard.moves.next');

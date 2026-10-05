@@ -14,6 +14,7 @@ import '../../../domain/models/achievement.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/player_rating.dart';
+import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
@@ -32,6 +33,7 @@ class GameReport {
     this.achievements = const [],
     this.characters = const [],
     this.next,
+    this.speedrun,
   });
 
   /// O rating antes e depois. Nulos se a partida não conta.
@@ -49,6 +51,30 @@ class GameReport {
 
   /// Num desafio da Jornada, o desafio para jogar em seguida.
   final NextChallenge? next;
+
+  /// Numa etapa de speedrun, o que vem depois dela.
+  final SpeedrunStep? speedrun;
+}
+
+/// O passo seguinte de um speedrun, depois de uma etapa: a mesma etapa de
+/// novo (se foi perdida), a próxima ou, com todas vencidas, o fim.
+class SpeedrunStep {
+  const SpeedrunStep({
+    required this.speedrunId,
+    required this.attemptId,
+    this.stage,
+    this.challenge,
+  });
+
+  final String speedrunId;
+  final int attemptId;
+
+  /// A etapa a jogar em seguida e o desafio dela. Nulos com o speedrun
+  /// concluído.
+  final int? stage;
+  final Challenge? challenge;
+
+  bool get finished => challenge == null;
 }
 
 /// Monta o [GameReport] de uma partida já gravada, a partir do histórico.
@@ -159,6 +185,27 @@ class GameReporter {
       ],
       achievements: earned,
       characters: await _characters?.characters() ?? const [],
+      speedrun: await _speedrunStep(game, speedruns),
+    );
+  }
+
+  // Depois de uma etapa de speedrun: a mesma de novo, a próxima ou o fim.
+  Future<SpeedrunStep?> _speedrunStep(
+    Attempt game,
+    Map<String, Speedrun> speedruns,
+  ) async {
+    final attemptId = game.speedrunAttemptId;
+    if (attemptId == null) return null;
+    final attempt = await _speedruns.attempt(attemptId);
+    final speedrun = speedruns[attempt?.speedrunId];
+    if (attempt == null || speedrun == null) return null;
+    final run = SpeedrunScore.run(speedrun, attempt);
+    final stage = run.currentStage;
+    return SpeedrunStep(
+      speedrunId: speedrun.id,
+      attemptId: attemptId,
+      stage: run.completed ? null : stage,
+      challenge: run.completed ? null : speedrun.stages[stage],
     );
   }
 

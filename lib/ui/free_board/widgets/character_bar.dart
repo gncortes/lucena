@@ -343,28 +343,62 @@ class _TypewriterTextState extends State<TypewriterText>
   Widget build(BuildContext context) {
     // Com menos movimento pedido ao sistema, o texto já aparece inteiro.
     final instant = MediaQuery.disableAnimationsOf(context);
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final shown = instant
-            ? widget.text.length
-            : (widget.text.length * _controller.value).round();
-        return Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(text: widget.text.substring(0, shown)),
-              // O resto, invisível, guarda o lugar das letras que faltam.
-              TextSpan(
-                text: widget.text.substring(shown),
-                style: const TextStyle(color: Colors.transparent),
-              ),
-            ],
-          ),
-          style: widget.style,
-          maxLines: widget.maxLines,
-          overflow: TextOverflow.ellipsis,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Fala longa no espaço do balão: a letra diminui até caber inteira,
+        // em vez de cortar a última linha.
+        final style = _fitting(context, constraints);
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) => _text(instant, style),
         );
       },
+    );
+  }
+
+  // O estilo com a letra no maior tamanho em que a fala inteira cabe no
+  // espaço dado (até 60% do tamanho normal).
+  TextStyle? _fitting(BuildContext context, BoxConstraints constraints) {
+    final base = widget.style ?? DefaultTextStyle.of(context).style;
+    if (!constraints.hasBoundedHeight || !constraints.hasBoundedWidth) {
+      return base;
+    }
+    final size = base.fontSize ?? 14;
+    final scaler = MediaQuery.textScalerOf(context);
+    for (var scale = 1.0; scale > 0.6; scale -= 0.05) {
+      final style = base.copyWith(fontSize: size * scale);
+      final painter = TextPainter(
+        text: TextSpan(text: widget.text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: scaler,
+        maxLines: widget.maxLines,
+      )..layout(maxWidth: constraints.maxWidth);
+      final fits =
+          painter.height <= constraints.maxHeight && !painter.didExceedMaxLines;
+      painter.dispose();
+      if (fits) return style;
+    }
+    return base.copyWith(fontSize: size * 0.6);
+  }
+
+  Widget _text(bool instant, TextStyle? style) {
+    final shown = instant
+        ? widget.text.length
+        : (widget.text.length * _controller.value).round();
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: widget.text.substring(0, shown)),
+          // O resto, invisível, guarda o lugar das letras que faltam.
+          TextSpan(
+            text: widget.text.substring(shown),
+            style: const TextStyle(color: Colors.transparent),
+          ),
+        ],
+      ),
+      style: style,
+      maxLines: widget.maxLines,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

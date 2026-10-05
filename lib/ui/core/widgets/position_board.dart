@@ -18,8 +18,16 @@ class PositionBoard extends StatelessWidget {
     this.coordinates = false,
     this.radius = 6,
     this.heroTag,
+    this.lastMove,
+    this.orientation,
     super.key,
   });
+
+  /// O lance em destaque.
+  final Move? lastMove;
+
+  /// O lado embaixo. Nulo: o lado que joga na posição.
+  final Side? orientation;
 
   /// Com a marca, o tabuleiro voa (e cresce) até o de mesma marca na tela
   /// seguinte.
@@ -80,8 +88,9 @@ class PositionBoard extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: StaticChessboard(
         size: size,
-        orientation: turn,
+        orientation: orientation ?? turn,
         fen: fen,
+        lastMove: lastMove,
         settings: StaticChessboardSettings(
           colorScheme: board.colors.scheme,
           pieceAssets: board.pieces.assets,

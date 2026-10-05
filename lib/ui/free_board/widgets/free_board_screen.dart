@@ -55,6 +55,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // O dedo está no tabuleiro: a tela não rola enquanto isso.
   bool _touchingBoard = false;
 
+  // O jogador confirmou que sai do speedrun: a tela pode fechar.
+  bool _quitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -102,6 +105,58 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       current: cubit.state.clock?.config,
     );
     if (choice != null) cubit.newGameWithClock(choice.config);
+  }
+
+  // Sair no meio do speedrun: a tentativa termina aqui e fica no histórico,
+  // sem recorde.
+  Future<void> _confirmQuitSpeedrun(FreeBoardCubit cubit) async {
+    final l10n = context.l10n;
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              Text(
+                l10n.speedrunQuitTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                l10n.speedrunAbandonQuestion,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              FilledButton(
+                key: FreeBoardKeys.speedrunQuitConfirm,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                ),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(l10n.speedrunAbandon),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.speedrunKeepGoing),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (!(confirmed ?? false) || !mounted) return;
+    await cubit.quitSpeedrun();
+    if (!mounted) return;
+    setState(() => _quitting = true);
+    // Só depois de a tela aceitar fechar.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.of(context).maybePop();
+    });
   }
 
   GameData _gameData(FreeBoardState state) {
@@ -195,10 +250,20 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             listener: (context, state) => _onStateChanged(state),
             builder: (context, state) {
               // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-              // guarda a partida.
+              // guarda a partida. No meio de um speedrun, sair encerra a
+              // tentativa: antes, a confirmação.
+              final speedrunOpen =
+                  state.mode.isSpeedrun &&
+                  !(state.report?.speedrun?.finished ?? false) &&
+                  !_quitting;
               return PopScope(
+                canPop: !speedrunOpen,
                 onPopInvokedWithResult: (didPop, _) {
-                  if (didPop) unawaited(cubit.leave());
+                  if (didPop) {
+                    if (!state.mode.isSpeedrun) unawaited(cubit.leave());
+                  } else {
+                    unawaited(_confirmQuitSpeedrun(cubit));
+                  }
                 },
                 child: _scaffold(
                   context,
@@ -236,8 +301,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
-      // Embaixo, voltar e avançar um lance para rever a partida.
-      bottomNavigationBar: _MoveButtons(state: state, cubit: cubit),
       appBar: AppBar(
         // Os lances numa faixa, logo abaixo da barra: tocar num deles mostra a
         // posição daquele momento.
@@ -457,20 +520,35 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     FreeBoardCubit cubit,
     GameMode mode,
   ) async {
-    // No speedrun, o fim leva de volta à tentativa: lá o jogador segue para a
-    // próxima etapa ou repete esta.
     if (!mode.isSpeedrun) {
       cubit.newGame();
       return;
     }
-    // A tentativa lê a partida do banco: ela precisa estar gravada antes.
+    // No speedrun, o botão segue direto: a próxima etapa (ou a mesma, se foi
+    // perdida) abre no lugar desta; com todas vencidas, o resumo da
+    // tentativa. O passo seguinte sai do histórico: a partida precisa estar
+    // gravada antes.
     await cubit.saved();
     if (!context.mounted) return;
-    context.go(
-      Routes.speedrunAttempt(
-        mode.speedrunId ?? '',
-        mode.speedrunAttemptId!,
-        game: context.read<Now>()().millisecondsSinceEpoch,
+    final step = cubit.state.report?.speedrun;
+    final challenge = step?.challenge;
+    if (step == null || challenge == null) {
+      context.go(
+        Routes.speedrunAttempt(
+          step?.speedrunId ?? mode.speedrunId ?? '',
+          step?.attemptId ?? mode.speedrunAttemptId!,
+          game: context.read<Now>()().millisecondsSinceEpoch,
+        ),
+      );
+      return;
+    }
+    setState(() => _quitting = true);
+    context.pushReplacement(
+      Routes.challengeGame(
+        challenge,
+        speedrunId: step.speedrunId,
+        attemptId: step.attemptId,
+        stage: step.stage,
       ),
     );
   }
@@ -491,8 +569,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   }
 }
 
-/// O fundo escuro e o cartão do resultado por cima da partida, entrando com
-/// animação, como no chess.com. Tocar fora fecha e deixa ver o tabuleiro.
+/// O fundo escuro e o painel do resultado subindo de baixo por cima da
+/// partida. Tocar fora fecha e deixa ver o tabuleiro.
 class _ResultOverlay extends StatelessWidget {
   const _ResultOverlay({required this.onClose, required this.child});
 
@@ -513,10 +591,10 @@ class _ResultOverlay extends StatelessWidget {
           child: child,
         ),
       ),
-      child: Center(
+      child: Align(
+        alignment: Alignment.bottomCenter,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          // Tocar no cartão não fecha.
+          // Tocar no painel não fecha.
           child: GestureDetector(onTap: () {}, child: child),
         ),
       ),
@@ -626,7 +704,10 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
     };
     final again = Text(
       widget.speedrun
-          ? l10n.speedrunContinue
+          // Venceu: a próxima etapa (ou o resumo, no fim). Perdeu: a mesma.
+          ? (widget.fulfilled ?? false)
+                ? l10n.speedrunContinue
+                : l10n.speedrunRetry
           : widget.fulfilled == null
           ? l10n.freeBoardNewGame
           : l10n.resultPlayAgain,
@@ -742,104 +823,115 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
         : lost
         ? Icons.flag_rounded
         : Icons.emoji_events_rounded;
-    final entrance = _interval(0, 0.35, Curves.easeOutBack);
+    final entrance = _interval(0, 0.35, Curves.easeOutCubic);
     final pop = _interval(0.15, 0.7, Curves.elasticOut);
     final ratingWidget = rating(CrossAxisAlignment.center, large: true);
-    return FadeTransition(
-      opacity: _interval(0, 0.2, Curves.easeOut),
-      child: ScaleTransition(
-        scale: Tween(begin: 0.8, end: 1.0).animate(entrance),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Material(
-            key: FreeBoardKeys.endPanel,
-            color: theme.colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(24),
-            clipBehavior: Clip.antiAlias,
-            elevation: 12,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Stack(
-                  fit: StackFit.passthrough,
+    return SlideTransition(
+      position: Tween(
+        begin: const Offset(0, 1),
+        end: Offset.zero,
+      ).animate(entrance),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Material(
+          key: FreeBoardKeys.endPanel,
+          color: theme.colorScheme.surfaceContainerLow,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          clipBehavior: Clip.antiAlias,
+          elevation: 12,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  Padding(
+                    key: FreeBoardKeys.resultCard,
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: Column(
+                      children: [
+                        // Só o ícone leva a cor do resultado; o cartão
+                        // fica neutro, como no chess.com.
+                        ScaleTransition(
+                          scale: pop,
+                          child: Icon(icon, size: 44, color: accent),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          title,
+                          key: FreeBoardKeys.resultTitle,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          reason,
+                          key: FreeBoardKeys.endReason,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PositionedDirectional(
+                    top: 4,
+                    end: 4,
+                    child: IconButton(
+                      key: FreeBoardKeys.resultClose,
+                      tooltip: MaterialLocalizations.of(context)
+                          .closeButtonTooltip,
+                      icon: const Icon(Icons.close),
+                      onPressed: widget.onClose,
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Padding(
-                      key: FreeBoardKeys.resultCard,
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                      child: Column(
-                        children: [
-                          // Só o ícone leva a cor do resultado; o cartão
-                          // fica neutro, como no chess.com.
-                          ScaleTransition(
-                            scale: pop,
-                            child: Icon(icon, size: 44, color: accent),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            title,
-                            key: FreeBoardKeys.resultTitle,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            reason,
-                            key: FreeBoardKeys.endReason,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      result,
+                      key: FreeBoardKeys.endResult,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
-                    PositionedDirectional(
-                      top: 4,
-                      end: 4,
-                      child: IconButton(
-                        key: FreeBoardKeys.resultClose,
-                        tooltip: MaterialLocalizations.of(context)
-                            .closeButtonTooltip,
-                        icon: const Icon(Icons.close),
-                        onPressed: widget.onClose,
+                    if (goal != null) ...[
+                      const SizedBox(height: 6),
+                      Center(child: goal),
+                    ],
+                    if (ratingWidget != null) ...[
+                      const SizedBox(height: 16),
+                      Center(child: ratingWidget),
+                    ],
+                    const SizedBox(height: 20),
+                    // As opções lado a lado; a principal à direita.
+                    SafeArea(
+                      top: false,
+                      child: Row(
+                        children: [
+                          for (final (index, button)
+                              in buttons.reversed.indexed) ...[
+                            if (index > 0) const SizedBox(width: 10),
+                            Expanded(
+                              child: SizedBox(height: 52, child: button),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        result,
-                        key: FreeBoardKeys.endResult,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                      if (goal != null) ...[
-                        const SizedBox(height: 6),
-                        Center(child: goal),
-                      ],
-                      if (ratingWidget != null) ...[
-                        const SizedBox(height: 16),
-                        Center(child: ratingWidget),
-                      ],
-                      const SizedBox(height: 20),
-                      for (final (index, button) in buttons.indexed) ...[
-                        if (index > 0) const SizedBox(height: 8),
-                        SizedBox(height: 48, child: button),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -970,65 +1062,4 @@ Future<bool?> showResignSheet(BuildContext context) {
       );
     },
   );
-}
-
-/// Voltar e avançar um lance, como no chess.com: para rever a partida sem
-/// mexer nela. No último lance, o tabuleiro volta a aceitar lances.
-class _MoveButtons extends StatelessWidget {
-  const _MoveButtons({required this.state, required this.cubit});
-
-  final FreeBoardState state;
-  final FreeBoardCubit cubit;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    // Sem lances (ou com a partida ainda sendo lida), nada para rever.
-    if (!state.ready || state.ucis.isEmpty) return const SizedBox.shrink();
-    final rtl = Directionality.of(context) == TextDirection.rtl;
-    Widget button({
-      required Key key,
-      required IconData icon,
-      required String label,
-      required VoidCallback? onPressed,
-    }) => Expanded(
-      child: TextButton(
-        key: key,
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          foregroundColor: theme.colorScheme.onSurface,
-          padding: const EdgeInsets.symmetric(vertical: 6),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 28),
-            Text(label, style: theme.textTheme.labelMedium),
-          ],
-        ),
-      ),
-    );
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: [
-            button(
-              key: FreeBoardKeys.movePrevious,
-              icon: rtl ? Icons.chevron_right : Icons.chevron_left,
-              label: l10n.gameMoveBack,
-              onPressed: state.shownPly > 0 ? cubit.viewPrevious : null,
-            ),
-            button(
-              key: FreeBoardKeys.moveNext,
-              icon: rtl ? Icons.chevron_left : Icons.chevron_right,
-              label: l10n.gameMoveForward,
-              onPressed: state.browsing ? cubit.viewNext : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

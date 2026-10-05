@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/use_cases/clock_format.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/l10n/run_time.dart';
 import '../view_models/rating_cubit.dart';
 
 /// Os números do progresso em blocos pequenos.
@@ -36,11 +36,7 @@ class StatsRow extends StatelessWidget {
         l10n.homeAchievements,
       ),
       if (best != null)
-        (
-          Icons.timer_outlined,
-          RunTimeFormat.format(best),
-          l10n.homeStatBestRun,
-        ),
+        (Icons.timer_outlined, runTime(context, best), l10n.homeStatBestRun),
     ];
     return LayoutBuilder(
       builder: (context, constraints) {
