@@ -42,7 +42,8 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 - [ ] **Layout e nomes da lista de speedruns.** ([print](../qa/melhorias/f8b57c1c.jpg)) O que incomoda no print:
   - "Degrau Maia 1000", "Os 9 desafios": termos internos ("degrau") e sem o personagem;
-  - lista longa de linhas iguais (ícone de cronômetro, "Sem recorde", seta), com o fim cortado pela barra do sistema;
+  - lista longa de linhas iguais (ícone de cronômetro, "Sem recorde", seta), com o fim cortado pela barra do sistema (a "Jornada completa" fica atrás dela, [print](../qa/melhorias/35e195f7.jpg));
+  - nos finais, o subtítulo "Do Maia 1000 ao Stockfish" se repete em todos e o nome do final é só o material em figurino (♕ – ♚): mostrar o nome ("Dama contra rei") junto do figurino;
   - o texto de explicação ocupa o topo inteiro toda vez.
 
   Proposta de nomes (a confirmar):
