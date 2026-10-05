@@ -378,7 +378,7 @@
   "homePathsTitle": "Que voulez-vous faire ?",
   "homeLearn": "Apprendre à jouer aux échecs",
   "homeLearnBody": "Leçons avec Viktor : le déplacement des pièces, l'échec, l'échec et mat et les premières finales.",
-  "homeJourneyBody": "Entraînement guidé : gagnez les finales de chaque adversaire, du plus faible jusqu'à Stockfish.",
+  "homeJourneyBody": "L'étape suivante après les leçons : entraînez-vous en gagnant les finales de chaque adversaire, du plus faible jusqu'à Stockfish.",
   "homeSpeedrunBody": "Choisissez une finale et battez tous les adversaires à la suite, jusqu'à Stockfish, contre la montre.",
   "homeTrainBody": "Choisissez n'importe quelle finale et l'adversaire, et jouez-la autant de fois que vous voulez.",
   "setupPaceCustom": "Personnaliser",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Ligne d'arrivée",
   "achievementSpeedrunHint": "Terminez un speedrun, du premier adversaire à Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Terminez le speedrun de cette finale en cadence {pace}"
+  "achievementSpeedrunPaceHint": "Terminez le speedrun de cette finale en cadence {pace}",
+  "journeyIntro": "L'étape suivante après les leçons de Viktor : mettez en pratique ce que vous avez appris et relevez de nouveaux défis, un adversaire à la fois."
 }

@@ -5,8 +5,12 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 
+import '../../../../testing/fakes/fake_achievements_repository.dart';
+import '../../../../testing/fakes/fake_journey_repository.dart';
+import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
+import '../../../../testing/fakes/fake_speedrun_repository.dart';
 
 void main() {
   final at = DateTime.utc(2026, 10, 5);
@@ -73,6 +77,45 @@ void main() {
       expect(games[0].entry, cubit.state.history.last);
     });
 
+    test('os números do jogador: partidas, vitórias, dias seguidos, '
+        'conquistas e o melhor speedrun', () async {
+      final rating = FakeRatingRepository();
+      final progress = FakeProgressRepository();
+      final speedruns = FakeSpeedrunRepository(progress);
+      final now = FakeNow(at.add(const Duration(hours: 3)));
+      await progress.addAttempt(game(AttemptOutcome.win));
+      await progress.addAttempt(game(AttemptOutcome.loss));
+      // Um speedrun concluído: duas etapas de 30 s.
+      final attempt = await speedruns.start('rung.1000', at);
+      for (final stage in [0, 1]) {
+        await progress.addAttempt(
+          game(AttemptOutcome.win).copyWith(
+            userClock: const Duration(seconds: 30),
+            speedrunAttemptId: attempt.id,
+            speedrunStage: stage,
+          ),
+        );
+      }
+      final cubit = RatingCubit(
+        rating,
+        progress: progress,
+        achievements: FakeAchievementsRepository(),
+        speedruns: speedruns,
+        journey: FakeJourneyRepository(),
+        now: now,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      final numbers = cubit.state.numbers!;
+      expect(numbers.stats.games, 4);
+      expect(numbers.stats.wins, 3);
+      expect(numbers.stats.streakDays, 1);
+      expect(numbers.achievementsUnlocked, 0);
+      expect(numbers.achievementsTotal, greaterThan(0));
+      expect(numbers.bestSpeedrun, const Duration(minutes: 1));
+    });
+
     test('sem o histórico das partidas, só os pontos do rating', () async {
       final rating = FakeRatingRepository();
       await rating.rate(
@@ -86,6 +129,7 @@ void main() {
 
       expect(cubit.state.games, hasLength(1));
       expect(cubit.state.games.single.attempt, isNull);
+      expect(cubit.state.numbers, isNull);
     });
   });
 }

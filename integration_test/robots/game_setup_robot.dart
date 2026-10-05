@@ -25,28 +25,27 @@ class GameSetupRobot {
     await $.pumpAndSettle();
   }
 
-  /// Ajusta o tempo de `user` ou `opponent` no painel "Personalizar ritmo".
-  /// O tempo do adversário só aparece com "mesmo tempo para os dois"
-  /// desligado.
+  /// Ajusta o tempo de `user` ou `opponent` no painel "Personalizar ritmo",
+  /// sem mexer no do outro lado: desliga "mesmo tempo para os dois".
   Future<void> setTime(
     String who, {
     required int minutes,
     required int increment,
   }) async {
-    await _openCustom(separate: who == 'opponent');
+    await _openCustom();
     await _slide(who, 'minutes', CustomPaceSteps.minutes, minutes);
     await _slide(who, 'increment', CustomPaceSteps.increments, increment);
     await $(GameSetupKeys.customConfirm).tap();
     await $.pumpAndSettle();
   }
 
-  Future<void> _openCustom({required bool separate}) async {
+  Future<void> _openCustom() async {
     await $(GameSetupKeys.customPace).scrollTo().tap();
     await $(GameSetupKeys.customSheet).waitUntilVisible();
     final same = $.tester.widget<SwitchListTile>(
       find.byKey(GameSetupKeys.customSame),
     );
-    if (separate && same.value) {
+    if (same.value) {
       await $(GameSetupKeys.customSame).tap();
       await $.pumpAndSettle();
     }

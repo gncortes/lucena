@@ -71,6 +71,15 @@ void main() {
     expect(textOf(tester, RatingKeys.value), '1150');
     expect(find.byKey(RatingKeys.chart), findsNothing);
     expect(find.byKey(RatingKeys.emptyHistory), findsOneWidget);
+    // Os números do jogador, zerados.
+    expect(find.byKey(RatingKeys.stats), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(RatingKeys.stat(0)),
+        matching: find.text('0'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('com partidas: o gráfico e o histórico, da mais recente para a '
@@ -81,6 +90,12 @@ void main() {
 
     expect(textOf(tester, RatingKeys.value), '${history.last.rating.rounded}');
     expect(textOf(tester, RatingKeys.games), '3 rated games');
+    // Partidas e vitórias nos números do jogador.
+    for (final (index, value, label) in [(0, '3', 'Games'), (1, '2', 'Wins')]) {
+      final stat = find.byKey(RatingKeys.stat(index));
+      expect(find.descendant(of: stat, matching: find.text(value)), findsOne);
+      expect(find.descendant(of: stat, matching: find.text(label)), findsOne);
+    }
     expect(find.byKey(RatingKeys.chart), findsOneWidget);
     expect(find.byKey(RatingKeys.emptyHistory), findsNothing);
 

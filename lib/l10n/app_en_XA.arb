@@ -377,7 +377,7 @@
   "homePathsTitle": "[Whåt dö ýöû wåñt tö dö? one two three]",
   "homeLearn": "[Léåŕñ tö plåý çhéšš one two]",
   "homeLearnBody": "[Léššöñš wîth Vîktöŕ: höw thé pîéçéš mövé, çhéçk, çhéçkmåté åñd thé fîŕšt éñdĝåméš. one two three four five six seven]",
-  "homeJourneyBody": "[Ĝûîdéd tŕåîñîñĝ: béåt thé éñdĝåméš öf éåçh öppöñéñt, fŕöm thé wéåkéšt ûp tö Štöçkfîšh. one two three four five six seven eight]",
+  "homeJourneyBody": "[Thé ñéxt štép åftéŕ thé léššöñš: pŕåçtîçé bý béåtîñĝ éåçh öppöñéñt'š éñdĝåméš, fŕöm thé wéåkéšt ûp tö Štöçkfîšh. one two three four five six seven eight nine]",
   "homeSpeedrunBody": "[Pîçk åñ éñdĝåmé åñd béåt évéŕý öppöñéñt îñ å ŕöw, ûp tö Štöçkfîšh, åĝåîñšt thé çlöçk. one two three four five six seven]",
   "homeTrainBody": "[Pîçk åñý éñdĝåmé åñd thé öppöñéñt, åñd plåý ît åš måñý tîméš åš ýöû wåñt. one two three four five six seven]",
   "setupPaceCustom": "[Çûštöm one]",
@@ -394,5 +394,6 @@
   "achievementSpeedrunTitle": "[Fîñîšh lîñé one two]",
   "achievementSpeedrunHint": "[Fîñîšh å špéédŕûñ, fŕöm thé fîŕšt öppöñéñt tö Štöçkfîšh one two three four five]",
   "achievementSpeedrunPaceTitle": "[{endgame} · {pace} one two]",
-  "achievementSpeedrunPaceHint": "[Fîñîšh thîš éñdĝåmé'š špéédŕûñ åt {pace} påçé one two three four]"
+  "achievementSpeedrunPaceHint": "[Fîñîšh thîš éñdĝåmé'š špéédŕûñ åt {pace} påçé one two three four]",
+  "journeyIntro": "[Thé ñéxt štép åftéŕ Vîktöŕ'š léššöñš: pŕåçtîçé whåt ýöû léåŕñéd åñd tåké öñ ñéw çhålléñĝéš, öñé öppöñéñt åt å tîmé. one two three four five six seven eight nine ten]"
 }

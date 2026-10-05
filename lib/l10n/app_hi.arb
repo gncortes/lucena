@@ -378,7 +378,7 @@
   "homePathsTitle": "आप क्या करना चाहते हैं?",
   "homeLearn": "शतरंज खेलना सीखें",
   "homeLearnBody": "विक्टर के साथ पाठ: मोहरे कैसे चलते हैं, शह, मात और शुरुआती एंडगेम।",
-  "homeJourneyBody": "निर्देशित अभ्यास: हर प्रतिद्वंद्वी के एंडगेम जीतें, सबसे कमज़ोर से Stockfish तक।",
+  "homeJourneyBody": "पाठों के बाद अगला क़दम: हर प्रतिद्वंद्वी के एंडगेम जीतकर अभ्यास करें, सबसे कमज़ोर से Stockfish तक।",
   "homeSpeedrunBody": "एक एंडगेम चुनें और घड़ी के ख़िलाफ़ सभी प्रतिद्वंद्वियों को लगातार हराएँ, Stockfish तक।",
   "homeTrainBody": "कोई भी एंडगेम और प्रतिद्वंद्वी चुनें, और जितनी बार चाहें खेलें।",
   "setupPaceCustom": "कस्टम",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "फ़िनिश लाइन",
   "achievementSpeedrunHint": "पहले प्रतिद्वंद्वी से Stockfish तक, एक स्पीडरन पूरा करें",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "इस एंडगेम का स्पीडरन {pace} समय नियंत्रण में पूरा करें"
+  "achievementSpeedrunPaceHint": "इस एंडगेम का स्पीडरन {pace} समय नियंत्रण में पूरा करें",
+  "journeyIntro": "विक्टर के पाठों के बाद अगला क़दम: जो सीखा उसका अभ्यास करें और नई चुनौतियों का सामना करें, एक-एक प्रतिद्वंद्वी करके।"
 }

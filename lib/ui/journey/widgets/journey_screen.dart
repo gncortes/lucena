@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/journey_keys.dart';
@@ -13,6 +12,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
+import 'trail_widgets.dart';
 
 /// A Jornada: o adversário atual em destaque e, embaixo, a trilha dos
 /// personagens, do mais fraco ao mais forte, com o Stockfish no fim, como
@@ -34,6 +34,17 @@ class JourneyScreen extends StatelessWidget {
           : ListView(
               padding: scrollPadding(context),
               children: [
+                // Para quem chega: a Jornada é o passo seguinte às aulas.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                  child: Text(
+                    l10n.journeyIntro,
+                    key: JourneyKeys.intro,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
                 _Summary(progress: progress),
                 const SizedBox(height: 8),
                 // A trilha vai do mais fraco ao mais forte: o Stockfish no
@@ -274,7 +285,7 @@ class _TrailNode extends StatelessWidget {
                       // O retrato voa para o cabeçalho da tela do adversário.
                       child: Hero(
                         tag: opponentHeroTag(id),
-                        child: _Portrait(
+                        child: TrailPortrait(
                           character: character,
                           size: size,
                           locked: locked,
@@ -323,7 +334,7 @@ class _TrailNode extends StatelessWidget {
                         // O último da trilha é o chefe final.
                         if (last || completed) ...[
                           const SizedBox(height: 6),
-                          _Badge(
+                          TrailBadge(
                             text: completed
                                 ? l10n.journeyDone
                                 : l10n.journeyBoss,
@@ -361,148 +372,5 @@ class _TrailNode extends StatelessWidget {
           ),
         ),
       );
-  }
-}
-
-/// O retrato redondo de um adversário da trilha.
-class _Portrait extends StatelessWidget {
-  const _Portrait({
-    required this.character,
-    required this.size,
-    required this.locked,
-    required this.completed,
-    required this.current,
-    required this.lockKey,
-    required this.doneKey,
-    required this.doneColor,
-  });
-
-  final Character? character;
-  final double size;
-  final bool locked;
-  final bool completed;
-  final bool current;
-  final Key lockKey;
-  final Key doneKey;
-  final Color doneColor;
-
-  // Tira a cor do retrato trancado.
-  static const _grayscale = ColorFilter.matrix([
-    0.2126, 0.7152, 0.0722, 0, 0, //
-    0.2126, 0.7152, 0.0722, 0, 0, //
-    0.2126, 0.7152, 0.0722, 0, 0, //
-    0, 0, 0, 1, 0, //
-  ]);
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final l10n = context.l10n;
-    final character = this.character;
-    Widget image = character == null
-        ? Icon(Icons.person, size: size * 0.6, color: colors.outline)
-        : Image.asset(
-            character.avatar,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-            excludeFromSemantics: true,
-          );
-    if (locked) {
-      image = Opacity(
-        opacity: 0.6,
-        child: ColorFiltered(colorFilter: _grayscale, child: image),
-      );
-    }
-    final ring = current
-        ? colors.primary
-        : completed
-        ? doneColor
-        : colors.outlineVariant;
-    return SizedBox.square(
-      dimension: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colors.surfaceContainerHighest,
-              border: Border.all(color: ring, width: current ? 4 : 3),
-              boxShadow: current
-                  ? [
-                      BoxShadow(
-                        color: colors.primary.withValues(alpha: 0.35),
-                        blurRadius: 12,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: ClipOval(child: image),
-          ),
-          if (locked)
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: colors.surface.withValues(alpha: 0.9),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.lock,
-                  key: lockKey,
-                  size: size * 0.3,
-                  color: colors.outline,
-                  semanticLabel: l10n.journeyLockedLabel,
-                ),
-              ),
-            ),
-          if (completed)
-            PositionedDirectional(
-              end: -2,
-              bottom: -2,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle,
-                  key: doneKey,
-                  size: 24,
-                  color: doneColor,
-                  semanticLabel: l10n.journeyCompletedLabel,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Um selo pequeno de texto colorido ("Concluído", "Chefe final").
-class _Badge extends StatelessWidget {
-  const _Badge({required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.labelSmall
-            ?.copyWith(color: color, fontWeight: FontWeight.w700),
-      ),
-    );
   }
 }

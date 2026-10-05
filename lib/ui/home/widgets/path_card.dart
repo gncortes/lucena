@@ -8,7 +8,6 @@ class PathCard extends StatelessWidget {
     required this.title,
     required this.body,
     required this.onTap,
-    this.highlighted = false,
     super.key,
   });
 
@@ -17,21 +16,12 @@ class PathCard extends StatelessWidget {
   final String body;
   final VoidCallback onTap;
 
-  /// O caminho indicado para o jogador agora: ganha a cor de destaque.
-  final bool highlighted;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final background = highlighted
-        ? colors.primaryContainer
-        : colors.surfaceContainerHigh;
-    final foreground = highlighted
-        ? colors.onPrimaryContainer
-        : colors.onSurface;
     return Material(
-      color: background,
+      color: colors.surfaceContainerHigh,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -44,17 +34,10 @@ class PathCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: highlighted
-                      ? colors.primary
-                      : colors.secondaryContainer,
+                  color: colors.secondaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  color: highlighted
-                      ? colors.onPrimary
-                      : colors.onSecondaryContainer,
-                ),
+                child: Icon(icon, color: colors.onSecondaryContainer),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -64,7 +47,6 @@ class PathCard extends StatelessWidget {
                     Text(
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        color: foreground,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -72,9 +54,7 @@ class PathCard extends StatelessWidget {
                     Text(
                       body,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: highlighted
-                            ? foreground.withValues(alpha: 0.85)
-                            : colors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -85,7 +65,7 @@ class PathCard extends StatelessWidget {
                 Directionality.of(context) == TextDirection.rtl
                     ? Icons.chevron_left
                     : Icons.chevron_right,
-                color: highlighted ? foreground : colors.onSurfaceVariant,
+                color: colors.onSurfaceVariant,
               ),
             ],
           ),

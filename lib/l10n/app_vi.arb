@@ -378,7 +378,7 @@
   "homePathsTitle": "Bạn muốn làm gì?",
   "homeLearn": "Học chơi cờ vua",
   "homeLearnBody": "Học cùng Viktor: cách các quân cờ di chuyển, chiếu, chiếu hết và những tàn cuộc đầu tiên.",
-  "homeJourneyBody": "Luyện tập có hướng dẫn: thắng các tàn cuộc của từng đối thủ, từ yếu nhất đến Stockfish.",
+  "homeJourneyBody": "Bước tiếp theo sau các bài học: luyện tập bằng cách thắng các tàn cuộc của từng đối thủ, từ yếu nhất đến Stockfish.",
   "homeSpeedrunBody": "Chọn một tàn cuộc và thắng liên tiếp mọi đối thủ, cho đến Stockfish, chạy đua với đồng hồ.",
   "homeTrainBody": "Chọn bất kỳ tàn cuộc nào cùng đối thủ và chơi bao nhiêu lần tùy thích.",
   "setupPaceCustom": "Tùy chỉnh",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Vạch đích",
   "achievementSpeedrunHint": "Hoàn thành một speedrun, từ đối thủ đầu tiên đến Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Hoàn thành speedrun của tàn cuộc này ở nhịp độ {pace}"
+  "achievementSpeedrunPaceHint": "Hoàn thành speedrun của tàn cuộc này ở nhịp độ {pace}",
+  "journeyIntro": "Bước tiếp theo sau các bài học của Viktor: luyện những gì bạn đã học và đón nhận thử thách mới, lần lượt từng đối thủ."
 }

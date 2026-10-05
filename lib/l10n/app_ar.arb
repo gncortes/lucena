@@ -378,7 +378,7 @@
   "homePathsTitle": "ماذا تريد أن تفعل؟",
   "homeLearn": "تعلّم لعب الشطرنج",
   "homeLearnBody": "دروس مع فيكتور: كيف تتحرك القطع، والكش، وكش مات، وأولى النهايات.",
-  "homeJourneyBody": "تدريب موجَّه: فُز بنهايات كل خصم، من الأضعف حتى Stockfish.",
+  "homeJourneyBody": "الخطوة التالية بعد الدروس: تدرّب بالفوز بنهايات كل خصم، من الأضعف حتى Stockfish.",
   "homeSpeedrunBody": "اختر نهاية واهزم كل الخصوم على التوالي، حتى Stockfish، في سباق مع الساعة.",
   "homeTrainBody": "اختر أي نهاية والخصم، والعبها بقدر ما تشاء.",
   "setupPaceCustom": "تخصيص",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "خط النهاية",
   "achievementSpeedrunHint": "أكمل سباق وقت، من أول خصم حتى Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "أكمل سباق الوقت لهذه النهاية بإيقاع {pace}"
+  "achievementSpeedrunPaceHint": "أكمل سباق الوقت لهذه النهاية بإيقاع {pace}",
+  "journeyIntro": "الخطوة التالية بعد دروس فيكتور: طبّق ما تعلمته وواجه تحديات جديدة، خصمًا تلو الآخر."
 }

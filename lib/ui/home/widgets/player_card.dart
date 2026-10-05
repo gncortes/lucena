@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -108,123 +107,6 @@ class PlayerCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Os números do progresso em blocos pequenos.
-class StatsRow extends StatelessWidget {
-  const StatsRow({required this.state, super.key});
-
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final best = state.bestSpeedrun;
-    final stats = [
-      (
-        Icons.sports_esports_outlined,
-        '${state.stats.games}',
-        l10n.homeStatGames,
-      ),
-      (Icons.emoji_events_outlined, '${state.stats.wins}', l10n.homeStatWins),
-      (
-        Icons.local_fire_department_outlined,
-        '${state.stats.streakDays}',
-        l10n.homeStatStreak,
-      ),
-      (
-        Icons.military_tech_outlined,
-        l10n.homeStatAchievements(
-          state.achievementsUnlocked,
-          state.achievementsTotal,
-        ),
-        l10n.homeAchievements,
-      ),
-      if (best != null)
-        (
-          Icons.timer_outlined,
-          RunTimeFormat.format(best),
-          l10n.homeStatBestRun,
-        ),
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const gap = 8.0;
-        // Quatro números em 2 × 2; cinco, em 3 + 2.
-        final columns = stats.length == 4 ? 2 : 3;
-        final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
-        return Wrap(
-          key: HomeKeys.stats,
-          spacing: gap,
-          runSpacing: gap,
-          children: [
-            for (final (index, (icon, value, label)) in stats.indexed)
-              SizedBox(
-                width: width,
-                child: _Stat(
-                  key: HomeKeys.stat(index),
-                  icon: icon,
-                  value: value,
-                  label: label,
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({
-    required this.icon,
-    required this.value,
-    required this.label,
-    super.key,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: colors.primary),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  value,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -378,7 +378,7 @@
   "homePathsTitle": "O que quer fazer?",
   "homeLearn": "Aprender a jogar xadrez",
   "homeLearnBody": "Aulas com o Viktor: como as peças se movem, xeque, mate e os primeiros finais.",
-  "homeJourneyBody": "Treino guiado: vença os finais de cada adversário, do mais fraco até ao Stockfish.",
+  "homeJourneyBody": "O passo seguinte às aulas: pratique vencendo os finais de cada adversário, do mais fraco até ao Stockfish.",
   "homeSpeedrunBody": "Escolha um final e vença todos os adversários de seguida, até ao Stockfish, contra o relógio.",
   "homeTrainBody": "Escolha qualquer final e o adversário, e jogue quantas vezes quiser.",
   "setupPaceCustom": "Personalizar",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Linha da meta",
   "achievementSpeedrunHint": "Conclua um speedrun, do primeiro adversário ao Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Conclua o speedrun deste final no ritmo {pace}"
+  "achievementSpeedrunPaceHint": "Conclua o speedrun deste final no ritmo {pace}",
+  "journeyIntro": "O passo seguinte às aulas do Viktor: pratique o que aprendeu e enfrente novos desafios, um adversário de cada vez."
 }

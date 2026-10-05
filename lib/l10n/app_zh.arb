@@ -378,7 +378,7 @@
   "homePathsTitle": "你想做什么？",
   "homeLearn": "学下国际象棋",
   "homeLearnBody": "跟维克多上课：棋子的走法、将军、将杀和最初的残局。",
-  "homeJourneyBody": "引导式训练：从最弱的对手到Stockfish，逐一赢下每个对手的残局。",
+  "homeJourneyBody": "课程之后的下一步：从最弱的对手到Stockfish，通过赢下每个对手的残局来练习。",
   "homeSpeedrunBody": "选一个残局，与时间赛跑，连续战胜所有对手，直到Stockfish。",
   "homeTrainBody": "任选残局和对手，想下多少次都可以。",
   "setupPaceCustom": "自定义",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "终点线",
   "achievementSpeedrunHint": "完成一次速通，从第一个对手到Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "以{pace}用时完成这个残局的速通"
+  "achievementSpeedrunPaceHint": "以{pace}用时完成这个残局的速通",
+  "journeyIntro": "上完维克多的课之后的下一步：练习学到的内容，迎接新的挑战，一次面对一个对手。"
 }

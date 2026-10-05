@@ -378,7 +378,7 @@
   "homePathsTitle": "Was möchtest du tun?",
   "homeLearn": "Schach spielen lernen",
   "homeLearnBody": "Unterricht bei Viktor: wie die Figuren ziehen, Schach, Schachmatt und die ersten Endspiele.",
-  "homeJourneyBody": "Geführtes Training: Gewinne die Endspiele jedes Gegners, vom schwächsten bis zu Stockfish.",
+  "homeJourneyBody": "Der nächste Schritt nach dem Unterricht: Übe, indem du die Endspiele jedes Gegners gewinnst, vom schwächsten bis zu Stockfish.",
   "homeSpeedrunBody": "Wähle ein Endspiel und besiege alle Gegner nacheinander, bis zu Stockfish, gegen die Uhr.",
   "homeTrainBody": "Wähle ein beliebiges Endspiel und den Gegner und spiele es, so oft du willst.",
   "setupPaceCustom": "Anpassen",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Ziellinie",
   "achievementSpeedrunHint": "Schaffe einen Speedrun, vom ersten Gegner bis zu Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Schaffe den Speedrun dieses Endspiels mit der Bedenkzeit {pace}"
+  "achievementSpeedrunPaceHint": "Schaffe den Speedrun dieses Endspiels mit der Bedenkzeit {pace}",
+  "journeyIntro": "Der nächste Schritt nach Viktors Unterricht: Übe, was du gelernt hast, und stelle dich neuen Aufgaben, ein Gegner nach dem anderen."
 }

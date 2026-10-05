@@ -1991,7 +1991,7 @@
   "@homeLearnBody": {
     "description": "Home screen: one-line explanation of the lessons path."
   },
-  "homeJourneyBody": "Guided training: beat the endgames of each opponent, from the weakest up to Stockfish.",
+  "homeJourneyBody": "The next step after the lessons: practice by beating each opponent's endgames, from the weakest up to Stockfish.",
   "@homeJourneyBody": {
     "description": "Home screen: one-line explanation of the Journey path."
   },
@@ -2098,5 +2098,9 @@
         "type": "String"
       }
     }
+  },
+  "journeyIntro": "The next step after Viktor's lessons: practice what you learned and take on new challenges, one opponent at a time.",
+  "@journeyIntro": {
+    "description": "Journey screen: one-sentence note at the top saying the Journey comes after the lessons."
   }
 }
