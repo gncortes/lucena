@@ -18,6 +18,7 @@ void main() {
     WidgetTester tester,
     AppSettings settings, {
     UserProfile profile = const UserProfile(),
+    String version = '',
   }) async {
     final cubit = SettingsCubit(
       FakeSettingsRepository(settings),
@@ -32,7 +33,7 @@ void main() {
       TestApp(
         settingsCubit: cubit,
         profileCubit: profileCubit,
-        child: const SettingsScreen(),
+        child: SettingsScreen(version: version),
       ),
     );
   }
@@ -90,5 +91,23 @@ void main() {
     );
 
     expect(profileValue(tester), 'Ana · Advanced');
+  });
+
+  testWidgets('mostra a versão do app no rodapé', (tester) async {
+    await pumpScreen(tester, const AppSettings(), version: '0.3.2-rc.1');
+    await tester.scrollUntilVisible(find.byKey(SettingsKeys.version), 200);
+
+    expect(
+      tester.widget<Text>(find.byKey(SettingsKeys.version)).data,
+      'Version 0.3.2-rc.1',
+    );
+  });
+
+  testWidgets('build local, sem versão: não mostra nada no rodapé', (
+    tester,
+  ) async {
+    await pumpScreen(tester, const AppSettings());
+
+    expect(find.byKey(SettingsKeys.version), findsNothing);
   });
 }

@@ -22,6 +22,10 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 - [x] **Tela da partida rola inteira.** Pedido do Gabriel (2026-10-05): como nos apps de xadrez; com o dedo no tabuleiro, a rolagem trava.
 - [x] **Rating no ritmo do chess.com.** Pedido do Gabriel (2026-10-05): o desvio do Glicko-2 fica no teto de 50; contra um igual, uns 7 pontos por partida, sem saltos nas primeiras.
 
+- [x] **Cores mais harmônicas no tema claro.** Pedido do Gabriel (2026-10-05): o azul principal deixou de ser quase preto e os destaques passaram a azul claro com texto azul-marinho, no app todo.
+- [x] **Tela inicial só com o título; versão nas Configurações.** Pedido do Gabriel (2026-10-05).
+- [x] **Catálogo com os finais por nome e o progresso.** Pedido do Gabriel (2026-10-05).
+
 ## Tela do desafio (Jornada)
 
 - [x] **Refazer o layout, hoje está feio e vazio.** (Feito, menos a variação do rating em cada partida do histórico: a tentativa ainda não guarda o rating dela.) ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:
@@ -83,7 +87,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Animações
 
-- [ ] **Transições entre telas.** Hoje a troca de tela é a padrão do Android e parece seca. Proposta:
+- [x] **Transições entre telas.** (Transição única no tema, listas em cascata, retrato e tabuleiro voando entre as telas da Jornada, cartão do resultado e rating contando; tudo respeita "remover animações".) Hoje a troca de tela é a padrão do Android e parece seca. Proposta:
   - transição única no app inteiro (deslizar com fade, ou a "shared axis" do Material) com curva suave, no tema (`pageTransitionsTheme`) e nas rotas do `go_router`;
   - elementos compartilhados (`Hero`): o retrato do personagem da Jornada para o degrau e para a partida; o tabuleiro em miniatura do desafio para o tabuleiro da partida;
   - listas entrando em cascata (cada item com um pequeno atraso) na Jornada, no degrau, no speedrun e nas conquistas;

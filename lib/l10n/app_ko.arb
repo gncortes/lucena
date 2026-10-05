@@ -359,5 +359,6 @@
   "homeStatBestRun": "최고 스피드런",
   "homeTools": "도구",
   "profileRatingPeriodGames": "최근 {count}판",
-  "profileRatingPeriodAll": "전체"
+  "profileRatingPeriodAll": "전체",
+  "catalogDone": "{total}개 중 {done}개 완료"
 }

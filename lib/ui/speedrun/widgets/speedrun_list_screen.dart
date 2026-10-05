@@ -10,6 +10,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
+import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um. As
@@ -73,8 +74,11 @@ class SpeedrunListScreen extends StatelessWidget {
                 ),
                 if (state.inProgress.isNotEmpty) ...[
                   section(l10n.speedrunContinue),
-                  for (final summary in state.inProgress)
-                    _Card(summary: summary, ongoing: true),
+                  for (final (index, summary) in state.inProgress.indexed)
+                    StaggeredEntrance(
+                      index: index,
+                      child: _Card(summary: summary, ongoing: true),
+                    ),
                 ],
                 for (final kind in SpeedrunKind.values)
                   // Modalidade sem speedrun não ganha título.
@@ -85,9 +89,12 @@ class SpeedrunListScreen extends StatelessWidget {
                       SpeedrunKind.exercises => l10n.speedrunExercisesSection,
                       SpeedrunKind.full => l10n.speedrunFullSection,
                     }),
-                    for (final summary in all)
+                    for (final (index, summary) in all.indexed)
                       if (summary.speedrun.kind == kind)
-                        _Card(summary: summary),
+                        StaggeredEntrance(
+                          index: index,
+                          child: _Card(summary: summary),
+                        ),
                   ],
               ],
             ),
@@ -181,6 +188,7 @@ class _Card extends StatelessWidget {
                       speedrunName(l10n, characters, speedrun),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
+                        color: ongoing ? colors.onPrimaryContainer : null,
                       ),
                     ),
                     Text(
@@ -189,7 +197,9 @@ class _Card extends StatelessWidget {
                                 ' · ${paceShort(l10n, speedrun.time)}'
                           : l10n.speedrunStagesCount(speedrun.stages.length),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                        color: ongoing
+                            ? colors.onPrimaryContainer
+                            : colors.onSurfaceVariant,
                       ),
                     ),
                   ],

@@ -26,7 +26,7 @@ void main() {
 
     await home.expectVisible();
     app.expectBrightness(Brightness.dark);
-    home.expectMascot(dark: true);
+    home.expectDark(dark: true);
   });
 
   patrolTest('tema do sistema: o app acompanha o tema do celular', ($) async {
@@ -72,7 +72,7 @@ void main() {
 
     await settings.back();
     await home.expectVisible();
-    home.expectMascot(dark: true);
+    home.expectDark(dark: true);
     home.expectSettingsButtonOnLeft();
     app.expectBrightness(Brightness.dark);
   });

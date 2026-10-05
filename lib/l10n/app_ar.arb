@@ -359,5 +359,6 @@
   "homeStatBestRun": "أفضل سباق وقت",
   "homeTools": "أدوات",
   "profileRatingPeriodGames": "آخر {count}",
-  "profileRatingPeriodAll": "الكل"
+  "profileRatingPeriodAll": "الكل",
+  "catalogDone": "{done} من {total} منجزة"
 }
