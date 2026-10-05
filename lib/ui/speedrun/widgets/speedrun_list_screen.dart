@@ -267,6 +267,8 @@ class _PacePickerState extends State<_PacePicker> {
                   ChoiceChip(
                     key: SpeedrunKeys.paceOption(time.code),
                     avatar: Icon(paceIcon(_category), size: 18),
+                    // O ícone do ritmo fica no lugar do "visto".
+                    showCheckmark: false,
                     label: Text(paceShort(l10n, time)),
                     selected: time == widget.current,
                     onSelected: (_) => cubit.choosePace(time),
