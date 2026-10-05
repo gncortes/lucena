@@ -64,6 +64,7 @@ class SpeedrunStep {
     required this.attemptId,
     this.stage,
     this.challenge,
+    this.lost = false,
   });
 
   final String speedrunId;
@@ -73,6 +74,10 @@ class SpeedrunStep {
   /// concluído.
   final int? stage;
   final Challenge? challenge;
+
+  /// A etapa foi perdida: a tentativa terminou ali, e tentar de novo é uma
+  /// tentativa nova, desde a primeira etapa ([challenge]).
+  final bool lost;
 
   bool get finished => challenge == null;
 }
@@ -199,6 +204,18 @@ class GameReporter {
     final attempt = await _speedruns.attempt(attemptId);
     final speedrun = speedruns[attempt?.speedrunId];
     if (attempt == null || speedrun == null) return null;
+    // O speedrun é uma fileira só: perder uma etapa encerra a tentativa,
+    // que fica no histórico até onde chegou.
+    if (!game.fulfilled) {
+      await _speedruns.abandon(attemptId, _now());
+      return SpeedrunStep(
+        speedrunId: speedrun.id,
+        attemptId: attemptId,
+        stage: 0,
+        challenge: speedrun.stages.first,
+        lost: true,
+      );
+    }
     final run = SpeedrunScore.run(speedrun, attempt);
     final stage = run.currentStage;
     return SpeedrunStep(

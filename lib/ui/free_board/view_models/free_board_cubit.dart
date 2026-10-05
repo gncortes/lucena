@@ -368,6 +368,15 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     await _saving;
   }
 
+  /// Depois de perder uma etapa: uma tentativa nova do mesmo speedrun.
+  /// Devolve o id dela.
+  Future<int?> restartSpeedrun(String speedrunId) async {
+    final speedruns = _speedruns;
+    if (speedruns == null) return null;
+    await _saving;
+    return (await speedruns.start(speedrunId, _now())).id;
+  }
+
   /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
   /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
   /// guardada para depois.
