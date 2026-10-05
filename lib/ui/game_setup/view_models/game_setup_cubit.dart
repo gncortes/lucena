@@ -19,7 +19,7 @@ import '../../../routing/routes.dart';
 
 part 'game_setup_cubit.freezed.dart';
 
-/// Os limites dos seletores de tempo.
+/// Os limites do tempo de cada lado.
 abstract final class SetupLimits {
   static const maxMinutes = 180;
   static const maxIncrement = 60;
@@ -187,26 +187,30 @@ class GameSetupCubit extends Cubit<GameSetupState> {
     ),
   );
 
-  Future<void> setUserTime({int? minutes, int? increment}) => _update(
+  /// Usa um ritmo montado à mão: relógio ligado, um tempo para cada lado
+  /// (dentro dos limites).
+  Future<void> setTimes({
+    required TimeControl user,
+    required TimeControl opponent,
+  }) => _update(
     state.setup.copyWith(
-      userTime: _time(state.setup.userTime, minutes, increment),
+      clock: true,
+      userTime: _limited(user),
+      opponentTime: _limited(opponent),
     ),
   );
 
-  Future<void> setOpponentTime({int? minutes, int? increment}) => _update(
-    state.setup.copyWith(
-      opponentTime: _time(state.setup.opponentTime, minutes, increment),
-    ),
-  );
-
-  static TimeControl _time(TimeControl time, int? minutes, int? increment) {
+  static TimeControl _limited(TimeControl time) {
     return TimeControl(
-      initial: minutes == null
-          ? time.initial
-          : Duration(minutes: minutes.clamp(0, SetupLimits.maxMinutes)),
-      increment: increment == null
-          ? time.increment
-          : Duration(seconds: increment.clamp(0, SetupLimits.maxIncrement)),
+      initial: Duration(
+        seconds: time.initial.inSeconds.clamp(
+          0,
+          SetupLimits.maxMinutes * Duration.secondsPerMinute,
+        ),
+      ),
+      increment: Duration(
+        seconds: time.increment.inSeconds.clamp(0, SetupLimits.maxIncrement),
+      ),
     );
   }
 

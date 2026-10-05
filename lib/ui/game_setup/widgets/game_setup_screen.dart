@@ -9,7 +9,6 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
@@ -21,6 +20,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_setup_cubit.dart';
+import 'custom_pace_sheet.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/pace/pace_ui.dart';
 
@@ -388,66 +388,38 @@ class _ClockSection extends StatelessWidget {
           value: setup.clock,
           onChanged: (value) => cubit.setClock(enabled: value),
         ),
-        if (state.paces.isNotEmpty) _PacePicker(state: state),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-          alignment: Alignment.topCenter,
-          child: !setup.clock
-              ? const SizedBox(width: double.infinity)
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _TimeCard(
-                      who: 'user',
-                      title: l10n.setupYourTime,
-                      time: setup.userTime,
-                      onMinutes: (value) => cubit.setUserTime(minutes: value),
-                      onIncrement: (value) =>
-                          cubit.setUserTime(increment: value),
-                    ),
-                    _TimeCard(
-                      who: 'opponent',
-                      title: l10n.setupOpponentTime,
-                      time: setup.opponentTime,
-                      onMinutes: (value) =>
-                          cubit.setOpponentTime(minutes: value),
-                      onIncrement: (value) =>
-                          cubit.setOpponentTime(increment: value),
-                    ),
-                    if (state.hasZeroTime)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: theme.colorScheme.error,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n.setupTimeZero,
-                                key: GameSetupKeys.timeError,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.error,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
+        _PacePicker(state: state),
+        if (state.hasZeroTime)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  color: theme.colorScheme.error,
+                  size: 20,
                 ),
-        ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.setupTimeZero,
+                    key: GameSetupKeys.timeError,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
 }
 
 /// Os ritmos nomeados, com a categoria (`3+2 · Blitz`): um toque põe o mesmo
-/// tempo para os dois lados.
+/// tempo para os dois lados. No fim, "Personalizar" abre o painel com os
+/// minutos e o incremento de cada lado.
 class _PacePicker extends StatelessWidget {
   const _PacePicker({required this.state});
 
@@ -459,6 +431,13 @@ class _PacePicker extends StatelessWidget {
     final l10n = context.l10n;
     final cubit = context.read<GameSetupCubit>();
     final selected = state.pace;
+    final setup = state.setup;
+    // Relógio ligado com um tempo que não é de nenhum ritmo nomeado.
+    final custom = setup.clock && selected == null;
+    final customTime = setup.userTime == setup.opponentTime
+        ? paceShort(l10n, setup.userTime)
+        : '${paceShort(l10n, setup.userTime)} / '
+              '${paceShort(l10n, setup.opponentTime)}';
     return Padding(
       key: GameSetupKeys.paces,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
@@ -485,6 +464,28 @@ class _PacePicker extends StatelessWidget {
                   selected: pace == selected,
                   onSelected: (_) => cubit.setPace(pace),
                 ),
+              ChoiceChip(
+                key: GameSetupKeys.customPace,
+                avatar: custom ? null : const Icon(Icons.tune, size: 18),
+                label: Text(
+                  custom
+                      ? l10n.setupPaceCustomValue(customTime)
+                      : l10n.setupPaceCustom,
+                ),
+                selected: custom,
+                onSelected: (_) async {
+                  final choice = await showCustomPaceSheet(
+                    context,
+                    user: setup.userTime,
+                    opponent: setup.opponentTime,
+                  );
+                  if (choice == null) return;
+                  await cubit.setTimes(
+                    user: choice.user,
+                    opponent: choice.opponent,
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -496,124 +497,6 @@ class _PacePicker extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// O tempo de um lado: minutos e incremento, cada um com menos e mais.
-class _TimeCard extends StatelessWidget {
-  const _TimeCard({
-    required this.who,
-    required this.title,
-    required this.time,
-    required this.onMinutes,
-    required this.onIncrement,
-  });
-
-  final String who;
-  final String title;
-  final TimeControl time;
-  final ValueChanged<int> onMinutes;
-  final ValueChanged<int> onIncrement;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = context.l10n;
-    final minutes = time.initial.inMinutes;
-    final increment = time.increment.inSeconds;
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      color: theme.colorScheme.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.titleSmall),
-            _Stepper(
-              who: who,
-              field: 'minutes',
-              label: l10n.clockMinutes,
-              value: minutes,
-              min: 0,
-              max: SetupLimits.maxMinutes,
-              onChanged: onMinutes,
-            ),
-            _Stepper(
-              who: who,
-              field: 'increment',
-              label: l10n.clockIncrement,
-              value: increment,
-              min: 0,
-              max: SetupLimits.maxIncrement,
-              onChanged: onIncrement,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Stepper extends StatelessWidget {
-  const _Stepper({
-    required this.who,
-    required this.field,
-    required this.label,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
-
-  final String who;
-  final String field;
-  final String label;
-  final int value;
-  final int min;
-  final int max;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = context.l10n;
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-        IconButton.filledTonal(
-          key: GameSetupKeys.decrease(who, field),
-          tooltip: l10n.setupDecrease,
-          icon: const Icon(Icons.remove),
-          onPressed: value > min ? () => onChanged(value - 1) : null,
-        ),
-        SizedBox(
-          width: 48,
-          child: Text(
-            value.toString(),
-            key: GameSetupKeys.value(who, field),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
-          ),
-        ),
-        IconButton.filledTonal(
-          key: GameSetupKeys.increase(who, field),
-          tooltip: l10n.setupIncrease,
-          icon: const Icon(Icons.add),
-          onPressed: value < max ? () => onChanged(value + 1) : null,
-        ),
-      ],
     );
   }
 }

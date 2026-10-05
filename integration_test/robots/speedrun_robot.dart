@@ -68,6 +68,27 @@ class SpeedrunRobot {
     await $.pumpAndSettle();
   }
 
+  /// Na tentativa: desiste dela pelo menu, confirmando.
+  Future<void> abandon() async {
+    await $(SpeedrunKeys.menu).tap();
+    await $(SpeedrunKeys.abandon).tap();
+    await $(SpeedrunKeys.abandonConfirm).tap();
+    await $(SpeedrunKeys.abandoned).waitUntilVisible();
+  }
+
+  /// Na tela do speedrun: o texto da tentativa [index] do histórico (0 é a
+  /// mais recente).
+  Future<void> expectHistory(int index, String text) async {
+    await $(SpeedrunKeys.run(index)).scrollTo();
+    expectTextIn(find.byKey(SpeedrunKeys.run(index)), text);
+  }
+
+  /// Na tela do speedrun, sem tentativa em andamento: "Começar".
+  Future<void> expectCanStart() async {
+    await $(SpeedrunKeys.start).waitUntilExists();
+    expect(find.byKey(SpeedrunKeys.resume), findsNothing);
+  }
+
   void expectTotal(String time) {
     expect(_text(SpeedrunKeys.total), time);
   }

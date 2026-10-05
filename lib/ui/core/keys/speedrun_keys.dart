@@ -16,6 +16,7 @@ abstract final class SpeedrunKeys {
   static const pace = Key('speedrun.pace');
   static const help = Key('speedrun.help');
   static const helpText = Key('speedrun.help.text');
+  static const intro = Key('speedrun.intro');
 
   /// Na tela do speedrun: o ritmo e a etapa na grade.
   static const paceBadge = Key('speedrun.paceBadge');

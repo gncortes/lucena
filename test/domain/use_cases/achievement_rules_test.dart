@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/achievement.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/achievement_rules.dart';
 import 'package:lucena/domain/use_cases/speedrun_score.dart';
 
@@ -188,7 +191,7 @@ void main() {
     );
   });
 
-  test('vencer um nível ou acima e vencer o Stockfish', () {
+  test('vencer um nível (só ele) e vencer o Stockfish', () {
     const beat2000 = Achievement(
       id: 'b',
       type: AchievementType.beatLevel,
@@ -202,8 +205,13 @@ void main() {
       AchievementRules.earned(beat2000, facts(games: [game(level: 1800)])),
       isFalse,
     );
+    // Vencer alguém mais forte não libera a conquista de outro personagem.
     expect(
       AchievementRules.earned(beat2000, facts(games: [game(level: 2200)])),
+      isFalse,
+    );
+    expect(
+      AchievementRules.earned(beat2000, facts(games: [game(level: 2000)])),
       isTrue,
     );
     expect(
@@ -221,6 +229,57 @@ void main() {
         facts(games: [game(opponent: OpponentKind.stockfish)]),
       ),
       isTrue,
+    );
+  });
+
+  test('speedrun concluído: qualquer um, ou um final num grupo de ritmo', () {
+    const any = Achievement(id: 'a', type: AchievementType.speedrunCompleted);
+    Achievement of(PaceCategory pace, {String? speedrun}) => Achievement(
+      id: 'p',
+      type: AchievementType.speedrunCompleted,
+      speedrunId: speedrun ?? endingSpeedrun.id,
+      pace: pace,
+    );
+    const bullet = TimeControl(initial: Duration(minutes: 1));
+    final endingBullet = SpeedrunPaces.withTime(endingSpeedrun, bullet);
+    final paced = {...speedruns, endingBullet.id: endingBullet};
+    AchievementFacts of2(List<SpeedrunRun> runs) =>
+        AchievementFacts(runs: runs, speedruns: paced);
+
+    expect(AchievementRules.earned(any, of2([])), isFalse);
+    expect(
+      AchievementRules.earned(
+        any,
+        of2([run(endingSpeedrun, 1, complete: false)]),
+      ),
+      isFalse,
+    );
+    expect(AchievementRules.earned(any, of2([run(rungSpeedrun, 2)])), isTrue);
+
+    // O ritmo padrão (5+3) é blitz.
+    final blitzRun = run(endingSpeedrun, 3);
+    expect(
+      AchievementRules.earned(of(PaceCategory.blitz), of2([blitzRun])),
+      isTrue,
+    );
+    expect(
+      AchievementRules.earned(of(PaceCategory.bullet), of2([blitzRun])),
+      isFalse,
+    );
+    expect(
+      AchievementRules.earned(
+        of(PaceCategory.bullet),
+        of2([run(endingBullet, 4)]),
+      ),
+      isTrue,
+    );
+    // Outro speedrun no mesmo ritmo não conta.
+    expect(
+      AchievementRules.earned(
+        of(PaceCategory.blitz, speedrun: 'ending.other'),
+        of2([blitzRun]),
+      ),
+      isFalse,
     );
   });
 

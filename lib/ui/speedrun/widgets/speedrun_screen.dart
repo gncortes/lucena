@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +13,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../journey/widgets/journey_ui.dart';
@@ -18,8 +21,8 @@ import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
 
 /// Um speedrun antes de começar: quem ou o que é, o ritmo, o melhor tempo (ou
-/// o convite para o primeiro), as etapas em miniatura com o melhor tempo de
-/// cada uma e o histórico. "Começar" fica fixo embaixo.
+/// o convite para o primeiro), a trilha das etapas com o melhor tempo de cada
+/// uma e o histórico das tentativas. "Começar" fica fixo embaixo.
 class SpeedrunScreen extends StatelessWidget {
   const SpeedrunScreen({super.key});
 
@@ -200,35 +203,30 @@ class SpeedrunScreen extends StatelessWidget {
                   ),
           ),
           _header(context, l10n.speedrunStages),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // Três por linha, cada uma com a altura do conteúdo.
-                const gap = 10.0;
-                final width = (constraints.maxWidth - gap * 2) / 3;
-                return Wrap(
-                  spacing: gap,
-                  runSpacing: gap,
-                  children: [
-                    for (final (index, stage) in speedrun.stages.indexed)
-                      SizedBox(
-                        width: width,
-                        child: _StageCard(
-                          index: index,
-                          stage: stage,
-                          speedrun: speedrun,
-                          best: records.bestStages[index],
-                        ),
-                      ),
-                  ],
-                );
-              },
+          // A ordem das etapas, uma embaixo da outra: quem o jogador
+          // enfrenta, até onde a tentativa em andamento chegou e o melhor
+          // tempo de cada etapa.
+          for (final (index, stage) in speedrun.stages.indexed)
+            _StageRow(
+              index: index,
+              stage: stage,
+              speedrun: speedrun,
+              best: records.bestStages[index],
+              last: index == speedrun.stages.length - 1,
+              status: ongoing == null
+                  ? _StageStatus.idle
+                  : index < ongoing.currentStage
+                  ? _StageStatus.done
+                  : index == ongoing.currentStage
+                  ? _StageStatus.current
+                  : _StageStatus.ahead,
             ),
-          ),
-          if (records.completed.isNotEmpty) ...[
+          if (records.completed.isNotEmpty || summary.abandoned.isNotEmpty) ...[
             _header(context, l10n.speedrunHistory),
-            ..._history(context, records.completed),
+            ..._history(context, speedrun, [
+              ...records.completed,
+              ...summary.abandoned,
+            ]),
           ],
         ],
       ),
@@ -261,20 +259,29 @@ class SpeedrunScreen extends StatelessWidget {
     );
   }
 
-  // Os tempos das tentativas concluídas, da mais recente para a mais antiga,
-  // com o título de cada mês.
-  List<Widget> _history(BuildContext context, List<SpeedrunRun> runs) {
+  // As tentativas terminadas, da mais recente para a mais antiga, com o
+  // título de cada mês: as concluídas com o tempo, as abandonadas com a
+  // etapa em que pararam.
+  List<Widget> _history(
+    BuildContext context,
+    Speedrun speedrun,
+    List<SpeedrunRun> runs,
+  ) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final month = DateFormat.yMMMM(locale);
     final date = DateFormat.MMMd(locale).add_Hm();
+    DateTime endOf(SpeedrunRun run) =>
+        (run.finishedAt ?? run.attempt.abandonedAt!).toLocal();
+    final sorted = [...runs]..sort((a, b) => endOf(b).compareTo(endOf(a)));
     final children = <Widget>[];
     String? current;
     var months = 0;
-    for (final (index, run) in runs.indexed) {
-      final finishedAt = run.finishedAt!.toLocal();
-      final label = month.format(finishedAt);
+    for (final (index, run) in sorted.indexed) {
+      final endedAt = endOf(run);
+      final label = month.format(endedAt);
       if (label != current) {
         current = label;
         children.add(
@@ -284,28 +291,41 @@ class SpeedrunScreen extends StatelessWidget {
               label,
               key: SpeedrunKeys.month(months++),
               style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
+                color: colors.primary,
               ),
             ),
           ),
         );
       }
+      final total = speedrun.stages.length;
       children.add(
         Card(
           key: SpeedrunKeys.run(index),
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          color: theme.colorScheme.surfaceContainerLow,
+          color: colors.surfaceContainerLow,
           child: ListTile(
-            leading: const Icon(Icons.flag_outlined),
+            leading: Icon(
+              run.completed ? Icons.flag_rounded : Icons.flag_outlined,
+              color: run.completed ? colors.primary : colors.outline,
+            ),
             title: Text(
-              RunTimeFormat.format(run.total),
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
+              run.completed
+                  ? RunTimeFormat.format(run.total)
+                  : l10n.speedrunStoppedAt(
+                      math.min(run.currentStage + 1, total),
+                      total,
+                    ),
+              style: run.completed
+                  ? theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    )
+                  : theme.textTheme.titleSmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
             ),
             subtitle: Text(
-              '${date.format(finishedAt)} · ${l10n.speedrunLosses(run.losses)}',
+              '${date.format(endedAt)} · ${l10n.speedrunLosses(run.losses)}',
             ),
           ),
         ),
@@ -315,20 +335,35 @@ class SpeedrunScreen extends StatelessWidget {
   }
 }
 
-/// Uma etapa na grade: o número, a posição em miniatura, o nome do final (e
-/// o adversário, quando muda de etapa para etapa) e o melhor tempo dela.
-class _StageCard extends StatelessWidget {
-  const _StageCard({
+enum _StageStatus {
+  /// Sem tentativa em andamento.
+  idle,
+  done,
+  current,
+  ahead,
+}
+
+/// Uma etapa na trilha: o número, quem o jogador enfrenta (ou o final, quando
+/// o adversário é sempre o mesmo) e o melhor tempo dela. Com uma tentativa em
+/// andamento, as etapas vencidas ganham o selo e a da vez fica em destaque.
+class _StageRow extends StatelessWidget {
+  const _StageRow({
     required this.index,
     required this.stage,
     required this.speedrun,
     required this.best,
+    required this.last,
+    required this.status,
   });
 
   final int index;
   final Challenge stage;
   final Speedrun speedrun;
   final Duration? best;
+  final bool last;
+  final _StageStatus status;
+
+  static const _avatar = 44.0;
 
   @override
   Widget build(BuildContext context) {
@@ -339,57 +374,117 @@ class _StageCard extends StatelessWidget {
       (SpeedrunCubit cubit) => cubit.state.characters,
     );
     final best = this.best;
-    return Card(
+    final byOpponent = speedrun.kind == SpeedrunKind.ending;
+    final character = opponentCharacter(characters, stage.opponent);
+    final current = status == _StageStatus.current;
+    final done = status == _StageStatus.done;
+    final line = done ? colors.primary : colors.outlineVariant;
+    return Padding(
       key: SpeedrunKeys.stageCard(index),
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: IntrinsicHeight(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            LayoutBuilder(
-              builder: (context, constraints) => Stack(
-                children: [
-                  PositionBoard(
-                    fen: stage.position.fen,
-                    size: constraints.maxWidth,
-                    radius: 4,
-                  ),
-                  PositionedDirectional(
-                    top: 2,
-                    start: 2,
-                    child: CircleAvatar(
-                      radius: 11,
-                      backgroundColor: colors.primary,
-                      child: Text(
-                        (index + 1).toString(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+            // O retrato (ou a posição) e a linha que desce até a próxima.
+            Column(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: byOpponent ? BoxShape.circle : BoxShape.rectangle,
+                    borderRadius: byOpponent ? null : BorderRadius.circular(6),
+                    border: Border.all(
+                      color: current || done
+                          ? colors.primary
+                          : colors.outlineVariant,
+                      width: current ? 3 : 2,
                     ),
                   ),
-                ],
-              ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: byOpponent && character != null
+                        ? ClipOval(
+                            child: CharacterAvatar(
+                              character: character,
+                              size: _avatar,
+                            ),
+                          )
+                        : PositionBoard(
+                            fen: stage.position.fen,
+                            size: _avatar,
+                            radius: 4,
+                          ),
+                  ),
+                ),
+                if (!last)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      constraints: const BoxConstraints(minHeight: 14),
+                      color: line,
+                    ),
+                  ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              speedrun.kind == SpeedrunKind.ending
-                  ? opponentName(l10n, characters, stage.opponent)
-                  : endgameName(l10n, stage.position.subcategory),
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              best == null ? '' : RunTimeFormat.format(best),
-              key: SpeedrunKeys.stageRecord(index),
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.primary,
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(top: 6, bottom: last ? 0 : 18),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            byOpponent
+                                ? opponentName(l10n, characters, stage.opponent)
+                                : endgameName(l10n, stage.position.subcategory),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: status == _StageStatus.ahead
+                                  ? colors.onSurfaceVariant
+                                  : null,
+                            ),
+                          ),
+                          Text(
+                            current
+                                ? l10n.speedrunNow
+                                : l10n.speedrunStageOf(
+                                    index + 1,
+                                    speedrun.stages.length,
+                                  ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: current
+                                  ? colors.primary
+                                  : colors.onSurfaceVariant,
+                              fontWeight: current ? FontWeight.w700 : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (done)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(end: 8),
+                        child: Icon(
+                          Icons.check_circle,
+                          size: 20,
+                          color: colors.primary,
+                        ),
+                      ),
+                    Text(
+                      best == null ? '' : RunTimeFormat.format(best),
+                      key: SpeedrunKeys.stageRecord(index),
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w700,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

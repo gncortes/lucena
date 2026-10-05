@@ -1,5 +1,6 @@
 import 'attempt.dart';
 import 'journey.dart';
+import 'pace.dart';
 import 'speedrun.dart';
 
 /// Os tipos de regra de conquista. A lista é fechada: uma conquista nova é
@@ -14,11 +15,16 @@ enum AchievementType {
   /// Uma subcategoria cumprida contra todos os níveis do Maia.
   allLevels,
 
-  /// Uma vitória contra o Maia de um nível ou mais.
+  /// Uma vitória contra o Maia de um nível.
   beatLevel,
 
   /// Uma vitória contra o Stockfish.
   beatStockfish,
+
+  /// Um speedrun concluído, do primeiro adversário ao último: qualquer um
+  /// ou, com `speedrun` e `pace`, um final num grupo de ritmo (bullet, blitz
+  /// ou rápido).
+  speedrunCompleted,
 
   /// Um speedrun concluído sem derrota.
   flawlessSpeedrun,
@@ -41,6 +47,8 @@ class Achievement {
     this.level,
     this.subcategory,
     this.speedrunKind,
+    this.speedrunId,
+    this.pace,
     this.under,
     this.icon = defaultIcon,
   });
@@ -71,6 +79,13 @@ class Achievement {
   /// A modalidade de speedrun (`rung`, `ending`). Nula: qualquer uma.
   final String? speedrunKind;
 
+  /// O speedrun de base (`ending.queen`), lido de `speedrun`. Nulo: qualquer
+  /// um.
+  final String? speedrunId;
+
+  /// O grupo de ritmo em que o speedrun foi jogado. Nulo: qualquer um.
+  final PaceCategory? pace;
+
   /// O tempo limite, lido de `seconds`.
   final Duration? under;
   final String icon;
@@ -89,6 +104,8 @@ class Achievement {
       level: (json['level'] as num?)?.toInt(),
       subcategory: json['subcategory'] as String?,
       speedrunKind: json['speedrunKind'] as String?,
+      speedrunId: json['speedrun'] as String?,
+      pace: PaceCategory.values.asNameMap()[json['pace']],
       under: seconds is num ? Duration(seconds: seconds.toInt()) : null,
       icon: icons.contains(icon) ? icon as String : defaultIcon,
     );

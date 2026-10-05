@@ -53,16 +53,6 @@ void main() {
     await setup.expectTime('opponent', minutes: 1, increment: 0);
   });
 
-  patrolTest('tempo zero: bloqueado com erro', ($) async {
-    final setup = GameSetupRobot($);
-    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
-    await openSetup($);
-
-    await setup.setTime('opponent', minutes: 0, increment: 0);
-
-    await setup.expectZeroTimeError();
-  });
-
   patrolTest('trocar o lado: o tabuleiro vira para o jogador', ($) async {
     final setup = GameSetupRobot($);
     final board = FreeBoardRobot($);

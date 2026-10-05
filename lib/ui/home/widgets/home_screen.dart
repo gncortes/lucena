@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/rating_level.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
+import 'path_card.dart';
 import 'player_card.dart';
 import 'where_card.dart';
 
@@ -128,9 +130,6 @@ class _HomeScreenState extends State<HomeScreen>
                       PlayerCard(state: state),
                       const SizedBox(height: 12),
                       WhereCard(state: state),
-                      const SizedBox(height: 12),
-                      StatsRow(state: state),
-                      const SizedBox(height: 16),
                       _shortcuts(context, theme, state),
                     ],
                   ),
@@ -143,67 +142,62 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // A Jornada em destaque, os modos de jogo em grade e as ferramentas, mais
-  // discretas.
+  // Os caminhos do app, cada um dizendo o que se faz nele; o indicado para o
+  // jogador vem primeiro e em destaque. Depois os números e as ferramentas.
   Widget _shortcuts(BuildContext context, ThemeData theme, HomeState state) {
     final l10n = context.l10n;
+    final learn = (
+      key: HomeKeys.schoolButton,
+      icon: Icons.school_outlined,
+      title: l10n.homeLearn,
+      body: l10n.homeLearnBody,
+      route: Routes.school,
+    );
+    final play = [
+      (
+        key: HomeKeys.journeyButton,
+        icon: Icons.flag_rounded,
+        title: l10n.homeJourney,
+        body: l10n.homeJourneyBody,
+        route: Routes.journey,
+      ),
+      (
+        key: HomeKeys.speedrunButton,
+        icon: Icons.timer_outlined,
+        title: l10n.homeSpeedrun,
+        body: l10n.homeSpeedrunBody,
+        route: Routes.speedruns,
+      ),
+      (
+        key: HomeKeys.catalogButton,
+        icon: Icons.grid_view_rounded,
+        title: l10n.homeTrain,
+        body: l10n.homeTrainBody,
+        route: Routes.catalog,
+      ),
+    ];
+    // Quem está começando aprende a jogar antes de tudo; para os outros, as
+    // aulas ficam no fim da lista.
+    final beginner = state.level == RatingLevel.beginner;
+    final paths = beginner ? [learn, ...play] : [...play, learn];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FilledButton.icon(
-          key: HomeKeys.journeyButton,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            textStyle: theme.textTheme.titleMedium,
+        _sectionTitle(theme, l10n.homePathsTitle, key: HomeKeys.pathsTitle),
+        for (final (index, path) in paths.indexed) ...[
+          if (index > 0) const SizedBox(height: 8),
+          PathCard(
+            key: path.key,
+            icon: path.icon,
+            title: path.title,
+            body: path.body,
+            highlighted: index == 0,
+            onTap: () => context.go(path.route),
           ),
-          icon: const Icon(Icons.flag_rounded),
-          label: Text(l10n.homeJourney),
-          onPressed: () => context.go(Routes.journey),
-        ),
-        const SizedBox(height: 12),
-        // Os três atalhos com a mesma altura.
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _Tile(
-                  key: HomeKeys.catalogButton,
-                  icon: Icons.grid_view_rounded,
-                  label: l10n.homeTrain,
-                  onTap: () => context.go(Routes.catalog),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _Tile(
-                  key: HomeKeys.speedrunButton,
-                  icon: Icons.timer_outlined,
-                  label: l10n.homeSpeedrun,
-                  onTap: () => context.go(Routes.speedruns),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _Tile(
-                  key: HomeKeys.schoolButton,
-                  icon: Icons.school_outlined,
-                  label: l10n.homeSchool,
-                  onTap: () => context.go(Routes.school),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(4, 20, 4, 4),
-          child: Text(
-            l10n.homeTools,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
+        ],
+        const SizedBox(height: 20),
+        StatsRow(state: state),
+        _sectionTitle(theme, l10n.homeTools),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -225,48 +219,15 @@ class _HomeScreenState extends State<HomeScreen>
       ],
     );
   }
-}
 
-/// Um atalho quadrado da grade: ícone em cima, nome embaixo.
-class _Tile extends StatelessWidget {
-  const _Tile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    super.key,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Material(
-      color: colors.secondaryContainer,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: colors.onSecondaryContainer),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.onSecondaryContainer,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+  Widget _sectionTitle(ThemeData theme, String text, {Key? key}) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 20, 4, 8),
+      child: Text(
+        text,
+        key: key,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
