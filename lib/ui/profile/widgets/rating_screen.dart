@@ -225,12 +225,6 @@ class _RatingCardState extends State<_RatingCard> {
                             valueKey: RatingKeys.value,
                             changeKey: RatingKeys.delta,
                           ),
-                          if (state.provisional)
-                            Chip(
-                              label: Text(l10n.profileRatingProvisional),
-                              visualDensity: VisualDensity.compact,
-                              side: BorderSide.none,
-                            ),
                         ],
                       ),
                       Text(
@@ -538,23 +532,49 @@ class _GameRow extends StatelessWidget {
                 semanticLabel: resultLabel,
               ),
             ),
-            // Quanto a partida mudou o rating, nas que contaram.
+            // Nas que contaram: quanto a partida mudou o rating e como ele
+            // ficou.
             SizedBox(
-              width: 56,
-              child: change == null
+              width: 64,
+              child: rated == null
                   ? null
-                  : Text(
-                      signedChange(change),
-                      key: RatingKeys.entryChange(index),
-                      textAlign: TextAlign.end,
-                      textDirection: TextDirection.ltr,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: change == 0
-                            ? colors.onSurfaceVariant
-                            : ChangeColors.of(context, up: change > 0),
-                        fontWeight: FontWeight.w700,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (change != null)
+                          Text(
+                            signedChange(change),
+                            key: RatingKeys.entryChange(index),
+                            textDirection: TextDirection.ltr,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: change == 0
+                                  ? colors.onSurfaceVariant
+                                  : ChangeColors.of(context, up: change > 0),
+                              fontWeight: FontWeight.w800,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        Text(
+                          '${rated.entry.rating.rounded}',
+                          key: RatingKeys.entryRating(index),
+                          style:
+                              (change == null
+                                      ? theme.textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                        )
+                                      : theme.textTheme.labelMedium?.copyWith(
+                                          color: colors.onSurfaceVariant,
+                                        ))
+                                  ?.copyWith(
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                        ),
+                      ],
                     ),
             ),
           ],

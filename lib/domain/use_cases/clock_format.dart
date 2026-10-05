@@ -48,6 +48,18 @@ abstract final class RunTimeFormat {
     return '$seconds$decimal$tenths s';
   }
 
+  /// O tempo como num relógio de xadrez: `0:13.8`, `3:25.0`, `1:02:15`.
+  static String clock(Duration time, {String decimal = '.'}) {
+    if (time.isNegative) time = Duration.zero;
+    final tenths = time.inMilliseconds.remainder(1000) ~/ 100;
+    final seconds = time.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final minutes = time.inMinutes.remainder(60);
+    if (time.inHours > 0) {
+      return '${time.inHours}:${minutes.toString().padLeft(2, '0')}:$seconds';
+    }
+    return '$minutes:$seconds$decimal$tenths';
+  }
+
   /// A diferença para o recorde, com sinal, em segundos com décimos: `+3.2`
   /// ou `-64.0`.
   static String difference(Duration difference, {String decimal = '.'}) {
