@@ -465,4 +465,6 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   speedruns: context.read<SpeedrunRepository>(),
   games: context.read<OngoingGameRepository>(),
   now: context.read<Now>(),
+  settings: context.read<SettingsRepository>(),
+  characters: context.read<CharacterRepository>(),
 );

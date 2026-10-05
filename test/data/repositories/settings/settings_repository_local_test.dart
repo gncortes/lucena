@@ -4,7 +4,9 @@ import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -104,6 +106,28 @@ void main() {
     await reopen().save(settings);
 
     expect(await reopen().load(), settings);
+  });
+
+  test('o último ritmo do speedrun e o da Jornada voltam ao reabrir', () async {
+    final start = (await reopen().load()).clock;
+    expect(start.speedrunTime, SpeedrunPaces.standard);
+    expect(start.journeyTime, isNull);
+
+    const settings = AppSettings(
+      clock: ClockSettings(
+        speedrunTime: TimeControl(
+          initial: Duration(minutes: 3),
+          increment: Duration(seconds: 2),
+        ),
+        journeyTime: TimeControl(initial: Duration(minutes: 10)),
+      ),
+    );
+    await reopen().save(settings);
+    expect(await reopen().load(), settings);
+
+    // Voltar para "sem relógio" na Jornada também fica gravado.
+    await reopen().save(const AppSettings());
+    expect((await reopen().load()).clock.journeyTime, isNull);
   });
 
   test(

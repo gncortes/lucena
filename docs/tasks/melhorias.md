@@ -47,7 +47,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Speedrun
 
-- [ ] **Layout e nomes da lista de speedruns.** ([print](../qa/melhorias/f8b57c1c.jpg)) O que incomoda no print:
+- [x] **Layout e nomes da lista de speedruns.** ([print](../qa/melhorias/f8b57c1c.jpg)) O que incomoda no print:
   - "Degrau Maia 1000", "Os 9 desafios": termos internos ("degrau") e sem o personagem;
   - lista longa de linhas iguais (ícone de cronômetro, "Sem recorde", seta), com o fim cortado pela barra do sistema (a "Jornada completa" fica atrás dela, [print](../qa/melhorias/35e195f7.jpg));
   - nos finais, o subtítulo "Do Maia 1000 ao Stockfish" se repete em todos e o nome do final é só o material em figurino (♕ – ♚): mostrar o nome ("Dama contra rei") junto do figurino;
@@ -60,7 +60,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta de layout: cartões em vez de linhas; o retrato do personagem (ou o material do final) no cartão; o melhor tempo em destaque quando houver; tentativa em andamento no topo com "Continuar"; a explicação vira um ícone de ajuda (ⓘ) que abre um painel; espaço embaixo para rolar até o fim.
 
-- [ ] **Tela de um speedrun (antes de começar).** ([print](../qa/melhorias/bae1cc34.jpg)) O que incomoda no print:
+- [x] **Tela de um speedrun (antes de começar).** ([print](../qa/melhorias/bae1cc34.jpg)) O que incomoda no print:
   - "Recorde pessoal · Sem recorde" num bloco verde enorme, repetindo a palavra recorde;
   - as etapas são 9 linhas iguais "Maia 1000" com um número: não dá para saber que final é cada uma;
   - título com "Degrau Maia 1000" e o ritmo "5 min + 3 s" escondido na linha de cima.
@@ -71,11 +71,11 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - etapas em grade de miniaturas do tabuleiro, numeradas, com o nome do final e o melhor tempo de cada uma (quando houver);
   - "Começar" fixo embaixo, com o total de etapas.
 
-- [ ] **Tentativa em andamento confusa.** ([print](../qa/melhorias/8da8fb64.jpg)) Nove linhas "Maia 1000" com bolinhas: não se vê que final vem, quanto cada etapa levou nem quanto falta. Proposta: a etapa atual em destaque (tabuleiro, nome do final, adversário e "Continuar a partida"); as feitas com o tempo de cada uma; uma barra "etapa 1 de 9" e o total grande no topo; "Desistir" discreto no menu (⋮).
+- [x] **Tentativa em andamento confusa.** ([print](../qa/melhorias/8da8fb64.jpg)) Nove linhas "Maia 1000" com bolinhas: não se vê que final vem, quanto cada etapa levou nem quanto falta. Proposta: a etapa atual em destaque (tabuleiro, nome do final, adversário e "Continuar a partida"); as feitas com o tempo de cada uma; uma barra "etapa 1 de 9" e o total grande no topo; "Desistir" discreto no menu (⋮).
 
 ## Ritmo de jogo (speedrun e Jornada)
 
-- [ ] **Escolher o ritmo, como no chess.com.** Hoje o speedrun tem ritmo fixo (5+3) e o desafio da Jornada não mostra ritmo nenhum. Proposta:
+- [x] **Escolher o ritmo, como no chess.com.** Hoje o speedrun tem ritmo fixo (5+3) e o desafio da Jornada não mostra ritmo nenhum. Proposta:
   - ao tocar em "Começar" (speedrun) ou "Jogar" (desafio), abre um painel com os ritmos em grade, agrupados como no chess.com: Bullet (1+0, 2+1), Blitz (3+0, 3+2, 5+3), Rápido (10+0, 15+10) e "Sem relógio" (só na Jornada);
   - o último ritmo escolhido vem marcado e fica gravado;
   - no speedrun, os recordes passam a ser **por ritmo** (o melhor tempo em 3+2 não se mistura com o de 5+3); a lista mostra o melhor tempo do ritmo selecionado;
@@ -91,7 +91,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - números que mudam (rating, tempo do speedrun) contando até o valor novo;
   - tudo respeitando "remover animações" do sistema.
 
-- [ ] **Repensar a notação do material (♕ – ♚) nas listas.** Economiza espaço mas fica ruim de ler: figurinos pequenos, o traço solto no meio e nada de texto. Vale para o speedrun de final, o catálogo e a Jornada. Opções a testar e mostrar ao Gabriel antes de decidir:
+- [x] **Repensar a notação do material (♕ – ♚) nas listas.** (Escolhida a primeira opção nas telas novas: o nome do final por extenso; no speedrun, as peças em duas linhas no quadro. O catálogo continua com o figurino, a mostrar ao Gabriel.) Economiza espaço mas fica ruim de ler: figurinos pequenos, o traço solto no meio e nada de texto. Vale para o speedrun de final, o catálogo e a Jornada. Opções a testar e mostrar ao Gabriel antes de decidir:
   - nome do final por extenso como título ("Dama contra rei", "Torre e peão contra torre"), com as peças grandes num selo ao lado;
   - as peças de cada lado em dois "chips" (brancas claro, pretas escuro) em vez do traço;
   - a miniatura do tabuleiro da posição no lugar das peças.

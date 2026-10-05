@@ -70,7 +70,9 @@ class FreeBoardRobot {
 
   Future<void> expectVisible() async {
     await $(FreeBoardKeys.screen).waitUntilVisible();
-    await $(FreeBoardKeys.board).waitUntilVisible();
+    // A partida pode terminar logo ao abrir (a máquina dá o mate): o cartão
+    // do resultado fica por cima do tabuleiro.
+    await $(FreeBoardKeys.board).waitUntilExists();
   }
 
   void expectNotOpen() {

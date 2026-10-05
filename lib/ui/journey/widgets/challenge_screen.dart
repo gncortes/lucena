@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/journey.dart';
-import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/journey_keys.dart';
@@ -51,7 +50,7 @@ class ChallengeScreen extends StatelessWidget {
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.journeyPlay),
                   onPressed: () async {
-                    await context.push(Routes.challengeGame(challenge));
+                    if (!await playChallenge(context, challenge)) return;
                     if (!context.mounted) return;
                     final uri = GoRouterState.of(context).pathParameters;
                     await context.read<JourneyCubit>().load(

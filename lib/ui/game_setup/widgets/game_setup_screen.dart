@@ -13,7 +13,6 @@ import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
-import '../../../domain/models/pace.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -23,6 +22,7 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_setup_cubit.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/pace/pace_ui.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -498,16 +498,6 @@ class _PacePicker extends StatelessWidget {
       ),
     );
   }
-}
-
-/// O nome de cada categoria de ritmo.
-extension PaceCategoryUi on PaceCategory {
-  String label(AppLocalizations l10n) => switch (this) {
-    PaceCategory.bullet => l10n.paceBullet,
-    PaceCategory.blitz => l10n.paceBlitz,
-    PaceCategory.rapid => l10n.paceRapid,
-    PaceCategory.classical => l10n.paceClassical,
-  };
 }
 
 /// O tempo de um lado: minutos e incremento, cada um com menos e mais.
