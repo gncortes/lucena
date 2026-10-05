@@ -86,6 +86,18 @@ void main() {
     expect(find.byKey(AchievementsKeys.toast), findsNothing);
   });
 
+  test('com várias de uma vez, a fila inteira dura no máximo uns 8 s', () {
+    expect(AchievementToasts.durationFor(1), AchievementToasts.duration);
+    for (var count = 1; count <= 6; count++) {
+      final total = AchievementToasts.durationFor(count) * count;
+      expect(total, lessThanOrEqualTo(const Duration(milliseconds: 9600)));
+    }
+    expect(
+      AchievementToasts.durationFor(4),
+      lessThan(AchievementToasts.duration),
+    );
+  });
+
   testWidgets('não recebe toques: o que está embaixo continua usável', (
     tester,
   ) async {
