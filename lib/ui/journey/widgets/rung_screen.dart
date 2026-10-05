@@ -11,6 +11,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
+import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
@@ -343,62 +344,24 @@ class _ChallengeCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final position = challenge.position;
-    return Card(
+    return PositionCard(
       key: JourneyKeys.challenge(position.id),
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _openChallenge(context, rungId, challenge),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) => Stack(
-                  children: [
-                    PositionBoard(
-                      fen: position.fen,
-                      size: constraints.maxWidth,
-                      heroTag: flies ? challengeBoardTag(challenge.id) : null,
-                    ),
-                    if (done)
-                      PositionedDirectional(
-                        top: 4,
-                        end: 4,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.check_circle,
-                            key: JourneyKeys.challengeDone(position.id),
-                            size: 28,
-                            color: ChangeColors.of(context, up: true),
-                            semanticLabel: l10n.journeyCompletedLabel,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                endgameName(l10n, position.subcategory),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              _GoalIfSpecial(goal: position.goal),
-            ],
+      fen: position.fen,
+      heroTag: flies ? challengeBoardTag(challenge.id) : null,
+      doneKey: done ? JourneyKeys.challengeDone(position.id) : null,
+      doneLabel: done ? l10n.journeyCompletedLabel : null,
+      onTap: () => _openChallenge(context, rungId, challenge),
+      children: [
+        Text(
+          endgameName(l10n, position.subcategory),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
         ),
-      ),
+        _GoalIfSpecial(goal: position.goal),
+      ],
     );
   }
 }
