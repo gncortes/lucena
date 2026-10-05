@@ -18,6 +18,7 @@ class WhereCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (state.school case final school?) return _SchoolCard(school: school);
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
@@ -109,6 +110,70 @@ class WhereCard extends StatelessWidget {
                 ],
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Para o iniciante: as aulas do Viktor vêm antes da Jornada.
+class _SchoolCard extends StatelessWidget {
+  const _SchoolCard({required this.school});
+
+  final SchoolSummary school;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final teacher = school.teacher;
+    return Card(
+      key: HomeKeys.schoolCard,
+      margin: EdgeInsets.zero,
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        child: Row(
+          children: [
+            if (teacher != null) ...[
+              CharacterAvatar(character: teacher, size: 48),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homeSchool,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  LinearProgressIndicator(
+                    value: school.total == 0 ? 0 : school.done / school.total,
+                    minHeight: 6,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.schoolLessonsDone(school.done, school.total),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            FilledButton(
+              key: HomeKeys.schoolContinue,
+              onPressed: () => context.go(Routes.school),
+              child: Text(l10n.homeContinue),
+            ),
           ],
         ),
       ),

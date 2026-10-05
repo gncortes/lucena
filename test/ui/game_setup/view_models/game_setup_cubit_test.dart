@@ -270,7 +270,7 @@ void main() {
     test('os personagens chegam para a escolha do adversário', () async {
       final cubit = full();
       await cubit.load();
-      expect(cubit.state.characters.map((c) => c.level), [1000, 1600]);
+      expect(cubit.state.characters.map((c) => c.level), [1000, 1600, 2600]);
     });
   });
 }

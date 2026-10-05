@@ -97,6 +97,10 @@ abstract final class Routes {
 
   static const achievements = '/achievements';
 
+  /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
+  static const school = '/school';
+  static String lesson(String id) => '/school/$id';
+
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 

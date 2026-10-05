@@ -10,6 +10,8 @@ import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
+import '../../../../testing/fakes/fake_profile_repository.dart';
+import '../../../../testing/fakes/fake_school_repositories.dart';
 import '../../../../testing/test_app.dart';
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
@@ -26,6 +28,9 @@ class _Home extends StatelessWidget {
       onboarding: FakeOnboardingRepository(),
       characters: FakeCharacterRepository(),
       rating: FakeRatingRepository(),
+      lessons: FakeLessonRepository(),
+      school: FakeSchoolProgressRepository(),
+      profile: FakeProfileRepository(),
     )..load(),
     child: child,
   );

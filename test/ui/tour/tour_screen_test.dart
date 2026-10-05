@@ -7,7 +7,9 @@ import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 
+import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -23,7 +25,9 @@ void main() {
           create: (_) => TourCubit(
             onboarding: onboarding,
             profile: FakeProfileRepository(),
-          )..load(),
+            characters: FakeCharacterRepository(),
+            lessons: FakeLessonRepository(),
+          )..load('pt'),
           child: const TourScreen(),
         ),
       ),
@@ -44,5 +48,16 @@ void main() {
     expect(find.text('A Jornada começa no Maia 1800'), findsOneWidget);
     expect(find.byKey(TourKeys.startButton), findsOneWidget);
     expect(find.byKey(TourKeys.skipButton), findsNothing);
+
+    // Iniciante: o botão abre as aulas.
+    await tester.ensureVisible(
+      find.byKey(TourKeys.level(RatingLevel.beginner)),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(TourKeys.level(RatingLevel.beginner)));
+    await tester.pumpAndSettle();
+    expect(find.text('Começar as aulas'), findsOneWidget);
+    expect(find.byKey(TourKeys.viktor), findsOneWidget);
+    expect(find.text('Mestre Viktor'), findsOneWidget);
   });
 }

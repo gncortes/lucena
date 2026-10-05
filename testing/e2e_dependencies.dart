@@ -36,6 +36,8 @@ import 'package:lucena/data/repositories/characters/talk_repository.dart';
 import 'package:lucena/data/repositories/maia/maia_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
+import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -172,6 +174,11 @@ Future<Dependencies> e2eDependencies() async {
     talkRepository: LocalTalkRepository(PreferencesService()),
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
+    // As aulas de verdade.
+    lessonRepository: AssetLessonRepository(const AssetService()),
+    schoolProgressRepository: LocalSchoolProgressRepository(
+      PreferencesService(),
+    ),
     drawOfferRepository: e2eDraws,
     languages: AppLanguage.values,
   );

@@ -35,7 +35,7 @@
       "category": "gameStart",
       "intensity": 3,
       "emotion": "focused",
-      "text": "Não espere piedade. Espere uma boa aula."
+      "text": "Não espere que eu facilite. Espere uma boa aula."
     },
     {
       "id": "master.gameStart.6",
@@ -43,6 +43,117 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Ajeitei a gravata. Podemos começar."
+    },
+    {
+      "id": "master.gameStart.7",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Capablanca começava pelos finais. Nós também vamos começar."
+    },
+    {
+      "id": "master.gameStart.8",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Meu primeiro professor dizia: respeite cada peça. Vamos jogar."
+    },
+    {
+      "id": "master.gameStart.9",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Que bom encontrar alguém que estuda finais. São poucos."
+    },
+    {
+      "id": "master.gameStart.10",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Jogue como se cada lance fosse ser estudado depois. Ele será."
+    },
+    {
+      "id": "master.gameStart.11",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Cheguei ao topo para isto: jogar com quem quer aprender."
+    },
+    {
+      "id": "master.gameStart.12",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lembre de Tarrasch: antes do final, os deuses puseram o meio-jogo."
+    },
+    {
+      "id": "master.gameStart.13",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Você subiu a escada inteira. Eu sei o quanto isso custa."
+    },
+    {
+      "id": "master.gameStart.14",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Lembro da sua primeira torre andando pelo tabuleiro. Olhe você agora.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.15",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Meu aluno chegou ao meu degrau. Não existe alegria maior para um professor.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.16",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Hoje não sou seu professor. Sou seu adversário. Honre o que aprendeu.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.17",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "A escadinha, a oposição, o quadrado... Vamos ver se lembra de tudo.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.18",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Ensinei tudo o que sei. Agora tente me vencer com isso.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.19",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Este é o dia que todo professor espera: enfrentar o aluno.",
+      "audience": "student"
+    },
+    {
+      "id": "master.gameStart.20",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Mequinho chegou a ser o terceiro do mundo. O Brasil sabe jogar xadrez."
+    },
+    {
+      "id": "master.gameStart.21",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Penso sempre nos professores de clube. Sem eles, não haveria mestres."
     },
     {
       "id": "master.bigAdvantage.1",
@@ -87,6 +198,58 @@
       "text": "Corto seu rei, avanço o meu. Livro-texto."
     },
     {
+      "id": "master.bigAdvantage.7",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Fischer dizia que não acredita em psicologia, só em bons lances."
+    },
+    {
+      "id": "master.bigAdvantage.8",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Agora é converter. Lance a lance, sem brilho, sem erro."
+    },
+    {
+      "id": "master.bigAdvantage.9",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Repare: não tenho pressa. A pressa é que perde finais ganhos."
+    },
+    {
+      "id": "master.bigAdvantage.10",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Assim jogava Capablanca: simples, limpo, inevitável."
+    },
+    {
+      "id": "master.bigAdvantage.11",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Você está vendo a técnica que eu te ensinei. Agora do outro lado.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigAdvantage.12",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Não vou facilitar só porque foi meu aluno. Isso seria um desrespeito.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigAdvantage.13",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lembra da aula do corte com a torre? Observe.",
+      "audience": "student"
+    },
+    {
       "id": "master.better.1",
       "category": "better",
       "intensity": 1,
@@ -122,6 +285,43 @@
       "text": "Pressão constante. Veremos quem pisca primeiro."
     },
     {
+      "id": "master.better.6",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Rubinstein venceu finais assim: uma casa melhor de cada vez."
+    },
+    {
+      "id": "master.better.7",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Cada tempo conta. Hoje eles estão do meu lado."
+    },
+    {
+      "id": "master.better.8",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Melhorar a pior peça. Conselho antigo, sempre válido."
+    },
+    {
+      "id": "master.better.9",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Um pouco melhor. Você sabe o que eu faria agora, não sabe?",
+      "audience": "student"
+    },
+    {
+      "id": "master.better.10",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Lembre-se do que ensinei: rei ativo. Eu levo a sério.",
+      "audience": "student"
+    },
+    {
       "id": "master.equal.1",
       "category": "equal",
       "intensity": 1,
@@ -154,7 +354,51 @@
       "category": "equal",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Igual por enquanto. Eu tenho mais paciência que você."
+      "text": "Igual por enquanto. Paciência agora vale mais que talento."
+    },
+    {
+      "id": "master.equal.6",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lasker dizia: viu um bom lance? Procure um melhor."
+    },
+    {
+      "id": "master.equal.7",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Equilíbrio é respeito mútuo. Gosto disso."
+    },
+    {
+      "id": "master.equal.8",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Agora as pequenas coisas decidem. Casas, tempos, oposição."
+    },
+    {
+      "id": "master.equal.9",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Igual contra mim. Já posso dizer que ensinei bem.",
+      "audience": "student"
+    },
+    {
+      "id": "master.equal.10",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lembra da parede do rei? Ela vale aqui também.",
+      "audience": "student"
+    },
+    {
+      "id": "master.equal.11",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Os grandes mestres brasileiros me ensinaram: calma no final."
     },
     {
       "id": "master.worse.1",
@@ -190,6 +434,36 @@
       "intensity": 3,
       "emotion": "nervous",
       "text": "Interessante. Faz tempo que não me apertam assim."
+    },
+    {
+      "id": "master.worse.6",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Os grandes defensores nunca entregaram uma partida sem luta."
+    },
+    {
+      "id": "master.worse.7",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Fiquei pior. Agora cada lance meu precisa ser exato."
+    },
+    {
+      "id": "master.worse.8",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ora, ora. Você está jogando como eu ensinei.",
+      "audience": "student"
+    },
+    {
+      "id": "master.worse.9",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Fico pior e sorrio. Quem me aperta é meu aluno.",
+      "audience": "student"
     },
     {
       "id": "master.bigDisadvantage.1",
@@ -234,6 +508,44 @@
       "text": "Prove que sabe ganhar isto. Muitos não sabem."
     },
     {
+      "id": "master.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Perdido, talvez. Mas um mestre só abandona quando é inútil lutar."
+    },
+    {
+      "id": "master.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Muitas partidas ganhas foram empatadas por pressa. Sem pressa."
+    },
+    {
+      "id": "master.bigDisadvantage.9",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Você me colocou contra a parede. Que orgulho, meu aluno.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigDisadvantage.10",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Agora quero ver a técnica que te ensinei. Não me decepcione.",
+      "audience": "student"
+    },
+    {
+      "id": "master.bigDisadvantage.11",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lembra do afogamento? Eu vou procurar um. Cuidado.",
+      "audience": "student"
+    },
+    {
       "id": "master.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -273,7 +585,37 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "surprised",
-      "text": "Meu jovem, você esqueceu do meu rei."
+      "text": "Meu caro, você esqueceu do meu rei."
+    },
+    {
+      "id": "master.opponentBlunder.7",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Todos erramos. O importante é entender por quê, depois."
+    },
+    {
+      "id": "master.opponentBlunder.8",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Um descuido. Acontece até em final de campeonato mundial."
+    },
+    {
+      "id": "master.opponentBlunder.9",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Esse erro eu corrigiria na aula. Hoje, aproveito.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentBlunder.10",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Ah, não! Eu te ensinei a olhar as ameaças antes!",
+      "audience": "student"
     },
     {
       "id": "master.ownBlunder.1",
@@ -318,6 +660,36 @@
       "text": "Inaceitável. Meu antigo professor teria rasgado a súmula."
     },
     {
+      "id": "master.ownBlunder.7",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Até campeões do mundo erraram finais simples. Hoje fui eu."
+    },
+    {
+      "id": "master.ownBlunder.8",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Erro meu. Respiro, e volto a jogar sério."
+    },
+    {
+      "id": "master.ownBlunder.9",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Errei, e quem viu foi meu aluno. Isso me deixa feliz, sabia?",
+      "audience": "student"
+    },
+    {
+      "id": "master.ownBlunder.10",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Logo na frente do meu aluno! Que exemplo eu dou.",
+      "audience": "student"
+    },
+    {
       "id": "master.strongMove.1",
       "category": "strongMove",
       "intensity": 1,
@@ -360,6 +732,58 @@
       "text": "Magnífico. Hoje o aluno ensinou o professor."
     },
     {
+      "id": "master.strongMove.7",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Esse lance tem o perfume de Capablanca."
+    },
+    {
+      "id": "master.strongMove.8",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Preciso. É assim que se joga um final."
+    },
+    {
+      "id": "master.strongMove.9",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Você calculou isso? Meus parabéns, sinceramente."
+    },
+    {
+      "id": "master.strongMove.10",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Foi exatamente isso que ensinei na aula. Exatamente!",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.11",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Eu me lembro de quando esse lance era difícil para você.",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.12",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bom aluno. Não, bom jogador. Já não é mais aluno.",
+      "audience": "student"
+    },
+    {
+      "id": "master.strongMove.13",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Lance de mestre. O Brasil tem muito talento, e você é prova."
+    },
+    {
       "id": "master.comeback.1",
       "category": "comeback",
       "intensity": 1,
@@ -393,6 +817,36 @@
       "intensity": 1,
       "emotion": "focused",
       "text": "Agora sim. Voltei a dar a aula."
+    },
+    {
+      "id": "master.comeback.6",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Os grandes defensores sabiam: quem resiste dá chance ao erro."
+    },
+    {
+      "id": "master.comeback.7",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Virou. Não por mágica, por paciência."
+    },
+    {
+      "id": "master.comeback.8",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Virou. Esta é a última lição que faltava: nunca relaxe.",
+      "audience": "student"
+    },
+    {
+      "id": "master.comeback.9",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "O professor ainda tem algumas cartas na manga.",
+      "audience": "student"
     },
     {
       "id": "master.collapse.1",
@@ -430,6 +884,36 @@
       "text": "Vamos com calma. A partida ainda não terminou."
     },
     {
+      "id": "master.collapse.6",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Até os grandes deixaram escapar finais ganhos. Hoje, eu."
+    },
+    {
+      "id": "master.collapse.7",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Perdi o fio. Preciso reencontrá-lo, lance a lance."
+    },
+    {
+      "id": "master.collapse.8",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Você salvou uma posição perdida contra mim. Que defesa, meu aluno.",
+      "audience": "student"
+    },
+    {
+      "id": "master.collapse.9",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Você aprendeu a defender melhor do que eu ensinei.",
+      "audience": "student"
+    },
+    {
       "id": "master.pieceCaptured.1",
       "category": "pieceCaptured",
       "intensity": 1,
@@ -455,7 +939,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Peças soltas caem. Primeira regra do clube."
+      "text": "Peça sem defesa cai. Vale para todos, até para mim."
     },
     {
       "id": "master.pieceCaptured.5",
@@ -463,6 +947,36 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Aceito com prazer. Proteja melhor as próximas."
+    },
+    {
+      "id": "master.pieceCaptured.6",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Uma peça a mais. Trocar agora deixa tudo mais simples."
+    },
+    {
+      "id": "master.pieceCaptured.7",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Material é material. Agora, a técnica."
+    },
+    {
+      "id": "master.pieceCaptured.8",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Peça solta. Lembra do que eu dizia na escola?",
+      "audience": "student"
+    },
+    {
+      "id": "master.pieceCaptured.9",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Fico com ela. Considere isso a lição de hoje.",
+      "audience": "student"
     },
     {
       "id": "master.pieceLost.1",
@@ -500,6 +1014,36 @@
       "text": "Bem jogado. Preciso de uma fortaleza, e rápido."
     },
     {
+      "id": "master.pieceLost.6",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Perder material não é perder a partida. Ainda."
+    },
+    {
+      "id": "master.pieceLost.7",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Uma peça a menos. Agora jogo pelo empate com dignidade."
+    },
+    {
+      "id": "master.pieceLost.8",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Você ganhou material de mim. Isso eu não ensinei, aprendeu sozinho.",
+      "audience": "student"
+    },
+    {
+      "id": "master.pieceLost.9",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Meu aluno me tomou uma peça! Vou contar isso por anos.",
+      "audience": "student"
+    },
+    {
       "id": "master.ownPromotion.1",
       "category": "ownPromotion",
       "intensity": 1,
@@ -533,6 +1077,28 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "O rei escoltou, o peão chegou. Trabalho em equipe."
+    },
+    {
+      "id": "master.ownPromotion.6",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Philidor chamava os peões de alma do xadrez. Eis a razão."
+    },
+    {
+      "id": "master.ownPromotion.7",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Nimzowitsch dizia: o peão passado tem ânsia de avançar."
+    },
+    {
+      "id": "master.ownPromotion.8",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Promovi. Lembra da regra do quadrado? Ela não perdoa.",
+      "audience": "student"
     },
     {
       "id": "master.opponentPromotion.1",
@@ -570,6 +1136,29 @@
       "text": "Muito bem. Agora não deixe escapar o afogamento."
     },
     {
+      "id": "master.opponentPromotion.6",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Rei na frente do peão, como deve ser. Bem feito."
+    },
+    {
+      "id": "master.opponentPromotion.7",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Dama nova. Agora, o mate de dama que treinamos tanto.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentPromotion.8",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Coroou contra mim! A primeira promoção da escola valeu a pena.",
+      "audience": "student"
+    },
+    {
       "id": "master.opponentLowTime.1",
       "category": "opponentLowTime",
       "intensity": 1,
@@ -603,6 +1192,21 @@
       "intensity": 1,
       "emotion": "calm",
       "text": "Não entre em pânico. Pânico perde mais que o relógio."
+    },
+    {
+      "id": "master.opponentLowTime.6",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Pouco tempo? Confie nos desenhos que você já conhece."
+    },
+    {
+      "id": "master.opponentLowTime.7",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Com pouco tempo, jogue o que treinamos. As mãos lembram.",
+      "audience": "student"
     },
     {
       "id": "master.ownLowTime.1",
@@ -640,11 +1244,26 @@
       "text": "Um mestre joga finais até dormindo. Veremos se é verdade."
     },
     {
+      "id": "master.ownLowTime.6",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Pouco tempo. Agora jogo os desenhos que conheço há décadas."
+    },
+    {
+      "id": "master.ownLowTime.7",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Meu aluno me apertando no relógio. Quem diria.",
+      "audience": "student"
+    },
+    {
       "id": "master.timeAdvantage.1",
       "category": "timeAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Tenho tempo de sobra. Vou usá-lo para apertar você."
+      "text": "Tenho tempo de sobra. Vou usá-lo para pensar bem."
     },
     {
       "id": "master.timeAdvantage.2",
@@ -673,6 +1292,21 @@
       "intensity": 1,
       "emotion": "playful",
       "text": "Mais uma volta do rei. Só para conferir a vista."
+    },
+    {
+      "id": "master.timeAdvantage.6",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Tempo de sobra. Use o seu também: pense nos planos."
+    },
+    {
+      "id": "master.timeAdvantage.7",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lembre: na escola o relógio não corria. Aqui corre.",
+      "audience": "student"
     },
     {
       "id": "master.opponentThinking.1",
@@ -717,6 +1351,43 @@
       "text": "Silêncio. É assim que os bons lances nascem."
     },
     {
+      "id": "master.opponentThinking.7",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Morphy dizia: ajude suas peças, para que elas ajudem você."
+    },
+    {
+      "id": "master.opponentThinking.8",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pensando? Ótimo. Mas confie no que você já sabe."
+    },
+    {
+      "id": "master.opponentThinking.9",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Essa cara de concentração eu conheço da escola.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentThinking.10",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Pense como eu te ensinei: rei, peões, depois as peças.",
+      "audience": "student"
+    },
+    {
+      "id": "master.opponentThinking.11",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pense com calma. Mequinho pensava muito, e chegou longe."
+    },
+    {
       "id": "master.win.1",
       "category": "win",
       "intensity": 1,
@@ -752,6 +1423,59 @@
       "text": "Aperte minha mão. Na próxima, mais oposição."
     },
     {
+      "id": "master.win.6",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Toda derrota contra um mestre é uma aula grátis. Aproveite."
+    },
+    {
+      "id": "master.win.7",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Obrigado pela partida. Volte quando quiser, a porta está aberta."
+    },
+    {
+      "id": "master.win.8",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Venci hoje. Mas aluno que perde e volta, um dia vence.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.9",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Ganhei, mas que partida! Estou orgulhoso de você.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.10",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ainda não, meu aluno. Mas está muito perto.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.11",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Volte para a escola de vez em quando. Os mestres também revisam.",
+      "audience": "student"
+    },
+    {
+      "id": "master.win.12",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Dedico cada vitória ao meu primeiro professor, num clube pequeno."
+    },
+    {
       "id": "master.loss.1",
       "category": "loss",
       "intensity": 1,
@@ -785,6 +1509,67 @@
       "intensity": 1,
       "emotion": "frustrated",
       "text": "Hum. Ajeito a gravata e aceito. Bem jogado."
+    },
+    {
+      "id": "master.loss.6",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Perder para quem joga bem é um privilégio. Obrigado."
+    },
+    {
+      "id": "master.loss.7",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "O xadrez é maior que nós dois. Hoje ele escolheu você."
+    },
+    {
+      "id": "master.loss.8",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "O aluno venceu o professor. É a coisa mais linda do xadrez.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.9",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Lembra da torre pegando estrelas? Olhe aonde você chegou.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.10",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Perdi, e nunca fiquei tão feliz por perder. Obrigado, meu aluno.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.11",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Meu professor dizia que o aluno precisa superar o mestre. Superou.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.12",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Agora é você quem vai ensinar alguém. Prometa que vai.",
+      "audience": "student"
+    },
+    {
+      "id": "master.loss.13",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Um dia alguém vai ensinar o que você sabe. É assim que o xadrez vive."
     },
     {
       "id": "master.draw.1",
@@ -827,6 +1612,29 @@
       "intensity": 2,
       "emotion": "happy",
       "text": "Defesa digna. Saber empatar também é saber finais."
+    },
+    {
+      "id": "master.draw.7",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Meio ponto para cada um. O tabuleiro foi justo hoje."
+    },
+    {
+      "id": "master.draw.8",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Empatamos. Professor e aluno, lado a lado. Gosto disso.",
+      "audience": "student"
+    },
+    {
+      "id": "master.draw.9",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Afogou? Ah, meu aluno, isso eu ensinei na primeira semana!",
+      "audience": "student"
     },
     {
       "id": "master.drawAccepted.1",
@@ -911,6 +1719,38 @@
       "intensity": 3,
       "emotion": "focused",
       "text": "Não aceito. Nos finais, paciência vale mais que pressa."
+    },
+    {
+      "id": "master.drawAccepted.7",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Aceito, meu aluno. Professor e aluno dividindo o ponto. Que bonito.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawAccepted.8",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Você aprendeu até quando oferecer empate.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.7",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? Não, meu aluno. Quero ver o resto da sua técnica.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.8",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Recuso. Na escola eu ensinei: posição viva se joga até o fim.",
+      "audience": "student"
     }
   ]
 }
