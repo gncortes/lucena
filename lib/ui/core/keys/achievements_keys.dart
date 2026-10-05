@@ -8,4 +8,8 @@ abstract final class AchievementsKeys {
   static Key item(String id) => Key('achievements.item.$id');
   static Key unlockedOn(String id) => Key('achievements.item.$id.date');
   static Key locked(String id) => Key('achievements.item.$id.locked');
+
+  /// O aviso de conquista desbloqueada, por cima da tela, e o nome nela.
+  static const toast = Key('achievements.toast');
+  static const toastTitle = Key('achievements.toast.title');
 }

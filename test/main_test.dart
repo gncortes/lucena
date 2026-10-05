@@ -1,3 +1,5 @@
+import 'package:lucena/ui/core/widgets/rating_sparkline.dart';
+import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:flutter/material.dart';
@@ -276,6 +278,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
     expect(find.byKey(HomeKeys.whereContinue), findsOneWidget);
+  });
+
+  testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
+      'voltar cai na tela inicial', (tester) async {
+    await pumpApp(tester);
+    // O gráfico saiu do cartão: fica na tela de detalhes.
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.playerCard),
+        matching: find.byType(RatingSparkline),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(find.byKey(HomeKeys.playerCard));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.screen), findsOneWidget);
+    expect(textOf(tester, RatingKeys.value), '1150');
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.screen), findsNothing);
+    expect(find.byKey(HomeKeys.playerCard), findsOneWidget);
   });
 
   Future<void> openProfile(WidgetTester tester) async {

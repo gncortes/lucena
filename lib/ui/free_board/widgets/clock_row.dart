@@ -14,7 +14,8 @@ import '../view_models/free_board_state.dart';
 import '../view_models/talk_cubit.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
-/// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro.
+/// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro. Sem
+/// relógio na partida, a ponta mostra de quem é a vez.
 class ClockRow extends StatelessWidget {
   const ClockRow({
     required this.sides,
@@ -102,12 +103,22 @@ class ClockRow extends StatelessWidget {
             ),
           ),
         ),
-      _ClockBox(
-        key: FreeBoardKeys.clock(side),
-        side: side,
-        time: state.timeOf(side),
-        running: state.clock?.running == side,
-      ),
+      if (state.clock != null)
+        _ClockBox(
+          key: FreeBoardKeys.clock(side),
+          side: side,
+          time: state.timeOf(side),
+          running: state.clock?.running == side,
+        )
+      // Sem relógio, a vez aparece na linha de quem joga.
+      else if (state.end == null && state.position.turn == side)
+        _TurnBadge(
+          label: side == mode.userSide && mode.opponent.isMachine
+              ? l10n.gameYourTurn
+              : side == Side.white
+              ? l10n.freeBoardWhiteToMove
+              : l10n.freeBoardBlackToMove,
+        ),
     ];
     return Semantics(
       container: true,
@@ -148,6 +159,36 @@ class _Portrait extends StatelessWidget {
           image: board.pieces.assets[pawn]!,
           width: _size * 0.8,
           height: _size * 0.8,
+        ),
+      ),
+    );
+  }
+}
+
+/// De quem é a vez, numa etiqueta na ponta da linha de quem joga.
+class _TurnBadge extends StatelessWidget {
+  const _TurnBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 180),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.secondaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        key: FreeBoardKeys.turn,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: colors.onSecondaryContainer,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

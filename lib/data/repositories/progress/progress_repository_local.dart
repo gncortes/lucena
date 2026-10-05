@@ -25,6 +25,13 @@ class LocalProgressRepository implements ProgressRepository {
   }
 
   @override
+  Future<Map<int, Attempt>> attemptsById(Iterable<int> ids) async {
+    final query = _database.select(_database.games)
+      ..where((row) => row.id.isIn(ids));
+    return {for (final row in await query.get()) row.id: attemptOf(row)};
+  }
+
+  @override
   Future<List<Attempt>> attemptsFor(String positionId) =>
       _newestFirst((row) => row.positionId.equals(positionId));
 
