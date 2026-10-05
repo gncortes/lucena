@@ -400,5 +400,13 @@
   "gameMoveBack": "Назад",
   "gameMoveForward": "Вперёд",
   "statsGamesTitle": "История партий",
-  "statsGamesEmpty": "Сыгранные партии появляются здесь, сначала самые новые."
+  "statsGamesEmpty": "Сыгранные партии появляются здесь, сначала самые новые.",
+  "speedrunRetry": "Ещё раз",
+  "speedrunQuitTitle": "Выйти из спидрана?",
+  "ratingPeriodDays": "{count, plural, =1{1 день} one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}",
+  "ratingPeriodYear": "1 год",
+  "ratingPeriodEmpty": "За этот период нет рейтинговых партий.",
+  "ratingHighest": "Максимум",
+  "gameDetailsTitle": "Детали партии",
+  "gameDetailsNotFound": "Эта партия больше не сохранена."
 }

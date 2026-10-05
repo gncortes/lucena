@@ -400,5 +400,13 @@
   "gameMoveBack": "Lùi",
   "gameMoveForward": "Tiến",
   "statsGamesTitle": "Lịch sử ván đấu",
-  "statsGamesEmpty": "Các ván bạn chơi sẽ hiện ở đây, ván mới nhất trước."
+  "statsGamesEmpty": "Các ván bạn chơi sẽ hiện ở đây, ván mới nhất trước.",
+  "speedrunRetry": "Thử lại",
+  "speedrunQuitTitle": "Rời speedrun?",
+  "ratingPeriodDays": "{count, plural, =1{1 ngày} other{{count} ngày}}",
+  "ratingPeriodYear": "1 năm",
+  "ratingPeriodEmpty": "Không có ván tính hệ số nào trong khoảng này.",
+  "ratingHighest": "Cao nhất",
+  "gameDetailsTitle": "Chi tiết ván đấu",
+  "gameDetailsNotFound": "Ván này không còn được lưu."
 }

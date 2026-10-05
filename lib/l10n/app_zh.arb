@@ -400,5 +400,13 @@
   "gameMoveBack": "上一步",
   "gameMoveForward": "下一步",
   "statsGamesTitle": "对局记录",
-  "statsGamesEmpty": "你下过的对局会显示在这里，最新的排在最前。"
+  "statsGamesEmpty": "你下过的对局会显示在这里，最新的排在最前。",
+  "speedrunRetry": "再试一次",
+  "speedrunQuitTitle": "退出速通？",
+  "ratingPeriodDays": "{count, plural, =1{1 天} other{{count} 天}}",
+  "ratingPeriodYear": "1 年",
+  "ratingPeriodEmpty": "此期间没有计入等级分的对局。",
+  "ratingHighest": "最高",
+  "gameDetailsTitle": "对局详情",
+  "gameDetailsNotFound": "这局棋已不再保存。"
 }

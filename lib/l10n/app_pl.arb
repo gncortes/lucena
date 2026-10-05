@@ -400,5 +400,13 @@
   "gameMoveBack": "Wstecz",
   "gameMoveForward": "Dalej",
   "statsGamesTitle": "Historia partii",
-  "statsGamesEmpty": "Rozegrane partie pojawiają się tutaj, od najnowszej."
+  "statsGamesEmpty": "Rozegrane partie pojawiają się tutaj, od najnowszej.",
+  "speedrunRetry": "Spróbuj ponownie",
+  "speedrunQuitTitle": "Opuścić speedrun?",
+  "ratingPeriodDays": "{count, plural, =1{1 dzień} few{{count} dni} many{{count} dni} other{{count} dnia}}",
+  "ratingPeriodYear": "1 rok",
+  "ratingPeriodEmpty": "Brak partii rankingowych w tym okresie.",
+  "ratingHighest": "Najwyższy",
+  "gameDetailsTitle": "Szczegóły partii",
+  "gameDetailsNotFound": "Ta partia nie jest już zapisana."
 }

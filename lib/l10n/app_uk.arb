@@ -400,5 +400,13 @@
   "gameMoveBack": "Назад",
   "gameMoveForward": "Вперед",
   "statsGamesTitle": "Історія партій",
-  "statsGamesEmpty": "Зіграні партії з'являються тут, спочатку найновіші."
+  "statsGamesEmpty": "Зіграні партії з'являються тут, спочатку найновіші.",
+  "speedrunRetry": "Ще раз",
+  "speedrunQuitTitle": "Вийти зі спідрану?",
+  "ratingPeriodDays": "{count, plural, =1{1 день} one{{count} день} few{{count} дні} many{{count} днів} other{{count} дня}}",
+  "ratingPeriodYear": "1 рік",
+  "ratingPeriodEmpty": "За цей період немає рейтингових партій.",
+  "ratingHighest": "Найвищий",
+  "gameDetailsTitle": "Деталі партії",
+  "gameDetailsNotFound": "Цю партію більше не збережено."
 }

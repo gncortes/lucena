@@ -400,5 +400,13 @@
   "gameMoveBack": "戻る",
   "gameMoveForward": "進む",
   "statsGamesTitle": "対局履歴",
-  "statsGamesEmpty": "プレイした対局がここに新しい順で表示されます。"
+  "statsGamesEmpty": "プレイした対局がここに新しい順で表示されます。",
+  "speedrunRetry": "もう一度",
+  "speedrunQuitTitle": "スピードランをやめますか？",
+  "ratingPeriodDays": "{count, plural, =1{1日} other{{count}日}}",
+  "ratingPeriodYear": "1年",
+  "ratingPeriodEmpty": "この期間にレーティング対象の対局はありません。",
+  "ratingHighest": "最高",
+  "gameDetailsTitle": "対局の詳細",
+  "gameDetailsNotFound": "この対局はもう保存されていません。"
 }
