@@ -18,6 +18,16 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta: tabuleiro grande no topo (largura da tela, como na configuração da partida); um cartão do adversário com retrato, nome, nível e a frase dele; o objetivo e o ritmo em selos; "Jogar" fixo embaixo; o histórico em cartões com o resultado colorido, o tempo gasto e a variação do rating de cada partida; e um estado vazio com convite para jogar.
 
+## Tela da Jornada
+
+- [ ] **Refazer a lista de degraus.** ([print](../qa/melhorias/c26d2730.jpg)) O que incomoda no print:
+  - o cartão de cima fala "Maia 1000" e "Próximo: Maia 1200" em vez dos personagens, e é um bloco verde só de texto;
+  - os degraus são uma lista plana igual à de configurações: não parece um caminho a subir;
+  - os trancados só ficam um pouco apagados; o cadeado e a seta repetem em todos;
+  - o último degrau (Viktor) e o Stockfish ficam atrás da barra do sistema.
+
+  Proposta: um caminho vertical (trilha) com os retratos em círculo ligados por uma linha, o degrau atual maior e em destaque com a barra de progresso e "Continuar"; os concluídos com selo de feito, os trancados em cinza com cadeado sobre o retrato e sem a seta; o Stockfish no topo como chefe final; o cartão de cima com o retrato do adversário atual, o progresso e o próximo personagem; espaço embaixo para rolar até o fim.
+
 ## Tela do degrau (Jornada)
 
 - [ ] **Refazer a lista dos desafios do degrau.** ([print](../qa/melhorias/6167f3c6.jpg)) O que incomoda no print:
