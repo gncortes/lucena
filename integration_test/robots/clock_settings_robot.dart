@@ -5,6 +5,8 @@ import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Tela de preferências do relógio (posição e vibração).
 class ClockSettingsRobot {
   const ClockSettingsRobot(this.$);
@@ -48,7 +50,7 @@ class ClockSettingsRobot {
   }
 
   void expectPositionValue(String text) {
-    expect(
+    expectText(
       $.tester
           .widget<Text>(find.byKey(BoardSettingsKeys.clockPositionValue))
           .data,

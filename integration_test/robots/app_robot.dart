@@ -7,6 +7,8 @@ import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
 
+import 'variant.dart';
+
 /// Ações do app inteiro e do aparelho: abrir, reiniciar, segundo plano, rede,
 /// tema e idioma do sistema.
 class AppRobot {
@@ -16,8 +18,10 @@ class AppRobot {
 
   /// Abre o app com a composição E2E, sem nenhum dado gravado.
   ///
-  /// [systemLocale] faz o app enxergar o aparelho nesse idioma.
-  Future<void> open({Locale? systemLocale}) async {
+  /// [systemLocale] faz o app enxergar o aparelho nesse idioma. Com
+  /// [lightDevice], o aparelho fica em tema claro mesmo na variante escura da
+  /// suíte: é para o cenário que troca o tema do aparelho ele mesmo.
+  Future<void> open({Locale? systemLocale, bool lightDevice = false}) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
     // fila terminam antes da limpeza: nada dele chega ao cenário novo.
@@ -26,9 +30,20 @@ class AppRobot {
       () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
     await resetE2EData();
-    if (systemLocale != null) {
-      $.tester.platformDispatcher.localesTestValue = [systemLocale];
-      addTearDown($.tester.platformDispatcher.clearLocalesTestValue);
+    final dispatcher = $.tester.platformDispatcher;
+    // Na variante em árabe, o cenário que espera o aparelho em inglês roda em
+    // árabe; os cenários de outro idioma ficam como são.
+    e2eTranslated =
+        e2eVariant == E2EVariant.arabic &&
+        (systemLocale == null || systemLocale.languageCode == 'en');
+    final locale = e2eTranslated ? const Locale('ar') : systemLocale;
+    if (locale != null) {
+      dispatcher.localesTestValue = [locale];
+      addTearDown(dispatcher.clearLocalesTestValue);
+    }
+    if (e2eVariant == E2EVariant.dark && !lightDevice) {
+      dispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(dispatcher.clearPlatformBrightnessTestValue);
     }
     await _pumpApp();
   }

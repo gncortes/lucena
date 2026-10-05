@@ -8,6 +8,12 @@ enum GameEndReason {
   stalemate,
   insufficientMaterial,
 
+  /// A mesma posição apareceu três vezes: empate.
+  repetition,
+
+  /// Cinquenta lances de cada lado sem captura nem lance de peão: empate.
+  fiftyMoves,
+
   /// O tempo de um lado acabou e o outro vence.
   timeout,
 

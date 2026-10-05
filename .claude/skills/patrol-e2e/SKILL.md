@@ -17,6 +17,7 @@ description: Como escrever e rodar cenários Patrol (ponta a ponta) com keys, ro
 - Todo cenário abre o app por `AppRobot($).open()`, que usa a composição E2E de `testing/e2e_dependencies.dart`: `Now` controlável e, conforme entrarem, adversário falso, tempos curtos e banco limpo. `lib/` não importa `testing/`; `lib/config/` só expõe `isE2E` e a composição normal.
 - `AppRobot.open()` apaga o que estava gravado: todo cenário começa do zero. Cenário de persistência usa `AppRobot.restart()`, que abre um app novo mantendo os dados; por isso a composição E2E grava de verdade no aparelho.
 - Idioma do sistema: `AppRobot.open(systemLocale: ...)`. Sempre passar um idioma quando o cenário confere texto, porque os aparelhos do Test Lab não estão em inglês.
+- Suíte inteira em tema escuro ou em árabe: `--dart-define=E2E_VARIANT=dark` ou `=ar` (`integration_test/robots/variant.dart`). O `AppRobot.open()` põe o aparelho em tema escuro, ou troca o inglês por árabe. Por isso todo texto da tela é conferido com `expectText` ou `expectTextIn`, nunca com `expect` direto: em árabe, texto com palavras só precisa existir (o conteúdo é da suíte padrão) e números continuam exatos. Cenário que troca o tema do aparelho abre com `lightDevice: true`.
 - Texto que não cabe: trocar para o pseudo-idioma (`AppLanguage.pseudo`, só na composição E2E) e chamar `AppRobot.expectNoClippedText()` em cada tela.
 
 ## Ações nativas

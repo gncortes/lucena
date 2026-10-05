@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/maia_level.dart';
+import '../../../domain/models/maia_timing.dart';
 import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -35,6 +36,8 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
     final cubit = context.read<MaiaDebugCubit>();
     final state = context.watch<MaiaDebugCubit>().state;
     final prediction = state.prediction;
+    final timing = state.timing;
+    final running = state.status == MaiaDebugStatus.running;
     return Scaffold(
       key: MaiaDebugKeys.screen,
       appBar: AppBar(title: Text(l10n.maiaDebugTitle)),
@@ -88,12 +91,21 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
             ),
-            onPressed: state.status == MaiaDebugStatus.running
-                ? null
-                : cubit.evaluate,
+            onPressed: running ? null : cubit.evaluate,
             child: Text(l10n.maiaDebugEvaluate),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: MaiaDebugKeys.measure,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            onPressed: running ? null : cubit.measure,
+            icon: const Icon(Icons.speed),
+            label: Text(l10n.maiaDebugMeasure),
+          ),
           const SizedBox(height: 16),
+          if (timing != null) _Timing(timing: timing),
           if (state.status == MaiaDebugStatus.invalidPosition)
             const SizedBox.shrink(key: MaiaDebugKeys.invalid),
           if (state.status == MaiaDebugStatus.failed)
@@ -104,6 +116,41 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
             ),
           if (prediction != null) _Result(prediction: prediction),
         ],
+      ),
+    );
+  }
+}
+
+class _Timing extends StatelessWidget {
+  const _Timing({required this.timing});
+
+  final MaiaTiming timing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            context.l10n.maiaDebugTiming(
+              timing.median.inMilliseconds,
+              timing.fastest.inMilliseconds,
+              timing.slowest.inMilliseconds,
+              timing.runs,
+            ),
+            key: MaiaDebugKeys.timing,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSecondaryContainer,
+            ),
+          ),
+        ),
       ),
     );
   }

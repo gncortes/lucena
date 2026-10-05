@@ -25,6 +25,10 @@ class FakeMaiaRepository implements MaiaRepository {
   /// O próximo pedido falha, como um modelo que não carregou.
   bool failNext = false;
 
+  /// O tempo de conta dos próximos pedidos, em ordem; acabando, vale o da
+  /// previsão combinada.
+  final elapsed = <Duration>[];
+
   @override
   Future<MovePrediction> predict(
     Position position, {
@@ -35,6 +39,14 @@ class FakeMaiaRepository implements MaiaRepository {
       failNext = false;
       throw StateError('o modelo não respondeu');
     }
-    return byLevel[level] ?? fallback;
+    final prediction = byLevel[level] ?? fallback;
+    if (elapsed.isEmpty) return prediction;
+    return MovePrediction(
+      moves: prediction.moves,
+      win: prediction.win,
+      draw: prediction.draw,
+      loss: prediction.loss,
+      elapsed: elapsed.removeAt(0),
+    );
   }
 }

@@ -12,10 +12,14 @@ enum OpponentKind {
   /// O Stockfish, na força máxima, joga o outro lado.
   stockfish,
 
-  /// O próprio jogador move os dois lados.
+  /// O próprio jogador move os dois lados (o tabuleiro livre).
   twoPlayers;
 
   static const fallback = OpponentKind.maia;
+
+  /// Os adversários que o treino oferece. Treinar um final é jogar contra
+  /// alguém: "dois jogadores" fica só no tabuleiro livre.
+  static const training = [OpponentKind.maia, OpponentKind.stockfish];
 
   /// A máquina joga o outro lado.
   bool get isMachine => this != twoPlayers;
@@ -25,6 +29,13 @@ enum OpponentKind {
 
   static OpponentKind fromCode(String? code) =>
       values.asNameMap()[code] ?? fallback;
+
+  /// O adversário gravado na configuração do treino. Um valor que o treino
+  /// não oferece mais ("dois jogadores", de versões antigas) vira o padrão.
+  static OpponentKind trainingFromCode(String? code) {
+    final kind = fromCode(code);
+    return training.contains(kind) ? kind : fallback;
+  }
 }
 
 /// A configuração de uma partida de treino. A última usada fica gravada e

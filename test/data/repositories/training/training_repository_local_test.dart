@@ -65,4 +65,12 @@ void main() {
     expect(setup.opponent, OpponentKind.stockfish);
     expect(setup.maiaLevel, 1800);
   });
+
+  test('"dois jogadores" gravado por uma versão antiga vira o Maia', () async {
+    await reopen().saveSetup(
+      const GameSetup(opponent: OpponentKind.twoPlayers),
+    );
+
+    expect((await reopen().loadSetup()).opponent, OpponentKind.maia);
+  });
 }

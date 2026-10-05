@@ -8,6 +8,8 @@ import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
 
+import 'variant.dart';
+
 /// Tela de posição personalizada: editor, FEN, vez e objetivo.
 class CustomPositionRobot {
   const CustomPositionRobot(this.$);
@@ -54,7 +56,7 @@ class CustomPositionRobot {
 
   Future<void> expectError(String text) async {
     await $(CustomPositionKeys.error).scrollTo();
-    expect(
+    expectText(
       $.tester.widget<Text>(find.byKey(CustomPositionKeys.error)).data,
       text,
     );
