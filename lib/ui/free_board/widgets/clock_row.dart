@@ -8,7 +8,9 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../view_models/free_board_state.dart';
+import '../view_models/talk_cubit.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
 /// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro.
@@ -17,6 +19,7 @@ class ClockRow extends StatelessWidget {
     required this.sides,
     required this.state,
     required this.board,
+    this.talk,
     super.key,
   });
 
@@ -29,6 +32,9 @@ class ClockRow extends StatelessWidget {
   /// A aparência escolhida: o retrato de cada lado é o peão dele, numa casa
   /// do tabuleiro.
   final BoardSettings board;
+
+  /// O personagem do adversário: o retrato e o nome dele no lado da máquina.
+  final TalkState? talk;
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +69,19 @@ class ClockRow extends StatelessWidget {
     final l10n = context.l10n;
     final mode = state.mode;
     // O lado da máquina leva o nome dela (`Maia 1400`, `Stockfish`).
-    final name = side == mode.machineSide
+    final character = side == mode.machineSide ? talk?.character : null;
+    final name = character != null
+        ? character.name
+        : side == mode.machineSide
         ? mode.opponent.label(l10n, level: mode.level)
         : side == Side.white
         ? l10n.sideWhite
         : l10n.sideBlack;
     final children = [
-      _Portrait(side: side, board: board),
+      if (character != null)
+        CharacterAvatar(character: character)
+      else
+        _Portrait(side: side, board: board),
       const SizedBox(width: 12),
       if (showName)
         Expanded(

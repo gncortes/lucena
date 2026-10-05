@@ -17,6 +17,10 @@ abstract final class GameSetupKeys {
 
   /// O aviso de qual nível combina com o rating do perfil.
   static const suggestedLevel = Key('setup.level.suggested');
+
+  /// Os ritmos nomeados (`setup.pace.3+2`).
+  static const paces = Key('setup.paces');
+  static Key pace(String id) => Key('setup.pace.$id');
   static const clockSwitch = Key('setup.clock');
 
   /// Os seletores de tempo: `user` ou `opponent`, `minutes` ou `increment`.

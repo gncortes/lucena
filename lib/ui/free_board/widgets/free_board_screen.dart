@@ -22,9 +22,12 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
+import '../view_models/talk_cubit.dart';
 import 'clock_row.dart';
+import 'character_bar.dart';
 import 'clock_sheet.dart';
 import 'move_list.dart';
+import 'report_panel.dart';
 
 class FreeBoardScreen extends StatefulWidget {
   const FreeBoardScreen({super.key});
@@ -51,10 +54,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final cubit = context.read<FreeBoardCubit>();
     _board = ChessboardController(game: _gameData(cubit.state));
     WidgetsBinding.instance.addObserver(this);
-    _clockRefresh = Timer.periodic(
-      const Duration(milliseconds: 100),
-      (_) => cubit.tick(),
-    );
+    final talk = context.read<TalkCubit>()
+      // A partida nova já abre pronta: o personagem a vê desde o começo.
+      ..update(cubit.state);
+    var ticks = 0;
+    _clockRefresh = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      cubit.tick();
+      // As falas de tempo não precisam de tanta pressa: uma vez por segundo.
+      if (++ticks % 10 == 0) talk.tick(cubit.state);
+    });
   }
 
   // Voltando do segundo plano ou da tela bloqueada: relógios refeitos e, se
@@ -134,26 +142,43 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       (SettingsCubit cubit) =>
           (cubit.state?.clock ?? const ClockSettings()).position,
     );
-    return BlocConsumer<FreeBoardCubit, FreeBoardState>(
-      // O tabuleiro só é refeito quando a partida muda, não a cada tique do
-      // relógio.
+    final talk = context.watch<TalkCubit>().state;
+    return BlocListener<FreeBoardCubit, FreeBoardState>(
+      // O personagem vê cada lance, o fim e a partida nova.
       listenWhen: (previous, current) =>
-          !identical(previous.position, current.position) ||
-          previous.moves.length != current.moves.length ||
+          previous.ready != current.ready ||
+          previous.ucis.length != current.ucis.length ||
           previous.end != current.end ||
-          previous.playerSide != current.playerSide ||
-          previous.machineThinking != current.machineThinking,
-      listener: (context, state) => _onStateChanged(state),
-      builder: (context, state) {
-        // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-        // guarda a partida.
-        return PopScope(
-          onPopInvokedWithResult: (didPop, _) {
-            if (didPop) unawaited(cubit.leave());
-          },
-          child: _scaffold(context, cubit, state, boardSettings, clockPosition),
-        );
-      },
+          previous.startedAt != current.startedAt,
+      listener: (context, state) => context.read<TalkCubit>().update(state),
+      child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
+        // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+        // relógio.
+        listenWhen: (previous, current) =>
+            !identical(previous.position, current.position) ||
+            previous.moves.length != current.moves.length ||
+            previous.end != current.end ||
+            previous.playerSide != current.playerSide ||
+            previous.machineThinking != current.machineThinking,
+        listener: (context, state) => _onStateChanged(state),
+        builder: (context, state) {
+          // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+          // guarda a partida.
+          return PopScope(
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop) unawaited(cubit.leave());
+            },
+            child: _scaffold(
+              context,
+              cubit,
+              state,
+              boardSettings,
+              clockPosition,
+              talk,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -163,6 +188,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     FreeBoardState state,
     BoardSettings boardSettings,
     ClockPosition clockPosition,
+    TalkState talk,
   ) {
     // Enquanto a partida em andamento é lida do aparelho, só a barra de cima:
     // o tabuleiro não pisca na posição errada.
@@ -237,11 +263,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               ClockPosition.sides => 2,
               ClockPosition.top || ClockPosition.bottom => 1,
             };
+            final character = talk.character;
             final boardSize = math.min(
               constraints.maxWidth,
               constraints.maxHeight -
                   _statusHeight -
                   clockRows * ClockRow.height -
+                  (character == null ? 0 : CharacterBar.height) -
                   _minMovesHeight,
             );
             const both = [Side.white, Side.black];
@@ -272,13 +300,20 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 ),
                 if (state.machineThinking && state.clock == null)
                   _Thinking(mode: state.mode),
+                if (character != null) CharacterBar(talk: talk),
                 if (clocks == ClockPosition.top)
-                  ClockRow(sides: both, state: state, board: boardSettings),
+                  ClockRow(
+                    sides: both,
+                    state: state,
+                    board: boardSettings,
+                    talk: talk,
+                  ),
                 if (clocks == ClockPosition.sides)
                   ClockRow(
                     sides: [state.orientation.opposite],
                     state: state,
                     board: boardSettings,
+                    talk: talk,
                   ),
                 // O tabuleiro não espelha em idiomas da direita para a esquerda.
                 Directionality(
@@ -297,9 +332,17 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     sides: [state.orientation],
                     state: state,
                     board: boardSettings,
+                    talk: talk,
                   ),
                 if (clocks == ClockPosition.bottom)
-                  ClockRow(sides: both, state: state, board: boardSettings),
+                  ClockRow(
+                    sides: both,
+                    state: state,
+                    board: boardSettings,
+                    talk: talk,
+                  ),
+                if (state.report case final report?)
+                  ReportPanel(report: report),
                 Expanded(
                   child: MoveList(
                     moves: state.moves,

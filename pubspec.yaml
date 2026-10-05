@@ -46,6 +46,20 @@ flutter:
     - assets/positions/positions.json
     - assets/progression/ladder.json
     - assets/progression/speedruns.json
+    - assets/progression/time_controls.json
+    - assets/achievements.json
+    - assets/characters/
+    - assets/characters/youngster/
+    - assets/characters/snob/
+    - assets/characters/prodigy/
+    - assets/characters/master/
+    - assets/characters/magician/
+    - assets/characters/grandpa/
+    - assets/characters/foodie/
+    - assets/characters/bodybuilder/
+    - assets/characters/beachgoer/
+    - assets/lines/en/
+    - assets/lines/pt/
     # Pesos do Maia-3 (tools/maia/export_weights.py)
     - assets/models/maia3-5m.bin
 

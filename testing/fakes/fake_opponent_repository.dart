@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 
 import 'fake_now.dart';
@@ -29,6 +30,9 @@ class FakeOpponentRepository implements OpponentRepository {
   final levels = <int?>[];
   final histories = <List<Position>>[];
 
+  /// O tempo da máquina em cada pedido (nulo sem relógio).
+  final times = <TimeControl?>[];
+
   Completer<void>? _gate;
 
   /// O próximo pedido falha, como um motor que travou.
@@ -48,12 +52,14 @@ class FakeOpponentRepository implements OpponentRepository {
     OpponentKind kind = OpponentKind.stockfish,
     int? level,
     List<Position> history = const [],
+    TimeControl? time,
   }) async {
     requests.add(position.fen);
     thinkTimes.add(thinkTime);
     kinds.add(kind);
     levels.add(level);
     histories.add(history);
+    times.add(time);
     final gate = _gate;
     if (gate != null) await gate.future;
     if (failNext) {

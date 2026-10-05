@@ -12,7 +12,10 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
+import '../../../domain/models/pace.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_setup_keys.dart';
@@ -300,14 +303,33 @@ class _LevelPicker extends StatelessWidget {
                 ChoiceChip(
                   key: GameSetupKeys.level(level),
                   showCheckmark: false,
-                  avatar: level == state.suggestedLevel
-                      ? const Icon(Icons.star_rounded, size: 18)
-                      : null,
-                  label: Text(
-                    level.toString(),
-                    style: const TextStyle(
-                      fontFeatures: [FontFeature.tabularFigures()],
+                  avatar: switch (state.characters.forLevel(level)) {
+                    final character? => CharacterAvatar(
+                      character: character,
+                      size: 24,
                     ),
+                    null => null,
+                  },
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        switch (state.characters.forLevel(level)) {
+                          final character? => l10n.characterNameLevel(
+                            character.name,
+                            level,
+                          ),
+                          null => level.toString(),
+                        },
+                        style: const TextStyle(
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      if (level == state.suggestedLevel) ...[
+                        const SizedBox(width: 4),
+                        const Icon(Icons.star_rounded, size: 16),
+                      ],
+                    ],
                   ),
                   selected: level == state.maiaLevel,
                   onSelected: (_) => cubit.setMaiaLevel(level),
@@ -325,7 +347,10 @@ class _LevelPicker extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  l10n.setupMaiaSuggested(state.suggestedLevel),
+                  switch (state.rating) {
+                    final rating? => l10n.setupSuggestedRating(rating),
+                    null => l10n.setupMaiaSuggested(state.suggestedLevel),
+                  },
                   key: GameSetupKeys.suggestedLevel,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -361,6 +386,7 @@ class _ClockSection extends StatelessWidget {
           value: setup.clock,
           onChanged: (value) => cubit.setClock(enabled: value),
         ),
+        if (state.paces.isNotEmpty) _PacePicker(state: state),
         AnimatedSize(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
@@ -416,6 +442,70 @@ class _ClockSection extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Os ritmos nomeados, com a categoria (`3+2 · Blitz`): um toque põe o mesmo
+/// tempo para os dois lados.
+class _PacePicker extends StatelessWidget {
+  const _PacePicker({required this.state});
+
+  final GameSetupState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final cubit = context.read<GameSetupCubit>();
+    final selected = state.pace;
+    return Padding(
+      key: GameSetupKeys.paces,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.setupPace,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              for (final pace in state.paces)
+                ChoiceChip(
+                  key: GameSetupKeys.pace(pace.id),
+                  label: Text(
+                    l10n.paceChip(pace.id, pace.category.label(l10n)),
+                  ),
+                  selected: pace == selected,
+                  onSelected: (_) => cubit.setPace(pace),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.setupPaceHint,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O nome de cada categoria de ritmo.
+extension PaceCategoryUi on PaceCategory {
+  String label(AppLocalizations l10n) => switch (this) {
+    PaceCategory.bullet => l10n.paceBullet,
+    PaceCategory.blitz => l10n.paceBlitz,
+    PaceCategory.rapid => l10n.paceRapid,
+    PaceCategory.classical => l10n.paceClassical,
+  };
 }
 
 /// O tempo de um lado: minutos e incremento, cada um com menos e mais.

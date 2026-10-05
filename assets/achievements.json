@@ -1,0 +1,19 @@
+{
+  "achievements": [
+    {"id": "first-fulfilled", "type": "firstFulfilled", "icon": "star"},
+    {"id": "rung-1000-completed", "type": "rungCompleted", "rungId": "1000", "icon": "military_tech"},
+    {"id": "rung-1600-completed", "type": "rungCompleted", "rungId": "1600", "icon": "military_tech"},
+    {"id": "rung-2200-completed", "type": "rungCompleted", "rungId": "2200", "icon": "workspace_premium"},
+    {"id": "rung-stockfish-completed", "type": "rungCompleted", "rungId": "stockfish", "icon": "emoji_events"},
+    {"id": "all-levels-queen", "type": "allLevels", "subcategory": "queen", "icon": "verified"},
+    {"id": "all-levels-rook", "type": "allLevels", "subcategory": "rook", "icon": "verified"},
+    {"id": "beat-2000", "type": "beatLevel", "level": 2000, "icon": "local_fire_department"},
+    {"id": "beat-2600", "type": "beatLevel", "level": 2600, "icon": "psychology"},
+    {"id": "beat-stockfish", "type": "beatStockfish", "icon": "rocket_launch"},
+    {"id": "flawless-speedrun", "type": "flawlessSpeedrun", "icon": "bolt"},
+    {"id": "flawless-ending", "type": "flawlessSpeedrun", "speedrunKind": "ending", "icon": "bolt"},
+    {"id": "record-improved", "type": "recordImproved", "icon": "timer"},
+    {"id": "challenge-under-30", "type": "underTime", "seconds": 30, "icon": "timer"},
+    {"id": "rung-speedrun-under-5min", "type": "underTime", "seconds": 300, "speedrunKind": "rung", "icon": "timer"}
+  ]
+}

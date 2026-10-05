@@ -21,5 +21,8 @@ abstract class AppSettings with _$AppSettings {
 
     /// Onde o relógio aparece e como ele avisa.
     @Default(ClockSettings()) ClockSettings clock,
+
+    /// Os personagens comentam a partida num balão de fala.
+    @Default(true) bool characterTalk,
   }) = _AppSettings;
 }

@@ -22,6 +22,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _boardNotationKey = 'board.notation';
   static const _clockPositionKey = 'clock.position';
   static const _clockVibrationKey = 'clock.lowTimeVibration';
+  static const _characterTalkKey = 'characters.talk';
 
   final PreferencesService _preferences;
 
@@ -39,6 +40,9 @@ class LocalSettingsRepository implements SettingsRepository {
             await _preferences.getBool(_clockVibrationKey) ??
             const ClockSettings().lowTimeVibration,
       ),
+      characterTalk:
+          await _preferences.getBool(_characterTalkKey) ??
+          const AppSettings().characterTalk,
     );
   }
 
@@ -91,6 +95,10 @@ class LocalSettingsRepository implements SettingsRepository {
     await _preferences.setBool(
       _clockVibrationKey,
       value: settings.clock.lowTimeVibration,
+    );
+    await _preferences.setBool(
+      _characterTalkKey,
+      value: settings.characterTalk,
     );
   }
 

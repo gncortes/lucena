@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,15 @@ import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
+import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
+import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_evaluation_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
+import '../../../../testing/fakes/fake_talk_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -33,6 +39,9 @@ void main() {
   late FakeOngoingGameRepository games;
   late FakeOpponentRepository opponent;
   late FakeProgressRepository progress;
+  late TalkCubit talk;
+  late FakeEvaluationRepository evaluation;
+  late FakeTalkRepository talkRepository;
 
   Future<void> pumpScreen(
     WidgetTester tester, {
@@ -44,13 +53,14 @@ void main() {
     ClockSettings clockSettings = const ClockSettings(),
     GameSnapshot? saved,
     GameMode mode = const GameMode(),
+    AppSettings? appSettings,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     final repository = FakeSettingsRepository(
-      AppSettings(board: board, clock: clockSettings),
+      appSettings ?? AppSettings(board: board, clock: clockSettings),
     );
     final settings = SettingsCubit(
       repository,
@@ -80,11 +90,29 @@ void main() {
       mode: mode,
     );
     addTearDown(cubit.close);
+    evaluation = FakeEvaluationRepository();
+    talkRepository = FakeTalkRepository();
+    talk = TalkCubit(
+      characters: FakeCharacterRepository(),
+      evaluation: evaluation,
+      talk: talkRepository,
+      settings: repository,
+      now: now,
+      language: 'en',
+      random: Random(1),
+    );
+    addTearDown(talk.close);
     await tester.pumpWidget(
       TestApp(
         locale: locale,
         settingsCubit: settings,
-        child: BlocProvider.value(value: cubit, child: const FreeBoardScreen()),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: cubit),
+            BlocProvider.value(value: talk),
+          ],
+          child: const FreeBoardScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -892,6 +920,45 @@ void main() {
       expect(find.text('Maia 1400'), findsOneWidget);
       expect(find.text('White'), findsOneWidget);
       expect(find.text('Black'), findsNothing);
+    });
+
+    testWidgets('contra um personagem: retrato, nome e balão sem cobrir o '
+        'tabuleiro', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.characterBar), findsOneWidget);
+      expect(find.text('Valdini · 1600'), findsOneWidget);
+      // O lado da máquina leva o nome do personagem.
+      expect(find.text('Valdini'), findsOneWidget);
+      expect(
+        find.byKey(FreeBoardKeys.speechText('magician.gameStart.1')),
+        findsOneWidget,
+      );
+      final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
+      expect(bubble.bottom, lessThanOrEqualTo(boardRect(tester).top));
+    });
+
+    testWidgets('com as falas desligadas, o balão não aparece', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
+        appSettings: const AppSettings(characterTalk: false),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.characterBar), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
     });
 
     testWidgets('sem relógio, avisa que o Maia está pensando', (tester) async {

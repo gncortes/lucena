@@ -67,7 +67,7 @@ class _RatingLevelSheetState extends State<_RatingLevelSheet> {
             child: Column(
               children: [
                 for (final level in RatingLevel.values)
-                  _LevelOption(
+                  RatingLevelOption(
                     key: ProfileKeys.levelOption(level),
                     level: level,
                     selected: level == _marked,
@@ -93,8 +93,9 @@ class _RatingLevelSheetState extends State<_RatingLevelSheet> {
   }
 }
 
-class _LevelOption extends StatelessWidget {
-  const _LevelOption({
+/// Uma faixa de rating para escolher, com a peça, o nome e o intervalo.
+class RatingLevelOption extends StatelessWidget {
+  const RatingLevelOption({
     required this.level,
     required this.selected,
     required this.onTap,

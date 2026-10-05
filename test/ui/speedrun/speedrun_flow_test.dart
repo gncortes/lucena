@@ -26,6 +26,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(HomeKeys.speedrunButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(HomeKeys.speedrunButton));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(SpeedrunKeys.item('rung.1000')));

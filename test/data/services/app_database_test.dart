@@ -124,4 +124,47 @@ void main() {
     expect(await repository.fulfilledPositions(), {'basic.queen.0001'});
     expect(await repository.fulfilledChallenges(), isEmpty);
   });
+
+  test('da versão 4 para a 5: as partidas ficam e as tabelas novas vêm '
+      'vazias', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          final v4 = AppDatabase(NativeDatabase.memory());
+          // As tabelas da versão 4, como o drift as cria.
+          raw
+            ..execute(profiles)
+            ..execute(
+              'CREATE TABLE games (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, position_id TEXT NOT NULL, played_at INTEGER '
+              'NOT NULL, outcome TEXT NOT NULL, fulfilled INTEGER NOT NULL, '
+              'opponent TEXT NOT NULL, opponent_level INTEGER NULL, '
+              'started_at INTEGER NULL, start_fen TEXT NULL, moves TEXT NOT '
+              "NULL DEFAULT '', end_reason TEXT NULL, user_time TEXT NULL, "
+              'opponent_time TEXT NULL, user_clock_ms INTEGER NULL, '
+              'challenge_id TEXT NULL, speedrun_attempt_id INTEGER NULL, '
+              'speedrun_stage INTEGER NULL)',
+            )
+            ..execute(
+              'CREATE TABLE speedrun_attempts (id INTEGER NOT NULL PRIMARY '
+              'KEY AUTOINCREMENT, speedrun_id TEXT NOT NULL, started_at '
+              'INTEGER NOT NULL, abandoned_at INTEGER NULL)',
+            )
+            ..execute(
+              'INSERT INTO games (position_id, played_at, outcome, fulfilled, '
+              "opponent) VALUES ('basic.queen.0001', 1767268800, 'win', 1, "
+              "'maia')",
+            )
+            ..execute('PRAGMA user_version = 4');
+          v4.close();
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    final games = await LocalProgressRepository(database).allAttempts();
+    expect(games, hasLength(1));
+    expect(await database.select(database.ratingHistory).get(), isEmpty);
+    expect(await database.select(database.unlockedAchievements).get(), isEmpty);
+  });
 }

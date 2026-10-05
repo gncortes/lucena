@@ -95,6 +95,11 @@ abstract final class Routes {
     queryParameters: {'game': ?game?.toString()},
   ).toString();
 
+  static const achievements = '/achievements';
+
+  /// O tour da primeira abertura (também aberto por Configurações).
+  static const tour = '/tour';
+
   static const catalog = '/catalog';
   static String catalogCategory(String category) => '/catalog/$category';
   static String catalogSubcategory(String category, String subcategory) =>
