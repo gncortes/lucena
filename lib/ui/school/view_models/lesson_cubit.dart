@@ -117,8 +117,14 @@ class LessonState {
   double get progress {
     if (stepCount == 0) return 0;
     if (finished) return 1;
-    final done = phase == StepPhase.done ? step + 1 : step;
-    return done / stepCount;
+    if (phase == StepPhase.done) return (step + 1) / stepCount;
+    // Dentro do passo, cada estrela pega e cada lance certo já enchem a barra.
+    final within = switch (current) {
+      StarsStep(:final stars) => collected.length / stars.length,
+      MoveStep(:final line) => turn / line.length,
+      _ => 0.0,
+    };
+    return (step + within) / stepCount;
   }
 
   /// O aluno pode mexer no tabuleiro.
@@ -636,6 +642,11 @@ class LessonCubit extends Cubit<LessonState> {
         );
       case TalkStep():
         break;
+    }
+    // Passo já cumprido: o Viktor volta dizendo o que disse ao cumprir.
+    if (restored.phase == StepPhase.done) {
+      final done = base.texts.done(base.lesson!.id, step.id);
+      if (done != null) restored = restored.copyWith(speech: done);
     }
     return restored;
   }

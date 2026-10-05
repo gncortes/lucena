@@ -196,13 +196,13 @@ class _LessonNode extends StatelessWidget {
     final texts = state.texts;
     final (background, foreground, icon) = switch (status) {
       LessonStatus.completed => (
-        colors.primary,
-        colors.onPrimary,
+        colors.primaryContainer,
+        colors.onPrimaryContainer,
         Icons.check_rounded,
       ),
       LessonStatus.open => (
-        isNext ? colors.tertiary : colors.secondaryContainer,
-        isNext ? colors.onTertiary : colors.onSecondaryContainer,
+        isNext ? colors.primary : colors.secondaryContainer,
+        isNext ? colors.onPrimary : colors.onSecondaryContainer,
         Icons.play_arrow_rounded,
       ),
       LessonStatus.locked => (
@@ -261,7 +261,7 @@ class _LessonNode extends StatelessWidget {
                         boxShadow: [
                           if (isNext)
                             BoxShadow(
-                              color: colors.tertiary.withValues(alpha: 0.4),
+                              color: colors.primary.withValues(alpha: 0.35),
                               blurRadius: 14,
                               spreadRadius: 2,
                             ),
