@@ -1910,5 +1910,17 @@
   "profileRatingPeriodAll": "All",
   "@profileRatingPeriodAll": {
     "description": "Rating chart period: every game."
+  },
+  "catalogDone": "{done} of {total} done",
+  "@catalogDone": {
+    "description": "Catalog category: how many positions were already solved, out of the total.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

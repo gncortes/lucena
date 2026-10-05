@@ -379,8 +379,6 @@ class _StageCard extends StatelessWidget {
               speedrun.kind == SpeedrunKind.ending
                   ? opponentName(l10n, characters, stage.opponent)
                   : endgameName(l10n, stage.position.subcategory),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),

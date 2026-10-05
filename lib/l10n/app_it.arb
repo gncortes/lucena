@@ -359,5 +359,6 @@
   "homeStatBestRun": "Miglior speedrun",
   "homeTools": "Strumenti",
   "profileRatingPeriodGames": "Ultime {count}",
-  "profileRatingPeriodAll": "Tutte"
+  "profileRatingPeriodAll": "Tutte",
+  "catalogDone": "{done} di {total} fatte"
 }
