@@ -32,6 +32,24 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - atalhos menores em grade (Jornada, Treinar finais, Speedrun) e os de ferramenta (Posição personalizada, Tabuleiro livre) mais discretos;
   - o mascote pequeno (ou só na primeira abertura, no tour).
 
+## Speedrun
+
+- [ ] **Layout e nomes da lista de speedruns.** ([print](../qa/melhorias/f8b57c1c.jpg)) O que incomoda no print:
+  - "Degrau Maia 1000", "Os 9 desafios": termos internos ("degrau") e sem o personagem;
+  - lista longa de linhas iguais (ícone de cronômetro, "Sem recorde", seta), com o fim cortado pela barra do sistema;
+  - o texto de explicação ocupa o topo inteiro toda vez.
+
+  Proposta de nomes (a confirmar):
+  - seção "Degraus" → **"Desafios por adversário"**; item "Degrau Maia 1000" → **"Contra o Coco"** (retrato + "1000 · 9 desafios");
+  - seção "Finais" → **"Um final, todos os adversários"**; "Exercícios" → **"Séries de exercícios"**; "Campanha" → **"Jornada completa"**;
+  - "Sem recorde" → **"Ainda sem tempo"**; "Recorde pessoal" → **"Seu melhor tempo"**.
+
+  Proposta de layout: cartões em vez de linhas; o retrato do personagem (ou o material do final) no cartão; o melhor tempo em destaque quando houver; tentativa em andamento no topo com "Continuar"; a explicação vira um ícone de ajuda (ⓘ) que abre um painel; espaço embaixo para rolar até o fim.
+
+## Nomes no app
+
+- [ ] **Revisar a palavra "degrau" em todas as telas.** Usar o personagem ("Contra o Coco") ou "nível" onde "degrau" aparece para o jogador (Jornada, tour, conquistas, mensagens do fim da partida). Manter "degrau" só no código.
+
 ## Tela da Jornada
 
 - [ ] **Refazer a lista de degraus.** ([print](../qa/melhorias/c26d2730.jpg)) O que incomoda no print:
