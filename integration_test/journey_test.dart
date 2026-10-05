@@ -70,13 +70,13 @@ void main() {
     await journey.expectCompleted('1000');
     await journey.expectUnlocked('1200');
     await journey.expectLocked('1400');
-    journey.expectCurrent('You are at Maia 1200');
+    await journey.expectCurrent('Tito');
 
     await app.restart();
     await journey.open();
     await journey.expectCompleted('1000');
     await journey.expectUnlocked('1200');
-    journey.expectCurrent('You are at Maia 1200');
+    await journey.expectCurrent('Tito');
   });
 
   patrolTest('perder um desafio: nada concluído e a partida no histórico', (
@@ -99,7 +99,7 @@ void main() {
     await journey.back();
     await journey.expectChallengeDone('basic.queen.0001', done: false);
     await journey.back();
-    journey.expectCurrent('You are at Maia 1000');
+    await journey.expectCurrent('Coco');
     await journey.expectLocked('1200');
   });
 
@@ -135,7 +135,7 @@ void main() {
 
     await journey.tapLockedAndExpectMessage(
       '1200',
-      'Complete 8 more challenges at Maia 1000 to unlock',
+      'Complete 8 more challenges against Coco to unlock',
     );
   });
 
@@ -182,6 +182,6 @@ void main() {
     // Partida antiga não era desafio: a Jornada começa do início.
     await app.restart();
     await journey.open();
-    journey.expectCurrent('You are at Maia 1000');
+    await journey.expectCurrent('Coco');
   });
 }

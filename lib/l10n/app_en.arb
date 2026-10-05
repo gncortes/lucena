@@ -701,7 +701,7 @@
   "@journeyHistoryEmpty": {
     "description": "Shown in the history of a challenge that was never played."
   },
-  "journeyLocked": "{count, plural, =1{Complete 1 more challenge at {rung} to unlock} other{Complete {count} more challenges at {rung} to unlock}}",
+  "journeyLocked": "{count, plural, =1{Complete 1 more challenge against {rung} to unlock} other{Complete {count} more challenges against {rung} to unlock}}",
   "@journeyLocked": {
     "description": "Message when tapping a locked level: what is missing in the previous level.",
     "placeholders": {
@@ -1707,5 +1707,96 @@
   "resultYouLost": "You lost",
   "@resultYouLost": {
     "description": "Title of the animated result card when the player loses."
+  },
+  "endgameQueen": "Queen mate",
+  "@endgameQueen": {
+    "description": "Name of the endgame: checkmate with king and queen against a lone king."
+  },
+  "endgameRook": "Rook mate",
+  "@endgameRook": {
+    "description": "Name of the endgame: checkmate with king and rook against a lone king."
+  },
+  "endgameTwoRooks": "Two-rook mate",
+  "@endgameTwoRooks": {
+    "description": "Name of the endgame: checkmate with two rooks against a lone king."
+  },
+  "endgamePawnVsKing": "Pawn against king",
+  "@endgamePawnVsKing": {
+    "description": "Name of the endgame: king and pawn against a lone king."
+  },
+  "endgameRookPawnVsRook": "Rook and pawn against rook",
+  "@endgameRookPawnVsRook": {
+    "description": "Name of the endgame: rook and pawn against rook."
+  },
+  "endgameQueenVsRook": "Queen against rook",
+  "@endgameQueenVsRook": {
+    "description": "Name of the endgame: queen against rook."
+  },
+  "endgameQueenVsPawn": "Queen against pawn",
+  "@endgameQueenVsPawn": {
+    "description": "Name of the endgame: queen against an advanced pawn."
+  },
+  "endgameRookVsPawn": "Rook against pawn",
+  "@endgameRookVsPawn": {
+    "description": "Name of the endgame: rook against a pawn."
+  },
+  "journeyNowFacing": "Your opponent now",
+  "@journeyNowFacing": {
+    "description": "Label above the current opponent on the Journey screen."
+  },
+  "journeyThen": "Then: {name}",
+  "@journeyThen": {
+    "description": "Who comes after the current opponent on the Journey.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyBoss": "Final boss",
+  "@journeyBoss": {
+    "description": "Badge on the last opponent of the Journey (Stockfish)."
+  },
+  "journeyDone": "Done",
+  "@journeyDone": {
+    "description": "Badge on an opponent whose challenges are all completed."
+  },
+  "journeyOpponentLevel": "Level {level}",
+  "@journeyOpponentLevel": {
+    "description": "Rating level of a Journey opponent, under the name.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyNextChallenge": "Your next challenge",
+  "@journeyNextChallenge": {
+    "description": "Title of the highlighted next challenge on an opponent's screen."
+  },
+  "journeyAllChallenges": "All challenges",
+  "@journeyAllChallenges": {
+    "description": "Title of the grid with all challenges against an opponent."
+  },
+  "challengeOpponent": "Your opponent",
+  "@challengeOpponent": {
+    "description": "Title of the opponent card on the challenge screen."
+  },
+  "challengeNoClock": "No clock",
+  "@challengeNoClock": {
+    "description": "Badge when the challenge is played without a clock."
+  },
+  "challengeHistoryInvite": "Your first game will show up here. Ready?",
+  "@challengeHistoryInvite": {
+    "description": "Empty state of the games history on the challenge screen."
+  },
+  "attemptClock": "{time} on the clock",
+  "@attemptClock": {
+    "description": "How long the player's clock ran in a past game.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   }
 }

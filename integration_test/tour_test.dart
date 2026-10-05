@@ -32,7 +32,7 @@ void main() {
     );
     final journey = JourneyRobot($);
     await journey.open();
-    journey.expectCurrent('You are at Maia 1400');
+    await journey.expectCurrent('Percival');
     await journey.expectUnlocked('1000');
     await journey.expectLocked('1600');
   });
