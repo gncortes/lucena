@@ -171,6 +171,10 @@ Como ficou (2026-10-05):
 - Speedrun: o app leva só os de final, nove, nesta ordem: mate de torre, mate de dama, mate de dois bispos, dama contra torre, torre e peão contra torre, peão contra rei, torre contra peão, dama contra peão e mate de bispo e cavalo. O catálogo ganhou as posições de dois bispos (3) e de bispo e cavalo (2), conferidas na tablebase. A tela do speedrun mostra as etapas no formato de passos da Jornada (pedido do Gabriel depois de ver a primeira versão): os retratos dos adversários ligados por uma linha, do Coco ao Stockfish (o chefe final), o selo de feito nas etapas vencidas, a da vez maior e em destaque e, em andamento, uma barra de progresso com um segmento por etapa. O histórico inclui as desistências ("Desistiu na etapa 4 de 10").
 - Os desafios por adversário, as séries de exercícios e a Jornada completa saíram do speedrun (o app ainda sabe ler essas modalidades, mas não leva nenhuma). A Jornada, que tem os mesmos desafios por adversário sem o relógio, é apresentada na tela inicial como o treino guiado que complementa as aulas.
 
+Próxima entrega (pedido do Gabriel, 2026-10-05):
+
+- [ ] **Tela da partida como a do chess.com: lances numa faixa no alto, tocáveis.** ([print do chess.com](../qa/melhorias/8d60273e.jpg)) Os lances ficam numa faixa que rola para o lado, logo abaixo da barra do alto; tocar num lance mostra a posição daquele momento, só para ver (sem mexer nas peças). No print, embaixo ficam os botões de voltar e avançar um lance. Troca a tabela de lances embaixo do tabuleiro, feita na v1.10.0.
+
 Em aberto, para confirmar com o Gabriel:
 
 - [ ] **"Recomeçar" o speedrun.** Hoje é desistir (menu da tentativa) e começar de novo; não há um botão único.
