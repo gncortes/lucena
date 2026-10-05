@@ -18,6 +18,16 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta: tabuleiro grande no topo (largura da tela, como na configuração da partida); um cartão do adversário com retrato, nome, nível e a frase dele; o objetivo e o ritmo em selos; "Jogar" fixo embaixo; o histórico em cartões com o resultado colorido, o tempo gasto e a variação do rating de cada partida; e um estado vazio com convite para jogar.
 
+## Tela do degrau (Jornada)
+
+- [ ] **Refazer a lista dos desafios do degrau.** ([print](../qa/melhorias/6167f3c6.jpg)) O que incomoda no print:
+  - título "Maia 1000" sem o personagem; o progresso é só um texto ("1 de 9 desafios");
+  - nove linhas iguais (tabuleiro pequeno, material, "Ganhar" verde e uma seta): nada diz qual é o próximo nem separa feito de por fazer;
+  - "Ganhar" repetido em todas, ocupando o espaço da informação útil;
+  - o último item fica atrás da barra de navegação do sistema (falta espaço embaixo).
+
+  Proposta: cabeçalho com o retrato e o nome do personagem, a frase dele e uma barra de progresso (1/9); o próximo desafio em destaque (cartão maior, com "Jogar"); os outros em grade de 2 ou 3 colunas, cada um com o tabuleiro, o nome do final (ex.: "Mate de dama") e um selo de feito; o objetivo só aparece quando for diferente do comum (ex.: "Empatar"); espaço embaixo para rolar até o fim.
+
 ## Notado nos mesmos prints (para confirmar com o Gabriel)
 
 - [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. Avaliar: empate aceito vale meio ponto no rating, ou não conta. ([print](../qa/melhorias/4c10dc0a.jpg))
