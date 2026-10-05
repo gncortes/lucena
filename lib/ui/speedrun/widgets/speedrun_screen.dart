@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
+import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/speedrun_keys.dart';
@@ -119,8 +120,9 @@ class SpeedrunScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // O ícone da categoria: raio, chama, relógio.
                             Icon(
-                              Icons.timer_outlined,
+                              paceIcon(PaceCategory.of(speedrun.time)),
                               size: 16,
                               color: colors.onSecondaryContainer,
                             ),
