@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
@@ -15,6 +17,11 @@ class AssetJourneyRepository implements JourneyRepository {
 
   static const ladderPath = 'assets/progression/ladder.json';
   static const speedrunsPath = 'assets/progression/speedruns.json';
+
+  /// As posições de cada etapa dos speedruns de final (geradas por
+  /// `tools/gen_speedrun_positions.py`). Ficam fora do catálogo.
+  static const speedrunPositionsPath =
+      'assets/progression/speedrun_positions.json';
 
   final AssetService _assets;
   final PositionsRepository _positions;
@@ -59,6 +66,7 @@ class AssetJourneyRepository implements JourneyRepository {
       await _assets.loadString(speedrunsPath),
     ) as Map<String, dynamic>;
     final ladder = await this.ladder();
+    final stagePositions = await _loadStagePositions();
     final speedruns = <Speedrun>[];
     for (final item
         in (json['speedruns'] as List).cast<Map<String, dynamic>>()) {
@@ -76,12 +84,18 @@ class AssetJourneyRepository implements JourneyRepository {
               in ladder.firstWhere((rung) => rung.id == rungId).challenges)
             challenge.copyWith(id: '$id/${challenge.position.id}', time: time),
         ],
-        // A mesma posição contra o adversário de cada degrau.
+        // O mesmo final contra o adversário de cada degrau, cada etapa com as
+        // peças em outras casas (e às vezes com as pretas). Sem as posições
+        // do arquivo, a posição do speedrun em todas as etapas.
         SpeedrunKind.ending => [
-          for (final rung in ladder)
+          for (final (index, rung) in ladder.indexed)
             Challenge(
               id: '$id/${rung.id}',
-              position: await _position(positionId!),
+              position: _stagePosition(
+                await _position(positionId!),
+                stagePositions[id],
+                index,
+              ),
               opponent: rung.opponent,
               time: time,
             ),
@@ -116,6 +130,42 @@ class AssetJourneyRepository implements JourneyRepository {
       );
     }
     return speedruns;
+  }
+
+  /// As posições das etapas, por id de speedrun. Vazio se o arquivo não
+  /// existe.
+  Future<Map<String, List<Map<String, dynamic>>>> _loadStagePositions() async {
+    final String text;
+    try {
+      text = await _assets.loadString(speedrunPositionsPath);
+    } on FlutterError {
+      return const {};
+    } on Exception {
+      return const {};
+    }
+    final json = jsonDecode(text) as Map<String, dynamic>;
+    return {
+      for (final MapEntry(:key, :value)
+          in (json['speedruns'] as Map<String, dynamic>).entries)
+        key: (value as List).cast<Map<String, dynamic>>(),
+    };
+  }
+
+  /// A posição da etapa [index]: a do arquivo, com o final (categoria,
+  /// subcategoria e objetivo) de [base]; sem ela, a própria [base].
+  EndgamePosition _stagePosition(
+    EndgamePosition base,
+    List<Map<String, dynamic>>? stages,
+    int index,
+  ) {
+    if (stages == null || index >= stages.length) return base;
+    final stage = stages[index];
+    return base.copyWith(
+      id: stage['id'] as String,
+      fen: stage['fen'] as String,
+      mateIn: stage['mateIn'] as int?,
+      verified: stage['verified'] as bool? ?? false,
+    );
   }
 
   Future<EndgamePosition> _position(String id) async {

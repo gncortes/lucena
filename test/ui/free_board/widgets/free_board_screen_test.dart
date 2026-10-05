@@ -175,8 +175,18 @@ void main() {
   String boardFen(WidgetTester tester) =>
       tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board)).controller.fen;
 
-  String textOf(WidgetTester tester, Key key) =>
-      tester.widget<Text>(find.byKey(key)).data!;
+  // O texto na key, simples ou com partes (o relógio escreve os décimos
+  // menores).
+  String textOf(WidgetTester tester, Key key) {
+    final text = tester.widget<Text>(
+      find.descendant(
+        of: find.byKey(key),
+        matching: find.byType(Text),
+        matchRoot: true,
+      ),
+    );
+    return text.data ?? text.textSpan!.toPlainText();
+  }
 
   testWidgets('abre na posição inicial, com as brancas para jogar', (
     tester,
@@ -285,7 +295,7 @@ void main() {
   });
 
   testWidgets('tocar num lance mostra a posição daquele momento, só para ver; '
-      'voltar e avançar andam lance a lance', (tester) async {
+      'tocar no último volta para a partida', (tester) async {
     await pumpScreen(tester);
     await move(tester, 'e2', 'e4');
     await move(tester, 'e7', 'e5');
@@ -303,41 +313,24 @@ void main() {
     expect(cubit.state.position.fen, live);
     expect(cubit.state.moves, ['e4', 'e5', 'Nf3']);
 
-    await tester.tap(find.byKey(FreeBoardKeys.moveNext));
+    await tester.tap(find.byKey(FreeBoardKeys.move(1)));
     await tester.pumpAndSettle();
     expect(cubit.state.viewedPly, 2);
-    await tester.tap(find.byKey(FreeBoardKeys.movePrevious));
-    await tester.tap(find.byKey(FreeBoardKeys.movePrevious));
-    await tester.pumpAndSettle();
-    // A posição de início: não há mais para onde voltar.
-    expect(cubit.state.viewedPly, 0);
-    expect(
-      tester
-          .widget<TextButton>(find.byKey(FreeBoardKeys.movePrevious))
-          .onPressed,
-      isNull,
-    );
+    expect(cubit.state.shownPosition.board.pieceAt(Square.e5), isNotNull);
 
-    // Avançar até o último lance devolve o tabuleiro à partida.
-    for (var step = 0; step < 3; step++) {
-      await tester.tap(find.byKey(FreeBoardKeys.moveNext));
-      await tester.pumpAndSettle();
-    }
+    // O último lance devolve o tabuleiro à partida.
+    await tester.tap(find.byKey(FreeBoardKeys.move(2)));
+    await tester.pumpAndSettle();
     expect(cubit.state.browsing, isFalse);
-    expect(
-      tester.widget<TextButton>(find.byKey(FreeBoardKeys.moveNext)).onPressed,
-      isNull,
-    );
     await move(tester, 'b8', 'c6');
     expect(cubit.state.moves, ['e4', 'e5', 'Nf3', 'Nc6']);
   });
 
-  testWidgets('sem lances, não há botões de rever a partida', (tester) async {
+  testWidgets('sem lances, a faixa avisa que não há lances', (tester) async {
     await pumpScreen(tester);
 
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
-    expect(find.byKey(FreeBoardKeys.movePrevious), findsNothing);
-    expect(find.byKey(FreeBoardKeys.moveNext), findsNothing);
+    expect(find.byKey(FreeBoardKeys.move(0)), findsNothing);
   });
 
   testWidgets('promoção: o seletor aparece e o cavalo escolhido entra', (

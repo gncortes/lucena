@@ -27,21 +27,33 @@ void main() {
     expect(cubit.state.filter, GoalFilter.draw);
     expect(cubit.state.categories?.map((c) => c.key), ['basic', 'rookPawn']);
     expect(cubit.state.positions, isNull);
+    expect(cubit.state.sections, isNull);
   });
 
-  test('com a subcategoria, carrega as posições dela', () async {
-    final cubit = build();
-    addTearDown(cubit.close);
+  test(
+    'com a categoria, carrega as posições de todos os finais dela',
+    () async {
+      final cubit = build();
+      addTearDown(cubit.close);
 
-    await cubit.load(subcategory: 'rookPawnVsRook');
+      await cubit.load(category: 'basic');
 
-    expect(cubit.state.positions, hasLength(2));
-  });
+      expect(cubit.state.positions?.map((p) => p.id), [
+        'basic.queen.0001',
+        'basic.rook.0001',
+      ]);
+      expect(cubit.state.sections?.map((s) => s.subcategory), [
+        'queen',
+        'rook',
+      ]);
+      expect(cubit.state.sections?.every((s) => s.expanded), isTrue);
+    },
+  );
 
   test('filtrar "defender" deixa só as posições de empate e grava', () async {
     final cubit = build();
     addTearDown(cubit.close);
-    await cubit.load(subcategory: 'rookPawnVsRook');
+    await cubit.load(category: 'rookPawn');
 
     await cubit.setFilter(GoalFilter.draw);
 
@@ -49,6 +61,30 @@ void main() {
       PositionGoal.draw,
     ]);
     expect(training.filter, GoalFilter.draw);
+  });
+
+  test('final sem posição para o filtro sai das seções', () async {
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load(category: 'basic');
+
+    await cubit.setFilter(GoalFilter.draw);
+
+    expect(cubit.state.sections, isEmpty);
+  });
+
+  test('fechar uma seção e abrir de novo', () async {
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load(category: 'basic');
+
+    cubit.toggleSection('queen');
+
+    expect(cubit.state.sections?.map((s) => s.expanded), [false, true]);
+
+    cubit.toggleSection('queen');
+
+    expect(cubit.state.sections?.map((s) => s.expanded), [true, true]);
   });
 
   test('a contagem da categoria segue o filtro', () async {

@@ -2118,5 +2118,42 @@
   "statsGamesEmpty": "The games you play show up here, most recent first.",
   "@statsGamesEmpty": {
     "description": "Statistics screen: shown in place of the game history while no game was played."
+  },
+  "speedrunRetry": "Try again",
+  "@speedrunRetry": {
+    "description": "Speedrun: button after losing a stage; plays the same stage again right away."
+  },
+  "speedrunQuitTitle": "Leave the speedrun?",
+  "@speedrunQuitTitle": {
+    "description": "Speedrun: title of the confirmation shown when the player leaves in the middle of an attempt."
+  },
+  "ratingPeriodDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@ratingPeriodDays": {
+    "description": "Rating chart period chip: the last N days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingPeriodYear": "1 year",
+  "@ratingPeriodYear": {
+    "description": "Rating chart period chip: the last year."
+  },
+  "ratingPeriodEmpty": "No rated games in this period.",
+  "@ratingPeriodEmpty": {
+    "description": "Rating chart: shown when the chosen period has no rated game."
+  },
+  "ratingHighest": "Highest",
+  "@ratingHighest": {
+    "description": "Statistics: label above the highest rating reached."
+  },
+  "gameDetailsTitle": "Game details",
+  "@gameDetailsTitle": {
+    "description": "Title of the screen with the details and moves of a finished game."
+  },
+  "gameDetailsNotFound": "This game is no longer saved.",
+  "@gameDetailsNotFound": {
+    "description": "Game details: shown when the game was not found."
   }
 }

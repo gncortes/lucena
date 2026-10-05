@@ -100,6 +100,9 @@ abstract final class Routes {
   /// Os detalhes do rating: o gráfico e o histórico das partidas.
   static const rating = '/rating';
 
+  /// Os detalhes de uma partida gravada, pelo id dela.
+  static String game(int id) => '/rating/game/$id';
+
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
   static String lesson(String id) => '/school/$id';
@@ -109,8 +112,6 @@ abstract final class Routes {
 
   static const catalog = '/catalog';
   static String catalogCategory(String category) => '/catalog/$category';
-  static String catalogSubcategory(String category, String subcategory) =>
-      '/catalog/$category/$subcategory';
 
   /// Configuração da partida numa posição, com o objetivo e, se ela vier do
   /// catálogo, o id dela (para o histórico).

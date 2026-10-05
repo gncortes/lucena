@@ -145,7 +145,8 @@ class FreeBoardRobot {
     await $(
       find.descendant(
         of: find.byKey(FreeBoardKeys.clock(side)),
-        matching: find.text(time),
+        // Os décimos vêm num trecho menor do mesmo texto.
+        matching: find.text(time, findRichText: true),
       ),
     ).waitUntilVisible();
   }
@@ -301,17 +302,6 @@ class FreeBoardRobot {
   /// daquele momento.
   Future<void> viewMove(int index) async {
     await $(FreeBoardKeys.move(index)).scrollTo().tap();
-    await $.pumpAndSettle();
-  }
-
-  /// Um lance para trás e um para a frente na revisão.
-  Future<void> viewPrevious() async {
-    await $(FreeBoardKeys.movePrevious).tap();
-    await $.pumpAndSettle();
-  }
-
-  Future<void> viewNext() async {
-    await $(FreeBoardKeys.moveNext).tap();
     await $.pumpAndSettle();
   }
 

@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
@@ -100,7 +101,8 @@ void main() {
     expect(attempts.first.opponentLevel, isNull);
   });
 
-  test('a partida completa volta igual: lances, relógio e desafio', () async {
+  test('a partida completa volta igual: lances com o tempo de cada um, lado, '
+      'relógio e desafio', () async {
     final full = Attempt(
       positionId: 'basic.queen.0001',
       playedAt: DateTime.utc(2026, 10, 4, 12, 5),
@@ -111,6 +113,11 @@ void main() {
       startedAt: DateTime.utc(2026, 10, 4, 12),
       startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
       moves: const ['c1c7', 'd7e6'],
+      moveTimes: const [
+        Duration(seconds: 3, milliseconds: 250),
+        Duration(milliseconds: 800),
+      ],
+      userSide: Side.white,
       endReason: GameEndReason.checkmate,
       userTime: const TimeControl(
         initial: Duration(minutes: 3),
@@ -142,5 +149,28 @@ void main() {
 
     expect(await repository.fulfilledChallenges(), {'1000/a'});
     expect(await repository.attemptsForChallenge('1000/b'), hasLength(1));
+  });
+
+  test('partida sem tempo por lance nem lado volta sem eles', () async {
+    await repository.addAttempt(
+      attempt('basic.queen.0001', 1, fulfilled: true),
+    );
+
+    final game = (await repository.allAttempts()).single;
+
+    expect(game.moveTimes, isEmpty);
+    expect(game.userSide, isNull);
+  });
+
+  test('o lado das pretas também volta', () async {
+    await repository.addAttempt(
+      attempt(
+        'basic.queen.0001',
+        1,
+        fulfilled: true,
+      ).copyWith(userSide: Side.black),
+    );
+
+    expect((await repository.allAttempts()).single.userSide, Side.black);
   });
 }

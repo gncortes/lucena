@@ -8,6 +8,9 @@ abstract class ProgressRepository {
   /// Todas as partidas, na ordem em que foram gravadas.
   Future<List<Attempt>> allAttempts();
 
+  /// Todas as partidas pelo id, na ordem em que foram gravadas.
+  Future<Map<int, Attempt>> allAttemptsById();
+
   /// As partidas com os ids [ids] (os que `addAttempt` devolveu), por id.
   Future<Map<int, Attempt>> attemptsById(Iterable<int> ids);
 

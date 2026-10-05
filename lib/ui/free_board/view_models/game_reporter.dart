@@ -14,6 +14,7 @@ import '../../../domain/models/achievement.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/player_rating.dart';
+import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
@@ -32,6 +33,7 @@ class GameReport {
     this.achievements = const [],
     this.characters = const [],
     this.next,
+    this.speedrun,
   });
 
   /// O rating antes e depois. Nulos se a partida não conta.
@@ -49,6 +51,35 @@ class GameReport {
 
   /// Num desafio da Jornada, o desafio para jogar em seguida.
   final NextChallenge? next;
+
+  /// Numa etapa de speedrun, o que vem depois dela.
+  final SpeedrunStep? speedrun;
+}
+
+/// O passo seguinte de um speedrun, depois de uma etapa: a mesma etapa de
+/// novo (se foi perdida), a próxima ou, com todas vencidas, o fim.
+class SpeedrunStep {
+  const SpeedrunStep({
+    required this.speedrunId,
+    required this.attemptId,
+    this.stage,
+    this.challenge,
+    this.lost = false,
+  });
+
+  final String speedrunId;
+  final int attemptId;
+
+  /// A etapa a jogar em seguida e o desafio dela. Nulos com o speedrun
+  /// concluído.
+  final int? stage;
+  final Challenge? challenge;
+
+  /// A etapa foi perdida: a tentativa terminou ali, e tentar de novo é uma
+  /// tentativa nova, desde a primeira etapa ([challenge]).
+  final bool lost;
+
+  bool get finished => challenge == null;
 }
 
 /// Monta o [GameReport] de uma partida já gravada, a partir do histórico.
@@ -118,8 +149,15 @@ class GameReporter {
         runs.add(SpeedrunScore.run(speedrun, attempt));
       }
     }
-    final subcategoryOf = <String, String>{};
+    // As posições das etapas dos speedruns de final ficam fora do catálogo:
+    // o final delas vem do próprio speedrun.
+    final subcategoryOf = <String, String>{
+      for (final speedrun in speedruns.values)
+        for (final stage in speedrun.stages)
+          stage.position.id: stage.position.subcategory,
+    };
     for (final id in {for (final game in games) game.positionId}) {
+      if (subcategoryOf.containsKey(id)) continue;
       final position = await _positions.byId(id);
       if (position != null) subcategoryOf[id] = position.subcategory;
     }
@@ -159,6 +197,39 @@ class GameReporter {
       ],
       achievements: earned,
       characters: await _characters?.characters() ?? const [],
+      speedrun: await _speedrunStep(game, speedruns),
+    );
+  }
+
+  // Depois de uma etapa de speedrun: a mesma de novo, a próxima ou o fim.
+  Future<SpeedrunStep?> _speedrunStep(
+    Attempt game,
+    Map<String, Speedrun> speedruns,
+  ) async {
+    final attemptId = game.speedrunAttemptId;
+    if (attemptId == null) return null;
+    final attempt = await _speedruns.attempt(attemptId);
+    final speedrun = speedruns[attempt?.speedrunId];
+    if (attempt == null || speedrun == null) return null;
+    // O speedrun é uma fileira só: perder uma etapa encerra a tentativa,
+    // que fica no histórico até onde chegou.
+    if (!game.fulfilled) {
+      await _speedruns.abandon(attemptId, _now());
+      return SpeedrunStep(
+        speedrunId: speedrun.id,
+        attemptId: attemptId,
+        stage: 0,
+        challenge: speedrun.stages.first,
+        lost: true,
+      );
+    }
+    final run = SpeedrunScore.run(speedrun, attempt);
+    final stage = run.currentStage;
+    return SpeedrunStep(
+      speedrunId: speedrun.id,
+      attemptId: attemptId,
+      stage: run.completed ? null : stage,
+      challenge: run.completed ? null : speedrun.stages[stage],
     );
   }
 

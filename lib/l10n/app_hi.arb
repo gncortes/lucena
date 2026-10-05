@@ -400,5 +400,13 @@
   "gameMoveBack": "पीछे",
   "gameMoveForward": "आगे",
   "statsGamesTitle": "बाज़ियों का इतिहास",
-  "statsGamesEmpty": "आपकी खेली हुई बाज़ियाँ यहाँ दिखती हैं, सबसे नई सबसे पहले।"
+  "statsGamesEmpty": "आपकी खेली हुई बाज़ियाँ यहाँ दिखती हैं, सबसे नई सबसे पहले।",
+  "speedrunRetry": "फिर से कोशिश करें",
+  "speedrunQuitTitle": "स्पीडरन छोड़ें?",
+  "ratingPeriodDays": "{count, plural, =1{1 दिन} other{{count} दिन}}",
+  "ratingPeriodYear": "1 साल",
+  "ratingPeriodEmpty": "इस अवधि में कोई रेटेड बाज़ी नहीं।",
+  "ratingHighest": "सर्वोच्च",
+  "gameDetailsTitle": "बाज़ी का विवरण",
+  "gameDetailsNotFound": "यह बाज़ी अब सहेजी नहीं है।"
 }

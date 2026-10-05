@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clock.dart';
@@ -43,6 +44,13 @@ abstract class Attempt with _$Attempt {
     /// partidas de antes da Jornada.
     String? startFen,
     @Default(<String>[]) List<String> moves,
+
+    /// Quanto cada lance levou, na ordem de [moves] (o do jogador e o do
+    /// adversário). Vazio nas partidas de antes de isto ser gravado.
+    @Default(<Duration>[]) List<Duration> moveTimes,
+
+    /// O lado do jogador. Nulo nas partidas de antes de isto ser gravado.
+    Side? userSide,
 
     /// Como a partida terminou (mate, tempo, desistência...).
     GameEndReason? endReason,

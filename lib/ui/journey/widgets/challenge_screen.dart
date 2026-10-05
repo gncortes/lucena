@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/journey.dart';
+import '../../../domain/models/pace.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
@@ -75,9 +77,10 @@ class ChallengeScreen extends StatelessWidget {
                     children: [
                       _GoalChip(challenge: challenge),
                       _Chip(
-                        icon: challenge.time == null
-                            ? Icons.timer_off_outlined
-                            : Icons.timer_outlined,
+                        icon: switch (challenge.time) {
+                          final time? => paceIcon(PaceCategory.of(time)),
+                          null => Icons.timer_off_outlined,
+                        },
                         text: switch (challenge.time) {
                           final time? => l10n.speedrunTimeControl(
                             time.initial.inMinutes,

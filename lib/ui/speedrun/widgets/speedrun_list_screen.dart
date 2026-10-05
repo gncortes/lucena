@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/clock.dart';
+import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
-import '../../../domain/use_cases/clock_format.dart';
+import '../../../domain/models/speedrun_pace.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
 
-/// Os speedruns no ritmo escolhido, com o melhor tempo de cada um. As
-/// tentativas em andamento (de qualquer ritmo) ficam no alto.
+/// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
   const SpeedrunListScreen({super.key});
 
@@ -51,27 +53,10 @@ class SpeedrunListScreen extends StatelessWidget {
           : ListView(
               padding: scrollPadding(context),
               children: [
-                // O ritmo da lista: cada ritmo tem os seus recordes.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: ActionChip(
-                      key: SpeedrunKeys.pace,
-                      avatar: const Icon(Icons.timer_outlined, size: 18),
-                      label: Text(paceLabel(l10n, state.pace)),
-                      onPressed: () async {
-                        final cubit = context.read<SpeedrunCubit>();
-                        final choice = await showPaceSheet(
-                          context,
-                          current: state.pace,
-                        );
-                        final time = choice?.time;
-                        if (time != null) await cubit.choosePace(time);
-                      },
-                    ),
-                  ),
-                ),
+                // O ritmo da lista, sempre à vista: a categoria e, dentro
+                // dela, o tempo. Cada ritmo tem os seus recordes, e o último
+                // escolhido fica gravado.
+                _PacePicker(current: state.pace),
                 // O que é o speedrun, em uma frase, para quem chega.
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -83,14 +68,6 @@ class SpeedrunListScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (state.inProgress.isNotEmpty) ...[
-                  section(l10n.speedrunContinue),
-                  for (final (index, summary) in state.inProgress.indexed)
-                    StaggeredEntrance(
-                      index: index,
-                      child: _Card(summary: summary, ongoing: true),
-                    ),
-                ],
                 for (final kind in SpeedrunKind.values)
                   // Modalidade sem speedrun não ganha título.
                   if (all.any((summary) => summary.speedrun.kind == kind)) ...[
@@ -149,13 +126,11 @@ class SpeedrunListScreen extends StatelessWidget {
   }
 }
 
-/// Um speedrun num cartão: a imagem, o nome, as etapas e o melhor tempo (ou,
-/// em andamento, em que etapa está e o ritmo).
+/// Um speedrun num cartão: a imagem, o nome, as etapas e o melhor tempo.
 class _Card extends StatelessWidget {
-  const _Card({required this.summary, this.ongoing = false});
+  const _Card({required this.summary});
 
   final SpeedrunSummary summary;
-  final bool ongoing;
 
   @override
   Widget build(BuildContext context) {
@@ -167,22 +142,15 @@ class _Card extends StatelessWidget {
     );
     final speedrun = summary.speedrun;
     final best = summary.records.best;
-    final run = summary.ongoing;
     return Card(
-      key: ongoing
-          ? SpeedrunKeys.inProgress(speedrun.id)
-          : SpeedrunKeys.item(speedrun.id),
+      key: SpeedrunKeys.item(speedrun.id),
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      color: ongoing ? colors.primaryContainer : colors.surfaceContainerLow,
+      color: colors.surfaceContainerLow,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () async {
           final cubit = context.read<SpeedrunCubit>();
-          await context.push(
-            ongoing && run != null
-                ? Routes.speedrunAttempt(speedrun.id, run.attempt.id)
-                : Routes.speedrun(speedrun.id),
-          );
+          await context.push(Routes.speedrun(speedrun.id));
           if (context.mounted) await cubit.load();
         },
         child: Padding(
@@ -199,47 +167,116 @@ class _Card extends StatelessWidget {
                       speedrunName(l10n, characters, speedrun),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: ongoing ? colors.onPrimaryContainer : null,
                       ),
                     ),
                     Text(
-                      ongoing && run != null
-                          ? '${l10n.speedrunStageOf(run.currentStage + 1, speedrun.stages.length)}'
-                                ' · ${paceShort(l10n, speedrun.time)}'
-                          : l10n.speedrunStagesCount(speedrun.stages.length),
+                      l10n.speedrunStagesCount(speedrun.stages.length),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: ongoing
-                            ? colors.onPrimaryContainer
-                            : colors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              if (ongoing)
-                Icon(Icons.play_circle_fill, size: 32, color: colors.primary)
-              else
-                Text(
-                  best == null
-                      ? l10n.speedrunNoRecord
-                      : RunTimeFormat.format(best),
-                  key: SpeedrunKeys.itemBest(speedrun.id),
-                  style:
-                      (best == null
-                              ? theme.textTheme.bodySmall
-                              : theme.textTheme.titleMedium)
-                          ?.copyWith(
-                            fontWeight: best == null ? null : FontWeight.w800,
-                            color: best == null
-                                ? colors.onSurfaceVariant
-                                : colors.primary,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                ),
+              Text(
+                best == null ? l10n.speedrunNoRecord : runTime(context, best),
+                key: SpeedrunKeys.itemBest(speedrun.id),
+                style:
+                    (best == null
+                            ? theme.textTheme.bodySmall
+                            : theme.textTheme.titleMedium)
+                        ?.copyWith(
+                          fontWeight: best == null ? null : FontWeight.w800,
+                          color: best == null
+                              ? colors.onSurfaceVariant
+                              : colors.primary,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Bullet, blitz ou rápido no alto e, embaixo, os ritmos da categoria
+/// escolhida. Tocar num ritmo troca a lista.
+class _PacePicker extends StatefulWidget {
+  const _PacePicker({required this.current});
+
+  final TimeControl current;
+
+  @override
+  State<_PacePicker> createState() => _PacePickerState();
+}
+
+class _PacePickerState extends State<_PacePicker> {
+  late PaceCategory _category = PaceCategory.of(widget.current);
+
+  @override
+  void didUpdateWidget(_PacePicker old) {
+    super.didUpdateWidget(old);
+    if (old.current != widget.current) {
+      _category = PaceCategory.of(widget.current);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<SpeedrunCubit>();
+    final groups = SpeedrunPaces.groups;
+    return Padding(
+      key: SpeedrunKeys.pace,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SegmentedButton<PaceCategory>(
+            showSelectedIcon: false,
+            segments: [
+              for (final category in groups.keys)
+                ButtonSegment(
+                  value: category,
+                  icon: Icon(paceIcon(category)),
+                  label: Text(
+                    category.label(l10n),
+                    key: SpeedrunKeys.paceCategory(category.name),
+                  ),
+                ),
+            ],
+            selected: {_category},
+            onSelectionChanged: (selection) =>
+                setState(() => _category = selection.single),
+          ),
+          const SizedBox(height: 10),
+          // Os ritmos da categoria, entrando com um fade quando ela muda.
+          AnimatedSwitcher(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 200),
+            child: Wrap(
+              key: ValueKey(_category),
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final time in groups[_category] ?? const <TimeControl>[])
+                  ChoiceChip(
+                    key: SpeedrunKeys.paceOption(time.code),
+                    avatar: Icon(paceIcon(_category), size: 18),
+                    // O ícone do ritmo fica no lugar do "visto".
+                    showCheckmark: false,
+                    label: Text(paceShort(l10n, time)),
+                    selected: time == widget.current,
+                    onSelected: (_) => cubit.choosePace(time),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

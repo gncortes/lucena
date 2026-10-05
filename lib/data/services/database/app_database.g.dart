@@ -376,6 +376,29 @@ class $GamesTable extends Games with TableInfo<$GamesTable, GameRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _moveTimesMsMeta = const VerificationMeta(
+    'moveTimesMs',
+  );
+  @override
+  late final GeneratedColumn<String> moveTimesMs = GeneratedColumn<String>(
+    'move_times_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _userSideMeta = const VerificationMeta(
+    'userSide',
+  );
+  @override
+  late final GeneratedColumn<String> userSide = GeneratedColumn<String>(
+    'user_side',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _userTimeMeta = const VerificationMeta(
     'userTime',
   );
@@ -455,6 +478,8 @@ class $GamesTable extends Games with TableInfo<$GamesTable, GameRow> {
     startFen,
     moves,
     endReason,
+    moveTimesMs,
+    userSide,
     userTime,
     opponentTime,
     userClockMs,
@@ -548,6 +573,21 @@ class $GamesTable extends Games with TableInfo<$GamesTable, GameRow> {
       context.handle(
         _endReasonMeta,
         endReason.isAcceptableOrUnknown(data['end_reason']!, _endReasonMeta),
+      );
+    }
+    if (data.containsKey('move_times_ms')) {
+      context.handle(
+        _moveTimesMsMeta,
+        moveTimesMs.isAcceptableOrUnknown(
+          data['move_times_ms']!,
+          _moveTimesMsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('user_side')) {
+      context.handle(
+        _userSideMeta,
+        userSide.isAcceptableOrUnknown(data['user_side']!, _userSideMeta),
       );
     }
     if (data.containsKey('user_time')) {
@@ -654,6 +694,14 @@ class $GamesTable extends Games with TableInfo<$GamesTable, GameRow> {
         DriftSqlType.string,
         data['${effectivePrefix}end_reason'],
       ),
+      moveTimesMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}move_times_ms'],
+      )!,
+      userSide: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_side'],
+      ),
       userTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_time'],
@@ -708,6 +756,13 @@ class GameRow extends DataClass implements Insertable<GameRow> {
   final String moves;
   final String? endReason;
 
+  /// Quanto cada lance levou, em milissegundos, separados por espaço. Vazio
+  /// nas partidas de antes da versão 6.
+  final String moveTimesMs;
+
+  /// O lado do jogador (`white` ou `black`). Nulo antes da versão 6.
+  final String? userSide;
+
   /// O tempo de cada lado (`segundos+incremento`).
   final String? userTime;
   final String? opponentTime;
@@ -729,6 +784,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
     this.startFen,
     required this.moves,
     this.endReason,
+    required this.moveTimesMs,
+    this.userSide,
     this.userTime,
     this.opponentTime,
     this.userClockMs,
@@ -757,6 +814,10 @@ class GameRow extends DataClass implements Insertable<GameRow> {
     map['moves'] = Variable<String>(moves);
     if (!nullToAbsent || endReason != null) {
       map['end_reason'] = Variable<String>(endReason);
+    }
+    map['move_times_ms'] = Variable<String>(moveTimesMs);
+    if (!nullToAbsent || userSide != null) {
+      map['user_side'] = Variable<String>(userSide);
     }
     if (!nullToAbsent || userTime != null) {
       map['user_time'] = Variable<String>(userTime);
@@ -800,6 +861,10 @@ class GameRow extends DataClass implements Insertable<GameRow> {
       endReason: endReason == null && nullToAbsent
           ? const Value.absent()
           : Value(endReason),
+      moveTimesMs: Value(moveTimesMs),
+      userSide: userSide == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userSide),
       userTime: userTime == null && nullToAbsent
           ? const Value.absent()
           : Value(userTime),
@@ -838,6 +903,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
       startFen: serializer.fromJson<String?>(json['startFen']),
       moves: serializer.fromJson<String>(json['moves']),
       endReason: serializer.fromJson<String?>(json['endReason']),
+      moveTimesMs: serializer.fromJson<String>(json['moveTimesMs']),
+      userSide: serializer.fromJson<String?>(json['userSide']),
       userTime: serializer.fromJson<String?>(json['userTime']),
       opponentTime: serializer.fromJson<String?>(json['opponentTime']),
       userClockMs: serializer.fromJson<int?>(json['userClockMs']),
@@ -861,6 +928,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
       'startFen': serializer.toJson<String?>(startFen),
       'moves': serializer.toJson<String>(moves),
       'endReason': serializer.toJson<String?>(endReason),
+      'moveTimesMs': serializer.toJson<String>(moveTimesMs),
+      'userSide': serializer.toJson<String?>(userSide),
       'userTime': serializer.toJson<String?>(userTime),
       'opponentTime': serializer.toJson<String?>(opponentTime),
       'userClockMs': serializer.toJson<int?>(userClockMs),
@@ -882,6 +951,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
     Value<String?> startFen = const Value.absent(),
     String? moves,
     Value<String?> endReason = const Value.absent(),
+    String? moveTimesMs,
+    Value<String?> userSide = const Value.absent(),
     Value<String?> userTime = const Value.absent(),
     Value<String?> opponentTime = const Value.absent(),
     Value<int?> userClockMs = const Value.absent(),
@@ -902,6 +973,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
     startFen: startFen.present ? startFen.value : this.startFen,
     moves: moves ?? this.moves,
     endReason: endReason.present ? endReason.value : this.endReason,
+    moveTimesMs: moveTimesMs ?? this.moveTimesMs,
+    userSide: userSide.present ? userSide.value : this.userSide,
     userTime: userTime.present ? userTime.value : this.userTime,
     opponentTime: opponentTime.present ? opponentTime.value : this.opponentTime,
     userClockMs: userClockMs.present ? userClockMs.value : this.userClockMs,
@@ -930,6 +1003,10 @@ class GameRow extends DataClass implements Insertable<GameRow> {
       startFen: data.startFen.present ? data.startFen.value : this.startFen,
       moves: data.moves.present ? data.moves.value : this.moves,
       endReason: data.endReason.present ? data.endReason.value : this.endReason,
+      moveTimesMs: data.moveTimesMs.present
+          ? data.moveTimesMs.value
+          : this.moveTimesMs,
+      userSide: data.userSide.present ? data.userSide.value : this.userSide,
       userTime: data.userTime.present ? data.userTime.value : this.userTime,
       opponentTime: data.opponentTime.present
           ? data.opponentTime.value
@@ -963,6 +1040,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
           ..write('startFen: $startFen, ')
           ..write('moves: $moves, ')
           ..write('endReason: $endReason, ')
+          ..write('moveTimesMs: $moveTimesMs, ')
+          ..write('userSide: $userSide, ')
           ..write('userTime: $userTime, ')
           ..write('opponentTime: $opponentTime, ')
           ..write('userClockMs: $userClockMs, ')
@@ -986,6 +1065,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
     startFen,
     moves,
     endReason,
+    moveTimesMs,
+    userSide,
     userTime,
     opponentTime,
     userClockMs,
@@ -1008,6 +1089,8 @@ class GameRow extends DataClass implements Insertable<GameRow> {
           other.startFen == this.startFen &&
           other.moves == this.moves &&
           other.endReason == this.endReason &&
+          other.moveTimesMs == this.moveTimesMs &&
+          other.userSide == this.userSide &&
           other.userTime == this.userTime &&
           other.opponentTime == this.opponentTime &&
           other.userClockMs == this.userClockMs &&
@@ -1028,6 +1111,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
   final Value<String?> startFen;
   final Value<String> moves;
   final Value<String?> endReason;
+  final Value<String> moveTimesMs;
+  final Value<String?> userSide;
   final Value<String?> userTime;
   final Value<String?> opponentTime;
   final Value<int?> userClockMs;
@@ -1046,6 +1131,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
     this.startFen = const Value.absent(),
     this.moves = const Value.absent(),
     this.endReason = const Value.absent(),
+    this.moveTimesMs = const Value.absent(),
+    this.userSide = const Value.absent(),
     this.userTime = const Value.absent(),
     this.opponentTime = const Value.absent(),
     this.userClockMs = const Value.absent(),
@@ -1065,6 +1152,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
     this.startFen = const Value.absent(),
     this.moves = const Value.absent(),
     this.endReason = const Value.absent(),
+    this.moveTimesMs = const Value.absent(),
+    this.userSide = const Value.absent(),
     this.userTime = const Value.absent(),
     this.opponentTime = const Value.absent(),
     this.userClockMs = const Value.absent(),
@@ -1088,6 +1177,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
     Expression<String>? startFen,
     Expression<String>? moves,
     Expression<String>? endReason,
+    Expression<String>? moveTimesMs,
+    Expression<String>? userSide,
     Expression<String>? userTime,
     Expression<String>? opponentTime,
     Expression<int>? userClockMs,
@@ -1107,6 +1198,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
       if (startFen != null) 'start_fen': startFen,
       if (moves != null) 'moves': moves,
       if (endReason != null) 'end_reason': endReason,
+      if (moveTimesMs != null) 'move_times_ms': moveTimesMs,
+      if (userSide != null) 'user_side': userSide,
       if (userTime != null) 'user_time': userTime,
       if (opponentTime != null) 'opponent_time': opponentTime,
       if (userClockMs != null) 'user_clock_ms': userClockMs,
@@ -1128,6 +1221,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
     Value<String?>? startFen,
     Value<String>? moves,
     Value<String?>? endReason,
+    Value<String>? moveTimesMs,
+    Value<String?>? userSide,
     Value<String?>? userTime,
     Value<String?>? opponentTime,
     Value<int?>? userClockMs,
@@ -1147,6 +1242,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
       startFen: startFen ?? this.startFen,
       moves: moves ?? this.moves,
       endReason: endReason ?? this.endReason,
+      moveTimesMs: moveTimesMs ?? this.moveTimesMs,
+      userSide: userSide ?? this.userSide,
       userTime: userTime ?? this.userTime,
       opponentTime: opponentTime ?? this.opponentTime,
       userClockMs: userClockMs ?? this.userClockMs,
@@ -1192,6 +1289,12 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
     if (endReason.present) {
       map['end_reason'] = Variable<String>(endReason.value);
     }
+    if (moveTimesMs.present) {
+      map['move_times_ms'] = Variable<String>(moveTimesMs.value);
+    }
+    if (userSide.present) {
+      map['user_side'] = Variable<String>(userSide.value);
+    }
     if (userTime.present) {
       map['user_time'] = Variable<String>(userTime.value);
     }
@@ -1227,6 +1330,8 @@ class GamesCompanion extends UpdateCompanion<GameRow> {
           ..write('startFen: $startFen, ')
           ..write('moves: $moves, ')
           ..write('endReason: $endReason, ')
+          ..write('moveTimesMs: $moveTimesMs, ')
+          ..write('userSide: $userSide, ')
           ..write('userTime: $userTime, ')
           ..write('opponentTime: $opponentTime, ')
           ..write('userClockMs: $userClockMs, ')
@@ -2356,6 +2461,8 @@ typedef $$GamesTableCreateCompanionBuilder = GamesCompanion Function({
   Value<String?> startFen,
   Value<String> moves,
   Value<String?> endReason,
+  Value<String> moveTimesMs,
+  Value<String?> userSide,
   Value<String?> userTime,
   Value<String?> opponentTime,
   Value<int?> userClockMs,
@@ -2375,6 +2482,8 @@ typedef $$GamesTableUpdateCompanionBuilder = GamesCompanion Function({
   Value<String?> startFen,
   Value<String> moves,
   Value<String?> endReason,
+  Value<String> moveTimesMs,
+  Value<String?> userSide,
   Value<String?> userTime,
   Value<String?> opponentTime,
   Value<int?> userClockMs,
@@ -2443,6 +2552,16 @@ class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
 
   ColumnFilters<String> get endReason => $composableBuilder(
     column: $table.endReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moveTimesMs => $composableBuilder(
+    column: $table.moveTimesMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userSide => $composableBuilder(
+    column: $table.userSide,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2541,6 +2660,16 @@ class $$GamesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get moveTimesMs => $composableBuilder(
+    column: $table.moveTimesMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userSide => $composableBuilder(
+    column: $table.userSide,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get userTime => $composableBuilder(
     column: $table.userTime,
     builder: (column) => ColumnOrderings(column),
@@ -2618,6 +2747,14 @@ class $$GamesTableAnnotationComposer
   GeneratedColumn<String> get endReason =>
       $composableBuilder(column: $table.endReason, builder: (column) => column);
 
+  GeneratedColumn<String> get moveTimesMs => $composableBuilder(
+    column: $table.moveTimesMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userSide =>
+      $composableBuilder(column: $table.userSide, builder: (column) => column);
+
   GeneratedColumn<String> get userTime =>
       $composableBuilder(column: $table.userTime, builder: (column) => column);
 
@@ -2686,6 +2823,8 @@ class $$GamesTableTableManager
                 Value<String?> startFen = const Value.absent(),
                 Value<String> moves = const Value.absent(),
                 Value<String?> endReason = const Value.absent(),
+                Value<String> moveTimesMs = const Value.absent(),
+                Value<String?> userSide = const Value.absent(),
                 Value<String?> userTime = const Value.absent(),
                 Value<String?> opponentTime = const Value.absent(),
                 Value<int?> userClockMs = const Value.absent(),
@@ -2704,6 +2843,8 @@ class $$GamesTableTableManager
                 startFen: startFen,
                 moves: moves,
                 endReason: endReason,
+                moveTimesMs: moveTimesMs,
+                userSide: userSide,
                 userTime: userTime,
                 opponentTime: opponentTime,
                 userClockMs: userClockMs,
@@ -2724,6 +2865,8 @@ class $$GamesTableTableManager
                 Value<String?> startFen = const Value.absent(),
                 Value<String> moves = const Value.absent(),
                 Value<String?> endReason = const Value.absent(),
+                Value<String> moveTimesMs = const Value.absent(),
+                Value<String?> userSide = const Value.absent(),
                 Value<String?> userTime = const Value.absent(),
                 Value<String?> opponentTime = const Value.absent(),
                 Value<int?> userClockMs = const Value.absent(),
@@ -2742,6 +2885,8 @@ class $$GamesTableTableManager
                 startFen: startFen,
                 moves: moves,
                 endReason: endReason,
+                moveTimesMs: moveTimesMs,
+                userSide: userSide,
                 userTime: userTime,
                 opponentTime: opponentTime,
                 userClockMs: userClockMs,

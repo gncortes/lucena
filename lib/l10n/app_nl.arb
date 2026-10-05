@@ -400,5 +400,13 @@
   "gameMoveBack": "Terug",
   "gameMoveForward": "Vooruit",
   "statsGamesTitle": "Partijgeschiedenis",
-  "statsGamesEmpty": "De partijen die je speelt verschijnen hier, de nieuwste eerst."
+  "statsGamesEmpty": "De partijen die je speelt verschijnen hier, de nieuwste eerst.",
+  "speedrunRetry": "Opnieuw",
+  "speedrunQuitTitle": "Speedrun verlaten?",
+  "ratingPeriodDays": "{count, plural, =1{1 dag} other{{count} dagen}}",
+  "ratingPeriodYear": "1 jaar",
+  "ratingPeriodEmpty": "Geen partijen voor de rating in deze periode.",
+  "ratingHighest": "Hoogste",
+  "gameDetailsTitle": "Partijdetails",
+  "gameDetailsNotFound": "Deze partij is niet meer opgeslagen."
 }

@@ -22,6 +22,7 @@ import '../../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_speedrun_repository.dart';
 
 void main() {
   late FakeNow now;
@@ -182,6 +183,8 @@ void main() {
         start: GameRules.initial,
         position: GameRules.initial,
         startedAt: now(),
+        // A vez do primeiro lance começa a contar na hora.
+        turnStartedAt: now(),
       ),
     ],
   );
@@ -497,6 +500,8 @@ void main() {
           startFen: startFen,
           moves: const ['e2e4', 'e7e5'],
           startedAt: now(),
+          moveTimes: const [Duration.zero, Duration.zero],
+          turnStartedAt: now(),
         ),
       );
     });
@@ -567,7 +572,11 @@ void main() {
       expect(cubit.state.position, GameRules.initial);
       expect(
         games.snapshot,
-        GameSnapshot(startFen: startFen, startedAt: now()),
+        GameSnapshot(
+          startFen: startFen,
+          startedAt: now(),
+          turnStartedAt: now(),
+        ),
       );
     });
 
@@ -709,6 +718,57 @@ void main() {
       expect(cubit.state.whiteTime, const Duration(minutes: 2, seconds: 45));
     });
 
+    test('cada lance grava o tempo que levou, mesmo com saída da tela no '
+        'meio', () async {
+      final first = build();
+      await first.open();
+      now.advance(const Duration(seconds: 3));
+      first.play(NormalMove.fromUci('e2e4'));
+      now.advance(const Duration(seconds: 4));
+      await first.leave();
+      await first.close();
+
+      // O tempo fora da tela não conta para o lance.
+      now.advance(const Duration(hours: 1));
+      final cubit = build(start: null);
+      addTearDown(cubit.close);
+      await cubit.open();
+      expect(cubit.state.moveTimes, const [Duration(seconds: 3)]);
+      expect(cubit.state.turnElapsed, const Duration(seconds: 4));
+
+      now.advance(const Duration(seconds: 2));
+      cubit.play(NormalMove.fromUci('e7e5'));
+      expect(cubit.state.moveTimes, const [
+        Duration(seconds: 3),
+        Duration(seconds: 6),
+      ]);
+      await cubit.saved();
+      expect(games.snapshot?.moveTimes, const [
+        Duration(seconds: 3),
+        Duration(seconds: 6),
+      ]);
+    });
+
+    test('fechado à força, o tempo da vez segue correndo', () async {
+      final first = build();
+      await first.open();
+      now.advance(const Duration(seconds: 2));
+      first.play(NormalMove.fromUci('e2e4'));
+      await first.saved();
+      await first.close();
+
+      now.advance(const Duration(seconds: 5));
+      final cubit = build(start: null);
+      addTearDown(cubit.close);
+      await cubit.open();
+      cubit.play(NormalMove.fromUci('e7e5'));
+
+      expect(cubit.state.moveTimes, const [
+        Duration(seconds: 2),
+        Duration(seconds: 5),
+      ]);
+    });
+
     test(
       'gravação que não fecha com as regras é trocada por partida nova',
       () async {
@@ -725,7 +785,11 @@ void main() {
         expect(cubit.state.position, GameRules.initial);
         expect(
           games.snapshot,
-          GameSnapshot(startFen: startFen, startedAt: now()),
+          GameSnapshot(
+            startFen: startFen,
+            startedAt: now(),
+            turnStartedAt: now(),
+          ),
         );
       },
     );
@@ -738,7 +802,10 @@ void main() {
 
       await cubit.open();
 
-      expect(games.snapshot, GameSnapshot(startFen: fen, startedAt: now()));
+      expect(
+        games.snapshot,
+        GameSnapshot(startFen: fen, startedAt: now(), turnStartedAt: now()),
+      );
     });
 
     test(
@@ -989,6 +1056,9 @@ void main() {
       expect(game.playedAt, now());
       expect(game.startFen, '3k4/8/3K4/8/8/8/8/7Q w - - 0 1');
       expect(game.moves, ['h1h8']);
+      // O tempo de cada lance e o lado do jogador, para os detalhes.
+      expect(game.moveTimes, const [Duration(seconds: 7)]);
+      expect(game.userSide, Side.white);
       expect(game.endReason, GameEndReason.checkmate);
       expect(game.userTime, threeTwo);
       expect(game.opponentTime, threeTwo);
@@ -1232,6 +1302,68 @@ void main() {
       expect(cubit.state.canOfferDraw, isFalse);
       await cubit.offerDraw();
       expect(draws.offers, 0);
+    });
+  });
+
+  group('speedrun', () {
+    late FakeSpeedrunRepository speedruns;
+
+    setUp(() => speedruns = FakeSpeedrunRepository(progress));
+
+    FreeBoardCubit stage(int attemptId) => FreeBoardCubit(
+      now: now,
+      haptics: haptics,
+      settings: settings,
+      games: games,
+      opponent: opponent,
+      progress: progress,
+      draws: draws,
+      speedruns: speedruns,
+      start: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1'),
+      clock: ClockConfig.same(threeTwo),
+      mode: GameMode(
+        opponent: OpponentKind.maia,
+        level: 1000,
+        userSide: Side.white,
+        goal: PositionGoal.win,
+        positionId: 'basic.queen.0001',
+        speedrunId: 'rung.1000',
+        speedrunAttemptId: attemptId,
+        speedrunStage: 0,
+      ),
+    );
+
+    test('sair no meio encerra a tentativa e não guarda a etapa', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+      final cubit = stage(attempt.id);
+      addTearDown(cubit.close);
+      await cubit.open();
+      expect(games.snapshot, isNotNull);
+
+      now.advance(const Duration(seconds: 5));
+      await cubit.quitSpeedrun();
+
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, now());
+      expect(games.snapshot, isNull);
+      expect(cubit.state.clock?.running, isNull);
+      // Depois de sair, nada mais mexe na partida.
+      cubit.play(NormalMove.fromUci('c1h1'));
+      expect(cubit.state.moves, isEmpty);
+    });
+
+    test('tentar de novo depois de perder começa uma tentativa nova', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+      final cubit = stage(attempt.id);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      final again = await cubit.restartSpeedrun('rung.1000');
+
+      expect(again, isNot(attempt.id));
+      expect((await speedruns.attempts('rung.1000')).map((a) => a.id), [
+        attempt.id,
+        again,
+      ]);
     });
   });
 }

@@ -103,6 +103,22 @@ void main() {
     },
   );
 
+  test('o tempo de cada lance e o da vez voltam ao reabrir', () async {
+    final snapshot = GameSnapshot(
+      startFen: startFen,
+      moves: const ['e2e4', 'e7e5'],
+      moveTimes: const [
+        Duration(seconds: 3, milliseconds: 200),
+        Duration(milliseconds: 900),
+      ],
+      turnElapsed: const Duration(seconds: 4),
+      turnStartedAt: DateTime.utc(2026, 1, 1, 12, 0, 5, 300),
+    );
+    await reopen().save(snapshot);
+
+    expect(await reopen().load(), snapshot);
+  });
+
   test('relógio parado volta parado', () async {
     const snapshot = GameSnapshot(
       startFen: startFen,
