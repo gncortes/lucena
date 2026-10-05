@@ -139,11 +139,16 @@ class RungScreen extends StatelessWidget {
 Future<void> _openChallenge(
   BuildContext context,
   String rungId,
-  String position,
+  Challenge challenge,
 ) async {
-  await context.push(Routes.journeyChallenge(rungId, position));
+  final cubit = context.read<JourneyCubit>();
+  // A tela do desafio abre com ele já pronto: o tabuleiro voa até ela.
+  await context.push(
+    Routes.journeyChallenge(rungId, challenge.position.id),
+    extra: cubit.state.copyWith(challenge: challenge, attempts: const []),
+  );
   // Ao voltar, o desafio pode ter sido concluído.
-  if (context.mounted) await context.read<JourneyCubit>().load();
+  if (context.mounted) await cubit.load();
 }
 
 /// O personagem do adversário, a frase dele e o progresso.
@@ -273,7 +278,7 @@ class _NextChallenge extends StatelessWidget {
       color: colors.secondaryContainer,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => _openChallenge(context, rungId, position.id),
+        onTap: () => _openChallenge(context, rungId, challenge),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -347,7 +352,7 @@ class _ChallengeCell extends StatelessWidget {
       color: colors.surfaceContainerLow,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => _openChallenge(context, rungId, position.id),
+        onTap: () => _openChallenge(context, rungId, challenge),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
