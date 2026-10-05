@@ -1,0 +1,51 @@
+name: Configuração do Firebase
+description: >
+  Grava o segredo QA_CONFIG_ENV num arquivo temporário (os passos seguintes fazem `source "$QA_CONFIG"`)
+  e falha cedo se faltar configuração ou a keystore.
+
+inputs:
+  qa-config-env:
+    description: Conteúdo do config.env (segredo QA_CONFIG_ENV do ambiente `release`).
+    required: true
+  tem-keystore:
+    description: "'true' se o segredo ANDROID_KEYSTORE_BASE64 existe."
+    required: true
+
+outputs:
+  provider:
+    description: Workload Identity Provider do Google Cloud.
+    value: ${{ steps.cfg.outputs.provider }}
+  service-account:
+    description: Conta de serviço do Google Cloud.
+    value: ${{ steps.cfg.outputs.service-account }}
+
+runs:
+  using: composite
+  steps:
+    - name: Configuração
+      id: cfg
+      shell: bash
+      env:
+        QA_CONFIG_ENV: ${{ inputs.qa-config-env }}
+        TEM_KEYSTORE: ${{ inputs.tem-keystore }}
+      run: |
+        if [[ -z "$QA_CONFIG_ENV" ]]; then
+          echo "::error::Segredo QA_CONFIG_ENV ausente no ambiente release (ver SETUP.md da skill qa-release)"
+          exit 1
+        fi
+        QA_CONFIG="$RUNNER_TEMP/qa_config.env"
+        (umask 077 && printf '%s\n' "$QA_CONFIG_ENV" > "$QA_CONFIG")
+        echo "QA_CONFIG=$QA_CONFIG" >> "$GITHUB_ENV"
+        source "$QA_CONFIG"
+        if [[ "$FIREBASE_PROJECT_ID" == *xxxxx* || -z "$GCP_WORKLOAD_IDENTITY_PROVIDER" || -z "$GCP_SERVICE_ACCOUNT" ]]; then
+          echo "::error::O segredo QA_CONFIG_ENV ainda não foi preenchido (ver SETUP.md da skill qa-release)"
+          exit 1
+        fi
+        if [[ "$TEM_KEYSTORE" != true ]]; then
+          echo "::error::Segredos de assinatura ausentes no ambiente release (ver SETUP.md da skill qa-release)"
+          exit 1
+        fi
+        {
+          echo "provider=$GCP_WORKLOAD_IDENTITY_PROVIDER"
+          echo "service-account=$GCP_SERVICE_ACCOUNT"
+        } >> "$GITHUB_OUTPUT"

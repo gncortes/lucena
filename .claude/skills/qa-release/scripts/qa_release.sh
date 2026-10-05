@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Uso: qa_release.sh TXX vX.Y.Z
 # Cria a tag de candidata (vX.Y.Z-rc.N), que dispara o workflow QA no GitHub
-# (Patrol no Test Lab + APK assinado no App Distribution), espera o fim e imprime o resultado.
+# (APK assinado no App Distribution, grupo de QA), espera o fim e imprime o resultado.
 # Nenhuma credencial do Firebase ou da keystore passa por esta máquina: ficam no GitHub.
 set -euo pipefail
 

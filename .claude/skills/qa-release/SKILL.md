@@ -1,27 +1,26 @@
 ---
 name: qa-release
-description: Gera a versão de QA de uma tarefa (build de release + Patrol no Firebase Test Lab + Firebase App Distribution + tag rc) e abre ou atualiza o PR com resumo e link do app. Use ao terminar uma tarefa, depois da skill `entrega`, e a cada correção pedida no PR.
+description: Gera a versão de QA de uma tarefa (tag rc + build de release + Firebase App Distribution) e abre ou atualiza o PR para a `develop` com resumo e link do app. Use ao terminar uma tarefa, depois da skill `entrega`, e a cada correção pedida no PR.
 ---
 
 # QA release: do branch ao link no celular
 
 Objetivo: quando o PR chega, o Gabriel abre no app do GitHub, lê um resumo curto, toca no link, instala o app e valida como QA. Só ele aprova e faz o merge.
 
-Duas ferramentas do Firebase, cada uma com um papel:
+O **App Distribution** do Firebase entrega o APK de release ao Gabriel por um link que abre no celular (app "Firebase App Tester"), no grupo de QA. Roda no GitHub Actions (`.github/workflows/qa.yml`), disparado pela tag de candidata, e leva poucos minutos.
 
-- **Test Lab:** roda a suíte Patrol em aparelhos reais/virtuais do Google. É a última barreira automática.
-- **App Distribution:** entrega o APK de release ao Gabriel por um link que abre no celular (app "Firebase App Tester").
+O Patrol não roda aqui: a suíte local em paralelo (skill `entrega`) é a validação antes da PR. O **Test Lab** ficou para a tag final na `main` (`release.yml`), que também envia o app ao grupo `release` do App Distribution.
 
-As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela tag de candidata. As credenciais do Google Cloud e a keystore ficam só no GitHub (ambiente `release`): nada disso passa pela máquina local nem pelo Claude.
+As credenciais do Google Cloud e a keystore ficam só no GitHub (ambiente `release`): nada disso passa pela máquina local nem pelo Claude.
 
 ## Regras
 
-- Nunca fazer merge, nunca dar push na `main`, nunca criar tag final (`vX.Y.Z`). Só tags de candidata (`vX.Y.Z-rc.N`) e só no branch da tarefa.
+- Nunca fazer merge, nunca dar push na `develop` nem na `main`, nunca criar tag final (`vX.Y.Z`). Só tags de candidata (`vX.Y.Z-rc.N`) e só no branch da tarefa.
 - Se qualquer etapa falhar, **não** abrir nem atualizar o PR com link. Corrigir, ou parar e relatar.
 - Nunca imprimir, ler ou commitar segredos (keystore, senhas, chave de conta de serviço) nem mexer nos segredos do GitHub (`gh secret`).
 - Todo PR e todo comentário de correção leva um **GIF da feature rodando no emulador** (seção "Demonstração"). Sem GIF, o PR não está pronto.
 - Rodar pelo script (`scripts/qa_release.sh`), não comando por comando: economiza tokens e evita erro de digitação.
-- O workflow já repete o Test Lab **uma vez** sozinho em caso de instabilidade do aparelho. Se reprovou mesmo assim, é falha de teste de verdade: corrigir o código, não rodar de novo.
+- O PR vai sempre para a `develop` (`gh pr create --base develop`).
 
 ## Pré-requisitos (conferir antes de rodar)
 
@@ -45,16 +44,15 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
    ```bash
    bash .claude/skills/qa-release/scripts/qa_release.sh TXX v0.1.3
    ```
-   Rodar em segundo plano: leva de 15 a 30 minutos. O script, em ordem:
+   Rodar em segundo plano: leva uns 10 minutos. O script, em ordem:
    1. confere pré-requisitos;
    2. calcula `rc.N`;
    3. envia o branch e cria e envia a tag `vX.Y.Z-rc.N`, que dispara o workflow `QA`;
    4. espera o workflow, que:
-      1. gera o build do Patrol e roda a suíte no Test Lab (aparelhos do `QA_CONFIG_ENV`);
-      2. gera o APK de release assinado (sem `E2E`);
-      3. envia o APK para o App Distribution, com notas de versão, para o grupo de testadores;
-   5. baixa e imprime o `result.json` (links, versão, aparelhos, status).
-3. Usar **só** o `result.json` que o script imprime no fim da saída (a leitura de `build/` é bloqueada). `ok-sem-test-lab` quer dizer que o link existe mas o Test Lab não rodou por falta de cota (ver "Erros comuns"). Se `status` não for `ok` nem `ok-sem-test-lab`, o script imprime também as últimas 50 linhas dos passos que falharam no workflow: corrigir ou relatar.
+      1. gera o APK de release assinado (sem `E2E`);
+      2. envia o APK para o App Distribution, com notas de versão, para o grupo de QA;
+   5. baixa e imprime o `result.json` (links, versão, status).
+3. Usar **só** o `result.json` que o script imprime no fim da saída (a leitura de `build/` é bloqueada). Se `status` não for `ok`, o script imprime também as últimas 50 linhas dos passos que falharam no workflow: corrigir ou relatar.
 4. Gravar o GIF da feature no emulador local:
    ```bash
    bash .claude/skills/qa-release/scripts/qa_gif.sh TXX v0.1.3-rc.1 -- <comando>
@@ -65,7 +63,7 @@ As duas rodam no GitHub Actions (`.github/workflows/qa.yml`), disparadas pela ta
    - o Gabriel acompanha pelo celular, onde GIF não anima na conversa: para mostrar uma prévia antes do PR, mandar o vídeo MP4 (`ffmpeg -i x.gif -pix_fmt yuv420p x.mp4`) e uma imagem com os quadros principais.
    Manter o GIF curto (até uns 20 s; o script recusa acima de 4 MB, porque ele entra no histórico do repositório) e conferir alguns quadros antes de colocar no PR.
 5. PR:
-   - **Não existe PR para o branch:** criar com `gh pr create` usando o modelo abaixo.
+   - **Não existe PR para o branch:** criar com `gh pr create --base develop` usando o modelo abaixo.
    - **PR já existe (correção):** adicionar um comentário com `gh pr comment` usando o modelo de correção. Não editar o resumo original.
 6. Responder ao Gabriel com o link do PR e o link do app, em duas linhas.
 
@@ -90,7 +88,6 @@ Título: `TXX: <título da tarefa>`
 ## Verificações automáticas
 - ✅ Testes unitários e de BLoC
 - ✅ Patrol local
-- ✅ Patrol no Firebase Test Lab: <aparelhos> ([resultado](<testLabLink>))
 
 <details>
 <summary>Detalhes técnicos</summary>
@@ -117,7 +114,7 @@ Regras do resumo: português, no máximo 3 linhas, foco no que o Gabriel vai ver
 
 Para conferir: <1–3 passos>
 
-✅ Testes, Patrol local e Test Lab passando ([resultado](<testLabLink>))
+✅ Testes e Patrol local passando
 ```
 
 ## Quando o Gabriel comenta um problema no PR
@@ -130,7 +127,6 @@ Para conferir: <1–3 passos>
 
 - **Falta segredo ou configuração no GitHub:** parar e pedir ao Gabriel (`SETUP.md`); nunca criar segredo.
 - **Falha de infraestrutura (permissão no Google Cloud, cota):** depois de corrigida, repetir a mesma candidata com `gh run rerun <id> --failed` em vez de gastar outro `rc`.
-- **Cota do Test Lab esgotada:** o workflow distribui o app mesmo assim e o `result.json` vem com `status: "ok-sem-test-lab"`. Abrir o PR mesmo assim, sem perguntar (decisão do Gabriel em 2026-10-04: "se a cota diária acabar não tem problema, deve abrir sem o Test Lab"); no PR, a linha do Test Lab vira "⏳ pendente (cota diária esgotada)". Quando a cota voltar (vira à meia-noite do Pacífico, perto das 4h de Brasília), rodar de novo com `gh run rerun <id>` e atualizar o PR com o resultado.
 - **`versionCode` repetido:** o workflow usa a contagem de commits; se reclamar, fazer um commit e rodar de novo.
 - **GIF com barras pretas, cortado ou pesado demais:** o `qa_gif.sh` grava em 720 px na proporção da tela e recusa GIF acima de 4 MB; encurtar o roteiro em vez de baixar a qualidade.
 - **Link não aparece no resultado:** o formato da saída do `gcloud` ou do Firebase CLI pode ter mudado; conferir o log do workflow e ajustar os `grep` do `qa.yml`.
