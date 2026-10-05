@@ -46,6 +46,39 @@ void main() {
     expect(reopened.state.step, TourStep.board);
   });
 
+  test('o nome do primeiro passo vai para o perfil na hora, já limpo, e '
+      'continua ao reabrir e ao terminar', () async {
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.nickname, '');
+
+    await tour.setNickname('  Ana   Clara ');
+    expect(tour.state.nickname, 'Ana Clara');
+    expect((await profile.load()).nickname, 'Ana Clara');
+
+    // Fechou o app no meio: o tour reabre com o nome.
+    final reopened = cubit();
+    await reopened.load('en');
+    expect(reopened.state.nickname, 'Ana Clara');
+
+    // Terminar grava a faixa sem perder o nome; pular também não o apaga.
+    reopened.setLevel(RatingLevel.intermediate);
+    await reopened.finish();
+    final saved = await profile.load();
+    expect(saved.nickname, 'Ana Clara');
+    expect(saved.level, RatingLevel.intermediate);
+  });
+
+  test('apagar o nome volta ao apelido padrão', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await tour.setNickname('Ana');
+    await tour.setNickname('');
+    await tour.skip();
+
+    expect((await profile.load()).nickname, '');
+  });
+
   test('escolher 1400 no fim: perfil e degrau de início', () async {
     final tour = cubit();
     await tour.load('en');

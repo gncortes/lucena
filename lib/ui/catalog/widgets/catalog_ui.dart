@@ -17,6 +17,8 @@ String categoryName(AppLocalizations l10n, String key) => switch (key) {
   'pawn' => l10n.catalogCategoryPawn,
   'rookPawn' => l10n.catalogCategoryRookPawn,
   'queen' => l10n.catalogCategoryQueen,
+  'bishop' => l10n.catalogCategoryBishop,
+  'knightBishop' => l10n.catalogCategoryKnightBishop,
   _ => key,
 };
 
@@ -26,6 +28,8 @@ String categoryFigurines(String key) => switch (key) {
   'pawn' => '♙',
   'rookPawn' => '♖♙',
   'queen' => '♕',
+  'bishop' => '♗',
+  'knightBishop' => '♗♘',
   _ => '♙',
 };
 
@@ -41,6 +45,8 @@ String endgameName(AppLocalizations l10n, String subcategory) =>
       'queenVsRook' => l10n.endgameQueenVsRook,
       'queenVsPawn' => l10n.endgameQueenVsPawn,
       'rookVsPawn' => l10n.endgameRookVsPawn,
+      'twoBishopsVsKing' => l10n.endgameTwoBishops,
+      'knightBishopVsKing' => l10n.endgameKnightBishop,
       _ => subcategory,
     };
 

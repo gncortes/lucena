@@ -13,6 +13,9 @@ abstract final class HomeKeys {
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
 
+  /// O título dos caminhos ("O que você quer fazer?").
+  static const pathsTitle = Key('home.paths.title');
+
   static const achievementsButton = Key('home.achievements');
 
   /// O cartão "onde estou": o degrau, o próximo desafio e o botão.

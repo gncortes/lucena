@@ -18,6 +18,9 @@ abstract final class TourKeys {
   static const viktor = Key('tour.viktor');
   static const speech = Key('tour.speech');
 
+  /// No primeiro passo: o nome do jogador.
+  static const nameField = Key('tour.name');
+
   /// O passo aberto.
   static Key step(TourStep step) => Key('tour.step.${step.name}');
 

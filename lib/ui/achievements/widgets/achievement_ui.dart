@@ -4,8 +4,10 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/pace/pace_ui.dart';
 
 /// O nome do adversário de um nível do Maia: o do personagem (`Coco`) ou,
 /// sem ele, o do motor (`Maia 1000`).
@@ -61,6 +63,13 @@ extension AchievementUi on Achievement {
     AchievementType.beatStockfish => l10n.achievementBeatTitle(
       OpponentKind.stockfish.label(l10n),
     ),
+    AchievementType.speedrunCompleted => switch ((subcategory, pace)) {
+      (final subcategory?, final pace?) => l10n.achievementSpeedrunPaceTitle(
+        endgameName(l10n, subcategory),
+        pace.label(l10n),
+      ),
+      _ => l10n.achievementSpeedrunTitle,
+    },
     AchievementType.flawlessSpeedrun =>
       speedrunKind == null
           ? l10n.achievementFlawlessTitle
@@ -85,6 +94,10 @@ extension AchievementUi on Achievement {
       levelName(l10n, characters, level),
     ),
     AchievementType.beatStockfish => l10n.achievementBeatStockfishHint,
+    AchievementType.speedrunCompleted =>
+      pace == null
+          ? l10n.achievementSpeedrunHint
+          : l10n.achievementSpeedrunPaceHint(pace!.label(l10n)),
     AchievementType.flawlessSpeedrun =>
       speedrunKind == null
           ? l10n.achievementFlawlessHint

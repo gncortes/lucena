@@ -23,12 +23,15 @@ abstract final class GameSetupKeys {
   static Key pace(String id) => Key('setup.pace.$id');
   static const clockSwitch = Key('setup.clock');
 
-  /// Os seletores de tempo: `user` ou `opponent`, `minutes` ou `increment`.
-  static Key value(String who, String field) => Key('setup.$who.$field');
-  static Key decrease(String who, String field) =>
-      Key('setup.$who.$field.decrease');
-  static Key increase(String who, String field) =>
-      Key('setup.$who.$field.increase');
+  /// "Personalizar": o chip e o painel com o tempo de cada lado (`user` ou
+  /// `opponent`), em controles deslizantes de `minutes` e `increment`.
+  static const customPace = Key('setup.pace.custom');
+  static const customSheet = Key('setup.custom.sheet');
+  static const customSame = Key('setup.custom.same');
+  static const customConfirm = Key('setup.custom.confirm');
+  static Key customValue(String who) => Key('setup.custom.$who.value');
+  static Key customSlider(String who, String field) =>
+      Key('setup.custom.$who.$field');
 
   static const timeError = Key('setup.timeError');
 

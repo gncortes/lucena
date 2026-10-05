@@ -16,7 +16,7 @@
   "@achievementAllLevelsTitle": {
     "description": "Achievement name."
   },
-  "achievementBeatLevelHint": "Complete a goal against {opponent} or stronger",
+  "achievementBeatLevelHint": "Complete a goal against {opponent}",
   "@achievementBeatLevelHint": {
     "description": "Achievement condition.",
     "placeholders": {
@@ -47,7 +47,7 @@
       }
     }
   },
-  "achievementFastSpeedrunHint": "Complete a level speedrun in under {minutes} min",
+  "achievementFastSpeedrunHint": "Finish an endgame speedrun in under {minutes} min",
   "@achievementFastSpeedrunHint": {
     "description": "Achievement condition.",
     "placeholders": {
@@ -56,7 +56,7 @@
       }
     }
   },
-  "achievementFastSpeedrunTitle": "Lightning level",
+  "achievementFastSpeedrunTitle": "Lightning speedrun",
   "@achievementFastSpeedrunTitle": {
     "description": "Achievement name."
   },
@@ -1335,17 +1335,9 @@
   "@settingsTour": {
     "description": "Settings item that opens the first-run tour again."
   },
-  "setupDecrease": "Decrease",
-  "@setupDecrease": {
-    "description": "Tooltip of the minus button of a time selector."
-  },
   "setupHistory": "Your attempts",
   "@setupHistory": {
     "description": "Section title: the games already played in this position."
-  },
-  "setupIncrease": "Increase",
-  "@setupIncrease": {
-    "description": "Tooltip of the plus button of a time selector."
   },
   "setupMaiaLevel": "Level",
   "@setupMaiaLevel": {
@@ -1976,6 +1968,134 @@
       },
       "total": {
         "type": "int"
+      }
+    }
+  },
+  "tourNameLabel": "What should I call you?",
+  "@tourNameLabel": {
+    "description": "Label of the name field on the first step of the tour (asked by the teacher)."
+  },
+  "tourNameHelper": "It shows on the home screen. You can change it later in your profile.",
+  "@tourNameHelper": {
+    "description": "Helper text under the name field on the first step of the tour."
+  },
+  "homePathsTitle": "What do you want to do?",
+  "@homePathsTitle": {
+    "description": "Home screen: title above the list of things to do in the app."
+  },
+  "homeLearn": "Learn to play chess",
+  "@homeLearn": {
+    "description": "Home screen path for beginners: the lessons with the teacher Viktor."
+  },
+  "homeLearnBody": "Lessons with Viktor: how the pieces move, check, checkmate and the first endgames.",
+  "@homeLearnBody": {
+    "description": "Home screen: one-line explanation of the lessons path."
+  },
+  "homeJourneyBody": "Guided training: beat the endgames of each opponent, from the weakest up to Stockfish.",
+  "@homeJourneyBody": {
+    "description": "Home screen: one-line explanation of the Journey path."
+  },
+  "homeSpeedrunBody": "Pick an endgame and beat every opponent in a row, up to Stockfish, against the clock.",
+  "@homeSpeedrunBody": {
+    "description": "Home screen: one-line explanation of the speedrun path."
+  },
+  "homeTrainBody": "Pick any endgame and the opponent, and play it as many times as you want.",
+  "@homeTrainBody": {
+    "description": "Home screen: one-line explanation of the endgame training path (the catalog)."
+  },
+  "setupPaceCustom": "Custom",
+  "@setupPaceCustom": {
+    "description": "Game setup: chip that opens the panel to set a custom time control."
+  },
+  "setupPaceCustomValue": "Custom · {time}",
+  "@setupPaceCustomValue": {
+    "description": "Game setup: the custom chip when a custom time control is in use, e.g. \"Custom · 7+3\".",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "setupPaceCustomTitle": "Custom time control",
+  "@setupPaceCustomTitle": {
+    "description": "Title of the panel to set a custom time control."
+  },
+  "setupPaceCustomMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@setupPaceCustomMinutes": {
+    "description": "Custom time control panel: the initial time picked on the slider.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "setupPaceCustomIncrement": "{count, plural, =0{No increment} =1{+1 second per move} other{+{count} seconds per move}}",
+  "@setupPaceCustomIncrement": {
+    "description": "Custom time control panel: the increment picked on the slider.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogCategoryBishop": "Bishop endgames",
+  "@catalogCategoryBishop": {
+    "description": "Catalog category name."
+  },
+  "catalogCategoryKnightBishop": "Bishop and knight endgames",
+  "@catalogCategoryKnightBishop": {
+    "description": "Catalog category name."
+  },
+  "endgameTwoBishops": "Two-bishop mate",
+  "@endgameTwoBishops": {
+    "description": "Endgame name: king and two bishops against a lone king."
+  },
+  "endgameKnightBishop": "Bishop and knight mate",
+  "@endgameKnightBishop": {
+    "description": "Endgame name: king, bishop and knight against a lone king."
+  },
+  "speedrunListIntro": "Pick an endgame. You play it against every opponent, from the weakest up to Stockfish, and your clock adds up to your time.",
+  "@speedrunListIntro": {
+    "description": "Speedrun list: one-sentence explanation at the top."
+  },
+  "speedrunStoppedAt": "Gave up at stage {stage} of {total}",
+  "@speedrunStoppedAt": {
+    "description": "Speedrun history: an abandoned attempt and how far it got.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementSpeedrunTitle": "Finish line",
+  "@achievementSpeedrunTitle": {
+    "description": "Achievement name: finishing a speedrun for the first time."
+  },
+  "achievementSpeedrunHint": "Finish a speedrun, from the first opponent to Stockfish",
+  "@achievementSpeedrunHint": {
+    "description": "Achievement condition."
+  },
+  "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
+  "@achievementSpeedrunPaceTitle": {
+    "description": "Achievement name: an endgame speedrun finished in a pace group, e.g. \"Two-bishop mate · Blitz\".",
+    "placeholders": {
+      "endgame": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementSpeedrunPaceHint": "Finish this endgame's speedrun at {pace} pace",
+  "@achievementSpeedrunPaceHint": {
+    "description": "Achievement condition. {pace} is Bullet, Blitz or Rapid.",
+    "placeholders": {
+      "pace": {
+        "type": "String"
       }
     }
   }

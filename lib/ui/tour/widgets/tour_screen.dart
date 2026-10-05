@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,7 @@ import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
@@ -134,6 +136,12 @@ class TourScreen extends StatelessWidget {
                           key: currentKey,
                           state: state,
                         ),
+                        // Nas boas-vindas, o Viktor pergunta o nome.
+                        TourStep.goal => _InfoStep(
+                          key: currentKey,
+                          step: step,
+                          footer: _NameField(initial: state.nickname),
+                        ),
                         _ => _InfoStep(key: currentKey, step: step),
                       },
                     ),
@@ -179,9 +187,12 @@ class TourScreen extends StatelessWidget {
 }
 
 class _InfoStep extends StatelessWidget {
-  const _InfoStep({required this.step, super.key});
+  const _InfoStep({required this.step, this.footer, super.key});
 
   final TourStep step;
+
+  /// O que o passo pede ao jogador, embaixo do texto.
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +275,61 @@ class _InfoStep extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            if (footer case final footer?) ...[
+              const SizedBox(height: 28),
+              footer,
+            ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Como devo chamar você?": o apelido do perfil, gravado enquanto o jogador
+/// digita. Vazio, fica o apelido padrão.
+class _NameField extends StatefulWidget {
+  const _NameField({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_NameField> createState() => _NameFieldState();
+}
+
+class _NameFieldState extends State<_NameField> {
+  late final _controller = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 420),
+      child: TextField(
+        key: TourKeys.nameField,
+        controller: _controller,
+        textInputAction: TextInputAction.done,
+        textCapitalization: TextCapitalization.words,
+        autocorrect: false,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(UserProfile.maxNicknameLength),
+        ],
+        onChanged: context.read<TourCubit>().setNickname,
+        decoration: InputDecoration(
+          labelText: l10n.tourNameLabel,
+          hintText: l10n.profileNicknameDefault,
+          helperText: l10n.tourNameHelper,
+          helperMaxLines: 3,
+          // O apelido padrão fica à vista enquanto o campo está vazio.
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: const Icon(Icons.person_outline),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
