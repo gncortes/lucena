@@ -57,6 +57,16 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - etapas em grade de miniaturas do tabuleiro, numeradas, com o nome do final e o melhor tempo de cada uma (quando houver);
   - "Começar" fixo embaixo, com o total de etapas.
 
+- [ ] **Tentativa em andamento confusa.** ([print](../qa/melhorias/8da8fb64.jpg)) Nove linhas "Maia 1000" com bolinhas: não se vê que final vem, quanto cada etapa levou nem quanto falta. Proposta: a etapa atual em destaque (tabuleiro, nome do final, adversário e "Continuar a partida"); as feitas com o tempo de cada uma; uma barra "etapa 1 de 9" e o total grande no topo; "Desistir" discreto no menu (⋮).
+
+## Ritmo de jogo (speedrun e Jornada)
+
+- [ ] **Escolher o ritmo, como no chess.com.** Hoje o speedrun tem ritmo fixo (5+3) e o desafio da Jornada não mostra ritmo nenhum. Proposta:
+  - ao tocar em "Começar" (speedrun) ou "Jogar" (desafio), abre um painel com os ritmos em grade, agrupados como no chess.com: Bullet (1+0, 2+1), Blitz (3+0, 3+2, 5+3), Rápido (10+0, 15+10) e "Sem relógio" (só na Jornada);
+  - o último ritmo escolhido vem marcado e fica gravado;
+  - no speedrun, os recordes passam a ser **por ritmo** (o melhor tempo em 3+2 não se mistura com o de 5+3); a lista mostra o melhor tempo do ritmo selecionado;
+  - muda a regra da T20 (ritmo fixo por speedrun para os tempos serem comparáveis): os tempos continuam comparáveis dentro do mesmo ritmo. **Precisa do ok do Gabriel.**
+
 ## Animações
 
 - [ ] **Transições entre telas.** Hoje a troca de tela é a padrão do Android e parece seca. Proposta:
