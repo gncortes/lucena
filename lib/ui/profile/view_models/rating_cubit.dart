@@ -175,10 +175,21 @@ class RatingCubit extends Cubit<RatingState> {
         history: history,
         attempts: attempts,
         numbers: numbers,
-        allGames: [...all]..sort((a, b) => b.playedAt.compareTo(a.playedAt)),
+        allGames: _recentFirst(all),
         characters: await _characters?.characters() ?? const <Character>[],
       ),
     );
+  }
+
+  // Da mais recente para a mais antiga. Entre partidas do mesmo instante,
+  // a gravada por último vem primeiro.
+  static List<Attempt> _recentFirst(List<Attempt> attempts) {
+    final indexed = attempts.indexed.toList()
+      ..sort((a, b) {
+        final byTime = b.$2.playedAt.compareTo(a.$2.playedAt);
+        return byTime != 0 ? byTime : b.$1.compareTo(a.$1);
+      });
+    return [for (final (_, attempt) in indexed) attempt];
   }
 
   // O melhor tempo entre todos os speedruns, em qualquer ritmo.

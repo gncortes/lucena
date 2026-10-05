@@ -154,6 +154,33 @@ void main() {
       expect(cubit.state.characters, isNotEmpty);
     });
 
+    test('partidas do mesmo instante: a gravada por último vem primeiro, com '
+        'a variação dela', () async {
+      final rating = FakeRatingRepository();
+      final progress = FakeProgressRepository();
+      for (final outcome in [AttemptOutcome.win, AttemptOutcome.loss]) {
+        final played = game(outcome);
+        final id = await progress.addAttempt(played);
+        await rating.rate(
+          played,
+          userSide: Side.white,
+          drawGoal: false,
+          gameId: id,
+        );
+      }
+      final cubit = RatingCubit(rating, progress: progress);
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      final log = cubit.state.log;
+      expect(log.map((entry) => entry.attempt.outcome), [
+        AttemptOutcome.loss,
+        AttemptOutcome.win,
+      ]);
+      expect(log.first.rated!.change, lessThan(0));
+      expect(log.last.rated!.change, isNull);
+    });
+
     test('sem o histórico das partidas, só os pontos do rating', () async {
       final rating = FakeRatingRepository();
       await rating.rate(
