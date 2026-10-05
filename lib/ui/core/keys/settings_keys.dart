@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 
 abstract final class SettingsKeys {
@@ -26,6 +27,11 @@ abstract final class SettingsKeys {
   /// Opção de um tema na tela de tema.
   static Key themeOption(AppThemeMode mode) =>
       Key('settings.theme.option.${mode.code}');
+
+  /// Cor do app na tela de tema, e o nome da cor escolhida.
+  static Key accentOption(AppAccent accent) =>
+      Key('settings.theme.accent.${accent.code}');
+  static const accentValue = Key('settings.theme.accent.value');
 
   static const boardAppearanceTile = Key('settings.boardAppearance');
   static const boardAppearanceValue = Key('settings.boardAppearance.value');

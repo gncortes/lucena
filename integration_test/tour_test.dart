@@ -1,5 +1,8 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_accent.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
+import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
@@ -8,6 +11,7 @@ import 'package:patrol/patrol.dart';
 import 'robots/app_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/journey_robot.dart';
+import 'robots/settings_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/variant.dart';
 
@@ -59,7 +63,7 @@ void main() {
     await tour.openFromSettings();
     await tour.expectStep(TourStep.goal);
     await tour.next();
-    await tour.expectStep(TourStep.rating);
+    await tour.expectStep(TourStep.theme);
     await tour.skip();
     await HomeRobot($).expectVisible();
   });
@@ -73,9 +77,83 @@ void main() {
     await tour.next();
     await tour.next();
     await tour.next();
-    await tour.expectStep(TourStep.endgames);
+    await tour.expectStep(TourStep.rating);
 
     await app.restart();
-    await tour.expectStep(TourStep.endgames);
+    await tour.expectStep(TourStep.rating);
+  });
+
+  patrolTest('primeira abertura: tema escuro, cor rosa e tabuleiro verde no '
+      'tour valem no app e continuam ao reabrir', ($) async {
+    final app = AppRobot($);
+    final tour = TourRobot($);
+    final home = HomeRobot($);
+    final settings = SettingsRobot($);
+    await app.open(systemLocale: _english, tour: true);
+    await tour.next();
+    await tour.expectStep(TourStep.theme);
+
+    // A escolha vale na hora, no próprio tour.
+    await tour.chooseThemeMode(AppThemeMode.dark);
+    app.expectBrightness(Brightness.dark);
+    await tour.chooseAccent(AppAccent.pink);
+    tour.expectAccentValue('Pink');
+    app.expectAccent(AppAccent.pink);
+
+    await tour.next();
+    await tour.expectStep(TourStep.board);
+    await tour.chooseBoardColors(BoardColors.green);
+    await tour.chooseBoardPieces(PieceStyle.merida);
+    await tour.expectBoardPreview(
+      colors: BoardColors.green,
+      pieces: PieceStyle.merida,
+    );
+
+    await tour.nextUntilLevel();
+    await tour.start();
+    await home.expectVisible();
+    home.expectDark(dark: true);
+    app.expectAccent(AppAccent.pink);
+
+    await app.restart();
+    await home.expectVisible();
+    home.expectDark(dark: true);
+    app.expectAccent(AppAccent.pink);
+    await home.openSettings();
+    settings.expectThemeValue('Dark');
+    await settings.expectBoardAppearanceValue('Green · Merida');
+  });
+
+  patrolTest('fechar à força no passo do tema: reabre nele, com a cor '
+      'escolhida', ($) async {
+    final app = AppRobot($);
+    final tour = TourRobot($);
+    await app.open(systemLocale: _english, tour: true);
+    await tour.next();
+    await tour.chooseThemeMode(AppThemeMode.light);
+    await tour.chooseAccent(AppAccent.purple);
+
+    await app.restart();
+    await tour.expectStep(TourStep.theme);
+    tour.expectAccentValue('Purple');
+    app.expectBrightness(Brightness.light);
+    app.expectAccent(AppAccent.purple);
+  });
+
+  patrolTest('sem escolher cor no tour, o app fica nas cores de fábrica: azul '
+      'no claro e verde no escuro', ($) async {
+    final app = AppRobot($);
+    final tour = TourRobot($);
+    await app.open(systemLocale: _english, tour: true);
+    await tour.next();
+    await tour.expectStep(TourStep.theme);
+
+    await tour.chooseThemeMode(AppThemeMode.light);
+    tour.expectAccentValue('Blue');
+    app.expectAccent(AppAccent.blue);
+
+    await tour.chooseThemeMode(AppThemeMode.dark);
+    tour.expectAccentValue('Green');
+    app.expectAccent(AppAccent.green);
   });
 }

@@ -17,7 +17,9 @@ mixin _$AppSettings {
 
 /// Código do idioma escolhido (`es`, `pt_PT`...). Nulo segue o sistema.
  String? get languageCode;/// Tema claro, escuro ou o do aparelho.
- AppThemeMode get themeMode;/// Aparência e comportamento do tabuleiro.
+ AppThemeMode get themeMode;/// Cor predominante do app. Nula: a de fábrica de cada tema (azul no
+/// claro, verde no escuro).
+ AppAccent? get accent;/// Aparência e comportamento do tabuleiro.
  BoardSettings get board;/// Onde o relógio aparece e como ele avisa.
  ClockSettings get clock;/// Os personagens comentam a partida num balão de fala.
  bool get characterTalk;
@@ -32,20 +34,20 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 @override
 bool operator ==(Object other) {
   final _this = this as AppSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.characterTalk, _this.characterTalk) || other.characterTalk == _this.characterTalk));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.accent, _this.accent) || other.accent == _this.accent)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.characterTalk, _this.characterTalk) || other.characterTalk == _this.characterTalk));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AppSettings;
-  return Object.hash(runtimeType,_this.languageCode,_this.themeMode,_this.board,_this.clock,_this.characterTalk);
+  return Object.hash(runtimeType,_this.languageCode,_this.themeMode,_this.accent,_this.board,_this.clock,_this.characterTalk);
 }
 
 @override
 String toString() {
   final _this = this as AppSettings;
-  return 'AppSettings(languageCode: ${_this.languageCode}, themeMode: ${_this.themeMode}, board: ${_this.board}, clock: ${_this.clock}, characterTalk: ${_this.characterTalk})';
+  return 'AppSettings(languageCode: ${_this.languageCode}, themeMode: ${_this.themeMode}, accent: ${_this.accent}, board: ${_this.board}, clock: ${_this.clock}, characterTalk: ${_this.characterTalk})';
 }
 
 
@@ -56,7 +58,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- String? languageCode, AppThemeMode themeMode, BoardSettings board, ClockSettings clock, bool characterTalk
+ String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk
 });
 
 
@@ -73,11 +75,12 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? board = null,Object? clock = null,Object? characterTalk = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,}) {
   return _then(AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
-as AppThemeMode,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
+as AppThemeMode,accent: freezed == accent ? _self.accent : accent // ignore: cast_nullable_to_non_nullable
+as AppAccent?,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
 as BoardSettings,clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockSettings,characterTalk: null == characterTalk ? _self.characterTalk : characterTalk // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -183,10 +186,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  BoardSettings board,  ClockSettings clock,  bool characterTalk)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that.characterTalk);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk);case _:
   return orElse();
 
 }
@@ -204,10 +207,10 @@ return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  BoardSettings board,  ClockSettings clock,  bool characterTalk)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that.characterTalk);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +227,10 @@ return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode,  AppThemeMode themeMode,  BoardSettings board,  ClockSettings clock,  bool characterTalk)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that.characterTalk);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk);case _:
   return null;
 
 }
@@ -239,13 +242,16 @@ return $default(_that.languageCode,_that.themeMode,_that.board,_that.clock,_that
 
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.languageCode, this.themeMode = AppThemeMode.system, this.board = const BoardSettings(), this.clock = const ClockSettings(), this.characterTalk = true});
+  const _AppSettings({this.languageCode, this.themeMode = AppThemeMode.system, this.accent, this.board = const BoardSettings(), this.clock = const ClockSettings(), this.characterTalk = true});
   
 
 /// Código do idioma escolhido (`es`, `pt_PT`...). Nulo segue o sistema.
 @override final  String? languageCode;
 /// Tema claro, escuro ou o do aparelho.
 @override@JsonKey() final  AppThemeMode themeMode;
+/// Cor predominante do app. Nula: a de fábrica de cada tema (azul no
+/// claro, verde no escuro).
+@override final  AppAccent? accent;
 /// Aparência e comportamento do tabuleiro.
 @override@JsonKey() final  BoardSettings board;
 /// Onde o relógio aparece e como ele avisa.
@@ -263,18 +269,18 @@ _$AppSettingsCopyWith<_AppSettings> get copyWith => __$AppSettingsCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.board, board) || other.board == board)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.characterTalk, characterTalk) || other.characterTalk == characterTalk));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.board, board) || other.board == board)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.characterTalk, characterTalk) || other.characterTalk == characterTalk));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,languageCode,themeMode,board,clock,characterTalk);
+    return Object.hash(runtimeType,languageCode,themeMode,accent,board,clock,characterTalk);
 }
 
 @override
 String toString() {
-    return 'AppSettings(languageCode: $languageCode, themeMode: $themeMode, board: $board, clock: $clock, characterTalk: $characterTalk)';
+    return 'AppSettings(languageCode: $languageCode, themeMode: $themeMode, accent: $accent, board: $board, clock: $clock, characterTalk: $characterTalk)';
 }
 
 
@@ -285,7 +291,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- String? languageCode, AppThemeMode themeMode, BoardSettings board, ClockSettings clock, bool characterTalk
+ String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk
 });
 
 
@@ -302,11 +308,12 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? board = null,Object? clock = null,Object? characterTalk = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,}) {
   return _then(_AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
-as AppThemeMode,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
+as AppThemeMode,accent: freezed == accent ? _self.accent : accent // ignore: cast_nullable_to_non_nullable
+as AppAccent?,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
 as BoardSettings,clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockSettings,characterTalk: null == characterTalk ? _self.characterTalk : characterTalk // ignore: cast_nullable_to_non_nullable
 as bool,

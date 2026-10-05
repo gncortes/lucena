@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
@@ -193,6 +195,38 @@ void main() {
     final context = tester.element(find.byKey(SettingsKeys.themeScreen));
     expect(Theme.of(context).brightness, Brightness.dark);
     expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
+  });
+
+  testWidgets('trocar a cor do app em Configurações muda o app na hora, no '
+      'claro e no escuro, e grava', (tester) async {
+    useSystemBrightness(tester, Brightness.light);
+    final settings = FakeSettingsRepository();
+    await pumpApp(tester, settings: settings);
+
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.accentOption(AppAccent.purple)));
+    await tester.pumpAndSettle();
+
+    // O tema que a tela usa: a cor principal e o fundo.
+    (Color, Color) colors(ThemeData theme) =>
+        (theme.colorScheme.primary, theme.scaffoldBackgroundColor);
+    ThemeData theme() =>
+        Theme.of(tester.element(find.byKey(SettingsKeys.themeScreen)));
+    expect(
+      colors(theme()),
+      colors(AppTheme.of(Brightness.light, accent: AppAccent.purple)),
+    );
+    expect(settings.saved, [const AppSettings(accent: AppAccent.purple)]);
+
+    await tester.tap(find.byKey(SettingsKeys.themeOption(AppThemeMode.dark)));
+    await tester.pumpAndSettle();
+    expect(
+      colors(theme()),
+      colors(AppTheme.of(Brightness.dark, accent: AppAccent.purple)),
+    );
   });
 
   Future<void> openProfile(WidgetTester tester) async {
