@@ -271,29 +271,32 @@ class _InfoStep extends StatelessWidget {
   }
 }
 
-/// Título e explicação de um passo de escolha.
+/// Título de um passo de escolha, com uma explicação curta opcional.
 class _ChoiceHeader extends StatelessWidget {
-  const _ChoiceHeader({required this.title, required this.body});
+  const _ChoiceHeader({required this.title, this.body});
 
   final String title;
-  final String body;
+  final String? body;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final body = this.body;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 4),
-          Text(
-            body,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          if (body != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              body,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -356,6 +359,10 @@ class _ThemeStep extends StatelessWidget {
 class _BoardStep extends StatelessWidget {
   const _BoardStep({super.key});
 
+  // Altura do título, das duas fileiras com os nomes e dos espaços.
+  static const _optionsHeight = 344.0;
+  static const _minPreview = 120.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -365,21 +372,28 @@ class _BoardStep extends StatelessWidget {
     );
     return LayoutBuilder(
       builder: (context, constraints) {
-        final previewSize = math.min(
-          constraints.maxWidth - 96,
-          constraints.maxHeight * 0.45,
+        // A amostra fica com o espaço que sobra do título e das duas
+        // fileiras de opções, para o passo caber na tela sem rolar.
+        final previewSize = math.max(
+          _minPreview,
+          math.min(
+            constraints.maxHeight - _optionsHeight,
+            constraints.maxWidth - 96,
+          ),
         );
         return ListView(
           padding: const EdgeInsets.only(bottom: 8),
           children: [
-            _ChoiceHeader(title: l10n.tourBoardTitle, body: l10n.tourBoardBody),
+            _ChoiceHeader(title: l10n.tourBoardTitle),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Center(
                 child: BoardPreview(
                   boardKey: TourKeys.boardPreview,
                   size: previewSize,
-                  board: board,
+                  // Amostra pequena: só as cores e as peças, sem as letras
+                  // e os números da borda.
+                  board: board.copyWith(coordinates: false),
                 ),
               ),
             ),

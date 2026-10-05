@@ -106,7 +106,6 @@ void main() {
     await tester.tap(find.byKey(TourKeys.nextButton));
     await tester.pumpAndSettle();
     expect(find.text('Escolha o seu tabuleiro'), findsOneWidget);
-    expect(find.textContaining('nas Configurações'), findsOneWidget);
     expect(find.byKey(TourKeys.boardPreview), findsOneWidget);
   });
 

@@ -304,7 +304,6 @@
   "speedrunVersusRecord": "記録 {record} と比べて {difference}秒",
   "teacherName": "{name}先生",
   "tourBack": "戻る",
-  "tourBoardBody": "色と駒はアプリ内のすべての盤に適用されます。設定からいつでも変更できます。",
   "tourBoardTitle": "盤を選びましょう",
   "tourEndgamesBody": "基本メイト、ポーン・ルーク・クイーンのエンドゲーム。各局面には「勝つ」か「引き分けを守る」の目標があります。",
   "tourEndgamesTitle": "エンドゲーム",
