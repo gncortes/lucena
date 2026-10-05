@@ -128,6 +128,9 @@ void main() {
     expect(cubit.state.run!.abandoned, isTrue);
     expect(cubit.state.selected!.ongoing, isNull);
     expect(games.snapshot, isNull);
+    // A desistência fica no resumo, para o histórico dizer até onde foi.
+    expect(cubit.state.selected!.abandoned.map((run) => run.attempt.id), [id]);
+    expect(cubit.state.selected!.records.completed, isEmpty);
   });
 
   group('ritmos', () {

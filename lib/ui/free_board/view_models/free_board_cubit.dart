@@ -230,6 +230,10 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         move.uci,
       ]),
       lastMove: move,
+      // Lance novo: o tabuleiro volta para a partida.
+      viewedPly: null,
+      viewedPosition: null,
+      viewedMove: null,
     );
     final clock = state.clock;
     if (clock != null) {
@@ -241,6 +245,42 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     emit(_timed(next, now));
     _changed();
   }
+
+  /// Mostra a posição depois de [ply] lances, só para ver (0 é a de início):
+  /// a partida não muda e o tabuleiro não aceita lances até voltar ao último.
+  /// No último lance (ou além), volta para a partida.
+  void view(int ply) {
+    if (!state.ready) return;
+    final target = ply.clamp(0, state.ucis.length);
+    if (target == state.shownPly) return;
+    if (target == state.ucis.length) {
+      emit(
+        state.copyWith(viewedPly: null, viewedPosition: null, viewedMove: null),
+      );
+      return;
+    }
+    var position = state.start;
+    Move? last;
+    for (final uci in state.ucis.take(target)) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : GameRules.play(position, move);
+      if (played == null) return;
+      position = played.position;
+      last = move;
+    }
+    emit(
+      state.copyWith(
+        viewedPly: target,
+        viewedPosition: position,
+        viewedMove: last,
+      ),
+    );
+  }
+
+  /// Um lance para trás e um para a frente na revisão.
+  void viewPrevious() => view(state.shownPly - 1);
+
+  void viewNext() => view(state.shownPly + 1);
 
   /// Atualiza os tempos pelo relógio do aparelho e confere a bandeira. A tela
   /// chama várias vezes por segundo; o resultado só depende do instante atual,

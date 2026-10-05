@@ -66,13 +66,13 @@ void main() {
     final catalog = CatalogRobot($);
     await app.open(systemLocale: const Locale('es', 'ES'));
     await catalog.open();
-    catalog.expectCategoryName('basic', 'Mates básicos');
-    catalog.expectCategoryName('pawn', 'Finales de peones');
+    await catalog.expectCategoryName('basic', 'Mates básicos');
+    await catalog.expectCategoryName('pawn', 'Finales de peones');
 
     await app.open(systemLocale: const Locale('ar'));
     await catalog.open();
-    catalog.expectCategoryName('basic', 'كش مات أساسي');
-    catalog.expectCategoryName('queen', 'نهايات الوزير');
+    await catalog.expectCategoryName('basic', 'كش مات أساسي');
+    await catalog.expectCategoryName('queen', 'نهايات الوزير');
     app.expectDirection(TextDirection.rtl);
   });
 

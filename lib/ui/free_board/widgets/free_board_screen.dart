@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -40,9 +39,8 @@ class FreeBoardScreen extends StatefulWidget {
 
 class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
-  // Altura da linha "vez de" (partida sem relógio) e o mínimo que sobra
-  // embaixo do tabuleiro para a faixa de lances.
-  static const _minBottom = MoveList.minHeight;
+  // O mínimo que sobra embaixo do tabuleiro (o fim da partida aparece ali).
+  static const _minBottom = 48.0;
 
   late final ChessboardController _board;
 
@@ -107,20 +105,24 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   }
 
   GameData _gameData(FreeBoardState state) {
-    final position = state.position;
+    // Revendo um lance anterior, o tabuleiro mostra a posição daquele
+    // momento.
+    final position = state.shownPosition;
     return GameData(
       fen: position.fen,
       playerSide: _playerSide(state),
       sideToMove: position.turn,
-      validMoves: GameRules.legalMoves(position),
-      lastMove: state.lastMove,
+      validMoves: state.browsing
+          ? const <Square, Set<Square>>{}
+          : GameRules.legalMoves(position),
+      lastMove: state.shownMove,
       kingSquareInCheck: GameRules.checkedKing(position),
     );
   }
 
   PlayerSide _playerSide(FreeBoardState state) {
-    // Com a partida terminada, o tabuleiro trava.
-    if (state.end != null) return PlayerSide.none;
+    // Com a partida terminada ou revendo um lance, o tabuleiro trava.
+    if (state.end != null || state.browsing) return PlayerSide.none;
     return switch (state.playerSide) {
       null => PlayerSide.both,
       Side.white => PlayerSide.white,
@@ -186,6 +188,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             listenWhen: (previous, current) =>
                 !identical(previous.position, current.position) ||
                 previous.moves.length != current.moves.length ||
+                previous.viewedPly != current.viewedPly ||
                 previous.end != current.end ||
                 previous.playerSide != current.playerSide ||
                 previous.machineThinking != current.machineThinking,
@@ -233,7 +236,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
+      // Embaixo, voltar e avançar um lance para rever a partida.
+      bottomNavigationBar: _MoveButtons(state: state, cubit: cubit),
       appBar: AppBar(
+        // Os lances numa faixa, logo abaixo da barra: tocar num deles mostra a
+        // posição daquele momento.
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(MoveList.height),
+          child: MoveList(
+            moves: state.moves,
+            firstMoveNumber: state.start.fullmoves,
+            firstSide: state.start.turn,
+            selected: state.shownPly - 1,
+            onSelected: (index) => cubit.view(index + 1),
+            pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
+          ),
+        ),
         // No treino a barra fica só com os botões: o objetivo aparece no fim.
         title: goal == null ? Text(context.l10n.freeBoardTitle) : null,
         // No treino, só propor empate e desistir; virar, trocar o relógio e
@@ -305,16 +323,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             // O tabuleiro ocupa sempre a largura toda; se não couber tudo, a
             // tela rola.
             final boardSize = width;
-            // A lista de lances fica com o que sobra da tela embaixo do
-            // tabuleiro (no mínimo, três linhas).
-            final listHeight = math.max(
-              MoveList.minHeight,
-              constraints.maxHeight -
-                  clockRows * ClockRow.height -
-                  (character == null ? 0 : CharacterBar.heightFor(avatar)) -
-                  boardSize -
-                  24,
-            );
             const both = [Side.white, Side.black];
             final end = state.end;
             return Stack(
@@ -391,18 +399,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           talk: talk,
                         ),
                       // Embaixo do tabuleiro: o fim da partida (com o rating e
-                      // as mensagens) e a faixa de lances.
+                      // as mensagens).
                       if (end != null && !_resultOpen)
                         _end(context, cubit, state, end, card: false),
-                      MoveList(
-                        height: listHeight,
-                        moves: state.moves,
-                        firstMoveNumber: state.start.fullmoves,
-                        firstSide: state.start.turn,
-                        pieceLetters: boardSettings.notation.pieceLetters(
-                          context.l10n,
-                        ),
-                      ),
                       if (state.report case final report?)
                         ReportPanel(report: report),
                     ],
@@ -971,4 +970,65 @@ Future<bool?> showResignSheet(BuildContext context) {
       );
     },
   );
+}
+
+/// Voltar e avançar um lance, como no chess.com: para rever a partida sem
+/// mexer nela. No último lance, o tabuleiro volta a aceitar lances.
+class _MoveButtons extends StatelessWidget {
+  const _MoveButtons({required this.state, required this.cubit});
+
+  final FreeBoardState state;
+  final FreeBoardCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    // Sem lances (ou com a partida ainda sendo lida), nada para rever.
+    if (!state.ready || state.ucis.isEmpty) return const SizedBox.shrink();
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    Widget button({
+      required Key key,
+      required IconData icon,
+      required String label,
+      required VoidCallback? onPressed,
+    }) => Expanded(
+      child: TextButton(
+        key: key,
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: theme.colorScheme.onSurface,
+          padding: const EdgeInsets.symmetric(vertical: 6),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 28),
+            Text(label, style: theme.textTheme.labelMedium),
+          ],
+        ),
+      ),
+    );
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            button(
+              key: FreeBoardKeys.movePrevious,
+              icon: rtl ? Icons.chevron_right : Icons.chevron_left,
+              label: l10n.gameMoveBack,
+              onPressed: state.shownPly > 0 ? cubit.viewPrevious : null,
+            ),
+            button(
+              key: FreeBoardKeys.moveNext,
+              icon: rtl ? Icons.chevron_left : Icons.chevron_right,
+              label: l10n.gameMoveForward,
+              onPressed: state.browsing ? cubit.viewNext : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

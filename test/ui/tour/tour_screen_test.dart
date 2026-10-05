@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
@@ -31,6 +32,7 @@ void main() {
     WidgetTester tester, {
     TourStep step = TourStep.goal,
     Locale locale = const Locale('en'),
+    FakeProfileRepository? profile,
   }) async {
     settings = FakeSettingsRepository();
     final settingsCubit = SettingsCubit(
@@ -48,7 +50,7 @@ void main() {
         child: BlocProvider(
           create: (_) => TourCubit(
             onboarding: FakeOnboardingRepository(Onboarding(step: step.index)),
-            profile: FakeProfileRepository(),
+            profile: profile ?? FakeProfileRepository(),
             characters: FakeCharacterRepository(),
             lessons: FakeLessonRepository(),
           )..load(locale.languageCode),
@@ -92,6 +94,45 @@ void main() {
     expect(find.text('Começar as aulas'), findsOneWidget);
     expect(find.byKey(TourKeys.viktor), findsOneWidget);
     expect(find.text('Mestre Viktor'), findsOneWidget);
+  });
+
+  testWidgets('nas boas-vindas, o campo do nome grava o apelido no perfil', (
+    tester,
+  ) async {
+    final profile = FakeProfileRepository();
+    await pumpTour(tester, locale: const Locale('pt'), profile: profile);
+
+    expect(find.text('Como devo chamar você?'), findsOneWidget);
+    // Vazio, o apelido padrão fica à vista.
+    expect(find.text('Jogador'), findsOneWidget);
+    await tester.enterText(find.byKey(TourKeys.nameField), 'Gabriel');
+    await tester.pumpAndSettle();
+
+    expect((await profile.load()).nickname, 'Gabriel');
+
+    // Ir e voltar não apaga o que foi escrito.
+    await tester.tap(find.byKey(TourKeys.nextButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TourKeys.nameField), findsNothing);
+    await tester.tap(find.byKey(TourKeys.backButton));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byKey(TourKeys.nameField)).controller!.text,
+      'Gabriel',
+    );
+  });
+
+  testWidgets('o nome passa do tamanho máximo: o campo corta', (tester) async {
+    final profile = FakeProfileRepository();
+    await pumpTour(tester, profile: profile);
+
+    await tester.enterText(find.byKey(TourKeys.nameField), 'a' * 40);
+    await tester.pumpAndSettle();
+
+    expect(
+      (await profile.load()).nickname,
+      'a' * UserProfile.maxNicknameLength,
+    );
   });
 
   testWidgets('a aparência vem logo depois das boas-vindas: tema e depois '

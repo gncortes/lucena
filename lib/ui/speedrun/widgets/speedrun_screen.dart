@@ -1,7 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
@@ -11,15 +13,17 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/position_board.dart';
+import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../journey/widgets/journey_ui.dart';
+import '../../journey/widgets/trail_widgets.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
 
 /// Um speedrun antes de começar: quem ou o que é, o ritmo, o melhor tempo (ou
-/// o convite para o primeiro), as etapas em miniatura com o melhor tempo de
-/// cada uma e o histórico. "Começar" fica fixo embaixo.
+/// o convite para o primeiro), a trilha das etapas com o melhor tempo de cada
+/// uma e o histórico das tentativas. "Começar" fica fixo embaixo.
 class SpeedrunScreen extends StatelessWidget {
   const SpeedrunScreen({super.key});
 
@@ -200,35 +204,40 @@ class SpeedrunScreen extends StatelessWidget {
                   ),
           ),
           _header(context, l10n.speedrunStages),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // Três por linha, cada uma com a altura do conteúdo.
-                const gap = 10.0;
-                final width = (constraints.maxWidth - gap * 2) / 3;
-                return Wrap(
-                  spacing: gap,
-                  runSpacing: gap,
-                  children: [
-                    for (final (index, stage) in speedrun.stages.indexed)
-                      SizedBox(
-                        width: width,
-                        child: _StageCard(
-                          index: index,
-                          stage: stage,
-                          speedrun: speedrun,
-                          best: records.bestStages[index],
-                        ),
-                      ),
-                  ],
-                );
-              },
+          // Em andamento, o progresso por passos: uma barra por etapa.
+          if (ongoing != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: StepProgress(
+                key: SpeedrunKeys.progress,
+                total: speedrun.stages.length,
+                value: ongoing.currentStage.toDouble(),
+              ),
             ),
-          ),
-          if (records.completed.isNotEmpty) ...[
+          // A ordem das etapas, uma embaixo da outra: quem o jogador
+          // enfrenta, até onde a tentativa em andamento chegou e o melhor
+          // tempo de cada etapa.
+          for (final (index, stage) in speedrun.stages.indexed)
+            _StageRow(
+              index: index,
+              stage: stage,
+              speedrun: speedrun,
+              best: records.bestStages[index],
+              last: index == speedrun.stages.length - 1,
+              status: ongoing == null
+                  ? _StageStatus.idle
+                  : index < ongoing.currentStage
+                  ? _StageStatus.done
+                  : index == ongoing.currentStage
+                  ? _StageStatus.current
+                  : _StageStatus.ahead,
+            ),
+          if (records.completed.isNotEmpty || summary.abandoned.isNotEmpty) ...[
             _header(context, l10n.speedrunHistory),
-            ..._history(context, records.completed),
+            ..._history(context, speedrun, [
+              ...records.completed,
+              ...summary.abandoned,
+            ]),
           ],
         ],
       ),
@@ -261,20 +270,29 @@ class SpeedrunScreen extends StatelessWidget {
     );
   }
 
-  // Os tempos das tentativas concluídas, da mais recente para a mais antiga,
-  // com o título de cada mês.
-  List<Widget> _history(BuildContext context, List<SpeedrunRun> runs) {
+  // As tentativas terminadas, da mais recente para a mais antiga, com o
+  // título de cada mês: as concluídas com o tempo, as abandonadas com a
+  // etapa em que pararam.
+  List<Widget> _history(
+    BuildContext context,
+    Speedrun speedrun,
+    List<SpeedrunRun> runs,
+  ) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final month = DateFormat.yMMMM(locale);
     final date = DateFormat.MMMd(locale).add_Hm();
+    DateTime endOf(SpeedrunRun run) =>
+        (run.finishedAt ?? run.attempt.abandonedAt!).toLocal();
+    final sorted = [...runs]..sort((a, b) => endOf(b).compareTo(endOf(a)));
     final children = <Widget>[];
     String? current;
     var months = 0;
-    for (final (index, run) in runs.indexed) {
-      final finishedAt = run.finishedAt!.toLocal();
-      final label = month.format(finishedAt);
+    for (final (index, run) in sorted.indexed) {
+      final endedAt = endOf(run);
+      final label = month.format(endedAt);
       if (label != current) {
         current = label;
         children.add(
@@ -284,28 +302,52 @@ class SpeedrunScreen extends StatelessWidget {
               label,
               key: SpeedrunKeys.month(months++),
               style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
+                color: colors.primary,
               ),
             ),
           ),
         );
       }
+      final total = speedrun.stages.length;
       children.add(
         Card(
           key: SpeedrunKeys.run(index),
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          color: theme.colorScheme.surfaceContainerLow,
+          color: colors.surfaceContainerLow,
+          clipBehavior: Clip.antiAlias,
           child: ListTile(
-            leading: const Icon(Icons.flag_outlined),
+            // Os detalhes da tentativa: o tempo e as derrotas de cada etapa.
+            onTap: () => context.push(
+              Routes.speedrunAttempt(speedrun.id, run.attempt.id),
+            ),
+            trailing: Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.chevron_left
+                  : Icons.chevron_right,
+              color: colors.onSurfaceVariant,
+            ),
+            leading: Icon(
+              run.completed ? Icons.flag_rounded : Icons.flag_outlined,
+              color: run.completed ? colors.primary : colors.outline,
+            ),
             title: Text(
-              RunTimeFormat.format(run.total),
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
+              run.completed
+                  ? RunTimeFormat.format(run.total)
+                  : l10n.speedrunStoppedAt(
+                      math.min(run.currentStage + 1, total),
+                      total,
+                    ),
+              style: run.completed
+                  ? theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    )
+                  : theme.textTheme.titleSmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
             ),
             subtitle: Text(
-              '${date.format(finishedAt)} · ${l10n.speedrunLosses(run.losses)}',
+              '${date.format(endedAt)} · ${l10n.speedrunLosses(run.losses)}',
             ),
           ),
         ),
@@ -315,20 +357,38 @@ class SpeedrunScreen extends StatelessWidget {
   }
 }
 
-/// Uma etapa na grade: o número, a posição em miniatura, o nome do final (e
-/// o adversário, quando muda de etapa para etapa) e o melhor tempo dela.
-class _StageCard extends StatelessWidget {
-  const _StageCard({
+enum _StageStatus {
+  /// Sem tentativa em andamento.
+  idle,
+  done,
+  current,
+  ahead,
+}
+
+/// Uma etapa na trilha, no formato da Jornada: o retrato do adversário num
+/// círculo, ligado aos vizinhos por uma linha, com o nome, a etapa e o melhor
+/// tempo dela. Com uma tentativa em andamento, as etapas vencidas levam o
+/// selo de feito e a da vez fica maior e em destaque; a última é o chefe
+/// final.
+class _StageRow extends StatelessWidget {
+  const _StageRow({
     required this.index,
     required this.stage,
     required this.speedrun,
     required this.best,
+    required this.last,
+    required this.status,
   });
 
   final int index;
   final Challenge stage;
   final Speedrun speedrun;
   final Duration? best;
+  final bool last;
+  final _StageStatus status;
+
+  // O meio da coluna dos retratos, por onde passa a linha.
+  static const _railX = 52.0;
 
   @override
   Widget build(BuildContext context) {
@@ -339,61 +399,114 @@ class _StageCard extends StatelessWidget {
       (SpeedrunCubit cubit) => cubit.state.characters,
     );
     final best = this.best;
-    return Card(
+    final current = status == _StageStatus.current;
+    final done = status == _StageStatus.done;
+    final ahead = status == _StageStatus.ahead;
+    final size = current ? 72.0 : 56.0;
+    final height = current ? 108.0 : 84.0;
+    final doneColor = ChangeColors.of(context, up: true);
+    final first = index == 0;
+    return SizedBox(
       key: SpeedrunKeys.stageCard(index),
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) => Stack(
-                children: [
-                  PositionBoard(
-                    fen: stage.position.fen,
-                    size: constraints.maxWidth,
-                    radius: 4,
-                  ),
-                  PositionedDirectional(
-                    top: 2,
-                    start: 2,
-                    child: CircleAvatar(
-                      radius: 11,
-                      backgroundColor: colors.primary,
-                      child: Text(
-                        (index + 1).toString(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+      height: height,
+      child: Stack(
+        children: [
+          // A linha da trilha, atrás dos retratos: só a metade de baixo na
+          // primeira etapa e só a de cima na última. Até a etapa da vez, ela
+          // vem na cor de feito.
+          PositionedDirectional(
+            start: _railX - 2,
+            width: 4,
+            top: first ? height / 2 : 0,
+            bottom: height / 2,
+            child: ColoredBox(
+              color: done || current ? doneColor : colors.outlineVariant,
+            ),
+          ),
+          if (!last)
+            PositionedDirectional(
+              start: _railX - 2,
+              width: 4,
+              top: height / 2,
+              bottom: 0,
+              child: ColoredBox(
+                color: done ? doneColor : colors.outlineVariant,
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 72,
+                  child: Center(
+                    child: TrailPortrait(
+                      character: opponentCharacter(characters, stage.opponent),
+                      size: size,
+                      locked: false,
+                      completed: done,
+                      current: current,
+                      doneColor: doneColor,
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        opponentName(l10n, characters, stage.opponent),
+                        style:
+                            (current
+                                    ? theme.textTheme.titleLarge
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: ahead ? colors.onSurfaceVariant : null,
+                                ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        [
+                          l10n.speedrunStageOf(
+                            index + 1,
+                            speedrun.stages.length,
+                          ),
+                          // Quando o final muda de etapa para etapa, o nome
+                          // dele vem junto.
+                          if (speedrun.kind != SpeedrunKind.ending)
+                            endgameName(l10n, stage.position.subcategory),
+                        ].join(' · '),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      if (current || last) ...[
+                        const SizedBox(height: 6),
+                        TrailBadge(
+                          text: current ? l10n.speedrunNow : l10n.journeyBoss,
+                          color: current ? colors.primary : colors.tertiary,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  best == null ? '' : RunTimeFormat.format(best),
+                  key: SpeedrunKeys.stageRecord(index),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              speedrun.kind == SpeedrunKind.ending
-                  ? opponentName(l10n, characters, stage.opponent)
-                  : endgameName(l10n, stage.position.subcategory),
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              best == null ? '' : RunTimeFormat.format(best),
-              key: SpeedrunKeys.stageRecord(index),
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.primary,
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

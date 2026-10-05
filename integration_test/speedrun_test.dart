@@ -162,6 +162,33 @@ void main() {
     await speedrun.expectItemBest(_endingRun, '0:13.0');
   });
 
+  patrolTest('desistir no meio: o histórico diz até onde a tentativa foi, e '
+      'continua ao reabrir', ($) async {
+    final app = AppRobot($);
+    final speedrun = SpeedrunRobot($);
+    await app.open(systemLocale: _english);
+    await speedrun.open();
+    await speedrun.openSpeedrun(_endingRun);
+
+    await speedrun.start();
+    await playStage($, 3);
+    await speedrun.abandon();
+    await speedrun.back();
+
+    await speedrun.expectHistory(0, 'Gave up at stage 2 of 3');
+    // Sem tentativa em andamento, dá para começar de novo.
+    await speedrun.expectCanStart();
+    // Tocar na tentativa abre os detalhes dela, com a marca de cada etapa.
+    await speedrun.openHistory(0);
+    await speedrun.expectAbandonedDetails(firstStage: '0:03.0');
+    await speedrun.back();
+
+    await app.restart();
+    await speedrun.open();
+    await speedrun.openSpeedrun(_endingRun);
+    await speedrun.expectHistory(0, 'Gave up at stage 2 of 3');
+  });
+
   patrolTest('o ritmo da lista: cada ritmo tem os seus speedruns e a escolha '
       'fica ao reabrir', ($) async {
     final app = AppRobot($);

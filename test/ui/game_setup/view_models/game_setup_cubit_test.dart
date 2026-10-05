@@ -59,8 +59,17 @@ void main() {
       addTearDown(cubit.close);
       await cubit.load();
 
-      await cubit.setUserTime(minutes: 3, increment: 2);
-      await cubit.setOpponentTime(minutes: 1, increment: 0);
+      await cubit.setClock(enabled: false);
+      await cubit.setTimes(
+        user: const TimeControl(
+          initial: Duration(minutes: 3),
+          increment: Duration(seconds: 2),
+        ),
+        opponent: const TimeControl(initial: Duration(minutes: 1)),
+      );
+
+      // O ritmo montado à mão liga o relógio.
+      expect(cubit.state.setup.clock, isTrue);
 
       expect(cubit.state.clockCodes, (white: '180+2', black: '60+0'));
       cubit.setUserSide(Side.black);
@@ -80,7 +89,10 @@ void main() {
     addTearDown(cubit.close);
     await cubit.load();
 
-    await cubit.setOpponentTime(minutes: 0);
+    await cubit.setTimes(
+      user: const TimeControl(initial: Duration(minutes: 5)),
+      opponent: const TimeControl(initial: Duration.zero),
+    );
 
     expect(cubit.state.hasZeroTime, isTrue);
     expect(cubit.state.canStart, isFalse);
@@ -95,7 +107,13 @@ void main() {
     addTearDown(cubit.close);
     await cubit.load();
 
-    await cubit.setUserTime(minutes: 999, increment: -4);
+    await cubit.setTimes(
+      user: const TimeControl(
+        initial: Duration(minutes: 999),
+        increment: Duration(seconds: -4),
+      ),
+      opponent: const TimeControl(initial: Duration(minutes: 5)),
+    );
 
     expect(
       cubit.state.setup.userTime.initial.inMinutes,
@@ -264,7 +282,10 @@ void main() {
       expect(cubit.state.clockCodes, (white: '60+0', black: '60+0'));
       expect(training.setup.userTime, bullet.time);
 
-      await cubit.setOpponentTime(minutes: 2);
+      await cubit.setTimes(
+        user: bullet.time,
+        opponent: const TimeControl(initial: Duration(minutes: 2)),
+      );
       expect(cubit.state.pace, isNull);
     });
 

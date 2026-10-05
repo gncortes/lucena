@@ -72,6 +72,17 @@ class SpeedrunListScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                // O que é o speedrun, em uma frase, para quem chega.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Text(
+                    l10n.speedrunListIntro,
+                    key: SpeedrunKeys.intro,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
                 if (state.inProgress.isNotEmpty) ...[
                   section(l10n.speedrunContinue),
                   for (final (index, summary) in state.inProgress.indexed)

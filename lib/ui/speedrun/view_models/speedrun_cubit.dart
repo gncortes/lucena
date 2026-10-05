@@ -24,6 +24,10 @@ abstract class SpeedrunSummary with _$SpeedrunSummary {
 
     /// A tentativa em andamento, se há.
     SpeedrunRun? ongoing,
+
+    /// As tentativas de que o jogador desistiu, da mais recente para a mais
+    /// antiga: o histórico mostra até onde cada uma foi.
+    @Default(<SpeedrunRun>[]) List<SpeedrunRun> abandoned,
   }) = _SpeedrunSummary;
 }
 
@@ -148,6 +152,10 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       speedrun: speedrun,
       records: SpeedrunScore.records(speedrun, attempts),
       ongoing: runs.where((run) => run.inProgress).lastOrNull,
+      abandoned: runs.where((run) => run.abandoned).toList()
+        ..sort(
+          (a, b) => b.attempt.abandonedAt!.compareTo(a.attempt.abandonedAt!),
+        ),
     );
   }
 

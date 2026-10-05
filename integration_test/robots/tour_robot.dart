@@ -1,5 +1,5 @@
 import 'package:chessground/chessground.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
@@ -27,6 +27,29 @@ class TourRobot {
 
   Future<void> next() async {
     await $(TourKeys.nextButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// No primeiro passo: escreve o nome do jogador.
+  Future<void> enterName(String name) async {
+    await $(TourKeys.nameField).scrollTo().enterText(name);
+    await $.pumpAndSettle();
+  }
+
+  /// O nome que está no campo do primeiro passo.
+  Future<void> expectName(String name) async {
+    await $(TourKeys.nameField).scrollTo();
+    expect(
+      $.tester
+          .widget<TextField>(find.byKey(TourKeys.nameField))
+          .controller!
+          .text,
+      name,
+    );
+  }
+
+  Future<void> back() async {
+    await $(TourKeys.backButton).tap();
     await $.pumpAndSettle();
   }
 
