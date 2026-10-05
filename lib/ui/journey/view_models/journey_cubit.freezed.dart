@@ -19,7 +19,9 @@ mixin _$JourneyState {
  JourneyProgress? get progress;/// O desafio aberto e as partidas dele, da mais recente para a mais
 /// antiga. Nulo fora da tela do desafio.
  Challenge? get challenge; List<Attempt> get attempts;/// Os personagens, um por nível do Maia.
- List<Character> get characters;
+ List<Character> get characters;/// O que o Viktor diz ao ex-aluno no degrau dele. Nulo para quem não fez
+/// aulas com ele.
+ String? get reunion;
 /// Create a copy of JourneyState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,20 +33,20 @@ $JourneyStateCopyWith<JourneyState> get copyWith => _$JourneyStateCopyWithImpl<J
 @override
 bool operator ==(Object other) {
   final _this = this as JourneyState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JourneyState&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.challenge, _this.challenge) || other.challenge == _this.challenge)&&const DeepCollectionEquality().equals(other.attempts, _this.attempts)&&const DeepCollectionEquality().equals(other.characters, _this.characters));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JourneyState&&(identical(other.progress, _this.progress) || other.progress == _this.progress)&&(identical(other.challenge, _this.challenge) || other.challenge == _this.challenge)&&const DeepCollectionEquality().equals(other.attempts, _this.attempts)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.reunion, _this.reunion) || other.reunion == _this.reunion));
 }
 
 
 @override
 int get hashCode {
   final _this = this as JourneyState;
-  return Object.hash(runtimeType,_this.progress,_this.challenge,const DeepCollectionEquality().hash(_this.attempts),const DeepCollectionEquality().hash(_this.characters));
+  return Object.hash(runtimeType,_this.progress,_this.challenge,const DeepCollectionEquality().hash(_this.attempts),const DeepCollectionEquality().hash(_this.characters),_this.reunion);
 }
 
 @override
 String toString() {
   final _this = this as JourneyState;
-  return 'JourneyState(progress: ${_this.progress}, challenge: ${_this.challenge}, attempts: ${_this.attempts}, characters: ${_this.characters})';
+  return 'JourneyState(progress: ${_this.progress}, challenge: ${_this.challenge}, attempts: ${_this.attempts}, characters: ${_this.characters}, reunion: ${_this.reunion})';
 }
 
 
@@ -55,7 +57,7 @@ abstract mixin class $JourneyStateCopyWith<$Res>  {
   factory $JourneyStateCopyWith(JourneyState value, $Res Function(JourneyState) _then) = _$JourneyStateCopyWithImpl;
 @useResult
 $Res call({
- JourneyProgress? progress, Challenge? challenge, List<Attempt> attempts, List<Character> characters
+ JourneyProgress? progress, Challenge? challenge, List<Attempt> attempts, List<Character> characters, String? reunion
 });
 
 
@@ -72,13 +74,14 @@ class _$JourneyStateCopyWithImpl<$Res>
 
 /// Create a copy of JourneyState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? progress = freezed,Object? challenge = freezed,Object? attempts = null,Object? characters = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? progress = freezed,Object? challenge = freezed,Object? attempts = null,Object? characters = null,Object? reunion = freezed,}) {
   return _then(JourneyState(
 progress: freezed == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
 as JourneyProgress?,challenge: freezed == challenge ? _self.challenge : challenge // ignore: cast_nullable_to_non_nullable
 as Challenge?,attempts: null == attempts ? _self.attempts : attempts // ignore: cast_nullable_to_non_nullable
 as List<Attempt>,characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
-as List<Character>,
+as List<Character>,reunion: freezed == reunion ? _self.reunion : reunion // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of JourneyState
@@ -187,10 +190,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters,  String? reunion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JourneyState() when $default != null:
-return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);case _:
+return $default(_that.progress,_that.challenge,_that.attempts,_that.characters,_that.reunion);case _:
   return orElse();
 
 }
@@ -208,10 +211,10 @@ return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters,  String? reunion)  $default,) {final _that = this;
 switch (_that) {
 case _JourneyState():
-return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);case _:
+return $default(_that.progress,_that.challenge,_that.attempts,_that.characters,_that.reunion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -228,10 +231,10 @@ return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( JourneyProgress? progress,  Challenge? challenge,  List<Attempt> attempts,  List<Character> characters,  String? reunion)?  $default,) {final _that = this;
 switch (_that) {
 case _JourneyState() when $default != null:
-return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);case _:
+return $default(_that.progress,_that.challenge,_that.attempts,_that.characters,_that.reunion);case _:
   return null;
 
 }
@@ -243,7 +246,7 @@ return $default(_that.progress,_that.challenge,_that.attempts,_that.characters);
 
 
 class _JourneyState implements JourneyState {
-  const _JourneyState({this.progress, this.challenge,  List<Attempt> attempts = const <Attempt>[],  List<Character> characters = const <Character>[]}): _attempts = attempts,_characters = characters;
+  const _JourneyState({this.progress, this.challenge,  List<Attempt> attempts = const <Attempt>[],  List<Character> characters = const <Character>[], this.reunion}): _attempts = attempts,_characters = characters;
   
 
 /// Nulo enquanto a Jornada é lida.
@@ -267,6 +270,9 @@ class _JourneyState implements JourneyState {
   return EqualUnmodifiableListView(_characters);
 }
 
+/// O que o Viktor diz ao ex-aluno no degrau dele. Nulo para quem não fez
+/// aulas com ele.
+@override final  String? reunion;
 
 /// Create a copy of JourneyState
 /// with the given fields replaced by the non-null parameter values.
@@ -278,18 +284,18 @@ _$JourneyStateCopyWith<_JourneyState> get copyWith => __$JourneyStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JourneyState&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.challenge, challenge) || other.challenge == challenge)&&const DeepCollectionEquality().equals(other.attempts, _attempts)&&const DeepCollectionEquality().equals(other.characters, _characters));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JourneyState&&(identical(other.progress, progress) || other.progress == progress)&&(identical(other.challenge, challenge) || other.challenge == challenge)&&const DeepCollectionEquality().equals(other.attempts, _attempts)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.reunion, reunion) || other.reunion == reunion));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,progress,challenge,const DeepCollectionEquality().hash(_attempts),const DeepCollectionEquality().hash(_characters));
+    return Object.hash(runtimeType,progress,challenge,const DeepCollectionEquality().hash(_attempts),const DeepCollectionEquality().hash(_characters),reunion);
 }
 
 @override
 String toString() {
-    return 'JourneyState(progress: $progress, challenge: $challenge, attempts: $attempts, characters: $characters)';
+    return 'JourneyState(progress: $progress, challenge: $challenge, attempts: $attempts, characters: $characters, reunion: $reunion)';
 }
 
 
@@ -300,7 +306,7 @@ abstract mixin class _$JourneyStateCopyWith<$Res> implements $JourneyStateCopyWi
   factory _$JourneyStateCopyWith(_JourneyState value, $Res Function(_JourneyState) _then) = __$JourneyStateCopyWithImpl;
 @override @useResult
 $Res call({
- JourneyProgress? progress, Challenge? challenge, List<Attempt> attempts, List<Character> characters
+ JourneyProgress? progress, Challenge? challenge, List<Attempt> attempts, List<Character> characters, String? reunion
 });
 
 
@@ -317,13 +323,14 @@ class __$JourneyStateCopyWithImpl<$Res>
 
 /// Create a copy of JourneyState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? progress = freezed,Object? challenge = freezed,Object? attempts = null,Object? characters = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? progress = freezed,Object? challenge = freezed,Object? attempts = null,Object? characters = null,Object? reunion = freezed,}) {
   return _then(_JourneyState(
 progress: freezed == progress ? _self.progress : progress // ignore: cast_nullable_to_non_nullable
 as JourneyProgress?,challenge: freezed == challenge ? _self.challenge : challenge // ignore: cast_nullable_to_non_nullable
 as Challenge?,attempts: null == attempts ? _self._attempts : attempts // ignore: cast_nullable_to_non_nullable
 as List<Attempt>,characters: null == characters ? _self._characters : characters // ignore: cast_nullable_to_non_nullable
-as List<Character>,
+as List<Character>,reunion: freezed == reunion ? _self.reunion : reunion // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

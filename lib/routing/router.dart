@@ -46,6 +46,12 @@ import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home/widgets/home_screen.dart';
 import '../ui/achievements/view_models/achievements_cubit.dart';
 import '../ui/achievements/widgets/achievements_screen.dart';
+import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/school_progress_repository.dart';
+import '../ui/school/view_models/lesson_cubit.dart';
+import '../ui/school/view_models/school_cubit.dart';
+import '../ui/school/widgets/lesson_screen.dart';
+import '../ui/school/widgets/school_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
 import '../ui/tour/widgets/tour_screen.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
@@ -76,10 +82,12 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
       GoRoute(
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
-          create: (context) => TourCubit(
+          create: (_) => TourCubit(
             onboarding: context.read<OnboardingRepository>(),
             profile: context.read<ProfileRepository>(),
-          )..load(),
+            characters: context.read<CharacterRepository>(),
+            lessons: context.read<LessonRepository>(),
+          )..load(_language(context)),
           child: const TourScreen(),
         ),
       ),
@@ -92,6 +100,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             onboarding: context.read<OnboardingRepository>(),
             characters: context.read<CharacterRepository>(),
             rating: context.read<RatingRepository>(),
+            lessons: context.read<LessonRepository>(),
+            school: context.read<SchoolProgressRepository>(),
+            profile: context.read<ProfileRepository>(),
           )..load(),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -176,6 +187,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       settings: context.read<SettingsRepository>(),
                       now: context.read<Now>(),
                       language: language,
+                      school: context.read<SchoolProgressRepository>(),
                     ),
                   ),
                 ],
@@ -193,23 +205,60 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             ),
           ),
           GoRoute(
+            path: 'school',
+            builder: (context, state) => BlocProvider(
+              create: (_) => SchoolCubit(
+                lessons: context.read<LessonRepository>(),
+                progress: context.read<SchoolProgressRepository>(),
+                characters: context.read<CharacterRepository>(),
+                profile: context.read<ProfileRepository>(),
+              )..load(_language(context)),
+              child: Builder(
+                builder: (context) => ReloadOnReturn(
+                  onReturn: () =>
+                      context.read<SchoolCubit>().load(_language(context)),
+                  child: const SchoolScreen(),
+                ),
+              ),
+            ),
+            routes: [
+              GoRoute(
+                path: ':lesson',
+                builder: (context, state) {
+                  final id = state.pathParameters['lesson']!;
+                  return BlocProvider(
+                    // A aula seguinte (pela tela de fim) troca o view model.
+                    key: ValueKey(id),
+                    create: (_) => LessonCubit(
+                      lessons: context.read<LessonRepository>(),
+                      progress: context.read<SchoolProgressRepository>(),
+                      characters: context.read<CharacterRepository>(),
+                      opponent: context.read<OpponentRepository>(),
+                    )..load(id, _language(context)),
+                    child: LessonScreen(key: ValueKey('lesson.$id')),
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
             path: 'journey',
             builder: (context, state) => BlocProvider(
-              create: (context) => _journeyCubit(context)..load(),
+              create: (_) => _journeyCubit(context)..load(),
               child: const JourneyScreen(),
             ),
             routes: [
               GoRoute(
                 path: ':rung',
                 builder: (context, state) => BlocProvider(
-                  create: (context) => _journeyCubit(context)..load(),
+                  create: (_) => _journeyCubit(context)..load(),
                   child: RungScreen(rungId: state.pathParameters['rung']!),
                 ),
                 routes: [
                   GoRoute(
                     path: ':position',
                     builder: (context, state) => BlocProvider(
-                      create: (context) => _journeyCubit(context)
+                      create: (_) => _journeyCubit(context)
                         ..load(
                           rungId: state.pathParameters['rung'],
                           positionId: state.pathParameters['position'],
@@ -400,7 +449,15 @@ JourneyCubit _journeyCubit(BuildContext context) => JourneyCubit(
   context.read<ProgressRepository>(),
   onboarding: context.read<OnboardingRepository>(),
   characters: context.read<CharacterRepository>(),
+  school: context.read<SchoolProgressRepository>(),
+  lessons: context.read<LessonRepository>(),
+  language: _language(context),
 );
+
+/// O idioma do app, lido no `builder` da rota (no `create` de um provider não
+/// se pode ouvir o `Localizations`).
+String _language(BuildContext context) =>
+    Localizations.localeOf(context).languageCode;
 
 SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   journey: context.read<JourneyRepository>(),

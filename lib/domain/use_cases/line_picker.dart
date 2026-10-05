@@ -32,11 +32,15 @@ class LinePicker {
   /// repete, mas nunca a mesma duas vezes seguidas. Prefere a intensidade do
   /// evento (ou a mais próxima) e a emoção do momento. [roll] (de 0 a 1)
   /// sorteia entre as que sobram.
+  ///
+  /// As falas de ex-aluno só valem com [student], e aí vêm na frente das
+  /// outras da categoria.
   static ({CharacterLine line, TalkMemory memory})? pick({
     required List<CharacterLine> lines,
     required List<GameEvent> events,
     required TalkMemory memory,
     required double roll,
+    bool student = false,
   }) {
     final emotion = EmotionRules.of(memory);
     for (final event in events) {
@@ -44,10 +48,21 @@ class LinePicker {
           memory.movesSinceLine < minMovesBetweenLines) {
         continue;
       }
-      final ofCategory = [
+      var ofCategory = [
         for (final l in lines)
-          if (l.category == event.category) l,
+          if (l.category == event.category &&
+              (student || l.audience != LineAudience.student))
+            l,
       ];
+      if (student) {
+        final forStudent = [
+          for (final l in ofCategory)
+            if (l.audience == LineAudience.student &&
+                !memory.spoken.contains(l.id))
+              l,
+        ];
+        if (forStudent.isNotEmpty) ofCategory = forStudent;
+      }
       var pool = [
         for (final l in ofCategory)
           if (!memory.spoken.contains(l.id)) l,

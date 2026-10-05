@@ -609,6 +609,10 @@
       }
     }
   },
+  "homeSchool": "Lessons with Viktor",
+  "@homeSchool": {
+    "description": "Home button that opens the lessons of the beginner course."
+  },
   "homeSpeedrun": "Speedrun",
   "@homeSpeedrun": {
     "description": "Home screen button: opens the timed challenges (speedruns)."
@@ -745,6 +749,96 @@
   "journeyTitle": "Journey",
   "@journeyTitle": {
     "description": "Title of the Journey screen: a ladder of levels, each with endgame challenges."
+  },
+  "lessonBackToSchool": "Back to the school",
+  "@lessonBackToSchool": {
+    "description": "Button at the end of a lesson that goes back to the lessons trail."
+  },
+  "lessonContinue": "Continue",
+  "@lessonContinue": {
+    "description": "Button that goes to the next step of the lesson."
+  },
+  "lessonDoneTitle": "{lesson}: done!",
+  "@lessonDoneTitle": {
+    "description": "Title of the card at the end of a lesson.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonFinish": "Finish lesson",
+  "@lessonFinish": {
+    "description": "Button on the last step of a lesson."
+  },
+  "lessonGraduationTitle": "Graduation!",
+  "@lessonGraduationTitle": {
+    "description": "Title of the card at the end of the last lesson of the course."
+  },
+  "lessonHint": "Hint",
+  "@lessonHint": {
+    "description": "Button that asks the teacher for the best move."
+  },
+  "lessonMissing": "This lesson does not exist.",
+  "@lessonMissing": {
+    "description": "When the lesson in the link does not exist."
+  },
+  "lessonNext": "Next: {lesson}",
+  "@lessonNext": {
+    "description": "Button at the end of a lesson that opens the next one.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonNumber": "Lesson {number} of {total}",
+  "@lessonNumber": {
+    "description": "Under the lesson title: its position in the course.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonRetry": "Try again",
+  "@lessonRetry": {
+    "description": "Button that restarts the position after a stalemate or a draw."
+  },
+  "lessonStep": "Step {step} of {total}",
+  "@lessonStep": {
+    "description": "Accessibility label of the lesson progress bar.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonStepShort": "{step}/{total}",
+  "@lessonStepShort": {
+    "description": "Short step counter beside the lesson progress bar.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonThinking": "Thinking…",
+  "@lessonThinking": {
+    "description": "While the computer answers in a lesson."
+  },
+  "lessonToJourney": "Go to the Journey",
+  "@lessonToJourney": {
+    "description": "Button at the graduation that opens the Journey."
   },
   "maiaDebugElapsed": "Computed in {ms} ms",
   "@maiaDebugElapsed": {
@@ -1076,6 +1170,74 @@
   "resultPlayAgain": "Play again",
   "@resultPlayAgain": {
     "description": "Button at the end of a training game: start the same position with the same setup."
+  },
+  "rungReunionTitle": "Reunion with {name}",
+  "@rungReunionTitle": {
+    "description": "Title of the card on the 2600 rung when the player took lessons with Viktor.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolContinue": "Continue: {lesson}",
+  "@schoolContinue": {
+    "description": "Button that opens the next lesson to do.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolLessonLabel": "{status, select, completed{{title}, complete} open{{title}, open} other{{title}, locked}}",
+  "@schoolLessonLabel": {
+    "description": "Accessibility label of a lesson in the trail, with its status (completed, open or locked).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolLessonsDone": "{done} of {total}",
+  "@schoolLessonsDone": {
+    "description": "How many lessons of the course are complete.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolLocked": "Finish \"{lesson}\" first.",
+  "@schoolLocked": {
+    "description": "Message when tapping a locked lesson: which lesson to finish first.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolModule": "Module {number}",
+  "@schoolModule": {
+    "description": "Label above the module title in the lessons trail.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolStart": "Start the first lesson",
+  "@schoolStart": {
+    "description": "Button that opens the first lesson."
+  },
+  "schoolTitle": "Viktor's School",
+  "@schoolTitle": {
+    "description": "Title of the lessons screen (the beginner course taught by Viktor)."
   },
   "settingsBoardAppearance": "Board appearance",
   "@settingsBoardAppearance": {
@@ -1416,6 +1578,15 @@
       }
     }
   },
+  "teacherName": "Master {name}",
+  "@teacherName": {
+    "description": "Name of the teacher above his speech bubble, in the lessons and the tour.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
@@ -1447,6 +1618,10 @@
   "tourLevelBody": "The Journey starts at the matching level, and you can still play the ones below.",
   "@tourLevelBody": {
     "description": "Text of the level step of the tour."
+  },
+  "tourLevelSchool": "You start with lessons with Viktor, then the Journey at 1000",
+  "@tourLevelSchool": {
+    "description": "Under the level choice when the beginner level is marked: the lessons come first."
   },
   "tourLevelStart": "Journey starts at {rung}",
   "@tourLevelStart": {
@@ -1504,6 +1679,10 @@
   "tourStart": "Start",
   "@tourStart": {
     "description": "Last button of the tour: confirms the level and opens the app."
+  },
+  "tourStartLessons": "Start the lessons",
+  "@tourStartLessons": {
+    "description": "Last button of the tour when the beginner level is marked: opens the lessons."
   },
   "tourStep": "Step {step} of {total}",
   "@tourStep": {

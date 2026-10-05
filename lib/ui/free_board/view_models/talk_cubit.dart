@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/characters/talk_repository.dart';
 import '../../../data/repositories/evaluation/evaluation_repository.dart';
+import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_end.dart';
@@ -68,6 +69,7 @@ class TalkCubit extends Cubit<TalkState> {
     required this._settings,
     required this._now,
     required this._language,
+    this._school,
     Random? random,
   }) : _random = random ?? Random(),
        super(const TalkState());
@@ -78,7 +80,11 @@ class TalkCubit extends Cubit<TalkState> {
   final SettingsRepository _settings;
   final Now _now;
   final String _language;
+
+  // Quem fez aulas com o Viktor ouve as falas de ex-aluno dele.
+  final SchoolProgressRepository? _school;
   final Random _random;
+  bool _student = false;
 
   // O trabalho em fila: um lance é visto depois do outro.
   Future<void> _work = Future.value();
@@ -237,6 +243,7 @@ class TalkCubit extends Cubit<TalkState> {
       return;
     }
     _lines = await _characters.lines(character.id, _language);
+    _student = (await _school?.load())?.isStudent ?? false;
     final saved = await _talk.load();
     if (isClosed) return;
     if (saved != null && saved.gameStartedAt == game.startedAt) {
@@ -324,6 +331,7 @@ class TalkCubit extends Cubit<TalkState> {
       events: events,
       memory: _memory,
       roll: _random.nextDouble(),
+      student: _student,
     );
     if (picked == null) return null;
     _memory = picked.memory;

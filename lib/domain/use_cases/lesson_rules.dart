@@ -1,0 +1,88 @@
+import 'package:dartchess/dartchess.dart';
+
+import '../models/lesson.dart';
+import 'game_rules.dart';
+
+/// Como terminou a posição de um [PlayStep].
+enum PlayResult {
+  /// Continua.
+  ongoing,
+
+  /// O objetivo foi cumprido.
+  success,
+
+  /// O rei sem lances e sem xeque: empate por afogamento.
+  stalemate,
+
+  /// Outro empate (material insuficiente, repetição, 50 lances).
+  draw,
+
+  /// O aluno levou mate.
+  lost,
+}
+
+/// As regras dos passos das aulas, em cima do `dartchess`.
+abstract final class LessonRules {
+  /// O tabuleiro das estrelas: só as peças do aluno, sem reis do outro lado
+  /// e sem peão (o peão se aprende com o rei em jogo, num [MoveStep]).
+  static Board starsBoard(String fen) => Board.parseFen(fen.split(' ').first);
+
+  /// Os destinos de cada peça do lado [side] no tabuleiro das estrelas: os
+  /// ataques dela (sem pular por cima de peça, sem cair numa peça amiga).
+  static Map<Square, Set<Square>> starsMoves(Board board, Side side) {
+    final own = board.bySide(side);
+    return {
+      for (final square in own.squares)
+        if (board.pieceAt(square) case final piece?
+            when piece.role != Role.pawn)
+          square: attacks(
+            piece,
+            square,
+            board.occupied,
+          ).diff(own).squares.toSet(),
+    };
+  }
+
+  /// O tabuleiro depois de levar a peça de [from] para [to]. Nulo se ela não
+  /// chega lá.
+  static Board? moveStar(Board board, Side side, Square from, Square to) {
+    if (!(starsMoves(board, side)[from]?.contains(to) ?? false)) return null;
+    final piece = board.pieceAt(from)!;
+    return board.removePieceAt(from).setPieceAt(to, piece);
+  }
+
+  /// O FEN completo do tabuleiro das estrelas, com [side] na vez.
+  static String starsFen(Board board, Side side) =>
+      '${board.fen} ${side == Side.white ? 'w' : 'b'} - - 0 1';
+
+  /// O lance [uci] é um dos aceitos na vez [turn] de [step].
+  static bool accepts(MoveStep step, int turn, String uci) {
+    if (turn < 0 || turn >= step.line.length) return false;
+    return step.line[turn].accept.contains(uci);
+  }
+
+  /// O resultado de [position] num [PlayStep] de objetivo [goal], com o aluno
+  /// jogando de [student]. [lastMove] é o último lance jogado (a promoção
+  /// conta no lance em que acontece).
+  static PlayResult resultOf(
+    Position position, {
+    required PlayGoal goal,
+    required Side student,
+    Move? lastMove,
+    int repetitions = 1,
+  }) {
+    final end = GameRules.endOf(position, repetitions: repetitions);
+    if (position.isCheckmate) {
+      return position.turn == student ? PlayResult.lost : PlayResult.success;
+    }
+    if (position.isStalemate) return PlayResult.stalemate;
+    if (end != null) return PlayResult.draw;
+    if (goal == PlayGoal.promote &&
+        position.turn != student &&
+        lastMove is NormalMove &&
+        lastMove.promotion != null) {
+      return PlayResult.success;
+    }
+    return PlayResult.ongoing;
+  }
+}

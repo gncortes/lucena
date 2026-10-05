@@ -686,3 +686,16 @@ Visão completa em `docs/VISAO-GAMIFICACAO.md`. Cada tarefa é uma entrega intei
 Ordem: T20 → T21 → (T22 e T23 em paralelo) → T24 → T25 → T26 → T27. A T23 só precisa da Jornada, então pode sair antes da T22.
 
 Princípios (visão, seção 34): rating, progressão, domínio e speedrun são coisas separadas; o Maia não vira engine artificialmente fraca, nem no bullet; personagens têm comportamento, não só imagem; falas dependem do contexto; speedrun não pune demais; tudo dirigido por dados.
+
+## 9. Modo iniciante: as aulas do Viktor (T28–T31)
+
+Pedido do Gabriel (2026-10-04): quem marca "iniciante" no tour aprende a jogar finais com o Viktor, o mestre de 2600, como professor. Ele ensina o movimento das peças, os mates elementares e as técnicas simples (parede do rei, zugzwang, cortar com a torre), conversa com o aluno a cada passo e, lá no degrau 2600, reencontra o ex-aluno. Visão: seção 19 de `docs/VISAO-GAMIFICACAO.md`. Lote: Entrega G · T28 + T29 + T30 + T31 (mesma branch, uma PR só).
+
+| Tarefa | Entrega | Depende de | Tag | Modelo |
+| --- | --- | --- | --- | --- |
+| T28 | Tour conduzido pelo Viktor: progresso animado entre os passos e "sou iniciante" leva às aulas | T27 | `v1.8.0` | Opus 5.5 |
+| T29 | Escola do Viktor: motor de aulas em dados, trilha, tela da aula e módulo "As peças" | T28 | `v1.8.0` | Opus 5.5 |
+| T30 | Aulas de finais: mates elementares, técnicas, peões, torre com peças menores e a formatura com os dois bispos | T29 | `v1.8.0` | Opus 5.5 |
+| T31 | Viktor, o professor: falas revistas e em dobro, grandes mestres de cada idioma e o reencontro com o ex-aluno no 2600 | T29 | `v1.8.0` | Opus 5.5 |
+
+Fora do iniciante (fica para outro módulo): mate de bispo e cavalo, finais de torre teóricos (Lucena, Philidor), dama contra torre.

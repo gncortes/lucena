@@ -7,6 +7,8 @@ import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
 
 void main() {
   HomeCubit cubit({Onboarding onboarding = const Onboarding(done: true)}) {
@@ -16,6 +18,9 @@ void main() {
       onboarding: FakeOnboardingRepository(onboarding),
       characters: FakeCharacterRepository(),
       rating: FakeRatingRepository(),
+      lessons: FakeLessonRepository(),
+      school: FakeSchoolProgressRepository(),
+      profile: FakeProfileRepository(),
     );
     addTearDown(cubit.close);
     return cubit;

@@ -209,6 +209,15 @@ class _HomeScreenState extends State<HomeScreen>
                       onPressed: () => context.go(Routes.journey),
                     ),
                     FilledButton.tonalIcon(
+                      key: HomeKeys.schoolButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 48),
+                      ),
+                      icon: const Icon(Icons.school_outlined),
+                      label: Text(context.l10n.homeSchool),
+                      onPressed: () => context.go(Routes.school),
+                    ),
+                    FilledButton.tonalIcon(
                       key: HomeKeys.catalogButton,
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(220, 48),
