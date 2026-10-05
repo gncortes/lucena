@@ -359,5 +359,6 @@
   "homeStatBestRun": "Speedrun terbaik",
   "homeTools": "Alat",
   "profileRatingPeriodGames": "{count} terakhir",
-  "profileRatingPeriodAll": "Semua"
+  "profileRatingPeriodAll": "Semua",
+  "catalogDone": "{done} dari {total} selesai"
 }

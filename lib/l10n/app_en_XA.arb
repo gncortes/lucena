@@ -358,5 +358,6 @@
   "homeStatBestRun": "[Béšt špéédŕûñ one two]",
   "homeTools": "[Töölš one]",
   "profileRatingPeriodGames": "[Låšt {count} one two]",
-  "profileRatingPeriodAll": "[Åll one]"
+  "profileRatingPeriodAll": "[Åll one]",
+  "catalogDone": "[{done} öf {total} döñé one two three]"
 }

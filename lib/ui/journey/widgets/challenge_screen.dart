@@ -1,19 +1,15 @@
-import 'package:chessground/chessground.dart';
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/journey.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../settings/view_models/settings_cubit.dart';
+import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
 
@@ -133,7 +129,8 @@ class ChallengeScreen extends StatelessWidget {
   }
 }
 
-/// A posição na largura da tela, vista pelo lado que joga.
+/// A posição na largura da tela, vista pelo lado que joga. Ela chega voando
+/// do tabuleiro pequeno da tela do adversário.
 class _BigBoard extends StatelessWidget {
   const _BigBoard({required this.challenge});
 
@@ -141,25 +138,13 @@ class _BigBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final board = context.select(
-      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
-    );
-    final fen = challenge.position.fen;
-    final turn = fen.split(' ')[1] == 'b' ? Side.black : Side.white;
     return LayoutBuilder(
-      builder: (context, constraints) => Directionality(
-        textDirection: TextDirection.ltr,
-        child: StaticChessboard(
-          size: constraints.maxWidth,
-          orientation: turn,
-          fen: fen,
-          settings: StaticChessboardSettings(
-            colorScheme: board.colors.scheme,
-            pieceAssets: board.pieces.assets,
-            enableCoordinates: board.coordinates,
-            animationDuration: Duration.zero,
-          ),
-        ),
+      builder: (context, constraints) => PositionBoard(
+        fen: challenge.position.fen,
+        size: constraints.maxWidth,
+        coordinates: true,
+        radius: 0,
+        heroTag: challengeBoardTag(challenge.id),
       ),
     );
   }

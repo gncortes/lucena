@@ -359,5 +359,6 @@
   "homeStatBestRun": "सबसे अच्छा स्पीडरन",
   "homeTools": "टूल",
   "profileRatingPeriodGames": "पिछली {count}",
-  "profileRatingPeriodAll": "सभी"
+  "profileRatingPeriodAll": "सभी",
+  "catalogDone": "{total} में से {done} पूरी"
 }

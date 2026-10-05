@@ -312,6 +312,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             const both = [Side.white, Side.black];
             final end = state.end;
             return Stack(
+              // A tela toda: o fundo escuro do resultado cobre até embaixo,
+              // mesmo com pouco conteúdo.
+              fit: StackFit.expand,
               children: [
                 // A tela inteira rola, como nos apps de xadrez; com o dedo no
                 // tabuleiro, a rolagem para e o lance (ou o arrastar da peça)
@@ -658,8 +661,7 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
           : widget.fulfilled == null
           ? l10n.freeBoardNewGame
           : l10n.resultPlayAgain,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
     );
     final onNext = widget.onNext;
     final buttons = [
@@ -668,11 +670,7 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
           key: FreeBoardKeys.endNextButton,
           onPressed: onNext,
           icon: const Icon(Icons.skip_next_rounded),
-          label: Text(
-            l10n.resultNextChallenge,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          label: Text(l10n.resultNextChallenge, textAlign: TextAlign.center),
         ),
       // No treino, a mesma posição com a mesma configuração.
       if (onNext == null)

@@ -359,5 +359,6 @@
   "homeStatBestRun": "Speedrun tốt nhất",
   "homeTools": "Công cụ",
   "profileRatingPeriodGames": "{count} ván gần nhất",
-  "profileRatingPeriodAll": "Tất cả"
+  "profileRatingPeriodAll": "Tất cả",
+  "catalogDone": "Đã xong {done}/{total}"
 }

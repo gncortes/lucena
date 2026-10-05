@@ -52,11 +52,6 @@ class _Home extends StatelessWidget {
 }
 
 void main() {
-  String mascotAsset(WidgetTester tester) {
-    final image = tester.widget<Image>(find.byKey(HomeKeys.mascot));
-    return (image.image as AssetImage).assetName;
-  }
-
   double opacityOf(WidgetTester tester, Key key) {
     final fade = tester.widget<FadeTransition>(
       find
@@ -66,32 +61,7 @@ void main() {
     return fade.opacity.value;
   }
 
-  testWidgets('mostra o mascote claro no tema claro', (tester) async {
-    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
-
-    expect(find.byKey(HomeKeys.screen), findsOneWidget);
-    expect(mascotAsset(tester), 'assets/branding/mascot_light.png');
-  });
-
-  testWidgets('mostra o mascote escuro no tema escuro', (tester) async {
-    await tester.pumpWidget(
-      TestApp(themeMode: ThemeMode.dark, child: _Home(HomeScreen())),
-    );
-
-    expect(mascotAsset(tester), 'assets/branding/mascot_dark.png');
-  });
-
-  testWidgets('descreve o mascote para o leitor de tela', (tester) async {
-    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.bySemanticsLabel('Lucena mascot: a chess pawn lifting dumbbells'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('mostra o nome do app e a frase no idioma da tela', (
+  testWidgets('no alto, só o nome do app (sem mascote nem frase)', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -99,32 +69,31 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(HomeKeys.title)).data, 'Lucena');
     expect(
-      tester.widget<Text>(find.byKey(HomeKeys.tagline)).data,
-      'Treino de finais de xadrez',
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName.contains('mascot'),
+      ),
+      findsNothing,
     );
+    expect(find.text('Treino de finais de xadrez'), findsNothing);
   });
 
-  testWidgets('entra em sequência: mascote, depois nome, depois frase', (
-    tester,
-  ) async {
+  testWidgets('entra em sequência: o nome, depois o painel', (tester) async {
     await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
 
-    expect(opacityOf(tester, HomeKeys.mascot), 0);
     expect(opacityOf(tester, HomeKeys.title), 0);
-    expect(opacityOf(tester, HomeKeys.tagline), 0);
 
     await tester.pump(const Duration(milliseconds: 450));
-
-    expect(opacityOf(tester, HomeKeys.mascot), greaterThan(0));
-    expect(opacityOf(tester, HomeKeys.tagline), 0);
+    expect(opacityOf(tester, HomeKeys.title), greaterThan(0));
 
     await tester.pumpAndSettle();
-
-    expect(opacityOf(tester, HomeKeys.mascot), 1);
     expect(opacityOf(tester, HomeKeys.title), 1);
-    expect(opacityOf(tester, HomeKeys.tagline), 1);
+    expect(opacityOf(tester, HomeKeys.journeyButton), 1);
   });
 
   testWidgets('com animações reduzidas no sistema a tela já abre pronta', (
@@ -135,31 +104,8 @@ void main() {
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
     await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
+    await tester.pump();
 
-    expect(opacityOf(tester, HomeKeys.mascot), 1);
-    expect(opacityOf(tester, HomeKeys.tagline), 1);
-  });
-
-  testWidgets('mostra a versão do app no pé da tela', (tester) async {
-    await tester.pumpWidget(
-      TestApp(child: _Home(HomeScreen(version: '0.3.2-rc.1'))),
-    );
-    await tester.pumpAndSettle();
-    // A versão fica no fim da tela, depois dos atalhos.
-    await tester.scrollUntilVisible(find.byKey(HomeKeys.version), 200);
-
-    expect(
-      tester.widget<Text>(find.byKey(HomeKeys.version)).data,
-      'Version 0.3.2-rc.1',
-    );
-  });
-
-  testWidgets('build local, sem versão: não mostra nada no lugar', (
-    tester,
-  ) async {
-    await tester.pumpWidget(TestApp(child: _Home(HomeScreen(version: ''))));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(HomeKeys.version), findsNothing);
+    expect(opacityOf(tester, HomeKeys.title), 1);
   });
 }

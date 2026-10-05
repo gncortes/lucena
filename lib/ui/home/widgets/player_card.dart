@@ -76,10 +76,19 @@ class PlayerCard extends StatelessWidget {
                             color: colors.onSurfaceVariant,
                           ),
                         ),
-                        RatingValue(
-                          rating: rating,
-                          change: state.ratingChange,
-                          valueKey: HomeKeys.ratingValue,
+                        // Ao voltar de uma partida, o número conta até o
+                        // rating novo.
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(end: rating.toDouble()),
+                          duration: MediaQuery.disableAnimationsOf(context)
+                              ? Duration.zero
+                              : const Duration(milliseconds: 900),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, _) => RatingValue(
+                            rating: value.round(),
+                            change: state.ratingChange,
+                            valueKey: HomeKeys.ratingValue,
+                          ),
                         ),
                       ],
                     ),
@@ -194,8 +203,6 @@ class _Stat extends StatelessWidget {
               Flexible(
                 child: Text(
                   value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     fontFeatures: const [FontFeature.tabularFigures()],
@@ -206,8 +213,6 @@ class _Stat extends StatelessWidget {
           ),
           Text(
             label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.labelSmall?.copyWith(
               color: colors.onSurfaceVariant,
             ),

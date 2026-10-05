@@ -14,6 +14,7 @@ import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
+import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o
@@ -108,13 +109,19 @@ class RungScreen extends StatelessWidget {
                           spacing: gap,
                           runSpacing: gap,
                           children: [
-                            for (final challenge in rung.rung.challenges)
+                            for (final (index, challenge)
+                                in rung.rung.challenges.indexed)
                               SizedBox(
                                 width: width,
-                                child: _ChallengeCell(
-                                  rungId: rungId,
-                                  challenge: challenge,
-                                  done: rung.completed.contains(challenge.id),
+                                child: StaggeredEntrance(
+                                  index: index,
+                                  child: _ChallengeCell(
+                                    rungId: rungId,
+                                    challenge: challenge,
+                                    done: rung.completed.contains(challenge.id),
+                                    // O do próximo voa do destaque.
+                                    flies: challenge.id != next?.id,
+                                  ),
                                 ),
                               ),
                           ],
@@ -168,7 +175,10 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               if (character != null) ...[
-                CharacterAvatar(character: character, size: 80),
+                Hero(
+                  tag: opponentHeroTag(rung.rung.id),
+                  child: CharacterAvatar(character: character, size: 80),
+                ),
                 const SizedBox(width: 16),
               ],
               Expanded(
@@ -268,7 +278,11 @@ class _NextChallenge extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              PositionBoard(fen: position.fen, size: 120),
+              PositionBoard(
+                fen: position.fen,
+                size: 120,
+                heroTag: challengeBoardTag(challenge.id),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -311,11 +325,15 @@ class _ChallengeCell extends StatelessWidget {
     required this.rungId,
     required this.challenge,
     required this.done,
+    required this.flies,
   });
 
   final String rungId;
   final Challenge challenge;
   final bool done;
+
+  /// O tabuleiro voa até a tela do desafio.
+  final bool flies;
 
   @override
   Widget build(BuildContext context) {
@@ -341,6 +359,7 @@ class _ChallengeCell extends StatelessWidget {
                     PositionBoard(
                       fen: position.fen,
                       size: constraints.maxWidth,
+                      heroTag: flies ? challengeBoardTag(challenge.id) : null,
                     ),
                     if (done)
                       PositionedDirectional(
@@ -366,8 +385,6 @@ class _ChallengeCell extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 endgameName(l10n, position.subcategory),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

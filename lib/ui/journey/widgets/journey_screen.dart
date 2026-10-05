@@ -11,6 +11,7 @@ import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/journey_cubit.dart';
+import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 
 /// A Jornada: o adversário atual em destaque e, embaixo, a trilha dos
@@ -38,11 +39,14 @@ class JourneyScreen extends StatelessWidget {
                 // A trilha vai do mais fraco ao mais forte: o Stockfish no
                 // fim, como chefe final.
                 for (final (index, rung) in progress.rungs.indexed)
-                  _TrailNode(
-                    rung: rung,
-                    progress: progress,
-                    first: index == 0,
-                    last: index == progress.rungs.length - 1,
+                  StaggeredEntrance(
+                    index: index,
+                    child: _TrailNode(
+                      rung: rung,
+                      progress: progress,
+                      first: index == 0,
+                      last: index == progress.rungs.length - 1,
+                    ),
                   ),
               ],
             ),
@@ -179,8 +183,6 @@ class _Summary extends StatelessWidget {
                         opponentName(l10n, characters, next.rung.opponent),
                       ),
                       key: JourneyKeys.next,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.onPrimaryContainer,
                       ),
@@ -264,15 +266,19 @@ class _TrailNode extends StatelessWidget {
                   SizedBox(
                     width: 72,
                     child: Center(
-                      child: _Portrait(
-                        character: character,
-                        size: size,
-                        locked: locked,
-                        completed: completed,
-                        current: current,
-                        lockKey: JourneyKeys.rungLocked(id),
-                        doneKey: JourneyKeys.rungCompleted(id),
-                        doneColor: done,
+                      // O retrato voa para o cabeçalho da tela do adversário.
+                      child: Hero(
+                        tag: opponentHeroTag(id),
+                        child: _Portrait(
+                          character: character,
+                          size: size,
+                          locked: locked,
+                          completed: completed,
+                          current: current,
+                          lockKey: JourneyKeys.rungLocked(id),
+                          doneKey: JourneyKeys.rungCompleted(id),
+                          doneColor: done,
+                        ),
                       ),
                     ),
                   ),

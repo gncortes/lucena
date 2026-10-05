@@ -359,5 +359,6 @@
   "homeStatBestRun": "最佳速通",
   "homeTools": "工具",
   "profileRatingPeriodGames": "最近 {count} 局",
-  "profileRatingPeriodAll": "全部"
+  "profileRatingPeriodAll": "全部",
+  "catalogDone": "已完成 {done}/{total}"
 }

@@ -359,5 +359,6 @@
   "homeStatBestRun": "En iyi speedrun",
   "homeTools": "Araçlar",
   "profileRatingPeriodGames": "Son {count}",
-  "profileRatingPeriodAll": "Tümü"
+  "profileRatingPeriodAll": "Tümü",
+  "catalogDone": "{done}/{total} tamam"
 }
