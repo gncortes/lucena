@@ -1635,6 +1635,122 @@
       "emotion": "calm",
       "text": "Afogou? Ah, meu aluno, isso eu ensinei na primeira semana!",
       "audience": "student"
+    },
+    {
+      "id": "master.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Saber oferecer empate também é técnica."
+    },
+    {
+      "id": "master.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate aceito. Sua posição merecia, admito."
+    },
+    {
+      "id": "master.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ajeito a gravata e aceito. Foi por pouco."
+    },
+    {
+      "id": "master.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Aceito com prazer. Hoje o aluno deu a aula."
+    },
+    {
+      "id": "master.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Aceito, e agradeço. Meu rei estava sem casas."
+    },
+    {
+      "id": "master.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Meio ponto num dia ruim é uma pequena vitória. Aceito."
+    },
+    {
+      "id": "master.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Recuso, com todo respeito. Ainda há o que jogar."
+    },
+    {
+      "id": "master.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Não. Primeiro o rei ativo, depois conversamos."
+    },
+    {
+      "id": "master.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Empate? Esta posição ainda tem uma lição a dar."
+    },
+    {
+      "id": "master.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Gentil da sua parte. Mas a aula não acabou."
+    },
+    {
+      "id": "master.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Recuso. Tenho a oposição e um peão passado."
+    },
+    {
+      "id": "master.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Não aceito. Nos finais, paciência vale mais que pressa."
+    },
+    {
+      "id": "master.drawAccepted.7",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Aceito, meu aluno. Professor e aluno dividindo o ponto. Que bonito.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawAccepted.8",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Você aprendeu até quando oferecer empate.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.7",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? Não, meu aluno. Quero ver o resto da sua técnica.",
+      "audience": "student"
+    },
+    {
+      "id": "master.drawDeclined.8",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Recuso. Na escola eu ensinei: posição viva se joga até o fim.",
+      "audience": "student"
     }
   ]
 }

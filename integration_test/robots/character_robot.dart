@@ -6,7 +6,6 @@ import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
-import 'variant.dart';
 
 /// O personagem na partida: o retrato com a emoção, o nome e o balão. A
 /// avaliação da posição é a combinada pelo cenário.
@@ -21,14 +20,10 @@ class CharacterRobot {
   void evaluate(int centipawns) =>
       e2eEvaluation.fallback = Evaluation(centipawns: centipawns);
 
+  /// O personagem acima do tabuleiro, com o nome ao lado do relógio dele.
   Future<void> expectCharacter(String name, int level) async {
-    // Sem balão, o meio da fileira fica vazio: basta ela existir.
     await $(FreeBoardKeys.characterBar).waitUntilExists();
-    await $(FreeBoardKeys.characterName).waitUntilVisible();
-    expectText(
-      $.tester.widget<Text>(find.byKey(FreeBoardKeys.characterName)).data,
-      '$name · $level',
-    );
+    await $(find.text(name)).waitUntilVisible();
   }
 
   /// O id da fala no balão. Nulo: balão fechado.

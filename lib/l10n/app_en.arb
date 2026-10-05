@@ -491,6 +491,10 @@
   "@freeBoardDraw": {
     "description": "Game result: draw."
   },
+  "freeBoardDrawAgreed": "Draw by agreement",
+  "@freeBoardDrawAgreed": {
+    "description": "Game end reason: the player offered a draw and the machine accepted."
+  },
   "freeBoardFiftyMoves": "Fifty-move rule",
   "@freeBoardFiftyMoves": {
     "description": "Reason the game ended in a draw: fifty moves by each side without a capture or a pawn move."
@@ -539,6 +543,10 @@
   "@freeBoardWhiteWins": {
     "description": "Game result: White won."
   },
+  "gameDrawDeclined": "Draw declined",
+  "@gameDrawDeclined": {
+    "description": "Short notice when the machine refuses the draw offer."
+  },
   "gameMachineThinking": "{name} is thinking…",
   "@gameMachineThinking": {
     "description": "Shown while the computer opponent chooses its move; {name} is the opponent, e.g. 'Maia 1400' or 'Stockfish'.",
@@ -547,6 +555,10 @@
         "type": "String"
       }
     }
+  },
+  "gameOfferDraw": "Offer a draw",
+  "@gameOfferDraw": {
+    "description": "Training game button: the player offers a draw to the machine."
   },
   "gameResign": "Resign",
   "@gameResign": {

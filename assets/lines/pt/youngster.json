@@ -785,6 +785,90 @@
       "intensity": 3,
       "emotion": "frustrated",
       "text": "Meio ponto. Queria o inteiro."
+    },
+    {
+      "id": "youngster.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá bom, empate. Faz sentido."
+    },
+    {
+      "id": "youngster.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Meio ponto tá ótimo."
+    },
+    {
+      "id": "youngster.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ok, aceito. Eu tava calculando a derrota."
+    },
+    {
+      "id": "youngster.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "GG. Você jogou melhor, eu aceito."
+    },
+    {
+      "id": "youngster.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Aceito rápido. Esse clipe não vai pro chat."
+    },
+    {
+      "id": "youngster.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Aceito. Errei antes, admito. Revanche depois?"
+    },
+    {
+      "id": "youngster.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Não, valeu. Ainda tem jogo."
+    },
+    {
+      "id": "youngster.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Recuso. Eu calculei, tá tudo certo aqui."
+    },
+    {
+      "id": "youngster.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Empate? Eu jogo isso até o fim no blitz."
+    },
+    {
+      "id": "youngster.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Chat, me ofereceram empate. Recusado."
+    },
+    {
+      "id": "youngster.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Não. Precisão até o fim, e eu tenho mais."
+    },
+    {
+      "id": "youngster.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Recusado. Esse final vira clipe meu."
     }
   ]
 }

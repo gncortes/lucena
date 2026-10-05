@@ -771,6 +771,90 @@
       "intensity": 3,
       "emotion": "frustrated",
       "text": "A draw? I was after the win, youngster!"
+    },
+    {
+      "id": "grandpa.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "All right, youngster. A draw suits these old knees."
+    },
+    {
+      "id": "grandpa.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Accepted! Leaves me time for my afternoon nap."
+    },
+    {
+      "id": "grandpa.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Oh, fiddlesticks, just in time. These glasses were failing me."
+    },
+    {
+      "id": "grandpa.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw? Back in my day, that was a gentleman's handshake."
+    },
+    {
+      "id": "grandpa.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Very kind, youngster. Grandpa thanks you from the heart."
+    },
+    {
+      "id": "grandpa.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Shake my hand. As far as the park crowd knows, it was even!"
+    },
+    {
+      "id": "grandpa.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Easy, youngster. Grandpa wants to play a bit longer."
+    },
+    {
+      "id": "grandpa.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "A draw? But I haven't even dozed off yet!"
+    },
+    {
+      "id": "grandpa.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Back in my day, nobody took a draw in a spot like this."
+    },
+    {
+      "id": "grandpa.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Heh, scared of the cane, youngster?"
+    },
+    {
+      "id": "grandpa.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Not a chance! I'm telling the park crowd about this one."
+    },
+    {
+      "id": "grandpa.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Declined! Grandpa's still got fire left for this endgame."
     }
   ]
 }

@@ -43,6 +43,7 @@ import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/use_cases/position_assessment.dart';
 
+import 'fakes/fake_draw_offer_repository.dart';
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_now.dart';
@@ -178,9 +179,13 @@ Future<Dependencies> e2eDependencies() async {
     schoolProgressRepository: LocalSchoolProgressRepository(
       PreferencesService(),
     ),
+    drawOfferRepository: e2eDraws,
     languages: AppLanguage.values,
   );
 }
+
+/// A resposta da máquina às propostas de empate, combinada pelo cenário.
+final e2eDraws = FakeDrawOfferRepository();
 
 /// A avaliação da posição para os personagens, combinada pelo cenário.
 final e2eEvaluation = FakeEvaluationRepository();
@@ -222,6 +227,9 @@ Future<void> resetE2EData() async {
   e2eNow.value = _e2eStart;
   e2eOpponent.reset();
   e2eMaia.reset();
+  e2eDraws
+    ..accept = false
+    ..offers = 0;
   e2eEvaluation
     ..next.clear()
     ..requests.clear()

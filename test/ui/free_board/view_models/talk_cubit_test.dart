@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart' hide Evaluation;
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_mode.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
@@ -79,17 +80,28 @@ void main() {
     expect(talking.state.line?.category, LineCategory.gameStart);
   });
 
-  test('contra o Stockfish não há personagem', () async {
-    final talking = cubit()
-      ..update(
-        game([])
-            .copyWith(mode: mode.copyWith(opponent: OpponentKind.stockfish)),
-      );
-    await talking.settled();
+  test(
+    'o Stockfish aparece com o logo e fala em binário quando joga',
+    () async {
+      final stockfish = mode.copyWith(opponent: OpponentKind.stockfish);
+      final talking = cubit()..update(game([]).copyWith(mode: stockfish));
+      await talking.settled();
 
-    expect(talking.state.character, isNull);
-    expect(talking.state.line, isNull);
-  });
+      expect(talking.state.character, TalkCubit.stockfish);
+      expect(talking.state.isEngine, isTrue);
+      final first = talking.state.line!;
+      expect(first.text, matches(RegExp(r'^[01]{8}( [01]{8})+$')));
+
+      // O lance do jogador não muda a fala; o da máquina, sim.
+      talking.update(game(shuffle.sublist(0, 1)).copyWith(mode: stockfish));
+      await talking.settled();
+      expect(talking.state.line, first);
+      talking.update(game(shuffle.sublist(0, 2)).copyWith(mode: stockfish));
+      await talking.settled();
+      expect(talking.state.line!.id, isNot(first.id));
+      expect(evaluation.requests, isEmpty);
+    },
+  );
 
   test('erro grave do jogador: fala de erro grave do adversário', () async {
     final talking = cubit()..update(game([]));
@@ -216,5 +228,24 @@ void main() {
     // Só os dois últimos lances da leva são avaliados.
     expect(evaluation.requests, hasLength(2));
     expect(Emotion.values, contains(talking.state.emotion));
+  });
+
+  test('empate recusado e aceito: falas da categoria certa', () async {
+    final talking = cubit()..update(game([]));
+    await talking.settled();
+    talking.update(
+      game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 0),
+    );
+    await talking.settled();
+    expect(talking.state.line?.category, LineCategory.drawDeclined);
+
+    talking.update(
+      game([]).copyWith(
+        drawOffer: DrawOffer.accepted,
+        forcedEnd: const GameEnd(GameEndReason.drawAgreed),
+      ),
+    );
+    await talking.settled();
+    expect(talking.state.line?.category, LineCategory.drawAccepted);
   });
 }

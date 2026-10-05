@@ -778,6 +778,90 @@
       "intensity": 1,
       "emotion": "confident",
       "text": "Fui generoso hoje. Não se acostume."
+    },
+    {
+      "id": "snob.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Por cortesia, claro, não por necessidade."
+    },
+    {
+      "id": "snob.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate. Considere uma honra dividir o ponto com um medalhista."
+    },
+    {
+      "id": "snob.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm, sim, aceito. Essa luz está péssima pra jogar."
+    },
+    {
+      "id": "snob.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Aceito, mas só porque o tabuleiro está torto."
+    },
+    {
+      "id": "snob.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ufa. Quer dizer, que gesto elegante. Aceito, claro."
+    },
+    {
+      "id": "snob.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Fechado. Era meu plano desde o início, você não entenderia."
+    },
+    {
+      "id": "snob.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Não, obrigado. Medalhista não divide ponto à toa."
+    },
+    {
+      "id": "snob.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate? Comigo? Recusado, com todo o respeito."
+    },
+    {
+      "id": "snob.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Que fofo. Mas eu tenho bronze no Aberto do Bairro."
+    },
+    {
+      "id": "snob.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Recuso. Eu jogo pela vitória, não pela simpatia."
+    },
+    {
+      "id": "snob.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Posso autografar a sua derrota, se preferir."
+    },
+    {
+      "id": "snob.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Recusado. Até de braços cruzados eu estou melhor."
     }
   ]
 }

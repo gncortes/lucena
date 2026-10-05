@@ -43,7 +43,13 @@ enum LineCategory {
   opponentThinking,
   win,
   loss,
-  draw;
+  draw,
+
+  /// O jogador propôs empate e o personagem aceitou (ele está bem pior).
+  drawAccepted,
+
+  /// O jogador propôs empate e o personagem recusou.
+  drawDeclined;
 
   /// A categoria de um código do JSON; desconhecida vira null, para dados
   /// novos não quebrarem versões antigas do app.

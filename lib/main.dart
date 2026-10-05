@@ -12,6 +12,7 @@ import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
 import 'data/repositories/school/school_progress_repository.dart';
+import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
@@ -147,6 +148,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SchoolProgressRepository>.value(
           value: dependencies.schoolProgressRepository,
+        ),
+        RepositoryProvider<DrawOfferRepository>.value(
+          value: dependencies.drawOfferRepository,
         ),
       ],
       child: MultiBlocProvider(

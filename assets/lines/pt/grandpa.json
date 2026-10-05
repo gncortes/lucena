@@ -771,6 +771,90 @@
       "intensity": 3,
       "emotion": "frustrated",
       "text": "Empate? Eu queria era a vitória, meu jovem!"
+    },
+    {
+      "id": "grandpa.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá bom, meu jovem. Um empate cai bem pros meus joelhos."
+    },
+    {
+      "id": "grandpa.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Aceito! Assim sobra tempo pro meu cochilo da tarde."
+    },
+    {
+      "id": "grandpa.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ora bolas, bem na hora. Esses óculos tavam me traindo."
+    },
+    {
+      "id": "grandpa.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? No meu tempo, isso era um gesto de cavalheiro."
+    },
+    {
+      "id": "grandpa.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Muito gentil, meu jovem. O vovô agradece de coração."
+    },
+    {
+      "id": "grandpa.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Aperta aqui a mão. Pros amigos da praça, foi equilibrado!"
+    },
+    {
+      "id": "grandpa.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Calma, meu jovem. O vovô ainda quer jogar mais um pouco."
+    },
+    {
+      "id": "grandpa.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Empate? Mas eu nem cochilei ainda!"
+    },
+    {
+      "id": "grandpa.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "No meu tempo, ninguém aceitava empate numa posição dessas."
+    },
+    {
+      "id": "grandpa.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hehe, tá com medo da bengala, meu jovem?"
+    },
+    {
+      "id": "grandpa.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nem pensar! Essa eu vou contar pros amigos da praça."
+    },
+    {
+      "id": "grandpa.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Recuso! O vovô ainda tem lenha pra queimar nesse final."
     }
   ]
 }

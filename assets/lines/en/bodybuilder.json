@@ -785,6 +785,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "Partner workouts pay off. Fist bump!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Accepted. Knowing when to rack the bar is technique too."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Deal! A tied session still counts as a workout."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew! Deal. That set was way too heavy."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Fair draw. Let's stretch and cool down."
+    },
+    {
+      "id": "bodybuilder.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Accepted! Thanks for the spot, buddy. I was about to drop it!"
+    },
+    {
+      "id": "bodybuilder.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Respect the offer. You had the heavier lift today."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw? I haven't even hit failure yet. Let's go!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined! There are still reps left in this set."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Stop now? No way, the pump is just kicking in!"
+    },
+    {
+      "id": "bodybuilder.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "No pain, no gain. And I want the gain."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thanks, buddy, but the workout goes on."
+    },
+    {
+      "id": "bodybuilder.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? That's skipping leg day! Declined!"
     }
   ]
 }

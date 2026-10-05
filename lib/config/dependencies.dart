@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
@@ -85,6 +86,7 @@ class Dependencies {
     required this.paceRepository,
     required this.lessonRepository,
     required this.schoolProgressRepository,
+    required this.drawOfferRepository,
     required this.languages,
   });
 
@@ -99,6 +101,7 @@ class Dependencies {
     final pace = AssetPaceRepository(assets);
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
+    final evaluation = StockfishEvaluationRepository(stockfish);
     return Dependencies(
       now: now,
       settingsRepository: LocalSettingsRepository(preferences),
@@ -124,12 +127,16 @@ class Dependencies {
       achievementsRepository: LocalAchievementsRepository(assets, database),
       characterRepository: AssetCharacterRepository(assets),
       // O mesmo Stockfish do adversário: contra o Maia ele está livre.
-      evaluationRepository: StockfishEvaluationRepository(stockfish),
+      evaluationRepository: evaluation,
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: LocalOnboardingRepository(preferences),
       paceRepository: pace,
       lessonRepository: AssetLessonRepository(assets),
       schoolProgressRepository: LocalSchoolProgressRepository(preferences),
+      drawOfferRepository: DeviceDrawOfferRepository(
+        maia: maiaRepository,
+        evaluation: evaluation,
+      ),
       languages: AppLanguage.selectable,
     );
   }
@@ -155,6 +162,7 @@ class Dependencies {
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final SchoolProgressRepository schoolProgressRepository;
+  final DrawOfferRepository drawOfferRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

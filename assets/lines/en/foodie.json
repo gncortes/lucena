@@ -778,6 +778,90 @@
       "intensity": 3,
       "emotion": "calm",
       "text": "Not much left on the table. No dinner for anyone."
+    },
+    {
+      "id": "foodie.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw? Deal. Better to split the pizza than pay the whole check."
+    },
+    {
+      "id": "foodie.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Half and half. Fair, and nobody leaves hungry."
+    },
+    {
+      "id": "foodie.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew. That dough was about to burn in my oven. Deal."
+    },
+    {
+      "id": "foodie.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "You're a good cook. I accept and take the rest to go."
+    },
+    {
+      "id": "foodie.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "I accept before you eat my last slice."
+    },
+    {
+      "id": "foodie.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "You saved my dinner. Draw, and dessert's on me."
+    },
+    {
+      "id": "foodie.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw? The pizza's not even out of the oven yet."
+    },
+    {
+      "id": "foodie.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Thanks, but I'm still hungry."
+    },
+    {
+      "id": "foodie.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Split the check? No, tonight it's on you."
+    },
+    {
+      "id": "foodie.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined. There are plenty of slices left on this board."
+    },
+    {
+      "id": "foodie.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I never leave a plate half eaten. Down to the crust."
+    },
+    {
+      "id": "foodie.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Low heat, no rush. This ending is still rising."
     }
   ]
 }
