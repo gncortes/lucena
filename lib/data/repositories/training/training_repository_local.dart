@@ -40,7 +40,7 @@ class LocalTrainingRepository implements TrainingRepository {
             await _preferences.getString(_opponentTimeKey),
           ) ??
           defaults.opponentTime,
-      opponent: OpponentKind.fromCode(
+      opponent: OpponentKind.trainingFromCode(
         await _preferences.getString(_opponentKey),
       ),
       maiaLevel: int.tryParse(

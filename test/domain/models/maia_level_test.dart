@@ -34,14 +34,10 @@ void main() {
     );
   });
 
-  test('quanto mais alto o nível, menos o Maia varia os lances', () {
-    expect(MaiaLevels.temperature(1000), 1);
-    expect(MaiaLevels.temperature(2600), 0.5);
-    for (var i = 1; i < MaiaLevels.all.length; i++) {
-      expect(
-        MaiaLevels.temperature(MaiaLevels.all[i]),
-        lessThan(MaiaLevels.temperature(MaiaLevels.all[i - 1])),
-      );
-    }
+  test('o Maia varia os lances, mas puxa para os mais prováveis', () {
+    // Entre o lance fixo (0), que repete a partida, e o sorteio puro (1), que
+    // erra mais do que as pessoas do nível (docs/calibracao.md).
+    expect(MaiaLevels.temperature, greaterThan(0));
+    expect(MaiaLevels.temperature, lessThan(1));
   });
 }

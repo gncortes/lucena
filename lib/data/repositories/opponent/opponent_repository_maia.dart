@@ -46,7 +46,7 @@ class MaiaOpponentRepository implements OpponentRepository {
     );
     final uci = PickHumanMove.pick(
       evaluation.policy,
-      temperature: MaiaLevels.temperature(elo),
+      temperature: MaiaLevels.temperature,
       roll: _random.nextDouble(),
     );
     if (uci == null) return null;

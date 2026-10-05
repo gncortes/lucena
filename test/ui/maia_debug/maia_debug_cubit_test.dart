@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/maia_timing.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/ui/maia_debug/view_models/maia_debug_cubit.dart';
 
@@ -83,5 +84,76 @@ void main() {
 
     await cubit.evaluate();
     expect(cubit.state.status, MaiaDebugStatus.done);
+  });
+
+  group('medir a velocidade', () {
+    Duration ms(int value) => Duration(milliseconds: value);
+
+    test('faz dez contas, sem contar a que liga o modelo', () async {
+      // A primeira conta (900 ms) é a que carrega o modelo.
+      maia.elapsed.addAll([
+        ms(900),
+        for (var run = 0; run < 9; run++) ms(110),
+        ms(300),
+      ]);
+      final cubit = MaiaDebugCubit(maia);
+      addTearDown(cubit.close);
+      cubit.setLevel(1800);
+
+      await cubit.measure();
+
+      expect(cubit.state.status, MaiaDebugStatus.done);
+      expect(
+        cubit.state.timing,
+        MaiaTiming(
+          runs: 10,
+          median: ms(110),
+          fastest: ms(110),
+          slowest: ms(300),
+        ),
+      );
+      expect(maia.requests, hasLength(MaiaDebugCubit.measureRuns + 1));
+      expect(maia.requests.toSet(), {(MaiaDebugState.defaultFen, 1800)});
+      // A previsão da posição aparece junto, como no avaliar.
+      expect(cubit.state.prediction, isNotNull);
+    });
+
+    test('avaliar depois não apaga a medição', () async {
+      final cubit = MaiaDebugCubit(maia);
+      addTearDown(cubit.close);
+
+      await cubit.measure();
+      final timing = cubit.state.timing;
+      await cubit.evaluate();
+
+      expect(timing, isNotNull);
+      expect(cubit.state.timing, timing);
+    });
+
+    test('FEN inválido não mede', () async {
+      final cubit = MaiaDebugCubit(maia);
+      addTearDown(cubit.close);
+
+      cubit.setFen('isto não é uma posição');
+      await cubit.measure();
+
+      expect(cubit.state.status, MaiaDebugStatus.invalidPosition);
+      expect(cubit.state.timing, isNull);
+      expect(maia.requests, isEmpty);
+    });
+
+    test(
+      'se o modelo falha no meio, a tela avisa e não inventa medição',
+      () async {
+        final cubit = MaiaDebugCubit(maia);
+        addTearDown(cubit.close);
+        maia.failNext = true;
+
+        await cubit.measure();
+
+        expect(cubit.state.status, MaiaDebugStatus.failed);
+        expect(cubit.state.timing, isNull);
+      },
+    );
   });
 }

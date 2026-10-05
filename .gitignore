@@ -63,3 +63,6 @@ integration_test/test_bundle.dart
 
 # Python
 __pycache__/
+
+# Roda a suíte Patrol em vários emuladores ao mesmo tempo: fica só na máquina de quem usa.
+tools/patrol_parallel.sh

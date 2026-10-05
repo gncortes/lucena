@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 class HomeRobot {
   const HomeRobot(this.$);
 
@@ -26,7 +28,7 @@ class HomeRobot {
   }
 
   void expectTagline(String text) {
-    expect($.tester.widget<Text>(find.byKey(HomeKeys.tagline)).data, text);
+    expectText($.tester.widget<Text>(find.byKey(HomeKeys.tagline)).data, text);
   }
 
   /// Com a tela espelhada (direita para a esquerda), o botão fica à esquerda.

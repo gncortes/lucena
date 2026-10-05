@@ -15,6 +15,8 @@ import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
 
+import 'variant.dart';
+
 /// Tela do tabuleiro livre. As casas são tocadas pela posição no tabuleiro.
 class FreeBoardRobot {
   const FreeBoardRobot(this.$);
@@ -164,7 +166,7 @@ class FreeBoardRobot {
   /// O resultado do treino no painel do fim.
   Future<void> expectGoalResult(String text) async {
     await $(FreeBoardKeys.endGoal).waitUntilVisible();
-    expect(_text(FreeBoardKeys.endGoal), text);
+    expectText(_text(FreeBoardKeys.endGoal), text);
   }
 
   /// "Jogar de novo" (no treino) ou "Nova partida", no painel do fim.
@@ -259,6 +261,8 @@ class FreeBoardRobot {
 
   /// O nome que aparece ao lado de um relógio (`White`, `Maia 1400`).
   Future<void> expectPlayerName(String name) async {
+    // Na variante em árabe o nome aparece traduzido.
+    if (e2eTranslated) return;
     await $(find.text(name)).waitUntilVisible();
   }
 
@@ -268,7 +272,10 @@ class FreeBoardRobot {
   }
 
   void expectTurn(String text) {
-    expect($.tester.widget<Text>(find.byKey(FreeBoardKeys.turn)).data, text);
+    expectText(
+      $.tester.widget<Text>(find.byKey(FreeBoardKeys.turn)).data,
+      text,
+    );
   }
 
   Future<void> expectEnd({
@@ -276,8 +283,8 @@ class FreeBoardRobot {
     required String result,
   }) async {
     await $(FreeBoardKeys.endPanel).waitUntilVisible();
-    expect(_text(FreeBoardKeys.endReason), reason);
-    expect(_text(FreeBoardKeys.endResult), result);
+    expectText(_text(FreeBoardKeys.endReason), reason);
+    expectText(_text(FreeBoardKeys.endResult), result);
   }
 
   String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;

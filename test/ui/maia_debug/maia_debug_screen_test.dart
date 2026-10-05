@@ -62,4 +62,22 @@ void main() {
     expect(find.text('This is not a valid FEN.'), findsOneWidget);
     expect(find.byKey(MaiaDebugKeys.result), findsNothing);
   });
+
+  testWidgets('medir mostra o tempo típico por lance', (tester) async {
+    await pump(tester);
+    maia.elapsed.addAll([
+      const Duration(milliseconds: 800),
+      for (var run = 0; run < 9; run++) const Duration(milliseconds: 110),
+      const Duration(milliseconds: 250),
+    ]);
+
+    expect(find.byKey(MaiaDebugKeys.timing), findsNothing);
+    await tester.tap(find.byKey(MaiaDebugKeys.measure));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<Text>(find.byKey(MaiaDebugKeys.timing)).data,
+      'Typical: 110 ms per move (110 to 250 ms in 10 runs)',
+    );
+  });
 }

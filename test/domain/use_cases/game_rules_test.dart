@@ -144,4 +144,77 @@ void main() {
       const GameEnd(GameEndReason.timeout, winner: Side.white),
     );
   });
+
+  group('empates automáticos', () {
+    const rookEnding = '8/8/8/4k3/8/8/8/R3K3 w - - 0 1';
+    // Os reis vão e voltam: a posição inicial se repete a cada quatro lances.
+    const shuffle = ['e1d1', 'e5d5', 'd1e1', 'd5e5'];
+
+    test('posição nova apareceu uma vez', () {
+      final start = GameRules.fromFen(rookEnding)!;
+
+      expect(GameRules.repetitionsOf(start, const []), 1);
+      expect(GameRules.repetitionsOf(start, const ['e1d1']), 1);
+    });
+
+    test('conta cada volta à mesma posição', () {
+      final start = GameRules.fromFen(rookEnding)!;
+
+      expect(GameRules.repetitionsOf(start, shuffle), 2);
+      expect(GameRules.repetitionsOf(start, [...shuffle, ...shuffle]), 3);
+    });
+
+    test('mesmas peças com o outro lado na vez não é repetição', () {
+      // O rei branco perde um tempo (e1-d2-d1-e1): as peças voltam ao lugar,
+      // mas agora jogam as pretas.
+      final start = GameRules.fromFen(rookEnding)!;
+
+      expect(
+        GameRules.repetitionsOf(start, const [
+          'e1d2',
+          'e5d5',
+          'd2d1',
+          'd5e5',
+          'd1e1',
+        ]),
+        1,
+      );
+    });
+
+    test('a terceira repetição empata; a segunda não', () {
+      final position = GameRules.fromFen(rookEnding)!;
+
+      expect(GameRules.endOf(position, repetitions: 2), isNull);
+      expect(
+        GameRules.endOf(position, repetitions: 3),
+        const GameEnd(GameEndReason.repetition),
+      );
+    });
+
+    test('50 lances de cada lado sem captura nem peão empatam', () {
+      final almost = GameRules.fromFen('8/8/8/4k3/8/8/8/R3K3 w - - 99 70')!;
+      final reached = GameRules.fromFen('8/8/8/4k3/8/8/8/R3K3 w - - 100 70')!;
+
+      expect(GameRules.endOf(almost, repetitions: 1), isNull);
+      expect(
+        GameRules.endOf(reached, repetitions: 1),
+        const GameEnd(GameEndReason.fiftyMoves),
+      );
+    });
+
+    test('o mate vale mais do que a repetição e os 50 lances', () {
+      final mate = GameRules.fromFen('7k/6Q1/6K1/8/8/8/8/8 b - - 100 70')!;
+
+      expect(
+        GameRules.endOf(mate, repetitions: 3),
+        const GameEnd(GameEndReason.checkmate, winner: Side.white),
+      );
+    });
+
+    test('sem contar repetições (tabuleiro livre), nada disso encerra', () {
+      final reached = GameRules.fromFen('8/8/8/4k3/8/8/8/R3K3 w - - 100 70')!;
+
+      expect(GameRules.endOf(reached), isNull);
+    });
+  });
 }

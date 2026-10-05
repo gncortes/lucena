@@ -34,7 +34,8 @@ void main() {
     final home = HomeRobot($);
     final settings = SettingsRobot($);
     addTearDown(app.disableSystemDarkMode);
-    await app.open(systemLocale: const Locale('en', 'US'));
+    // É este cenário que troca o tema do aparelho.
+    await app.open(systemLocale: const Locale('en', 'US'), lightDevice: true);
 
     await home.openSettings();
     await settings.openThemes();

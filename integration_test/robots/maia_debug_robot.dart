@@ -35,9 +35,22 @@ class MaiaDebugRobot {
 
   /// Avalia e espera a resposta do modelo (ele roda fora do ritmo dos
   /// quadros, então não basta o pumpAndSettle).
-  Future<void> evaluate() async {
-    await $(MaiaDebugKeys.evaluate).scrollTo().tap();
-    for (var guard = 0; guard < 100; guard++) {
+  Future<void> evaluate() => _run(MaiaDebugKeys.evaluate);
+
+  /// Mede a velocidade do modelo (várias contas seguidas) e espera o fim.
+  Future<void> measure() => _run(MaiaDebugKeys.measure);
+
+  /// O tempo típico por lance da última medição, em milissegundos.
+  Future<int> measuredMedian() async {
+    await $(MaiaDebugKeys.timing).scrollTo();
+    return int.parse(
+      RegExp(r'\d+').firstMatch(_text(MaiaDebugKeys.timing))![0]!,
+    );
+  }
+
+  Future<void> _run(Key action) async {
+    await $(action).scrollTo().tap();
+    for (var guard = 0; guard < 600; guard++) {
       await $.pump(const Duration(milliseconds: 100));
       final button = $.tester.widget<FilledButton>(
         find.byKey(MaiaDebugKeys.evaluate),

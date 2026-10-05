@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$MaiaDebugState {
 
  String get fen; int get level; MaiaDebugStatus get status;/// A última previsão, da posição e do nível em que foi pedida.
- MovePrediction? get prediction;
+ MovePrediction? get prediction;/// A última medição de velocidade neste aparelho.
+ MaiaTiming? get timing;
 /// Create a copy of MaiaDebugState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $MaiaDebugStateCopyWith<MaiaDebugState> get copyWith => _$MaiaDebugStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as MaiaDebugState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MaiaDebugState&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.prediction, _this.prediction) || other.prediction == _this.prediction));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MaiaDebugState&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.prediction, _this.prediction) || other.prediction == _this.prediction)&&(identical(other.timing, _this.timing) || other.timing == _this.timing));
 }
 
 
 @override
 int get hashCode {
   final _this = this as MaiaDebugState;
-  return Object.hash(runtimeType,_this.fen,_this.level,_this.status,_this.prediction);
+  return Object.hash(runtimeType,_this.fen,_this.level,_this.status,_this.prediction,_this.timing);
 }
 
 @override
 String toString() {
   final _this = this as MaiaDebugState;
-  return 'MaiaDebugState(fen: ${_this.fen}, level: ${_this.level}, status: ${_this.status}, prediction: ${_this.prediction})';
+  return 'MaiaDebugState(fen: ${_this.fen}, level: ${_this.level}, status: ${_this.status}, prediction: ${_this.prediction}, timing: ${_this.timing})';
 }
 
 
@@ -52,11 +53,11 @@ abstract mixin class $MaiaDebugStateCopyWith<$Res>  {
   factory $MaiaDebugStateCopyWith(MaiaDebugState value, $Res Function(MaiaDebugState) _then) = _$MaiaDebugStateCopyWithImpl;
 @useResult
 $Res call({
- String fen, int level, MaiaDebugStatus status, MovePrediction? prediction
+ String fen, int level, MaiaDebugStatus status, MovePrediction? prediction, MaiaTiming? timing
 });
 
 
-
+$MaiaTimingCopyWith<$Res>? get timing;
 
 }
 /// @nodoc
@@ -69,16 +70,29 @@ class _$MaiaDebugStateCopyWithImpl<$Res>
 
 /// Create a copy of MaiaDebugState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? level = null,Object? status = null,Object? prediction = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? level = null,Object? status = null,Object? prediction = freezed,Object? timing = freezed,}) {
   return _then(MaiaDebugState(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as MaiaDebugStatus,prediction: freezed == prediction ? _self.prediction : prediction // ignore: cast_nullable_to_non_nullable
-as MovePrediction?,
+as MovePrediction?,timing: freezed == timing ? _self.timing : timing // ignore: cast_nullable_to_non_nullable
+as MaiaTiming?,
   ));
 }
+/// Create a copy of MaiaDebugState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MaiaTimingCopyWith<$Res>? get timing {
+    if (_self.timing == null) {
+    return null;
+  }
 
+  return $MaiaTimingCopyWith<$Res>(_self.timing!, (value) {
+    return _then(_self.copyWith(timing: value));
+  });
+}
 }
 
 
@@ -160,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction,  MaiaTiming? timing)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MaiaDebugState() when $default != null:
-return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
+return $default(_that.fen,_that.level,_that.status,_that.prediction,_that.timing);case _:
   return orElse();
 
 }
@@ -181,10 +195,10 @@ return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction,  MaiaTiming? timing)  $default,) {final _that = this;
 switch (_that) {
 case _MaiaDebugState():
-return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
+return $default(_that.fen,_that.level,_that.status,_that.prediction,_that.timing);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +215,10 @@ return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  int level,  MaiaDebugStatus status,  MovePrediction? prediction,  MaiaTiming? timing)?  $default,) {final _that = this;
 switch (_that) {
 case _MaiaDebugState() when $default != null:
-return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
+return $default(_that.fen,_that.level,_that.status,_that.prediction,_that.timing);case _:
   return null;
 
 }
@@ -216,7 +230,7 @@ return $default(_that.fen,_that.level,_that.status,_that.prediction);case _:
 
 
 class _MaiaDebugState implements MaiaDebugState {
-  const _MaiaDebugState({this.fen = MaiaDebugState.defaultFen, this.level = 1400, this.status = MaiaDebugStatus.idle, this.prediction});
+  const _MaiaDebugState({this.fen = MaiaDebugState.defaultFen, this.level = 1400, this.status = MaiaDebugStatus.idle, this.prediction, this.timing});
   
 
 @override@JsonKey() final  String fen;
@@ -224,6 +238,8 @@ class _MaiaDebugState implements MaiaDebugState {
 @override@JsonKey() final  MaiaDebugStatus status;
 /// A última previsão, da posição e do nível em que foi pedida.
 @override final  MovePrediction? prediction;
+/// A última medição de velocidade neste aparelho.
+@override final  MaiaTiming? timing;
 
 /// Create a copy of MaiaDebugState
 /// with the given fields replaced by the non-null parameter values.
@@ -235,18 +251,18 @@ _$MaiaDebugStateCopyWith<_MaiaDebugState> get copyWith => __$MaiaDebugStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _MaiaDebugState&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.level, level) || other.level == level)&&(identical(other.status, status) || other.status == status)&&(identical(other.prediction, prediction) || other.prediction == prediction));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _MaiaDebugState&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.level, level) || other.level == level)&&(identical(other.status, status) || other.status == status)&&(identical(other.prediction, prediction) || other.prediction == prediction)&&(identical(other.timing, timing) || other.timing == timing));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fen,level,status,prediction);
+    return Object.hash(runtimeType,fen,level,status,prediction,timing);
 }
 
 @override
 String toString() {
-    return 'MaiaDebugState(fen: $fen, level: $level, status: $status, prediction: $prediction)';
+    return 'MaiaDebugState(fen: $fen, level: $level, status: $status, prediction: $prediction, timing: $timing)';
 }
 
 
@@ -257,11 +273,11 @@ abstract mixin class _$MaiaDebugStateCopyWith<$Res> implements $MaiaDebugStateCo
   factory _$MaiaDebugStateCopyWith(_MaiaDebugState value, $Res Function(_MaiaDebugState) _then) = __$MaiaDebugStateCopyWithImpl;
 @override @useResult
 $Res call({
- String fen, int level, MaiaDebugStatus status, MovePrediction? prediction
+ String fen, int level, MaiaDebugStatus status, MovePrediction? prediction, MaiaTiming? timing
 });
 
 
-
+@override $MaiaTimingCopyWith<$Res>? get timing;
 
 }
 /// @nodoc
@@ -274,17 +290,30 @@ class __$MaiaDebugStateCopyWithImpl<$Res>
 
 /// Create a copy of MaiaDebugState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? level = null,Object? status = null,Object? prediction = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? level = null,Object? status = null,Object? prediction = freezed,Object? timing = freezed,}) {
   return _then(_MaiaDebugState(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as MaiaDebugStatus,prediction: freezed == prediction ? _self.prediction : prediction // ignore: cast_nullable_to_non_nullable
-as MovePrediction?,
+as MovePrediction?,timing: freezed == timing ? _self.timing : timing // ignore: cast_nullable_to_non_nullable
+as MaiaTiming?,
   ));
 }
 
+/// Create a copy of MaiaDebugState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MaiaTimingCopyWith<$Res>? get timing {
+    if (_self.timing == null) {
+    return null;
+  }
 
+  return $MaiaTimingCopyWith<$Res>(_self.timing!, (value) {
+    return _then(_self.copyWith(timing: value));
+  });
+}
 }
 
 // dart format on

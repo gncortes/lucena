@@ -406,6 +406,8 @@ class _End extends StatelessWidget {
       GameEndReason.checkmate => l10n.freeBoardCheckmate,
       GameEndReason.stalemate => l10n.freeBoardStalemate,
       GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
+      GameEndReason.repetition => l10n.freeBoardRepetition,
+      GameEndReason.fiftyMoves => l10n.freeBoardFiftyMoves,
       GameEndReason.timeout => l10n.freeBoardTimeout,
       GameEndReason.timeoutVsInsufficientMaterial =>
         l10n.freeBoardTimeoutVsInsufficientMaterial,
