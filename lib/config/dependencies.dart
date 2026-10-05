@@ -1,6 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 import '../data/repositories/haptics/haptics_repository.dart';
+import '../data/repositories/journey/journey_repository.dart';
+import '../data/repositories/journey/journey_repository_asset.dart';
+import '../data/repositories/speedrun/speedrun_repository.dart';
+import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository_local.dart';
@@ -56,6 +60,8 @@ class Dependencies {
     required this.opponentRepository,
     required this.maiaRepository,
     required this.progressRepository,
+    required this.journeyRepository,
+    required this.speedrunRepository,
     required this.languages,
   });
 
@@ -64,6 +70,7 @@ class Dependencies {
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
+    final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     return Dependencies(
       now: now,
@@ -71,7 +78,7 @@ class Dependencies {
       profileRepository: LocalProfileRepository(database),
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
-      positionsRepository: AssetPositionsRepository(assets),
+      positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now),
@@ -79,6 +86,8 @@ class Dependencies {
       ),
       maiaRepository: DeviceMaiaRepository(maia),
       progressRepository: LocalProgressRepository(database),
+      journeyRepository: AssetJourneyRepository(assets, positions),
+      speedrunRepository: LocalSpeedrunRepository(database),
       languages: AppLanguage.selectable,
     );
   }
@@ -93,6 +102,8 @@ class Dependencies {
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;
   final ProgressRepository progressRepository;
+  final JourneyRepository journeyRepository;
+  final SpeedrunRepository speedrunRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

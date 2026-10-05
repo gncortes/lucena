@@ -19,7 +19,15 @@ void main() {
       'fulfilled INTEGER NOT NULL CHECK (fulfilled IN (0, 1)), '
       'opponent TEXT NOT NULL)';
 
-  test('da versão 2 para a 3: as partidas antigas ficam e ganham o nível', () async {
+  // A tabela como era na versão 3.
+  const attemptsV3 =
+      'CREATE TABLE attempts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
+      'position_id TEXT NOT NULL, played_at INTEGER NOT NULL, '
+      'outcome TEXT NOT NULL, '
+      'fulfilled INTEGER NOT NULL CHECK (fulfilled IN (0, 1)), '
+      'opponent TEXT NOT NULL, opponent_level INTEGER NULL)';
+
+  test('da versão 2 para a 4: as partidas antigas passam para a tabela nova', () async {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (raw) {
@@ -58,7 +66,7 @@ void main() {
     expect(await repository.fulfilledPositions(), {'basic.queen.0001'});
   });
 
-  test('da versão 1 para a 3: a tabela de partidas nasce completa', () async {
+  test('da versão 1 para a 4: a tabela de partidas nasce completa', () async {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (raw) {
@@ -84,5 +92,36 @@ void main() {
 
     final attempts = await repository.attemptsFor('basic.rook.0001');
     expect(attempts.single.opponentLevel, 2000);
+  });
+
+  test('da versão 3 para a 4: nada se perde e as marcas continuam', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(profiles)
+            ..execute(attemptsV3)
+            ..execute(
+              'INSERT INTO attempts (position_id, played_at, outcome, '
+              'fulfilled, opponent, opponent_level) VALUES '
+              "('basic.queen.0001', 1767268800, 'win', 1, 'maia', 1200), "
+              "('basic.rook.0001', 1767268900, 'loss', 0, 'stockfish', NULL)",
+            )
+            ..execute('PRAGMA user_version = 3');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final repository = LocalProgressRepository(database);
+
+    final queen = await repository.attemptsFor('basic.queen.0001');
+    expect(queen.single.opponentLevel, 1200);
+    expect(queen.single.fulfilled, isTrue);
+    expect(queen.single.playedAt, DateTime.utc(2026, 1, 1, 12));
+    // As partidas antigas não têm lances nem desafio.
+    expect(queen.single.moves, isEmpty);
+    expect(queen.single.challengeId, isNull);
+    expect(await repository.fulfilledPositions(), {'basic.queen.0001'});
+    expect(await repository.fulfilledChallenges(), isEmpty);
   });
 }

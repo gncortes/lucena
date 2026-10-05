@@ -1,6 +1,6 @@
 import '../../../domain/models/attempt.dart';
 
-/// As partidas jogadas nas posições do catálogo.
+/// As partidas de treino terminadas.
 abstract class ProgressRepository {
   Future<void> addAttempt(Attempt attempt);
 
@@ -9,4 +9,11 @@ abstract class ProgressRepository {
 
   /// As posições em que o objetivo já foi cumprido alguma vez.
   Future<Set<String>> fulfilledPositions();
+
+  /// As partidas de um desafio da Jornada, da mais recente para a mais
+  /// antiga.
+  Future<List<Attempt>> attemptsForChallenge(String challengeId);
+
+  /// Os desafios da Jornada em que o objetivo já foi cumprido.
+  Future<Set<String>> fulfilledChallenges();
 }

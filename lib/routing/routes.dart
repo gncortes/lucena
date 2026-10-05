@@ -1,3 +1,5 @@
+import '../domain/models/journey.dart';
+
 abstract final class Routes {
   static const home = '/';
   static const freeBoard = '/board';
@@ -21,6 +23,10 @@ abstract final class Routes {
     String? user,
     String? goal,
     String? position,
+    String? challenge,
+    String? speedrun,
+    String? attempt,
+    String? stage,
   }) => Uri(
     path: freeBoard,
     queryParameters: {
@@ -34,7 +40,59 @@ abstract final class Routes {
       'user': ?user,
       'goal': ?goal,
       'position': ?position,
+      'challenge': ?challenge,
+      'speedrun': ?speedrun,
+      'attempt': ?attempt,
+      'stage': ?stage,
     },
+  ).toString();
+
+  /// A partida de um desafio da Jornada (ou de uma etapa de speedrun, com
+  /// [speedrunId], [attemptId] e [stage]): o jogador joga o lado que move na
+  /// posição, contra o adversário do desafio, com o relógio dele.
+  static String challengeGame(
+    Challenge challenge, {
+    String? speedrunId,
+    int? attemptId,
+    int? stage,
+  }) {
+    final fen = challenge.position.fen;
+    final user = fen.split(' ')[1] == 'b' ? 'black' : 'white';
+    final time = challenge.time?.code;
+    final opponent = challenge.opponent;
+    return freeBoardAt(
+      fen,
+      view: user,
+      white: time,
+      black: time,
+      opponent: opponent.kind.code,
+      level: opponent.level?.toString(),
+      user: user,
+      goal: challenge.goal.code,
+      position: challenge.position.id,
+      challenge: speedrunId == null ? challenge.id : null,
+      speedrun: speedrunId,
+      attempt: attemptId?.toString(),
+      stage: stage?.toString(),
+    );
+  }
+
+  /// A Jornada, um degrau e um desafio (pelo id da posição dentro do degrau).
+  static const journey = '/journey';
+  static String journeyRung(String rung) => '/journey/$rung';
+  static String journeyChallenge(String rung, String position) =>
+      '/journey/$rung/$position';
+
+  /// Os speedruns, um speedrun e uma tentativa dele.
+  static const speedruns = '/speedruns';
+  static String speedrun(String id) => '/speedruns/$id';
+
+  ///
+  /// [game] (o instante em que uma etapa terminou) faz a tentativa ser lida de
+  /// novo ao voltar do tabuleiro, mesmo que a tela dela já esteja aberta.
+  static String speedrunAttempt(String id, int attempt, {int? game}) => Uri(
+    path: '/speedruns/$id/$attempt',
+    queryParameters: {'game': ?game?.toString()},
   ).toString();
 
   static const catalog = '/catalog';

@@ -55,6 +55,19 @@ class AppRobot {
     await _pumpApp();
   }
 
+  /// Fecha o app e troca o banco por um da versão 3 (antes da Jornada), com
+  /// as partidas [rows] (`(posição, cumprida, adversário)`); depois abre o
+  /// app novo sobre ele, como numa atualização.
+  Future<void> upgradeFromVersion3(List<(String, bool, String)> rows) async {
+    await $.pumpWidgetAndSettle(const SizedBox());
+    await $.tester.runAsync(() async {
+      // As gravações do app que saiu terminam antes de o banco ser trocado.
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await installVersion3Database(rows);
+    });
+    await _pumpApp();
+  }
+
   // A key nova a cada abertura garante um app do zero, sem estado em memória.
   // A leitura das preferências vem do aparelho e não agenda quadros: só o
   // pumpAndSettle não basta, é preciso esperar a primeira tela aparecer.

@@ -13,7 +13,9 @@ import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
+import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/maia/maia_repository.dart';
+import '../data/repositories/speedrun/speedrun_repository.dart';
 import '../data/repositories/opponent/opponent_repository.dart';
 import '../data/repositories/profile/profile_repository.dart';
 import '../data/repositories/positions/positions_repository.dart';
@@ -33,12 +35,21 @@ import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/journey/view_models/journey_cubit.dart';
+import '../ui/journey/widgets/challenge_screen.dart';
+import '../ui/journey/widgets/journey_screen.dart';
+import '../ui/journey/widgets/rung_screen.dart';
+import '../ui/speedrun/view_models/speedrun_cubit.dart';
+import '../ui/speedrun/widgets/speedrun_attempt_screen.dart';
+import '../ui/speedrun/widgets/speedrun_list_screen.dart';
+import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/theme_screen.dart';
+import '../ui/core/widgets/reload_on_return.dart';
 import 'routes.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
@@ -80,6 +91,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 userSide: sides[query['user']],
                 goal: PositionGoal.fromCode(query['goal']),
                 positionId: query['position'],
+                challengeId: query['challenge'],
+                speedrunId: query['speedrun'],
+                speedrunAttemptId: int.tryParse(query['attempt'] ?? ''),
+                speedrunStage: int.tryParse(query['stage'] ?? ''),
               );
               final start = fen == null ? null : GameRules.fromFen(fen);
               return BlocProvider(
@@ -102,6 +117,83 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 child: const FreeBoardScreen(),
               );
             },
+          ),
+          GoRoute(
+            path: 'journey',
+            builder: (context, state) => BlocProvider(
+              create: (context) => _journeyCubit(context)..load(),
+              child: const JourneyScreen(),
+            ),
+            routes: [
+              GoRoute(
+                path: ':rung',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => _journeyCubit(context)..load(),
+                  child: RungScreen(rungId: state.pathParameters['rung']!),
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':position',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => _journeyCubit(context)
+                        ..load(
+                          rungId: state.pathParameters['rung'],
+                          positionId: state.pathParameters['position'],
+                        ),
+                      child: const ChallengeScreen(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'speedruns',
+            builder: (context, state) => BlocProvider(
+              create: (context) => _speedrunCubit(context)..load(),
+              child: Builder(
+                builder: (context) => ReloadOnReturn(
+                  onReturn: () => context.read<SpeedrunCubit>().load(),
+                  child: const SpeedrunListScreen(),
+                ),
+              ),
+            ),
+            routes: [
+              GoRoute(
+                path: ':speedrun',
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      _speedrunCubit(context)
+                        ..load(speedrunId: state.pathParameters['speedrun']),
+                  child: Builder(
+                    builder: (context) => ReloadOnReturn(
+                      onReturn: () => context.read<SpeedrunCubit>().load(
+                        speedrunId: state.pathParameters['speedrun'],
+                      ),
+                      child: const SpeedrunScreen(),
+                    ),
+                  ),
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':attempt',
+                    builder: (context, state) => BlocProvider(
+                      // A tentativa é refeita a cada visita (as etapas
+                      // terminam no tabuleiro).
+                      key: ValueKey(state.uri),
+                      create: (context) => _speedrunCubit(context)
+                        ..load(
+                          speedrunId: state.pathParameters['speedrun'],
+                          attemptId: int.tryParse(
+                            state.pathParameters['attempt']!,
+                          ),
+                        ),
+                      child: const SpeedrunAttemptScreen(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           GoRoute(
             path: 'catalog',
@@ -220,4 +312,16 @@ CatalogCubit _catalogCubit(BuildContext context) => CatalogCubit(
   context.read<PositionsRepository>(),
   context.read<TrainingRepository>(),
   context.read<ProgressRepository>(),
+);
+
+JourneyCubit _journeyCubit(BuildContext context) => JourneyCubit(
+  context.read<JourneyRepository>(),
+  context.read<ProgressRepository>(),
+);
+
+SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
+  journey: context.read<JourneyRepository>(),
+  speedruns: context.read<SpeedrunRepository>(),
+  games: context.read<OngoingGameRepository>(),
+  now: context.read<Now>(),
 );

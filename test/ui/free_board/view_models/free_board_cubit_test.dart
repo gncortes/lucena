@@ -136,9 +136,10 @@ void main() {
     },
     skip: 2,
     expect: () => [
-      const FreeBoardState(
+      FreeBoardState(
         start: GameRules.initial,
         position: GameRules.initial,
+        startedAt: now(),
       ),
     ],
   );
@@ -450,7 +451,11 @@ void main() {
 
       expect(
         games.snapshot,
-        GameSnapshot(startFen: startFen, moves: const ['e2e4', 'e7e5']),
+        GameSnapshot(
+          startFen: startFen,
+          moves: const ['e2e4', 'e7e5'],
+          startedAt: now(),
+        ),
       );
     });
 
@@ -518,7 +523,10 @@ void main() {
 
       expect(cubit.state.ready, isTrue);
       expect(cubit.state.position, GameRules.initial);
-      expect(games.snapshot, GameSnapshot(startFen: startFen));
+      expect(
+        games.snapshot,
+        GameSnapshot(startFen: startFen, startedAt: now()),
+      );
     });
 
     test('antes de a partida ser lida, lances são ignorados', () {
@@ -673,7 +681,10 @@ void main() {
 
         expect(cubit.state.moves, isEmpty);
         expect(cubit.state.position, GameRules.initial);
-        expect(games.snapshot, GameSnapshot(startFen: startFen));
+        expect(
+          games.snapshot,
+          GameSnapshot(startFen: startFen, startedAt: now()),
+        );
       },
     );
 
@@ -685,7 +696,7 @@ void main() {
 
       await cubit.open();
 
-      expect(games.snapshot, const GameSnapshot(startFen: fen));
+      expect(games.snapshot, GameSnapshot(startFen: fen, startedAt: now()));
     });
 
     test(
@@ -911,6 +922,61 @@ void main() {
         expect(progress.attempts, hasLength(2));
       },
     );
+
+    test('a partida gravada leva lances, relógio, desafio e etapa', () async {
+      final started = now();
+      final cubit = build(
+        start: GameRules.fromFen('3k4/8/3K4/8/8/8/8/7Q w - - 0 1')!,
+        clock: ClockConfig.same(threeTwo),
+        mode: vsMachine.copyWith(
+          challengeId: '1000/basic.queen.0001',
+          speedrunId: 'rung.1000',
+          speedrunAttemptId: 3,
+          speedrunStage: 1,
+        ),
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      now.advance(const Duration(seconds: 7));
+      cubit.play(NormalMove.fromUci('h1h8'));
+      await cubit.open();
+
+      final game = progress.attempts.single;
+      expect(game.startedAt, started);
+      expect(game.playedAt, now());
+      expect(game.startFen, '3k4/8/3K4/8/8/8/8/7Q w - - 0 1');
+      expect(game.moves, ['h1h8']);
+      expect(game.endReason, GameEndReason.checkmate);
+      expect(game.userTime, threeTwo);
+      expect(game.opponentTime, threeTwo);
+      // Só o tempo que o relógio do jogador gastou (o incremento não conta).
+      expect(game.userClock, const Duration(seconds: 7));
+      expect(game.challengeId, '1000/basic.queen.0001');
+      expect(game.speedrunAttemptId, 3);
+      expect(game.speedrunStage, 1);
+    });
+
+    test('o tempo do jogador não inclui o que a máquina pensou', () async {
+      final cubit = build(
+        start: queenMate,
+        clock: ClockConfig.same(threeTwo),
+        mode: vsMachine,
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      now.advance(const Duration(seconds: 4));
+      cubit.play(NormalMove.fromUci('c1g5'));
+      await settle();
+      // A máquina já respondeu (o relógio dela andou o que ela pensou).
+      expect(cubit.state.moves, hasLength(2));
+      now.advance(const Duration(seconds: 6));
+      cubit.resign();
+      await cubit.open();
+
+      expect(progress.attempts.single.userClock, const Duration(seconds: 10));
+    });
 
     test('fora do treino nada é gravado no histórico', () async {
       final cubit = build(

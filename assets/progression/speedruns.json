@@ -1,0 +1,94 @@
+{
+  "speedruns": [
+    {
+      "id": "rung.1000",
+      "kind": "rung",
+      "rung": "1000",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.1200",
+      "kind": "rung",
+      "rung": "1200",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.1400",
+      "kind": "rung",
+      "rung": "1400",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.1600",
+      "kind": "rung",
+      "rung": "1600",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.1800",
+      "kind": "rung",
+      "rung": "1800",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.2000",
+      "kind": "rung",
+      "rung": "2000",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.2200",
+      "kind": "rung",
+      "rung": "2200",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.2400",
+      "kind": "rung",
+      "rung": "2400",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.2600",
+      "kind": "rung",
+      "rung": "2600",
+      "time": "300+3"
+    },
+    {
+      "id": "rung.stockfish",
+      "kind": "rung",
+      "rung": "stockfish",
+      "time": "300+3"
+    },
+    {
+      "id": "ending.queen",
+      "kind": "ending",
+      "position": "basic.queen.0001",
+      "time": "180+2"
+    },
+    {
+      "id": "ending.rook",
+      "kind": "ending",
+      "position": "basic.rook.0001",
+      "time": "180+2"
+    },
+    {
+      "id": "ending.pawn",
+      "kind": "ending",
+      "position": "pawn.pawnVsKing.0001",
+      "time": "180+2"
+    },
+    {
+      "id": "ending.queenVsRook",
+      "kind": "ending",
+      "position": "queen.queenVsRook.0001",
+      "time": "180+2"
+    },
+    {
+      "id": "ending.rookPawnVsRook",
+      "kind": "ending",
+      "position": "rookPawn.rookPawnVsRook.0001",
+      "time": "180+2"
+    }
+  ]
+}

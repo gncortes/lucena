@@ -1,5 +1,7 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/data/repositories/journey/journey_repository.dart';
+import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'package:lucena/data/repositories/maia/maia_repository.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
@@ -11,6 +13,8 @@ import 'package:lucena/data/repositories/training/training_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_journey_repository.dart';
+import 'fakes/fake_speedrun_repository.dart';
 import 'fakes/fake_maia_repository.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_ongoing_game_repository.dart';
@@ -33,8 +37,11 @@ Dependencies testDependencies({
   OpponentRepository? opponentRepository,
   MaiaRepository? maiaRepository,
   ProgressRepository? progressRepository,
+  JourneyRepository? journeyRepository,
+  SpeedrunRepository? speedrunRepository,
   List<AppLanguage>? languages,
 }) {
+  final progress = progressRepository ?? FakeProgressRepository();
   return Dependencies(
     now: now ?? FakeNow(DateTime.utc(2026, 1, 1, 12)),
     settingsRepository: settingsRepository ?? FakeSettingsRepository(),
@@ -45,7 +52,15 @@ Dependencies testDependencies({
     trainingRepository: trainingRepository ?? FakeTrainingRepository(),
     opponentRepository: opponentRepository ?? FakeOpponentRepository(),
     maiaRepository: maiaRepository ?? FakeMaiaRepository(),
-    progressRepository: progressRepository ?? FakeProgressRepository(),
+    progressRepository: progress,
+    journeyRepository: journeyRepository ?? FakeJourneyRepository(),
+    speedrunRepository:
+        speedrunRepository ??
+        FakeSpeedrunRepository(
+          progress is FakeProgressRepository
+              ? progress
+              : FakeProgressRepository(),
+        ),
     languages: languages ?? AppLanguage.selectable,
   );
 }
