@@ -18,6 +18,8 @@ import 'package:lucena/data/repositories/evaluation/evaluation_repository.dart';
 import 'package:lucena/data/repositories/characters/talk_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
+import 'package:lucena/data/repositories/school/lesson_repository.dart';
+import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 
 import 'fakes/fake_rating_repository.dart';
 import 'fakes/fake_achievements_repository.dart';
@@ -26,6 +28,7 @@ import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_talk_repository.dart';
 import 'fakes/fake_onboarding_repository.dart';
 import 'fakes/fake_pace_repository.dart';
+import 'fakes/fake_school_repositories.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_journey_repository.dart';
@@ -61,6 +64,8 @@ Dependencies testDependencies({
   TalkRepository? talkRepository,
   OnboardingRepository? onboardingRepository,
   PaceRepository? paceRepository,
+  LessonRepository? lessonRepository,
+  SchoolProgressRepository? schoolProgressRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -91,6 +96,9 @@ Dependencies testDependencies({
     talkRepository: talkRepository ?? FakeTalkRepository(),
     onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
     paceRepository: paceRepository ?? FakePaceRepository(),
+    lessonRepository: lessonRepository ?? FakeLessonRepository(),
+    schoolProgressRepository:
+        schoolProgressRepository ?? FakeSchoolProgressRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

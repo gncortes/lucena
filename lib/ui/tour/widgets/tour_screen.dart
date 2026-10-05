@@ -7,7 +7,10 @@ import '../../../domain/models/rating_level.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../../domain/models/character.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/widgets/step_progress.dart';
+import '../../core/widgets/teacher_speech.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_sheet.dart';
 import '../view_models/tour_cubit.dart';
@@ -27,16 +30,46 @@ class TourScreen extends StatelessWidget {
       listener: (context, state) {
         // A faixa escolhida já está no perfil.
         context.read<ProfileCubit>().load();
-        context.go(Routes.home);
+        // O iniciante vai direto para as aulas (a tela inicial fica embaixo).
+        context.go(state.toSchool ? Routes.school : Routes.home);
       },
       builder: (context, state) {
         if (!state.ready) return const Scaffold(key: TourKeys.screen);
         final step = state.step;
         final total = TourStep.values.length;
+        final rtl = Directionality.of(context) == TextDirection.rtl;
+        // Avançando, o passo novo entra pelo fim da linha e o velho sai pelo
+        // começo; voltando, ao contrário. Em árabe, espelhado.
+        final sign = (state.forward ? 1.0 : -1.0) * (rtl ? -1 : 1);
+        final currentKey = TourKeys.step(step);
         return Scaffold(
           key: TourKeys.screen,
           appBar: AppBar(
             automaticallyImplyLeading: false,
+            title: Semantics(
+              label: l10n.tourStep(step.index + 1, total),
+              child: ExcludeSemantics(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: StepProgress(
+                        key: TourKeys.progress,
+                        total: total,
+                        value: step.index + 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      '${step.index + 1}/$total',
+                      key: TourKeys.stepCounter,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             actions: [
               if (!step.isLast)
                 TextButton(
@@ -49,34 +82,43 @@ class TourScreen extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: step.isLast
-                        ? _LevelStep(key: TourKeys.step(step), state: state)
-                        : _InfoStep(key: TourKeys.step(step), step: step),
+                if (state.viktor case final viktor?)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                    child: TeacherSpeech(
+                      key: TourKeys.viktor,
+                      teacher: viktor,
+                      text: state.speech,
+                      emotion: step.isLast && state.toSchool
+                          ? Emotion.happy
+                          : Emotion.calm,
+                      avatarSize: 64,
+                      bubbleKey: TourKeys.speech,
+                    ),
                   ),
-                ),
-                Semantics(
-                  label: l10n.tourStep(step.index + 1, total),
-                  child: ExcludeSemantics(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var index = 0; index < total; index++)
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.all(3),
-                            width: index == step.index ? 20 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: index == step.index
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.outlineVariant,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                Expanded(
+                  child: ClipRect(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 380),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) {
+                        final entering = child.key == currentKey;
+                        final offset = Tween(
+                          begin: Offset((entering ? 1 : -1) * sign * 0.35, 0),
+                          end: Offset.zero,
+                        ).animate(animation);
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: offset,
+                            child: child,
                           ),
-                      ],
+                        );
+                      },
+                      child: step.isLast
+                          ? _LevelStep(key: currentKey, state: state)
+                          : _InfoStep(key: currentKey, step: step),
                     ),
                   ),
                 ),
@@ -100,7 +142,11 @@ class TourScreen extends StatelessWidget {
                         ),
                         onPressed: step.isLast ? cubit.finish : cubit.next,
                         child: Text(
-                          step.isLast ? l10n.tourStart : l10n.tourNext,
+                          !step.isLast
+                              ? l10n.tourNext
+                              : state.toSchool
+                              ? l10n.tourStartLessons
+                              : l10n.tourStart,
                         ),
                       ),
                     ],
@@ -164,19 +210,26 @@ class _InfoStep extends StatelessWidget {
     };
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 48,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(
-                icon,
-                size: 48,
-                color: theme.colorScheme.onPrimaryContainer,
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.6, end: 1),
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) =>
+                  Transform.scale(scale: value, child: child),
+              child: CircleAvatar(
+                radius: 44,
+                backgroundColor: theme.colorScheme.primaryContainer,
+                child: Icon(
+                  icon,
+                  size: 44,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -241,16 +294,21 @@ class _LevelStep extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
           child: Row(
             children: [
-              Icon(Icons.flag_rounded, color: theme.colorScheme.primary),
+              Icon(
+                state.toSchool ? Icons.school_outlined : Icons.flag_rounded,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  l10n.tourLevelStart(
-                    OpponentKind.maia.label(
-                      l10n,
-                      level: int.parse(state.startRung),
-                    ),
-                  ),
+                  state.toSchool
+                      ? l10n.tourLevelSchool
+                      : l10n.tourLevelStart(
+                          OpponentKind.maia.label(
+                            l10n,
+                            level: int.parse(state.startRung),
+                          ),
+                        ),
                   key: TourKeys.startRung,
                   style: theme.textTheme.titleSmall,
                 ),

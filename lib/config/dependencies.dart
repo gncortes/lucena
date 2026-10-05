@@ -7,6 +7,9 @@ import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
+import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/lesson_repository_asset.dart';
+import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
 import '../data/repositories/rating/rating_repository_local.dart';
 import '../data/repositories/achievements/achievements_repository_local.dart';
@@ -80,6 +83,8 @@ class Dependencies {
     required this.talkRepository,
     required this.onboardingRepository,
     required this.paceRepository,
+    required this.lessonRepository,
+    required this.schoolProgressRepository,
     required this.languages,
   });
 
@@ -123,6 +128,8 @@ class Dependencies {
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: LocalOnboardingRepository(preferences),
       paceRepository: pace,
+      lessonRepository: AssetLessonRepository(assets),
+      schoolProgressRepository: LocalSchoolProgressRepository(preferences),
       languages: AppLanguage.selectable,
     );
   }
@@ -146,6 +153,8 @@ class Dependencies {
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
   final PaceRepository paceRepository;
+  final LessonRepository lessonRepository;
+  final SchoolProgressRepository schoolProgressRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

@@ -10,6 +10,8 @@ import 'data/repositories/evaluation/evaluation_repository.dart';
 import 'data/repositories/characters/talk_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
+import 'data/repositories/school/lesson_repository.dart';
+import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
@@ -54,14 +56,21 @@ class _LucenaAppState extends State<LucenaApp> {
     _openRouter();
   }
 
-  // Partida que estava na tela quando o app foi fechado: o app reabre nela.
+  // Partida ou aula que estava na tela quando o app foi fechado: o app
+  // reabre nela.
   Future<void> _openRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
+    final school = await widget.dependencies.schoolProgressRepository.load();
     if (!mounted) return;
     final resume = game != null && game.reopensOnLaunch;
+    final lesson = school.ongoing;
     setState(() {
       _router = buildRouter(
-        initialLocation: resume ? Routes.freeBoard : Routes.home,
+        initialLocation: resume
+            ? Routes.freeBoard
+            : lesson != null && lesson.open
+            ? Routes.lesson(lesson.lessonId)
+            : Routes.home,
       );
     });
   }
@@ -132,6 +141,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<PaceRepository>.value(
           value: dependencies.paceRepository,
+        ),
+        RepositoryProvider<LessonRepository>.value(
+          value: dependencies.lessonRepository,
+        ),
+        RepositoryProvider<SchoolProgressRepository>.value(
+          value: dependencies.schoolProgressRepository,
         ),
       ],
       child: MultiBlocProvider(

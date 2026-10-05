@@ -17,6 +17,17 @@ class FakeCharacterRepository implements CharacterRepository {
     avatar: 'assets/characters/magician/avatar.png',
   );
 
+  /// O professor das aulas e do tour.
+  static const viktor = Character(
+    id: 'master',
+    level: 2600,
+    name: 'Viktor',
+    tagline: {'en': 'The grandmaster', 'pt': 'O grande mestre'},
+    personality: {},
+    traits: [],
+    avatar: 'assets/characters/master/avatar.png',
+  );
+
   static const sampleCharacters = [
     Character(
       id: 'beachgoer',
@@ -28,6 +39,7 @@ class FakeCharacterRepository implements CharacterRepository {
       avatar: 'assets/characters/beachgoer/avatar.png',
     ),
     magician,
+    viktor,
   ];
 
   final List<Character> all;
