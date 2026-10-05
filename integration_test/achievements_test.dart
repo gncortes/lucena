@@ -57,8 +57,9 @@ void main() {
       // a vitória contra o personagem), traduzidas.
       expect(feedback, hasLength(3));
     } else {
-      expect(feedback, contains('Achievement unlocked: First endgame'));
-      expect(feedback, contains('Achievement unlocked: Beat Coco'));
+      // As conquistas vêm em cartões, com o nome delas.
+      expect(feedback, contains('First endgame'));
+      expect(feedback, contains('Beat Coco'));
       expect(feedback, contains('You beat Coco for the first time!'));
     }
 
