@@ -60,6 +60,10 @@ flutter:
     - assets/characters/beachgoer/
     - assets/lines/en/
     - assets/lines/pt/
+    # As aulas do Viktor (tools/build_lessons.py) e as falas dele
+    - assets/lessons/course.json
+    - assets/lessons/en/
+    - assets/lessons/pt/
     # Pesos do Maia-3 (tools/maia/export_weights.py)
     - assets/models/maia3-5m.bin
 
