@@ -350,5 +350,14 @@
   "speedrunStageOf": "Tahap {stage} dari {total}",
   "speedrunNow": "Sekarang",
   "paceTitle": "Pilih kontrol waktu",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Hai, {name}",
+  "homeStatGames": "Permainan",
+  "homeStatWins": "Menang",
+  "homeStatStreak": "Hari berturut",
+  "homeStatAchievements": "{unlocked} dari {total}",
+  "homeStatBestRun": "Speedrun terbaik",
+  "homeTools": "Alat",
+  "profileRatingPeriodGames": "{count} terakhir",
+  "profileRatingPeriodAll": "Semua"
 }

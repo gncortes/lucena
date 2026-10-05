@@ -350,5 +350,14 @@
   "speedrunStageOf": "مرحله {stage} از {total}",
   "speedrunNow": "اکنون",
   "paceTitle": "زمان را انتخاب کن",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "سلام، {name}",
+  "homeStatGames": "بازی‌ها",
+  "homeStatWins": "بردها",
+  "homeStatStreak": "روزهای پیاپی",
+  "homeStatAchievements": "{unlocked} از {total}",
+  "homeStatBestRun": "بهترین اسپیدران",
+  "homeTools": "ابزارها",
+  "profileRatingPeriodGames": "{count} تای آخر",
+  "profileRatingPeriodAll": "همه"
 }

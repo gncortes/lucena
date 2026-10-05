@@ -24,4 +24,12 @@ abstract final class HomeKeys {
   static const whereNext = Key('home.where.next');
   static const whereContinue = Key('home.where.continue');
   static const rating = Key('home.rating');
+  static const ratingValue = Key('home.rating.value');
+
+  /// O painel do jogador e os números do progresso.
+  static const playerCard = Key('home.player');
+  static const hello = Key('home.hello');
+  static const stats = Key('home.stats');
+  static Key stat(int index) => Key('home.stat.$index');
+  static const whereBoard = Key('home.where.board');
 }

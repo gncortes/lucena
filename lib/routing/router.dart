@@ -103,6 +103,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             lessons: context.read<LessonRepository>(),
             school: context.read<SchoolProgressRepository>(),
             profile: context.read<ProfileRepository>(),
+            achievements: context.read<AchievementsRepository>(),
+            speedruns: context.read<SpeedrunRepository>(),
+            now: context.read<Now>(),
           )..load(),
           child: Builder(
             builder: (context) => ReloadOnReturn(

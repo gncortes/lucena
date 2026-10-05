@@ -13,7 +13,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - conferir em telas pequenas (SmallPhone) e no tema com relógio em cima/embaixo/dos lados.
 - [x] **"Próximo desafio" no fim da partida.** Num desafio da Jornada, o painel do fim ganha embaixo a opção de ir direto para o próximo desafio do degrau (ou do degrau seguinte, se este acabou), além de "Jogar de novo". ([print](../qa/melhorias/3d0bf1e2.jpg))
 
-- [x] **Layout do rating, no estilo do chess.com.** (Entrega melhorias-partida: painel do fim e cartão do perfil com o número e o selo; a escolha de período da curva fica para depois.) Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
+- [x] **Layout do rating, no estilo do chess.com.** (Painel do fim, cartão do perfil e tela inicial com o número e a variação; a curva do perfil tem período: últimas 10, últimas 30 ou todas as partidas.) Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
 
 - [x] **Sem a frase "Mova uma peça para começar".** Pedido do Gabriel (2026-10-05): a faixa de lances fica vazia até o primeiro lance.
 - [x] **Cartão animado de vitória/derrota, como no chess.com.** Pedido do Gabriel (2026-10-05): abre por cima da partida no fim, neutro (só o ícone com a cor do resultado), com o rating contando do valor antigo ao novo e a variação em texto verde/vermelho; fechado, o resultado fica no painel embaixo do tabuleiro.
@@ -33,7 +33,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Tela inicial
 
-- [ ] **Virar um painel do jogador.** ([print](../qa/melhorias/f566c19e.jpg)) O que incomoda no print:
+- [x] **Virar um painel do jogador.** ([print](../qa/melhorias/f566c19e.jpg)) O que incomoda no print:
   - o mascote e o nome do app ocupam quase metade da tela toda vez que o app abre;
   - o cartão de progresso fala "Maia 1000" em vez do personagem, e o rating fica num selo solto;
   - cinco botões grandes empilhados com o mesmo peso visual.

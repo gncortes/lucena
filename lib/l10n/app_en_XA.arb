@@ -349,5 +349,14 @@
   "speedrunStageOf": "[Štåĝé {stage} öf {total} one two three]",
   "speedrunNow": "[Ûp ñéxt one]",
   "paceTitle": "[Çhööšé thé tîmé çöñtŕöl one two three]",
-  "paceShort": "[{minutes}+{increment} one two three]"
+  "paceShort": "[{minutes}+{increment} one two three]",
+  "homeHello": "[Hî, {name} one]",
+  "homeStatGames": "[Ĝåméš one]",
+  "homeStatWins": "[Wîñš one]",
+  "homeStatStreak": "[Dåý štŕéåk one]",
+  "homeStatAchievements": "[{unlocked} öf {total} one two three]",
+  "homeStatBestRun": "[Béšt špéédŕûñ one two]",
+  "homeTools": "[Töölš one]",
+  "profileRatingPeriodGames": "[Låšt {count} one two]",
+  "profileRatingPeriodAll": "[Åll one]"
 }

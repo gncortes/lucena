@@ -350,5 +350,14 @@
   "speedrunStageOf": "Etappe {stage} von {total}",
   "speedrunNow": "Als Nächstes",
   "paceTitle": "Wähle die Bedenkzeit",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Hallo, {name}",
+  "homeStatGames": "Partien",
+  "homeStatWins": "Siege",
+  "homeStatStreak": "Tage in Folge",
+  "homeStatAchievements": "{unlocked} von {total}",
+  "homeStatBestRun": "Bester Speedrun",
+  "homeTools": "Werkzeuge",
+  "profileRatingPeriodGames": "Letzte {count}",
+  "profileRatingPeriodAll": "Alle"
 }

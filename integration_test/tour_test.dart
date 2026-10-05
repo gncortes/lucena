@@ -28,7 +28,7 @@ void main() {
     await $(HomeKeys.whereTitle).waitUntilVisible();
     expectText(
       $.tester.widget<Text>(find.byKey(HomeKeys.whereTitle)).data,
-      'You are at Maia 1400',
+      'Percival',
     );
     final journey = JourneyRobot($);
     await journey.open();

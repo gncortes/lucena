@@ -350,5 +350,14 @@
   "speedrunStageOf": "Aşama {stage}/{total}",
   "speedrunNow": "Şimdi",
   "paceTitle": "Süreyi seç",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Merhaba, {name}",
+  "homeStatGames": "Oyunlar",
+  "homeStatWins": "Galibiyet",
+  "homeStatStreak": "Gün serisi",
+  "homeStatAchievements": "{unlocked}/{total}",
+  "homeStatBestRun": "En iyi speedrun",
+  "homeTools": "Araçlar",
+  "profileRatingPeriodGames": "Son {count}",
+  "profileRatingPeriodAll": "Tümü"
 }

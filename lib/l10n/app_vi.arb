@@ -350,5 +350,14 @@
   "speedrunStageOf": "Chặng {stage}/{total}",
   "speedrunNow": "Tiếp theo",
   "paceTitle": "Chọn nhịp độ",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Chào {name}",
+  "homeStatGames": "Ván",
+  "homeStatWins": "Thắng",
+  "homeStatStreak": "Ngày liên tiếp",
+  "homeStatAchievements": "{unlocked}/{total}",
+  "homeStatBestRun": "Speedrun tốt nhất",
+  "homeTools": "Công cụ",
+  "profileRatingPeriodGames": "{count} ván gần nhất",
+  "profileRatingPeriodAll": "Tất cả"
 }

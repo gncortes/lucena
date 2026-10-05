@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
@@ -13,6 +16,7 @@ import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/fakes/fake_settings_repository.dart';
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
@@ -21,17 +25,28 @@ class _Home extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => HomeCubit(
-      journey: FakeJourneyRepository(),
-      progress: FakeProgressRepository(),
-      onboarding: FakeOnboardingRepository(),
-      characters: FakeCharacterRepository(),
-      rating: FakeRatingRepository(),
-      lessons: FakeLessonRepository(),
-      school: FakeSchoolProgressRepository(),
-      profile: FakeProfileRepository(),
-    )..load(),
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      // A miniatura do próximo desafio usa as cores do tabuleiro.
+      BlocProvider(
+        create: (_) => SettingsCubit(
+          FakeSettingsRepository(const AppSettings()),
+          languages: AppLanguage.selectable,
+        )..load(),
+      ),
+      BlocProvider(
+        create: (_) => HomeCubit(
+          journey: FakeJourneyRepository(),
+          progress: FakeProgressRepository(),
+          onboarding: FakeOnboardingRepository(),
+          characters: FakeCharacterRepository(),
+          rating: FakeRatingRepository(),
+          lessons: FakeLessonRepository(),
+          school: FakeSchoolProgressRepository(),
+          profile: FakeProfileRepository(),
+        )..load(),
+      ),
+    ],
     child: child,
   );
 }
@@ -130,6 +145,8 @@ void main() {
       TestApp(child: _Home(HomeScreen(version: '0.3.2-rc.1'))),
     );
     await tester.pumpAndSettle();
+    // A versão fica no fim da tela, depois dos atalhos.
+    await tester.scrollUntilVisible(find.byKey(HomeKeys.version), 200);
 
     expect(
       tester.widget<Text>(find.byKey(HomeKeys.version)).data,

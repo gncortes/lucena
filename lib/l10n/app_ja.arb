@@ -350,5 +350,14 @@
   "speedrunStageOf": "ステージ {stage}/{total}",
   "speedrunNow": "次はこちら",
   "paceTitle": "持ち時間を選ぶ",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "こんにちは、{name}",
+  "homeStatGames": "対局",
+  "homeStatWins": "勝ち",
+  "homeStatStreak": "連続日数",
+  "homeStatAchievements": "{unlocked}/{total}",
+  "homeStatBestRun": "最速スピードラン",
+  "homeTools": "ツール",
+  "profileRatingPeriodGames": "直近{count}局",
+  "profileRatingPeriodAll": "すべて"
 }

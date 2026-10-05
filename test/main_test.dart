@@ -275,6 +275,7 @@ void main() {
     );
 
     await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(HomeKeys.freeBoardButton));
     await tester.pumpAndSettle();
 
@@ -341,6 +342,7 @@ void main() {
       expect(find.byKey(FreeBoardKeys.screen), findsNothing);
 
       await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(HomeKeys.freeBoardButton));
       await tester.pumpAndSettle();
 
