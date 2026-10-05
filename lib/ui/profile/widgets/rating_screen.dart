@@ -108,35 +108,53 @@ class RatingScreen extends StatelessWidget {
                 // Todas as partidas, de qualquer modo, da mais recente para a
                 // mais antiga: a lista segue enquanto houver partida.
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 4),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 8),
                   child: Row(
                     children: [
-                      Text(
-                        l10n.statsGamesTitle,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                l10n.statsGamesTitle,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            if (log.isNotEmpty)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${log.length}',
+                                  key: RatingKeys.gamesCount,
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                    fontWeight: FontWeight.w700,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      if (log.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            '${log.length}',
-                            key: RatingKeys.gamesCount,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
+                      // O que a coluna da direita mostra.
+                      if (log.any((game) => game.rated != null))
+                        Text(
+                          l10n.reportRatingLabel,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                     ],
@@ -171,7 +189,7 @@ class RatingScreen extends StatelessWidget {
                         height: 1,
                         indent: 16,
                         endIndent: 16,
-                        color: colors.outlineVariant.withValues(alpha: 0.5),
+                        color: colors.outlineVariant.withValues(alpha: 0.4),
                       ),
                     _GameRow(
                       index: index,
@@ -302,30 +320,31 @@ class _GameRow extends StatelessWidget {
     final endgame = parts.length > 1 ? endgameName(l10n, parts[1]) : null;
     return Padding(
       key: RatingKeys.entry(index),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
           Icon(
             paceIcon,
-            color: colors.primary,
+            size: 28,
+            color: ChangeColors.of(context, up: true),
             semanticLabel: time == null
                 ? l10n.challengeNoClock
                 : paceLabel(l10n, time),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           if (character != null)
-            CharacterAvatar(character: character, size: 44)
+            CharacterAvatar(character: character, size: 52)
           else
             Container(
-              width: 44,
-              height: 44,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(7),
               ),
               child: Icon(Icons.person_outline, color: colors.outline),
             ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,23 +356,27 @@ class _GameRow extends StatelessWidget {
                         text:
                             character?.name ??
                             attempt.opponent.label(l10n, level: level),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        style: const TextStyle(fontWeight: FontWeight.w800),
                       ),
                       if (level != null && character != null)
                         TextSpan(
-                          text: '  ($level)',
-                          style: TextStyle(color: colors.onSurfaceVariant),
+                          text: ' ($level)',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                     ],
                   ),
                   key: RatingKeys.entryOpponent(index),
-                  style: theme.textTheme.titleSmall,
+                  style: theme.textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Text(
                   [?endgame, date].join(' · '),
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                   maxLines: 1,
@@ -362,51 +385,61 @@ class _GameRow extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Container(
             key: RatingKeys.entryResult(index),
-            width: 24,
-            height: 24,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
               color: resultColor,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(7),
             ),
             child: Icon(
               resultIcon,
-              size: 18,
+              size: 24,
               color: colors.surface,
               semanticLabel: resultLabel,
             ),
           ),
-          // O rating depois da partida e quanto ela o mudou, nas que contaram.
+          // Quanto a partida mudou o rating e como ele ficou, nas que
+          // contaram.
           SizedBox(
-            width: 64,
+            width: 62,
             child: rated == null
                 ? null
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        '${rated.entry.rating.rounded}',
-                        key: RatingKeys.entryRating(index),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
                       if (change != null)
                         Text(
                           signedChange(change),
                           key: RatingKeys.entryChange(index),
                           textDirection: TextDirection.ltr,
-                          style: theme.textTheme.labelMedium?.copyWith(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             color: change == 0
                                 ? colors.onSurfaceVariant
                                 : ChangeColors.of(context, up: change > 0),
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
+                      Text(
+                        '${rated.entry.rating.rounded}',
+                        key: RatingKeys.entryRating(index),
+                        style:
+                            (change == null
+                                    ? theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                      )
+                                    : theme.textTheme.bodySmall?.copyWith(
+                                        color: colors.onSurfaceVariant,
+                                      ))
+                                ?.copyWith(
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                      ),
                     ],
                   ),
           ),
