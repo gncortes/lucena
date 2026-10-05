@@ -1,0 +1,776 @@
+{
+  "character": "beachgoer",
+  "language": "en",
+  "lines": [
+    {
+      "id": "beachgoer.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hey buddy! Pull up a beach chair, we're taking it easy today."
+    },
+    {
+      "id": "beachgoer.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Sun on my face, coconut in hand, a board to play. Living the dream."
+    },
+    {
+      "id": "beachgoer.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let's play stress-free. Loser buys the coconut water."
+    },
+    {
+      "id": "beachgoer.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Relax, I play at the speed of the tide: slow and steady."
+    },
+    {
+      "id": "beachgoer.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Hang on tight, the beach dude is here to surf this board!"
+    },
+    {
+      "id": "beachgoer.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Whoa, the tide's all going my way. So chill."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "This is easier than riding a knee-high wave."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Fold up your umbrella, it's all sunshine on my side."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I'm lying in the hammock, just waiting for the sunset."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Dude, it's so smooth I'm ordering another coconut to celebrate."
+    },
+    {
+      "id": "beachgoer.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Feeling a nice breeze on my side of the board."
+    },
+    {
+      "id": "beachgoer.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Ooh, looks like a wave is building up for me."
+    },
+    {
+      "id": "beachgoer.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Slowly but surely I'll get there. No rush, buddy."
+    },
+    {
+      "id": "beachgoer.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Getting cozy, like warm sand late in the afternoon."
+    },
+    {
+      "id": "beachgoer.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I think I'm riding this wave all the way to shore."
+    },
+    {
+      "id": "beachgoer.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Flat sea, nobody ahead. All good."
+    },
+    {
+      "id": "beachgoer.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hmm, let me take a sip and think it over."
+    },
+    {
+      "id": "beachgoer.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Dead even, like two matching sandcastles."
+    },
+    {
+      "id": "beachgoer.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Even for now. The tide will turn eventually."
+    },
+    {
+      "id": "beachgoer.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "What a fun game, man! Nobody's giving up a grain of sand."
+    },
+    {
+      "id": "beachgoer.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Uh-oh, got a little sand in my flip-flop. No biggie."
+    },
+    {
+      "id": "beachgoer.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa, where did that ripple come from?"
+    },
+    {
+      "id": "beachgoer.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Bit of a headwind now, but we roll with it."
+    },
+    {
+      "id": "beachgoer.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Easy now, heart. Plenty of beach left ahead."
+    },
+    {
+      "id": "beachgoer.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Think I forgot the sunscreen. Starting to burn here."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Yeah, I got wiped out. That's the ocean for you."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "My board drifted off and I'm just floating out here."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "It's ugly, but at least the coconut's ice-cold."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Dude, the tide came in and took my whole sandcastle!"
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Rough out here, buddy. But I'm not letting go of my umbrella."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa, you slipped there! I took off my shades to look closer."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Easy, buddy. Happens to everyone, even me."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Whoa! A coconut just fell right into my hand!"
+    },
+    {
+      "id": "beachgoer.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Playing with your eyes shut, like a nap in the hammock?"
+    },
+    {
+      "id": "beachgoer.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Thanks for the gift! That wave came in perfect."
+    },
+    {
+      "id": "beachgoer.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Oops, got distracted watching a seagull. My bad."
+    },
+    {
+      "id": "beachgoer.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Whoops, I goofed. All good, let's keep going."
+    },
+    {
+      "id": "beachgoer.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Aw man, sand got in my coconut and my move."
+    },
+    {
+      "id": "beachgoer.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Blame that move on too much sun."
+    },
+    {
+      "id": "beachgoer.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Oh no! Total wipeout, I swallowed half the ocean!"
+    },
+    {
+      "id": "beachgoer.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa! That move was a pro-level surf trick."
+    },
+    {
+      "id": "beachgoer.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Sweet wave you caught there, buddy!"
+    },
+    {
+      "id": "beachgoer.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "I took off my shades just to see that move."
+    },
+    {
+      "id": "beachgoer.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Respect. That one came in like a perfect barrel."
+    },
+    {
+      "id": "beachgoer.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Holy wow! I almost dropped my coconut!"
+    },
+    {
+      "id": "beachgoer.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "See? The tide always comes back."
+    },
+    {
+      "id": "beachgoer.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Paddled and paddled and caught the wave back!"
+    },
+    {
+      "id": "beachgoer.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Told you it was just about patience. Easy breezy."
+    },
+    {
+      "id": "beachgoer.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "That's what I'm talking about! Flipped it like a breaking wave!"
+    },
+    {
+      "id": "beachgoer.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "The sun's shining on my side again, buddy."
+    },
+    {
+      "id": "beachgoer.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh, where'd my lead go? Did I leave it on the sand?"
+    },
+    {
+      "id": "beachgoer.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Oops, the wave passed and I just watched. It happens."
+    },
+    {
+      "id": "beachgoer.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Was so relaxed I ended up dozing off in the hammock."
+    },
+    {
+      "id": "beachgoer.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "The tide turned and took my flip-flop with it."
+    },
+    {
+      "id": "beachgoer.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Dude, I had it all! Slipped right off my board!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'll take this one home, like a seashell."
+    },
+    {
+      "id": "beachgoer.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Ooh, got it! Thanks, buddy."
+    },
+    {
+      "id": "beachgoer.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hitching a ride on my board. Welcome aboard!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "One more for my sand bucket!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "That one dropped like a coconut off the tree!"
+    },
+    {
+      "id": "beachgoer.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Oops, there goes my piece. The wave gives, the wave takes."
+    },
+    {
+      "id": "beachgoer.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh, where'd it go? It was right next to my coconut."
+    },
+    {
+      "id": "beachgoer.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Lost my piece like I lose flip-flops at the beach."
+    },
+    {
+      "id": "beachgoer.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "It's fine, it just went for a swim. No worries."
+    },
+    {
+      "id": "beachgoer.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ouch, that hurt more than stepping on a sea urchin!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "My little pawn made it to shore. What a ride!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "From the sand to king of the beach. I mean, queen!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Rode the whole wave, from way out right up to the sand!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "New queen in town! This calls for an ice-cold coconut."
+    },
+    {
+      "id": "beachgoer.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Aloha, queen! She showed up with a tan and everything!"
+    },
+    {
+      "id": "beachgoer.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa, your pawn crossed the whole beach."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Nice stroll, huh? That deserves a coconut."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Aw man, I was looking at the ocean and it slipped by."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "A new queen for you? Gnarly!"
+    },
+    {
+      "id": "beachgoer.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Oh no! Now the sea's getting really rough."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Watch the clock, buddy. No rush, but kinda rush."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Your time's melting like a popsicle in the sun."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "The tide on your clock is going out fast."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Breathe, buddy. But breathe fast!"
+    },
+    {
+      "id": "beachgoer.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Hurry, the sun's setting on your clock!"
+    },
+    {
+      "id": "beachgoer.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa, I was enjoying the breeze and time flew."
+    },
+    {
+      "id": "beachgoer.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Not much time, but panic doesn't go with the beach."
+    },
+    {
+      "id": "beachgoer.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Aw man, I napped in the hammock and the clock didn't wait."
+    },
+    {
+      "id": "beachgoer.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Okay, coconut's down. Now it's serious."
+    },
+    {
+      "id": "beachgoer.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Lifeguard! Help! My clock is drowning!"
+    },
+    {
+      "id": "beachgoer.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Got time to spare. Just one more little sip."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "I'm on beach time, you're on rush-hour time."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "No hurry at all. Your clock's doing the hurrying."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Gonna put on some sunscreen first. Plenty of time."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I've got the whole afternoon, buddy. Do you?"
+    },
+    {
+      "id": "beachgoer.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. I'll go look at the sea and be right back."
+    },
+    {
+      "id": "beachgoer.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "I've had time to finish a whole coconut here."
+    },
+    {
+      "id": "beachgoer.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Waiting for the perfect wave? Sometimes it never comes."
+    },
+    {
+      "id": "beachgoer.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "No worries, buddy. I'll just fix my umbrella."
+    },
+    {
+      "id": "beachgoer.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I got a tan just waiting for your move!"
+    },
+    {
+      "id": "beachgoer.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Good game, buddy! Wanna grab a coconut?"
+    },
+    {
+      "id": "beachgoer.win.2",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Won it nice and easy, no stress. Just how I like it."
+    },
+    {
+      "id": "beachgoer.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Rode that wave all the way in. Aloha!"
+    },
+    {
+      "id": "beachgoer.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "What a beautiful day! Sun, coconut and a win."
+    },
+    {
+      "id": "beachgoer.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "King of the beach, buddy! Come back tomorrow for more."
+    },
+    {
+      "id": "beachgoer.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lost it, but it's all good. The sea's still beautiful."
+    },
+    {
+      "id": "beachgoer.loss.2",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Nice one, buddy! Coconuts are on me today."
+    },
+    {
+      "id": "beachgoer.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Got wiped out, but there's a fresh wave tomorrow."
+    },
+    {
+      "id": "beachgoer.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Blame the sun, it hit me right on the head."
+    },
+    {
+      "id": "beachgoer.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Got crushed, but who cares? Let's go another round!"
+    },
+    {
+      "id": "beachgoer.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw! Nobody drowned, everybody's happy."
+    },
+    {
+      "id": "beachgoer.draw.2",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Half and half, like sharing a coconut with two straws."
+    },
+    {
+      "id": "beachgoer.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tied sandcastles. Fair enough, right?"
+    },
+    {
+      "id": "beachgoer.draw.4",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Huh, that's it? The tide stopped halfway!"
+    },
+    {
+      "id": "beachgoer.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "A draw, but what a beach day, buddy."
+    }
+  ]
+}

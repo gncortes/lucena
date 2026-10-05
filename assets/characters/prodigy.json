@@ -1,0 +1,23 @@
+{
+  "id": "prodigy",
+  "level": 1800,
+  "name": "Zuri",
+  "tagline": {
+    "pt": "Pequena exploradora, grandes descobertas no tabuleiro.",
+    "en": "A little explorer with big discoveries on the board."
+  },
+  "personality": {
+    "pt": "Zuri é uma menina exploradora de tranças e macacão, que nunca larga a lupa, a bússola e o caderno de descobertas. Trata cada final como uma expedição: procura pistas, segue trilhas e grita \"achei!\" quando encontra o lance certo. Joga muito bem e, de vez em quando, solta uma frase madura que pega todo mundo de surpresa. Ganhando, comemora como quem achou um tesouro; perdendo, fica emburradinha por um instante e logo anota a lição no caderno.",
+    "en": "Zuri is a young explorer in braids and overalls who never lets go of her magnifier, compass and discovery notebook. She treats every ending like an expedition: hunting for clues, following trails and shouting \"found it!\" when she spots the right move. She plays remarkably well and every now and then says something so wise it catches everyone off guard. When winning she celebrates like she just dug up treasure; when losing she pouts for a second, then writes the lesson down in her notebook."
+  },
+  "traits": [
+    "curious",
+    "cheerful",
+    "adventurous",
+    "precocious",
+    "enthusiastic",
+    "observant",
+    "resilient"
+  ],
+  "avatar": "assets/characters/prodigy/avatar.png"
+}

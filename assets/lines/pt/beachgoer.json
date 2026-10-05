@@ -1,0 +1,776 @@
+{
+  "character": "beachgoer",
+  "language": "pt",
+  "lines": [
+    {
+      "id": "beachgoer.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "E aí, parceiro! Puxa a cadeira de praia que hoje é de boa."
+    },
+    {
+      "id": "beachgoer.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Sol na cara, coco na mão e um tabuleiro. Vida boa, hein?"
+    },
+    {
+      "id": "beachgoer.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Bora jogar sem estresse? Quem perder paga a água de coco."
+    },
+    {
+      "id": "beachgoer.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Relaxa que eu jogo no ritmo da maré: devagar e sempre."
+    },
+    {
+      "id": "beachgoer.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Segura a onda, que o praieiro chegou pra surfar no tabuleiro!"
+    },
+    {
+      "id": "beachgoer.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ih, a maré tá toda a meu favor. Que tranquilidade."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Isso aqui tá mais fácil que pegar onda de meio metro."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Pode tirar o guarda-sol, que o meu dia tá ensolarado."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Tô deitado na rede, só esperando o pôr do sol chegar."
+    },
+    {
+      "id": "beachgoer.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Mano, tá tão de boa que vou pedir outro coco pra comemorar."
+    },
+    {
+      "id": "beachgoer.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tô sentindo uma brisa boa do meu lado do tabuleiro."
+    },
+    {
+      "id": "beachgoer.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Opa, parece que a onda tá formando pra mim."
+    },
+    {
+      "id": "beachgoer.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Devagarinho eu chego lá. Sem pressa, parceiro."
+    },
+    {
+      "id": "beachgoer.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá ficando gostoso, igual areia quentinha no fim da tarde."
+    },
+    {
+      "id": "beachgoer.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Acho que essa onda eu pego até a beira."
+    },
+    {
+      "id": "beachgoer.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Mar calmo, ninguém na frente. Tá tudo de boa."
+    },
+    {
+      "id": "beachgoer.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hmm, deixa eu dar um gole aqui e pensar com calma."
+    },
+    {
+      "id": "beachgoer.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá igualzinho, tipo castelo de areia de dois lados."
+    },
+    {
+      "id": "beachgoer.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Empatado por enquanto. A maré ainda vai mudar."
+    },
+    {
+      "id": "beachgoer.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Que jogo gostoso, cara! Ninguém cede um grão de areia."
+    },
+    {
+      "id": "beachgoer.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ih, entrou uma areinha no meu chinelo. Nada demais."
+    },
+    {
+      "id": "beachgoer.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Opa, de onde veio essa marola?"
+    },
+    {
+      "id": "beachgoer.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Tá batendo um ventinho contra, mas segue o baile."
+    },
+    {
+      "id": "beachgoer.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Relaxa, coração. Tem muita praia pela frente ainda."
+    },
+    {
+      "id": "beachgoer.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Acho que esqueci o protetor solar. Tô começando a arder."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "É, levei um caldo. Mas o mar é assim mesmo."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Minha prancha foi embora e eu fiquei boiando aqui."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá feio, mas pelo menos o coco tá geladinho."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Mano, a maré subiu e levou meu castelo inteiro!"
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Tá difícil, parceiro. Mas eu não largo o guarda-sol, não."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Eita, deu mole aí, hein? Tirei o óculos pra ver melhor."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Calma, parceiro. Acontece com todo mundo, até comigo."
+    },
+    {
+      "id": "beachgoer.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Opa! Caiu um coco do céu bem na minha mão!"
+    },
+    {
+      "id": "beachgoer.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá jogando de olho fechado, igual cochilo na rede?"
+    },
+    {
+      "id": "beachgoer.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Valeu pelo presente! Essa onda veio perfeitinha."
+    },
+    {
+      "id": "beachgoer.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Xi, me distraí olhando a gaivota. Foi mal."
+    },
+    {
+      "id": "beachgoer.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ih, vacilei. Mas de boa, segue o jogo."
+    },
+    {
+      "id": "beachgoer.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Pô, caiu areia no meu coco e no meu lance."
+    },
+    {
+      "id": "beachgoer.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Esse lance aí foi o sol batendo na cabeça."
+    },
+    {
+      "id": "beachgoer.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Ah, não! Tomei um caldo daqueles, de engolir água!"
+    },
+    {
+      "id": "beachgoer.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Uou! Esse lance aí foi manobra de campeonato."
+    },
+    {
+      "id": "beachgoer.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Que onda bonita você pegou, parceiro!"
+    },
+    {
+      "id": "beachgoer.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Até tirei o óculos escuro pra ver esse lance."
+    },
+    {
+      "id": "beachgoer.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Respeito. Esse aí veio que nem tubo perfeito."
+    },
+    {
+      "id": "beachgoer.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Caramba! Quase deixei o coco cair da mão!"
+    },
+    {
+      "id": "beachgoer.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Viu só? A maré sempre volta."
+    },
+    {
+      "id": "beachgoer.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Remei, remei e peguei a onda de volta!"
+    },
+    {
+      "id": "beachgoer.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Falei que era só ter paciência. De boa na lagoa."
+    },
+    {
+      "id": "beachgoer.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "É disso que eu tô falando! Virei igual onda quebrando!"
+    },
+    {
+      "id": "beachgoer.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "O sol voltou a brilhar do meu lado, parceiro."
+    },
+    {
+      "id": "beachgoer.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ué, cadê minha vantagem? Deixei na areia?"
+    },
+    {
+      "id": "beachgoer.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ih, a onda passou e eu fiquei olhando. Faz parte."
+    },
+    {
+      "id": "beachgoer.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Tava tão de boa que acabei cochilando na rede."
+    },
+    {
+      "id": "beachgoer.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "A maré virou e levou meu chinelo junto."
+    },
+    {
+      "id": "beachgoer.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Mano, eu tinha tudo! Escorreguei na prancha!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Essa aqui eu vou levar pra casa, igual conchinha."
+    },
+    {
+      "id": "beachgoer.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Opa, peguei! Valeu, parceiro."
+    },
+    {
+      "id": "beachgoer.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pegou carona na minha prancha. Bem-vinda!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Mais uma pro meu balde de areia!"
+    },
+    {
+      "id": "beachgoer.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Essa veio que nem coco caindo do coqueiro!"
+    },
+    {
+      "id": "beachgoer.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ih, levou minha peça. A onda dá, a onda leva."
+    },
+    {
+      "id": "beachgoer.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ué, cadê ela? Tava aqui do lado do coco."
+    },
+    {
+      "id": "beachgoer.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Perdi minha peça igual perco chinelo na praia."
+    },
+    {
+      "id": "beachgoer.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Tudo bem, ela foi dar um mergulho. De boa."
+    },
+    {
+      "id": "beachgoer.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Pô, essa doeu mais que pisar em ouriço!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meu peãozinho chegou na beira. Que viagem!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Saiu da areia e virou rei da praia. Quer dizer, dama!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Pegou a onda inteirinha, do fundo até a areia!"
+    },
+    {
+      "id": "beachgoer.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Dama nova na área! Essa merece um coco gelado."
+    },
+    {
+      "id": "beachgoer.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Aloha, dama! Chegou bronzeada e tudo!"
+    },
+    {
+      "id": "beachgoer.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ih, seu peão atravessou a praia inteira."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bela caminhada, hein? Merece um coco."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Pô, eu tava olhando o mar e ele passou."
+    },
+    {
+      "id": "beachgoer.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Dama nova do seu lado? Que onda, hein!"
+    },
+    {
+      "id": "beachgoer.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Ah, não! Agora o mar ficou bravo de verdade."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ó o relógio, parceiro. Sem pressa, mas com pressa."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Seu tempo tá derretendo igual picolé no sol."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "A maré do seu relógio tá baixando rapidinho."
+    },
+    {
+      "id": "beachgoer.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Respira, parceiro. Mas respira rápido!"
+    },
+    {
+      "id": "beachgoer.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Corre que o sol tá se pondo no seu relógio!"
+    },
+    {
+      "id": "beachgoer.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Eita, fiquei curtindo a brisa e o tempo voou."
+    },
+    {
+      "id": "beachgoer.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá pouco tempo, mas pânico não combina com praia."
+    },
+    {
+      "id": "beachgoer.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Pô, cochilei na rede e o relógio não esperou."
+    },
+    {
+      "id": "beachgoer.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Beleza, larguei o coco. Agora é sério."
+    },
+    {
+      "id": "beachgoer.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Socorro, salva-vidas! Meu relógio tá se afogando!"
+    },
+    {
+      "id": "beachgoer.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tenho tempo de sobra. Vou só dar mais um golinho."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Eu tô na hora da praia, você tá na hora do rush."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Sem pressa nenhuma. O relógio é que tem pressa por você."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Vou passar um protetor antes de mexer. Tempo não falta."
+    },
+    {
+      "id": "beachgoer.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Eu tenho a tarde toda, parceiro. E você?"
+    },
+    {
+      "id": "beachgoer.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pensa com calma. Eu vou ali ver o mar e já volto."
+    },
+    {
+      "id": "beachgoer.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Deu tempo de eu tomar um coco inteiro, hein."
+    },
+    {
+      "id": "beachgoer.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá esperando a onda perfeita? Às vezes ela não vem."
+    },
+    {
+      "id": "beachgoer.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "De boa, parceiro. Vou só ajeitar o guarda-sol."
+    },
+    {
+      "id": "beachgoer.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Já tô bronzeado só de esperar seu lance!"
+    },
+    {
+      "id": "beachgoer.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Boa partida, parceiro! Bora tomar um coco?"
+    },
+    {
+      "id": "beachgoer.win.2",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Ganhei na maciota, sem estresse. Do jeito que eu gosto."
+    },
+    {
+      "id": "beachgoer.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Peguei a onda até a areia. Aloha!"
+    },
+    {
+      "id": "beachgoer.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Que dia lindo! Sol, coco e vitória."
+    },
+    {
+      "id": "beachgoer.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Rei da praia, parceiro! Volta amanhã que tem mais."
+    },
+    {
+      "id": "beachgoer.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Perdi, mas de boa. O mar continua lindo."
+    },
+    {
+      "id": "beachgoer.loss.2",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Mandou bem, parceiro! O coco hoje é por minha conta."
+    },
+    {
+      "id": "beachgoer.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Levei um caldo, mas amanhã tem onda nova."
+    },
+    {
+      "id": "beachgoer.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Culpa do sol, que bateu bem na minha cabeça."
+    },
+    {
+      "id": "beachgoer.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Tomei uma surra, mas quem liga? Bora outra rodada!"
+    },
+    {
+      "id": "beachgoer.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate! Ninguém se afogou, todo mundo feliz."
+    },
+    {
+      "id": "beachgoer.draw.2",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meio a meio, igual dividir um coco com dois canudos."
+    },
+    {
+      "id": "beachgoer.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Castelo de areia empatado. Justo, né?"
+    },
+    {
+      "id": "beachgoer.draw.4",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ué, acabou assim? A maré parou no meio!"
+    },
+    {
+      "id": "beachgoer.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Empatou, mas foi um baita dia de praia, parceiro."
+    }
+  ]
+}
