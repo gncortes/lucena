@@ -102,7 +102,6 @@
   "freeBoardFlip": "Retourner l'échiquier",
   "freeBoardInsufficientMaterial": "Matériel insuffisant",
   "freeBoardNewGame": "Nouvelle partie",
-  "freeBoardNoMoves": "Déplacez une pièce pour commencer",
   "freeBoardRepetition": "Triple répétition",
   "freeBoardStalemate": "Pat",
   "freeBoardTimeout": "Temps écoulé",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Commencer",
   "tourStartLessons": "Commencer les leçons",
-  "tourStep": "Étape {step} sur {total}"
+  "tourStep": "Étape {step} sur {total}",
+  "resultNextChallenge": "Défi suivant",
+  "reportRatingLabel": "Classement",
+  "resultYouWon": "Vous avez gagné !",
+  "resultYouLost": "Vous avez perdu"
 }

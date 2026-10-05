@@ -102,7 +102,6 @@
   "freeBoardFlip": "Tahtayı çevir",
   "freeBoardInsufficientMaterial": "Yetersiz materyal",
   "freeBoardNewGame": "Yeni oyun",
-  "freeBoardNoMoves": "Başlamak için bir taş oynayın",
   "freeBoardRepetition": "Üç kez tekrar",
   "freeBoardStalemate": "Pat",
   "freeBoardTimeout": "Süre bitti",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Başla",
   "tourStartLessons": "Derslere başla",
-  "tourStep": "Adım {step}/{total}"
+  "tourStep": "Adım {step}/{total}",
+  "resultNextChallenge": "Sonraki görev",
+  "reportRatingLabel": "Puan",
+  "resultYouWon": "Kazandın!",
+  "resultYouLost": "Kaybettin"
 }

@@ -102,7 +102,6 @@
   "freeBoardFlip": "체스판 뒤집기",
   "freeBoardInsufficientMaterial": "기물 부족",
   "freeBoardNewGame": "새 게임",
-  "freeBoardNoMoves": "기물을 움직여 시작하세요",
   "freeBoardRepetition": "3회 동형 반복",
   "freeBoardStalemate": "스테일메이트",
   "freeBoardTimeout": "시간 초과",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "스피드런",
   "tourStart": "시작",
   "tourStartLessons": "수업 시작",
-  "tourStep": "{total}단계 중 {step}단계"
+  "tourStep": "{total}단계 중 {step}단계",
+  "resultNextChallenge": "다음 도전",
+  "reportRatingLabel": "레이팅",
+  "resultYouWon": "승리했습니다!",
+  "resultYouLost": "패배했습니다"
 }

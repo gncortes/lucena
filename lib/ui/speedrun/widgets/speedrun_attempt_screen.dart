@@ -10,6 +10,7 @@ import '../../core/l10n/l10n.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Uma tentativa: as etapas com o tempo e as derrotas de cada uma, o total e
 /// o botão da próxima etapa. No fim, a diferença para o recorde.
@@ -42,7 +43,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         title: SpeedrunTitle(speedrun, style: theme.textTheme.titleLarge),
       ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: scrollPadding(context),
         children: [
           if (run.completed)
             _Finish(run: run, previousBest: state.previousBest),

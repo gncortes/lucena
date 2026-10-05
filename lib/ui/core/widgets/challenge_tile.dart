@@ -9,6 +9,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../board/board_settings_ui.dart';
 import '../l10n/l10n.dart';
+import 'goal_style.dart';
 
 /// Uma posição do catálogo numa lista: miniatura vista pelo lado que joga, o
 /// material, o objetivo e, à direita, o que vier em [trailing].
@@ -35,7 +36,6 @@ class ChallengeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
@@ -73,14 +73,24 @@ class ChallengeTile extends StatelessWidget {
                         position.subcategory,
                         style: theme.textTheme.titleMedium,
                       ),
-                  Text(
-                    goalLabel(l10n, position.goal),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: position.goal == PositionGoal.win
-                          ? colors.primary
-                          : colors.tertiary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Icon(
+                        GoalStyle.of(context, position.goal).icon,
+                        size: 14,
+                        color: GoalStyle.of(context, position.goal).color,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          goalLabel(l10n, position.goal),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: GoalStyle.of(context, position.goal).color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   ?subtitle,
                 ],

@@ -13,6 +13,12 @@ class RatingState {
   /// Da partida mais antiga para a mais recente.
   final List<RatingEntry> history;
 
+  /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
+  int? get lastChange => history.length < 2
+      ? null
+      : history.last.rating.rounded -
+            history[history.length - 2].rating.rounded;
+
   /// Poucas partidas: o rating ainda pode mudar muito.
   bool get provisional =>
       (current?.deviation ?? PlayerRating.initialDeviation) > 110;

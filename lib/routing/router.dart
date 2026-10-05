@@ -169,6 +169,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         speedruns: context.read<SpeedrunRepository>(),
                         positions: context.read<PositionsRepository>(),
                         now: context.read<Now>(),
+                        onboarding: context.read<OnboardingRepository>(),
                       ),
                       mode: mode,
                       start: isNewGame ? start ?? GameRules.initial : null,

@@ -7,6 +7,7 @@ import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/maia_debug_cubit.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Tela de depuração do Maia (só em build de desenvolvimento e de teste):
 /// avalia uma posição num nível e mostra o que o modelo respondeu e em quanto
@@ -42,7 +43,13 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
       key: MaiaDebugKeys.screen,
       appBar: AppBar(title: Text(l10n.maiaDebugTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: scrollPadding(
+          context,
+          left: 16,
+          top: 16,
+          right: 16,
+          bottom: 16,
+        ),
         children: [
           // O FEN é sempre da esquerda para a direita.
           Directionality(

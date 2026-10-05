@@ -101,7 +101,6 @@
   "freeBoardFlip": "[Flîp böåŕd one]",
   "freeBoardInsufficientMaterial": "[Îñšûffîçîéñt måtéŕîål one two three]",
   "freeBoardNewGame": "[Ñéw ĝåmé one]",
-  "freeBoardNoMoves": "[Mövé å pîéçé tö štåŕt one two three]",
   "freeBoardRepetition": "[Thŕééföld ŕépétîtîöñ one two]",
   "freeBoardStalemate": "[Štålémåté one]",
   "freeBoardTimeout": "[Tîmé öût one]",
@@ -319,5 +318,9 @@
   "tourSpeedrunTitle": "[Špéédŕûñ one]",
   "tourStart": "[Štåŕt one]",
   "tourStartLessons": "[Štåŕt thé léššöñš one two]",
-  "tourStep": "[Štép {step} öf {total} one two three]"
+  "tourStep": "[Štép {step} öf {total} one two three]",
+  "resultNextChallenge": "[Ñéxt çhålléñĝé one two]",
+  "reportRatingLabel": "[Ŕåtîñĝ one]",
+  "resultYouWon": "[Ýöû wöñ! one]",
+  "resultYouLost": "[Ýöû löšt one]"
 }

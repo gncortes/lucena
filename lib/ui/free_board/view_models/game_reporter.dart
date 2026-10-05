@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import '../../../data/repositories/achievements/achievements_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/positions/positions_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
@@ -13,6 +14,7 @@ import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
+import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 
@@ -24,6 +26,7 @@ class GameReport {
     this.after,
     this.feedback = const [],
     this.achievements = const [],
+    this.next,
   });
 
   /// O rating antes e depois. Nulos se a partida não conta.
@@ -35,6 +38,9 @@ class GameReport {
 
   /// As conquistas que a partida liberou.
   final List<Achievement> achievements;
+
+  /// Num desafio da Jornada, o desafio para jogar em seguida.
+  final NextChallenge? next;
 }
 
 /// Monta o [GameReport] de uma partida já gravada, a partir do histórico.
@@ -47,6 +53,7 @@ class GameReporter {
     required this._speedruns,
     required this._positions,
     required this._now,
+    this._onboarding,
   });
 
   final RatingRepository _rating;
@@ -56,6 +63,9 @@ class GameReporter {
   final SpeedrunRepository _speedruns;
   final PositionsRepository _positions;
   final Now _now;
+
+  /// O degrau de início do tour: os de baixo já começam liberados.
+  final OnboardingRepository? _onboarding;
 
   Future<GameReport> report(
     Attempt game, {
@@ -112,7 +122,17 @@ class GameReporter {
     if (earned.isNotEmpty) {
       await _achievements.unlock([for (final a in earned) a.id], _now());
     }
+    final challengeId = game.challengeId;
+    final next = challengeId == null
+        ? null
+        : Mastery.nextChallenge(
+            ladder,
+            await _progress.fulfilledChallenges(),
+            challengeId,
+            startRung: (await _onboarding?.load())?.startRung,
+          );
     return GameReport(
+      next: next,
       before: rated == null ? null : before,
       after: rated?.rating,
       feedback: [

@@ -102,7 +102,6 @@
   "freeBoardFlip": "Xoay bàn cờ",
   "freeBoardInsufficientMaterial": "Không đủ quân chiếu hết",
   "freeBoardNewGame": "Ván mới",
-  "freeBoardNoMoves": "Di chuyển một quân để bắt đầu",
   "freeBoardRepetition": "Lặp lại ba lần",
   "freeBoardStalemate": "Hết nước đi",
   "freeBoardTimeout": "Hết giờ",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Bắt đầu",
   "tourStartLessons": "Bắt đầu học",
-  "tourStep": "Bước {step}/{total}"
+  "tourStep": "Bước {step}/{total}",
+  "resultNextChallenge": "Thử thách tiếp theo",
+  "reportRatingLabel": "Hệ số",
+  "resultYouWon": "Bạn đã thắng!",
+  "resultYouLost": "Bạn đã thua"
 }

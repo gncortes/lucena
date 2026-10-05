@@ -69,6 +69,14 @@ abstract final class FreeBoardKeys {
   /// O que a partida terminada mudou: o rating e as mensagens.
   static const report = Key('freeBoard.report');
   static const ratingChange = Key('freeBoard.report.rating');
+  static const ratingValue = Key('freeBoard.report.rating.value');
+  static const ratingDelta = Key('freeBoard.report.rating.delta');
+  static const endNextButton = Key('freeBoard.end.next');
+  static const bottomArea = Key('freeBoard.bottom');
+  static const characterName = Key('freeBoard.character.name');
+  static const resultCard = Key('freeBoard.result');
+  static const resultTitle = Key('freeBoard.result.title');
+  static const resultClose = Key('freeBoard.result.close');
   static Key feedback(int index) => Key('freeBoard.report.feedback.$index');
 
   /// Propor empate e o aviso de que a máquina recusou.

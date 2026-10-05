@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/rating_value.dart';
 import '../view_models/rating_cubit.dart';
 
 /// O rating de finais: o número, se ainda é provisório, a curva das partidas e
@@ -37,26 +38,23 @@ class RatingCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
               children: [
-                Text(
-                  current.rounded.toString(),
-                  key: ProfileKeys.ratingValue,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+                // O número grande e, ao lado, a variação da última partida.
+                RatingValue(
+                  rating: current.rounded,
+                  change: state.lastChange,
+                  large: true,
+                  valueKey: ProfileKeys.ratingValue,
+                  changeKey: ProfileKeys.ratingDelta,
                 ),
-                const SizedBox(width: 12),
                 if (state.provisional)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Chip(
-                      label: Text(l10n.profileRatingProvisional),
-                      visualDensity: VisualDensity.compact,
-                      side: BorderSide.none,
-                    ),
+                  Chip(
+                    label: Text(l10n.profileRatingProvisional),
+                    visualDensity: VisualDensity.compact,
+                    side: BorderSide.none,
                   ),
               ],
             ),

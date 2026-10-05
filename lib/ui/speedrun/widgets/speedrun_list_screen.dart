@@ -9,6 +9,7 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Os speedruns, de degrau e de final, com o recorde de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -34,7 +35,7 @@ class SpeedrunListScreen extends StatelessWidget {
       body: all == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: scrollPadding(context),
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),

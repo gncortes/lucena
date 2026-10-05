@@ -42,7 +42,7 @@ class ProgressRobot {
 
   /// No fim da partida, a linha do rating.
   Future<void> expectRatingChanged() async {
-    await $(FreeBoardKeys.ratingChange).waitUntilVisible();
+    await $(FreeBoardKeys.ratingValue).waitUntilVisible();
   }
 
   /// As mensagens do fim da partida, em ordem.

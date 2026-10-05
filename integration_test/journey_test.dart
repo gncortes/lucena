@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -100,6 +101,28 @@ void main() {
     await journey.back();
     journey.expectCurrent('You are at Maia 1000');
     await journey.expectLocked('1200');
+  });
+
+  patrolTest('fim de um desafio: rating no painel e próximo desafio direto', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final journey = JourneyRobot($);
+    final board = FreeBoardRobot($);
+    await app.open(systemLocale: _english);
+
+    await journey.open();
+    await journey.openRung('1000');
+    await journey.openChallenge('basic.queen.0001');
+    await journey.play();
+    board.expectBoardFullWidth();
+    await board.resign();
+    await board.expectGoalResult('Goal not achieved');
+    await board.expectRatingInEndPanel();
+
+    await board.nextChallenge();
+    expect(board.challengeId, '1000/basic.queen.0002');
+    board.expectBoardFullWidth();
   });
 
   patrolTest('degrau trancado: tocar mostra o que falta', ($) async {

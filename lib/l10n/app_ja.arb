@@ -102,7 +102,6 @@
   "freeBoardFlip": "盤を反転",
   "freeBoardInsufficientMaterial": "駒不足",
   "freeBoardNewGame": "新しい対局",
-  "freeBoardNoMoves": "駒を動かして始めましょう",
   "freeBoardRepetition": "同一局面3回",
   "freeBoardStalemate": "ステイルメイト",
   "freeBoardTimeout": "時間切れ",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "スピードラン",
   "tourStart": "はじめる",
   "tourStartLessons": "レッスンを始める",
-  "tourStep": "ステップ {step}/{total}"
+  "tourStep": "ステップ {step}/{total}",
+  "resultNextChallenge": "次の挑戦",
+  "reportRatingLabel": "レーティング",
+  "resultYouWon": "勝ちました！",
+  "resultYouLost": "負けました"
 }

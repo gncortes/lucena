@@ -102,7 +102,6 @@
   "freeBoardFlip": "翻转棋盘",
   "freeBoardInsufficientMaterial": "子力不足",
   "freeBoardNewGame": "新对局",
-  "freeBoardNoMoves": "走一步棋开始",
   "freeBoardRepetition": "三次重复局面",
   "freeBoardStalemate": "逼和",
   "freeBoardTimeout": "超时",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "速通",
   "tourStart": "开始",
   "tourStartLessons": "开始上课",
-  "tourStep": "第 {step} 步，共 {total} 步"
+  "tourStep": "第 {step} 步，共 {total} 步",
+  "resultNextChallenge": "下一个挑战",
+  "reportRatingLabel": "等级分",
+  "resultYouWon": "你赢了！",
+  "resultYouLost": "你输了"
 }

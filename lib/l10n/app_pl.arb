@@ -102,7 +102,6 @@
   "freeBoardFlip": "Obróć szachownicę",
   "freeBoardInsufficientMaterial": "Niewystarczający materiał",
   "freeBoardNewGame": "Nowa partia",
-  "freeBoardNoMoves": "Wykonaj ruch, aby zacząć",
   "freeBoardRepetition": "Trzykrotne powtórzenie",
   "freeBoardStalemate": "Pat",
   "freeBoardTimeout": "Koniec czasu",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Zaczynamy",
   "tourStartLessons": "Zacznij lekcje",
-  "tourStep": "Krok {step} z {total}"
+  "tourStep": "Krok {step} z {total}",
+  "resultNextChallenge": "Następne wyzwanie",
+  "reportRatingLabel": "Ranking",
+  "resultYouWon": "Wygrałeś!",
+  "resultYouLost": "Przegrałeś"
 }

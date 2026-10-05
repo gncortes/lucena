@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/keys/free_board_keys.dart';
@@ -5,43 +7,84 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../view_models/talk_cubit.dart';
 
-/// O adversário acima do tabuleiro, como no chess.com: o retrato grande e, ao
-/// lado, o balão com a última fala, que aparece letra por letra. O balão
-/// nunca cobre o tabuleiro.
+/// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
+/// última fala, que aparece letra por letra. O relógio dele fica na linha de
+/// baixo. O balão nunca cobre o tabuleiro.
 class CharacterBar extends StatelessWidget {
-  const CharacterBar({required this.talk, super.key});
+  const CharacterBar({
+    required this.talk,
+    this.avatarSize = maxAvatar,
+    this.showName = true,
+    super.key,
+  });
 
-  /// Altura reservada para a fileira, para o tabuleiro caber.
-  static const height = 108.0;
+  /// O tamanho do retrato: menor em tela baixa, para o tabuleiro ocupar a
+  /// largura toda.
+  static const maxAvatar = 84.0;
+  static const minAvatar = 44.0;
 
-  static const _avatar = 84.0;
+  /// O espaço acima do retrato e o respiro entre a faixa e o tabuleiro.
+  static const topGap = 6.0;
+  static const bottomGap = 10.0;
+
+  /// A altura da faixa com um retrato de [avatar].
+  static double heightFor(double avatar) => avatar + topGap + bottomGap;
 
   final TalkState talk;
+  final double avatarSize;
+
+  /// O nome numa etiqueta sobre a foto. Desligado quando a linha do relógio
+  /// logo abaixo já mostra o nome.
+  final bool showName;
 
   @override
   Widget build(BuildContext context) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
+    // Retrato pequeno: a fala também diminui, para caber no balão.
+    final small = avatarSize < 72;
     return SizedBox(
       key: FreeBoardKeys.characterBar,
-      height: height,
+      height: heightFor(avatarSize),
       child: Padding(
-        // O retrato encosta no tabuleiro, como no chess.com.
-        padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 0),
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          12,
+          topGap,
+          12,
+          bottomGap,
+        ),
         child: Row(
+          // O balão alinhado pela base do retrato.
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Semantics(
               label: character.name,
-              child: CharacterAvatar(
-                key: FreeBoardKeys.characterAvatar(talk.emotion),
-                character: character,
-                // O Stockfish não tem emoção: só o logo.
-                emotion: talk.isEngine ? null : talk.emotion,
-                size: _avatar,
+              child: Stack(
+                children: [
+                  CharacterAvatar(
+                    key: FreeBoardKeys.characterAvatar(talk.emotion),
+                    character: character,
+                    // O Stockfish não tem emoção: só o logo.
+                    emotion: talk.isEngine ? null : talk.emotion,
+                    size: avatarSize,
+                  ),
+                  // O nome numa etiqueta sobre a base da foto.
+                  if (showName)
+                    PositionedDirectional(
+                      start: 0,
+                      end: 0,
+                      bottom: 0,
+                      child: ExcludeSemantics(
+                        child: _NameTag(
+                          name: character.name,
+                          width: avatarSize,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
@@ -56,7 +99,7 @@ class CharacterBar extends StatelessWidget {
                   ),
                 ),
                 child: line == null
-                    ? const SizedBox(key: ValueKey('none'), height: _avatar)
+                    ? const SizedBox(key: ValueKey('none'))
                     : _Bubble(
                         key: ValueKey(line.id),
                         lineId: line.id,
@@ -66,6 +109,7 @@ class CharacterBar extends StatelessWidget {
                           line.text,
                         ),
                         monospace: talk.isEngine,
+                        small: small,
                       ),
               ),
             ),
@@ -76,13 +120,51 @@ class CharacterBar extends StatelessWidget {
   }
 }
 
-/// O balão branco com a ponta virada para o retrato.
+/// O nome do personagem na base do retrato, em branco sobre uma faixa escura.
+class _NameTag extends StatelessWidget {
+  const _NameTag({required this.name, required this.width});
+
+  final String name;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.vertical(
+        bottom: Radius.circular(width * 0.14),
+      ),
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.fromLTRB(4, 6, 4, 3),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x00000000), Color(0xB3000000)],
+          ),
+        ),
+        child: Text(
+          name,
+          key: FreeBoardKeys.characterName,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelMedium
+              ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
+      ),
+    );
+  }
+}
+
+/// O balão com a ponta virada para o retrato, alinhado pela base da foto.
 class _Bubble extends StatelessWidget {
   const _Bubble({
     required this.lineId,
     required this.text,
     required this.semantics,
     required this.monospace,
+    required this.small,
     super.key,
   });
 
@@ -90,8 +172,9 @@ class _Bubble extends StatelessWidget {
   final String text;
   final String semantics;
   final bool monospace;
+  final bool small;
 
-  static const _tail = 12.0;
+  static const _tail = 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -100,42 +183,40 @@ class _Bubble extends StatelessWidget {
     final background = dark ? const Color(0xFF3A3A3C) : Colors.white;
     final foreground = dark ? Colors.white : const Color(0xFF1F1F1F);
     final rtl = Directionality.of(context) == TextDirection.rtl;
-    // O balão fica embaixo, rente à base da foto.
+    final style = small
+        ? theme.textTheme.bodyMedium
+        : theme.textTheme.titleMedium;
     return Align(
       alignment: AlignmentDirectional.bottomStart,
-      child: Padding(
-        // A base do balão na mesma linha da base da foto.
-        padding: EdgeInsets.zero,
-        child: CustomPaint(
-          key: FreeBoardKeys.speechBubble,
-          painter: _BubblePainter(
-            color: background,
-            shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
-            tail: _tail,
-            tailOnRight: rtl,
+      child: CustomPaint(
+        key: FreeBoardKeys.speechBubble,
+        painter: BubblePainter(
+          color: background,
+          shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
+          tail: _tail,
+          tailOnRight: rtl,
+        ),
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(
+            _tail + 12,
+            small ? 8 : 10,
+            12,
+            small ? 8 : 10,
           ),
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              _tail + 14,
-              12,
-              14,
-              12,
-            ),
-            child: Semantics(
-              liveRegion: true,
-              label: semantics,
-              excludeSemantics: true,
-              child: TypewriterText(
-                text,
-                key: FreeBoardKeys.speechText(lineId),
-                maxLines: 3,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: foreground,
-                  fontWeight: FontWeight.w600,
-                  height: 1.25,
-                  fontFamily: monospace ? 'monospace' : null,
-                  letterSpacing: monospace ? 0.5 : null,
-                ),
+          child: Semantics(
+            liveRegion: true,
+            label: semantics,
+            excludeSemantics: true,
+            child: TypewriterText(
+              text,
+              key: FreeBoardKeys.speechText(lineId),
+              maxLines: 3,
+              style: style?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w600,
+                height: 1.25,
+                fontFamily: monospace ? 'monospace' : null,
+                letterSpacing: monospace ? 0.5 : null,
               ),
             ),
           ),
@@ -145,9 +226,10 @@ class _Bubble extends StatelessWidget {
   }
 }
 
-/// O balão com a ponta no canto de baixo, virada para o retrato.
-class _BubblePainter extends CustomPainter {
-  _BubblePainter({
+/// O balão e a ponta desenhados num caminho só, sem emenda: a ponta sai da
+/// lateral, perto da base, levemente curva, e aponta para o retrato.
+class BubblePainter extends CustomPainter {
+  BubblePainter({
     required this.color,
     required this.shadow,
     required this.tail,
@@ -159,34 +241,56 @@ class _BubblePainter extends CustomPainter {
   final double tail;
   final bool tailOnRight;
 
+  static const _radius = 14.0;
+
+  /// O caminho do balão num retângulo de [size]: o corpo começa depois da
+  /// ponta (à esquerda, ou à direita em idiomas da direita para a esquerda).
+  static Path pathFor(
+    Size size, {
+    required double tail,
+    bool tailOnRight = false,
+  }) {
+    final width = size.width - tail;
+    final height = size.height;
+    final r = math.min(_radius, math.min(width, height) / 2);
+    // A ponta fica perto da base, logo acima do canto arredondado, na altura
+    // da base da foto.
+    final middle = math.max(height / 2, height - r - 10);
+    // A base da ponta não passa dos cantos arredondados.
+    final half = math.min(8.0, middle - r);
+    final path = Path()
+      ..moveTo(tail + r, 0)
+      ..lineTo(tail + width - r, 0)
+      ..arcToPoint(Offset(tail + width, r), radius: Radius.circular(r))
+      ..lineTo(tail + width, height - r)
+      ..arcToPoint(Offset(tail + width - r, height), radius: Radius.circular(r))
+      ..lineTo(tail + r, height)
+      ..arcToPoint(Offset(tail, height - r), radius: Radius.circular(r))
+      ..lineTo(tail, middle + half)
+      // A ponta: duas curvas suaves até a pontinha, um pouco acima do meio.
+      ..quadraticBezierTo(tail - 2, middle + 2, 0, middle - 2)
+      ..quadraticBezierTo(tail - 4, middle - half + 2, tail, middle - half)
+      ..lineTo(tail, r)
+      ..arcToPoint(Offset(tail + r, 0), radius: Radius.circular(r))
+      ..close();
+    if (!tailOnRight) return path;
+    // Espelhada: a ponta à direita.
+    final mirror = Matrix4.identity()
+      ..translateByDouble(size.width, 0, 0, 1)
+      ..scaleByDouble(-1, 1, 1, 1);
+    return path.transform(mirror.storage);
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
-    final left = tailOnRight ? 0.0 : tail;
-    final right = tailOnRight ? size.width - tail : size.width;
-    final body = RRect.fromLTRBR(
-      left,
-      0,
-      right,
-      size.height,
-      const Radius.circular(16),
-    );
-    // A ponta sai da lateral, perto da base, e aponta para a foto.
-    final edge = tailOnRight ? right : left;
-    final tip = tailOnRight ? size.width : 0.0;
-    final bottom = size.height;
-    final path = Path()
-      ..addRRect(body)
-      ..moveTo(edge, bottom - 30)
-      ..lineTo(tip, bottom - 16)
-      ..lineTo(edge, bottom - 8)
-      ..close();
+    final path = pathFor(size, tail: tail, tailOnRight: tailOnRight);
     canvas
       ..drawShadow(path, shadow, 3, false)
       ..drawPath(path, Paint()..color = color);
   }
 
   @override
-  bool shouldRepaint(_BubblePainter old) =>
+  bool shouldRepaint(BubblePainter old) =>
       old.color != color || old.tailOnRight != tailOnRight;
 }
 
