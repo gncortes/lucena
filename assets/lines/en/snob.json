@@ -1,0 +1,783 @@
+{
+  "character": "snob",
+  "language": "en",
+  "lines": [
+    {
+      "id": "snob.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Good luck. You'll need it. I have a medal."
+    },
+    {
+      "id": "snob.gameStart.2",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Bronze, Neighborhood Open. Just so you know who you're facing."
+    },
+    {
+      "id": "snob.gameStart.3",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'll play slowly so you can keep up."
+    },
+    {
+      "id": "snob.gameStart.4",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "An endgame? I was born in an endgame. Figuratively."
+    },
+    {
+      "id": "snob.gameStart.5",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Let me adjust my glasses. Try not to bore me."
+    },
+    {
+      "id": "snob.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Predictable. Just like the Neighborhood Open final."
+    },
+    {
+      "id": "snob.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I can win this with my arms crossed. Literally."
+    },
+    {
+      "id": "snob.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Relax, no need to be nervous. Yet."
+    },
+    {
+      "id": "snob.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Want me to explain what went wrong? My rates are modest."
+    },
+    {
+      "id": "snob.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Medalist technique. Take notes."
+    },
+    {
+      "id": "snob.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Hm. Exactly as I planned."
+    },
+    {
+      "id": "snob.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Small edge, but it's mine. Like the medal."
+    },
+    {
+      "id": "snob.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Now it's pure technique. Which I have plenty of."
+    },
+    {
+      "id": "snob.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Feel that little pressure? That's me."
+    },
+    {
+      "id": "snob.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "A few more moves and you'll want an autograph."
+    },
+    {
+      "id": "snob.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Equal? On the board, maybe. Not in talent."
+    },
+    {
+      "id": "snob.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Interesting. You're giving me some actual work."
+    },
+    {
+      "id": "snob.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "I'm just waiting for you to slip. Champion's patience."
+    },
+    {
+      "id": "snob.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Level for now. I'm being generous."
+    },
+    {
+      "id": "snob.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Why is this still level? I have a medal!"
+    },
+    {
+      "id": "snob.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'm giving you some rope. All part of the plan."
+    },
+    {
+      "id": "snob.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm. These glasses keep fogging up."
+    },
+    {
+      "id": "snob.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A small strategic concession. You wouldn't understand."
+    },
+    {
+      "id": "snob.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "This tweed jacket runs hot, you know?"
+    },
+    {
+      "id": "snob.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "I'm just... testing a new theory."
+    },
+    {
+      "id": "snob.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "This would never happen at the Neighborhood Open."
+    },
+    {
+      "id": "snob.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "The lighting here is awful. Nobody could play like this."
+    },
+    {
+      "id": "snob.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "I'm playing at half focus. Out of politeness."
+    },
+    {
+      "id": "snob.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Beginner's luck. Pure statistics."
+    },
+    {
+      "id": "snob.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Has anyone seen my medal? It's my lucky charm."
+    },
+    {
+      "id": "snob.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Oh, how cute. You thought that move worked?"
+    },
+    {
+      "id": "snob.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tsk, tsk. Predictable."
+    },
+    {
+      "id": "snob.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Was that a gift? I'll hang it next to my medal."
+    },
+    {
+      "id": "snob.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I saw that coming three moves ago. Of course I did."
+    },
+    {
+      "id": "snob.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "I'm telling the club about that one. No names, don't worry."
+    },
+    {
+      "id": "snob.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "That was on purpose. To make it more exciting."
+    },
+    {
+      "id": "snob.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "My hand slipped. Tweed is very slippery."
+    },
+    {
+      "id": "snob.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "That was a sacrifice. Too deep for you."
+    },
+    {
+      "id": "snob.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Who moved that piece? Wasn't me."
+    },
+    {
+      "id": "snob.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "The glasses. It was the glasses' fault."
+    },
+    {
+      "id": "snob.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Hm. Even a stopped clock is right twice a day."
+    },
+    {
+      "id": "snob.strongMove.2",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Decent move. I'd have played it too, just sooner."
+    },
+    {
+      "id": "snob.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "You read that in a book, didn't you? Admit it."
+    },
+    {
+      "id": "snob.strongMove.4",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Right. I'm uncrossing my arms now."
+    },
+    {
+      "id": "snob.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good move. For your level, a great move."
+    },
+    {
+      "id": "snob.comeback.1",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "All calculated. I was just letting you hope."
+    },
+    {
+      "id": "snob.comeback.2",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "That's how you turn a game. That's how I won the medal."
+    },
+    {
+      "id": "snob.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "The natural order has been restored."
+    },
+    {
+      "id": "snob.comeback.4",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Enjoy the suspense? That was a free bonus."
+    },
+    {
+      "id": "snob.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "See? A champion is never losing. Just waiting."
+    },
+    {
+      "id": "snob.collapse.1",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "That doesn't count. I was adjusting my medal."
+    },
+    {
+      "id": "snob.collapse.2",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Wait, wait. It was winning. It was winning!"
+    },
+    {
+      "id": "snob.collapse.3",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "I wanted to give you a chance. I regret it."
+    },
+    {
+      "id": "snob.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Someone sneezed. I lost my train of thought."
+    },
+    {
+      "id": "snob.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "That must be a typo on the board."
+    },
+    {
+      "id": "snob.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thank you. I'll treasure it."
+    },
+    {
+      "id": "snob.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Another one for the collection. Right next to the medal."
+    },
+    {
+      "id": "snob.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "You didn't even see where that came from, did you?"
+    },
+    {
+      "id": "snob.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Delicious. Want to try protecting the rest?"
+    },
+    {
+      "id": "snob.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "That piece was begging to leave."
+    },
+    {
+      "id": "snob.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take it. I never liked that one anyway."
+    },
+    {
+      "id": "snob.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Piece? What piece? I have a medal, I don't need pieces."
+    },
+    {
+      "id": "snob.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "That was a loan. I'll want it back."
+    },
+    {
+      "id": "snob.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Hey! I was adjusting my glasses!"
+    },
+    {
+      "id": "snob.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Positional sacrifice. You'll get it in about ten years."
+    },
+    {
+      "id": "snob.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A brand-new queen. Goes nicely with my jacket."
+    },
+    {
+      "id": "snob.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A promotion. Like the one I deserve at the club."
+    },
+    {
+      "id": "snob.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Crowned! Now there are two royals here: her and me."
+    },
+    {
+      "id": "snob.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pawn becomes queen. Just like me at the Neighborhood Open."
+    },
+    {
+      "id": "snob.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Basic endgame technique. Basic for me, anyway."
+    },
+    {
+      "id": "snob.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A queen. Adorable. Still not a medal."
+    },
+    {
+      "id": "snob.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I let that pawn through. Out of pity."
+    },
+    {
+      "id": "snob.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "That... wasn't in plan A. Or plan B."
+    },
+    {
+      "id": "snob.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Who let that pawn walk so far?"
+    },
+    {
+      "id": "snob.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "One extra queen doesn't scare a medalist."
+    },
+    {
+      "id": "snob.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "The clock is ticking. Yours, specifically."
+    },
+    {
+      "id": "snob.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tick-tock. Want me to think for you?"
+    },
+    {
+      "id": "snob.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Medalists manage their time. You, not so much."
+    },
+    {
+      "id": "snob.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Hurry up, I have an awards dinner to get to."
+    },
+    {
+      "id": "snob.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Breathe. Oh wait, no time for that."
+    },
+    {
+      "id": "snob.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I play better under pressure. Always."
+    },
+    {
+      "id": "snob.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "This clock runs fast. I'm sure of it."
+    },
+    {
+      "id": "snob.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Quick, quick! I mean, elegantly!"
+    },
+    {
+      "id": "snob.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I spent my time analyzing you. Worth it? No."
+    },
+    {
+      "id": "snob.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Little time, lots of talent. It balances out."
+    },
+    {
+      "id": "snob.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'll take my time. I have plenty."
+    },
+    {
+      "id": "snob.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let me admire the position a little longer."
+    },
+    {
+      "id": "snob.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Look at my clock. Now look at yours."
+    },
+    {
+      "id": "snob.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I'll polish my medal while you rush."
+    },
+    {
+      "id": "snob.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No rush. Champions don't run."
+    },
+    {
+      "id": "snob.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thinking? Take all the time you need. Clearly."
+    },
+    {
+      "id": "snob.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Want a hint? No. I wouldn't give one anyway."
+    },
+    {
+      "id": "snob.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I already know your move. And it's wrong."
+    },
+    {
+      "id": "snob.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I just reread my entire certificate."
+    },
+    {
+      "id": "snob.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'll just wait here, arms crossed."
+    },
+    {
+      "id": "snob.win.1",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "As expected. You can put the pieces away."
+    },
+    {
+      "id": "snob.win.2",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Another win for the medalist's résumé."
+    },
+    {
+      "id": "snob.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good game. For you, it was a lesson."
+    },
+    {
+      "id": "snob.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Would you like a consolation autograph?"
+    },
+    {
+      "id": "snob.win.5",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Not bad. For me, I mean. Not bad."
+    },
+    {
+      "id": "snob.loss.1",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I didn't have my lucky pen. Doesn't count."
+    },
+    {
+      "id": "snob.loss.2",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Rematch. Now. That was a warm-up."
+    },
+    {
+      "id": "snob.loss.3",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "I let you win. It's good for your confidence."
+    },
+    {
+      "id": "snob.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Don't tell anyone at the club, okay?"
+    },
+    {
+      "id": "snob.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "The board was crooked. I swear it was."
+    },
+    {
+      "id": "snob.loss.6",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Congratulations. But I'm the one with the medal."
+    },
+    {
+      "id": "snob.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw. I'll call it a moral victory. Mine."
+    },
+    {
+      "id": "snob.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "A draw? Against you? I'll pretend that didn't happen."
+    },
+    {
+      "id": "snob.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "We split the point. The medal stays mine, though."
+    },
+    {
+      "id": "snob.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "What do you mean it's over? I was about to win!"
+    },
+    {
+      "id": "snob.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "I was generous today. Don't get used to it."
+    }
+  ]
+}

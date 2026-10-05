@@ -1,0 +1,825 @@
+{
+  "character": "prodigy",
+  "language": "en",
+  "lines": [
+    {
+      "id": "prodigy.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Ooh, a new expedition! My compass points at your king."
+    },
+    {
+      "id": "prodigy.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Notebook open, magnifier polished. Let's go!"
+    },
+    {
+      "id": "prodigy.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I've explored this ending a thousand times. Let's do it again!"
+    },
+    {
+      "id": "prodigy.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Adventure time! Every square is part of a treasure map."
+    },
+    {
+      "id": "prodigy.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Don't go easy just because I'm small. I sure won't."
+    },
+    {
+      "id": "prodigy.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "First we observe. Then we discover."
+    },
+    {
+      "id": "prodigy.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Found the path! It's all marked on my map."
+    },
+    {
+      "id": "prodigy.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "My compass only points one way: victory!"
+    },
+    {
+      "id": "prodigy.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I could hike this trail with my eyes closed."
+    },
+    {
+      "id": "prodigy.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Now I just don't trip. Step by step, like on a trail."
+    },
+    {
+      "id": "prodigy.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Notebook entry: lucky day... and great technique!"
+    },
+    {
+      "id": "prodigy.bigAdvantage.6",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "The treasure's almost in my overalls pocket!"
+    },
+    {
+      "id": "prodigy.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hmm, my magnifier spotted a clue..."
+    },
+    {
+      "id": "prodigy.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I think I found a good trail here!"
+    },
+    {
+      "id": "prodigy.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A little ahead. But the good trails are the long ones."
+    },
+    {
+      "id": "prodigy.better.4",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "My king's closer to the center. That's half the journey!"
+    },
+    {
+      "id": "prodigy.better.5",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Getting warmer... getting warmer..."
+    },
+    {
+      "id": "prodigy.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "All even. The map still has lots of blank spots."
+    },
+    {
+      "id": "prodigy.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Let me look up close... every square matters."
+    },
+    {
+      "id": "prodigy.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Same trail for both of us. Who finds the shortcut first?"
+    },
+    {
+      "id": "prodigy.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Opposition or triangulation... which one do I test today?"
+    },
+    {
+      "id": "prodigy.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Even for now. But I'm amazing at finding hidden stuff!"
+    },
+    {
+      "id": "prodigy.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Oops, I think I took the wrong trail..."
+    },
+    {
+      "id": "prodigy.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Easy, compass. We'll find north again."
+    },
+    {
+      "id": "prodigy.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh, that wasn't on my map!"
+    },
+    {
+      "id": "prodigy.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Real explorers don't quit at the first ditch."
+    },
+    {
+      "id": "prodigy.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Hmph. It's tough, but I like tough."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "I think I got lost in the forest..."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It's okay. Even a lost map teaches you something."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "My compass is spinning like crazy!"
+    },
+    {
+      "id": "prodigy.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "There's gotta be a hiding spot somewhere. Searching!"
+    },
+    {
+      "id": "prodigy.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Help, toucan! The trail just ended!"
+    },
+    {
+      "id": "prodigy.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Even when I'm losing, I'm learning. That's worth gold."
+    },
+    {
+      "id": "prodigy.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Found it! Found it! Look what I found!"
+    },
+    {
+      "id": "prodigy.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Ooh, that's going straight into my discovery notebook."
+    },
+    {
+      "id": "prodigy.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Footprints of a mistake! I'm following them."
+    },
+    {
+      "id": "prodigy.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "My magnifier spotted that from a mile away."
+    },
+    {
+      "id": "prodigy.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Whoa! An X just showed up on the treasure map!"
+    },
+    {
+      "id": "prodigy.opponentBlunder.6",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hmm, are you sure? It's okay, I've done that too."
+    },
+    {
+      "id": "prodigy.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Oops! I tripped over a tree root."
+    },
+    {
+      "id": "prodigy.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Argh! I was holding my magnifier upside down!"
+    },
+    {
+      "id": "prodigy.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "That one goes on the \"never again\" page."
+    },
+    {
+      "id": "prodigy.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Umm... pretend you didn't see that?"
+    },
+    {
+      "id": "prodigy.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "My bad. Explorers get lost too. Let's find the way back."
+    },
+    {
+      "id": "prodigy.ownBlunder.6",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "I can't believe it! I knew this ending by heart!"
+    },
+    {
+      "id": "prodigy.strongMove.1",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Whoa! How did you find that trail?"
+    },
+    {
+      "id": "prodigy.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Beautiful move! Can I sketch it in my notebook?"
+    },
+    {
+      "id": "prodigy.strongMove.3",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Even my magnifier missed that one!"
+    },
+    {
+      "id": "prodigy.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Hmm, you're an explorer too, huh?"
+    },
+    {
+      "id": "prodigy.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Hey, that discovery was supposed to be mine!"
+    },
+    {
+      "id": "prodigy.strongMove.6",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Uh-oh. Now I'm the one in danger."
+    },
+    {
+      "id": "prodigy.comeback.1",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Found my way back! I knew it!"
+    },
+    {
+      "id": "prodigy.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "See? A compass never lies for long."
+    },
+    {
+      "id": "prodigy.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Sometimes the long way is the right way."
+    },
+    {
+      "id": "prodigy.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Made it out of the woods AND found the treasure!"
+    },
+    {
+      "id": "prodigy.comeback.5",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "This one gets its own chapter in my notebook!"
+    },
+    {
+      "id": "prodigy.collapse.1",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "No! The treasure slipped right out of my hands!"
+    },
+    {
+      "id": "prodigy.collapse.2",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "I was so close... and I let the trail fade away."
+    },
+    {
+      "id": "prodigy.collapse.3",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh, where'd my advantage go? It was right here!"
+    },
+    {
+      "id": "prodigy.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Lesson noted: a won ending still has to be won."
+    },
+    {
+      "id": "prodigy.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "My map had a hole right there. Right there!"
+    },
+    {
+      "id": "prodigy.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Found one! Into my collection it goes."
+    },
+    {
+      "id": "prodigy.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "This piece is going in my overalls pocket."
+    },
+    {
+      "id": "prodigy.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Piece captured! Another X on the treasure map."
+    },
+    {
+      "id": "prodigy.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Thanks for the piece. I promise to take good care of it."
+    },
+    {
+      "id": "prodigy.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Notebook entry: \"rare species captured.\""
+    },
+    {
+      "id": "prodigy.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Oh no! That was my favorite one."
+    },
+    {
+      "id": "prodigy.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "That's fine. Explorers with light backpacks move faster."
+    },
+    {
+      "id": "prodigy.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Hey! Give it back! ...Okay, never mind."
+    },
+    {
+      "id": "prodigy.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Huh, where did that attack come from?"
+    },
+    {
+      "id": "prodigy.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Noted. Now I need a different trail."
+    },
+    {
+      "id": "prodigy.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "My pawn reached the end of the trail! It's a queen!"
+    },
+    {
+      "id": "prodigy.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The caterpillar became a butterfly! I mean, the pawn became a queen."
+    },
+    {
+      "id": "prodigy.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "See? Small ones go far too."
+    },
+    {
+      "id": "prodigy.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Expedition complete! Crown found!"
+    },
+    {
+      "id": "prodigy.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "New queen in town. My compass loves her."
+    },
+    {
+      "id": "prodigy.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Whoa, your pawn hiked farther than I ever did!"
+    },
+    {
+      "id": "prodigy.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "A brand-new queen? Time to find a hiding spot!"
+    },
+    {
+      "id": "prodigy.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "That's fine. I've seen bigger beasts in the jungle."
+    },
+    {
+      "id": "prodigy.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I should've stopped that pawn way back!"
+    },
+    {
+      "id": "prodigy.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Note to self: never let a passed pawn go hiking alone."
+    },
+    {
+      "id": "prodigy.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tick-tock! Your clock sounds like a hungry crocodile."
+    },
+    {
+      "id": "prodigy.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Check your clock! Hurry, hurry!"
+    },
+    {
+      "id": "prodigy.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Little time, long trail... I'd run if I were you!"
+    },
+    {
+      "id": "prodigy.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Breathe. Simple moves get you there too."
+    },
+    {
+      "id": "prodigy.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Your clock's about to fall off the edge of the map!"
+    },
+    {
+      "id": "prodigy.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Uh-oh! I spent too long behind my magnifier!"
+    },
+    {
+      "id": "prodigy.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Run, run, run!"
+    },
+    {
+      "id": "prodigy.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Low on time. Compass, help me out!"
+    },
+    {
+      "id": "prodigy.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Wasted time taking notes. Silly me!"
+    },
+    {
+      "id": "prodigy.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It's fine. I can do this path at a sprint."
+    },
+    {
+      "id": "prodigy.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "I've got plenty of time to explore every corner."
+    },
+    {
+      "id": "prodigy.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I'm gonna wander around a bit. No rush at all."
+    },
+    {
+      "id": "prodigy.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Full clock, open map. How are you doing?"
+    },
+    {
+      "id": "prodigy.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Let me check again with my magnifier... and again..."
+    },
+    {
+      "id": "prodigy.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I even have time to sketch the board!"
+    },
+    {
+      "id": "prodigy.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. I'll check my compass."
+    },
+    {
+      "id": "prodigy.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hunting for treasure too? Hot or cold?"
+    },
+    {
+      "id": "prodigy.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meanwhile, I'll draw a toucan in my notebook."
+    },
+    {
+      "id": "prodigy.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Psst... the answer's somewhere on the map!"
+    },
+    {
+      "id": "prodigy.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Thinking hard, huh? I like people who take it seriously."
+    },
+    {
+      "id": "prodigy.win.1",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Treasure found! Expedition complete!"
+    },
+    {
+      "id": "prodigy.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Got it! I'm taping this game into my notebook."
+    },
+    {
+      "id": "prodigy.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good game. You made me really explore."
+    },
+    {
+      "id": "prodigy.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Another little star on my map!"
+    },
+    {
+      "id": "prodigy.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Small, but I know these trails like nobody else!"
+    },
+    {
+      "id": "prodigy.win.6",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Winning's nice. But the adventure was the best part."
+    },
+    {
+      "id": "prodigy.loss.1",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Aw... this time the treasure's yours."
+    },
+    {
+      "id": "prodigy.loss.2",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Congrats! I'll study this until I find my mistake."
+    },
+    {
+      "id": "prodigy.loss.3",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Hmph! Rematch! My compass demands a rematch!"
+    },
+    {
+      "id": "prodigy.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "You showed me a new trail. Thank you!"
+    },
+    {
+      "id": "prodigy.loss.5",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Losing is discovering too. It just stings a little."
+    },
+    {
+      "id": "prodigy.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw! We reached the summit together."
+    },
+    {
+      "id": "prodigy.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Huh, nobody found the treasure? It was really well hidden!"
+    },
+    {
+      "id": "prodigy.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "We split the treasure fifty-fifty, deal?"
+    },
+    {
+      "id": "prodigy.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "I was so close! I'm noting where the trail closed."
+    },
+    {
+      "id": "prodigy.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "A draw's still an adventure. Again?"
+    }
+  ]
+}

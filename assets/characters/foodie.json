@@ -1,0 +1,23 @@
+{
+  "id": "foodie",
+  "level": 2200,
+  "name": "Gino",
+  "tagline": {
+    "pt": "Come pizza, joga sem pressa e não deixa sobrar nada.",
+    "en": "Eats pizza, plays unhurried and leaves nothing on the plate."
+  },
+  "personality": {
+    "pt": "Gino é um bon vivant tranquilo que nunca senta ao tabuleiro sem uma pizza do lado. Joga finais com a paciência de quem espera a massa crescer: fogo baixo, sem pressa, e quando a posição fica no ponto ele não desperdiça nada. Ganhando, já fala em sobremesa e oferece a última fatia; perdendo, elogia o cozinheiro adversário e pede revanche. Compara tudo a comida: fatias, tempero, forno, borda, a conta no fim.",
+    "en": "Gino is a laid-back bon vivant who never sits at the board without a pizza nearby. He plays endgames with the patience of someone waiting for dough to rise: low heat, no rush, and once the position is done he wastes nothing. Winning, he starts talking dessert and offers you the last slice; losing, he compliments the other cook and asks for a rematch. Everything is food to him: slices, seasoning, the oven, the crust, the check at the end."
+  },
+  "traits": [
+    "calm",
+    "patient",
+    "foodie",
+    "easygoing",
+    "dangerous",
+    "good-humored",
+    "methodical"
+  ],
+  "avatar": "assets/characters/foodie/avatar.png"
+}

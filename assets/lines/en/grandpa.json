@@ -1,0 +1,776 @@
+{
+  "character": "grandpa",
+  "language": "en",
+  "lines": [
+    {
+      "id": "grandpa.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Have a seat, youngster. Grandpa doesn't bite... much."
+    },
+    {
+      "id": "grandpa.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Back in my day, we played in the park till sundown."
+    },
+    {
+      "id": "grandpa.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let me fix my glasses. There, now I can see you!"
+    },
+    {
+      "id": "grandpa.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I've played better folks than you... I think. Long ago!"
+    },
+    {
+      "id": "grandpa.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "This cane has seen plenty of games. Here comes one more!"
+    },
+    {
+      "id": "grandpa.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Heh, old Grandpa's still got some fire in him!"
+    },
+    {
+      "id": "grandpa.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Fancy a cup of tea, youngster? You'll need it."
+    },
+    {
+      "id": "grandpa.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Back in my day, we called this a free lesson."
+    },
+    {
+      "id": "grandpa.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Chin up. Even Grandpa lost like this once. In 1962."
+    },
+    {
+      "id": "grandpa.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I'm telling the gang at the park about this one!"
+    },
+    {
+      "id": "grandpa.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hmm, shaping up just the way Grandpa likes it."
+    },
+    {
+      "id": "grandpa.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I smell a little victory in the air."
+    },
+    {
+      "id": "grandpa.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Slow and steady, youngster. That's how endgames are won."
+    },
+    {
+      "id": "grandpa.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "My knees creak, but my head's still sharp!"
+    },
+    {
+      "id": "grandpa.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I'm one step ahead. And I walk with a cane!"
+    },
+    {
+      "id": "grandpa.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "All square. Like a park bench debate: nobody gives in."
+    },
+    {
+      "id": "grandpa.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hmm... let Grandpa mull this over."
+    },
+    {
+      "id": "grandpa.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "You're as stubborn as I was at your age!"
+    },
+    {
+      "id": "grandpa.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A good game like this takes me way back."
+    },
+    {
+      "id": "grandpa.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "First to blink loses. Lucky I blink slowly."
+    },
+    {
+      "id": "grandpa.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa there! Where did Grandpa drift off?"
+    },
+    {
+      "id": "grandpa.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Easy now. I've climbed out of worse holes than this."
+    },
+    {
+      "id": "grandpa.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Let me wipe my glasses. That can't be right."
+    },
+    {
+      "id": "grandpa.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Oh, youngster, you're squeezing an old man!"
+    },
+    {
+      "id": "grandpa.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "This is harder than climbing stairs with a cane."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Oh dear... back in my day I didn't lose like this."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "This game is giving me a backache."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let's say the sun got in my glasses. Deal?"
+    },
+    {
+      "id": "grandpa.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Youngster, have mercy on a tired old man..."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "It's not over! I've seen miracles at the park, you know."
+    },
+    {
+      "id": "grandpa.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Oops! Even I saw that one without my glasses."
+    },
+    {
+      "id": "grandpa.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Heh, haste makes waste, youngster."
+    },
+    {
+      "id": "grandpa.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Thanks for the gift! It's not even my birthday."
+    },
+    {
+      "id": "grandpa.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Back in my day, a move like that meant buying the coffee."
+    },
+    {
+      "id": "grandpa.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Aha! That one's going in my book of stories!"
+    },
+    {
+      "id": "grandpa.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Uh-oh... my hand moved faster than my head."
+    },
+    {
+      "id": "grandpa.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "These glasses need a new prescription."
+    },
+    {
+      "id": "grandpa.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "How silly! Pretend you didn't see that, youngster?"
+    },
+    {
+      "id": "grandpa.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "That was on purpose. To spice things up. Obviously."
+    },
+    {
+      "id": "grandpa.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Oh, fiddlesticks! Fifty years of park chess and I do that!"
+    },
+    {
+      "id": "grandpa.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Whoa! That's a grown-up move right there."
+    },
+    {
+      "id": "grandpa.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Lovely, youngster. Really lovely."
+    },
+    {
+      "id": "grandpa.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I wish I'd spotted that one first!"
+    },
+    {
+      "id": "grandpa.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Whoa! Who taught you that? Tell me it was an old-timer."
+    },
+    {
+      "id": "grandpa.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Hats off! If I wore a hat, that is."
+    },
+    {
+      "id": "grandpa.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Little by little, Grandpa gets there!"
+    },
+    {
+      "id": "grandpa.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Thought the old man was finished, huh?"
+    },
+    {
+      "id": "grandpa.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Experience, youngster. You can't buy it at the pharmacy."
+    },
+    {
+      "id": "grandpa.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Turned it around! Just like the park final of '74!"
+    },
+    {
+      "id": "grandpa.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "The cane's for walking, not for giving up!"
+    },
+    {
+      "id": "grandpa.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh? Where'd my advantage go? It was right here!"
+    },
+    {
+      "id": "grandpa.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Let it slip away. Just like my hair."
+    },
+    {
+      "id": "grandpa.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "That's what I get for napping mid-game!"
+    },
+    {
+      "id": "grandpa.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Easy, Grandpa, easy. Deep breaths."
+    },
+    {
+      "id": "grandpa.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Oh no! Had it in my hands and it slipped like soap!"
+    },
+    {
+      "id": "grandpa.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I'll tuck this one in my jacket pocket."
+    },
+    {
+      "id": "grandpa.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pardon me, youngster. I'll take that."
+    },
+    {
+      "id": "grandpa.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Got it! These old hands are still quick!"
+    },
+    {
+      "id": "grandpa.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Heh, another one for Grandpa's collection."
+    },
+    {
+      "id": "grandpa.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "See that? At the park we call that lunch!"
+    },
+    {
+      "id": "grandpa.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Ouch, that hurt more than my knee."
+    },
+    {
+      "id": "grandpa.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh, was that there? I need new glasses."
+    },
+    {
+      "id": "grandpa.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Fine, fine, take it. But treat it kindly."
+    },
+    {
+      "id": "grandpa.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "There goes my piece. Like my younger days."
+    },
+    {
+      "id": "grandpa.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Oh, fiddlesticks! That piece was with me from the start!"
+    },
+    {
+      "id": "grandpa.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "My little pawn's all grown up! Grandpa's so proud."
+    },
+    {
+      "id": "grandpa.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "That pawn walked farther than I do on my morning stroll!"
+    },
+    {
+      "id": "grandpa.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Crowned! Just like me at the park fair in '81."
+    },
+    {
+      "id": "grandpa.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Slow and steady, it got there. Just like me!"
+    },
+    {
+      "id": "grandpa.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Promoted! This pawn has earned a pension."
+    },
+    {
+      "id": "grandpa.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Uh-oh, that little pawn slipped past Grandpa."
+    },
+    {
+      "id": "grandpa.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Well played. I used to do that at your age."
+    },
+    {
+      "id": "grandpa.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Oh dear, a brand new piece. You shouldn't have."
+    },
+    {
+      "id": "grandpa.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I saw it coming! Thought it'd get tired on the way."
+    },
+    {
+      "id": "grandpa.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Now Grandpa's really in a pickle!"
+    },
+    {
+      "id": "grandpa.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Watch the clock, youngster. It waits for no one."
+    },
+    {
+      "id": "grandpa.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tick-tock! At my age, you hear that loud and clear."
+    },
+    {
+      "id": "grandpa.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "In a hurry, youngster? I've got all afternoon."
+    },
+    {
+      "id": "grandpa.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Time flies, youngster. Take it from me!"
+    },
+    {
+      "id": "grandpa.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Your clock's running faster than a late bus!"
+    },
+    {
+      "id": "grandpa.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Whoa, the clock's moving faster than I do."
+    },
+    {
+      "id": "grandpa.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Not much time. Come on, Grandpa, no napping now."
+    },
+    {
+      "id": "grandpa.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Oh dear, back in my day clocks ran slower!"
+    },
+    {
+      "id": "grandpa.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Spent all my time telling stories. Again!"
+    },
+    {
+      "id": "grandpa.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Quick, hand! Quick! It doesn't listen like it used to..."
+    },
+    {
+      "id": "grandpa.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No rush. Grandpa's got time to spare."
+    },
+    {
+      "id": "grandpa.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "I'll take my time. Fancy a story meanwhile?"
+    },
+    {
+      "id": "grandpa.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Retired folks have time, youngster. Lots of it."
+    },
+    {
+      "id": "grandpa.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hmm, let me polish my glasses... nice and slow."
+    },
+    {
+      "id": "grandpa.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Sweat all you like, youngster. I'll go at my own pace."
+    },
+    {
+      "id": "grandpa.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Think, think. I'll wait. I've waited plenty in my life."
+    },
+    {
+      "id": "grandpa.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Thinking or napping? I'm an expert at both."
+    },
+    {
+      "id": "grandpa.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I'll take a stroll round the block. Back in a jiffy."
+    },
+    {
+      "id": "grandpa.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Back in my day we thought that long too. Then dozed off."
+    },
+    {
+      "id": "grandpa.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Youngster, my beard grew while you were thinking!"
+    },
+    {
+      "id": "grandpa.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Good game, youngster. Come back tomorrow for more."
+    },
+    {
+      "id": "grandpa.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Grandpa's still got it! Heh heh!"
+    },
+    {
+      "id": "grandpa.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "This one's becoming a park story, mark my words."
+    },
+    {
+      "id": "grandpa.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Old, sure. Retired from the board? Never!"
+    },
+    {
+      "id": "grandpa.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "I won! I'm calling the grandkids!"
+    },
+    {
+      "id": "grandpa.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Well played, youngster. You earned it."
+    },
+    {
+      "id": "grandpa.loss.2",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Oh dear... today wasn't Grandpa's day."
+    },
+    {
+      "id": "grandpa.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I'll tell my friends I let you win. Deal?"
+    },
+    {
+      "id": "grandpa.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I lost, but what a lovely game! Worth the afternoon."
+    },
+    {
+      "id": "grandpa.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Rematch! Grandpa wants a rematch, right now!"
+    },
+    {
+      "id": "grandpa.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "An honest draw. Shake Grandpa's hand."
+    },
+    {
+      "id": "grandpa.draw.2",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Nobody lost! Best way to end an afternoon."
+    },
+    {
+      "id": "grandpa.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw! Like a sports debate on a park bench."
+    },
+    {
+      "id": "grandpa.draw.4",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Huh, that's it? I was just warming up!"
+    },
+    {
+      "id": "grandpa.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "A draw? I was after the win, youngster!"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "master",
+  "level": 2600,
+  "name": "Viktor",
+  "tagline": {
+    "pt": "O grande mestre que ensina enquanto vence.",
+    "en": "The grandmaster who teaches while he wins."
+  },
+  "personality": {
+    "pt": "Grande mestre veterano, de terno, gravata e mãos para trás, que já viu todos os finais do livro. Joga com técnica impecável e paciência de relojoeiro, sempre com o rei ativo. Ganhando, transforma a partida numa aula; perdendo, mantém a compostura e elogia com elegância. Fala pouco, em frases de professor sobre oposição, rei ativo e peão passado, e ajeita a gravata quando algo o incomoda.",
+    "en": "A veteran grandmaster in suit and tie, hands clasped behind his back, who has seen every ending in the book. He plays with flawless technique and a watchmaker's patience, always with an active king. When winning, he turns the game into a lesson; when losing, he keeps his composure and praises with elegance. He speaks sparingly, in teacher's maxims about opposition, the active king and passed pawns, and straightens his tie when something bothers him."
+  },
+  "traits": [
+    "wise",
+    "sober",
+    "demanding",
+    "patient",
+    "elegant",
+    "teacher",
+    "composed"
+  ],
+  "avatar": "assets/characters/master/avatar.png"
+}
