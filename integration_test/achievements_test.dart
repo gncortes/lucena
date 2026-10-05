@@ -37,14 +37,12 @@ void main() {
     return feedback;
   }
 
-  /// Joga a etapa da vez em [seconds] segundos do relógio do jogador.
+  /// A etapa no tabuleiro, vencida em [seconds] segundos do relógio do
+  /// jogador.
   Future<void> playStage(PatrolIntegrationTester $, int seconds) async {
-    final speedrun = SpeedrunRobot($);
-    await speedrun.playStage();
     await AppRobot($).advanceTime(Duration(seconds: seconds));
     final (from, to) = E2EJourneyRepository.mate;
     await FreeBoardRobot($).move(from, to);
-    await speedrun.continueAfterGame();
   }
 
   patrolTest('primeiro final concluído: a conquista aparece e continua ao '
@@ -103,8 +101,8 @@ void main() {
     expect(second.where((text) => text.startsWith('You beat')), isEmpty);
   });
 
-  patrolTest('speedrun completo pausado: reabrir o app volta ao mesmo ponto '
-      'e tempo', ($) async {
+  patrolTest('speedrun completo com o app fechado no meio de uma etapa: '
+      'reabrir volta à etapa e ao tempo', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     await app.open(systemLocale: _english);
@@ -112,22 +110,22 @@ void main() {
     await speedrun.openSpeedrun('e2e.full');
     await speedrun.start();
     await playStage($, 9);
-    speedrun.expectTotal('0:09.0');
+    await speedrun.continueToNextStage();
+    await app.advanceTime(const Duration(seconds: 2));
 
-    // Pausa longa entre as etapas, com o app fechado.
-    await app.advanceTime(const Duration(days: 2));
+    // O app fecha no meio da segunda etapa e reabre nela, com o relógio
+    // como estava.
     await app.restart();
-    await speedrun.open();
-    await speedrun.openSpeedrun('e2e.full');
-    await $(SpeedrunKeys.resume).scrollTo().tap();
-    await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
+    await FreeBoardRobot($).expectVisible();
+    await playStage($, 2);
+    await speedrun.continueToNextStage();
+    await playStage($, 6);
+    await speedrun.finishAttempt();
+
     speedrun
       ..expectStageTime(0, '0:09.0')
-      ..expectTotal('0:09.0');
-
-    await playStage($, 4);
-    await playStage($, 6);
-    speedrun.expectTotal('0:19.0');
+      ..expectStageTime(1, '0:04.0')
+      ..expectTotal('0:19.0');
     await speedrun.expectNewRecord(record: true);
   });
 
@@ -139,7 +137,9 @@ void main() {
     await speedrun.openSpeedrun('e2e.exercises');
     await speedrun.start();
     await playStage($, 3);
+    await speedrun.continueToNextStage();
     await playStage($, 5);
+    await speedrun.finishAttempt();
 
     speedrun.expectTotal('0:08.0');
     await speedrun.expectNewRecord(record: true);

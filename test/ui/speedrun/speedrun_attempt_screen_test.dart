@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_attempt_screen.dart';
@@ -68,61 +69,55 @@ void main() {
     );
   }
 
-  testWidgets('em andamento: parciais, derrotas e a etapa da vez', (
-    tester,
-  ) async {
+  // O tempo de um RunClock (os décimos ficam num pedaço menor).
+  String clockText(WidgetTester tester, Key key) =>
+      tester.widget<Text>(find.byKey(key)).textSpan!.toPlainText();
+
+  testWidgets('abandonada: até onde foi, o tempo, as derrotas e nada de '
+      'jogar', (tester) async {
     await cubit.load(speedrunId: 'rung.1000');
-    final id = (await cubit.start())!;
+    final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await game(id, 0, 20, won: false);
     await game(id, 0, 15);
 
+    // Sem a etapa no tabuleiro, a tentativa pela metade é largada ao abrir.
     await pump(tester, id);
 
-    expect(find.text('0:35.0'), findsWidgets);
-    // A etapa da vez em destaque, com o botão dela.
-    expect(find.byKey(SpeedrunKeys.current), findsOneWidget);
-    expect(find.text('Play stage 2'), findsOneWidget);
-    expect(find.text('Stage 2 of 2'), findsOneWidget);
-    // As etapas embaixo, com o tempo e as derrotas de cada uma.
+    expect(find.byKey(SpeedrunKeys.abandoned), findsOneWidget);
+    expect(find.text('Gave up at stage 2 of 2'), findsOneWidget);
+    expect(clockText(tester, SpeedrunKeys.total), '0:35.0');
+    expect(clockText(tester, SpeedrunKeys.stageTime(0)), '0:35.0');
+    // A etapa com a derrota diz quantas foram.
     await tester.scrollUntilVisible(find.text('1 loss'), 100);
     expect(find.text('1 loss'), findsOneWidget);
+    // Só o resumo: sem jogar nem menu.
+    expect(find.byKey(SpeedrunKeys.play), findsNothing);
+    expect(find.byKey(SpeedrunKeys.menu), findsNothing);
     expect(find.byKey(SpeedrunKeys.newRecord), findsNothing);
-  });
-
-  testWidgets('desistir fica no menu', (tester) async {
-    await cubit.load(speedrunId: 'rung.1000');
-    final id = (await cubit.start())!;
-
-    await pump(tester, id);
-    expect(find.byKey(SpeedrunKeys.abandon), findsNothing);
-    await tester.tap(find.byKey(SpeedrunKeys.menu));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(SpeedrunKeys.abandon), findsOneWidget);
   });
 
   testWidgets('a primeira concluída é recorde', (tester) async {
     await cubit.load(speedrunId: 'rung.1000');
-    final id = (await cubit.start())!;
+    final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await game(id, 0, 30);
     await game(id, 1, 40);
 
     await pump(tester, id);
 
     expect(find.byKey(SpeedrunKeys.newRecord), findsOneWidget);
-    expect(find.byKey(SpeedrunKeys.play), findsNothing);
-    expect(tester.widget<Text>(find.byKey(SpeedrunKeys.total)).data, '1:10.0');
+    expect(find.byKey(SpeedrunKeys.abandoned), findsNothing);
+    expect(clockText(tester, SpeedrunKeys.total), '1:10.0');
   });
 
   testWidgets('mais lenta que o recorde: diferença em segundos', (
     tester,
   ) async {
     await cubit.load(speedrunId: 'rung.1000');
-    final first = (await cubit.start())!;
+    final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await game(first, 0, 30);
     await game(first, 1, 40);
     now.advance(const Duration(minutes: 5));
-    final second = (await cubit.start())!;
+    final (_, second) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await game(second, 0, 33);
     await game(second, 1, 40);
 

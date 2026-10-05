@@ -305,17 +305,6 @@ class FreeBoardRobot {
     await $.pumpAndSettle();
   }
 
-  /// Um lance para trás e um para a frente na revisão.
-  Future<void> viewPrevious() async {
-    await $(FreeBoardKeys.movePrevious).tap();
-    await $.pumpAndSettle();
-  }
-
-  Future<void> viewNext() async {
-    await $(FreeBoardKeys.moveNext).tap();
-    await $.pumpAndSettle();
-  }
-
   /// A peça que o tabuleiro mostra em [square] (nulo: casa vazia).
   void expectPieceAt(String square, Piece? piece) {
     final setup = Setup.parseFen(_chessboard.controller.fen);

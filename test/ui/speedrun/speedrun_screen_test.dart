@@ -4,7 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_mode.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/game_snapshot.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
@@ -25,16 +29,18 @@ void main() {
   late FakeNow now;
   late FakeProgressRepository progress;
   late FakeSpeedrunRepository speedruns;
+  late FakeOngoingGameRepository games;
   late SpeedrunCubit cubit;
 
   setUp(() {
     now = FakeNow(DateTime.utc(2026, 10, 4, 12));
     progress = FakeProgressRepository();
     speedruns = FakeSpeedrunRepository(progress);
+    games = FakeOngoingGameRepository();
     cubit = SpeedrunCubit(
       journey: FakeJourneyRepository(),
       speedruns: speedruns,
-      games: FakeOngoingGameRepository(),
+      games: games,
       now: now,
       characters: FakeCharacterRepository(),
     );
@@ -103,11 +109,19 @@ void main() {
     expect(find.byKey(SpeedrunKeys.run(0)), findsNothing);
   });
 
-  testWidgets('em andamento: as etapas vencidas ganham o selo e a da vez diz '
-      '"agora"', (tester) async {
+  testWidgets('com a etapa no tabuleiro (o app fechou no meio), as etapas '
+      'vencidas ganham o selo, a da vez diz "agora" e a partida continua', (
+    tester,
+  ) async {
     await cubit.load(speedrunId: id);
-    final attempt = (await cubit.start())!;
+    final (speedrun, attempt) = (await cubit.startWith(
+      SpeedrunPaces.standard,
+    ))!;
     await win(attempt, 0, 20);
+    games.snapshot = GameSnapshot(
+      startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+      mode: GameMode(speedrunId: speedrun.id, speedrunAttemptId: attempt),
+    );
 
     await pump(tester);
 
@@ -120,21 +134,22 @@ void main() {
     );
     expect(stageText(tester, 1), contains('Up next'));
     expect(find.byKey(SpeedrunKeys.resume), findsOneWidget);
+    expect(find.byKey(SpeedrunKeys.start), findsNothing);
   });
 
   testWidgets('o histórico diz até onde foi a tentativa abandonada e o tempo '
       'da concluída', (tester) async {
     await cubit.load(speedrunId: id);
     final total = cubit.state.selected!.speedrun.stages.length;
-    // A primeira: venceu uma etapa e desistiu.
-    final first = (await cubit.start())!;
+    // A primeira: venceu uma etapa e saiu (sem a etapa no tabuleiro, ela é
+    // largada ao abrir).
+    final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await win(first, 0, 20);
     now.advance(const Duration(minutes: 5));
-    await cubit.load(speedrunId: id, attemptId: first);
-    await cubit.abandon();
+    await cubit.load(speedrunId: id);
     // A segunda: concluída, 10 s por etapa.
     now.advance(const Duration(minutes: 5));
-    final second = (await cubit.start())!;
+    final (_, second) = (await cubit.startWith(SpeedrunPaces.standard))!;
     for (var stage = 0; stage < total; stage++) {
       now.advance(const Duration(minutes: 1));
       await win(second, stage, 10);
@@ -146,7 +161,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(SpeedrunKeys.run(0)),
-        matching: find.text('0:${total * 10}.0'),
+        matching: find.text(RunTimeFormat.clock(Duration(seconds: total * 10))),
       ),
       findsOneWidget,
     );
