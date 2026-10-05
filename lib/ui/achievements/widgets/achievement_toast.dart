@@ -22,8 +22,17 @@ class AchievementToasts extends StatefulWidget {
   /// Os personagens, para o nome da conquista dizer o adversário.
   final List<Character> characters;
 
-  /// Quanto tempo cada aviso fica na tela, da entrada à saída.
+  /// Quanto tempo um aviso sozinho fica na tela, da entrada à saída.
   static const duration = Duration(milliseconds: 3800);
+
+  /// Quanto tempo cada aviso fica quando são [count] de uma vez: a fila
+  /// inteira não passa de uns 8 segundos.
+  static Duration durationFor(int count) => Duration(
+    milliseconds: (8000 ~/ (count < 1 ? 1 : count)).clamp(
+      1600,
+      duration.inMilliseconds,
+    ),
+  );
 
   @override
   State<AchievementToasts> createState() => _AchievementToastsState();
@@ -33,7 +42,7 @@ class _AchievementToastsState extends State<AchievementToasts>
     with SingleTickerProviderStateMixin {
   late final _show = AnimationController(
     vsync: this,
-    duration: AchievementToasts.duration,
+    duration: AchievementToasts.durationFor(widget.achievements.length),
   );
 
   // A conquista na tela. Depois da última, nada.
