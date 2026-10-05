@@ -221,10 +221,22 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final played = GameRules.play(state.position, move);
     if (played == null) return;
     final now = _now();
+    final turnStartedAt = state.turnStartedAt;
     var next = state.copyWith(
       position: played.position,
       moves: [...state.moves, played.san],
       ucis: [...state.ucis, move.uci],
+      // O tempo deste lance: o que já tinha corrido antes de uma saída da
+      // tela mais o que correu desde que a vez (re)começou.
+      moveTimes: [
+        ...state.moveTimes,
+        state.turnElapsed +
+            (turnStartedAt == null
+                ? Duration.zero
+                : now.difference(turnStartedAt)),
+      ],
+      turnElapsed: Duration.zero,
+      turnStartedAt: now,
       repetitions: GameRules.repetitionsOf(state.start, [
         ...state.ucis,
         move.uci,
@@ -242,6 +254,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         clock: next.end == null ? pressed : ClockEngine.stop(pressed, now),
       );
     }
+    // Com a partida terminada, o tempo da vez para.
+    if (next.end != null) next = next.copyWith(turnStartedAt: null);
     emit(_timed(next, now));
     _changed();
   }
@@ -329,11 +343,22 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   Future<void> leave() async {
     if (!_active) return;
     _left = true;
+    final now = _now();
+    // O tempo do lance da vez para junto com o relógio.
+    final turnStartedAt = state.turnStartedAt;
+    var paused = state.copyWith(
+      turnElapsed:
+          state.turnElapsed +
+          (turnStartedAt == null
+              ? Duration.zero
+              : now.difference(turnStartedAt)),
+      turnStartedAt: null,
+    );
     final clock = state.clock;
     if (clock != null) {
-      final now = _now();
-      emit(_timed(state.copyWith(clock: ClockEngine.stop(clock, now)), now));
+      paused = paused.copyWith(clock: ClockEngine.stop(clock, now));
     }
+    emit(_timed(paused, now));
     _persist(onScreen: false);
     await _saving;
   }
@@ -386,6 +411,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       startedAt: state.startedAt,
       startFen: state.start.fen,
       moves: state.ucis,
+      moveTimes: state.moveTimes,
+      userSide: mode.userSide,
       endReason: state.end?.reason,
       userTime: clock?.config.of(user),
       opponentTime: clock?.config.of(user.opposite),
@@ -520,6 +547,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
             mode: current.mode,
             onScreen: onScreen,
             startedAt: current.startedAt,
+            moveTimes: current.moveTimes,
+            turnElapsed: current.turnElapsed,
+            turnStartedAt: current.turnStartedAt,
           );
     _saving = _saving.whenComplete(
       () => snapshot == null ? _games.clear() : _games.save(snapshot),
@@ -555,6 +585,14 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       clock: snapshot.clock,
       mode: snapshot.mode,
       startedAt: snapshot.startedAt,
+      // Gravação de antes do tempo por lance: os lances ficam sem tempo.
+      moveTimes: snapshot.moveTimes.length == snapshot.moves.length
+          ? snapshot.moveTimes
+          : const [],
+      turnElapsed: snapshot.turnElapsed,
+      // Parado (o jogador tinha saído da tela), o tempo da vez volta a
+      // correr agora; fechado à força, ele seguiu correndo.
+      turnStartedAt: snapshot.turnStartedAt ?? now,
     );
     final clock = snapshot.clock;
     // Relógio parado numa partida em andamento: o jogador tinha saído da tela.
@@ -583,6 +621,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         orientation: orientation,
         mode: mode,
         startedAt: now,
+        turnStartedAt: GameRules.endOf(start) == null ? now : null,
         // Posição que já abre terminada (mate, afogado) não liga o relógio.
         clock: clock == null || GameRules.endOf(start) != null
             ? null

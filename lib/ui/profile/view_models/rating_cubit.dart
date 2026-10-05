@@ -49,8 +49,10 @@ class PlayerNumbers {
 
 /// Uma partida do histórico geral.
 class LoggedGame {
-  const LoggedGame({required this.attempt, this.rated});
+  const LoggedGame({required this.id, required this.attempt, this.rated});
 
+  /// O id da partida gravada: abre os detalhes dela.
+  final int id;
   final Attempt attempt;
 
   /// Como o rating ficou depois dela e quanto mudou. Nulo se ela não contou.
@@ -64,8 +66,9 @@ class RatingState {
     this.history = const [],
     this.attempts = const {},
     this.numbers,
-    this.allGames = const [],
+    this.allGames = const {},
     this.characters = const [],
+    this.now,
   });
 
   /// Nulo enquanto é lido.
@@ -81,9 +84,12 @@ class RatingState {
   /// onde só o rating interessa (sem o histórico de partidas).
   final PlayerNumbers? numbers;
 
-  /// Todas as partidas, de qualquer modo, da mais recente para a mais
-  /// antiga.
-  final List<Attempt> allGames;
+  /// Todas as partidas, de qualquer modo, pelo id, da mais recente para a
+  /// mais antiga.
+  final Map<int, Attempt> allGames;
+
+  /// O instante da leitura: de onde os períodos do gráfico contam para trás.
+  final DateTime? now;
 
   /// Os personagens, um por nível do Maia: o histórico mostra o retrato.
   final List<Character> characters;
@@ -91,10 +97,10 @@ class RatingState {
   /// O histórico de partidas: cada uma com o que ela fez no rating, quando
   /// contou.
   List<LoggedGame> get log {
-    final rated = {for (final game in games) ?game.attempt: game};
+    final rated = {for (final game in games) ?game.entry.gameId: game};
     return [
-      for (final attempt in allGames)
-        LoggedGame(attempt: attempt, rated: rated[attempt]),
+      for (final MapEntry(key: id, value: attempt) in allGames.entries)
+        LoggedGame(id: id, attempt: attempt, rated: rated[id]),
     ];
   }
 
@@ -155,11 +161,12 @@ class RatingCubit extends Cubit<RatingState> {
         }) ??
         const <int, Attempt>{};
     final achievements = _achievements;
-    final all = await progress?.allAttempts() ?? const <Attempt>[];
+    final all = await progress?.allAttemptsById() ?? const <int, Attempt>{};
+    final now = _now();
     final numbers = progress == null
         ? null
         : PlayerNumbers(
-            stats: PlayerStats.of(all, _now()),
+            stats: PlayerStats.of(all.values.toList(), now),
             achievementsUnlocked: achievements == null
                 ? 0
                 : (await achievements.unlocked()).length,
@@ -176,6 +183,7 @@ class RatingCubit extends Cubit<RatingState> {
         attempts: attempts,
         numbers: numbers,
         allGames: _recentFirst(all),
+        now: now,
         characters: await _characters?.characters() ?? const <Character>[],
       ),
     );
@@ -183,13 +191,13 @@ class RatingCubit extends Cubit<RatingState> {
 
   // Da mais recente para a mais antiga. Entre partidas do mesmo instante,
   // a gravada por último vem primeiro.
-  static List<Attempt> _recentFirst(List<Attempt> attempts) {
-    final indexed = attempts.indexed.toList()
+  static Map<int, Attempt> _recentFirst(Map<int, Attempt> attempts) {
+    final entries = attempts.entries.toList()
       ..sort((a, b) {
-        final byTime = b.$2.playedAt.compareTo(a.$2.playedAt);
-        return byTime != 0 ? byTime : b.$1.compareTo(a.$1);
+        final byTime = b.value.playedAt.compareTo(a.value.playedAt);
+        return byTime != 0 ? byTime : b.key.compareTo(a.key);
       });
-    return [for (final (_, attempt) in indexed) attempt];
+    return Map.fromEntries(entries);
   }
 
   // O melhor tempo entre todos os speedruns, em qualquer ritmo.

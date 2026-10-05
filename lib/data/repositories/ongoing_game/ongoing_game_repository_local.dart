@@ -58,6 +58,11 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
         'speedrunStage': snapshot.mode.speedrunStage,
       },
       'startedAt': snapshot.startedAt?.millisecondsSinceEpoch,
+      'moveTimesMs': [
+        for (final time in snapshot.moveTimes) time.inMilliseconds,
+      ],
+      'turnElapsedMs': snapshot.turnElapsed.inMilliseconds,
+      'turnStartedAt': snapshot.turnStartedAt?.millisecondsSinceEpoch,
       'clock': clock == null
           ? null
           : {
@@ -80,6 +85,8 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
     // Gravações de antes do treino não têm modo: tabuleiro livre.
     final mode = json['mode'] as Map<String, dynamic>?;
     final startedAt = json['startedAt'] as int?;
+    // Gravações de antes do tempo por lance não têm estes campos.
+    final moveTurnStartedAt = json['turnStartedAt'] as int?;
     return GameSnapshot(
       startFen: json['startFen'] as String,
       moves: (json['moves'] as List).cast<String>(),
@@ -102,6 +109,14 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
       startedAt: startedAt == null
           ? null
           : DateTime.fromMillisecondsSinceEpoch(startedAt, isUtc: true),
+      moveTimes: [
+        for (final ms in (json['moveTimesMs'] as List?) ?? const [])
+          Duration(milliseconds: ms as int),
+      ],
+      turnElapsed: Duration(milliseconds: (json['turnElapsedMs'] as int?) ?? 0),
+      turnStartedAt: moveTurnStartedAt == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(moveTurnStartedAt, isUtc: true),
       clock: clock == null
           ? null
           : ClockState(

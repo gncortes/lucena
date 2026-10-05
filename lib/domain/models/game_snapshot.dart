@@ -35,6 +35,15 @@ abstract class GameSnapshot with _$GameSnapshot {
 
     /// Quando a partida começou. Nulo nas gravações de antes da Jornada.
     DateTime? startedAt,
+
+    /// Quanto cada lance levou, na ordem de [moves].
+    @Default(<Duration>[]) List<Duration> moveTimes,
+
+    /// O tempo já gasto no lance da vez antes de [turnStartedAt] (o jogador
+    /// saiu da tela e voltou) e o instante em que a vez (re)começou. Com o
+    /// instante nulo, o tempo da vez está parado.
+    @Default(Duration.zero) Duration turnElapsed,
+    DateTime? turnStartedAt,
   }) = _GameSnapshot;
 
   const GameSnapshot._();

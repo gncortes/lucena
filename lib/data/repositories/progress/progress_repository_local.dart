@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/drift.dart';
 
 import '../../../domain/models/attempt.dart';
@@ -22,6 +23,13 @@ class LocalProgressRepository implements ProgressRepository {
     final query = _database.select(_database.games)
       ..orderBy([(row) => OrderingTerm.asc(row.id)]);
     return [for (final row in await query.get()) attemptOf(row)];
+  }
+
+  @override
+  Future<Map<int, Attempt>> allAttemptsById() async {
+    final query = _database.select(_database.games)
+      ..orderBy([(row) => OrderingTerm.asc(row.id)]);
+    return {for (final row in await query.get()) row.id: attemptOf(row)};
   }
 
   @override
@@ -83,6 +91,10 @@ class LocalProgressRepository implements ProgressRepository {
       startedAt: Value(attempt.startedAt),
       startFen: Value(attempt.startFen),
       moves: Value(attempt.moves.join(' ')),
+      moveTimesMs: Value(
+        attempt.moveTimes.map((time) => time.inMilliseconds).join(' '),
+      ),
+      userSide: Value(attempt.userSide?.name),
       endReason: Value(attempt.endReason?.name),
       userTime: Value(attempt.userTime?.code),
       opponentTime: Value(attempt.opponentTime?.code),
@@ -107,6 +119,11 @@ class LocalProgressRepository implements ProgressRepository {
       startedAt: row.startedAt?.toUtc(),
       startFen: row.startFen,
       moves: row.moves.isEmpty ? const [] : row.moves.split(' '),
+      moveTimes: [
+        for (final ms in row.moveTimesMs.split(' '))
+          if (int.tryParse(ms) case final value?) Duration(milliseconds: value),
+      ],
+      userSide: Side.values.asNameMap()[row.userSide],
       endReason: GameEndReason.values.asNameMap()[row.endReason],
       userTime: TimeControl.tryParse(row.userTime),
       opponentTime: TimeControl.tryParse(row.opponentTime),
