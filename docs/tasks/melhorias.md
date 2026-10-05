@@ -84,6 +84,11 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - números que mudam (rating, tempo do speedrun) contando até o valor novo;
   - tudo respeitando "remover animações" do sistema.
 
+- [ ] **Repensar a notação do material (♕ – ♚) nas listas.** Economiza espaço mas fica ruim de ler: figurinos pequenos, o traço solto no meio e nada de texto. Vale para o speedrun de final, o catálogo e a Jornada. Opções a testar e mostrar ao Gabriel antes de decidir:
+  - nome do final por extenso como título ("Dama contra rei", "Torre e peão contra torre"), com as peças grandes num selo ao lado;
+  - as peças de cada lado em dois "chips" (brancas claro, pretas escuro) em vez do traço;
+  - a miniatura do tabuleiro da posição no lugar das peças.
+
 ## Nomes no app
 
 - [ ] **Revisar a palavra "degrau" em todas as telas.** Usar o personagem ("Contra o Coco") ou "nível" onde "degrau" aparece para o jogador (Jornada, tour, conquistas, mensagens do fim da partida). Manter "degrau" só no código.
