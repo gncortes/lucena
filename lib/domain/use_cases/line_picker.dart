@@ -15,6 +15,8 @@ class LinePicker {
     LineCategory.win,
     LineCategory.loss,
     LineCategory.draw,
+    LineCategory.drawAccepted,
+    LineCategory.drawDeclined,
     LineCategory.ownBlunder,
     LineCategory.opponentBlunder,
     LineCategory.comeback,

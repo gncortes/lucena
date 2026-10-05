@@ -9,6 +9,7 @@ import '../../../data/repositories/characters/talk_repository.dart';
 import '../../../data/repositories/evaluation/evaluation_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/emotion_state.dart';
@@ -27,8 +28,12 @@ class TalkState {
     this.enabled = true,
   });
 
-  /// O adversário como personagem. Nulo contra o Stockfish e sem máquina.
+  /// O adversário como personagem (o Stockfish também aparece, com o logo).
+  /// Nulo sem máquina.
   final Character? character;
+
+  /// O adversário é o Stockfish: não tem emoção e fala em binário.
+  bool get isEngine => character?.id == TalkCubit.stockfish.id;
 
   /// A fala no balão. Nula: balão fechado.
   final CharacterLine? line;
@@ -83,6 +88,23 @@ class TalkCubit extends Cubit<TalkState> {
   DateTime? _game;
   int _plies = 0;
   bool _ended = false;
+
+  /// O Stockfish na fileira de cima: o logo e nenhuma emoção.
+  static const stockfish = Character(
+    id: 'stockfish',
+    level: 3000,
+    name: 'Stockfish',
+    tagline: {},
+    personality: {},
+    traits: [],
+    avatar: 'assets/branding/stockfish.png',
+  );
+
+  // Quantas falas em binário o Stockfish já disse (o id de cada uma).
+  int _beeps = 0;
+
+  // A recusa de empate já respondida (o lance em que ela aconteceu).
+  int? _declineSaid;
 
   // O lance do jogador em que o personagem já reclamou da demora.
   int? _thinkingSaidAt;
@@ -142,6 +164,25 @@ class TalkCubit extends Cubit<TalkState> {
     }
     if (state.character == null) return;
     final machine = mode.machineSide!;
+    final declined = game.drawOffer == DrawOffer.declined
+        ? game.drawDeclinedAt
+        : null;
+    final newDecline = declined != null && declined != _declineSaid;
+    if (newDecline) _declineSaid = declined;
+    if (state.isEngine) {
+      final agreed = game.end?.reason == GameEndReason.drawAgreed;
+      if (newDecline || (agreed && !_ended)) _beep();
+      if (agreed) _ended = true;
+      // O Stockfish só "fala" quando joga: uns bytes ao acaso.
+      final before = _plies;
+      _plies = game.ucis.length;
+      final machinePlayed = [
+        for (var ply = before; ply < _plies; ply++)
+          if ((game.start.turn == machine) == ply.isEven) ply,
+      ].isNotEmpty;
+      if (machinePlayed && game.end == null) _beep();
+      return;
+    }
     while (_plies < game.ucis.length) {
       // O lance do jogador e a resposta da máquina costumam chegar juntos: os
       // dois são avaliados. Uma leva maior (lances jogados com o app fechado)
@@ -150,13 +191,16 @@ class TalkCubit extends Cubit<TalkState> {
       await _moved(game, _plies, machine, evaluate: recent);
       _plies++;
     }
+    if (newDecline) _say(const [GameEvent(LineCategory.drawDeclined, 2)]);
     final end = game.end;
     if (end != null && !_ended) {
       _ended = true;
       final winner = end.winner;
       _say([
         GameEvent(
-          winner == null
+          end.reason == GameEndReason.drawAgreed
+              ? LineCategory.drawAccepted
+              : winner == null
               ? LineCategory.draw
               : winner == machine
               ? LineCategory.win
@@ -175,10 +219,19 @@ class TalkCubit extends Cubit<TalkState> {
     _ended = game.end != null;
     _thinkingSaidAt = null;
     final mode = game.mode;
-    final character = mode.opponent == OpponentKind.maia
-        ? (await _characters.characters()).forLevel(mode.level)
-        : null;
+    final character = switch (mode.opponent) {
+      OpponentKind.maia => (await _characters.characters()).forLevel(
+        mode.level,
+      ),
+      OpponentKind.stockfish => stockfish,
+      OpponentKind.twoPlayers => null,
+    };
     final settings = await _settings.load();
+    if (character == stockfish) {
+      emit(TalkState(character: stockfish, enabled: settings.characterTalk));
+      _beep();
+      return;
+    }
     if (character == null) {
       emit(TalkState(enabled: settings.characterTalk));
       return;
@@ -277,6 +330,27 @@ class TalkCubit extends Cubit<TalkState> {
     emit(state.copyWith(line: picked.line, emotion: picked.line.emotion));
     unawaited(_save());
     return picked.line;
+  }
+
+  // Uma fala de máquina: dois a quatro bytes ao acaso.
+  void _beep() {
+    if (isClosed) return;
+    final bytes = 2 + _random.nextInt(3);
+    final text = [
+      for (var byte = 0; byte < bytes; byte++)
+        _random.nextInt(256).toRadixString(2).padLeft(8, '0'),
+    ].join(' ');
+    emit(
+      state.copyWith(
+        line: CharacterLine(
+          id: 'stockfish.binary.${_beeps++}',
+          category: LineCategory.gameStart,
+          intensity: 1,
+          emotion: Emotion.calm,
+          text: text,
+        ),
+      ),
+    );
   }
 
   CharacterLine? _lineById(String? id) {

@@ -771,6 +771,90 @@
       "intensity": 3,
       "emotion": "calm",
       "text": "Empatou, mas foi um baita dia de praia, parceiro."
+    },
+    {
+      "id": "beachgoer.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "De boa, parceiro. Empate e todo mundo vai pro mar feliz."
+    },
+    {
+      "id": "beachgoer.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Fechado! Bora dividir esse coco e esquecer o tabuleiro."
+    },
+    {
+      "id": "beachgoer.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa, a maré tava subindo rápido demais pro meu lado."
+    },
+    {
+      "id": "beachgoer.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Aceito. O sol tava me cegando mesmo, sabe como é."
+    },
+    {
+      "id": "beachgoer.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Valeu, parceiro! Você me tirou do caldo antes da onda quebrar."
+    },
+    {
+      "id": "beachgoer.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Empate tá ótimo. Hoje a onda não era minha, segura a onda."
+    },
+    {
+      "id": "beachgoer.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Valeu, mas não. Ainda tem muita onda pra pegar aqui."
+    },
+    {
+      "id": "beachgoer.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Empate? Mano, eu nem terminei meu coco ainda."
+    },
+    {
+      "id": "beachgoer.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Relaxa, parceiro. A maré tá virando pro meu lado."
+    },
+    {
+      "id": "beachgoer.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Nada disso! Sair da praia agora? Com esse sol lindo?"
+    },
+    {
+      "id": "beachgoer.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Segura a onda, que a série boa tá só chegando pra mim."
+    },
+    {
+      "id": "beachgoer.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Recuso de boa. Tô surfando liso, parceiro, bora até o fim."
     }
   ]
 }

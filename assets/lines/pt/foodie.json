@@ -778,6 +778,90 @@
       "intensity": 3,
       "emotion": "calm",
       "text": "Sobrou pouca coisa na mesa. Ninguém janta hoje."
+    },
+    {
+      "id": "foodie.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate? Aceito. Melhor dividir a pizza do que pagar a conta sozinho."
+    },
+    {
+      "id": "foodie.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meio a meio. Justo, e ninguém sai com fome."
+    },
+    {
+      "id": "foodie.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa. Essa massa ia queimar no meu forno. Aceito."
+    },
+    {
+      "id": "foodie.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Bom cozinheiro você. Aceito e guardo o resto pra viagem."
+    },
+    {
+      "id": "foodie.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Aceito antes que você coma minha última fatia."
+    },
+    {
+      "id": "foodie.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Salvou meu jantar. Empate, e a sobremesa é por minha conta."
+    },
+    {
+      "id": "foodie.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate? Nem tirei a pizza do forno ainda."
+    },
+    {
+      "id": "foodie.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Obrigado, mas ainda tô com fome."
+    },
+    {
+      "id": "foodie.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Dividir a conta? Não, hoje quem paga é você."
+    },
+    {
+      "id": "foodie.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Recusado. Ainda tem muita fatia nesse tabuleiro."
+    },
+    {
+      "id": "foodie.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Não largo o prato pela metade. Vamos até a borda."
+    },
+    {
+      "id": "foodie.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Fogo baixo, sem pressa. Esse final ainda vai crescer."
     }
   ]
 }

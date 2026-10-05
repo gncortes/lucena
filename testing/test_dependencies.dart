@@ -11,6 +11,10 @@ import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/data/repositories/settings/settings_repository.dart';
 import 'package:lucena/data/repositories/training/training_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/data/repositories/draw/draw_offer_repository.dart';
+
+import 'fakes/fake_draw_offer_repository.dart';
+
 import 'package:lucena/data/repositories/rating/rating_repository.dart';
 import 'package:lucena/data/repositories/achievements/achievements_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
@@ -61,6 +65,7 @@ Dependencies testDependencies({
   TalkRepository? talkRepository,
   OnboardingRepository? onboardingRepository,
   PaceRepository? paceRepository,
+  DrawOfferRepository? drawOfferRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -91,6 +96,7 @@ Dependencies testDependencies({
     talkRepository: talkRepository ?? FakeTalkRepository(),
     onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
     paceRepository: paceRepository ?? FakePaceRepository(),
+    drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

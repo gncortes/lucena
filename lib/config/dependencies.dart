@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
@@ -80,6 +81,7 @@ class Dependencies {
     required this.talkRepository,
     required this.onboardingRepository,
     required this.paceRepository,
+    required this.drawOfferRepository,
     required this.languages,
   });
 
@@ -94,6 +96,7 @@ class Dependencies {
     final pace = AssetPaceRepository(assets);
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
+    final evaluation = StockfishEvaluationRepository(stockfish);
     return Dependencies(
       now: now,
       settingsRepository: LocalSettingsRepository(preferences),
@@ -119,10 +122,14 @@ class Dependencies {
       achievementsRepository: LocalAchievementsRepository(assets, database),
       characterRepository: AssetCharacterRepository(assets),
       // O mesmo Stockfish do adversário: contra o Maia ele está livre.
-      evaluationRepository: StockfishEvaluationRepository(stockfish),
+      evaluationRepository: evaluation,
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: LocalOnboardingRepository(preferences),
       paceRepository: pace,
+      drawOfferRepository: DeviceDrawOfferRepository(
+        maia: maiaRepository,
+        evaluation: evaluation,
+      ),
       languages: AppLanguage.selectable,
     );
   }
@@ -146,6 +153,7 @@ class Dependencies {
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
   final PaceRepository paceRepository;
+  final DrawOfferRepository drawOfferRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

@@ -785,6 +785,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "Meio ponto pra cada. Um número em dupla, que bonito."
+    },
+    {
+      "id": "magician.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate aceito. Todo grande número sabe a hora de fechar a cortina."
+    },
+    {
+      "id": "magician.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tcharam! O truque de hoje: ninguém perde. Aplausos, por favor."
+    },
+    {
+      "id": "magician.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Aceito, sim. O coelho já estava pedindo pra ir embora."
+    },
+    {
+      "id": "magician.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa... digo, que proposta elegante! Aceito."
+    },
+    {
+      "id": "magician.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Abracadabra, a minha derrota sumiu! Aceito!"
+    },
+    {
+      "id": "magician.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Senhoras e senhores, um empate. O mágico sai de cartola erguida."
+    },
+    {
+      "id": "magician.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate? O show mal começou. Pode sentar, por favor."
+    },
+    {
+      "id": "magician.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Recuso! Ainda tenho cartas na manga. Muitas cartas."
+    },
+    {
+      "id": "magician.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Ninguém sai antes do grand finale. Regra do teatro!"
+    },
+    {
+      "id": "magician.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? Que pena, o meu coelho queria ver o final."
+    },
+    {
+      "id": "magician.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Agradeço a gentileza, mas o número continua."
+    },
+    {
+      "id": "magician.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Recusado! Olhe bem a minha mão... não, a outra!"
     }
   ]
 }

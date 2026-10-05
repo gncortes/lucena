@@ -778,6 +778,90 @@
       "intensity": 1,
       "emotion": "confident",
       "text": "I was generous today. Don't get used to it."
+    },
+    {
+      "id": "snob.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Accepted. Out of courtesy, of course, not necessity."
+    },
+    {
+      "id": "snob.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw. Consider it an honor to share a point with a medalist."
+    },
+    {
+      "id": "snob.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm, yes, accepted. The lighting in here is dreadful."
+    },
+    {
+      "id": "snob.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Fine, but only because this board is crooked."
+    },
+    {
+      "id": "snob.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Phew. I mean, what an elegant gesture. Accepted, naturally."
+    },
+    {
+      "id": "snob.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Agreed. That was my plan all along. You wouldn't understand."
+    },
+    {
+      "id": "snob.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No, thank you. Medalists don't split points for nothing."
+    },
+    {
+      "id": "snob.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw? With me? Declined, with all due respect."
+    },
+    {
+      "id": "snob.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "How sweet. But I hold bronze at the Neighborhood Open."
+    },
+    {
+      "id": "snob.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Declined. I play to win, not to be liked."
+    },
+    {
+      "id": "snob.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? I could autograph your defeat instead."
+    },
+    {
+      "id": "snob.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Declined. I'm better off even with my arms crossed."
     }
   ]
 }

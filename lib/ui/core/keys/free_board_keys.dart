@@ -57,10 +57,9 @@ abstract final class FreeBoardKeys {
   static const endResult = Key('freeBoard.end.result');
   static const endNewGameButton = Key('freeBoard.end.newGame');
 
-  /// O personagem acima do tabuleiro: a fileira, o retrato (pela emoção), o
-  /// nome e o balão com a fala (pelo id da fala).
+  /// O personagem acima do tabuleiro: a fileira, o retrato (pela emoção) e o
+  /// balão com a fala (pelo id da fala).
   static const characterBar = Key('freeBoard.character');
-  static const characterName = Key('freeBoard.character.name');
   static const speechBubble = Key('freeBoard.character.bubble');
   static Key characterAvatar(Emotion emotion) =>
       Key('freeBoard.character.avatar.${emotion.name}');
@@ -71,4 +70,8 @@ abstract final class FreeBoardKeys {
   static const report = Key('freeBoard.report');
   static const ratingChange = Key('freeBoard.report.rating');
   static Key feedback(int index) => Key('freeBoard.report.feedback.$index');
+
+  /// Propor empate e o aviso de que a máquina recusou.
+  static const drawButton = Key('freeBoard.draw');
+  static const drawDeclined = Key('freeBoard.draw.declined');
 }

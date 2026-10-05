@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import '../testing/e2e_dependencies.dart';
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
 import 'robots/character_robot.dart';
@@ -221,5 +222,27 @@ void main() {
     expect(character.lineId(), line);
     await shuffle($, 0);
     FreeBoardRobot($).expectStillPlaying();
+  });
+
+  patrolTest('empate: o personagem recusa com fala dele e, bem pior, aceita', (
+    $,
+  ) async {
+    final character = CharacterRobot($);
+    await AppRobot($).open(systemLocale: _english);
+    await openMagician($);
+
+    await $(FreeBoardKeys.drawButton).tap();
+    await character.expectLine('drawDeclined');
+    await $(FreeBoardKeys.drawDeclined).waitUntilVisible();
+    FreeBoardRobot($).expectStillPlaying();
+
+    // Uns lances depois, com a posição perdida para ele, aceita.
+    e2eDraws.accept = true;
+    for (var move = 0; move < 3; move++) {
+      await shuffle($, move);
+    }
+    await $(FreeBoardKeys.drawButton).tap();
+    await character.expectLine('drawAccepted');
+    await $(FreeBoardKeys.endPanel).waitUntilVisible();
   });
 }

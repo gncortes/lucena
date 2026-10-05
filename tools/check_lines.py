@@ -25,7 +25,7 @@ CATEGORIES = [
     "opponentBlunder", "ownBlunder", "strongMove", "comeback", "collapse",
     "pieceCaptured", "pieceLost", "ownPromotion", "opponentPromotion",
     "opponentLowTime", "ownLowTime", "timeAdvantage", "opponentThinking",
-    "win", "loss", "draw",
+    "win", "loss", "draw", "drawAccepted", "drawDeclined",
 ]
 EMOTIONS = {
     "calm", "happy", "confident", "playful", "focused", "surprised",

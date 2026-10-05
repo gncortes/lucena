@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/draw/draw_offer_repository.dart';
 import '../../../data/repositories/haptics/haptics_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
@@ -48,6 +49,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._opponent,
     required this._progress,
     this._reporter,
+    this._draws,
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -84,6 +86,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   // Conta a partida terminada no rating, nas mensagens e nas conquistas. Nulo:
   // só grava o histórico.
   final GameReporter? _reporter;
+
+  // Quem responde as propostas de empate. Nulo: a máquina sempre recusa.
+  final DrawOfferRepository? _draws;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -148,6 +153,57 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         state.copyWith(
           clock: clock == null ? null : ClockEngine.stop(clock, now),
           forcedEnd: GameEnd(GameEndReason.resign, winner: user.opposite),
+          machineThinking: false,
+        ),
+        now,
+      ),
+    );
+    _changed();
+  }
+
+  /// O jogador propõe empate. A máquina só aceita quando está bem pior; se
+  /// aceitar, a partida termina empatada na hora.
+  Future<void> offerDraw() async {
+    final machine = state.mode.machineSide;
+    if (!_active || !state.canOfferDraw || machine == null) return;
+    final startedAt = state.startedAt;
+    emit(state.copyWith(drawOffer: DrawOffer.pending));
+    var accepted = false;
+    try {
+      accepted =
+          await _draws?.accepts(
+            state.position,
+            machine: machine,
+            kind: state.mode.opponent,
+            level: state.mode.level,
+          ) ??
+          false;
+    } on Object {
+      accepted = false;
+    }
+    // A partida acabou ou recomeçou enquanto a máquina pensava.
+    if (isClosed || state.startedAt != startedAt) return;
+    if (state.end != null) {
+      emit(state.copyWith(drawOffer: DrawOffer.none));
+      return;
+    }
+    if (!accepted) {
+      emit(
+        state.copyWith(
+          drawOffer: DrawOffer.declined,
+          drawDeclinedAt: state.ucis.length,
+        ),
+      );
+      return;
+    }
+    final now = _now();
+    final clock = state.clock;
+    emit(
+      _timed(
+        state.copyWith(
+          clock: clock == null ? null : ClockEngine.stop(clock, now),
+          forcedEnd: const GameEnd(GameEndReason.drawAgreed),
+          drawOffer: DrawOffer.accepted,
           machineThinking: false,
         ),
         now,
