@@ -45,7 +45,8 @@ class JourneyCubit extends Cubit<JourneyState> {
     this._school,
     this._lessons,
     this._language = 'en',
-  }) : super(const JourneyState());
+    JourneyState? initial,
+  }) : super(initial ?? const JourneyState());
 
   final JourneyRepository _journey;
   final ProgressRepository _progress;

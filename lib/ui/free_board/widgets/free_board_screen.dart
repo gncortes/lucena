@@ -17,7 +17,6 @@ import '../../core/board/board_settings_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -287,14 +286,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               ClockPosition.sides => 2,
               ClockPosition.top || ClockPosition.bottom => 1,
             };
-            final turnHeight = state.clock == null && state.end == null
+            // De quem é a vez só no tabuleiro livre sem relógio; contra a
+            // máquina, o personagem e o último lance já dizem.
+            final turnHeight =
+                state.clock == null &&
+                    state.end == null &&
+                    !state.mode.opponent.isMachine
                 ? _turnHeight
                 : 0.0;
-            final fixed =
-                turnHeight +
-                clockRows * ClockRow.height +
-                (state.machineThinking && state.clock == null ? 28 : 0) +
-                _minBottom;
+            final fixed = turnHeight + clockRows * ClockRow.height + _minBottom;
             // O retrato do personagem encolhe para a partida caber na tela
             // sem rolar, quando dá.
             final width = constraints.maxWidth;
@@ -333,8 +333,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           height: turnHeight,
                           child: _Turn(side: state.position.turn),
                         ),
-                      if (state.machineThinking && state.clock == null)
-                        _Thinking(mode: state.mode),
                       if (character != null)
                         CharacterBar(
                           talk: talk,
@@ -950,44 +948,6 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
                 Expanded(child: button),
               ],
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A máquina está escolhendo o lance (partida sem relógio; com relógio, o
-/// relógio dela correndo já mostra).
-class _Thinking extends StatelessWidget {
-  const _Thinking({required this.mode});
-
-  final GameMode mode;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      key: FreeBoardKeys.machineThinking,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Row(
-        children: [
-          // Ícone parado: a tela não fica animando enquanto a máquina pensa.
-          Icon(
-            Icons.hourglass_top,
-            size: 18,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              context.l10n.gameMachineThinking(
-                mode.opponent.label(context.l10n, level: mode.level),
-              ),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
           ),
         ],
       ),

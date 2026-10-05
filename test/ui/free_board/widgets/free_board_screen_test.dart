@@ -1187,7 +1187,9 @@ void main() {
       expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
     });
 
-    testWidgets('sem relógio, avisa que o Maia está pensando', (tester) async {
+    testWidgets('contra a máquina, sem a linha de vez nem o "pensando"', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -1195,13 +1197,14 @@ void main() {
       );
       opponent.hold();
 
+      expect(find.byKey(FreeBoardKeys.turn), findsNothing);
       await move(tester, 'c1', 'g5');
       await tester.pump();
 
-      expect(find.text('Maia 1400 is thinking…'), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
+      expect(find.text('Maia 1400 is thinking…'), findsNothing);
       opponent.release();
       await tester.pumpAndSettle();
-      expect(find.byKey(FreeBoardKeys.machineThinking), findsNothing);
     });
   });
 }
