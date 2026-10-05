@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/journey/journey_repository_asset.dart';
@@ -9,6 +10,8 @@ import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/domain/use_cases/position_validation.dart';
+import 'package:lucena/domain/use_cases/subcategory_material.dart';
 
 /// Lê os arquivos do próprio projeto, como o app lê os dele. Os de
 /// [overrides] vêm do texto dado (para as modalidades de speedrun que o app
@@ -22,7 +25,7 @@ class _ProjectBundle extends CachingAssetBundle {
   Future<ByteData> load(String key) async {
     final text = overrides[key];
     final bytes = text == null
-        ? await File(key).readAsBytes()
+        ? await io.File(key).readAsBytes()
         : Uint8List.fromList(utf8.encode(text));
     return ByteData.sublistView(bytes);
   }
@@ -40,6 +43,26 @@ const _otherKinds = '''
   {"id": "full", "kind": "full", "time": "300+3"}
 ]}
 ''';
+
+// Os mates: quem defende só tem o rei (ou a torre, contra a dama).
+const _mates = {
+  'rook',
+  'queen',
+  'twoBishopsVsKing',
+  'queenVsRook',
+  'knightBishopVsKing',
+};
+
+// As peças de [side], da mais forte para a mais fraca, como em
+// SubcategoryMaterial: o rei só aparece quando não há mais nada.
+List<Role> _roles(Board board, Side side) {
+  const order = [Role.queen, Role.rook, Role.bishop, Role.knight, Role.pawn];
+  final roles = [
+    for (final square in board.bySide(side).squares)
+      if (board.roleAt(square) case final role? when role != Role.king) role,
+  ]..sort((a, b) => order.indexOf(a).compareTo(order.indexOf(b)));
+  return roles.isEmpty ? const [Role.king] : roles;
+}
 
 void main() {
   late AssetJourneyRepository repository;
@@ -128,7 +151,64 @@ void main() {
     }
   });
 
-  test('speedrun de final: a mesma posição contra cada degrau', () async {
+  test('speedrun de final: o mesmo final contra cada degrau, com as peças em '
+      'casas diferentes e às vezes com as pretas', () async {
+    final ladder = await repository.ladder();
+    final endings = (await repository.speedruns()).where(
+      (s) => s.kind == SpeedrunKind.ending,
+    );
+    final catalog = AssetPositionsRepository(AssetService(_ProjectBundle()));
+
+    expect(endings, hasLength(9));
+    for (final speedrun in endings) {
+      final base = (await catalog.byId(speedrun.positionId!))!;
+      expect(speedrun.stages, hasLength(ladder.length), reason: speedrun.id);
+      expect(
+        speedrun.stages.map((stage) => stage.opponent),
+        ladder.map((rung) => rung.opponent),
+      );
+      final positions = [for (final stage in speedrun.stages) stage.position];
+      expect(positions.map((p) => p.fen).toSet(), hasLength(ladder.length));
+      expect(positions.map((p) => p.id).toSet(), hasLength(ladder.length));
+      var black = 0;
+      for (final position in positions) {
+        final reason = '${speedrun.id} ${position.fen}';
+        // O final do speedrun, fora do catálogo.
+        expect(position.category, base.category, reason: reason);
+        expect(position.subcategory, base.subcategory, reason: reason);
+        expect(position.goal, base.goal, reason: reason);
+        expect(position.verified, isTrue, reason: reason);
+        expect(await catalog.byId(position.id), isNull, reason: reason);
+
+        final checked = PositionValidation.check(position.fen);
+        expect(checked.problem, isNull, reason: reason);
+        final board = checked.position!.board;
+        final turn = checked.position!.turn;
+        if (turn == Side.black) black++;
+        final (strong, weak) = SubcategoryMaterial.of(position.subcategory);
+        expect(_roles(board, turn), strong, reason: reason);
+        expect(_roles(board, turn.opposite), weak, reason: reason);
+        // Nos mates, o rei de quem defende nunca começa na borda.
+        if (_mates.contains(position.subcategory)) {
+          final king = board.kingOf(turn.opposite)!;
+          final edges = [File.a.value, File.h.value];
+          expect(
+            edges.contains(king.file.value) ||
+                [Rank.first.value, Rank.eighth.value].contains(king.rank.value),
+            isFalse,
+            reason: reason,
+          );
+        }
+      }
+      expect(black, greaterThanOrEqualTo(3), reason: speedrun.id);
+    }
+  });
+
+  test('speedrun de final sem posições no arquivo: a do speedrun em todas as '
+      'etapas', () async {
+    repository = build({
+      AssetJourneyRepository.speedrunPositionsPath: '{"speedruns": {}}',
+    });
     final ladder = await repository.ladder();
     final endings = (await repository.speedruns()).where(
       (s) => s.kind == SpeedrunKind.ending,
@@ -137,10 +217,6 @@ void main() {
     expect(endings, isNotEmpty);
     for (final speedrun in endings) {
       expect(speedrun.stages, hasLength(ladder.length));
-      expect(
-        speedrun.stages.map((stage) => stage.opponent),
-        ladder.map((rung) => rung.opponent),
-      );
       expect(speedrun.stages.map((stage) => stage.position.id).toSet(), {
         speedrun.positionId,
       });
