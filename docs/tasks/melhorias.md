@@ -5,6 +5,11 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 ## Tela da partida
 
 - [ ] **Espaço entre o personagem e o tabuleiro.** Hoje o retrato e o balão encostam na borda de cima do tabuleiro. Dar um respiro (uns 8 a 12 px) entre a fileira do personagem e o tabuleiro. ([print](../qa/melhorias/38eb7dc8.jpg))
+- [ ] **Tabuleiro pequeno (prioridade).** ([print](../qa/melhorias/e7a6e103.jpg)) Com o relógio "dos lados", a fileira do personagem, a fileira do relógio do adversário, a do jogador e o espaço reservado para a lista de lances, o tabuleiro não ocupa a largura da tela, enquanto sobra um vazio embaixo ("Mova uma peça para começar"). Proposta:
+  - o tabuleiro sempre na largura toda; o que cede é a lista de lances (que rola) e não o tabuleiro;
+  - juntar a fileira do personagem com a do relógio dele (retrato, balão e relógio numa faixa só), como no chess.com, e reduzir o retrato quando a tela for baixa;
+  - diminuir o espaço mínimo da lista de lances; a lista vira uma faixa horizontal de lances (como no chess.com e no Lichess) logo abaixo do tabuleiro;
+  - conferir em telas pequenas (SmallPhone) e no tema com relógio em cima/embaixo/dos lados.
 - [ ] **"Próximo desafio" no fim da partida.** Num desafio da Jornada, o painel do fim ganha embaixo a opção de ir direto para o próximo desafio do degrau (ou do degrau seguinte, se este acabou), além de "Jogar de novo". ([print](../qa/melhorias/3d0bf1e2.jpg))
 
 - [ ] **Layout do rating, no estilo do chess.com.** Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
