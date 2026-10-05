@@ -46,6 +46,17 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta de layout: cartões em vez de linhas; o retrato do personagem (ou o material do final) no cartão; o melhor tempo em destaque quando houver; tentativa em andamento no topo com "Continuar"; a explicação vira um ícone de ajuda (ⓘ) que abre um painel; espaço embaixo para rolar até o fim.
 
+- [ ] **Tela de um speedrun (antes de começar).** ([print](../qa/melhorias/bae1cc34.jpg)) O que incomoda no print:
+  - "Recorde pessoal · Sem recorde" num bloco verde enorme, repetindo a palavra recorde;
+  - as etapas são 9 linhas iguais "Maia 1000" com um número: não dá para saber que final é cada uma;
+  - título com "Degrau Maia 1000" e o ritmo "5 min + 3 s" escondido na linha de cima.
+
+  Proposta:
+  - cabeçalho com o retrato do personagem, nome do speedrun (ver os nomes novos acima) e o ritmo em selo ("5+3 · Blitz");
+  - melhor tempo em destaque só quando existir; sem tempo, um texto curto de convite ("Seu primeiro tempo vai aparecer aqui");
+  - etapas em grade de miniaturas do tabuleiro, numeradas, com o nome do final e o melhor tempo de cada uma (quando houver);
+  - "Começar" fixo embaixo, com o total de etapas.
+
 ## Animações
 
 - [ ] **Transições entre telas.** Hoje a troca de tela é a padrão do Android e parece seca. Proposta:
