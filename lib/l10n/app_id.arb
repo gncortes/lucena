@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Selesaikan satu speedrun, dari lawan pertama sampai Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Selesaikan speedrun akhir permainan ini dengan kontrol waktu {pace}",
-  "journeyIntro": "Langkah berikutnya setelah pelajaran Viktor: latih apa yang sudah kamu pelajari dan hadapi tantangan baru, lawan demi lawan."
+  "journeyIntro": "Langkah berikutnya setelah pelajaran Viktor: latih apa yang sudah kamu pelajari dan hadapi tantangan baru, lawan demi lawan.",
+  "gameMoveBack": "Mundur",
+  "gameMoveForward": "Maju",
+  "statsGamesTitle": "Riwayat permainan",
+  "statsGamesEmpty": "Permainan yang kamu mainkan muncul di sini, dari yang terbaru."
 }

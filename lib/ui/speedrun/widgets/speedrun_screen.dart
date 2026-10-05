@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
@@ -314,7 +314,18 @@ class SpeedrunScreen extends StatelessWidget {
           key: SpeedrunKeys.run(index),
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
           color: colors.surfaceContainerLow,
+          clipBehavior: Clip.antiAlias,
           child: ListTile(
+            // Os detalhes da tentativa: o tempo e as derrotas de cada etapa.
+            onTap: () => context.push(
+              Routes.speedrunAttempt(speedrun.id, run.attempt.id),
+            ),
+            trailing: Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.chevron_left
+                  : Icons.chevron_right,
+              color: colors.onSurfaceVariant,
+            ),
             leading: Icon(
               run.completed ? Icons.flag_rounded : Icons.flag_outlined,
               color: run.completed ? colors.primary : colors.outline,

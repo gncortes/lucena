@@ -297,6 +297,30 @@ class FreeBoardRobot {
     expect(find.byKey(FreeBoardKeys.move(moves.length)), findsNothing);
   }
 
+  /// Toca no lance [index] da faixa do alto: o tabuleiro mostra a posição
+  /// daquele momento.
+  Future<void> viewMove(int index) async {
+    await $(FreeBoardKeys.move(index)).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  /// Um lance para trás e um para a frente na revisão.
+  Future<void> viewPrevious() async {
+    await $(FreeBoardKeys.movePrevious).tap();
+    await $.pumpAndSettle();
+  }
+
+  Future<void> viewNext() async {
+    await $(FreeBoardKeys.moveNext).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// A peça que o tabuleiro mostra em [square] (nulo: casa vazia).
+  void expectPieceAt(String square, Piece? piece) {
+    final setup = Setup.parseFen(_chessboard.controller.fen);
+    expect(setup.board.pieceAt(Square.fromName(square)), piece);
+  }
+
   /// Espera a lista chegar a [count] lances (a máquina de verdade responde
   /// fora do ritmo dos quadros) e devolve os lances.
   Future<List<String>> waitForMoves(int count) async {

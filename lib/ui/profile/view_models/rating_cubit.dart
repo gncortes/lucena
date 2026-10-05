@@ -1,11 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/achievements/achievements_repository.dart';
+import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/attempt.dart';
+import '../../../domain/models/character.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/now.dart';
@@ -45,6 +47,16 @@ class PlayerNumbers {
   final Duration? bestSpeedrun;
 }
 
+/// Uma partida do histórico geral.
+class LoggedGame {
+  const LoggedGame({required this.attempt, this.rated});
+
+  final Attempt attempt;
+
+  /// Como o rating ficou depois dela e quanto mudou. Nulo se ela não contou.
+  final RatedGame? rated;
+}
+
 /// O rating do jogador, o histórico dele e os números do progresso.
 class RatingState {
   const RatingState({
@@ -52,6 +64,8 @@ class RatingState {
     this.history = const [],
     this.attempts = const {},
     this.numbers,
+    this.allGames = const [],
+    this.characters = const [],
   });
 
   /// Nulo enquanto é lido.
@@ -66,6 +80,23 @@ class RatingState {
   /// Partidas, vitórias, dias seguidos, conquistas e o melhor speedrun. Nulo
   /// onde só o rating interessa (sem o histórico de partidas).
   final PlayerNumbers? numbers;
+
+  /// Todas as partidas, de qualquer modo, da mais recente para a mais
+  /// antiga.
+  final List<Attempt> allGames;
+
+  /// Os personagens, um por nível do Maia: o histórico mostra o retrato.
+  final List<Character> characters;
+
+  /// O histórico de partidas: cada uma com o que ela fez no rating, quando
+  /// contou.
+  List<LoggedGame> get log {
+    final rated = {for (final game in games) ?game.attempt: game};
+    return [
+      for (final attempt in allGames)
+        LoggedGame(attempt: attempt, rated: rated[attempt]),
+    ];
+  }
 
   /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
   int? get lastChange => history.length < 2
@@ -99,6 +130,7 @@ class RatingCubit extends Cubit<RatingState> {
     this._achievements,
     this._speedruns,
     this._journey,
+    this._characters,
     this._now = const SystemNow(),
   }) : super(const RatingState());
 
@@ -110,6 +142,7 @@ class RatingCubit extends Cubit<RatingState> {
   final AchievementsRepository? _achievements;
   final SpeedrunRepository? _speedruns;
   final JourneyRepository? _journey;
+  final CharacterRepository? _characters;
   final Now _now;
 
   Future<void> load() async {
@@ -122,10 +155,11 @@ class RatingCubit extends Cubit<RatingState> {
         }) ??
         const <int, Attempt>{};
     final achievements = _achievements;
+    final all = await progress?.allAttempts() ?? const <Attempt>[];
     final numbers = progress == null
         ? null
         : PlayerNumbers(
-            stats: PlayerStats.of(await progress.allAttempts(), _now()),
+            stats: PlayerStats.of(all, _now()),
             achievementsUnlocked: achievements == null
                 ? 0
                 : (await achievements.unlocked()).length,
@@ -141,6 +175,8 @@ class RatingCubit extends Cubit<RatingState> {
         history: history,
         attempts: attempts,
         numbers: numbers,
+        allGames: [...all]..sort((a, b) => b.playedAt.compareTo(a.playedAt)),
+        characters: await _characters?.characters() ?? const <Character>[],
       ),
     );
   }

@@ -178,6 +178,10 @@ void main() {
     await speedrun.expectHistory(0, 'Gave up at stage 2 of 3');
     // Sem tentativa em andamento, dá para começar de novo.
     await speedrun.expectCanStart();
+    // Tocar na tentativa abre os detalhes dela, com a marca de cada etapa.
+    await speedrun.openHistory(0);
+    await speedrun.expectAbandonedDetails(firstStage: '0:03.0');
+    await speedrun.back();
 
     await app.restart();
     await speedrun.open();

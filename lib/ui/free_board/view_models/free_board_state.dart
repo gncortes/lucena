@@ -80,6 +80,15 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
     /// enquanto ela continua ou até a conta terminar.
     GameReport? report,
+
+    /// O lance que o jogador está revendo: quantos lances estão no tabuleiro
+    /// (0 é a posição de início). Nulo: a posição atual da partida.
+    int? viewedPly,
+
+    /// A posição depois de [viewedPly] lances e o último deles. Só valem com
+    /// ele.
+    Position? viewedPosition,
+    Move? viewedMove,
   }) = _FreeBoardState;
 
   const FreeBoardState._();
@@ -128,6 +137,17 @@ abstract class FreeBoardState with _$FreeBoardState {
     return declinedAt == null ||
         ucis.length - declinedAt >= DrawRules.cooldownPlies;
   }
+
+  /// O jogador está revendo um lance anterior: o tabuleiro só mostra, sem
+  /// aceitar lances.
+  bool get browsing => viewedPly != null;
+
+  /// Quantos lances estão no tabuleiro: os do lance revisto ou todos.
+  int get shownPly => viewedPly ?? ucis.length;
+
+  /// A posição que o tabuleiro mostra e o lance em destaque nela.
+  Position get shownPosition => viewedPosition ?? position;
+  Move? get shownMove => browsing ? viewedMove : lastMove;
 
   /// Quanto falta para [side], como aparece na tela.
   Duration timeOf(Side side) => side == Side.white ? whiteTime : blackTime;

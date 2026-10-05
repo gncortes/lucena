@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "أكمل سباق وقت، من أول خصم حتى Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "أكمل سباق الوقت لهذه النهاية بإيقاع {pace}",
-  "journeyIntro": "الخطوة التالية بعد دروس فيكتور: طبّق ما تعلمته وواجه تحديات جديدة، خصمًا تلو الآخر."
+  "journeyIntro": "الخطوة التالية بعد دروس فيكتور: طبّق ما تعلمته وواجه تحديات جديدة، خصمًا تلو الآخر.",
+  "gameMoveBack": "السابق",
+  "gameMoveForward": "التالي",
+  "statsGamesTitle": "سجل المباريات",
+  "statsGamesEmpty": "تظهر هنا المباريات التي تلعبها، الأحدث أولًا."
 }

@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Completa un speedrun, del primer rival a Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Completa el speedrun de este final en el ritmo {pace}",
-  "journeyIntro": "El siguiente paso tras las clases de Viktor: practica lo que aprendiste y afronta nuevos desafíos, un rival cada vez."
+  "journeyIntro": "El siguiente paso tras las clases de Viktor: practica lo que aprendiste y afronta nuevos desafíos, un rival cada vez.",
+  "gameMoveBack": "Atrás",
+  "gameMoveForward": "Adelante",
+  "statsGamesTitle": "Historial de partidas",
+  "statsGamesEmpty": "Las partidas que juegues aparecen aquí, de la más reciente a la más antigua."
 }

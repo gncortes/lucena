@@ -396,5 +396,9 @@
   "achievementSpeedrunHint": "Terminez un speedrun, du premier adversaire à Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
   "achievementSpeedrunPaceHint": "Terminez le speedrun de cette finale en cadence {pace}",
-  "journeyIntro": "L'étape suivante après les leçons de Viktor : mettez en pratique ce que vous avez appris et relevez de nouveaux défis, un adversaire à la fois."
+  "journeyIntro": "L'étape suivante après les leçons de Viktor : mettez en pratique ce que vous avez appris et relevez de nouveaux défis, un adversaire à la fois.",
+  "gameMoveBack": "Reculer",
+  "gameMoveForward": "Avancer",
+  "statsGamesTitle": "Historique des parties",
+  "statsGamesEmpty": "Les parties que vous jouez apparaissent ici, de la plus récente à la plus ancienne."
 }
