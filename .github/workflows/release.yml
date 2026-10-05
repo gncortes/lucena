@@ -1,7 +1,8 @@
 name: Release
 
-# A tag final (`git tag vX.Y.Z && git push --tags`, feita pelo Gabriel depois do merge)
-# roda o CI e publica o APK assinado como Release. Tags de candidata (-rc.N) vão para o qa.yml.
+# A tag final (`git tag vX.Y.Z && git push --tags`, feita pelo Gabriel na `main` depois do merge da `develop`)
+# roda o CI e o Patrol no Test Lab, publica o APK assinado como Release e o envia ao grupo `release` do
+# App Distribution (todo mundo). Tags de candidata (-rc.N) vão para o qa.yml.
 on:
   push:
     tags: ['v[0-9]+.[0-9]+.[0-9]+']
@@ -9,23 +10,72 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  test-lab:
+    name: Patrol no Test Lab
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Os segredos (assinatura e configuração do QA) só existem neste ambiente, restrito a tags `v*`.
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # login no Google Cloud sem chave (Workload Identity Federation)
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/qa-config
+        id: cfg
+        with:
+          qa-config-env: ${{ secrets.QA_CONFIG_ENV }}
+          tem-keystore: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+
+      - uses: ./.github/actions/setup-flutter
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ steps.cfg.outputs.provider }}
+          service_account: ${{ steps.cfg.outputs.service-account }}
+
+      - uses: ./.github/actions/test-lab
+        id: testlab
+
+      - name: Resumo
+        env:
+          TEST_LAB_LINK: ${{ steps.testlab.outputs.link }}
+          TEST_LAB_RESULT: ${{ steps.testlab.outputs.result }}
+        run: |
+          if [[ "$TEST_LAB_RESULT" == ok ]]; then
+            echo "- [Resultado do Test Lab]($TEST_LAB_LINK)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- Test Lab não rodou: cota diária esgotada" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   publicar:
     name: Publicar Release
-    needs: ci
+    needs: [ci, test-lab]
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # Os segredos de assinatura só existem neste ambiente, restrito a tags `v*`.
     environment: release
     permissions:
       contents: write
+      id-token: write # login no Google Cloud sem chave (Workload Identity Federation)
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # versionCode = número de commits
+
+      - uses: ./.github/actions/qa-config
+        id: cfg
+        with:
+          qa-config-env: ${{ secrets.QA_CONFIG_ENV }}
+          tem-keystore: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
 
       - uses: ./.github/actions/setup-flutter
 
@@ -44,8 +94,29 @@ jobs:
           APK: ${{ steps.apk.outputs.apk }}
         run: |
           destino="lucena-$GITHUB_REF_NAME.apk"
-          mv "$APK" "$destino"
+          cp "$APK" "$destino"
           gh release create "$GITHUB_REF_NAME" "$destino" \
             --title "$GITHUB_REF_NAME" \
             --generate-notes \
             --verify-tag
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ steps.cfg.outputs.provider }}
+          service_account: ${{ steps.cfg.outputs.service-account }}
+
+      # Grupo `release` do App Distribution: todo mundo que recebe as versões finais.
+      - uses: ./.github/actions/app-distribution
+        id: dist
+        with:
+          apk: ${{ steps.apk.outputs.apk }}
+          group: release
+
+      - name: Resumo
+        env:
+          TESTER_LINK: ${{ steps.dist.outputs.tester }}
+        run: |
+          {
+            echo "### Release $GITHUB_REF_NAME"
+            echo "- [Instalar pelo App Distribution]($TESTER_LINK)"
+          } >> "$GITHUB_STEP_SUMMARY"
