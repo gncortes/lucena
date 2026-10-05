@@ -10,7 +10,6 @@ import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/use_cases/rating_period.dart';
 import '../../../routing/routes.dart';
-import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -418,9 +417,9 @@ class _Results extends StatelessWidget {
   }
 }
 
-/// Uma partida do histórico, no formato do chess.com: o ritmo, o retrato e o
-/// nome do adversário, o final jogado e a data, e o resultado; nas que
-/// contaram para o rating, quanto ele mudou.
+/// Uma partida do histórico, enxuta como no chess.com: o ícone do ritmo, o
+/// retrato pequeno, o nome e o nível do adversário, a marca do resultado e
+/// quanto o rating mudou. Tocar abre os detalhes.
 class _GameRow extends StatelessWidget {
   const _GameRow({
     required this.index,
@@ -437,19 +436,9 @@ class _GameRow extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
-    final locale = Localizations.localeOf(context).toString();
     final attempt = game.attempt;
-    final date = DateFormat.MMMd(locale)
-        .add_Hm()
-        .format(attempt.playedAt.toLocal());
     final time = attempt.userTime;
-    final paceIcon = switch (time == null ? null : PaceCategory.of(time)) {
-      null => Icons.timer_off_outlined,
-      PaceCategory.bullet => Icons.bolt,
-      PaceCategory.blitz => Icons.local_fire_department_outlined,
-      PaceCategory.rapid => Icons.timer_outlined,
-      PaceCategory.classical => Icons.hourglass_bottom,
-    };
+    final category = time == null ? null : PaceCategory.of(time);
     final character = switch (attempt.opponent) {
       OpponentKind.stockfish => Character.stockfish,
       OpponentKind.maia => characters.forLevel(attempt.opponentLevel),
@@ -477,20 +466,17 @@ class _GameRow extends StatelessWidget {
     };
     final rated = game.rated;
     final change = rated?.change;
-    // O final jogado, pelo id da posição (`categoria.subcategoria.número`).
-    final parts = attempt.positionId.split('.');
-    final endgame = parts.length > 1 ? endgameName(l10n, parts[1]) : null;
-    // A linha inteira responde ao toque e ao leitor de tela como um item só.
     return InkWell(
       key: RatingKeys.entry(index),
       onTap: () => context.push(Routes.game(game.id)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
+            // O ritmo pelo ícone de sempre: raio, chama, relógio.
             Icon(
-              paceIcon,
-              size: 28,
+              category == null ? Icons.timer_off_outlined : paceIcon(category),
+              size: 24,
               color: ChangeColors.of(context, up: true),
               semanticLabel: time == null
                   ? l10n.challengeNoClock
@@ -498,122 +484,77 @@ class _GameRow extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             if (character != null)
-              CharacterAvatar(character: character, size: 52)
+              CharacterAvatar(character: character, size: 36)
             else
               Container(
-                width: 52,
-                height: 52,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(7),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Icon(Icons.person_outline, color: colors.outline),
               ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text.rich(
+              child: Text.rich(
+                TextSpan(
+                  children: [
                     TextSpan(
-                      children: [
-                        TextSpan(
-                          text:
-                              character?.name ??
-                              attempt.opponent.label(l10n, level: level),
-                          style: const TextStyle(fontWeight: FontWeight.w800),
+                      text:
+                          character?.name ??
+                          attempt.opponent.label(l10n, level: level),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    if (level != null && character != null)
+                      TextSpan(
+                        text: ' ($level)',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant,
+                          fontWeight: FontWeight.w400,
                         ),
-                        if (level != null && character != null)
-                          TextSpan(
-                            text: ' ($level)',
-                            style: TextStyle(
-                              color: colors.onSurfaceVariant,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                      ],
-                    ),
-                    key: RatingKeys.entryOpponent(index),
-                    style: theme.textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  // O final numa linha e a data na outra: nada cortado.
-                  if (endgame != null)
-                    Text(
-                      endgame,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
                       ),
-                    ),
-                  Text(
-                    date,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
+                key: RatingKeys.entryOpponent(index),
+                style: theme.textTheme.titleMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 10),
             Container(
               key: RatingKeys.entryResult(index),
-              width: 30,
-              height: 30,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
                 color: resultColor,
-                borderRadius: BorderRadius.circular(7),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: Icon(
                 resultIcon,
-                size: 24,
+                size: 18,
                 color: colors.surface,
                 semanticLabel: resultLabel,
               ),
             ),
-            // Quanto a partida mudou o rating e como ele ficou, nas que
-            // contaram.
+            // Quanto a partida mudou o rating, nas que contaram.
             SizedBox(
-              width: 62,
-              child: rated == null
+              width: 56,
+              child: change == null
                   ? null
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (change != null)
-                          Text(
-                            signedChange(change),
-                            key: RatingKeys.entryChange(index),
-                            textDirection: TextDirection.ltr,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: change == 0
-                                  ? colors.onSurfaceVariant
-                                  : ChangeColors.of(context, up: change > 0),
-                              fontWeight: FontWeight.w800,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
-                          ),
-                        Text(
-                          '${rated.entry.rating.rounded}',
-                          key: RatingKeys.entryRating(index),
-                          style:
-                              (change == null
-                                      ? theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                        )
-                                      : theme.textTheme.bodySmall?.copyWith(
-                                          color: colors.onSurfaceVariant,
-                                        ))
-                                  ?.copyWith(
-                                    fontFeatures: const [
-                                      FontFeature.tabularFigures(),
-                                    ],
-                                  ),
-                        ),
-                      ],
+                  : Text(
+                      signedChange(change),
+                      key: RatingKeys.entryChange(index),
+                      textAlign: TextAlign.end,
+                      textDirection: TextDirection.ltr,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: change == 0
+                            ? colors.onSurfaceVariant
+                            : ChangeColors.of(context, up: change > 0),
+                        fontWeight: FontWeight.w700,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
             ),
           ],

@@ -204,6 +204,8 @@ Pedidos do Gabriel em 2026-10-05, usando a v1.11.0-rc.2 no celular. Ele valida p
 
 - [ ] **Speedrun: o mesmo final em posições diferentes a cada etapa, às vezes de pretas.** Pedido do Gabriel (2026-10-05): em cada etapa o final é o mesmo, mas com as peças em outras casas e, em algumas etapas, o jogador com as pretas (ex.: na etapa 5 do mate de torre, ele joga de pretas), para não jogar sempre de brancas. As peças ficam pelo meio do tabuleiro, nunca numa posição que já facilite o mate (rei adversário no canto, por exemplo): a dificuldade não pode cair por causa da posição.
 
+  - Depois ([print](../qa/melhorias/7a23e5d1.jpg)): perder uma etapa encerra a tentativa; "Tentar novamente" recomeça da etapa 1. "Speedrun é uma fileira só: se perdeu, volta tudo de novo, e o histórico guarda até onde o usuário chegou." Não existe ficar repetindo só a etapa perdida.
+
 Em aberto, para confirmar com o Gabriel:
 
 - [ ] **"Recomeçar" o speedrun.** Hoje é desistir (menu da tentativa) e começar de novo; não há um botão único.

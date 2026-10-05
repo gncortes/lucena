@@ -253,9 +253,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               // guarda a partida. No meio de um speedrun, sair encerra a
               // tentativa: antes, a confirmação.
               final speedrunOpen =
-                  state.mode.isSpeedrun &&
-                  !(state.report?.speedrun?.finished ?? false) &&
-                  !_quitting;
+                  state.mode.isSpeedrun && state.end == null && !_quitting;
               return PopScope(
                 canPop: !speedrunOpen,
                 onPopInvokedWithResult: (didPop, _) {
@@ -542,12 +540,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       );
       return;
     }
+    // Perdeu: a tentativa já terminou; "Tentar novamente" é uma nova, da
+    // primeira etapa.
+    final attemptId = step.lost
+        ? await cubit.restartSpeedrun(step.speedrunId)
+        : step.attemptId;
+    if (attemptId == null || !context.mounted) return;
     setState(() => _quitting = true);
     context.pushReplacement(
       Routes.challengeGame(
         challenge,
         speedrunId: step.speedrunId,
-        attemptId: step.attemptId,
+        attemptId: attemptId,
         stage: step.stage,
       ),
     );
