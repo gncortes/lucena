@@ -178,6 +178,21 @@ Pedidos seguintes do Gabriel (2026-10-05), na mesma entrega ("pode juntar tudo n
 - [x] **Histórico do speedrun: tocar numa tentativa abre os detalhes dela.** Pedido do Gabriel (2026-10-05): ao tocar numa linha do histórico, abre a tentativa com a marca de cada etapa (o tempo e as derrotas contra cada adversário).
 - [x] **Histórico geral de partidas, na tela de estatísticas.** Pedido do Gabriel (2026-10-05, [print do chess.com](../qa/melhorias/34e4e29b.jpg)): todas as partidas, de qualquer modo (Jornada, speedrun, finais avulsos), da mais recente para a mais antiga, rolando sem fim, no layout do print: o ritmo, o retrato e o nome do adversário e o resultado. Feito na tela que abre pelo cartão do jogador (os detalhes do rating): cada linha tem o ritmo, o retrato, o nome e o nível, o final jogado e a data, a marca de vitória, empate ou derrota e, nas partidas que contaram, o rating depois dela e a variação. Substitui o antigo "Histórico do rating".
 
+## Estatísticas, detalhes da partida e speedrun direto (feedback do Gabriel depois da v1.11.0-rc.2)
+
+Pedidos do Gabriel em 2026-10-05, usando a v1.11.0-rc.2 no celular. Ele valida por prints antes da suíte.
+
+- [ ] **Tela de estatísticas: layout melhor, inspirado no chess.com.** ([print 1](../qa/melhorias/c333bae9.jpg), [print 2](../qa/melhorias/25f17eca.jpg)) "Bora melhorar o layout dessas duas telas"; "se inspira um pouco mais no chess.com, nos widgets que tem lá". Os filtros do gráfico ("Últimas 10", "Últimas 30") "não fazem muito sentido": trocar por período de tempo. No print, a linha do histórico corta o nome do final e a data ("Mate de dois bispos…").
+- [ ] **Detalhes de uma partida.** Tocar numa partida do histórico abre os detalhes dela: os dados da partida e os lances, com o tempo gasto em cada lance ("a minutagem em cada lance"). "É como se fosse o histórico da partida mesmo, sem nenhuma análise"; a análise com o treinador vem depois.
+- [ ] **Speedrun: entrar na partida com menos toques.** ([print](../qa/melhorias/9c99345c.jpg)) "Quando ele clica no speedrun, tem que clicar duas vezes para entrar no desafio, em vez de uma vez só [...] não sei para que tantos passos". Hoje: lista → speedrun → "Começar" → ritmo → tentativa → "Jogar a etapa 1" → partida, e de novo a tentativa entre uma etapa e outra.
+  - Depois (Gabriel, 2026-10-05): "não existe esse conceito de continuar a partida. Ou ele tenta o speedrun, ou ele sai fora [...] tem que ser bem dinâmico: ele entra, já faz um final, clica em continuar e já está no próximo, jogando". Ou seja: começar abre a primeira etapa; "Continuar" no fim de cada uma abre a seguinte; sair no meio encerra a tentativa.
+- [ ] **Tela da tentativa do speedrun: layout e textos.** No mesmo print: "o layout nessa tela ainda está um pouco feio"; "Tentar novamente" em vez de "Jogar a etapa 1 de novo".
+
+  - O tempo no alto ("1:15.8") confunde: "é 1h15? 1.8?" (Gabriel, 2026-10-05). Mostrar o tempo de um jeito que diga as unidades.
+  - O menu de três pontos com uma opção só ([print](../qa/melhorias/c0753f34.jpg)): pôr a ação direto na barra, e desistir tem de pedir confirmação.
+
+- [ ] **Catálogo: as posições já abertas na tela da categoria.** ([print](../qa/melhorias/f1f72395.jpg)) Pedido do Gabriel (2026-10-05): em "Finais de peão" há uma linha só ("♙ – ♚, 9 posições") e é preciso tocar nela para ver as posições. Ele prefere que a tela da categoria já mostre as posições de cada final, expandidas, para tocar e entrar; quem não quiser ver expandido recolhe a seção.
+
 Em aberto, para confirmar com o Gabriel:
 
 - [ ] **"Recomeçar" o speedrun.** Hoje é desistir (menu da tentativa) e começar de novo; não há um botão único.

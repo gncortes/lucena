@@ -18,6 +18,11 @@ class FakeProgressRepository implements ProgressRepository {
 
   // O id de uma partida é a posição dela na lista, a partir de 1.
   @override
+  Future<Map<int, Attempt>> allAttemptsById() async => {
+    for (final (index, attempt) in attempts.indexed) index + 1: attempt,
+  };
+
+  @override
   Future<Map<int, Attempt>> attemptsById(Iterable<int> ids) async => {
     for (final id in ids)
       if (id >= 1 && id <= attempts.length) id: attempts[id - 1],

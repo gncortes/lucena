@@ -40,6 +40,15 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// Os mesmos lances em UCI (`e2e4`, `g1f3`), como são gravados.
     @Default(<String>[]) List<String> ucis,
 
+    /// Quanto cada lance levou, na ordem de [ucis].
+    @Default(<Duration>[]) List<Duration> moveTimes,
+
+    /// O tempo já gasto no lance da vez antes de [turnStartedAt] e o instante
+    /// em que a vez (re)começou. Com o instante nulo, o tempo está parado (a
+    /// partida terminou ou o jogador saiu da tela).
+    @Default(Duration.zero) Duration turnElapsed,
+    DateTime? turnStartedAt,
+
     /// Quantas vezes a posição atual já apareceu nesta partida.
     @Default(1) int repetitions,
 

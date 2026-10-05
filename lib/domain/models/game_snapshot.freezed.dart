@@ -24,7 +24,11 @@ mixin _$GameSnapshot {
  GameMode get mode;/// Se a tela da partida estava aberta quando isto foi gravado. Falso
 /// quando o jogador saiu da partida por conta própria.
  bool get onScreen;/// Quando a partida começou. Nulo nas gravações de antes da Jornada.
- DateTime? get startedAt;
+ DateTime? get startedAt;/// Quanto cada lance levou, na ordem de [moves].
+ List<Duration> get moveTimes;/// O tempo já gasto no lance da vez antes de [turnStartedAt] (o jogador
+/// saiu da tela e voltou) e o instante em que a vez (re)começou. Com o
+/// instante nulo, o tempo da vez está parado.
+ Duration get turnElapsed; DateTime? get turnStartedAt;
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -36,20 +40,20 @@ $GameSnapshotCopyWith<GameSnapshot> get copyWith => _$GameSnapshotCopyWithImpl<G
 @override
 bool operator ==(Object other) {
   final _this = this as GameSnapshot;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSnapshot&&(identical(other.startFen, _this.startFen) || other.startFen == _this.startFen)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.onScreen, _this.onScreen) || other.onScreen == _this.onScreen)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSnapshot&&(identical(other.startFen, _this.startFen) || other.startFen == _this.startFen)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.onScreen, _this.onScreen) || other.onScreen == _this.onScreen)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&const DeepCollectionEquality().equals(other.moveTimes, _this.moveTimes)&&(identical(other.turnElapsed, _this.turnElapsed) || other.turnElapsed == _this.turnElapsed)&&(identical(other.turnStartedAt, _this.turnStartedAt) || other.turnStartedAt == _this.turnStartedAt));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GameSnapshot;
-  return Object.hash(runtimeType,_this.startFen,const DeepCollectionEquality().hash(_this.moves),_this.orientation,_this.playerSide,_this.clock,_this.mode,_this.onScreen,_this.startedAt);
+  return Object.hash(runtimeType,_this.startFen,const DeepCollectionEquality().hash(_this.moves),_this.orientation,_this.playerSide,_this.clock,_this.mode,_this.onScreen,_this.startedAt,const DeepCollectionEquality().hash(_this.moveTimes),_this.turnElapsed,_this.turnStartedAt);
 }
 
 @override
 String toString() {
   final _this = this as GameSnapshot;
-  return 'GameSnapshot(startFen: ${_this.startFen}, moves: ${_this.moves}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, mode: ${_this.mode}, onScreen: ${_this.onScreen}, startedAt: ${_this.startedAt})';
+  return 'GameSnapshot(startFen: ${_this.startFen}, moves: ${_this.moves}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, mode: ${_this.mode}, onScreen: ${_this.onScreen}, startedAt: ${_this.startedAt}, moveTimes: ${_this.moveTimes}, turnElapsed: ${_this.turnElapsed}, turnStartedAt: ${_this.turnStartedAt})';
 }
 
 
@@ -60,7 +64,7 @@ abstract mixin class $GameSnapshotCopyWith<$Res>  {
   factory $GameSnapshotCopyWith(GameSnapshot value, $Res Function(GameSnapshot) _then) = _$GameSnapshotCopyWithImpl;
 @useResult
 $Res call({
- String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt
+ String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt
 });
 
 
@@ -77,7 +81,7 @@ class _$GameSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,}) {
   return _then(GameSnapshot(
 startFen: null == startFen ? _self.startFen : startFen // ignore: cast_nullable_to_non_nullable
 as String,moves: null == moves ? _self.moves : moves // ignore: cast_nullable_to_non_nullable
@@ -87,6 +91,9 @@ as Side?,clock: freezed == clock ? _self.clock : clock // ignore: cast_nullable_
 as ClockState?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,onScreen: null == onScreen ? _self.onScreen : onScreen // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,moveTimes: null == moveTimes ? _self.moveTimes : moveTimes // ignore: cast_nullable_to_non_nullable
+as List<Duration>,turnElapsed: null == turnElapsed ? _self.turnElapsed : turnElapsed // ignore: cast_nullable_to_non_nullable
+as Duration,turnStartedAt: freezed == turnStartedAt ? _self.turnStartedAt : turnStartedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -193,10 +200,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameSnapshot() when $default != null:
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt);case _:
   return orElse();
 
 }
@@ -214,10 +221,10 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt)  $default,) {final _that = this;
 switch (_that) {
 case _GameSnapshot():
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -234,10 +241,10 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _GameSnapshot() when $default != null:
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt);case _:
   return null;
 
 }
@@ -249,7 +256,7 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 
 
 class _GameSnapshot extends GameSnapshot {
-  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.mode = const GameMode(), this.onScreen = true, this.startedAt}): _moves = moves,super._();
+  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.mode = const GameMode(), this.onScreen = true, this.startedAt,  List<Duration> moveTimes = const <Duration>[], this.turnElapsed = Duration.zero, this.turnStartedAt}): _moves = moves,_moveTimes = moveTimes,super._();
   
 
 /// A posição em que a partida começou (FEN).
@@ -276,6 +283,20 @@ class _GameSnapshot extends GameSnapshot {
 @override@JsonKey() final  bool onScreen;
 /// Quando a partida começou. Nulo nas gravações de antes da Jornada.
 @override final  DateTime? startedAt;
+/// Quanto cada lance levou, na ordem de [moves].
+ final  List<Duration> _moveTimes;
+/// Quanto cada lance levou, na ordem de [moves].
+@override@JsonKey() List<Duration> get moveTimes {
+  if (_moveTimes is EqualUnmodifiableListView) return _moveTimes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_moveTimes);
+}
+
+/// O tempo já gasto no lance da vez antes de [turnStartedAt] (o jogador
+/// saiu da tela e voltou) e o instante em que a vez (re)começou. Com o
+/// instante nulo, o tempo da vez está parado.
+@override@JsonKey() final  Duration turnElapsed;
+@override final  DateTime? turnStartedAt;
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
@@ -287,18 +308,18 @@ _$GameSnapshotCopyWith<_GameSnapshot> get copyWith => __$GameSnapshotCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSnapshot&&(identical(other.startFen, startFen) || other.startFen == startFen)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.onScreen, onScreen) || other.onScreen == onScreen)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSnapshot&&(identical(other.startFen, startFen) || other.startFen == startFen)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.onScreen, onScreen) || other.onScreen == onScreen)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&const DeepCollectionEquality().equals(other.moveTimes, _moveTimes)&&(identical(other.turnElapsed, turnElapsed) || other.turnElapsed == turnElapsed)&&(identical(other.turnStartedAt, turnStartedAt) || other.turnStartedAt == turnStartedAt));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,startFen,const DeepCollectionEquality().hash(_moves),orientation,playerSide,clock,mode,onScreen,startedAt);
+    return Object.hash(runtimeType,startFen,const DeepCollectionEquality().hash(_moves),orientation,playerSide,clock,mode,onScreen,startedAt,const DeepCollectionEquality().hash(_moveTimes),turnElapsed,turnStartedAt);
 }
 
 @override
 String toString() {
-    return 'GameSnapshot(startFen: $startFen, moves: $moves, orientation: $orientation, playerSide: $playerSide, clock: $clock, mode: $mode, onScreen: $onScreen, startedAt: $startedAt)';
+    return 'GameSnapshot(startFen: $startFen, moves: $moves, orientation: $orientation, playerSide: $playerSide, clock: $clock, mode: $mode, onScreen: $onScreen, startedAt: $startedAt, moveTimes: $moveTimes, turnElapsed: $turnElapsed, turnStartedAt: $turnStartedAt)';
 }
 
 
@@ -309,7 +330,7 @@ abstract mixin class _$GameSnapshotCopyWith<$Res> implements $GameSnapshotCopyWi
   factory _$GameSnapshotCopyWith(_GameSnapshot value, $Res Function(_GameSnapshot) _then) = __$GameSnapshotCopyWithImpl;
 @override @useResult
 $Res call({
- String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt
+ String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt
 });
 
 
@@ -326,7 +347,7 @@ class __$GameSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,}) {
   return _then(_GameSnapshot(
 startFen: null == startFen ? _self.startFen : startFen // ignore: cast_nullable_to_non_nullable
 as String,moves: null == moves ? _self._moves : moves // ignore: cast_nullable_to_non_nullable
@@ -336,6 +357,9 @@ as Side?,clock: freezed == clock ? _self.clock : clock // ignore: cast_nullable_
 as ClockState?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,onScreen: null == onScreen ? _self.onScreen : onScreen // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,moveTimes: null == moveTimes ? _self._moveTimes : moveTimes // ignore: cast_nullable_to_non_nullable
+as List<Duration>,turnElapsed: null == turnElapsed ? _self.turnElapsed : turnElapsed // ignore: cast_nullable_to_non_nullable
+as Duration,turnStartedAt: freezed == turnStartedAt ? _self.turnStartedAt : turnStartedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
