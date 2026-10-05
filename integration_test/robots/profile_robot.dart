@@ -5,6 +5,8 @@ import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Tela de perfil, o painel de faixas de rating e o resumo em Configurações.
 class ProfileRobot {
   const ProfileRobot(this.$);
@@ -60,13 +62,7 @@ class ProfileRobot {
 
   /// Um texto (nome ou intervalo de uma faixa) aparece no painel.
   void expectInLevels(String text) {
-    expect(
-      find.descendant(
-        of: find.byKey(ProfileKeys.levelSheet),
-        matching: find.text(text),
-      ),
-      findsOneWidget,
-    );
+    expectTextIn(find.byKey(ProfileKeys.levelSheet), text);
   }
 
   /// Salvar volta para Configurações.
@@ -80,13 +76,13 @@ class ProfileRobot {
       find.byKey(ProfileKeys.nicknameField),
     );
     expect(field.controller!.text, nickname);
-    expect(_text(ProfileKeys.levelName), level);
+    expectText(_text(ProfileKeys.levelName), level);
   }
 
   /// O resumo "apelido · faixa" na tela de Configurações.
   Future<void> expectSummary(String text) async {
     await $(SettingsKeys.profileValue).waitUntilVisible();
-    expect(_text(SettingsKeys.profileValue), text);
+    expectText(_text(SettingsKeys.profileValue), text);
   }
 
   String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;

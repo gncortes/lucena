@@ -18,6 +18,10 @@ const _mateInOne = '3k4/8/3K4/8/8/8/8/7Q w - - 0 1';
 // Db6 afoga o rei preto.
 const _stalemateTrap = 'k7/8/8/2Q5/8/8/8/K7 w - - 0 1';
 
+// O rei preto só tem a8 e b8: a máquina dos cenários vai e volta, e o
+// jogador faz o mesmo com o rei dele.
+const _fortress = 'k7/p7/P7/8/8/8/8/7K w - - 0 1';
+
 void main() {
   Future<void> openQueenPositions(PatrolIntegrationTester $) async {
     final catalog = CatalogRobot($);
@@ -146,5 +150,32 @@ void main() {
     await board.expectClock(Side.white, '3:00');
     await board.expectClock(Side.black, '5:00');
     board.expectOrientation(Side.white);
+  });
+
+  patrolTest('repetir a posição três vezes contra a máquina: empate, e o '
+      'objetivo de empatar fica cumprido', ($) async {
+    final app = AppRobot($);
+    final board = FreeBoardRobot($);
+    await app.open(systemLocale: const Locale('en', 'US'));
+    await board.openAt(
+      _fortress,
+      opponent: 'stockfish',
+      user: Side.white,
+      goal: 'draw',
+      position: _positionId,
+    );
+
+    await board.move('h1', 'g1');
+    await board.move('g1', 'h1');
+    // A posição inicial apareceu duas vezes: a partida continua, inclusive
+    // depois de fechar e abrir o app.
+    board.expectStillPlaying();
+    await app.restart();
+    await board.expectVisible();
+    await board.move('h1', 'g1');
+    await board.move('g1', 'h1');
+
+    await board.expectEnd(reason: 'Threefold repetition', result: 'Draw');
+    await board.expectGoalResult('Goal achieved!');
   });
 }

@@ -9,4 +9,5 @@ abstract final class HomeKeys {
   static const catalogButton = Key('home.catalog');
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
+  static const version = Key('home.version');
 }

@@ -6,6 +6,8 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Tela de configuração da partida.
 class GameSetupRobot {
   const GameSetupRobot(this.$);
@@ -74,26 +76,14 @@ class GameSetupRobot {
   /// O objetivo da posição como aparece antes de jogar (`Win`, `Defend`).
   Future<void> expectGoal(String text) async {
     await $(GameSetupKeys.goal).scrollTo();
-    expect(
-      find.descendant(
-        of: find.byKey(GameSetupKeys.goal),
-        matching: find.text(text),
-      ),
-      findsOneWidget,
-    );
+    expectTextIn(find.byKey(GameSetupKeys.goal), text);
   }
 
   /// Os resultados do histórico, de cima para baixo (`Win`, `Draw`).
   Future<void> expectAttempts(List<String> outcomes) async {
     for (final (index, outcome) in outcomes.indexed) {
       await $(GameSetupKeys.attempt(index)).scrollTo();
-      expect(
-        find.descendant(
-          of: find.byKey(GameSetupKeys.attempt(index)),
-          matching: find.text(outcome),
-        ),
-        findsOneWidget,
-      );
+      expectTextIn(find.byKey(GameSetupKeys.attempt(index)), outcome);
     }
     expect(find.byKey(GameSetupKeys.attempt(outcomes.length)), findsNothing);
   }
@@ -105,7 +95,12 @@ class GameSetupRobot {
 
   Future<void> expectOpponent(OpponentKind kind) async {
     await $(GameSetupKeys.opponent(kind)).scrollTo();
-    for (final other in OpponentKind.values) {
+    // O treino só oferece adversários de verdade.
+    expect(
+      find.byKey(GameSetupKeys.opponent(OpponentKind.twoPlayers)),
+      findsNothing,
+    );
+    for (final other in OpponentKind.training) {
       final tile = $.tester.widget<ListTile>(
         find.byKey(GameSetupKeys.opponent(other)),
       );
@@ -127,7 +122,7 @@ class GameSetupRobot {
     expect(chip.selected, isTrue);
     if (suggestion != null) {
       await $(GameSetupKeys.suggestedLevel).scrollTo();
-      expect(_text(GameSetupKeys.suggestedLevel), suggestion);
+      expectText(_text(GameSetupKeys.suggestedLevel), suggestion);
     }
   }
 

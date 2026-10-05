@@ -4,6 +4,10 @@ abstract final class MaiaDebugKeys {
   static const screen = Key('maiaDebug.screen');
   static const fen = Key('maiaDebug.fen');
   static const evaluate = Key('maiaDebug.evaluate');
+
+  /// Mede a velocidade do modelo no aparelho, e o resultado da medição.
+  static const measure = Key('maiaDebug.measure');
+  static const timing = Key('maiaDebug.timing');
   static const invalid = Key('maiaDebug.invalid');
   static const failed = Key('maiaDebug.failed');
 

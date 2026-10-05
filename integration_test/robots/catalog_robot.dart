@@ -7,6 +7,8 @@ import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Telas do catálogo: categorias, subcategorias e posições.
 class CatalogRobot {
   const CatalogRobot(this.$);
@@ -52,7 +54,7 @@ class CatalogRobot {
 
   /// O nome de uma categoria como aparece na tela.
   void expectCategoryName(String category, String name) {
-    expect(
+    expectText(
       $.tester
           .widget<Text>(find.byKey(CatalogKeys.categoryName(category)))
           .data,
@@ -77,12 +79,6 @@ class CatalogRobot {
   Future<void> expectPositionShows(String id, String text) async {
     await $(CatalogKeys.position(id))
         .scrollTo(view: find.byKey(CatalogKeys.positionList));
-    expect(
-      find.descendant(
-        of: find.byKey(CatalogKeys.position(id)),
-        matching: find.text(text),
-      ),
-      findsOneWidget,
-    );
+    expectTextIn(find.byKey(CatalogKeys.position(id)), text);
   }
 }
