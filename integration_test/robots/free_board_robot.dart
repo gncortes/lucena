@@ -145,7 +145,8 @@ class FreeBoardRobot {
     await $(
       find.descendant(
         of: find.byKey(FreeBoardKeys.clock(side)),
-        matching: find.text(time),
+        // Os décimos vêm num trecho menor do mesmo texto.
+        matching: find.text(time, findRichText: true),
       ),
     ).waitUntilVisible();
   }

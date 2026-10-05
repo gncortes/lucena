@@ -255,10 +255,9 @@ class _ClockBox extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerRight,
-                  child: Text(
+                  child: _ClockText(
                     ClockFormat.format(time),
                     key: FreeBoardKeys.clockTime(side),
-                    maxLines: 1,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: foreground,
                       fontWeight: FontWeight.w700,
@@ -273,6 +272,33 @@ class _ClockBox extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// O tempo do relógio com os décimos menores, como no Lichess (`0:05.7`).
+class _ClockText extends StatelessWidget {
+  const _ClockText(this.text, {this.style, super.key});
+
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final dot = text.lastIndexOf('.');
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: dot < 0 ? text : text.substring(0, dot)),
+          if (dot >= 0)
+            TextSpan(
+              text: text.substring(dot),
+              style: TextStyle(fontSize: (style?.fontSize ?? 22) * 0.7),
+            ),
+        ],
+      ),
+      maxLines: 1,
+      style: style,
     );
   }
 }
