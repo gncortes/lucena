@@ -4,11 +4,16 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/maia_level.dart';
+import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 
+import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_pace_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
+import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 
@@ -197,6 +202,75 @@ void main() {
       final query = Uri.parse(cubit.state.gameRoute).queryParameters;
       expect(query['opponent'], 'stockfish');
       expect(query.containsKey('level'), isFalse);
+    });
+  });
+
+  group('rating e ritmo', () {
+    GameSetupCubit full({FakeRatingRepository? rating}) {
+      final cubit = GameSetupCubit(
+        training,
+        progress: FakeProgressRepository(),
+        profile: FakeProfileRepository(const UserProfile(rating: 1150)),
+        rating: rating ?? FakeRatingRepository(),
+        pace: FakePaceRepository(),
+        characters: FakeCharacterRepository(),
+        position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+        goal: PositionGoal.win,
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test('com partidas contadas, o rating sugere o nível', () async {
+      final rating = FakeRatingRepository(start: 1150, expected: 0.1);
+      // Uma vitória improvável: o rating sobe bastante.
+      await rating.rate(
+        Attempt(
+          positionId: 'x',
+          playedAt: DateTime.utc(2026),
+          outcome: AttemptOutcome.win,
+          fulfilled: true,
+          opponent: OpponentKind.maia,
+          opponentLevel: 1600,
+        ),
+        userSide: Side.white,
+        drawGoal: false,
+      );
+      final cubit = full(rating: rating);
+      await cubit.load();
+
+      final current = (await rating.current()).rounded;
+      expect(cubit.state.rating, current);
+      expect(cubit.state.suggestedLevel, MaiaLevels.nearest(current));
+      expect(cubit.state.suggestedLevel, greaterThan(1200));
+    });
+
+    test('sem partidas, a sugestão é a da faixa do perfil', () async {
+      final cubit = full();
+      await cubit.load();
+      expect(cubit.state.rating, isNull);
+      expect(cubit.state.suggestedLevel, 1200);
+    });
+
+    test('o ritmo nomeado põe o mesmo tempo dos dois lados', () async {
+      final cubit = full();
+      await cubit.load();
+      final bullet = cubit.state.paces.first;
+      await cubit.setPace(bullet);
+
+      expect(cubit.state.pace, bullet);
+      expect(bullet.category, PaceCategory.bullet);
+      expect(cubit.state.clockCodes, (white: '60+0', black: '60+0'));
+      expect(training.setup.userTime, bullet.time);
+
+      await cubit.setOpponentTime(minutes: 2);
+      expect(cubit.state.pace, isNull);
+    });
+
+    test('os personagens chegam para a escolha do adversário', () async {
+      final cubit = full();
+      await cubit.load();
+      expect(cubit.state.characters.map((c) => c.level), [1000, 1600]);
     });
   });
 }

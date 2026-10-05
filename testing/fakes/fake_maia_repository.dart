@@ -49,4 +49,17 @@ class FakeMaiaRepository implements MaiaRepository {
       elapsed: elapsed.removeAt(0),
     );
   }
+
+  /// Os pedidos de partida entre dois ratings: posição, quem joga e oponente.
+  final matches = <(String, int, int)>[];
+
+  @override
+  Future<MovePrediction> predictMatch(
+    Position position, {
+    required int selfElo,
+    required int oppoElo,
+  }) async {
+    matches.add((position.fen, selfElo, oppoElo));
+    return byLevel[selfElo] ?? fallback;
+  }
 }

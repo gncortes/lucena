@@ -14,8 +14,14 @@ class LocalProgressRepository implements ProgressRepository {
   final AppDatabase _database;
 
   @override
-  Future<void> addAttempt(Attempt attempt) async {
-    await _database.into(_database.games).insert(gameRow(attempt));
+  Future<int> addAttempt(Attempt attempt) =>
+      _database.into(_database.games).insert(gameRow(attempt));
+
+  @override
+  Future<List<Attempt>> allAttempts() async {
+    final query = _database.select(_database.games)
+      ..orderBy([(row) => OrderingTerm.asc(row.id)]);
+    return [for (final row in await query.get()) attemptOf(row)];
   }
 
   @override

@@ -7,6 +7,7 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import 'game_reporter.dart';
 
 part 'free_board_state.freezed.dart';
 
@@ -59,6 +60,10 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// Quando a partida começou (ou recomeçou).
     DateTime? startedAt,
+
+    /// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
+    /// enquanto ela continua ou até a conta terminar.
+    GameReport? report,
   }) = _FreeBoardState;
 
   const FreeBoardState._();

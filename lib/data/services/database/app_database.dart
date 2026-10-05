@@ -59,36 +59,77 @@ class SpeedrunAttempts extends Table {
   DateTimeColumn get abandonedAt => dateTime().nullable()();
 }
 
+/// O rating do jogador depois de cada partida que conta (contra o Maia ou o
+/// Stockfish). A última linha é o rating atual.
+@DataClassName('RatingRow')
+class RatingHistory extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// A partida que mudou o rating.
+  IntColumn get gameId => integer().nullable()();
+  DateTimeColumn get at => dateTime()();
+  RealColumn get rating => real()();
+  RealColumn get deviation => real()();
+  RealColumn get volatility => real()();
+}
+
+/// As conquistas já mostradas ao jogador. Se ele tem ou não sai das partidas;
+/// aqui fica só quando ela apareceu, para não aparecer de novo como nova.
+@DataClassName('UnlockedAchievementRow')
+class UnlockedAchievements extends Table {
+  TextColumn get achievementId => text()();
+  DateTimeColumn get at => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {achievementId};
+}
+
 /// Banco local do app (SQLite). Só os repositórios falam com ele.
-@DriftDatabase(tables: [Profiles, Games, SpeedrunAttempts])
+@DriftDatabase(
+  tables: [
+    Profiles,
+    Games,
+    SpeedrunAttempts,
+    RatingHistory,
+    UnlockedAchievements,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   /// Sem [executor], usa o arquivo do app no aparelho, aberto só no primeiro uso.
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (migrator, from, to) async {
-      await migrator.createTable(games);
-      await migrator.createTable(speedrunAttempts);
-      // 2 e 3 -> 4: as partidas de `attempts` passam para `games`, sem perder
-      // nenhuma. A versão 2 ainda não tinha o nível do Maia.
-      if (from >= 2) {
-        final level = from >= 3 ? 'opponent_level' : 'NULL';
-        await customStatement(
-          'INSERT INTO games '
-          '(position_id, played_at, outcome, fulfilled, opponent, '
-          'opponent_level) '
-          'SELECT position_id, played_at, outcome, fulfilled, opponent, $level '
-          'FROM attempts ORDER BY id',
-        );
-        await customStatement('DROP TABLE attempts');
+      if (from < 4) await _toVersion4(migrator, from);
+      if (from < 5) {
+        await migrator.createTable(ratingHistory);
+        await migrator.createTable(unlockedAchievements);
       }
     },
   );
+
+  Future<void> _toVersion4(Migrator migrator, int from) async {
+    await migrator.createTable(games);
+    await migrator.createTable(speedrunAttempts);
+    // 2 e 3 -> 4: as partidas de `attempts` passam para `games`, sem perder
+    // nenhuma. A versão 2 ainda não tinha o nível do Maia.
+    if (from >= 2) {
+      final level = from >= 3 ? 'opponent_level' : 'NULL';
+      await customStatement(
+        'INSERT INTO games '
+        '(position_id, played_at, outcome, fulfilled, opponent, '
+        'opponent_level) '
+        'SELECT position_id, played_at, outcome, fulfilled, opponent, $level '
+        'FROM attempts ORDER BY id',
+      );
+      await customStatement('DROP TABLE attempts');
+    }
+  }
 
   /// Apaga todas as linhas de todas as tabelas.
   Future<void> deleteEverything() {

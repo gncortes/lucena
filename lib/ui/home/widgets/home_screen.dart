@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../view_models/home_cubit.dart';
+import 'where_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.version = appVersion});
@@ -62,6 +65,16 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    return BlocListener<HomeCubit, HomeState>(
+      // Primeira abertura: o tour antes de tudo.
+      listenWhen: (previous, current) =>
+          current.ready && current.tourPending && !previous.tourPending,
+      listener: (context, state) => context.go(Routes.tour),
+      child: _scaffold(context, theme, isDark),
+    );
+  }
+
+  Widget _scaffold(BuildContext context, ThemeData theme, bool isDark) {
     return Scaffold(
       key: HomeKeys.screen,
       body: SafeArea(
@@ -74,11 +87,22 @@ class _HomeScreenState extends State<HomeScreen>
                 padding: const EdgeInsets.all(8),
                 child: FadeTransition(
                   opacity: _actions,
-                  child: IconButton(
-                    key: HomeKeys.settingsButton,
-                    icon: const Icon(Icons.settings_outlined),
-                    tooltip: context.l10n.settingsTitle,
-                    onPressed: () => context.go(Routes.settings),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        key: HomeKeys.achievementsButton,
+                        icon: const Icon(Icons.emoji_events_outlined),
+                        tooltip: context.l10n.homeAchievements,
+                        onPressed: () => context.go(Routes.achievements),
+                      ),
+                      IconButton(
+                        key: HomeKeys.settingsButton,
+                        icon: const Icon(Icons.settings_outlined),
+                        tooltip: context.l10n.settingsTitle,
+                        onPressed: () => context.go(Routes.settings),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -117,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
               animation: _mascot,
               scaleFrom: 0.9,
               child: FractionallySizedBox(
-                widthFactor: 0.6,
+                widthFactor: 0.45,
                 child: Image.asset(
                   isDark
                       ? 'assets/branding/mascot_dark.png'
@@ -153,7 +177,19 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
+            _Entrance(
+              animation: _actions,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) => state.ready
+                      ? WhereCard(state: state)
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             _Entrance(
               animation: _actions,
               child: ConstrainedBox(

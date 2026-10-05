@@ -105,4 +105,13 @@ void main() {
 
     expect(await reopen().load(), settings);
   });
+
+  test(
+    'falas dos personagens: ligadas de fábrica, desligar fica gravado',
+    () async {
+      expect((await reopen().load()).characterTalk, isTrue);
+      await reopen().save(const AppSettings(characterTalk: false));
+      expect((await reopen().load()).characterTalk, isFalse);
+    },
+  );
 }

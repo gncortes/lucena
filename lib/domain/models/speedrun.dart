@@ -6,13 +6,20 @@ import 'journey.dart';
 
 part 'speedrun.freezed.dart';
 
-/// As modalidades de speedrun. Outras entram depois (exercícios, completo).
+/// As modalidades de speedrun.
 enum SpeedrunKind {
   /// Todos os desafios de um degrau da Jornada.
   rung,
 
   /// Um final contra cada degrau: 1000, 1200... 2600 e o Stockfish.
-  ending;
+  ending,
+
+  /// Uma sequência fixa de posições, cada uma contra um adversário.
+  exercises,
+
+  /// A Jornada inteira, do 1000 ao Stockfish. Pode levar dias: a pausa entre
+  /// etapas é livre.
+  full;
 
   static SpeedrunKind? fromCode(String? code) => values.asNameMap()[code];
 }

@@ -3,6 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'data/repositories/rating/rating_repository.dart';
+import 'data/repositories/achievements/achievements_repository.dart';
+import 'data/repositories/characters/character_repository.dart';
+import 'data/repositories/evaluation/evaluation_repository.dart';
+import 'data/repositories/characters/talk_repository.dart';
+import 'data/repositories/onboarding/onboarding_repository.dart';
+import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
@@ -104,6 +111,27 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<ProfileRepository>.value(
           value: dependencies.profileRepository,
+        ),
+        RepositoryProvider<RatingRepository>.value(
+          value: dependencies.ratingRepository,
+        ),
+        RepositoryProvider<AchievementsRepository>.value(
+          value: dependencies.achievementsRepository,
+        ),
+        RepositoryProvider<CharacterRepository>.value(
+          value: dependencies.characterRepository,
+        ),
+        RepositoryProvider<EvaluationRepository>.value(
+          value: dependencies.evaluationRepository,
+        ),
+        RepositoryProvider<TalkRepository>.value(
+          value: dependencies.talkRepository,
+        ),
+        RepositoryProvider<OnboardingRepository>.value(
+          value: dependencies.onboardingRepository,
+        ),
+        RepositoryProvider<PaceRepository>.value(
+          value: dependencies.paceRepository,
         ),
       ],
       child: MultiBlocProvider(

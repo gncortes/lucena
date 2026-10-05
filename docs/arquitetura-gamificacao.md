@@ -155,3 +155,13 @@ Uma divergência para você: a T25 fala em "os 10 personagens da visão", mas a 
 - **T25:** avaliação da seção 7, emoção, falas e tradução da seção 8.
 - **T26:** PNGs, sem animação.
 - **Cronologia de dependências** igual ao plano: T21 → (T22 e T23) → T24 → T25 → T26 → T27.
+
+## 11. Como ficou (T22, T24 a T27)
+
+- **Rating (T22):** `RatingHistory` (rating, desvio, volatilidade e partida); `LocalRatingRepository` pergunta ao Maia a chance do jogador naquela posição e o `RatingRules` (Glicko-2) conta. Começa na faixa do perfil; a configuração da partida passa a sugerir o nível pelo rating quando já há partidas contadas. Treino, desafio e etapa de speedrun contam do mesmo jeito.
+- **Ritmo (T22):** `time_controls.json` com os ritmos nomeados e o perfil do Maia por categoria (`docs/calibracao.md`).
+- **Speedrun (T24):** modalidades `exercises` (lista fixa de posições, cada uma com o seu adversário) e `full` (todos os desafios da Jornada, do 1000 ao Stockfish). A pausa entre etapas já era livre.
+- **Conquistas (T24):** `assets/achievements.json` com 8 tipos de regra; quais o jogador tem sai das partidas (`AchievementRules`); `UnlockedAchievements` guarda só quando cada uma apareceu, para não aparecer de novo como nova. O fim da partida mostra o rating, "venceu o 2600 pela primeira vez", "todos os finais do degrau", recordes do speedrun e as conquistas novas (`GameReporter`).
+- **Personagens (T25 e T26):** `TalkCubit` ao lado da partida: avalia cada lance com o Stockfish (profundidade 10), acha os eventos (`GameEvents`), atualiza a emoção (`EmotionRules`, média dos últimos 6 lances) e escolhe a fala (`LinePicker`, sem repetir na partida, no máximo uma a cada 2 lances fora dos eventos importantes). A memória dele é gravada e volta com a partida. Falas em `assets/lines/{en,pt}`; os outros idiomas usam o inglês por enquanto. Opção em Configurações para silenciar.
+- **Avatares (T26):** um PNG por personagem; o JSON aceita `images` por emoção quando houver mais. Sem animação: um selo com o rosto da emoção no canto do retrato. O id de reação continua sendo a categoria da fala.
+- **Tour (T27):** 8 passos, o último com as faixas do perfil; a faixa vai para o perfil e escolhe o degrau de início (`journey.startRung`), com os degraus de baixo abertos. Cada passo é gravado. Rever em Configurações.

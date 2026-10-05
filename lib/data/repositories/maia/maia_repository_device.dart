@@ -11,14 +11,19 @@ class DeviceMaiaRepository implements MaiaRepository {
   final MaiaService _maia;
 
   @override
-  Future<MovePrediction> predict(
+  Future<MovePrediction> predict(Position position, {required int level}) =>
+      predictMatch(position, selfElo: level, oppoElo: level);
+
+  @override
+  Future<MovePrediction> predictMatch(
     Position position, {
-    required int level,
+    required int selfElo,
+    required int oppoElo,
   }) async {
     final evaluation = await _maia.evaluate(
       [position],
-      selfElo: level,
-      oppoElo: level,
+      selfElo: selfElo,
+      oppoElo: oppoElo,
     );
     return MovePrediction(
       moves: evaluation.policy,

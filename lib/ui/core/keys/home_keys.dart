@@ -12,4 +12,13 @@ abstract final class HomeKeys {
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
   static const version = Key('home.version');
+
+  static const achievementsButton = Key('home.achievements');
+
+  /// O cartão "onde estou": o degrau, o próximo desafio e o botão.
+  static const whereCard = Key('home.where');
+  static const whereTitle = Key('home.where.title');
+  static const whereNext = Key('home.where.next');
+  static const whereContinue = Key('home.where.continue');
+  static const rating = Key('home.rating');
 }

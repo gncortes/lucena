@@ -7,12 +7,14 @@ import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository_device.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/think_time_policy.dart';
 
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_opponent_repository.dart';
+import '../../../../testing/fakes/fake_pace_repository.dart';
 
 void main() {
   late MaiaService service;
@@ -152,4 +154,40 @@ void main() {
     expect(maiaFake.histories.single, same(history));
     expect(stockfishFake.kinds, [OpponentKind.stockfish]);
   });
+
+  test(
+    'no bullet o Maia pensa menos, sem deixar de jogar lance legal',
+    () async {
+      final position = GameRules.fromFen('8/8/8/4k3/8/8/2PK4/8 w - - 0 1')!;
+      Future<Duration> thinking(TimeControl time) async {
+        waits.clear();
+        final paced = MaiaOpponentRepository(
+          service,
+          now: now,
+          pace: FakePaceRepository(),
+          random: Random(5),
+          wait: (duration) async => waits.add(duration),
+        );
+        for (var move = 0; move < 6; move++) {
+          final picked = await paced.pickMove(
+            position,
+            thinkTime: budget,
+            kind: OpponentKind.maia,
+            level: 1400,
+            time: time,
+          );
+          expect(position.isLegal(picked!), isTrue);
+        }
+        return waits.fold<Duration>(Duration.zero, (sum, wait) => sum + wait);
+      }
+
+      final bullet = await thinking(
+        const TimeControl(initial: Duration(minutes: 1)),
+      );
+      final rapid = await thinking(
+        const TimeControl(initial: Duration(minutes: 10)),
+      );
+      expect(bullet, lessThan(rapid));
+    },
+  );
 }

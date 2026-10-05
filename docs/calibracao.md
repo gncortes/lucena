@@ -118,6 +118,30 @@ A calibração mostrou um buraco fora do Maia: o app só empatava por rei afogad
 
 Agora, nas partidas contra a máquina, a terceira repetição da posição e a regra dos 50 lances empatam sozinhas, e o objetivo de empatar fica cumprido. No tabuleiro livre (o jogador move os dois lados) nada muda.
 
+## Ritmo da partida (T22)
+
+O Maia decide de outro jeito conforme o ritmo, sem trocar o nível (a força continua vindo do rating passado ao modelo). Os parâmetros ficam em `assets/progression/time_controls.json`, por categoria (pela regra do Lichess: tempo inicial + 40 × incremento; abaixo de 3 min é bullet, de 8 min blitz, de 25 min rápido):
+
+| Categoria | Temperatura | Tempo de pensar |
+| --- | ---: | ---: |
+| Bullet | 0,3 | 45% |
+| Blitz | 0,4 | 75% |
+| Rápido e clássico | 0,5 | 100% |
+
+- **Temperatura menor = mais instinto:** o Maia fica nos lances que as pessoas daquele rating mais jogam (os naturais da posição) e sorteia menos os que pedem cálculo. Isso não enfraquece: o lance mais provável do modelo é, quase sempre, o melhor que aquele rating acha.
+- **Tempo de pensar** multiplica o tempo humano da T18 e nunca passa do teto do relógio; no bullet a máquina continua sem perder por tempo.
+
+Medido neste computador, nas 50 posições do catálogo, com o Maia 1000, 1600 e 2200 (5 sorteios por posição):
+
+| Ritmo | Lance mais provável | Tempo médio por lance |
+| --- | ---: | ---: |
+| 1+0 (bullet) | 81% | 0,6 s |
+| 3+0 e 3+2 (blitz) | 73% | 1,0 s |
+| 5+3 (blitz) | 72% | 1,0 s |
+| 10+0 (rápido) | 70% | 1,4 s |
+
+**Falta no celular:** jogar algumas partidas de 1+0 e 10+0 e ver se a diferença se sente. Se o bullet parecer lento ou "esperto" demais, os números estão no JSON (não precisa mexer em código).
+
 ## O que falta
 
 - **Tempo da conta no celular do Gabriel.** O Diagnóstico do Maia ganhou o botão "Medir velocidade": dez contas seguidas e o tempo típico por lance. No emulador dá perto de 100 ms. A decisão da T15 pede revisão se passar de 400 ms no aparelho.

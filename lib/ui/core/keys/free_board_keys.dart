@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../domain/models/character.dart';
+
 abstract final class FreeBoardKeys {
   static const screen = Key('freeBoard.screen');
   static const board = Key('freeBoard.board');
@@ -54,4 +56,19 @@ abstract final class FreeBoardKeys {
   static const endReason = Key('freeBoard.end.reason');
   static const endResult = Key('freeBoard.end.result');
   static const endNewGameButton = Key('freeBoard.end.newGame');
+
+  /// O personagem acima do tabuleiro: a fileira, o retrato (pela emoção), o
+  /// nome e o balão com a fala (pelo id da fala).
+  static const characterBar = Key('freeBoard.character');
+  static const characterName = Key('freeBoard.character.name');
+  static const speechBubble = Key('freeBoard.character.bubble');
+  static Key characterAvatar(Emotion emotion) =>
+      Key('freeBoard.character.avatar.${emotion.name}');
+  static Key speechText(String lineId) =>
+      Key('freeBoard.character.line.$lineId');
+
+  /// O que a partida terminada mudou: o rating e as mensagens.
+  static const report = Key('freeBoard.report');
+  static const ratingChange = Key('freeBoard.report.rating');
+  static Key feedback(int index) => Key('freeBoard.report.feedback.$index');
 }

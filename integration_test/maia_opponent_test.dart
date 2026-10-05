@@ -39,7 +39,8 @@ void main() {
       white: '300+0',
       black: '300+0',
     );
-    await board.expectPlayerName('Maia 1400');
+    // O Maia 1400 é o Percival.
+    await board.expectPlayerName('Percival');
 
     // Três lances que valem contra qualquer resposta do rei preto; a lista
     // só aceita lance legal, então seis lances são três respostas legais.
