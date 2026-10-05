@@ -49,7 +49,7 @@ As decisões marcadas **(Gabriel)** precisam do seu ok antes da T21. As outras s
 | `assets/progression/ladder.json` | degraus 1000 → … → 2600 → Stockfish; cada degrau com a lista de desafios | `Rung`, `Challenge` | T21 |
 | (dentro do degrau) | desafio = posição do catálogo + adversário (`maia:1200` ou `stockfish`) + objetivo + ritmo opcional | `Challenge`, `OpponentRef` | T21 |
 | `assets/progression/time_controls.json` | ritmos nomeados (`1+0`, `3+2`…) com categoria (bullet, blitz, rápido) e parâmetros do Maia por ritmo | `NamedTimeControl` | T22 |
-| `assets/speedruns/<id>.json` | modalidade (`rung`, `ending`, `exercises`, `full`) e as etapas geradas ou listadas | `SpeedrunDefinition`, `SpeedrunStage` | T23, T24 |
+| `assets/progression/speedruns.json` | um item por speedrun: modalidade (`rung`, `ending`; `exercises` e `full` na T24), degrau ou posição e ritmo; as etapas são geradas da escada | `Speedrun` (etapas como `Challenge`) | T23, T24 |
 | `assets/achievements.json` | conquista = id + condição de uma lista fechada de tipos (`firstFulfilled`, `rungCompleted`, `beatLevel`, `recordImproved`, `underTime`…) + parâmetros | `Achievement`, `AchievementRule` | T24 |
 | `assets/characters/<id>.json` | nome, nível do Maia, traços, imagens por emoção, pesos de emoção | `Character` | T25, T26 |
 | `assets/lines/<idioma>/<personagem>.json` | falas por categoria de evento, com intensidade e emoção | `CharacterLine` | T25 |
@@ -63,12 +63,11 @@ Para o speedrun de final não precisa listar etapa por etapa: a definição diz 
 | `Games` | partida terminada: posição inicial (FEN e id do catálogo, se houver), lances (UCI), adversário e nível, ritmo de cada lado, início e fim (instantes), tempo gasto por lado, resultado, motivo do fim, objetivo cumprido, id do desafio e da tentativa de speedrun (se houver) | T21 |
 | `RatingHistory` | rating, desvio e volatilidade depois de cada partida que conta, com o id da partida | T22 |
 | `SpeedrunAttempts` | definição, início, fim ou abandono, estado (em andamento, concluída, abandonada) | T23 |
-| `SpeedrunStageResults` | tentativa, etapa, tempo gasto, vitórias e derrotas até concluir | T23 |
 | `UnlockedAchievements` | id e instante (o que já foi mostrado ao jogador) | T24 |
 
 - `Attempts` é migrada para `Games` na T21 sem perder nada (as partidas antigas entram sem lances e sem ritmo).
 - **Domínio** (desafio concluído, degrau liberado) é calculado de `Games`: um desafio está concluído quando existe uma partida dele com o objetivo cumprido. Não há tabela própria.
-- **Recordes** são calculados de `SpeedrunAttempts` e `SpeedrunStageResults` (melhor tempo geral e por etapa, histórico por mês). Sem tabela própria.
+- **Etapas e recordes** são calculados das partidas (`Games`) de cada tentativa: cada partida guarda a tentativa, a etapa e o tempo gasto pelo relógio do jogador. Melhor tempo geral e por etapa, histórico por mês. Sem tabela própria (na T23 a tabela `SpeedrunStageResults` saiu: repetiria o que as partidas já dizem).
 - **Progressão** (onde estou) = o primeiro degrau com desafio não concluído, ou o escolhido no tour (T27, nas preferências).
 
 ### Personagens em tempo de partida (T25)

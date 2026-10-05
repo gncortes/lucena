@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
@@ -12,7 +13,9 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
@@ -171,6 +174,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     }
     final goal = state.mode.goal;
     final training = state.mode.userSide != null;
+    final mode = state.mode;
+    final speedrun = mode.isSpeedrun;
     return Scaffold(
       key: FreeBoardKeys.screen,
       appBar: AppBar(
@@ -204,18 +209,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             tooltip: context.l10n.freeBoardFlip,
             onPressed: cubit.flip,
           ),
-          IconButton(
-            key: FreeBoardKeys.clockButton,
-            icon: const Icon(Icons.timer_outlined),
-            tooltip: context.l10n.freeBoardClock,
-            onPressed: _pickClock,
-          ),
-          IconButton(
-            key: FreeBoardKeys.newGameButton,
-            icon: const Icon(Icons.restart_alt),
-            tooltip: context.l10n.freeBoardNewGame,
-            onPressed: cubit.newGame,
-          ),
+          // No speedrun o relógio é o do speedrun e recomeçar apagaria o
+          // tempo gasto: a etapa só termina jogando.
+          if (!speedrun) ...[
+            IconButton(
+              key: FreeBoardKeys.clockButton,
+              icon: const Icon(Icons.timer_outlined),
+              tooltip: context.l10n.freeBoardClock,
+              onPressed: _pickClock,
+            ),
+            IconButton(
+              key: FreeBoardKeys.newGameButton,
+              icon: const Icon(Icons.restart_alt),
+              tooltip: context.l10n.freeBoardNewGame,
+              onPressed: cubit.newGame,
+            ),
+          ],
         ],
       ),
       body: SafeArea(
@@ -241,7 +250,25 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 _Status(
                   minHeight: _statusHeight,
                   state: state,
-                  onNewGame: cubit.newGame,
+                  // No speedrun, o fim leva de volta à tentativa: lá o
+                  // jogador segue para a próxima etapa ou repete esta.
+                  onNewGame: speedrun
+                      ? () async {
+                          // A tentativa lê a partida do banco: ela precisa
+                          // estar gravada antes.
+                          await cubit.saved();
+                          if (!context.mounted) return;
+                          context.go(
+                            Routes.speedrunAttempt(
+                              mode.speedrunId ?? '',
+                              mode.speedrunAttemptId!,
+                              game: context
+                                  .read<Now>()()
+                                  .millisecondsSinceEpoch,
+                            ),
+                          );
+                        }
+                      : cubit.newGame,
                 ),
                 if (state.machineThinking && state.clock == null)
                   _Thinking(mode: state.mode),
@@ -336,6 +363,7 @@ class _Status extends StatelessWidget {
             final end? => _End(
               end: end,
               fulfilled: state.fulfilled,
+              speedrun: state.mode.isSpeedrun,
               onNewGame: onNewGame,
             ),
             null when showsTurn => _Turn(side: state.position.turn),
@@ -389,10 +417,14 @@ class _End extends StatelessWidget {
   const _End({
     required this.end,
     required this.fulfilled,
+    required this.speedrun,
     required this.onNewGame,
   });
 
   final GameEnd end;
+
+  /// A partida é uma etapa de speedrun: o botão volta para a tentativa.
+  final bool speedrun;
 
   /// No treino: o objetivo foi cumprido. Nulo fora do treino.
   final bool? fulfilled;
@@ -489,7 +521,9 @@ class _End extends StatelessWidget {
               onPressed: onNewGame,
               // No treino, a mesma posição com a mesma configuração.
               child: Text(
-                fulfilled == null
+                speedrun
+                    ? l10n.speedrunContinue
+                    : fulfilled == null
                     ? l10n.freeBoardNewGame
                     : l10n.resultPlayAgain,
               ),

@@ -1,7 +1,12 @@
 import 'dart:math';
 
+import 'package:drift/drift.dart';
+import 'package:drift_flutter/drift_flutter.dart';
+
 import 'package:lucena/config/dependencies.dart';
+import 'package:lucena/data/repositories/journey/journey_repository_asset.dart';
 import 'package:lucena/data/repositories/maia/maia_repository_device.dart';
+import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -18,7 +23,12 @@ import 'package:lucena/data/repositories/training/training_repository_local.dart
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/domain/models/journey.dart';
+import 'package:lucena/domain/models/speedrun.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_now.dart';
@@ -110,6 +120,7 @@ AppDatabase? _database;
 Future<Dependencies> e2eDependencies() async {
   await _database?.close();
   final database = _database = AppDatabase();
+  final positions = AssetPositionsRepository(const AssetService());
   return Dependencies(
     now: e2eNow,
     settingsRepository: LocalSettingsRepository(PreferencesService()),
@@ -117,12 +128,17 @@ Future<Dependencies> e2eDependencies() async {
     hapticsRepository: FakeHapticsRepository(),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
-    positionsRepository: AssetPositionsRepository(const AssetService()),
+    positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: DeviceMaiaRepository(_maia),
     progressRepository: LocalProgressRepository(database),
+    // A Jornada e os speedruns de verdade.
+    journeyRepository: E2EJourneyRepository(
+      AssetJourneyRepository(const AssetService(), positions),
+    ),
+    speedrunRepository: LocalSpeedrunRepository(database),
     languages: AppLanguage.values,
   );
 }
@@ -137,4 +153,125 @@ Future<void> resetE2EData() async {
   final database = AppDatabase();
   await database.deleteEverything();
   await database.close();
+}
+
+/// A Jornada de verdade e, antes dos speedruns de verdade, dois curtos de
+/// mate em um lance: os cenários percorrem um speedrun inteiro em segundos.
+class E2EJourneyRepository implements JourneyRepository {
+  E2EJourneyRepository(this._real);
+
+  final JourneyRepository _real;
+
+  static const mateInOne = EndgamePosition(
+    id: 'e2e.queen.0001',
+    category: 'basic',
+    subcategory: 'queen',
+    fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+    goal: PositionGoal.win,
+  );
+
+  /// O lance que dá o mate em [mateInOne].
+  static const mate = ('h1', 'h8');
+
+  static const time = TimeControl(
+    initial: Duration(minutes: 3),
+    increment: Duration(seconds: 2),
+  );
+
+  @override
+  Future<List<Rung>> ladder() => _real.ladder();
+
+  @override
+  Future<List<Speedrun>> speedruns() async {
+    final ladder = await _real.ladder();
+    final maia1000 = ladder.first.opponent;
+    // Três adversários da escada: o primeiro, o segundo e o Stockfish.
+    final opponents = [ladder[0], ladder[1], ladder.last];
+    return [
+      Speedrun(
+        id: 'e2e.rung',
+        kind: SpeedrunKind.rung,
+        rungId: ladder.first.id,
+        time: time,
+        stages: [
+          for (var index = 0; index < 2; index++)
+            Challenge(
+              id: 'e2e.rung/$index',
+              position: mateInOne,
+              opponent: maia1000,
+              time: time,
+            ),
+        ],
+      ),
+      Speedrun(
+        id: 'e2e.ending',
+        kind: SpeedrunKind.ending,
+        positionId: mateInOne.id,
+        time: time,
+        stages: [
+          for (final rung in opponents)
+            Challenge(
+              id: 'e2e.ending/${rung.id}',
+              position: mateInOne,
+              opponent: rung.opponent,
+              time: time,
+            ),
+        ],
+      ),
+      ...await _real.speedruns(),
+    ];
+  }
+}
+
+/// Troca o banco do aparelho por um da versão 3 do app (antes da Jornada),
+/// com as partidas [rows] na tabela antiga `attempts`: cada uma é
+/// `(posição, cumprida, adversário)`. O próximo `AppRobot.restart` abre o app
+/// novo sobre ele, como numa atualização.
+Future<void> installVersion3Database(List<(String, bool, String)> rows) async {
+  await _database?.close();
+  _database = null;
+  final executor = driftDatabase(name: 'lucena');
+  await executor.ensureOpen(_Version3(rows));
+  await executor.close();
+}
+
+class _Version3 extends QueryExecutorUser {
+  _Version3(this.rows);
+
+  final List<(String, bool, String)> rows;
+
+  @override
+  int get schemaVersion => 3;
+
+  @override
+  Future<void> beforeOpen(
+    QueryExecutor executor,
+    OpeningDetails details,
+  ) async {
+    // O executor recebido aqui também precisa ser aberto antes de usar.
+    await executor.ensureOpen(this);
+    for (final table in ['games', 'speedrun_attempts', 'attempts']) {
+      await executor.runCustom('DROP TABLE IF EXISTS $table');
+    }
+    await executor.runCustom(
+      'CREATE TABLE attempts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
+      'position_id TEXT NOT NULL, played_at INTEGER NOT NULL, '
+      'outcome TEXT NOT NULL, '
+      'fulfilled INTEGER NOT NULL CHECK (fulfilled IN (0, 1)), '
+      'opponent TEXT NOT NULL, opponent_level INTEGER NULL)',
+    );
+    for (final (position, fulfilled, opponent) in rows) {
+      await executor.runCustom(
+        'INSERT INTO attempts (position_id, played_at, outcome, fulfilled, '
+        'opponent) VALUES (?, ?, ?, ?, ?)',
+        [
+          position,
+          _e2eStart.millisecondsSinceEpoch ~/ 1000,
+          fulfilled ? 'win' : 'loss',
+          fulfilled ? 1 : 0,
+          opponent,
+        ],
+      );
+    }
+  }
 }

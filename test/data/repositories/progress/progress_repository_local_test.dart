@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 
 void main() {
@@ -80,5 +82,49 @@ void main() {
     expect(attempts.last.opponent, OpponentKind.maia);
     expect(attempts.last.opponentLevel, 1400);
     expect(attempts.first.opponentLevel, isNull);
+  });
+
+  test('a partida completa volta igual: lances, relógio e desafio', () async {
+    final full = Attempt(
+      positionId: 'basic.queen.0001',
+      playedAt: DateTime.utc(2026, 10, 4, 12, 5),
+      outcome: AttemptOutcome.win,
+      fulfilled: true,
+      opponent: OpponentKind.maia,
+      opponentLevel: 1000,
+      startedAt: DateTime.utc(2026, 10, 4, 12),
+      startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+      moves: const ['c1c7', 'd7e6'],
+      endReason: GameEndReason.checkmate,
+      userTime: const TimeControl(
+        initial: Duration(minutes: 3),
+        increment: Duration(seconds: 2),
+      ),
+      opponentTime: const TimeControl(initial: Duration(minutes: 3)),
+      userClock: const Duration(seconds: 42, milliseconds: 500),
+      challengeId: '1000/basic.queen.0001',
+      speedrunAttemptId: 7,
+      speedrunStage: 1,
+    );
+    await repository.addAttempt(full);
+
+    expect(await repository.attemptsFor('basic.queen.0001'), [full]);
+    expect(await repository.attemptsForChallenge('1000/basic.queen.0001'), [
+      full,
+    ]);
+  });
+
+  test('desafio cumprido fica marcado; o que só perdeu, não', () async {
+    Attempt challenge(String id, {required bool fulfilled}) => attempt(
+      'basic.queen.0001',
+      1,
+      fulfilled: fulfilled,
+    ).copyWith(challengeId: id);
+    await repository.addAttempt(challenge('1000/a', fulfilled: true));
+    await repository.addAttempt(challenge('1000/b', fulfilled: false));
+    await repository.addAttempt(attempt('basic.rook.0001', 2, fulfilled: true));
+
+    expect(await repository.fulfilledChallenges(), {'1000/a'});
+    expect(await repository.attemptsForChallenge('1000/b'), hasLength(1));
   });
 }

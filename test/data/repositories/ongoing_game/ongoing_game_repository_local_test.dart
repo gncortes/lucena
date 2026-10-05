@@ -40,6 +40,30 @@ void main() {
     expect(await reopen().load(), snapshot);
   });
 
+  test(
+    'a etapa de speedrun volta com o desafio, a tentativa e o início',
+    () async {
+      final snapshot = GameSnapshot(
+        startFen: startFen,
+        moves: const ['e2e4'],
+        mode: const GameMode(
+          opponent: OpponentKind.maia,
+          level: 1000,
+          userSide: Side.white,
+          positionId: 'basic.queen.0001',
+          challengeId: '1000/basic.queen.0001',
+          speedrunId: 'rung.1000',
+          speedrunAttemptId: 4,
+          speedrunStage: 2,
+        ),
+        startedAt: DateTime.utc(2026, 10, 4, 12),
+      );
+      await reopen().save(snapshot);
+
+      expect(await reopen().load(), snapshot);
+    },
+  );
+
   test('a partida sem relógio volta igual ao reabrir', () async {
     const snapshot = GameSnapshot(
       startFen: startFen,

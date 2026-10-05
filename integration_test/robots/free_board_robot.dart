@@ -46,6 +46,7 @@ class FreeBoardRobot {
     Side? user,
     String? goal,
     String? position,
+    String? challenge,
   }) async {
     final context = $.tester.element(find.byKey(HomeKeys.screen));
     GoRouter.of(context).go(
@@ -60,6 +61,7 @@ class FreeBoardRobot {
         user: user?.name,
         goal: goal,
         position: position,
+        challenge: challenge,
       ),
     );
     await $.pumpAndSettle();
