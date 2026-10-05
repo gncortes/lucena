@@ -102,7 +102,6 @@
   "freeBoardFlip": "چرخاندن صفحه",
   "freeBoardInsufficientMaterial": "مهرهٔ ناکافی",
   "freeBoardNewGame": "بازی جدید",
-  "freeBoardNoMoves": "برای شروع یک مهره را حرکت دهید",
   "freeBoardRepetition": "تکرار سه‌باره",
   "freeBoardStalemate": "پات",
   "freeBoardTimeout": "زمان تمام شد",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "اسپیدران",
   "tourStart": "شروع",
   "tourStartLessons": "شروع درس‌ها",
-  "tourStep": "گام {step} از {total}"
+  "tourStep": "گام {step} از {total}",
+  "resultNextChallenge": "چالش بعدی",
+  "reportRatingLabel": "ریتینگ",
+  "resultYouWon": "بردی!",
+  "resultYouLost": "باختی"
 }

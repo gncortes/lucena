@@ -6,6 +6,7 @@ import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// As conquistas: as obtidas primeiro, com a data, e as bloqueadas com o que
 /// falta fazer.
@@ -26,7 +27,7 @@ class AchievementsScreen extends StatelessWidget {
       body: all == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: scrollPadding(context),
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

@@ -11,6 +11,7 @@ import '../../core/l10n/l10n.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Um speedrun: o recorde, o melhor tempo de cada etapa, começar ou continuar
 /// a tentativa e os tempos de antes, por mês.
@@ -47,7 +48,7 @@ class SpeedrunScreen extends StatelessWidget {
         title: SpeedrunTitle(speedrun, style: theme.textTheme.titleLarge),
       ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: scrollPadding(context),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),

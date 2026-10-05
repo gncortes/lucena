@@ -9,6 +9,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class CatalogScreen extends StatelessWidget {
             child: categories == null
                 ? const Center(child: CircularProgressIndicator())
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    padding: scrollPadding(context, left: 16, right: 16),
                     children: [
                       for (final category in categories)
                         if (category.count(state.filter) > 0)

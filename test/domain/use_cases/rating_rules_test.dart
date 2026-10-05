@@ -67,6 +67,10 @@ void main() {
     );
     expect(RatingRules.score(fulfilled: true), 1);
     expect(RatingRules.score(fulfilled: false), 0);
+    // Empatar quando o objetivo era vencer vale meio ponto.
+    expect(RatingRules.score(fulfilled: false, draw: true), 0.5);
+    // Se o objetivo era o empate, ele já cumpre: ponto inteiro.
+    expect(RatingRules.score(fulfilled: true, draw: true), 1);
   });
 
   group('rate', () {
@@ -78,6 +82,28 @@ void main() {
       expect(win.rating, greaterThan(1500));
       expect(loss.rating, lessThan(1500));
       expect(win.deviation, lessThan(100));
+    });
+
+    test('empate: sobe contra o mais forte, desce contra o mais fraco', () {
+      // Posição difícil: o adversário equivalente é mais forte.
+      final hard = RatingRules.rate(
+        player,
+        expected: 0.3,
+        fulfilled: false,
+        draw: true,
+      );
+      // Posição ganha: o adversário equivalente é mais fraco.
+      final easy = RatingRules.rate(
+        player,
+        expected: 0.9,
+        fulfilled: false,
+        draw: true,
+      );
+      final loss = RatingRules.rate(player, expected: 0.9, fulfilled: false);
+      expect(hard.rating, greaterThan(1500));
+      expect(easy.rating, lessThan(1500));
+      // Mas o empate custa menos que a derrota.
+      expect(easy.rating, greaterThan(loss.rating));
     });
 
     test('cumprir algo difícil vale mais que cumprir algo fácil', () {

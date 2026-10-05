@@ -4,16 +4,20 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Tela da partida
 
-- [ ] **Ponta do balão com defeito.** ([print](../qa/melhorias/e7a6e103.jpg)) A ponta aparece como um triângulo solto, desalinhado da curva do balão. Desenhar balão e ponta como um caminho só (sem emenda), com a ponta levemente curva, na altura do meio da foto, como no chess.com; conferir no claro, no escuro e em árabe (espelhada).
-- [ ] **Espaço entre o personagem e o tabuleiro.** Hoje o retrato e o balão encostam na borda de cima do tabuleiro. Dar um respiro (uns 8 a 12 px) entre a fileira do personagem e o tabuleiro. ([print](../qa/melhorias/38eb7dc8.jpg))
-- [ ] **Tabuleiro pequeno (prioridade).** ([print](../qa/melhorias/e7a6e103.jpg)) Com o relógio "dos lados", a fileira do personagem, a fileira do relógio do adversário, a do jogador e o espaço reservado para a lista de lances, o tabuleiro não ocupa a largura da tela, enquanto sobra um vazio embaixo ("Mova uma peça para começar"). Proposta:
+- [x] **Ponta do balão com defeito.** ([print](../qa/melhorias/e7a6e103.jpg)) A ponta aparece como um triângulo solto, desalinhado da curva do balão. Desenhar balão e ponta como um caminho só (sem emenda), com a ponta levemente curva, na altura do meio da foto, como no chess.com; conferir no claro, no escuro e em árabe (espelhada).
+- [x] **Espaço entre o personagem e o tabuleiro.** Hoje o retrato e o balão encostam na borda de cima do tabuleiro. Dar um respiro (uns 8 a 12 px) entre a fileira do personagem e o tabuleiro. ([print](../qa/melhorias/38eb7dc8.jpg))
+- [x] **Tabuleiro pequeno (prioridade).** ([print](../qa/melhorias/e7a6e103.jpg)) Com o relógio "dos lados", a fileira do personagem, a fileira do relógio do adversário, a do jogador e o espaço reservado para a lista de lances, o tabuleiro não ocupa a largura da tela, enquanto sobra um vazio embaixo ("Mova uma peça para começar"). Proposta:
   - **regra: o tabuleiro ocupa sempre toda a largura da tela, como em todo app de xadrez** (pedido do Gabriel); o que cede é a lista de lances (que rola) e não o tabuleiro;
   - juntar a fileira do personagem com a do relógio dele (retrato, balão e relógio numa faixa só), como no chess.com, e reduzir o retrato quando a tela for baixa;
   - diminuir o espaço mínimo da lista de lances; a lista vira uma faixa horizontal de lances (como no chess.com e no Lichess) logo abaixo do tabuleiro;
   - conferir em telas pequenas (SmallPhone) e no tema com relógio em cima/embaixo/dos lados.
-- [ ] **"Próximo desafio" no fim da partida.** Num desafio da Jornada, o painel do fim ganha embaixo a opção de ir direto para o próximo desafio do degrau (ou do degrau seguinte, se este acabou), além de "Jogar de novo". ([print](../qa/melhorias/3d0bf1e2.jpg))
+- [x] **"Próximo desafio" no fim da partida.** Num desafio da Jornada, o painel do fim ganha embaixo a opção de ir direto para o próximo desafio do degrau (ou do degrau seguinte, se este acabou), além de "Jogar de novo". ([print](../qa/melhorias/3d0bf1e2.jpg))
 
-- [ ] **Layout do rating, no estilo do chess.com.** Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
+- [x] **Layout do rating, no estilo do chess.com.** (Entrega melhorias-partida: painel do fim e cartão do perfil com o número e o selo; a escolha de período da curva fica para depois.) Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
+
+- [x] **Sem a frase "Mova uma peça para começar".** Pedido do Gabriel (2026-10-05): a faixa de lances fica vazia até o primeiro lance.
+- [x] **Cartão animado de vitória/derrota, como no chess.com.** Pedido do Gabriel (2026-10-05): abre por cima da partida no fim, neutro (só o ícone com a cor do resultado), com o rating contando do valor antigo ao novo e a variação em texto verde/vermelho; fechado, o resultado fica no painel embaixo do tabuleiro.
+- [x] **Personagem e relógio em linhas separadas.** Pedido do Gabriel (2026-10-05): retrato e balão (alinhados pela base) numa linha; o relógio do adversário numa linha própria, como a do jogador.
 
 ## Tela do desafio (Jornada)
 
@@ -114,10 +118,10 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta: cabeçalho com o retrato e o nome do personagem, a frase dele e uma barra de progresso (1/9); o próximo desafio em destaque (cartão maior, com "Jogar"); os outros em grade de 2 ou 3 colunas, cada um com o tabuleiro, o nome do final (ex.: "Mate de dama") e um selo de feito; o objetivo só aparece quando for diferente do comum (ex.: "Empatar"); espaço embaixo para rolar até o fim.
 
-- [ ] **Fim da lista cortado.** O último desafio fica atrás da barra de navegação do sistema e não dá para rolar até ele inteiro: falta o espaço de baixo (`SafeArea`/padding) em todas as listas. ([print](../qa/melhorias/89eeba71.jpg))
-- [ ] **"Defender" não é vermelho.** Vermelho parece erro ou derrota. Usar uma cor neutra de destaque (azul ou âmbar) com o ícone de escudo, e o verde para "Ganhar"; vale no catálogo, na Jornada e na configuração. ([print](../qa/melhorias/89eeba71.jpg))
+- [x] **Fim da lista cortado.** O último desafio fica atrás da barra de navegação do sistema e não dá para rolar até ele inteiro: falta o espaço de baixo (`SafeArea`/padding) em todas as listas. ([print](../qa/melhorias/89eeba71.jpg))
+- [x] **"Defender" não é vermelho.** Vermelho parece erro ou derrota. Usar uma cor neutra de destaque (azul ou âmbar) com o ícone de escudo, e o verde para "Ganhar"; vale no catálogo, na Jornada e na configuração. ([print](../qa/melhorias/89eeba71.jpg))
 
 ## Notado nos mesmos prints (para confirmar com o Gabriel)
 
-- [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. **Decisão do Gabriel (2026-10-05):** empate vale meio ponto no Glicko-2, contra o adversário equivalente: se ele for mais forte que o jogador, o rating sobe; se for mais fraco, desce (vale para empate combinado e para os empates do tabuleiro). ([print](../qa/melhorias/4c10dc0a.jpg))
-- [ ] **Parte de baixo cortada, sem espaço para rolar.** No fim da partida, a lista de lances fica cortada (uma linha e meia visível, a de baixo pela metade). A área de baixo precisa rolar até o fim, com um espaço (padding) depois do último lance para nada ficar colado na borda. Rever também a ordem: talvez o rating dentro do painel do fim. ([print](../qa/melhorias/4c10dc0a.jpg))
+- [x] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. **Decisão do Gabriel (2026-10-05):** empate vale meio ponto no Glicko-2, contra o adversário equivalente: se ele for mais forte que o jogador, o rating sobe; se for mais fraco, desce (vale para empate combinado e para os empates do tabuleiro). ([print](../qa/melhorias/4c10dc0a.jpg))
+- [x] **Parte de baixo cortada, sem espaço para rolar.** No fim da partida, a lista de lances fica cortada (uma linha e meia visível, a de baixo pela metade). A área de baixo precisa rolar até o fim, com um espaço (padding) depois do último lance para nada ficar colado na borda. Rever também a ordem: talvez o rating dentro do painel do fim. ([print](../qa/melhorias/4c10dc0a.jpg))

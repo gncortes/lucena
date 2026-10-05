@@ -511,10 +511,6 @@
   "@freeBoardNewGame": {
     "description": "Button that puts the board back in its starting position."
   },
-  "freeBoardNoMoves": "Move a piece to start",
-  "@freeBoardNoMoves": {
-    "description": "Shown in place of the move list while no move has been played."
-  },
   "freeBoardRepetition": "Threefold repetition",
   "@freeBoardRepetition": {
     "description": "Reason the game ended in a draw: the same position appeared three times."
@@ -1695,5 +1691,21 @@
         "type": "int"
       }
     }
+  },
+  "resultNextChallenge": "Next challenge",
+  "@resultNextChallenge": {
+    "description": "End-of-game button: go straight to the next Journey challenge."
+  },
+  "reportRatingLabel": "Rating",
+  "@reportRatingLabel": {
+    "description": "Small label above the new rating number in the end-of-game panel."
+  },
+  "resultYouWon": "You won!",
+  "@resultYouWon": {
+    "description": "Title of the animated result card when the player wins."
+  },
+  "resultYouLost": "You lost",
+  "@resultYouLost": {
+    "description": "Title of the animated result card when the player loses."
   }
 }

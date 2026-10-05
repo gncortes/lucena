@@ -102,7 +102,6 @@
   "freeBoardFlip": "قلب الرقعة",
   "freeBoardInsufficientMaterial": "قطع غير كافية",
   "freeBoardNewGame": "مباراة جديدة",
-  "freeBoardNoMoves": "حرّك قطعة للبدء",
   "freeBoardRepetition": "تكرار الوضعية ثلاث مرات",
   "freeBoardStalemate": "تعادل بالخنق",
   "freeBoardTimeout": "انتهى الوقت",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "سباق الوقت",
   "tourStart": "ابدأ",
   "tourStartLessons": "ابدأ الدروس",
-  "tourStep": "الخطوة {step} من {total}"
+  "tourStep": "الخطوة {step} من {total}",
+  "resultNextChallenge": "التحدي التالي",
+  "reportRatingLabel": "التصنيف",
+  "resultYouWon": "لقد فزت!",
+  "resultYouLost": "لقد خسرت"
 }

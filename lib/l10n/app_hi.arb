@@ -102,7 +102,6 @@
   "freeBoardFlip": "बोर्ड पलटें",
   "freeBoardInsufficientMaterial": "अपर्याप्त मोहरे",
   "freeBoardNewGame": "नई बाज़ी",
-  "freeBoardNoMoves": "शुरू करने के लिए कोई मोहरा चलें",
   "freeBoardRepetition": "तीन बार दोहराव",
   "freeBoardStalemate": "ज़िच",
   "freeBoardTimeout": "समय समाप्त",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "स्पीडरन",
   "tourStart": "शुरू करें",
   "tourStartLessons": "पाठ शुरू करें",
-  "tourStep": "चरण {step} / {total}"
+  "tourStep": "चरण {step} / {total}",
+  "resultNextChallenge": "अगली चुनौती",
+  "reportRatingLabel": "रेटिंग",
+  "resultYouWon": "आप जीत गए!",
+  "resultYouLost": "आप हार गए"
 }

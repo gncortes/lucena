@@ -102,7 +102,6 @@
   "freeBoardFlip": "Brett drehen",
   "freeBoardInsufficientMaterial": "Ungenügendes Material",
   "freeBoardNewGame": "Neue Partie",
-  "freeBoardNoMoves": "Ziehe eine Figur, um zu beginnen",
   "freeBoardRepetition": "Dreifache Stellungswiederholung",
   "freeBoardStalemate": "Patt",
   "freeBoardTimeout": "Zeit abgelaufen",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Los geht's",
   "tourStartLessons": "Unterricht beginnen",
-  "tourStep": "Schritt {step} von {total}"
+  "tourStep": "Schritt {step} von {total}",
+  "resultNextChallenge": "Nächste Herausforderung",
+  "reportRatingLabel": "Wertung",
+  "resultYouWon": "Du hast gewonnen!",
+  "resultYouLost": "Du hast verloren"
 }

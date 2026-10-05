@@ -102,7 +102,6 @@
   "freeBoardFlip": "Перевернути дошку",
   "freeBoardInsufficientMaterial": "Недостатньо матеріалу",
   "freeBoardNewGame": "Нова партія",
-  "freeBoardNoMoves": "Зробіть хід, щоб почати",
   "freeBoardRepetition": "Триразове повторення",
   "freeBoardStalemate": "Пат",
   "freeBoardTimeout": "Час вичерпано",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Спідран",
   "tourStart": "Почати",
   "tourStartLessons": "Почати уроки",
-  "tourStep": "Крок {step} з {total}"
+  "tourStep": "Крок {step} з {total}",
+  "resultNextChallenge": "Наступне випробування",
+  "reportRatingLabel": "Рейтинг",
+  "resultYouWon": "Ви перемогли!",
+  "resultYouLost": "Ви програли"
 }

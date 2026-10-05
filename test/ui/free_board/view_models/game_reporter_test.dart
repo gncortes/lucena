@@ -112,4 +112,21 @@ void main() {
       contains(const GameFeedback(FeedbackKind.rungCompleted, rungId: '1000')),
     );
   });
+
+  test('no desafio da Jornada, aponta o próximo', () async {
+    final rung = sampleLadder.first;
+    final report = await play(
+      fulfilled: true,
+      level: 1000,
+      challengeId: rung.challenges[0].id,
+    );
+
+    expect(report.next!.challenge.id, rung.challenges[1].id);
+  });
+
+  test('fora da Jornada, sem próximo desafio', () async {
+    final report = await play(fulfilled: true);
+
+    expect(report.next, isNull);
+  });
 }

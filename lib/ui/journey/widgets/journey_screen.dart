@@ -10,6 +10,7 @@ import '../../core/widgets/character_avatar.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// A Jornada: onde o jogador está, o próximo degrau e todos os degraus, com o
 /// que já foi concluído em cada um.
@@ -28,7 +29,7 @@ class JourneyScreen extends StatelessWidget {
       body: progress == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: scrollPadding(context),
               children: [
                 _Summary(progress: progress),
                 for (final rung in progress.rungs)

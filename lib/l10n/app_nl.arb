@@ -102,7 +102,6 @@
   "freeBoardFlip": "Bord omdraaien",
   "freeBoardInsufficientMaterial": "Onvoldoende materiaal",
   "freeBoardNewGame": "Nieuwe partij",
-  "freeBoardNoMoves": "Verplaats een stuk om te beginnen",
   "freeBoardRepetition": "Drievoudige herhaling",
   "freeBoardStalemate": "Pat",
   "freeBoardTimeout": "Tijd op",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Beginnen",
   "tourStartLessons": "Begin de lessen",
-  "tourStep": "Stap {step} van {total}"
+  "tourStep": "Stap {step} van {total}",
+  "resultNextChallenge": "Volgende uitdaging",
+  "reportRatingLabel": "Rating",
+  "resultYouWon": "Je hebt gewonnen!",
+  "resultYouLost": "Je hebt verloren"
 }

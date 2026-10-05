@@ -9,6 +9,7 @@ import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/challenge_tile.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Um desafio: a posição, contra quem, o botão de jogar e as partidas dele
 /// agrupadas por mês.
@@ -27,7 +28,7 @@ class ChallengeScreen extends StatelessWidget {
       body: challenge == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: scrollPadding(context),
               children: [
                 ChallengeTile(
                   position: challenge.position,

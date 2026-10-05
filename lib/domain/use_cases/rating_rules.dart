@@ -35,8 +35,14 @@ abstract final class RatingRules {
   /// Tolerância do cálculo da volatilidade.
   static const epsilon = 0.000001;
 
-  /// Placar da partida para o rating: cumpriu o objetivo ou não.
-  static double score({required bool fulfilled}) => fulfilled ? 1 : 0;
+  /// Placar da partida para o rating: cumpriu o objetivo (1), empatou sem
+  /// cumprir (meio ponto, contra o adversário equivalente: sobe se ele é mais
+  /// forte que o jogador e desce se é mais fraco) ou perdeu (0).
+  static double score({required bool fulfilled, bool draw = false}) => fulfilled
+      ? 1
+      : draw
+      ? 0.5
+      : 0;
 
   /// O placar previsto pela cabeça de resultado do Maia, do ponto de vista
   /// do jogador. Se o objetivo é vencer, o empate vale meio ponto; se é só
@@ -63,6 +69,7 @@ abstract final class RatingRules {
     PlayerRating player, {
     required double expected,
     required bool fulfilled,
+    bool draw = false,
     bool stockfish = false,
   }) {
     var opponent = equivalentOpponent(
@@ -73,7 +80,7 @@ abstract final class RatingRules {
     return update(
       player,
       opponentRating: opponent,
-      score: score(fulfilled: fulfilled),
+      score: score(fulfilled: fulfilled, draw: draw),
     );
   }
 

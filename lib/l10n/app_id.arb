@@ -102,7 +102,6 @@
   "freeBoardFlip": "Balik papan",
   "freeBoardInsufficientMaterial": "Materi tidak cukup",
   "freeBoardNewGame": "Permainan baru",
-  "freeBoardNoMoves": "Gerakkan buah catur untuk memulai",
   "freeBoardRepetition": "Pengulangan tiga kali",
   "freeBoardStalemate": "Pat",
   "freeBoardTimeout": "Waktu habis",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Mulai",
   "tourStartLessons": "Mulai pelajaran",
-  "tourStep": "Langkah {step} dari {total}"
+  "tourStep": "Langkah {step} dari {total}",
+  "resultNextChallenge": "Tantangan berikutnya",
+  "reportRatingLabel": "Rating",
+  "resultYouWon": "Kamu menang!",
+  "resultYouLost": "Kamu kalah"
 }

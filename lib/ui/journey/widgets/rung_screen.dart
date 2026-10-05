@@ -10,6 +10,7 @@ import '../../core/widgets/challenge_tile.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// Os desafios de um degrau, com a marca de concluído.
 class RungScreen extends StatelessWidget {
@@ -45,7 +46,7 @@ class RungScreen extends StatelessWidget {
       body: rung == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: scrollPadding(context),
               children: [
                 if (teacher != null && reunion != null)
                   Card(

@@ -10,7 +10,6 @@ import 'package:intl/intl.dart' show DateFormat;
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
-import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
@@ -23,6 +22,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_setup_cubit.dart';
+import '../../core/widgets/goal_style.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -89,8 +89,6 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
@@ -124,13 +122,17 @@ class _Header extends StatelessWidget {
                 Chip(
                   key: GameSetupKeys.goal,
                   avatar: Icon(
-                    state.goal == PositionGoal.win
-                        ? Icons.emoji_events_outlined
-                        : Icons.shield_outlined,
+                    GoalStyle.of(context, state.goal).icon,
                     size: 18,
+                    color: GoalStyle.of(context, state.goal).onContainer,
                   ),
-                  label: Text(goalLabel(l10n, state.goal)),
-                  backgroundColor: colors.secondaryContainer,
+                  label: Text(
+                    goalLabel(l10n, state.goal),
+                    style: TextStyle(
+                      color: GoalStyle.of(context, state.goal).onContainer,
+                    ),
+                  ),
+                  backgroundColor: GoalStyle.of(context, state.goal).container,
                   side: BorderSide.none,
                 ),
                 Chip(

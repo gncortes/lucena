@@ -20,6 +20,7 @@ abstract final class ProfileKeys {
 
   /// O rating de finais: o cartão, o número, quantas partidas e a curva.
   static const ratingCard = Key('profile.rating');
+  static const ratingDelta = Key('profile.rating.delta');
   static const ratingValue = Key('profile.rating.value');
   static const ratingGames = Key('profile.rating.games');
   static const ratingChart = Key('profile.rating.chart');

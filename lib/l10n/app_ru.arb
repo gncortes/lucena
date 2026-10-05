@@ -102,7 +102,6 @@
   "freeBoardFlip": "Перевернуть доску",
   "freeBoardInsufficientMaterial": "Недостаточно материала",
   "freeBoardNewGame": "Новая партия",
-  "freeBoardNoMoves": "Сделайте ход, чтобы начать",
   "freeBoardRepetition": "Троекратное повторение",
   "freeBoardStalemate": "Пат",
   "freeBoardTimeout": "Время истекло",
@@ -320,5 +319,9 @@
   "tourSpeedrunTitle": "Спидран",
   "tourStart": "Начать",
   "tourStartLessons": "Начать уроки",
-  "tourStep": "Шаг {step} из {total}"
+  "tourStep": "Шаг {step} из {total}",
+  "resultNextChallenge": "Следующее испытание",
+  "reportRatingLabel": "Рейтинг",
+  "resultYouWon": "Вы победили!",
+  "resultYouLost": "Вы проиграли"
 }
