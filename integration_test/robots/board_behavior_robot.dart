@@ -5,6 +5,8 @@ import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Tela de comportamento do tabuleiro (jeito de mover, ajudas, notação).
 class BoardBehaviorRobot {
   const BoardBehaviorRobot(this.$);
@@ -60,11 +62,11 @@ class BoardBehaviorRobot {
   }
 
   void expectMoveMethodValue(String text) {
-    expect(_text(BoardSettingsKeys.moveMethodValue), text);
+    expectText(_text(BoardSettingsKeys.moveMethodValue), text);
   }
 
   void expectNotationValue(String text) {
-    expect(_text(BoardSettingsKeys.notationValue), text);
+    expectText(_text(BoardSettingsKeys.notationValue), text);
   }
 
   String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;

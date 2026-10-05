@@ -69,4 +69,16 @@ void main() {
 
     await maia.expectInvalidPosition();
   });
+
+  patrolTest('medir a velocidade: mostra o tempo típico por lance', ($) async {
+    final maia = MaiaDebugRobot($);
+    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
+    await maia.open();
+
+    await maia.measure();
+
+    // Fora desta faixa, a medição quebrou (zero) ou o modelo travou.
+    expect(await maia.measuredMedian(), inInclusiveRange(1, 5000));
+    await maia.expectResult();
+  });
 }

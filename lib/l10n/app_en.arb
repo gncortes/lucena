@@ -270,6 +270,10 @@
   "@freeBoardDraw": {
     "description": "Game result: draw."
   },
+  "freeBoardFiftyMoves": "Fifty-move rule",
+  "@freeBoardFiftyMoves": {
+    "description": "Reason the game ended in a draw: fifty moves by each side without a capture or a pawn move."
+  },
   "freeBoardFlip": "Flip board",
   "@freeBoardFlip": {
     "description": "Tooltip of the button that turns the board around to see it from the other side."
@@ -285,6 +289,10 @@
   "freeBoardNoMoves": "Move a piece to start",
   "@freeBoardNoMoves": {
     "description": "Shown in place of the move list while no move has been played."
+  },
+  "freeBoardRepetition": "Threefold repetition",
+  "@freeBoardRepetition": {
+    "description": "Reason the game ended in a draw: the same position appeared three times."
   },
   "freeBoardStalemate": "Stalemate",
   "@freeBoardStalemate": {
@@ -355,6 +363,15 @@
   "@homeTrain": {
     "description": "Main home screen button: opens the catalog of endgame positions to practice."
   },
+  "homeVersion": "Version {version}",
+  "@homeVersion": {
+    "description": "App version shown at the bottom of the home screen, e.g. Version 0.3.2.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "maiaDebugElapsed": "Computed in {ms} ms",
   "@maiaDebugElapsed": {
     "description": "How long the model took, in milliseconds.",
@@ -371,6 +388,10 @@
   "maiaDebugFailed": "The model did not respond.",
   "@maiaDebugFailed": {
     "description": "Shown when the Maia model fails to answer."
+  },
+  "maiaDebugMeasure": "Measure speed",
+  "@maiaDebugMeasure": {
+    "description": "Button that runs the Maia model several times to measure how fast this device computes a move."
   },
   "maiaDebugOutcome": "Win {win}% · Draw {draw}% · Loss {loss}%",
   "@maiaDebugOutcome": {
@@ -399,6 +420,24 @@
   "maiaDebugPosition": "Position (FEN)",
   "@maiaDebugPosition": {
     "description": "Label of the text field with the position to evaluate, in FEN."
+  },
+  "maiaDebugTiming": "Typical: {median} ms per move ({fastest} to {slowest} ms in {runs} runs)",
+  "@maiaDebugTiming": {
+    "description": "Result of the speed measurement: the median time per move and the fastest and slowest runs, in milliseconds.",
+    "placeholders": {
+      "median": {
+        "type": "int"
+      },
+      "fastest": {
+        "type": "int"
+      },
+      "slowest": {
+        "type": "int"
+      },
+      "runs": {
+        "type": "int"
+      }
+    }
   },
   "maiaDebugTitle": "Maia diagnostics",
   "@maiaDebugTitle": {

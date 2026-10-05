@@ -65,7 +65,7 @@ void main() {
 
     await app.sendToBackgroundAndReturn();
     await setup.expectVisible();
-    setup.expectTime('user', minutes: 3, increment: 2);
+    await setup.expectTime('user', minutes: 3, increment: 2);
 
     await app.open(systemLocale: const Locale('en', 'US'));
     await custom.open();

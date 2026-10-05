@@ -99,10 +99,9 @@ Título: `TXX: <título da tarefa>`
 - Arquivos principais: <lista curta>
 - Pendências: <ou "nenhuma">
 </details>
-
----
-Aprovar = fazer o merge. Achou problema? Comente aqui que eu corrijo e mando uma nova versão.
 ```
+
+A descrição termina nos detalhes técnicos: sem rodapé, sem linha de aprovação, sem "Generated with Claude Code" e sem link de sessão do Claude (pedido do Gabriel).
 
 Regras do resumo: português, no máximo 3 linhas, foco no que o Gabriel vai ver no app. Passos de teste: no máximo 5, cada um com uma ação.
 

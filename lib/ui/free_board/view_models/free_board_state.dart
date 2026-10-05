@@ -28,6 +28,9 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// Os mesmos lances em UCI (`e2e4`, `g1f3`), como são gravados.
     @Default(<String>[]) List<String> ucis,
 
+    /// Quantas vezes a posição atual já apareceu nesta partida.
+    @Default(1) int repetitions,
+
     /// O último lance, para o tabuleiro destacar.
     Move? lastMove,
 
@@ -58,7 +61,14 @@ abstract class FreeBoardState with _$FreeBoardState {
   const FreeBoardState._();
 
   /// Como a partida terminou. Nulo enquanto ela continua.
-  GameEnd? get end => forcedEnd ?? GameRules.endOf(position);
+  GameEnd? get end =>
+      forcedEnd ??
+      GameRules.endOf(
+        position,
+        // Contra a máquina, repetição e 50 lances empatam sozinhos; no
+        // tabuleiro livre o jogador move os dois lados à vontade.
+        repetitions: mode.opponent.isMachine ? repetitions : null,
+      );
 
   /// Como a partida terminou para o jogador. Nulo enquanto ela continua ou
   /// fora do treino.

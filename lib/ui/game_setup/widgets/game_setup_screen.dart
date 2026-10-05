@@ -227,7 +227,7 @@ class _OpponentPicker extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
-          for (final kind in OpponentKind.values)
+          for (final kind in OpponentKind.training)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: ListTile(

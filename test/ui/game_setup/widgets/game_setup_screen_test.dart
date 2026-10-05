@@ -155,6 +155,25 @@ void main() {
     expect(cubit.state.maiaLevel, 1600);
   });
 
+  testWidgets('os adversários são o Maia e o Stockfish, sem "dois jogadores"', (
+    tester,
+  ) async {
+    await pump(tester);
+
+    expect(
+      find.byKey(GameSetupKeys.opponent(OpponentKind.maia)),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(GameSetupKeys.opponent(OpponentKind.stockfish)),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(GameSetupKeys.opponent(OpponentKind.twoPlayers)),
+      findsNothing,
+    );
+  });
+
   testWidgets('contra o Stockfish, os níveis somem', (tester) async {
     await pump(tester);
 

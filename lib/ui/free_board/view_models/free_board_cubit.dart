@@ -154,25 +154,24 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final played = GameRules.play(state.position, move);
     if (played == null) return;
     final now = _now();
-    var clock = state.clock;
-    if (clock != null) {
-      clock = ClockEngine.press(clock, now);
-      if (GameRules.endOf(played.position) != null) {
-        clock = ClockEngine.stop(clock, now);
-      }
-    }
-    emit(
-      _timed(
-        state.copyWith(
-          position: played.position,
-          moves: [...state.moves, played.san],
-          ucis: [...state.ucis, move.uci],
-          lastMove: move,
-          clock: clock,
-        ),
-        now,
-      ),
+    var next = state.copyWith(
+      position: played.position,
+      moves: [...state.moves, played.san],
+      ucis: [...state.ucis, move.uci],
+      repetitions: GameRules.repetitionsOf(state.start, [
+        ...state.ucis,
+        move.uci,
+      ]),
+      lastMove: move,
     );
+    final clock = state.clock;
+    if (clock != null) {
+      final pressed = ClockEngine.press(clock, now);
+      next = next.copyWith(
+        clock: next.end == null ? pressed : ClockEngine.stop(pressed, now),
+      );
+    }
+    emit(_timed(next, now));
     _changed();
   }
 
@@ -386,26 +385,27 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       moves.add(played.san);
       lastMove = move;
     }
-    var clock = snapshot.clock;
+    var restored = FreeBoardState(
+      start: start,
+      position: position,
+      moves: moves,
+      ucis: snapshot.moves,
+      repetitions: GameRules.repetitionsOf(start, snapshot.moves),
+      lastMove: lastMove,
+      orientation: snapshot.orientation,
+      playerSide: snapshot.playerSide,
+      clock: snapshot.clock,
+      mode: snapshot.mode,
+    );
+    final clock = snapshot.clock;
     // Relógio parado numa partida em andamento: o jogador tinha saído da tela.
     // Ao voltar, o relógio retoma do ponto em que parou.
-    if (clock != null && GameRules.endOf(position) == null) {
-      clock = ClockEngine.resume(clock, turn: position.turn, now: now);
+    if (clock != null && restored.end == null) {
+      restored = restored.copyWith(
+        clock: ClockEngine.resume(clock, turn: position.turn, now: now),
+      );
     }
-    return _timed(
-      FreeBoardState(
-        start: start,
-        position: position,
-        moves: moves,
-        ucis: snapshot.moves,
-        lastMove: lastMove,
-        orientation: snapshot.orientation,
-        playerSide: snapshot.playerSide,
-        clock: clock,
-        mode: snapshot.mode,
-      ),
-      now,
-    );
+    return _timed(restored, now);
   }
 
   static FreeBoardState _fresh({

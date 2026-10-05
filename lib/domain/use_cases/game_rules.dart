@@ -51,7 +51,12 @@ abstract final class GameRules {
   }
 
   /// Como a partida terminou. Nulo enquanto ela continua.
-  static GameEnd? endOf(Position position) {
+  ///
+  /// [repetitions] é quantas vezes a posição atual já apareceu na partida
+  /// (ver [repetitionsOf]). Com ele, valem também os empates automáticos: a
+  /// terceira repetição e a regra dos 50 lances. Sem ele (o tabuleiro livre,
+  /// em que o jogador move os dois lados), a partida só acaba no tabuleiro.
+  static GameEnd? endOf(Position position, {int? repetitions}) {
     if (position.isCheckmate) {
       return GameEnd(GameEndReason.checkmate, winner: position.turn.opposite);
     }
@@ -59,6 +64,36 @@ abstract final class GameRules {
     if (position.isInsufficientMaterial) {
       return const GameEnd(GameEndReason.insufficientMaterial);
     }
+    if (repetitions != null) {
+      if (repetitions >= 3) return const GameEnd(GameEndReason.repetition);
+      if (position.halfmoves >= fiftyMovesInPlies) {
+        return const GameEnd(GameEndReason.fiftyMoves);
+      }
+    }
     return null;
   }
+
+  /// A regra dos 50 lances, em meios-lances (cada lado joga 50).
+  static const fiftyMovesInPlies = 100;
+
+  /// Quantas vezes a posição a que [moves] (UCI) chega, a partir de [start],
+  /// já apareceu na partida, contando esta. Posição igual é a mesma
+  /// disposição de peças, com o mesmo lado na vez e os mesmos direitos de
+  /// roque e de captura en passant.
+  static int repetitionsOf(Position start, List<String> moves) {
+    var position = start;
+    final seen = [_repetitionKey(position)];
+    for (final uci in moves) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : play(position, move);
+      if (played == null) break;
+      position = played.position;
+      seen.add(_repetitionKey(position));
+    }
+    return seen.where((key) => key == seen.last).length;
+  }
+
+  // O FEN sem os contadores de lances.
+  static String _repetitionKey(Position position) =>
+      position.fen.split(' ').take(4).join(' ');
 }

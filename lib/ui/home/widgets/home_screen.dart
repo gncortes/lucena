@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.version = appVersion});
+
+  /// A versão do app, mostrada no pé da tela para quem relata um problema.
+  /// Vazia (build local, sem versão): não aparece.
+  final String version;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -78,6 +83,23 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
+            if (widget.version.isNotEmpty)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: FadeTransition(
+                    opacity: _actions,
+                    child: Text(
+                      context.l10n.homeVersion(widget.version),
+                      key: HomeKeys.version,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

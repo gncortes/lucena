@@ -93,4 +93,25 @@ void main() {
     expect(opacityOf(tester, HomeKeys.mascot), 1);
     expect(opacityOf(tester, HomeKeys.tagline), 1);
   });
+
+  testWidgets('mostra a versão do app no pé da tela', (tester) async {
+    await tester.pumpWidget(
+      const TestApp(child: HomeScreen(version: '0.3.2-rc.1')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.version)).data,
+      'Version 0.3.2-rc.1',
+    );
+  });
+
+  testWidgets('build local, sem versão: não mostra nada no lugar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const TestApp(child: HomeScreen(version: '')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(HomeKeys.version), findsNothing);
+  });
 }

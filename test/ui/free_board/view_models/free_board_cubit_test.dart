@@ -968,4 +968,105 @@ void main() {
       },
     );
   });
+
+  group('empates automáticos contra a máquina', () {
+    final rookEnding = GameRules.fromFen('8/8/8/4k3/8/8/8/R3K3 w - - 0 1')!;
+    // Os reis vão e voltam: a posição inicial se repete a cada quatro lances.
+    const shuffle = ['e1d1', 'e5d5', 'd1e1', 'd5e5'];
+
+    GameMode training(PositionGoal goal) => GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+      goal: goal,
+      positionId: 'rook.test',
+    );
+
+    // A máquina fica segurando a resposta: o teste joga os dois lados.
+    FreeBoardCubit against(PositionGoal goal, {ClockConfig? clock}) {
+      opponent.hold();
+      final cubit = build(
+        start: rookEnding,
+        playerSide: Side.white,
+        clock: clock,
+        mode: training(goal),
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test('a terceira repetição empata e cumpre o objetivo de empatar', () {
+      final cubit = against(PositionGoal.draw);
+
+      playAll(cubit, shuffle);
+      expect(cubit.state.end, isNull);
+      expect(cubit.state.repetitions, 2);
+      playAll(cubit, shuffle);
+
+      expect(cubit.state.end, const GameEnd(GameEndReason.repetition));
+      expect(cubit.state.outcome, AttemptOutcome.draw);
+      expect(cubit.state.fulfilled, isTrue);
+    });
+
+    test('no objetivo de ganhar, repetir a posição não cumpre', () {
+      final cubit = against(PositionGoal.win);
+
+      playAll(cubit, [...shuffle, ...shuffle]);
+
+      expect(cubit.state.end, const GameEnd(GameEndReason.repetition));
+      expect(cubit.state.fulfilled, isFalse);
+    });
+
+    test('depois do empate, nenhum lance entra e o relógio para', () {
+      final cubit = against(
+        PositionGoal.draw,
+        clock: ClockConfig.same(threeTwo),
+      );
+
+      playAll(cubit, [...shuffle, ...shuffle, 'e1d1']);
+
+      expect(cubit.state.ucis, hasLength(8));
+      expect(cubit.state.clock?.running, isNull);
+    });
+
+    test('50 lances sem captura nem lance de peão empatam', () {
+      opponent.hold();
+      final cubit = build(
+        start: GameRules.fromFen('8/8/8/4k3/8/8/8/R3K3 w - - 98 60'),
+        playerSide: Side.white,
+        mode: training(PositionGoal.draw),
+      );
+      addTearDown(cubit.close);
+
+      cubit.play(NormalMove.fromUci('a1a2'));
+      expect(cubit.state.end, isNull);
+      cubit.play(NormalMove.fromUci('e5d5'));
+
+      expect(cubit.state.end, const GameEnd(GameEndReason.fiftyMoves));
+      expect(cubit.state.fulfilled, isTrue);
+    });
+
+    test('a contagem de repetições sobrevive a fechar o app', () async {
+      final first = against(PositionGoal.draw);
+      playAll(first, shuffle);
+      await settle();
+
+      final cubit = build(start: null);
+      addTearDown(cubit.close);
+      await cubit.open();
+      expect(cubit.state.repetitions, 2);
+      playAll(cubit, shuffle);
+
+      expect(cubit.state.end, const GameEnd(GameEndReason.repetition));
+    });
+
+    test('no tabuleiro livre, repetir a posição não encerra a partida', () {
+      final cubit = build(start: rookEnding);
+      addTearDown(cubit.close);
+
+      playAll(cubit, [...shuffle, ...shuffle, ...shuffle]);
+
+      expect(cubit.state.end, isNull);
+      expect(cubit.state.ucis, hasLength(12));
+    });
+  });
 }

@@ -11,13 +11,13 @@ abstract final class MaiaLevels {
   static int nearest(int rating) =>
       ((rating / step).round() * step).clamp(min, max);
 
-  /// Quanto o Maia varia os lances em cada nível. Com 1, ele sorteia o lance
-  /// na proporção em que as pessoas daquele rating o jogam; mais perto de 0,
-  /// fica nos lances mais prováveis. Os níveis altos erram menos.
+  /// Quanto o Maia varia os lances. Com 1, ele sorteia o lance na proporção
+  /// em que as pessoas daquele rating o jogam; mais perto de 0, fica nos
+  /// lances mais prováveis; com 0, joga sempre o mesmo lance.
   ///
-  /// Valores iniciais: a calibração por partidas é da T19.
-  static double temperature(int level) {
-    final strength = (nearest(level) - min) / (max - min);
-    return 1 - 0.5 * strength;
-  }
+  /// Calibrado nos finais do catálogo (`docs/calibracao.md`): o mesmo valor
+  /// para todos os níveis. A força de cada nível já vem das probabilidades do
+  /// modelo. Com 1, o Maia joga fora mais resultados do que o próprio modelo
+  /// prevê para pessoas daquele rating; com 0, toda partida sai igual.
+  static const temperature = 0.5;
 }

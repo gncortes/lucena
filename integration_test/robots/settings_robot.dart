@@ -5,6 +5,8 @@ import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'variant.dart';
+
 /// Telas de Configurações, de idioma e de tema.
 class SettingsRobot {
   const SettingsRobot(this.$);
@@ -16,11 +18,14 @@ class SettingsRobot {
   }
 
   void expectTitle(String text) {
-    expect($.tester.widget<Text>(find.byKey(SettingsKeys.title)).data, text);
+    expectText(
+      $.tester.widget<Text>(find.byKey(SettingsKeys.title)).data,
+      text,
+    );
   }
 
   void expectLanguageValue(String text) {
-    expect(
+    expectText(
       $.tester.widget<Text>(find.byKey(SettingsKeys.languageValue)).data,
       text,
     );
@@ -44,7 +49,7 @@ class SettingsRobot {
   }
 
   void expectThemeValue(String text) {
-    expect(
+    expectText(
       $.tester.widget<Text>(find.byKey(SettingsKeys.themeValue)).data,
       text,
     );
@@ -65,7 +70,7 @@ class SettingsRobot {
 
   Future<void> expectBoardAppearanceValue(String text) async {
     await $(SettingsKeys.boardAppearanceValue).scrollTo();
-    expect(
+    expectText(
       $.tester.widget<Text>(find.byKey(SettingsKeys.boardAppearanceValue)).data,
       text,
     );
