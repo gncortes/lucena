@@ -13,6 +13,7 @@ import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
+import '../../core/widgets/goal_style.dart';
 
 /// As posições de uma subcategoria. A lista só desenha as linhas que estão na
 /// tela: subcategorias com centenas de posições rolam sem travar.
@@ -139,12 +140,12 @@ class _PositionTile extends StatelessWidget {
                     children: [
                       _Tag(
                         label: goalLabel(l10n, position.goal),
-                        color: position.goal == PositionGoal.win
-                            ? colors.primaryContainer
-                            : colors.tertiaryContainer,
-                        onColor: position.goal == PositionGoal.win
-                            ? colors.onPrimaryContainer
-                            : colors.onTertiaryContainer,
+                        icon: GoalStyle.of(context, position.goal).icon,
+                        color: GoalStyle.of(context, position.goal).container,
+                        onColor: GoalStyle.of(
+                          context,
+                          position.goal,
+                        ).onContainer,
                       ),
                     ],
                   ),
@@ -179,9 +180,15 @@ class _PositionTile extends StatelessWidget {
 }
 
 class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.color, required this.onColor});
+  const _Tag({
+    required this.label,
+    required this.color,
+    required this.onColor,
+    this.icon,
+  });
 
   final String label;
+  final IconData? icon;
   final Color color;
   final Color onColor;
 
@@ -193,10 +200,19 @@ class _Tag extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium
-            ?.copyWith(color: onColor),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon case final icon?) ...[
+            Icon(icon, size: 14, color: onColor),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium
+                ?.copyWith(color: onColor),
+          ),
+        ],
       ),
     );
   }

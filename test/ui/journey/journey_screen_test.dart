@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/journey_screen.dart';
 
+import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/test_app.dart';
@@ -16,6 +17,7 @@ void main() {
     WidgetTester tester, {
     Set<String> done = const {},
     Locale locale = const Locale('en'),
+    bool withCharacters = false,
   }) async {
     final cubit = JourneyCubit(
       FakeJourneyRepository(),
@@ -30,6 +32,7 @@ void main() {
             challengeId: id,
           ),
       ]),
+      characters: withCharacters ? FakeCharacterRepository() : null,
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -46,8 +49,9 @@ void main() {
   ) async {
     await pump(tester);
 
-    expect(find.text('You are at Maia 1000'), findsOneWidget);
-    expect(find.text('Next: Maia 1200'), findsOneWidget);
+    expect(find.text('Your opponent now'), findsOneWidget);
+    expect(textOf(tester, JourneyKeys.current), 'Maia 1000');
+    expect(textOf(tester, JourneyKeys.next), 'Then: Maia 1200');
     expect(find.byKey(JourneyKeys.rungLocked('1200')), findsOneWidget);
     expect(find.byKey(JourneyKeys.rungLocked('stockfish')), findsOneWidget);
     expect(find.text('0 of 2 challenges'), findsWidgets);
@@ -60,7 +64,7 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Complete 1 more challenge at Maia 1000 to unlock'),
+      find.text('Complete 1 more challenge against Maia 1000 to unlock'),
       findsOneWidget,
     );
   });
@@ -72,12 +76,28 @@ void main() {
 
     expect(find.byKey(JourneyKeys.rungCompleted('1000')), findsOneWidget);
     expect(find.byKey(JourneyKeys.rungLocked('1200')), findsNothing);
-    expect(find.text('You are at Maia 1200'), findsOneWidget);
+    expect(textOf(tester, JourneyKeys.current), 'Maia 1200');
+  });
+
+  testWidgets('com os personagens: o nome deles, do mais fraco ao mais '
+      'forte, e o Stockfish no fim, como chefe final', (tester) async {
+    await pump(tester, withCharacters: true);
+
+    expect(textOf(tester, JourneyKeys.current), 'Coco');
+    expect(find.text('Final boss'), findsOneWidget);
+    // O primeiro adversário em cima; o Stockfish abaixo dele.
+    final first = tester.getRect(find.byKey(JourneyKeys.rung('1000')));
+    final stockfish = tester.getRect(find.byKey(JourneyKeys.rung('stockfish')));
+    expect(first.top, lessThan(stockfish.top));
   });
 
   testWidgets('em português', (tester) async {
     await pump(tester, locale: const Locale('pt'));
 
-    expect(find.text('Você está no Maia 1000'), findsOneWidget);
+    expect(find.text('Seu adversário agora'), findsOneWidget);
+    expect(find.text('Depois: Maia 1200'), findsOneWidget);
   });
 }
+
+String? textOf(WidgetTester tester, Key key) =>
+    tester.widget<Text>(find.byKey(key)).data;

@@ -112,4 +112,62 @@ void main() {
       contains(const GameFeedback(FeedbackKind.rungCompleted, rungId: '1000')),
     );
   });
+
+  test('no desafio da Jornada, aponta o próximo', () async {
+    final rung = sampleLadder.first;
+    final report = await play(
+      fulfilled: true,
+      level: 1000,
+      challengeId: rung.challenges[0].id,
+    );
+
+    expect(report.next!.challenge.id, rung.challenges[1].id);
+  });
+
+  test('fora da Jornada, sem próximo desafio', () async {
+    final report = await play(fulfilled: true);
+
+    expect(report.next, isNull);
+  });
+
+  test('speedrun em outro ritmo também traz o recorde', () async {
+    final speedruns = FakeSpeedrunRepository(progress);
+    reporter = GameReporter(
+      rating: rating,
+      achievements: achievements,
+      journey: FakeJourneyRepository(),
+      progress: progress,
+      speedruns: speedruns,
+      positions: FakePositionsRepository(),
+      now: now,
+    );
+    final attempt = await speedruns.start('rung.1000@180+2', now());
+    Attempt stage(int index) => Attempt(
+      positionId: samplePositions[0].id,
+      playedAt: now(),
+      outcome: AttemptOutcome.win,
+      fulfilled: true,
+      opponent: OpponentKind.maia,
+      opponentLevel: 1000,
+      startFen: samplePositions[0].fen,
+      userClock: const Duration(seconds: 40),
+      speedrunAttemptId: attempt.id,
+      speedrunStage: index,
+    );
+    await progress.addAttempt(stage(0));
+    final last = stage(1);
+    final id = await progress.addAttempt(last);
+
+    final report = await reporter.report(
+      last,
+      gameId: id,
+      userSide: Side.white,
+      drawGoal: false,
+    );
+
+    expect(
+      report.feedback.map((f) => f.kind),
+      contains(FeedbackKind.newSpeedrunRecord),
+    );
+  });
 }

@@ -29,6 +29,21 @@ String categoryFigurines(String key) => switch (key) {
   _ => '♙',
 };
 
+/// O nome do final por extenso ("Dama contra torre"). Subcategoria nova
+/// precisa de nome aqui e nos arquivos de tradução; sem ele, fica a chave.
+String endgameName(AppLocalizations l10n, String subcategory) =>
+    switch (subcategory) {
+      'queen' => l10n.endgameQueen,
+      'rook' => l10n.endgameRook,
+      'twoRooks' => l10n.endgameTwoRooks,
+      'pawnVsKing' => l10n.endgamePawnVsKing,
+      'rookPawnVsRook' => l10n.endgameRookPawnVsRook,
+      'queenVsRook' => l10n.endgameQueenVsRook,
+      'queenVsPawn' => l10n.endgameQueenVsPawn,
+      'rookVsPawn' => l10n.endgameRookVsPawn,
+      _ => subcategory,
+    };
+
 /// O que o jogador precisa fazer, em palavras.
 String goalLabel(AppLocalizations l10n, PositionGoal goal) => switch (goal) {
   PositionGoal.win => l10n.goalWin,

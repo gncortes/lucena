@@ -12,7 +12,7 @@ void main() {
     await AppRobot($).open(systemLocale: const Locale('pt', 'BR'));
 
     await HomeRobot($).expectVisible();
-    HomeRobot($).expectTagline('Treino de finais de xadrez');
+    HomeRobot($).expectJourneyLabel('Jornada');
   });
 
   patrolTest('trocar para espanhol e reiniciar: continua em espanhol', (
@@ -32,7 +32,7 @@ void main() {
     await app.restart();
 
     await home.expectVisible();
-    home.expectTagline('Entrenamiento de finales de ajedrez');
+    home.expectJourneyLabel('Recorrido');
   });
 
   patrolTest('trocar para árabe: layout espelhado e textos em árabe', (
@@ -54,7 +54,7 @@ void main() {
 
     await settings.back();
     await home.expectVisible();
-    home.expectTagline('تدريب نهايات الشطرنج');
+    home.expectJourneyLabel('الرحلة');
     home.expectSettingsButtonOnLeft();
   });
 

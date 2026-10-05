@@ -84,6 +84,7 @@ class LocalRatingRepository implements RatingRepository {
         drawGoal: drawGoal,
       ),
       fulfilled: game.fulfilled,
+      draw: game.outcome == AttemptOutcome.draw,
       stockfish: stockfish,
     );
     final entry = RatingEntry(rating: rated, at: _now(), gameId: gameId);

@@ -2,9 +2,7 @@ import 'package:flutter/widgets.dart';
 
 abstract final class HomeKeys {
   static const screen = Key('home.screen');
-  static const mascot = Key('home.mascot');
   static const title = Key('home.title');
-  static const tagline = Key('home.tagline');
   static const freeBoardButton = Key('home.freeBoard');
   static const journeyButton = Key('home.journey');
   static const speedrunButton = Key('home.speedrun');
@@ -14,7 +12,6 @@ abstract final class HomeKeys {
   static const schoolContinue = Key('home.schoolContinue');
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
-  static const version = Key('home.version');
 
   static const achievementsButton = Key('home.achievements');
 
@@ -24,4 +21,12 @@ abstract final class HomeKeys {
   static const whereNext = Key('home.where.next');
   static const whereContinue = Key('home.where.continue');
   static const rating = Key('home.rating');
+  static const ratingValue = Key('home.rating.value');
+
+  /// O painel do jogador e os números do progresso.
+  static const playerCard = Key('home.player');
+  static const hello = Key('home.hello');
+  static const stats = Key('home.stats');
+  static Key stat(int index) => Key('home.stat.$index');
+  static const whereBoard = Key('home.where.board');
 }

@@ -11,6 +11,17 @@ abstract final class JourneyKeys {
   /// O resumo do alto: onde o jogador está e o próximo degrau.
   static const current = Key('journey.current');
   static const next = Key('journey.next');
+  static const continueButton = Key('journey.continue');
+
+  /// Na tela de um adversário: o cabeçalho com o progresso e o próximo
+  /// desafio em destaque, com o botão de jogar.
+  static const rungHeader = Key('journey.rung.header');
+  static const rungProgress = Key('journey.rung.progress');
+  static const nextChallenge = Key('journey.rung.nextChallenge');
+  static const nextChallengePlay = Key('journey.rung.nextChallenge.play');
+
+  /// Na tela do desafio: o cartão do adversário.
+  static const opponentCard = Key('journey.challenge.opponent');
 
   static Key rung(String id) => Key('journey.rung.$id');
   static Key rungLocked(String id) => Key('journey.rung.$id.locked');

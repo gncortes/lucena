@@ -6,11 +6,12 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/position_board.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 
-/// Onde o jogador está na Jornada, contra quem joga e o próximo passo, com o
-/// rating ao lado.
+/// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
+/// próximo desafio, com o tabuleiro em miniatura.
 class WhereCard extends StatelessWidget {
   const WhereCard({required this.state, super.key});
 
@@ -25,74 +26,85 @@ class WhereCard extends StatelessWidget {
     final current = state.current;
     final next = state.next;
     final character = state.character;
+    final onColor = colors.onSecondaryContainer;
+    final done = current?.completed.length ?? 0;
+    final total = current?.rung.challenges.length ?? 0;
     return Card(
       key: HomeKeys.whereCard,
       margin: EdgeInsets.zero,
       color: colors.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 if (character != null) ...[
-                  CharacterAvatar(character: character, size: 48),
+                  CharacterAvatar(character: character, size: 56),
                   const SizedBox(width: 12),
                 ],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (current != null)
+                        Text(
+                          l10n.journeyNowFacing,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: onColor,
+                          ),
+                        ),
                       Text(
                         current == null
                             ? l10n.homeWhereDone
-                            : l10n.homeWhereTitle(
-                                opponentRefLabel(l10n, current.rung.opponent),
-                              ),
+                            : character?.name ??
+                                  opponentRefLabel(l10n, current.rung.opponent),
                         key: HomeKeys.whereTitle,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSecondaryContainer,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: onColor,
                         ),
                       ),
-                      if (current != null)
-                        Text(
-                          l10n.homeWhereProgress(
-                            current.completed.length,
-                            current.rung.challenges.length,
-                          ),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSecondaryContainer,
-                          ),
-                        ),
                     ],
                   ),
                 ),
-                if (state.rating case final rating?)
-                  Chip(
-                    key: HomeKeys.rating,
-                    avatar: const Icon(Icons.trending_up, size: 18),
-                    label: Text(l10n.homeRating(rating)),
-                    side: BorderSide.none,
-                    visualDensity: VisualDensity.compact,
-                  ),
               ],
             ),
+            if (current != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: total == 0 ? 0 : done / total,
+                  minHeight: 8,
+                  backgroundColor: colors.surface.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.homeWhereProgress(done, total),
+                style: theme.textTheme.bodySmall?.copyWith(color: onColor),
+              ),
+            ],
             if (current != null && next != null) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Row(
                 children: [
+                  PositionBoard(
+                    key: HomeKeys.whereBoard,
+                    fen: next.position.fen,
+                    size: 64,
+                    radius: 4,
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      l10n.homeWhereNext(
-                        categoryName(l10n, next.position.category),
-                        character?.name ??
-                            opponentRefLabel(l10n, next.opponent),
-                      ),
+                      endgameName(l10n, next.position.subcategory),
                       key: HomeKeys.whereNext,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSecondaryContainer,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: onColor,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

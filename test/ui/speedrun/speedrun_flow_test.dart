@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 
 import '../../../testing/fakes/fake_now.dart';
@@ -33,6 +34,9 @@ void main() {
     await tester.tap(find.byKey(SpeedrunKeys.item('rung.1000')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(SpeedrunKeys.start));
+    await tester.pumpAndSettle();
+    // O painel do ritmo abre com o 5+3 marcado: confirmar começa nele.
+    await tester.tap(find.byKey(PaceKeys.confirm));
     await tester.pumpAndSettle();
     expect(find.byKey(SpeedrunKeys.attemptScreen), findsOneWidget);
 

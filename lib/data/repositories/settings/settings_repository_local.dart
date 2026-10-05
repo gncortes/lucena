@@ -1,6 +1,7 @@
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/clock.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../services/preferences_service.dart';
 import 'settings_repository.dart';
@@ -22,6 +23,8 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _boardNotationKey = 'board.notation';
   static const _clockPositionKey = 'clock.position';
   static const _clockVibrationKey = 'clock.lowTimeVibration';
+  static const _speedrunTimeKey = 'clock.speedrunTime';
+  static const _journeyTimeKey = 'clock.journeyTime';
   static const _characterTalkKey = 'characters.talk';
 
   final PreferencesService _preferences;
@@ -39,6 +42,15 @@ class LocalSettingsRepository implements SettingsRepository {
         lowTimeVibration:
             await _preferences.getBool(_clockVibrationKey) ??
             const ClockSettings().lowTimeVibration,
+        speedrunTime:
+            TimeControl.tryParse(
+              await _preferences.getString(_speedrunTimeKey),
+            ) ??
+            const ClockSettings().speedrunTime,
+        // Sem nada gravado (ou "sem relógio"), o desafio fica sem relógio.
+        journeyTime: TimeControl.tryParse(
+          await _preferences.getString(_journeyTimeKey),
+        ),
       ),
       characterTalk:
           await _preferences.getBool(_characterTalkKey) ??
@@ -95,6 +107,14 @@ class LocalSettingsRepository implements SettingsRepository {
     await _preferences.setBool(
       _clockVibrationKey,
       value: settings.clock.lowTimeVibration,
+    );
+    await _preferences.setString(
+      _speedrunTimeKey,
+      settings.clock.speedrunTime.code,
+    );
+    await _preferences.setString(
+      _journeyTimeKey,
+      settings.clock.journeyTime?.code ?? 'none',
     );
     await _preferences.setBool(
       _characterTalkKey,

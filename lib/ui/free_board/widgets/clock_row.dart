@@ -25,7 +25,7 @@ class ClockRow extends StatelessWidget {
   });
 
   /// Altura da fileira, para a tela reservar o espaço do tabuleiro.
-  static const height = 64.0;
+  static const height = 56.0;
 
   final List<Side> sides;
   final FreeBoardState state;

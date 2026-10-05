@@ -1,11 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/models/player_rating.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/rating_sparkline.dart';
+import '../../core/widgets/rating_value.dart';
 import '../view_models/rating_cubit.dart';
 
 /// O rating de finais: o número, se ainda é provisório, a curva das partidas e
@@ -37,26 +36,23 @@ class RatingCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
               children: [
-                Text(
-                  current.rounded.toString(),
-                  key: ProfileKeys.ratingValue,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+                // O número grande e, ao lado, a variação da última partida.
+                RatingValue(
+                  rating: current.rounded,
+                  change: state.lastChange,
+                  large: true,
+                  valueKey: ProfileKeys.ratingValue,
+                  changeKey: ProfileKeys.ratingDelta,
                 ),
-                const SizedBox(width: 12),
                 if (state.provisional)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Chip(
-                      label: Text(l10n.profileRatingProvisional),
-                      visualDensity: VisualDensity.compact,
-                      side: BorderSide.none,
-                    ),
+                  Chip(
+                    label: Text(l10n.profileRatingProvisional),
+                    visualDensity: VisualDensity.compact,
+                    side: BorderSide.none,
                   ),
               ],
             ),
@@ -71,19 +67,10 @@ class RatingCard extends StatelessWidget {
             ),
             if (state.history.length > 1) ...[
               const SizedBox(height: 12),
-              ExcludeSemantics(
-                child: SizedBox(
-                  height: 72,
-                  width: double.infinity,
-                  child: CustomPaint(
-                    key: ProfileKeys.ratingChart,
-                    painter: _Curve(
-                      [for (final entry in state.history) entry.rating],
-                      line: colors.primary,
-                      fill: colors.primary.withValues(alpha: 0.12),
-                    ),
-                  ),
-                ),
+              _Chart(
+                ratings: [
+                  for (final entry in state.history) entry.rating.rating,
+                ],
               ),
             ],
             const SizedBox(height: 12),
@@ -100,43 +87,52 @@ class RatingCard extends StatelessWidget {
   }
 }
 
-/// A curva do rating partida a partida.
-class _Curve extends CustomPainter {
-  _Curve(this.ratings, {required this.line, required this.fill});
+/// A curva com a escolha do período: as últimas 10, as últimas 30 ou todas
+/// as partidas.
+class _Chart extends StatefulWidget {
+  const _Chart({required this.ratings});
 
-  final List<PlayerRating> ratings;
-  final Color line;
-  final Color fill;
+  final List<double> ratings;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final values = [for (final rating in ratings) rating.rating];
-    final low = values.reduce(math.min) - 10;
-    final high = values.reduce(math.max) + 10;
-    Offset point(int index) => Offset(
-      size.width * index / (values.length - 1),
-      size.height * (1 - (values[index] - low) / (high - low)),
+  State<_Chart> createState() => _ChartState();
+}
+
+class _ChartState extends State<_Chart> {
+  // Quantas partidas a curva mostra. Nulo: todas.
+  int? _games;
+
+  static const _periods = [10, 30, null];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final games = _games;
+    final ratings = games == null || widget.ratings.length <= games
+        ? widget.ratings
+        : widget.ratings.sublist(widget.ratings.length - games);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        RatingSparkline(key: ProfileKeys.ratingChart, ratings: ratings),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: [
+            for (final period in _periods)
+              ChoiceChip(
+                key: ProfileKeys.ratingPeriod(period),
+                label: Text(
+                  period == null
+                      ? l10n.profileRatingPeriodAll
+                      : l10n.profileRatingPeriodGames(period),
+                ),
+                selected: _games == period,
+                onSelected: (_) => setState(() => _games = period),
+              ),
+          ],
+        ),
+      ],
     );
-    final path = Path()..moveTo(point(0).dx, point(0).dy);
-    for (var index = 1; index < values.length; index++) {
-      path.lineTo(point(index).dx, point(index).dy);
-    }
-    final area = Path.from(path)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas
-      ..drawPath(area, Paint()..color = fill)
-      ..drawPath(
-        path,
-        Paint()
-          ..color = line
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.5
-          ..strokeJoin = StrokeJoin.round,
-      );
   }
-
-  @override
-  bool shouldRepaint(_Curve old) => old.ratings != ratings;
 }

@@ -10,7 +10,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_reporter.dart';
 
-/// Depois da partida: quanto o rating mudou e o que o jogador conquistou
+/// Depois da partida: o que o jogador conquistou
 /// ("Você venceu o Maia 2600 pela primeira vez", "Novo recorde").
 class ReportPanel extends StatelessWidget {
   const ReportPanel({required this.report, super.key});
@@ -19,24 +19,9 @@ class ReportPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
-    final before = report.before;
-    final after = report.after;
     final achievements = {for (final a in report.achievements) a.id: a};
     final rows = <Widget>[
-      if (before != null && after != null)
-        _Row(
-          key: FreeBoardKeys.ratingChange,
-          icon: after.rounded >= before.rounded
-              ? Icons.trending_up
-              : Icons.trending_down,
-          text: l10n.reportRating(
-            after.rounded,
-            _signed(after.rounded - before.rounded),
-          ),
-        ),
       for (final (index, item) in report.feedback.indexed)
         _Row(
           key: FreeBoardKeys.feedback(index),
@@ -48,20 +33,13 @@ class ReportPanel extends StatelessWidget {
         ),
     ];
     if (rows.isEmpty) return const SizedBox.shrink();
-    return ConstrainedBox(
+    // Embaixo da faixa de lances; quem rola é a parte de baixo da tela.
+    return Padding(
       key: FreeBoardKeys.report,
-      constraints: const BoxConstraints(maxHeight: 132),
-      child: Material(
-        color: colors.surfaceContainerLow,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: Column(children: rows),
-        ),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(children: rows),
     );
   }
-
-  static String _signed(int change) => change > 0 ? '+$change' : '$change';
 }
 
 /// A mensagem de evolução, em palavras.

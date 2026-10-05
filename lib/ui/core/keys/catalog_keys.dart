@@ -13,6 +13,7 @@ abstract final class CatalogKeys {
   static Key category(String key) => Key('catalog.category.$key');
   static Key categoryName(String key) => Key('catalog.category.$key.name');
   static Key subcategory(String key) => Key('catalog.subcategory.$key');
+  static Key categoryDone(String key) => Key('catalog.category.$key.done');
   static Key position(String id) => Key('catalog.position.$id');
 
   /// A marca de objetivo cumprido de uma posição.

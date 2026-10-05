@@ -10,6 +10,7 @@ import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
+import '../../core/widgets/scroll_padding.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com
 /// as aulas em caminho (feitas, liberadas e bloqueadas).
@@ -34,7 +35,13 @@ class SchoolScreen extends StatelessWidget {
               ? texts.say('school.welcome')
               : texts.say('school.welcomeBack', state.done);
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            padding: scrollPadding(
+              context,
+              left: 16,
+              top: 8,
+              right: 16,
+              bottom: 32,
+            ),
             children: [
               if (viktor != null)
                 TeacherSpeech(teacher: viktor, text: greeting, avatarSize: 72),

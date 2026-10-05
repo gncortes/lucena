@@ -222,8 +222,9 @@ void main() {
     }
 
     test('com partidas contadas, o rating sugere o nível', () async {
-      final rating = FakeRatingRepository(start: 1150, expected: 0.1);
-      // Uma vitória improvável: o rating sobe bastante.
+      // Perto da divisa entre o 1200 e o 1400: uma vitória improvável leva
+      // o rating para o lado do 1400.
+      final rating = FakeRatingRepository(start: 1295, expected: 0.1);
       await rating.rate(
         Attempt(
           positionId: 'x',

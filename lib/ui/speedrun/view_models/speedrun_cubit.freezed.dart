@@ -352,7 +352,10 @@ mixin _$SpeedrunState {
  SpeedrunSummary? get selected;/// A tentativa aberta, já contada.
  SpeedrunRun? get run;/// O recorde de antes de [run] terminar. Nulo se não havia.
  Duration? get previousBest;/// A partida em andamento é uma etapa de [run]: jogar continua ela.
- bool get gameOngoing;
+ bool get gameOngoing;/// O ritmo da lista: cada ritmo tem os seus speedruns e recordes.
+ TimeControl get pace;/// As tentativas em andamento, em qualquer ritmo.
+ List<SpeedrunSummary> get inProgress;/// Os personagens, um por nível do Maia.
+ List<Character> get characters;
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -364,20 +367,20 @@ $SpeedrunStateCopyWith<SpeedrunState> get copyWith => _$SpeedrunStateCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as SpeedrunState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunState&&const DeepCollectionEquality().equals(other.all, _this.all)&&(identical(other.selected, _this.selected) || other.selected == _this.selected)&&(identical(other.run, _this.run) || other.run == _this.run)&&(identical(other.previousBest, _this.previousBest) || other.previousBest == _this.previousBest)&&(identical(other.gameOngoing, _this.gameOngoing) || other.gameOngoing == _this.gameOngoing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunState&&const DeepCollectionEquality().equals(other.all, _this.all)&&(identical(other.selected, _this.selected) || other.selected == _this.selected)&&(identical(other.run, _this.run) || other.run == _this.run)&&(identical(other.previousBest, _this.previousBest) || other.previousBest == _this.previousBest)&&(identical(other.gameOngoing, _this.gameOngoing) || other.gameOngoing == _this.gameOngoing)&&(identical(other.pace, _this.pace) || other.pace == _this.pace)&&const DeepCollectionEquality().equals(other.inProgress, _this.inProgress)&&const DeepCollectionEquality().equals(other.characters, _this.characters));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SpeedrunState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.all),_this.selected,_this.run,_this.previousBest,_this.gameOngoing);
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.all),_this.selected,_this.run,_this.previousBest,_this.gameOngoing,_this.pace,const DeepCollectionEquality().hash(_this.inProgress),const DeepCollectionEquality().hash(_this.characters));
 }
 
 @override
 String toString() {
   final _this = this as SpeedrunState;
-  return 'SpeedrunState(all: ${_this.all}, selected: ${_this.selected}, run: ${_this.run}, previousBest: ${_this.previousBest}, gameOngoing: ${_this.gameOngoing})';
+  return 'SpeedrunState(all: ${_this.all}, selected: ${_this.selected}, run: ${_this.run}, previousBest: ${_this.previousBest}, gameOngoing: ${_this.gameOngoing}, pace: ${_this.pace}, inProgress: ${_this.inProgress}, characters: ${_this.characters})';
 }
 
 
@@ -388,11 +391,11 @@ abstract mixin class $SpeedrunStateCopyWith<$Res>  {
   factory $SpeedrunStateCopyWith(SpeedrunState value, $Res Function(SpeedrunState) _then) = _$SpeedrunStateCopyWithImpl;
 @useResult
 $Res call({
- List<SpeedrunSummary>? all, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, bool gameOngoing
+ List<SpeedrunSummary>? all, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, bool gameOngoing, TimeControl pace, List<SpeedrunSummary> inProgress, List<Character> characters
 });
 
 
-$SpeedrunSummaryCopyWith<$Res>? get selected;$SpeedrunRunCopyWith<$Res>? get run;
+$SpeedrunSummaryCopyWith<$Res>? get selected;$SpeedrunRunCopyWith<$Res>? get run;$TimeControlCopyWith<$Res> get pace;
 
 }
 /// @nodoc
@@ -405,14 +408,17 @@ class _$SpeedrunStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? all = freezed,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? gameOngoing = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? all = freezed,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? gameOngoing = null,Object? pace = null,Object? inProgress = null,Object? characters = null,}) {
   return _then(SpeedrunState(
 all: freezed == all ? _self.all : all // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>?,selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
 as SpeedrunSummary?,run: freezed == run ? _self.run : run // ignore: cast_nullable_to_non_nullable
 as SpeedrunRun?,previousBest: freezed == previousBest ? _self.previousBest : previousBest // ignore: cast_nullable_to_non_nullable
 as Duration?,gameOngoing: null == gameOngoing ? _self.gameOngoing : gameOngoing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non_nullable
+as TimeControl,inProgress: null == inProgress ? _self.inProgress : inProgress // ignore: cast_nullable_to_non_nullable
+as List<SpeedrunSummary>,characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
+as List<Character>,
   ));
 }
 /// Create a copy of SpeedrunState
@@ -438,6 +444,15 @@ $SpeedrunRunCopyWith<$Res>? get run {
 
   return $SpeedrunRunCopyWith<$Res>(_self.run!, (value) {
     return _then(_self.copyWith(run: value));
+  });
+}/// Create a copy of SpeedrunState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TimeControlCopyWith<$Res> get pace {
+  
+  return $TimeControlCopyWith<$Res>(_self.pace, (value) {
+    return _then(_self.copyWith(pace: value));
   });
 }
 }
@@ -521,10 +536,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing,  TimeControl pace,  List<SpeedrunSummary> inProgress,  List<Character> characters)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SpeedrunState() when $default != null:
-return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing);case _:
+return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing,_that.pace,_that.inProgress,_that.characters);case _:
   return orElse();
 
 }
@@ -542,10 +557,10 @@ return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.game
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing,  TimeControl pace,  List<SpeedrunSummary> inProgress,  List<Character> characters)  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunState():
-return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing);case _:
+return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing,_that.pace,_that.inProgress,_that.characters);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -562,10 +577,10 @@ return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.game
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SpeedrunSummary>? all,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  bool gameOngoing,  TimeControl pace,  List<SpeedrunSummary> inProgress,  List<Character> characters)?  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunState() when $default != null:
-return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing);case _:
+return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.gameOngoing,_that.pace,_that.inProgress,_that.characters);case _:
   return null;
 
 }
@@ -577,7 +592,7 @@ return $default(_that.all,_that.selected,_that.run,_that.previousBest,_that.game
 
 
 class _SpeedrunState implements SpeedrunState {
-  const _SpeedrunState({ List<SpeedrunSummary>? all, this.selected, this.run, this.previousBest, this.gameOngoing = false}): _all = all;
+  const _SpeedrunState({ List<SpeedrunSummary>? all, this.selected, this.run, this.previousBest, this.gameOngoing = false, this.pace = SpeedrunPaces.standard,  List<SpeedrunSummary> inProgress = const <SpeedrunSummary>[],  List<Character> characters = const <Character>[]}): _all = all,_inProgress = inProgress,_characters = characters;
   
 
 /// Todos os speedruns. Nulo enquanto são lidos.
@@ -599,6 +614,26 @@ class _SpeedrunState implements SpeedrunState {
 @override final  Duration? previousBest;
 /// A partida em andamento é uma etapa de [run]: jogar continua ela.
 @override@JsonKey() final  bool gameOngoing;
+/// O ritmo da lista: cada ritmo tem os seus speedruns e recordes.
+@override@JsonKey() final  TimeControl pace;
+/// As tentativas em andamento, em qualquer ritmo.
+ final  List<SpeedrunSummary> _inProgress;
+/// As tentativas em andamento, em qualquer ritmo.
+@override@JsonKey() List<SpeedrunSummary> get inProgress {
+  if (_inProgress is EqualUnmodifiableListView) return _inProgress;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_inProgress);
+}
+
+/// Os personagens, um por nível do Maia.
+ final  List<Character> _characters;
+/// Os personagens, um por nível do Maia.
+@override@JsonKey() List<Character> get characters {
+  if (_characters is EqualUnmodifiableListView) return _characters;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_characters);
+}
+
 
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
@@ -610,18 +645,18 @@ _$SpeedrunStateCopyWith<_SpeedrunState> get copyWith => __$SpeedrunStateCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunState&&const DeepCollectionEquality().equals(other.all, _all)&&(identical(other.selected, selected) || other.selected == selected)&&(identical(other.run, run) || other.run == run)&&(identical(other.previousBest, previousBest) || other.previousBest == previousBest)&&(identical(other.gameOngoing, gameOngoing) || other.gameOngoing == gameOngoing));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunState&&const DeepCollectionEquality().equals(other.all, _all)&&(identical(other.selected, selected) || other.selected == selected)&&(identical(other.run, run) || other.run == run)&&(identical(other.previousBest, previousBest) || other.previousBest == previousBest)&&(identical(other.gameOngoing, gameOngoing) || other.gameOngoing == gameOngoing)&&(identical(other.pace, pace) || other.pace == pace)&&const DeepCollectionEquality().equals(other.inProgress, _inProgress)&&const DeepCollectionEquality().equals(other.characters, _characters));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_all),selected,run,previousBest,gameOngoing);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_all),selected,run,previousBest,gameOngoing,pace,const DeepCollectionEquality().hash(_inProgress),const DeepCollectionEquality().hash(_characters));
 }
 
 @override
 String toString() {
-    return 'SpeedrunState(all: $all, selected: $selected, run: $run, previousBest: $previousBest, gameOngoing: $gameOngoing)';
+    return 'SpeedrunState(all: $all, selected: $selected, run: $run, previousBest: $previousBest, gameOngoing: $gameOngoing, pace: $pace, inProgress: $inProgress, characters: $characters)';
 }
 
 
@@ -632,11 +667,11 @@ abstract mixin class _$SpeedrunStateCopyWith<$Res> implements $SpeedrunStateCopy
   factory _$SpeedrunStateCopyWith(_SpeedrunState value, $Res Function(_SpeedrunState) _then) = __$SpeedrunStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<SpeedrunSummary>? all, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, bool gameOngoing
+ List<SpeedrunSummary>? all, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, bool gameOngoing, TimeControl pace, List<SpeedrunSummary> inProgress, List<Character> characters
 });
 
 
-@override $SpeedrunSummaryCopyWith<$Res>? get selected;@override $SpeedrunRunCopyWith<$Res>? get run;
+@override $SpeedrunSummaryCopyWith<$Res>? get selected;@override $SpeedrunRunCopyWith<$Res>? get run;@override $TimeControlCopyWith<$Res> get pace;
 
 }
 /// @nodoc
@@ -649,14 +684,17 @@ class __$SpeedrunStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? all = freezed,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? gameOngoing = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? all = freezed,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? gameOngoing = null,Object? pace = null,Object? inProgress = null,Object? characters = null,}) {
   return _then(_SpeedrunState(
 all: freezed == all ? _self._all : all // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>?,selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
 as SpeedrunSummary?,run: freezed == run ? _self.run : run // ignore: cast_nullable_to_non_nullable
 as SpeedrunRun?,previousBest: freezed == previousBest ? _self.previousBest : previousBest // ignore: cast_nullable_to_non_nullable
 as Duration?,gameOngoing: null == gameOngoing ? _self.gameOngoing : gameOngoing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non_nullable
+as TimeControl,inProgress: null == inProgress ? _self._inProgress : inProgress // ignore: cast_nullable_to_non_nullable
+as List<SpeedrunSummary>,characters: null == characters ? _self._characters : characters // ignore: cast_nullable_to_non_nullable
+as List<Character>,
   ));
 }
 
@@ -683,6 +721,15 @@ $SpeedrunRunCopyWith<$Res>? get run {
 
   return $SpeedrunRunCopyWith<$Res>(_self.run!, (value) {
     return _then(_self.copyWith(run: value));
+  });
+}/// Create a copy of SpeedrunState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TimeControlCopyWith<$Res> get pace {
+  
+  return $TimeControlCopyWith<$Res>(_self.pace, (value) {
+    return _then(_self.copyWith(pace: value));
   });
 }
 }
