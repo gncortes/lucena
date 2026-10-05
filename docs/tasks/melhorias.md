@@ -28,6 +28,9 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta: cabeçalho com o retrato e o nome do personagem, a frase dele e uma barra de progresso (1/9); o próximo desafio em destaque (cartão maior, com "Jogar"); os outros em grade de 2 ou 3 colunas, cada um com o tabuleiro, o nome do final (ex.: "Mate de dama") e um selo de feito; o objetivo só aparece quando for diferente do comum (ex.: "Empatar"); espaço embaixo para rolar até o fim.
 
+- [ ] **Fim da lista cortado.** O último desafio fica atrás da barra de navegação do sistema e não dá para rolar até ele inteiro: falta o espaço de baixo (`SafeArea`/padding) em todas as listas. ([print](../qa/melhorias/89eeba71.jpg))
+- [ ] **"Defender" não é vermelho.** Vermelho parece erro ou derrota. Usar uma cor neutra de destaque (azul ou âmbar) com o ícone de escudo, e o verde para "Ganhar"; vale no catálogo, na Jornada e na configuração. ([print](../qa/melhorias/89eeba71.jpg))
+
 ## Notado nos mesmos prints (para confirmar com o Gabriel)
 
 - [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. Avaliar: empate aceito vale meio ponto no rating, ou não conta. ([print](../qa/melhorias/4c10dc0a.jpg))
