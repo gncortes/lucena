@@ -820,6 +820,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "A draw's still an adventure. Again?"
+    },
+    {
+      "id": "prodigy.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Okay, a draw. Sometimes a smart explorer heads back to camp."
+    },
+    {
+      "id": "prodigy.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Deal! My map was full of holes anyway."
+    },
+    {
+      "id": "prodigy.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "I accept. Noted in my notebook: very kind draw offer."
+    },
+    {
+      "id": "prodigy.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew! I mean... sure, okay. Draw."
+    },
+    {
+      "id": "prodigy.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Yes, yes, yes! Deal, before you change your mind!"
+    },
+    {
+      "id": "prodigy.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw accepted. Knowing when to turn back is part of playing well."
+    },
+    {
+      "id": "prodigy.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "No, thank you. My compass still points to victory."
+    },
+    {
+      "id": "prodigy.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw? But I just found a brand-new clue!"
+    },
+    {
+      "id": "prodigy.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "No way! The treasure is right over there, I can feel it!"
+    },
+    {
+      "id": "prodigy.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "My magnifier says there's more trail to explore. Declined."
+    },
+    {
+      "id": "prodigy.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thanks, but a good expedition goes all the way."
+    },
+    {
+      "id": "prodigy.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? I'm little, but I'm not silly!"
     }
   ]
 }

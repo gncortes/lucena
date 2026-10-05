@@ -43,6 +43,7 @@ flutter:
   assets:
     - assets/branding/mascot_light.png
     - assets/branding/mascot_dark.png
+    - assets/branding/stockfish.png
     - assets/positions/positions.json
     - assets/progression/ladder.json
     - assets/progression/speedruns.json

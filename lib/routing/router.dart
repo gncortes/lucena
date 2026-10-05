@@ -41,6 +41,7 @@ import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
+import '../data/repositories/draw/draw_offer_repository.dart';
 import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home/widgets/home_screen.dart';
 import '../ui/achievements/view_models/achievements_cubit.dart';
@@ -148,6 +149,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       games: context.read<OngoingGameRepository>(),
                       opponent: context.read<OpponentRepository>(),
                       progress: context.read<ProgressRepository>(),
+                      draws: context.read<DrawOfferRepository>(),
                       reporter: GameReporter(
                         rating: context.read<RatingRepository>(),
                         achievements: context.read<AchievementsRepository>(),

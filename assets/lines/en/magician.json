@@ -785,6 +785,90 @@
       "intensity": 1,
       "emotion": "happy",
       "text": "Half a point each. A double act, how lovely."
+    },
+    {
+      "id": "magician.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw accepted. Every great act knows when to drop the curtain."
+    },
+    {
+      "id": "magician.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Ta-da! Tonight's trick: nobody loses. Applause, please."
+    },
+    {
+      "id": "magician.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "I accept. The rabbit was begging to go home anyway."
+    },
+    {
+      "id": "magician.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew... I mean, what an elegant offer! Accepted."
+    },
+    {
+      "id": "magician.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A draw? Abracadabra, my defeat just vanished! Deal!"
+    },
+    {
+      "id": "magician.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Ladies and gentlemen, a draw. The magician leaves, hat held high."
+    },
+    {
+      "id": "magician.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "A draw? The show has barely started. Please, take your seat."
+    },
+    {
+      "id": "magician.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined! I've still got cards up my sleeve. Lots of them."
+    },
+    {
+      "id": "magician.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nobody leaves before the grand finale. Theater rules!"
+    },
+    {
+      "id": "magician.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw? Too bad, my rabbit wants to see the ending."
+    },
+    {
+      "id": "magician.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thank you kindly, but the act goes on."
+    },
+    {
+      "id": "magician.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Declined! Watch my hand closely... no, the other one!"
     }
   ]
 }

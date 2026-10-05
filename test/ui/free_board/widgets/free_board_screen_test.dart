@@ -17,6 +17,7 @@ import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -827,7 +828,7 @@ void main() {
       positionId: 'basic.queen.0001',
     );
 
-    testWidgets('o título mostra o objetivo', (tester) async {
+    testWidgets('a barra de cima fica só com os botões', (tester) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -837,7 +838,7 @@ void main() {
 
       expect(
         find.descendant(of: find.byType(AppBar), matching: find.text('Ganhar')),
-        findsOneWidget,
+        findsNothing,
       );
     });
 
@@ -918,7 +919,9 @@ void main() {
       );
 
       expect(find.text('Maia 1400'), findsOneWidget);
-      expect(find.text('White'), findsOneWidget);
+      // O lado do jogador leva o apelido (o de fábrica, sem apelido).
+      expect(find.text('Player'), findsOneWidget);
+      expect(find.text('White'), findsNothing);
       expect(find.text('Black'), findsNothing);
     });
 
@@ -936,8 +939,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(FreeBoardKeys.characterBar), findsOneWidget);
-      expect(find.text('Valdini · 1600'), findsOneWidget);
-      // O lado da máquina leva o nome do personagem.
+      // O retrato fica só em cima; o nome, ao lado do relógio da máquina.
+      expect(find.byType(CharacterAvatar), findsOneWidget);
       expect(find.text('Valdini'), findsOneWidget);
       expect(
         find.byKey(FreeBoardKeys.speechText('magician.gameStart.1')),

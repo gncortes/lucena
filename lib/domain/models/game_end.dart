@@ -23,6 +23,9 @@ enum GameEndReason {
 
   /// O jogador desistiu.
   resign,
+
+  /// O jogador propôs empate e a máquina aceitou.
+  drawAgreed,
 }
 
 /// Como a partida terminou. [winner] nulo é empate.

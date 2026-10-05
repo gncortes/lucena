@@ -771,6 +771,90 @@
       "intensity": 3,
       "emotion": "calm",
       "text": "A draw, but what a beach day, buddy."
+    },
+    {
+      "id": "beachgoer.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No worries, buddy. Draw, and we all hit the waves happy."
+    },
+    {
+      "id": "beachgoer.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Deal! Let's split this coconut and forget the board."
+    },
+    {
+      "id": "beachgoer.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew, the tide was rising way too fast on my side."
+    },
+    {
+      "id": "beachgoer.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I'll take it. The sun was in my eyes anyway, you know?"
+    },
+    {
+      "id": "beachgoer.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Thanks, buddy! You pulled me out before that wave crushed me."
+    },
+    {
+      "id": "beachgoer.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "A draw works. Today's wave wasn't mine. Hang loose."
+    },
+    {
+      "id": "beachgoer.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thanks, but nah. Plenty of waves left to ride here."
+    },
+    {
+      "id": "beachgoer.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "A draw? Dude, I haven't even finished my coconut."
+    },
+    {
+      "id": "beachgoer.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Easy, buddy. The tide's turning my way."
+    },
+    {
+      "id": "beachgoer.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "No way! Leave the beach now? With this sunshine?"
+    },
+    {
+      "id": "beachgoer.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Hang tight, the good set is just rolling in for me."
+    },
+    {
+      "id": "beachgoer.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Gonna pass, no worries. I'm cruising, buddy. Let's ride it out."
     }
   ]
 }

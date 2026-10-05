@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
-import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -17,7 +16,6 @@ import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
-import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -149,35 +147,50 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
           previous.ready != current.ready ||
           previous.ucis.length != current.ucis.length ||
           previous.end != current.end ||
-          previous.startedAt != current.startedAt,
+          previous.startedAt != current.startedAt ||
+          previous.drawOffer != current.drawOffer,
       listener: (context, state) => context.read<TalkCubit>().update(state),
-      child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
-        // O tabuleiro só é refeito quando a partida muda, não a cada tique do
-        // relógio.
+      child: BlocListener<FreeBoardCubit, FreeBoardState>(
+        // A máquina recusou o empate: um aviso curto, além da fala.
         listenWhen: (previous, current) =>
-            !identical(previous.position, current.position) ||
-            previous.moves.length != current.moves.length ||
-            previous.end != current.end ||
-            previous.playerSide != current.playerSide ||
-            previous.machineThinking != current.machineThinking,
-        listener: (context, state) => _onStateChanged(state),
-        builder: (context, state) {
-          // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-          // guarda a partida.
-          return PopScope(
-            onPopInvokedWithResult: (didPop, _) {
-              if (didPop) unawaited(cubit.leave());
-            },
-            child: _scaffold(
-              context,
-              cubit,
-              state,
-              boardSettings,
-              clockPosition,
-              talk,
+            previous.drawOffer != current.drawOffer &&
+            current.drawOffer == DrawOffer.declined,
+        listener: (context, state) => ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              key: FreeBoardKeys.drawDeclined,
+              content: Text(context.l10n.gameDrawDeclined),
             ),
-          );
-        },
+          ),
+        child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
+          // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+          // relógio.
+          listenWhen: (previous, current) =>
+              !identical(previous.position, current.position) ||
+              previous.moves.length != current.moves.length ||
+              previous.end != current.end ||
+              previous.playerSide != current.playerSide ||
+              previous.machineThinking != current.machineThinking,
+          listener: (context, state) => _onStateChanged(state),
+          builder: (context, state) {
+            // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+            // guarda a partida.
+            return PopScope(
+              onPopInvokedWithResult: (didPop, _) {
+                if (didPop) unawaited(cubit.leave());
+              },
+              child: _scaffold(
+                context,
+                cubit,
+                state,
+                boardSettings,
+                clockPosition,
+                talk,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -205,53 +218,47 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     return Scaffold(
       key: FreeBoardKeys.screen,
       appBar: AppBar(
-        // No treino, o objetivo no lugar do título: ícone e uma palavra, que
-        // cabem junto dos botões em qualquer idioma.
-        title: goal == null
-            ? Text(context.l10n.freeBoardTitle)
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    goal == PositionGoal.win
-                        ? Icons.emoji_events_outlined
-                        : Icons.shield_outlined,
+        // No treino a barra fica só com os botões: o objetivo aparece no fim.
+        title: goal == null ? Text(context.l10n.freeBoardTitle) : null,
+        // No treino, só propor empate e desistir; virar, trocar o relógio e
+        // recomeçar ficam no tabuleiro livre.
+        actions: training
+            ? [
+                if (state.end == null && state.mode.opponent.isMachine) ...[
+                  IconButton(
+                    key: FreeBoardKeys.drawButton,
+                    icon: const Icon(Icons.handshake_outlined),
+                    tooltip: context.l10n.gameOfferDraw,
+                    onPressed: state.canOfferDraw ? cubit.offerDraw : null,
                   ),
-                  const SizedBox(width: 8),
-                  Flexible(child: Text(goalLabel(context.l10n, goal))),
+                  IconButton(
+                    key: FreeBoardKeys.resignButton,
+                    icon: const Icon(Icons.flag_outlined),
+                    tooltip: context.l10n.gameResign,
+                    onPressed: _confirmResign,
+                  ),
                 ],
-              ),
-        actions: [
-          if (training && state.end == null)
-            IconButton(
-              key: FreeBoardKeys.resignButton,
-              icon: const Icon(Icons.flag_outlined),
-              tooltip: context.l10n.gameResign,
-              onPressed: _confirmResign,
-            ),
-          IconButton(
-            key: FreeBoardKeys.flipButton,
-            icon: const Icon(Icons.swap_vert),
-            tooltip: context.l10n.freeBoardFlip,
-            onPressed: cubit.flip,
-          ),
-          // No speedrun o relógio é o do speedrun e recomeçar apagaria o
-          // tempo gasto: a etapa só termina jogando.
-          if (!speedrun) ...[
-            IconButton(
-              key: FreeBoardKeys.clockButton,
-              icon: const Icon(Icons.timer_outlined),
-              tooltip: context.l10n.freeBoardClock,
-              onPressed: _pickClock,
-            ),
-            IconButton(
-              key: FreeBoardKeys.newGameButton,
-              icon: const Icon(Icons.restart_alt),
-              tooltip: context.l10n.freeBoardNewGame,
-              onPressed: cubit.newGame,
-            ),
-          ],
-        ],
+              ]
+            : [
+                IconButton(
+                  key: FreeBoardKeys.flipButton,
+                  icon: const Icon(Icons.swap_vert),
+                  tooltip: context.l10n.freeBoardFlip,
+                  onPressed: cubit.flip,
+                ),
+                IconButton(
+                  key: FreeBoardKeys.clockButton,
+                  icon: const Icon(Icons.timer_outlined),
+                  tooltip: context.l10n.freeBoardClock,
+                  onPressed: _pickClock,
+                ),
+                IconButton(
+                  key: FreeBoardKeys.newGameButton,
+                  icon: const Icon(Icons.restart_alt),
+                  tooltip: context.l10n.freeBoardNewGame,
+                  onPressed: cubit.newGame,
+                ),
+              ],
       ),
       body: SafeArea(
         child: LayoutBuilder(
@@ -341,16 +348,24 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     board: boardSettings,
                     talk: talk,
                   ),
-                if (state.report case final report?)
-                  ReportPanel(report: report),
+                // O resumo do fim e a lista de lances dividem o espaço que
+                // sobra embaixo do tabuleiro: nada passa do tamanho da tela.
                 Expanded(
-                  child: MoveList(
-                    moves: state.moves,
-                    firstMoveNumber: state.start.fullmoves,
-                    firstSide: state.start.turn,
-                    pieceLetters: boardSettings.notation.pieceLetters(
-                      context.l10n,
-                    ),
+                  child: Column(
+                    children: [
+                      if (state.report case final report?)
+                        Flexible(child: ReportPanel(report: report)),
+                      Expanded(
+                        child: MoveList(
+                          moves: state.moves,
+                          firstMoveNumber: state.start.fullmoves,
+                          firstSide: state.start.turn,
+                          pieceLetters: boardSettings.notation.pieceLetters(
+                            context.l10n,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -487,6 +502,7 @@ class _End extends StatelessWidget {
       GameEndReason.timeoutVsInsufficientMaterial =>
         l10n.freeBoardTimeoutVsInsufficientMaterial,
       GameEndReason.resign => l10n.gameResigned,
+      GameEndReason.drawAgreed => l10n.freeBoardDrawAgreed,
     };
     final result = switch (end.winner) {
       Side.white => l10n.freeBoardWhiteWins,

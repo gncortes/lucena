@@ -31,7 +31,9 @@ mixin _$FreeBoardState {
  GameEnd? get forcedEnd;/// Contra quem, de que lado e, num treino, com que objetivo.
  GameMode get mode;/// A máquina está escolhendo o lance.
  bool get machineThinking;/// Quando a partida começou (ou recomeçou).
- DateTime? get startedAt;/// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
+ DateTime? get startedAt;/// A última proposta de empate e em que lance (quantos lances já tinham
+/// sido jogados) ela foi recusada.
+ DrawOffer get drawOffer; int? get drawDeclinedAt;/// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
 /// enquanto ela continua ou até a conta terminar.
  GameReport? get report;
 /// Create a copy of FreeBoardState
@@ -45,20 +47,20 @@ $FreeBoardStateCopyWith<FreeBoardState> get copyWith => _$FreeBoardStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as FreeBoardState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FreeBoardState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&const DeepCollectionEquality().equals(other.ucis, _this.ucis)&&(identical(other.repetitions, _this.repetitions) || other.repetitions == _this.repetitions)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.whiteTime, _this.whiteTime) || other.whiteTime == _this.whiteTime)&&(identical(other.blackTime, _this.blackTime) || other.blackTime == _this.blackTime)&&(identical(other.forcedEnd, _this.forcedEnd) || other.forcedEnd == _this.forcedEnd)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.report, _this.report) || other.report == _this.report));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FreeBoardState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&const DeepCollectionEquality().equals(other.ucis, _this.ucis)&&(identical(other.repetitions, _this.repetitions) || other.repetitions == _this.repetitions)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.whiteTime, _this.whiteTime) || other.whiteTime == _this.whiteTime)&&(identical(other.blackTime, _this.blackTime) || other.blackTime == _this.blackTime)&&(identical(other.forcedEnd, _this.forcedEnd) || other.forcedEnd == _this.forcedEnd)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.drawOffer, _this.drawOffer) || other.drawOffer == _this.drawOffer)&&(identical(other.drawDeclinedAt, _this.drawDeclinedAt) || other.drawDeclinedAt == _this.drawDeclinedAt)&&(identical(other.report, _this.report) || other.report == _this.report));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FreeBoardState;
-  return Object.hash(runtimeType,_this.start,_this.position,_this.ready,const DeepCollectionEquality().hash(_this.moves),const DeepCollectionEquality().hash(_this.ucis),_this.repetitions,_this.lastMove,_this.orientation,_this.playerSide,_this.clock,_this.whiteTime,_this.blackTime,_this.forcedEnd,_this.mode,_this.machineThinking,_this.startedAt,_this.report);
+  return Object.hashAll([runtimeType,_this.start,_this.position,_this.ready,const DeepCollectionEquality().hash(_this.moves),const DeepCollectionEquality().hash(_this.ucis),_this.repetitions,_this.lastMove,_this.orientation,_this.playerSide,_this.clock,_this.whiteTime,_this.blackTime,_this.forcedEnd,_this.mode,_this.machineThinking,_this.startedAt,_this.drawOffer,_this.drawDeclinedAt,_this.report]);
 }
 
 @override
 String toString() {
   final _this = this as FreeBoardState;
-  return 'FreeBoardState(start: ${_this.start}, position: ${_this.position}, ready: ${_this.ready}, moves: ${_this.moves}, ucis: ${_this.ucis}, repetitions: ${_this.repetitions}, lastMove: ${_this.lastMove}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, whiteTime: ${_this.whiteTime}, blackTime: ${_this.blackTime}, forcedEnd: ${_this.forcedEnd}, mode: ${_this.mode}, machineThinking: ${_this.machineThinking}, startedAt: ${_this.startedAt}, report: ${_this.report})';
+  return 'FreeBoardState(start: ${_this.start}, position: ${_this.position}, ready: ${_this.ready}, moves: ${_this.moves}, ucis: ${_this.ucis}, repetitions: ${_this.repetitions}, lastMove: ${_this.lastMove}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, whiteTime: ${_this.whiteTime}, blackTime: ${_this.blackTime}, forcedEnd: ${_this.forcedEnd}, mode: ${_this.mode}, machineThinking: ${_this.machineThinking}, startedAt: ${_this.startedAt}, drawOffer: ${_this.drawOffer}, drawDeclinedAt: ${_this.drawDeclinedAt}, report: ${_this.report})';
 }
 
 
@@ -69,7 +71,7 @@ abstract mixin class $FreeBoardStateCopyWith<$Res>  {
   factory $FreeBoardStateCopyWith(FreeBoardState value, $Res Function(FreeBoardState) _then) = _$FreeBoardStateCopyWithImpl;
 @useResult
 $Res call({
- Position start, Position position, bool ready, List<String> moves, List<String> ucis, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, GameReport? report
+ Position start, Position position, bool ready, List<String> moves, List<String> ucis, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report
 });
 
 
@@ -86,7 +88,7 @@ class _$FreeBoardStateCopyWithImpl<$Res>
 
 /// Create a copy of FreeBoardState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? report = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,}) {
   return _then(FreeBoardState(
 start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as Position,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
@@ -104,7 +106,9 @@ as Duration,forcedEnd: freezed == forcedEnd ? _self.forcedEnd : forcedEnd // ign
 as GameEnd?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,machineThinking: null == machineThinking ? _self.machineThinking : machineThinking // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,report: freezed == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
+as DateTime?,drawOffer: null == drawOffer ? _self.drawOffer : drawOffer // ignore: cast_nullable_to_non_nullable
+as DrawOffer,drawDeclinedAt: freezed == drawDeclinedAt ? _self.drawDeclinedAt : drawDeclinedAt // ignore: cast_nullable_to_non_nullable
+as int?,report: freezed == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
 as GameReport?,
   ));
 }
@@ -223,10 +227,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  GameReport? report)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FreeBoardState() when $default != null:
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.report);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report);case _:
   return orElse();
 
 }
@@ -244,10 +248,10 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  GameReport? report)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report)  $default,) {final _that = this;
 switch (_that) {
 case _FreeBoardState():
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.report);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -264,10 +268,10 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  GameReport? report)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report)?  $default,) {final _that = this;
 switch (_that) {
 case _FreeBoardState() when $default != null:
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.report);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report);case _:
   return null;
 
 }
@@ -279,7 +283,7 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 
 
 class _FreeBoardState extends FreeBoardState {
-  const _FreeBoardState({required this.start, required this.position, this.ready = true,  List<String> moves = const <String>[],  List<String> ucis = const <String>[], this.repetitions = 1, this.lastMove, this.orientation = Side.white, this.playerSide, this.clock, this.whiteTime = Duration.zero, this.blackTime = Duration.zero, this.forcedEnd, this.mode = const GameMode(), this.machineThinking = false, this.startedAt, this.report}): _moves = moves,_ucis = ucis,super._();
+  const _FreeBoardState({required this.start, required this.position, this.ready = true,  List<String> moves = const <String>[],  List<String> ucis = const <String>[], this.repetitions = 1, this.lastMove, this.orientation = Side.white, this.playerSide, this.clock, this.whiteTime = Duration.zero, this.blackTime = Duration.zero, this.forcedEnd, this.mode = const GameMode(), this.machineThinking = false, this.startedAt, this.drawOffer = DrawOffer.none, this.drawDeclinedAt, this.report}): _moves = moves,_ucis = ucis,super._();
   
 
 /// A posição em que o tabuleiro abriu; "nova partida" volta para ela.
@@ -328,6 +332,10 @@ class _FreeBoardState extends FreeBoardState {
 @override@JsonKey() final  bool machineThinking;
 /// Quando a partida começou (ou recomeçou).
 @override final  DateTime? startedAt;
+/// A última proposta de empate e em que lance (quantos lances já tinham
+/// sido jogados) ela foi recusada.
+@override@JsonKey() final  DrawOffer drawOffer;
+@override final  int? drawDeclinedAt;
 /// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
 /// enquanto ela continua ou até a conta terminar.
 @override final  GameReport? report;
@@ -342,18 +350,18 @@ _$FreeBoardStateCopyWith<_FreeBoardState> get copyWith => __$FreeBoardStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FreeBoardState&&(identical(other.start, start) || other.start == start)&&(identical(other.position, position) || other.position == position)&&(identical(other.ready, ready) || other.ready == ready)&&const DeepCollectionEquality().equals(other.moves, _moves)&&const DeepCollectionEquality().equals(other.ucis, _ucis)&&(identical(other.repetitions, repetitions) || other.repetitions == repetitions)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.whiteTime, whiteTime) || other.whiteTime == whiteTime)&&(identical(other.blackTime, blackTime) || other.blackTime == blackTime)&&(identical(other.forcedEnd, forcedEnd) || other.forcedEnd == forcedEnd)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.report, report) || other.report == report));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FreeBoardState&&(identical(other.start, start) || other.start == start)&&(identical(other.position, position) || other.position == position)&&(identical(other.ready, ready) || other.ready == ready)&&const DeepCollectionEquality().equals(other.moves, _moves)&&const DeepCollectionEquality().equals(other.ucis, _ucis)&&(identical(other.repetitions, repetitions) || other.repetitions == repetitions)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.whiteTime, whiteTime) || other.whiteTime == whiteTime)&&(identical(other.blackTime, blackTime) || other.blackTime == blackTime)&&(identical(other.forcedEnd, forcedEnd) || other.forcedEnd == forcedEnd)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.drawOffer, drawOffer) || other.drawOffer == drawOffer)&&(identical(other.drawDeclinedAt, drawDeclinedAt) || other.drawDeclinedAt == drawDeclinedAt)&&(identical(other.report, report) || other.report == report));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,start,position,ready,const DeepCollectionEquality().hash(_moves),const DeepCollectionEquality().hash(_ucis),repetitions,lastMove,orientation,playerSide,clock,whiteTime,blackTime,forcedEnd,mode,machineThinking,startedAt,report);
+    return Object.hashAll([runtimeType,start,position,ready,const DeepCollectionEquality().hash(_moves),const DeepCollectionEquality().hash(_ucis),repetitions,lastMove,orientation,playerSide,clock,whiteTime,blackTime,forcedEnd,mode,machineThinking,startedAt,drawOffer,drawDeclinedAt,report]);
 }
 
 @override
 String toString() {
-    return 'FreeBoardState(start: $start, position: $position, ready: $ready, moves: $moves, ucis: $ucis, repetitions: $repetitions, lastMove: $lastMove, orientation: $orientation, playerSide: $playerSide, clock: $clock, whiteTime: $whiteTime, blackTime: $blackTime, forcedEnd: $forcedEnd, mode: $mode, machineThinking: $machineThinking, startedAt: $startedAt, report: $report)';
+    return 'FreeBoardState(start: $start, position: $position, ready: $ready, moves: $moves, ucis: $ucis, repetitions: $repetitions, lastMove: $lastMove, orientation: $orientation, playerSide: $playerSide, clock: $clock, whiteTime: $whiteTime, blackTime: $blackTime, forcedEnd: $forcedEnd, mode: $mode, machineThinking: $machineThinking, startedAt: $startedAt, drawOffer: $drawOffer, drawDeclinedAt: $drawDeclinedAt, report: $report)';
 }
 
 
@@ -364,7 +372,7 @@ abstract mixin class _$FreeBoardStateCopyWith<$Res> implements $FreeBoardStateCo
   factory _$FreeBoardStateCopyWith(_FreeBoardState value, $Res Function(_FreeBoardState) _then) = __$FreeBoardStateCopyWithImpl;
 @override @useResult
 $Res call({
- Position start, Position position, bool ready, List<String> moves, List<String> ucis, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, GameReport? report
+ Position start, Position position, bool ready, List<String> moves, List<String> ucis, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report
 });
 
 
@@ -381,7 +389,7 @@ class __$FreeBoardStateCopyWithImpl<$Res>
 
 /// Create a copy of FreeBoardState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? report = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,}) {
   return _then(_FreeBoardState(
 start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as Position,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
@@ -399,7 +407,9 @@ as Duration,forcedEnd: freezed == forcedEnd ? _self.forcedEnd : forcedEnd // ign
 as GameEnd?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,machineThinking: null == machineThinking ? _self.machineThinking : machineThinking // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,report: freezed == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
+as DateTime?,drawOffer: null == drawOffer ? _self.drawOffer : drawOffer // ignore: cast_nullable_to_non_nullable
+as DrawOffer,drawDeclinedAt: freezed == drawDeclinedAt ? _self.drawDeclinedAt : drawDeclinedAt // ignore: cast_nullable_to_non_nullable
+as int?,report: freezed == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
 as GameReport?,
   ));
 }
