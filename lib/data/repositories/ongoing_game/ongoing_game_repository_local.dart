@@ -52,7 +52,12 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
         'userSide': snapshot.mode.userSide?.name,
         'goal': snapshot.mode.goal?.code,
         'positionId': snapshot.mode.positionId,
+        'challengeId': snapshot.mode.challengeId,
+        'speedrunId': snapshot.mode.speedrunId,
+        'speedrunAttemptId': snapshot.mode.speedrunAttemptId,
+        'speedrunStage': snapshot.mode.speedrunStage,
       },
+      'startedAt': snapshot.startedAt?.millisecondsSinceEpoch,
       'clock': clock == null
           ? null
           : {
@@ -74,6 +79,7 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
     final turnStartedAt = clock?['turnStartedAt'] as int?;
     // Gravações de antes do treino não têm modo: tabuleiro livre.
     final mode = json['mode'] as Map<String, dynamic>?;
+    final startedAt = json['startedAt'] as int?;
     return GameSnapshot(
       startFen: json['startFen'] as String,
       moves: (json['moves'] as List).cast<String>(),
@@ -88,7 +94,14 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
               userSide: sides[mode['userSide']],
               goal: PositionGoal.fromCode(mode['goal'] as String?),
               positionId: mode['positionId'] as String?,
+              challengeId: mode['challengeId'] as String?,
+              speedrunId: mode['speedrunId'] as String?,
+              speedrunAttemptId: mode['speedrunAttemptId'] as int?,
+              speedrunStage: mode['speedrunStage'] as int?,
             ),
+      startedAt: startedAt == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(startedAt, isUtc: true),
       clock: clock == null
           ? null
           : ClockState(

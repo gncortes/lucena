@@ -56,6 +56,9 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// A máquina está escolhendo o lance.
     @Default(false) bool machineThinking,
+
+    /// Quando a partida começou (ou recomeçou).
+    DateTime? startedAt,
   }) = _FreeBoardState;
 
   const FreeBoardState._();

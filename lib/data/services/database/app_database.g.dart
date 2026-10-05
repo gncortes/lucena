@@ -246,12 +246,11 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   }
 }
 
-class $AttemptsTable extends Attempts
-    with TableInfo<$AttemptsTable, AttemptRow> {
+class $GamesTable extends Games with TableInfo<$GamesTable, GameRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $AttemptsTable(this.attachedDatabase, [this._alias]);
+  $GamesTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -334,6 +333,115 @@ class $AttemptsTable extends Attempts
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startFenMeta = const VerificationMeta(
+    'startFen',
+  );
+  @override
+  late final GeneratedColumn<String> startFen = GeneratedColumn<String>(
+    'start_fen',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _movesMeta = const VerificationMeta('moves');
+  @override
+  late final GeneratedColumn<String> moves = GeneratedColumn<String>(
+    'moves',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _endReasonMeta = const VerificationMeta(
+    'endReason',
+  );
+  @override
+  late final GeneratedColumn<String> endReason = GeneratedColumn<String>(
+    'end_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userTimeMeta = const VerificationMeta(
+    'userTime',
+  );
+  @override
+  late final GeneratedColumn<String> userTime = GeneratedColumn<String>(
+    'user_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _opponentTimeMeta = const VerificationMeta(
+    'opponentTime',
+  );
+  @override
+  late final GeneratedColumn<String> opponentTime = GeneratedColumn<String>(
+    'opponent_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userClockMsMeta = const VerificationMeta(
+    'userClockMs',
+  );
+  @override
+  late final GeneratedColumn<int> userClockMs = GeneratedColumn<int>(
+    'user_clock_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _challengeIdMeta = const VerificationMeta(
+    'challengeId',
+  );
+  @override
+  late final GeneratedColumn<String> challengeId = GeneratedColumn<String>(
+    'challenge_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _speedrunAttemptIdMeta = const VerificationMeta(
+    'speedrunAttemptId',
+  );
+  @override
+  late final GeneratedColumn<int> speedrunAttemptId = GeneratedColumn<int>(
+    'speedrun_attempt_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _speedrunStageMeta = const VerificationMeta(
+    'speedrunStage',
+  );
+  @override
+  late final GeneratedColumn<int> speedrunStage = GeneratedColumn<int>(
+    'speedrun_stage',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -343,15 +451,25 @@ class $AttemptsTable extends Attempts
     fulfilled,
     opponent,
     opponentLevel,
+    startedAt,
+    startFen,
+    moves,
+    endReason,
+    userTime,
+    opponentTime,
+    userClockMs,
+    challengeId,
+    speedrunAttemptId,
+    speedrunStage,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'attempts';
+  static const String $name = 'games';
   @override
   VerificationContext validateIntegrity(
-    Insertable<AttemptRow> instance, {
+    Insertable<GameRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -408,15 +526,90 @@ class $AttemptsTable extends Attempts
         ),
       );
     }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    }
+    if (data.containsKey('start_fen')) {
+      context.handle(
+        _startFenMeta,
+        startFen.isAcceptableOrUnknown(data['start_fen']!, _startFenMeta),
+      );
+    }
+    if (data.containsKey('moves')) {
+      context.handle(
+        _movesMeta,
+        moves.isAcceptableOrUnknown(data['moves']!, _movesMeta),
+      );
+    }
+    if (data.containsKey('end_reason')) {
+      context.handle(
+        _endReasonMeta,
+        endReason.isAcceptableOrUnknown(data['end_reason']!, _endReasonMeta),
+      );
+    }
+    if (data.containsKey('user_time')) {
+      context.handle(
+        _userTimeMeta,
+        userTime.isAcceptableOrUnknown(data['user_time']!, _userTimeMeta),
+      );
+    }
+    if (data.containsKey('opponent_time')) {
+      context.handle(
+        _opponentTimeMeta,
+        opponentTime.isAcceptableOrUnknown(
+          data['opponent_time']!,
+          _opponentTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('user_clock_ms')) {
+      context.handle(
+        _userClockMsMeta,
+        userClockMs.isAcceptableOrUnknown(
+          data['user_clock_ms']!,
+          _userClockMsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('challenge_id')) {
+      context.handle(
+        _challengeIdMeta,
+        challengeId.isAcceptableOrUnknown(
+          data['challenge_id']!,
+          _challengeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('speedrun_attempt_id')) {
+      context.handle(
+        _speedrunAttemptIdMeta,
+        speedrunAttemptId.isAcceptableOrUnknown(
+          data['speedrun_attempt_id']!,
+          _speedrunAttemptIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('speedrun_stage')) {
+      context.handle(
+        _speedrunStageMeta,
+        speedrunStage.isAcceptableOrUnknown(
+          data['speedrun_stage']!,
+          _speedrunStageMeta,
+        ),
+      );
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  AttemptRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+  GameRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return AttemptRow(
+    return GameRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -445,18 +638,60 @@ class $AttemptsTable extends Attempts
         DriftSqlType.int,
         data['${effectivePrefix}opponent_level'],
       ),
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      ),
+      startFen: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_fen'],
+      ),
+      moves: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}moves'],
+      )!,
+      endReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_reason'],
+      ),
+      userTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_time'],
+      ),
+      opponentTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}opponent_time'],
+      ),
+      userClockMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_clock_ms'],
+      ),
+      challengeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}challenge_id'],
+      ),
+      speedrunAttemptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}speedrun_attempt_id'],
+      ),
+      speedrunStage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}speedrun_stage'],
+      ),
     );
   }
 
   @override
-  $AttemptsTable createAlias(String alias) {
-    return $AttemptsTable(attachedDatabase, alias);
+  $GamesTable createAlias(String alias) {
+    return $GamesTable(attachedDatabase, alias);
   }
 }
 
-class AttemptRow extends DataClass implements Insertable<AttemptRow> {
+class GameRow extends DataClass implements Insertable<GameRow> {
   final int id;
   final String positionId;
+
+  /// Quando a partida terminou.
   final DateTime playedAt;
 
   /// `win`, `draw` ou `loss`, do ponto de vista do jogador.
@@ -466,7 +701,23 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
 
   /// O nível do Maia, quando ele foi o adversário.
   final int? opponentLevel;
-  const AttemptRow({
+  final DateTime? startedAt;
+  final String? startFen;
+
+  /// Os lances em UCI, separados por espaço.
+  final String moves;
+  final String? endReason;
+
+  /// O tempo de cada lado (`segundos+incremento`).
+  final String? userTime;
+  final String? opponentTime;
+
+  /// Quanto o relógio do jogador gastou, em milissegundos.
+  final int? userClockMs;
+  final String? challengeId;
+  final int? speedrunAttemptId;
+  final int? speedrunStage;
+  const GameRow({
     required this.id,
     required this.positionId,
     required this.playedAt,
@@ -474,6 +725,16 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     required this.fulfilled,
     required this.opponent,
     this.opponentLevel,
+    this.startedAt,
+    this.startFen,
+    required this.moves,
+    this.endReason,
+    this.userTime,
+    this.opponentTime,
+    this.userClockMs,
+    this.challengeId,
+    this.speedrunAttemptId,
+    this.speedrunStage,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -487,11 +748,39 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     if (!nullToAbsent || opponentLevel != null) {
       map['opponent_level'] = Variable<int>(opponentLevel);
     }
+    if (!nullToAbsent || startedAt != null) {
+      map['started_at'] = Variable<DateTime>(startedAt);
+    }
+    if (!nullToAbsent || startFen != null) {
+      map['start_fen'] = Variable<String>(startFen);
+    }
+    map['moves'] = Variable<String>(moves);
+    if (!nullToAbsent || endReason != null) {
+      map['end_reason'] = Variable<String>(endReason);
+    }
+    if (!nullToAbsent || userTime != null) {
+      map['user_time'] = Variable<String>(userTime);
+    }
+    if (!nullToAbsent || opponentTime != null) {
+      map['opponent_time'] = Variable<String>(opponentTime);
+    }
+    if (!nullToAbsent || userClockMs != null) {
+      map['user_clock_ms'] = Variable<int>(userClockMs);
+    }
+    if (!nullToAbsent || challengeId != null) {
+      map['challenge_id'] = Variable<String>(challengeId);
+    }
+    if (!nullToAbsent || speedrunAttemptId != null) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId);
+    }
+    if (!nullToAbsent || speedrunStage != null) {
+      map['speedrun_stage'] = Variable<int>(speedrunStage);
+    }
     return map;
   }
 
-  AttemptsCompanion toCompanion(bool nullToAbsent) {
-    return AttemptsCompanion(
+  GamesCompanion toCompanion(bool nullToAbsent) {
+    return GamesCompanion(
       id: Value(id),
       positionId: Value(positionId),
       playedAt: Value(playedAt),
@@ -501,15 +790,43 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       opponentLevel: opponentLevel == null && nullToAbsent
           ? const Value.absent()
           : Value(opponentLevel),
+      startedAt: startedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startedAt),
+      startFen: startFen == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startFen),
+      moves: Value(moves),
+      endReason: endReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endReason),
+      userTime: userTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userTime),
+      opponentTime: opponentTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(opponentTime),
+      userClockMs: userClockMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userClockMs),
+      challengeId: challengeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(challengeId),
+      speedrunAttemptId: speedrunAttemptId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(speedrunAttemptId),
+      speedrunStage: speedrunStage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(speedrunStage),
     );
   }
 
-  factory AttemptRow.fromJson(
+  factory GameRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AttemptRow(
+    return GameRow(
       id: serializer.fromJson<int>(json['id']),
       positionId: serializer.fromJson<String>(json['positionId']),
       playedAt: serializer.fromJson<DateTime>(json['playedAt']),
@@ -517,6 +834,16 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       fulfilled: serializer.fromJson<bool>(json['fulfilled']),
       opponent: serializer.fromJson<String>(json['opponent']),
       opponentLevel: serializer.fromJson<int?>(json['opponentLevel']),
+      startedAt: serializer.fromJson<DateTime?>(json['startedAt']),
+      startFen: serializer.fromJson<String?>(json['startFen']),
+      moves: serializer.fromJson<String>(json['moves']),
+      endReason: serializer.fromJson<String?>(json['endReason']),
+      userTime: serializer.fromJson<String?>(json['userTime']),
+      opponentTime: serializer.fromJson<String?>(json['opponentTime']),
+      userClockMs: serializer.fromJson<int?>(json['userClockMs']),
+      challengeId: serializer.fromJson<String?>(json['challengeId']),
+      speedrunAttemptId: serializer.fromJson<int?>(json['speedrunAttemptId']),
+      speedrunStage: serializer.fromJson<int?>(json['speedrunStage']),
     );
   }
   @override
@@ -530,10 +857,20 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       'fulfilled': serializer.toJson<bool>(fulfilled),
       'opponent': serializer.toJson<String>(opponent),
       'opponentLevel': serializer.toJson<int?>(opponentLevel),
+      'startedAt': serializer.toJson<DateTime?>(startedAt),
+      'startFen': serializer.toJson<String?>(startFen),
+      'moves': serializer.toJson<String>(moves),
+      'endReason': serializer.toJson<String?>(endReason),
+      'userTime': serializer.toJson<String?>(userTime),
+      'opponentTime': serializer.toJson<String?>(opponentTime),
+      'userClockMs': serializer.toJson<int?>(userClockMs),
+      'challengeId': serializer.toJson<String?>(challengeId),
+      'speedrunAttemptId': serializer.toJson<int?>(speedrunAttemptId),
+      'speedrunStage': serializer.toJson<int?>(speedrunStage),
     };
   }
 
-  AttemptRow copyWith({
+  GameRow copyWith({
     int? id,
     String? positionId,
     DateTime? playedAt,
@@ -541,7 +878,17 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     bool? fulfilled,
     String? opponent,
     Value<int?> opponentLevel = const Value.absent(),
-  }) => AttemptRow(
+    Value<DateTime?> startedAt = const Value.absent(),
+    Value<String?> startFen = const Value.absent(),
+    String? moves,
+    Value<String?> endReason = const Value.absent(),
+    Value<String?> userTime = const Value.absent(),
+    Value<String?> opponentTime = const Value.absent(),
+    Value<int?> userClockMs = const Value.absent(),
+    Value<String?> challengeId = const Value.absent(),
+    Value<int?> speedrunAttemptId = const Value.absent(),
+    Value<int?> speedrunStage = const Value.absent(),
+  }) => GameRow(
     id: id ?? this.id,
     positionId: positionId ?? this.positionId,
     playedAt: playedAt ?? this.playedAt,
@@ -551,9 +898,23 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     opponentLevel: opponentLevel.present
         ? opponentLevel.value
         : this.opponentLevel,
+    startedAt: startedAt.present ? startedAt.value : this.startedAt,
+    startFen: startFen.present ? startFen.value : this.startFen,
+    moves: moves ?? this.moves,
+    endReason: endReason.present ? endReason.value : this.endReason,
+    userTime: userTime.present ? userTime.value : this.userTime,
+    opponentTime: opponentTime.present ? opponentTime.value : this.opponentTime,
+    userClockMs: userClockMs.present ? userClockMs.value : this.userClockMs,
+    challengeId: challengeId.present ? challengeId.value : this.challengeId,
+    speedrunAttemptId: speedrunAttemptId.present
+        ? speedrunAttemptId.value
+        : this.speedrunAttemptId,
+    speedrunStage: speedrunStage.present
+        ? speedrunStage.value
+        : this.speedrunStage,
   );
-  AttemptRow copyWithCompanion(AttemptsCompanion data) {
-    return AttemptRow(
+  GameRow copyWithCompanion(GamesCompanion data) {
+    return GameRow(
       id: data.id.present ? data.id.value : this.id,
       positionId: data.positionId.present
           ? data.positionId.value
@@ -565,19 +926,49 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
       opponentLevel: data.opponentLevel.present
           ? data.opponentLevel.value
           : this.opponentLevel,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      startFen: data.startFen.present ? data.startFen.value : this.startFen,
+      moves: data.moves.present ? data.moves.value : this.moves,
+      endReason: data.endReason.present ? data.endReason.value : this.endReason,
+      userTime: data.userTime.present ? data.userTime.value : this.userTime,
+      opponentTime: data.opponentTime.present
+          ? data.opponentTime.value
+          : this.opponentTime,
+      userClockMs: data.userClockMs.present
+          ? data.userClockMs.value
+          : this.userClockMs,
+      challengeId: data.challengeId.present
+          ? data.challengeId.value
+          : this.challengeId,
+      speedrunAttemptId: data.speedrunAttemptId.present
+          ? data.speedrunAttemptId.value
+          : this.speedrunAttemptId,
+      speedrunStage: data.speedrunStage.present
+          ? data.speedrunStage.value
+          : this.speedrunStage,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('AttemptRow(')
+    return (StringBuffer('GameRow(')
           ..write('id: $id, ')
           ..write('positionId: $positionId, ')
           ..write('playedAt: $playedAt, ')
           ..write('outcome: $outcome, ')
           ..write('fulfilled: $fulfilled, ')
           ..write('opponent: $opponent, ')
-          ..write('opponentLevel: $opponentLevel')
+          ..write('opponentLevel: $opponentLevel, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('startFen: $startFen, ')
+          ..write('moves: $moves, ')
+          ..write('endReason: $endReason, ')
+          ..write('userTime: $userTime, ')
+          ..write('opponentTime: $opponentTime, ')
+          ..write('userClockMs: $userClockMs, ')
+          ..write('challengeId: $challengeId, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId, ')
+          ..write('speedrunStage: $speedrunStage')
           ..write(')'))
         .toString();
   }
@@ -591,21 +982,41 @@ class AttemptRow extends DataClass implements Insertable<AttemptRow> {
     fulfilled,
     opponent,
     opponentLevel,
+    startedAt,
+    startFen,
+    moves,
+    endReason,
+    userTime,
+    opponentTime,
+    userClockMs,
+    challengeId,
+    speedrunAttemptId,
+    speedrunStage,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is AttemptRow &&
+      (other is GameRow &&
           other.id == this.id &&
           other.positionId == this.positionId &&
           other.playedAt == this.playedAt &&
           other.outcome == this.outcome &&
           other.fulfilled == this.fulfilled &&
           other.opponent == this.opponent &&
-          other.opponentLevel == this.opponentLevel);
+          other.opponentLevel == this.opponentLevel &&
+          other.startedAt == this.startedAt &&
+          other.startFen == this.startFen &&
+          other.moves == this.moves &&
+          other.endReason == this.endReason &&
+          other.userTime == this.userTime &&
+          other.opponentTime == this.opponentTime &&
+          other.userClockMs == this.userClockMs &&
+          other.challengeId == this.challengeId &&
+          other.speedrunAttemptId == this.speedrunAttemptId &&
+          other.speedrunStage == this.speedrunStage);
 }
 
-class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
+class GamesCompanion extends UpdateCompanion<GameRow> {
   final Value<int> id;
   final Value<String> positionId;
   final Value<DateTime> playedAt;
@@ -613,7 +1024,17 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
   final Value<bool> fulfilled;
   final Value<String> opponent;
   final Value<int?> opponentLevel;
-  const AttemptsCompanion({
+  final Value<DateTime?> startedAt;
+  final Value<String?> startFen;
+  final Value<String> moves;
+  final Value<String?> endReason;
+  final Value<String?> userTime;
+  final Value<String?> opponentTime;
+  final Value<int?> userClockMs;
+  final Value<String?> challengeId;
+  final Value<int?> speedrunAttemptId;
+  final Value<int?> speedrunStage;
+  const GamesCompanion({
     this.id = const Value.absent(),
     this.positionId = const Value.absent(),
     this.playedAt = const Value.absent(),
@@ -621,8 +1042,18 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     this.fulfilled = const Value.absent(),
     this.opponent = const Value.absent(),
     this.opponentLevel = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.startFen = const Value.absent(),
+    this.moves = const Value.absent(),
+    this.endReason = const Value.absent(),
+    this.userTime = const Value.absent(),
+    this.opponentTime = const Value.absent(),
+    this.userClockMs = const Value.absent(),
+    this.challengeId = const Value.absent(),
+    this.speedrunAttemptId = const Value.absent(),
+    this.speedrunStage = const Value.absent(),
   });
-  AttemptsCompanion.insert({
+  GamesCompanion.insert({
     this.id = const Value.absent(),
     required String positionId,
     required DateTime playedAt,
@@ -630,12 +1061,22 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     required bool fulfilled,
     required String opponent,
     this.opponentLevel = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.startFen = const Value.absent(),
+    this.moves = const Value.absent(),
+    this.endReason = const Value.absent(),
+    this.userTime = const Value.absent(),
+    this.opponentTime = const Value.absent(),
+    this.userClockMs = const Value.absent(),
+    this.challengeId = const Value.absent(),
+    this.speedrunAttemptId = const Value.absent(),
+    this.speedrunStage = const Value.absent(),
   }) : positionId = Value(positionId),
        playedAt = Value(playedAt),
        outcome = Value(outcome),
        fulfilled = Value(fulfilled),
        opponent = Value(opponent);
-  static Insertable<AttemptRow> custom({
+  static Insertable<GameRow> custom({
     Expression<int>? id,
     Expression<String>? positionId,
     Expression<DateTime>? playedAt,
@@ -643,6 +1084,16 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     Expression<bool>? fulfilled,
     Expression<String>? opponent,
     Expression<int>? opponentLevel,
+    Expression<DateTime>? startedAt,
+    Expression<String>? startFen,
+    Expression<String>? moves,
+    Expression<String>? endReason,
+    Expression<String>? userTime,
+    Expression<String>? opponentTime,
+    Expression<int>? userClockMs,
+    Expression<String>? challengeId,
+    Expression<int>? speedrunAttemptId,
+    Expression<int>? speedrunStage,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -652,10 +1103,20 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
       if (fulfilled != null) 'fulfilled': fulfilled,
       if (opponent != null) 'opponent': opponent,
       if (opponentLevel != null) 'opponent_level': opponentLevel,
+      if (startedAt != null) 'started_at': startedAt,
+      if (startFen != null) 'start_fen': startFen,
+      if (moves != null) 'moves': moves,
+      if (endReason != null) 'end_reason': endReason,
+      if (userTime != null) 'user_time': userTime,
+      if (opponentTime != null) 'opponent_time': opponentTime,
+      if (userClockMs != null) 'user_clock_ms': userClockMs,
+      if (challengeId != null) 'challenge_id': challengeId,
+      if (speedrunAttemptId != null) 'speedrun_attempt_id': speedrunAttemptId,
+      if (speedrunStage != null) 'speedrun_stage': speedrunStage,
     });
   }
 
-  AttemptsCompanion copyWith({
+  GamesCompanion copyWith({
     Value<int>? id,
     Value<String>? positionId,
     Value<DateTime>? playedAt,
@@ -663,8 +1124,18 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     Value<bool>? fulfilled,
     Value<String>? opponent,
     Value<int?>? opponentLevel,
+    Value<DateTime?>? startedAt,
+    Value<String?>? startFen,
+    Value<String>? moves,
+    Value<String?>? endReason,
+    Value<String?>? userTime,
+    Value<String?>? opponentTime,
+    Value<int?>? userClockMs,
+    Value<String?>? challengeId,
+    Value<int?>? speedrunAttemptId,
+    Value<int?>? speedrunStage,
   }) {
-    return AttemptsCompanion(
+    return GamesCompanion(
       id: id ?? this.id,
       positionId: positionId ?? this.positionId,
       playedAt: playedAt ?? this.playedAt,
@@ -672,6 +1143,16 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
       fulfilled: fulfilled ?? this.fulfilled,
       opponent: opponent ?? this.opponent,
       opponentLevel: opponentLevel ?? this.opponentLevel,
+      startedAt: startedAt ?? this.startedAt,
+      startFen: startFen ?? this.startFen,
+      moves: moves ?? this.moves,
+      endReason: endReason ?? this.endReason,
+      userTime: userTime ?? this.userTime,
+      opponentTime: opponentTime ?? this.opponentTime,
+      userClockMs: userClockMs ?? this.userClockMs,
+      challengeId: challengeId ?? this.challengeId,
+      speedrunAttemptId: speedrunAttemptId ?? this.speedrunAttemptId,
+      speedrunStage: speedrunStage ?? this.speedrunStage,
     );
   }
 
@@ -699,19 +1180,373 @@ class AttemptsCompanion extends UpdateCompanion<AttemptRow> {
     if (opponentLevel.present) {
       map['opponent_level'] = Variable<int>(opponentLevel.value);
     }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (startFen.present) {
+      map['start_fen'] = Variable<String>(startFen.value);
+    }
+    if (moves.present) {
+      map['moves'] = Variable<String>(moves.value);
+    }
+    if (endReason.present) {
+      map['end_reason'] = Variable<String>(endReason.value);
+    }
+    if (userTime.present) {
+      map['user_time'] = Variable<String>(userTime.value);
+    }
+    if (opponentTime.present) {
+      map['opponent_time'] = Variable<String>(opponentTime.value);
+    }
+    if (userClockMs.present) {
+      map['user_clock_ms'] = Variable<int>(userClockMs.value);
+    }
+    if (challengeId.present) {
+      map['challenge_id'] = Variable<String>(challengeId.value);
+    }
+    if (speedrunAttemptId.present) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId.value);
+    }
+    if (speedrunStage.present) {
+      map['speedrun_stage'] = Variable<int>(speedrunStage.value);
+    }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('AttemptsCompanion(')
+    return (StringBuffer('GamesCompanion(')
           ..write('id: $id, ')
           ..write('positionId: $positionId, ')
           ..write('playedAt: $playedAt, ')
           ..write('outcome: $outcome, ')
           ..write('fulfilled: $fulfilled, ')
           ..write('opponent: $opponent, ')
-          ..write('opponentLevel: $opponentLevel')
+          ..write('opponentLevel: $opponentLevel, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('startFen: $startFen, ')
+          ..write('moves: $moves, ')
+          ..write('endReason: $endReason, ')
+          ..write('userTime: $userTime, ')
+          ..write('opponentTime: $opponentTime, ')
+          ..write('userClockMs: $userClockMs, ')
+          ..write('challengeId: $challengeId, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId, ')
+          ..write('speedrunStage: $speedrunStage')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SpeedrunAttemptsTable extends SpeedrunAttempts
+    with TableInfo<$SpeedrunAttemptsTable, SpeedrunAttemptRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SpeedrunAttemptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _speedrunIdMeta = const VerificationMeta(
+    'speedrunId',
+  );
+  @override
+  late final GeneratedColumn<String> speedrunId = GeneratedColumn<String>(
+    'speedrun_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _abandonedAtMeta = const VerificationMeta(
+    'abandonedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> abandonedAt = GeneratedColumn<DateTime>(
+    'abandoned_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    speedrunId,
+    startedAt,
+    abandonedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'speedrun_attempts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SpeedrunAttemptRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('speedrun_id')) {
+      context.handle(
+        _speedrunIdMeta,
+        speedrunId.isAcceptableOrUnknown(data['speedrun_id']!, _speedrunIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_speedrunIdMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('abandoned_at')) {
+      context.handle(
+        _abandonedAtMeta,
+        abandonedAt.isAcceptableOrUnknown(
+          data['abandoned_at']!,
+          _abandonedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SpeedrunAttemptRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SpeedrunAttemptRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      speedrunId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}speedrun_id'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      abandonedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}abandoned_at'],
+      ),
+    );
+  }
+
+  @override
+  $SpeedrunAttemptsTable createAlias(String alias) {
+    return $SpeedrunAttemptsTable(attachedDatabase, alias);
+  }
+}
+
+class SpeedrunAttemptRow extends DataClass
+    implements Insertable<SpeedrunAttemptRow> {
+  final int id;
+  final String speedrunId;
+  final DateTime startedAt;
+  final DateTime? abandonedAt;
+  const SpeedrunAttemptRow({
+    required this.id,
+    required this.speedrunId,
+    required this.startedAt,
+    this.abandonedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['speedrun_id'] = Variable<String>(speedrunId);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || abandonedAt != null) {
+      map['abandoned_at'] = Variable<DateTime>(abandonedAt);
+    }
+    return map;
+  }
+
+  SpeedrunAttemptsCompanion toCompanion(bool nullToAbsent) {
+    return SpeedrunAttemptsCompanion(
+      id: Value(id),
+      speedrunId: Value(speedrunId),
+      startedAt: Value(startedAt),
+      abandonedAt: abandonedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(abandonedAt),
+    );
+  }
+
+  factory SpeedrunAttemptRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SpeedrunAttemptRow(
+      id: serializer.fromJson<int>(json['id']),
+      speedrunId: serializer.fromJson<String>(json['speedrunId']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      abandonedAt: serializer.fromJson<DateTime?>(json['abandonedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'speedrunId': serializer.toJson<String>(speedrunId),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'abandonedAt': serializer.toJson<DateTime?>(abandonedAt),
+    };
+  }
+
+  SpeedrunAttemptRow copyWith({
+    int? id,
+    String? speedrunId,
+    DateTime? startedAt,
+    Value<DateTime?> abandonedAt = const Value.absent(),
+  }) => SpeedrunAttemptRow(
+    id: id ?? this.id,
+    speedrunId: speedrunId ?? this.speedrunId,
+    startedAt: startedAt ?? this.startedAt,
+    abandonedAt: abandonedAt.present ? abandonedAt.value : this.abandonedAt,
+  );
+  SpeedrunAttemptRow copyWithCompanion(SpeedrunAttemptsCompanion data) {
+    return SpeedrunAttemptRow(
+      id: data.id.present ? data.id.value : this.id,
+      speedrunId: data.speedrunId.present
+          ? data.speedrunId.value
+          : this.speedrunId,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      abandonedAt: data.abandonedAt.present
+          ? data.abandonedAt.value
+          : this.abandonedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SpeedrunAttemptRow(')
+          ..write('id: $id, ')
+          ..write('speedrunId: $speedrunId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('abandonedAt: $abandonedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, speedrunId, startedAt, abandonedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SpeedrunAttemptRow &&
+          other.id == this.id &&
+          other.speedrunId == this.speedrunId &&
+          other.startedAt == this.startedAt &&
+          other.abandonedAt == this.abandonedAt);
+}
+
+class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
+  final Value<int> id;
+  final Value<String> speedrunId;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> abandonedAt;
+  const SpeedrunAttemptsCompanion({
+    this.id = const Value.absent(),
+    this.speedrunId = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.abandonedAt = const Value.absent(),
+  });
+  SpeedrunAttemptsCompanion.insert({
+    this.id = const Value.absent(),
+    required String speedrunId,
+    required DateTime startedAt,
+    this.abandonedAt = const Value.absent(),
+  }) : speedrunId = Value(speedrunId),
+       startedAt = Value(startedAt);
+  static Insertable<SpeedrunAttemptRow> custom({
+    Expression<int>? id,
+    Expression<String>? speedrunId,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? abandonedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (speedrunId != null) 'speedrun_id': speedrunId,
+      if (startedAt != null) 'started_at': startedAt,
+      if (abandonedAt != null) 'abandoned_at': abandonedAt,
+    });
+  }
+
+  SpeedrunAttemptsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? speedrunId,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? abandonedAt,
+  }) {
+    return SpeedrunAttemptsCompanion(
+      id: id ?? this.id,
+      speedrunId: speedrunId ?? this.speedrunId,
+      startedAt: startedAt ?? this.startedAt,
+      abandonedAt: abandonedAt ?? this.abandonedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (speedrunId.present) {
+      map['speedrun_id'] = Variable<String>(speedrunId.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (abandonedAt.present) {
+      map['abandoned_at'] = Variable<DateTime>(abandonedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SpeedrunAttemptsCompanion(')
+          ..write('id: $id, ')
+          ..write('speedrunId: $speedrunId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('abandonedAt: $abandonedAt')
           ..write(')'))
         .toString();
   }
@@ -721,12 +1556,19 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ProfilesTable profiles = $ProfilesTable(this);
-  late final $AttemptsTable attempts = $AttemptsTable(this);
+  late final $GamesTable games = $GamesTable(this);
+  late final $SpeedrunAttemptsTable speedrunAttempts = $SpeedrunAttemptsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [profiles, attempts];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    profiles,
+    games,
+    speedrunAttempts,
+  ];
 }
 
 typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
@@ -881,7 +1723,7 @@ typedef $$ProfilesTableProcessedTableManager =
       Profile,
       PrefetchHooks Function()
     >;
-typedef $$AttemptsTableCreateCompanionBuilder = AttemptsCompanion Function({
+typedef $$GamesTableCreateCompanionBuilder = GamesCompanion Function({
   Value<int> id,
   required String positionId,
   required DateTime playedAt,
@@ -889,8 +1731,18 @@ typedef $$AttemptsTableCreateCompanionBuilder = AttemptsCompanion Function({
   required bool fulfilled,
   required String opponent,
   Value<int?> opponentLevel,
+  Value<DateTime?> startedAt,
+  Value<String?> startFen,
+  Value<String> moves,
+  Value<String?> endReason,
+  Value<String?> userTime,
+  Value<String?> opponentTime,
+  Value<int?> userClockMs,
+  Value<String?> challengeId,
+  Value<int?> speedrunAttemptId,
+  Value<int?> speedrunStage,
 });
-typedef $$AttemptsTableUpdateCompanionBuilder = AttemptsCompanion Function({
+typedef $$GamesTableUpdateCompanionBuilder = GamesCompanion Function({
   Value<int> id,
   Value<String> positionId,
   Value<DateTime> playedAt,
@@ -898,11 +1750,20 @@ typedef $$AttemptsTableUpdateCompanionBuilder = AttemptsCompanion Function({
   Value<bool> fulfilled,
   Value<String> opponent,
   Value<int?> opponentLevel,
+  Value<DateTime?> startedAt,
+  Value<String?> startFen,
+  Value<String> moves,
+  Value<String?> endReason,
+  Value<String?> userTime,
+  Value<String?> opponentTime,
+  Value<int?> userClockMs,
+  Value<String?> challengeId,
+  Value<int?> speedrunAttemptId,
+  Value<int?> speedrunStage,
 });
 
-class $$AttemptsTableFilterComposer
-    extends Composer<_$AppDatabase, $AttemptsTable> {
-  $$AttemptsTableFilterComposer({
+class $$GamesTableFilterComposer extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -943,11 +1804,61 @@ class $$AttemptsTableFilterComposer
     column: $table.opponentLevel,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startFen => $composableBuilder(
+    column: $table.startFen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moves => $composableBuilder(
+    column: $table.moves,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endReason => $composableBuilder(
+    column: $table.endReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userTime => $composableBuilder(
+    column: $table.userTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get opponentTime => $composableBuilder(
+    column: $table.opponentTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userClockMs => $composableBuilder(
+    column: $table.userClockMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get challengeId => $composableBuilder(
+    column: $table.challengeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get speedrunStage => $composableBuilder(
+    column: $table.speedrunStage,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
-class $$AttemptsTableOrderingComposer
-    extends Composer<_$AppDatabase, $AttemptsTable> {
-  $$AttemptsTableOrderingComposer({
+class $$GamesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -988,11 +1899,61 @@ class $$AttemptsTableOrderingComposer
     column: $table.opponentLevel,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startFen => $composableBuilder(
+    column: $table.startFen,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moves => $composableBuilder(
+    column: $table.moves,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endReason => $composableBuilder(
+    column: $table.endReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userTime => $composableBuilder(
+    column: $table.userTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get opponentTime => $composableBuilder(
+    column: $table.opponentTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userClockMs => $composableBuilder(
+    column: $table.userClockMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get challengeId => $composableBuilder(
+    column: $table.challengeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get speedrunStage => $composableBuilder(
+    column: $table.speedrunStage,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
-class $$AttemptsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $AttemptsTable> {
-  $$AttemptsTableAnnotationComposer({
+class $$GamesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GamesTable> {
+  $$GamesTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1023,37 +1984,74 @@ class $$AttemptsTableAnnotationComposer
     column: $table.opponentLevel,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get startFen =>
+      $composableBuilder(column: $table.startFen, builder: (column) => column);
+
+  GeneratedColumn<String> get moves =>
+      $composableBuilder(column: $table.moves, builder: (column) => column);
+
+  GeneratedColumn<String> get endReason =>
+      $composableBuilder(column: $table.endReason, builder: (column) => column);
+
+  GeneratedColumn<String> get userTime =>
+      $composableBuilder(column: $table.userTime, builder: (column) => column);
+
+  GeneratedColumn<String> get opponentTime => $composableBuilder(
+    column: $table.opponentTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get userClockMs => $composableBuilder(
+    column: $table.userClockMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get challengeId => $composableBuilder(
+    column: $table.challengeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get speedrunStage => $composableBuilder(
+    column: $table.speedrunStage,
+    builder: (column) => column,
+  );
 }
 
-class $$AttemptsTableTableManager
+class $$GamesTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $AttemptsTable,
-          AttemptRow,
-          $$AttemptsTableFilterComposer,
-          $$AttemptsTableOrderingComposer,
-          $$AttemptsTableAnnotationComposer,
-          $$AttemptsTableCreateCompanionBuilder,
-          $$AttemptsTableUpdateCompanionBuilder,
-          (
-            AttemptRow,
-            BaseReferences<_$AppDatabase, $AttemptsTable, AttemptRow>,
-          ),
-          AttemptRow,
+          $GamesTable,
+          GameRow,
+          $$GamesTableFilterComposer,
+          $$GamesTableOrderingComposer,
+          $$GamesTableAnnotationComposer,
+          $$GamesTableCreateCompanionBuilder,
+          $$GamesTableUpdateCompanionBuilder,
+          (GameRow, BaseReferences<_$AppDatabase, $GamesTable, GameRow>),
+          GameRow,
           PrefetchHooks Function()
         > {
-  $$AttemptsTableTableManager(_$AppDatabase db, $AttemptsTable table)
+  $$GamesTableTableManager(_$AppDatabase db, $GamesTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$AttemptsTableFilterComposer($db: db, $table: table),
+              $$GamesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$AttemptsTableOrderingComposer($db: db, $table: table),
+              $$GamesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$AttemptsTableAnnotationComposer($db: db, $table: table),
+              $$GamesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
@@ -1063,7 +2061,17 @@ class $$AttemptsTableTableManager
                 Value<bool> fulfilled = const Value.absent(),
                 Value<String> opponent = const Value.absent(),
                 Value<int?> opponentLevel = const Value.absent(),
-              }) => AttemptsCompanion(
+                Value<DateTime?> startedAt = const Value.absent(),
+                Value<String?> startFen = const Value.absent(),
+                Value<String> moves = const Value.absent(),
+                Value<String?> endReason = const Value.absent(),
+                Value<String?> userTime = const Value.absent(),
+                Value<String?> opponentTime = const Value.absent(),
+                Value<int?> userClockMs = const Value.absent(),
+                Value<String?> challengeId = const Value.absent(),
+                Value<int?> speedrunAttemptId = const Value.absent(),
+                Value<int?> speedrunStage = const Value.absent(),
+              }) => GamesCompanion(
                 id: id,
                 positionId: positionId,
                 playedAt: playedAt,
@@ -1071,6 +2079,16 @@ class $$AttemptsTableTableManager
                 fulfilled: fulfilled,
                 opponent: opponent,
                 opponentLevel: opponentLevel,
+                startedAt: startedAt,
+                startFen: startFen,
+                moves: moves,
+                endReason: endReason,
+                userTime: userTime,
+                opponentTime: opponentTime,
+                userClockMs: userClockMs,
+                challengeId: challengeId,
+                speedrunAttemptId: speedrunAttemptId,
+                speedrunStage: speedrunStage,
               ),
           createCompanionCallback:
               ({
@@ -1081,7 +2099,17 @@ class $$AttemptsTableTableManager
                 required bool fulfilled,
                 required String opponent,
                 Value<int?> opponentLevel = const Value.absent(),
-              }) => AttemptsCompanion.insert(
+                Value<DateTime?> startedAt = const Value.absent(),
+                Value<String?> startFen = const Value.absent(),
+                Value<String> moves = const Value.absent(),
+                Value<String?> endReason = const Value.absent(),
+                Value<String?> userTime = const Value.absent(),
+                Value<String?> opponentTime = const Value.absent(),
+                Value<int?> userClockMs = const Value.absent(),
+                Value<String?> challengeId = const Value.absent(),
+                Value<int?> speedrunAttemptId = const Value.absent(),
+                Value<int?> speedrunStage = const Value.absent(),
+              }) => GamesCompanion.insert(
                 id: id,
                 positionId: positionId,
                 playedAt: playedAt,
@@ -1089,12 +2117,22 @@ class $$AttemptsTableTableManager
                 fulfilled: fulfilled,
                 opponent: opponent,
                 opponentLevel: opponentLevel,
+                startedAt: startedAt,
+                startFen: startFen,
+                moves: moves,
+                endReason: endReason,
+                userTime: userTime,
+                opponentTime: opponentTime,
+                userClockMs: userClockMs,
+                challengeId: challengeId,
+                speedrunAttemptId: speedrunAttemptId,
+                speedrunStage: speedrunStage,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$AttemptsTable, AttemptRow>(table),
-                  BaseReferences<_$AppDatabase, $AttemptsTable, AttemptRow>(
+                  e.readTable<$GamesTable, GameRow>(table),
+                  BaseReferences<_$AppDatabase, $GamesTable, GameRow>(
                     db,
                     table,
                     e,
@@ -1107,18 +2145,218 @@ class $$AttemptsTableTableManager
       );
 }
 
-typedef $$AttemptsTableProcessedTableManager =
+typedef $$GamesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $AttemptsTable,
-      AttemptRow,
-      $$AttemptsTableFilterComposer,
-      $$AttemptsTableOrderingComposer,
-      $$AttemptsTableAnnotationComposer,
-      $$AttemptsTableCreateCompanionBuilder,
-      $$AttemptsTableUpdateCompanionBuilder,
-      (AttemptRow, BaseReferences<_$AppDatabase, $AttemptsTable, AttemptRow>),
-      AttemptRow,
+      $GamesTable,
+      GameRow,
+      $$GamesTableFilterComposer,
+      $$GamesTableOrderingComposer,
+      $$GamesTableAnnotationComposer,
+      $$GamesTableCreateCompanionBuilder,
+      $$GamesTableUpdateCompanionBuilder,
+      (GameRow, BaseReferences<_$AppDatabase, $GamesTable, GameRow>),
+      GameRow,
+      PrefetchHooks Function()
+    >;
+typedef $$SpeedrunAttemptsTableCreateCompanionBuilder =
+    SpeedrunAttemptsCompanion Function({
+      Value<int> id,
+      required String speedrunId,
+      required DateTime startedAt,
+      Value<DateTime?> abandonedAt,
+    });
+typedef $$SpeedrunAttemptsTableUpdateCompanionBuilder =
+    SpeedrunAttemptsCompanion Function({
+      Value<int> id,
+      Value<String> speedrunId,
+      Value<DateTime> startedAt,
+      Value<DateTime?> abandonedAt,
+    });
+
+class $$SpeedrunAttemptsTableFilterComposer
+    extends Composer<_$AppDatabase, $SpeedrunAttemptsTable> {
+  $$SpeedrunAttemptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get speedrunId => $composableBuilder(
+    column: $table.speedrunId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get abandonedAt => $composableBuilder(
+    column: $table.abandonedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SpeedrunAttemptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SpeedrunAttemptsTable> {
+  $$SpeedrunAttemptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get speedrunId => $composableBuilder(
+    column: $table.speedrunId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get abandonedAt => $composableBuilder(
+    column: $table.abandonedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SpeedrunAttemptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SpeedrunAttemptsTable> {
+  $$SpeedrunAttemptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get speedrunId => $composableBuilder(
+    column: $table.speedrunId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get abandonedAt => $composableBuilder(
+    column: $table.abandonedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SpeedrunAttemptsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SpeedrunAttemptsTable,
+          SpeedrunAttemptRow,
+          $$SpeedrunAttemptsTableFilterComposer,
+          $$SpeedrunAttemptsTableOrderingComposer,
+          $$SpeedrunAttemptsTableAnnotationComposer,
+          $$SpeedrunAttemptsTableCreateCompanionBuilder,
+          $$SpeedrunAttemptsTableUpdateCompanionBuilder,
+          (
+            SpeedrunAttemptRow,
+            BaseReferences<
+              _$AppDatabase,
+              $SpeedrunAttemptsTable,
+              SpeedrunAttemptRow
+            >,
+          ),
+          SpeedrunAttemptRow,
+          PrefetchHooks Function()
+        > {
+  $$SpeedrunAttemptsTableTableManager(
+    _$AppDatabase db,
+    $SpeedrunAttemptsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SpeedrunAttemptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SpeedrunAttemptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SpeedrunAttemptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> speedrunId = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> abandonedAt = const Value.absent(),
+              }) => SpeedrunAttemptsCompanion(
+                id: id,
+                speedrunId: speedrunId,
+                startedAt: startedAt,
+                abandonedAt: abandonedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String speedrunId,
+                required DateTime startedAt,
+                Value<DateTime?> abandonedAt = const Value.absent(),
+              }) => SpeedrunAttemptsCompanion.insert(
+                id: id,
+                speedrunId: speedrunId,
+                startedAt: startedAt,
+                abandonedAt: abandonedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SpeedrunAttemptsTable, SpeedrunAttemptRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SpeedrunAttemptsTable,
+                    SpeedrunAttemptRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SpeedrunAttemptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SpeedrunAttemptsTable,
+      SpeedrunAttemptRow,
+      $$SpeedrunAttemptsTableFilterComposer,
+      $$SpeedrunAttemptsTableOrderingComposer,
+      $$SpeedrunAttemptsTableAnnotationComposer,
+      $$SpeedrunAttemptsTableCreateCompanionBuilder,
+      $$SpeedrunAttemptsTableUpdateCompanionBuilder,
+      (
+        SpeedrunAttemptRow,
+        BaseReferences<
+          _$AppDatabase,
+          $SpeedrunAttemptsTable,
+          SpeedrunAttemptRow
+        >,
+      ),
+      SpeedrunAttemptRow,
       PrefetchHooks Function()
     >;
 
@@ -1127,6 +2365,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$ProfilesTableTableManager get profiles =>
       $$ProfilesTableTableManager(_db, _db.profiles);
-  $$AttemptsTableTableManager get attempts =>
-      $$AttemptsTableTableManager(_db, _db.attempts);
+  $$GamesTableTableManager get games =>
+      $$GamesTableTableManager(_db, _db.games);
+  $$SpeedrunAttemptsTableTableManager get speedrunAttempts =>
+      $$SpeedrunAttemptsTableTableManager(_db, _db.speedrunAttempts);
 }

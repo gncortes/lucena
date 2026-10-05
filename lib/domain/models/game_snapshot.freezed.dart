@@ -23,7 +23,8 @@ mixin _$GameSnapshot {
  ClockState? get clock;/// Contra quem, de que lado e, num treino, com que objetivo.
  GameMode get mode;/// Se a tela da partida estava aberta quando isto foi gravado. Falso
 /// quando o jogador saiu da partida por conta própria.
- bool get onScreen;
+ bool get onScreen;/// Quando a partida começou. Nulo nas gravações de antes da Jornada.
+ DateTime? get startedAt;
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,20 +36,20 @@ $GameSnapshotCopyWith<GameSnapshot> get copyWith => _$GameSnapshotCopyWithImpl<G
 @override
 bool operator ==(Object other) {
   final _this = this as GameSnapshot;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSnapshot&&(identical(other.startFen, _this.startFen) || other.startFen == _this.startFen)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.onScreen, _this.onScreen) || other.onScreen == _this.onScreen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSnapshot&&(identical(other.startFen, _this.startFen) || other.startFen == _this.startFen)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.onScreen, _this.onScreen) || other.onScreen == _this.onScreen)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GameSnapshot;
-  return Object.hash(runtimeType,_this.startFen,const DeepCollectionEquality().hash(_this.moves),_this.orientation,_this.playerSide,_this.clock,_this.mode,_this.onScreen);
+  return Object.hash(runtimeType,_this.startFen,const DeepCollectionEquality().hash(_this.moves),_this.orientation,_this.playerSide,_this.clock,_this.mode,_this.onScreen,_this.startedAt);
 }
 
 @override
 String toString() {
   final _this = this as GameSnapshot;
-  return 'GameSnapshot(startFen: ${_this.startFen}, moves: ${_this.moves}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, mode: ${_this.mode}, onScreen: ${_this.onScreen})';
+  return 'GameSnapshot(startFen: ${_this.startFen}, moves: ${_this.moves}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, mode: ${_this.mode}, onScreen: ${_this.onScreen}, startedAt: ${_this.startedAt})';
 }
 
 
@@ -59,7 +60,7 @@ abstract mixin class $GameSnapshotCopyWith<$Res>  {
   factory $GameSnapshotCopyWith(GameSnapshot value, $Res Function(GameSnapshot) _then) = _$GameSnapshotCopyWithImpl;
 @useResult
 $Res call({
- String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen
+ String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt
 });
 
 
@@ -76,7 +77,7 @@ class _$GameSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,}) {
   return _then(GameSnapshot(
 startFen: null == startFen ? _self.startFen : startFen // ignore: cast_nullable_to_non_nullable
 as String,moves: null == moves ? _self.moves : moves // ignore: cast_nullable_to_non_nullable
@@ -85,7 +86,8 @@ as Side,playerSide: freezed == playerSide ? _self.playerSide : playerSide // ign
 as Side?,clock: freezed == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockState?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,onScreen: null == onScreen ? _self.onScreen : onScreen // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of GameSnapshot
@@ -191,10 +193,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameSnapshot() when $default != null:
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
   return orElse();
 
 }
@@ -212,10 +214,10 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)  $default,) {final _that = this;
 switch (_that) {
 case _GameSnapshot():
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -232,10 +234,10 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String startFen,  List<String> moves,  Side orientation,  Side? playerSide,  ClockState? clock,  GameMode mode,  bool onScreen,  DateTime? startedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _GameSnapshot() when $default != null:
-return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen);case _:
+return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_that.clock,_that.mode,_that.onScreen,_that.startedAt);case _:
   return null;
 
 }
@@ -247,7 +249,7 @@ return $default(_that.startFen,_that.moves,_that.orientation,_that.playerSide,_t
 
 
 class _GameSnapshot extends GameSnapshot {
-  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.mode = const GameMode(), this.onScreen = true}): _moves = moves,super._();
+  const _GameSnapshot({required this.startFen,  List<String> moves = const <String>[], this.orientation = Side.white, this.playerSide, this.clock, this.mode = const GameMode(), this.onScreen = true, this.startedAt}): _moves = moves,super._();
   
 
 /// A posição em que a partida começou (FEN).
@@ -272,6 +274,8 @@ class _GameSnapshot extends GameSnapshot {
 /// Se a tela da partida estava aberta quando isto foi gravado. Falso
 /// quando o jogador saiu da partida por conta própria.
 @override@JsonKey() final  bool onScreen;
+/// Quando a partida começou. Nulo nas gravações de antes da Jornada.
+@override final  DateTime? startedAt;
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
@@ -283,18 +287,18 @@ _$GameSnapshotCopyWith<_GameSnapshot> get copyWith => __$GameSnapshotCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSnapshot&&(identical(other.startFen, startFen) || other.startFen == startFen)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.onScreen, onScreen) || other.onScreen == onScreen));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSnapshot&&(identical(other.startFen, startFen) || other.startFen == startFen)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.onScreen, onScreen) || other.onScreen == onScreen)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,startFen,const DeepCollectionEquality().hash(_moves),orientation,playerSide,clock,mode,onScreen);
+    return Object.hash(runtimeType,startFen,const DeepCollectionEquality().hash(_moves),orientation,playerSide,clock,mode,onScreen,startedAt);
 }
 
 @override
 String toString() {
-    return 'GameSnapshot(startFen: $startFen, moves: $moves, orientation: $orientation, playerSide: $playerSide, clock: $clock, mode: $mode, onScreen: $onScreen)';
+    return 'GameSnapshot(startFen: $startFen, moves: $moves, orientation: $orientation, playerSide: $playerSide, clock: $clock, mode: $mode, onScreen: $onScreen, startedAt: $startedAt)';
 }
 
 
@@ -305,7 +309,7 @@ abstract mixin class _$GameSnapshotCopyWith<$Res> implements $GameSnapshotCopyWi
   factory _$GameSnapshotCopyWith(_GameSnapshot value, $Res Function(_GameSnapshot) _then) = __$GameSnapshotCopyWithImpl;
 @override @useResult
 $Res call({
- String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen
+ String startFen, List<String> moves, Side orientation, Side? playerSide, ClockState? clock, GameMode mode, bool onScreen, DateTime? startedAt
 });
 
 
@@ -322,7 +326,7 @@ class __$GameSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of GameSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? startFen = null,Object? moves = null,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? mode = null,Object? onScreen = null,Object? startedAt = freezed,}) {
   return _then(_GameSnapshot(
 startFen: null == startFen ? _self.startFen : startFen // ignore: cast_nullable_to_non_nullable
 as String,moves: null == moves ? _self._moves : moves // ignore: cast_nullable_to_non_nullable
@@ -331,7 +335,8 @@ as Side,playerSide: freezed == playerSide ? _self.playerSide : playerSide // ign
 as Side?,clock: freezed == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockState?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,onScreen: null == onScreen ? _self.onScreen : onScreen // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

@@ -25,11 +25,22 @@ abstract class GameMode with _$GameMode {
     /// A posição do catálogo, para gravar a tentativa. Nula na posição
     /// personalizada.
     String? positionId,
+
+    /// O desafio da Jornada, quando a partida é um.
+    String? challengeId,
+
+    /// O speedrun, a tentativa e a etapa (a partir de 0), quando a partida é
+    /// uma etapa.
+    String? speedrunId,
+    int? speedrunAttemptId,
+    int? speedrunStage,
   }) = _GameMode;
 
   const GameMode._();
 
   /// O lado da máquina. Nulo quando o jogador move os dois lados.
+  bool get isSpeedrun => speedrunAttemptId != null;
+
   Side? get machineSide =>
       opponent.isMachine ? (userSide ?? Side.white).opposite : null;
 }

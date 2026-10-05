@@ -29,3 +29,29 @@ abstract final class ClockFormat {
 
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }
+
+/// Como o tempo de um speedrun é escrito: sempre com décimos (`4:05.3`,
+/// `1:02:03.4`), para dois tempos próximos não parecerem iguais.
+abstract final class RunTimeFormat {
+  static String format(Duration time) {
+    if (time.isNegative) time = Duration.zero;
+    final tenths = time.inMilliseconds.remainder(1000) ~/ 100;
+    final seconds = time.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final minutes = time.inMinutes.remainder(60);
+    if (time.inHours > 0) {
+      return '${time.inHours}:${minutes.toString().padLeft(2, '0')}:'
+          '$seconds.$tenths';
+    }
+    return '$minutes:$seconds.$tenths';
+  }
+
+  /// A diferença para o recorde, com sinal: `+3.2` ou `-1:04.0` (segundos
+  /// com décimos; minutos quando passa de um).
+  static String difference(Duration difference) {
+    final sign = difference.isNegative ? '-' : '+';
+    final abs = difference.abs();
+    final tenths = abs.inMilliseconds.remainder(1000) ~/ 100;
+    if (abs.inMinutes == 0) return '$sign${abs.inSeconds}.$tenths';
+    return '$sign${format(abs)}';
+  }
+}

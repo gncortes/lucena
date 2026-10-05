@@ -118,6 +118,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     await _saving;
   }
 
+  /// Espera as gravações em andamento (a partida e o histórico) terminarem.
+  Future<void> saved() => _saving;
+
   /// O app voltou do segundo plano (ou a tela foi desbloqueada): os relógios
   /// são refeitos e, se for a vez da máquina sem pedido em andamento, ela
   /// volta a pensar.
@@ -266,17 +269,40 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (_recorded || positionId == null || outcome == null) return;
     if (fulfilled == null) return;
     _recorded = true;
+    final mode = state.mode;
+    final clock = state.clock;
+    final user = mode.userSide ?? Side.white;
     final attempt = Attempt(
       positionId: positionId,
       playedAt: _now(),
       outcome: outcome,
       fulfilled: fulfilled,
-      opponent: state.mode.opponent,
-      opponentLevel: state.mode.opponent == OpponentKind.maia
-          ? state.mode.level
-          : null,
+      opponent: mode.opponent,
+      opponentLevel: mode.opponent == OpponentKind.maia ? mode.level : null,
+      startedAt: state.startedAt,
+      startFen: state.start.fen,
+      moves: state.ucis,
+      endReason: state.end?.reason,
+      userTime: clock?.config.of(user),
+      opponentTime: clock?.config.of(user.opposite),
+      userClock: clock == null ? null : _spent(clock, user),
+      challengeId: mode.challengeId,
+      speedrunAttemptId: mode.speedrunAttemptId,
+      speedrunStage: mode.speedrunStage,
     );
     _saving = _saving.whenComplete(() => _progress.addAttempt(attempt));
+  }
+
+  // Quanto o relógio de [side] gastou na partida: o tempo inicial mais os
+  // incrementos dos lances dele, menos o que sobrou.
+  Duration _spent(ClockState clock, Side side) {
+    final config = clock.config.of(side);
+    // Os lances se alternam a partir de quem joga na posição inicial.
+    final plies = state.ucis.length;
+    final sideMoves = state.start.turn == side ? (plies + 1) ~/ 2 : plies ~/ 2;
+    final left = ClockEngine.remaining(clock, side, _now());
+    final spent = config.initial + config.increment * sideMoves - left;
+    return spent.isNegative ? Duration.zero : spent;
   }
 
   // Pede o lance à máquina quando é a vez dela. O relógio dela corre enquanto
@@ -362,6 +388,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
             clock: current.clock,
             mode: current.mode,
             onScreen: onScreen,
+            startedAt: current.startedAt,
           );
     _saving = _saving.whenComplete(
       () => snapshot == null ? _games.clear() : _games.save(snapshot),
@@ -396,6 +423,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       playerSide: snapshot.playerSide,
       clock: snapshot.clock,
       mode: snapshot.mode,
+      startedAt: snapshot.startedAt,
     );
     final clock = snapshot.clock;
     // Relógio parado numa partida em andamento: o jogador tinha saído da tela.
@@ -423,6 +451,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         playerSide: playerSide,
         orientation: orientation,
         mode: mode,
+        startedAt: now,
         // Posição que já abre terminada (mate, afogado) não liga o relógio.
         clock: clock == null || GameRules.endOf(start) != null
             ? null
