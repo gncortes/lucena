@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/domain/models/app_accent.dart';
+import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
@@ -31,16 +33,23 @@ class TestApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final app = MaterialApp(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+    final settingsCubit = this.settingsCubit;
+    Widget build(AppAccent? accent) => MaterialApp(
+      theme: AppTheme.of(Brightness.light, accent: accent),
+      darkTheme: AppTheme.of(Brightness.dark, accent: accent),
       themeMode: themeMode,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: appSupportedLocales,
       home: child,
     );
-    final settingsCubit = this.settingsCubit;
+    // Com as preferências, a cor do app escolhida vale na hora, como no app.
+    final app = settingsCubit == null
+        ? build(null)
+        : BlocBuilder<SettingsCubit, AppSettings?>(
+            bloc: settingsCubit,
+            builder: (context, settings) => build(settings?.accent),
+          );
     final profileCubit = this.profileCubit;
     final providers = [
       if (settingsCubit != null)

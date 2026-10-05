@@ -46,6 +46,22 @@ void main() {
     expect(history.first.opponent, OpponentKind.stockfish);
   });
 
+  test('as partidas voltam pelo id que a gravação devolveu', () async {
+    final first = await repository.addAttempt(
+      attempt('basic.queen.0001', 1, fulfilled: false),
+    );
+    await repository.addAttempt(attempt('basic.rook.0001', 2, fulfilled: true));
+    final third = await repository.addAttempt(
+      attempt('basic.rook.0002', 3, fulfilled: true),
+    );
+
+    final games = await repository.attemptsById({first, third, 999});
+
+    expect(games.keys, unorderedEquals([first, third]));
+    expect(games[first]!.positionId, 'basic.queen.0001');
+    expect(games[third]!.positionId, 'basic.rook.0002');
+  });
+
   test('cumprida uma vez, a posição fica marcada', () async {
     await repository.addAttempt(
       attempt('basic.queen.0001', 1, fulfilled: false),

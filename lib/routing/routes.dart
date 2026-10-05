@@ -97,6 +97,9 @@ abstract final class Routes {
 
   static const achievements = '/achievements';
 
+  /// Os detalhes do rating: o gráfico e o histórico das partidas.
+  static const rating = '/rating';
+
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
   static String lesson(String id) => '/school/$id';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
@@ -45,6 +46,13 @@ class HomeRobot {
     final button = $.tester.getCenter(find.byKey(HomeKeys.settingsButton));
     final width = $.tester.getSize(find.byKey(HomeKeys.screen)).width;
     expect(button.dx, lessThan(width / 2));
+  }
+
+  /// "Continuar" no cartão do adversário atual: abre o próximo desafio.
+  Future<void> continueJourney() async {
+    await $(HomeKeys.whereContinue).scrollTo().tap();
+    await $(JourneyKeys.challengeScreen).waitUntilVisible();
+    await $.pumpAndSettle();
   }
 
   Future<void> openSettings() async {

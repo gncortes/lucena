@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -28,6 +29,7 @@ import 'character_bar.dart';
 import 'clock_sheet.dart';
 import 'move_list.dart';
 import 'report_panel.dart';
+import '../../achievements/widgets/achievement_toast.dart';
 
 class FreeBoardScreen extends StatefulWidget {
   const FreeBoardScreen({super.key});
@@ -40,8 +42,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   // Altura da linha "vez de" (partida sem relógio) e o mínimo que sobra
   // embaixo do tabuleiro para a faixa de lances.
-  static const _turnHeight = 48.0;
-  static const _minBottom = MoveList.height;
+  static const _minBottom = MoveList.minHeight;
 
   late final ChessboardController _board;
 
@@ -278,23 +279,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Sem relógio na partida, nenhuma fileira de relógio aparece.
-            final clocks = state.clock == null ? null : clockPosition;
+            // Sem relógio na partida, cada lado tem a sua linha (o peão e o
+            // nome), com a vez de quem joga; com relógio, onde o jogador
+            // escolheu.
+            final clocks = state.clock == null
+                ? ClockPosition.sides
+                : clockPosition;
             final character = talk.character;
             final clockRows = switch (clocks) {
-              null => 0,
               ClockPosition.sides => 2,
               ClockPosition.top || ClockPosition.bottom => 1,
             };
-            // De quem é a vez só no tabuleiro livre sem relógio; contra a
-            // máquina, o personagem e o último lance já dizem.
-            final turnHeight =
-                state.clock == null &&
-                    state.end == null &&
-                    !state.mode.opponent.isMachine
-                ? _turnHeight
-                : 0.0;
-            final fixed = turnHeight + clockRows * ClockRow.height + _minBottom;
+            final fixed = clockRows * ClockRow.height + _minBottom;
             // O retrato do personagem encolhe para a partida caber na tela
             // sem rolar, quando dá.
             final width = constraints.maxWidth;
@@ -309,6 +305,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             // O tabuleiro ocupa sempre a largura toda; se não couber tudo, a
             // tela rola.
             final boardSize = width;
+            // A lista de lances fica com o que sobra da tela embaixo do
+            // tabuleiro (no mínimo, três linhas).
+            final listHeight = math.max(
+              MoveList.minHeight,
+              constraints.maxHeight -
+                  clockRows * ClockRow.height -
+                  (character == null ? 0 : CharacterBar.heightFor(avatar)) -
+                  boardSize -
+                  24,
+            );
             const both = [Side.white, Side.black];
             final end = state.end;
             return Stack(
@@ -328,11 +334,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (turnHeight > 0)
-                        SizedBox(
-                          height: turnHeight,
-                          child: _Turn(side: state.position.turn),
-                        ),
                       if (character != null)
                         CharacterBar(
                           talk: talk,
@@ -394,6 +395,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       if (end != null && !_resultOpen)
                         _end(context, cubit, state, end, card: false),
                       MoveList(
+                        height: listHeight,
                         moves: state.moves,
                         firstMoveNumber: state.start.fullmoves,
                         firstSide: state.start.turn,
@@ -412,6 +414,14 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       onClose: () => setState(() => _resultOpen = false),
                       child: _end(context, cubit, state, end, card: true),
                     ),
+                  ),
+                // A conquista nova avisa por cima de tudo, como um troféu.
+                if (state.report case final report?
+                    when report.achievements.isNotEmpty)
+                  AchievementToasts(
+                    key: ObjectKey(report),
+                    achievements: report.achievements,
+                    characters: report.characters,
                   ),
               ],
             );
@@ -478,44 +488,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final time = cubit.state.clock?.config.white;
     context.pushReplacement(
       Routes.challengeGame(next.challenge.copyWith(time: time)),
-    );
-  }
-}
-
-class _Turn extends StatelessWidget {
-  const _Turn({required this.side});
-
-  final Side side;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          // Disco da cor de quem joga.
-          Container(
-            width: 18,
-            height: 18,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: side == Side.white ? Colors.white : Colors.black,
-              border: Border.all(color: theme.colorScheme.outline, width: 1.5),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              side == Side.white
-                  ? context.l10n.freeBoardWhiteToMove
-                  : context.l10n.freeBoardBlackToMove,
-              key: FreeBoardKeys.turn,
-              style: theme.textTheme.titleMedium,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

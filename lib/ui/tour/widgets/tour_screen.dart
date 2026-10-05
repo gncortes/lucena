@@ -1,22 +1,33 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/app_accent.dart';
+import '../../../domain/models/app_theme_mode.dart';
+import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../routing/routes.dart';
+import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../../domain/models/character.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_accent_ui.dart';
+import '../../core/widgets/accent_picker.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/theme_mode_picker.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_sheet.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/tour_cubit.dart';
 
-/// O tour da primeira abertura: o que é o app, rating, Jornada, finais,
-/// adversários, speedrun e recordes, e no fim o nível do jogador.
+/// O tour da primeira abertura: o que é o app, a aparência (tema, cor do app
+/// e tabuleiro), rating, Jornada, finais, adversários, speedrun e recordes, e
+/// no fim o nível do jogador.
 class TourScreen extends StatelessWidget {
   const TourScreen({super.key});
 
@@ -116,9 +127,15 @@ class TourScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: step.isLast
-                          ? _LevelStep(key: currentKey, state: state)
-                          : _InfoStep(key: currentKey, step: step),
+                      child: switch (step) {
+                        TourStep.theme => _ThemeStep(key: currentKey),
+                        TourStep.board => _BoardStep(key: currentKey),
+                        TourStep.level => _LevelStep(
+                          key: currentKey,
+                          state: state,
+                        ),
+                        _ => _InfoStep(key: currentKey, step: step),
+                      },
                     ),
                   ),
                 ),
@@ -206,6 +223,8 @@ class _InfoStep extends StatelessWidget {
         l10n.tourRecordsTitle,
         l10n.tourRecordsBody,
       ),
+      TourStep.theme ||
+      TourStep.board ||
       TourStep.level => (Icons.person_outline, '', ''),
     };
     return Center(
@@ -248,6 +267,154 @@ class _InfoStep extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Título de um passo de escolha, com uma explicação curta opcional.
+class _ChoiceHeader extends StatelessWidget {
+  const _ChoiceHeader({required this.title, this.body});
+
+  final String title;
+  final String? body;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final body = this.body;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: theme.textTheme.headlineSmall),
+          if (body != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              body,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Tema claro, escuro ou o do aparelho, e a cor do app. A escolha vale na
+/// hora, no app inteiro, e fica gravada.
+class _ThemeStep extends StatelessWidget {
+  const _ThemeStep({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final settings = context.read<SettingsCubit>();
+    final mode = context.select(
+      (SettingsCubit cubit) => cubit.state?.themeMode ?? AppThemeMode.system,
+    );
+    final chosen = context.select((SettingsCubit cubit) => cubit.state?.accent);
+    // Sem cor escolhida, vale a de fábrica do tema que está na tela.
+    final accent =
+        chosen ??
+        AppAccent.standard(
+          dark: Theme.of(context).brightness == Brightness.dark,
+        );
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
+      children: [
+        _ChoiceHeader(title: l10n.tourThemeTitle, body: l10n.tourThemeBody),
+        AppearanceSectionTitle(l10n.settingsTheme),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ThemeModePicker(
+            selected: mode,
+            accent: chosen,
+            keyOf: TourKeys.themeMode,
+            onSelected: settings.setThemeMode,
+          ),
+        ),
+        const SizedBox(height: 8),
+        AppearanceSectionTitle(
+          l10n.settingsAccent,
+          value: accent.label(l10n),
+          valueKey: TourKeys.accentValue,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: AccentPicker(
+            selected: accent,
+            keyOf: TourKeys.accent,
+            onSelected: settings.setAccent,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Cores e peças do tabuleiro, com uma amostra que muda na hora.
+class _BoardStep extends StatelessWidget {
+  const _BoardStep({super.key});
+
+  // Altura do título, das duas fileiras com os nomes e dos espaços.
+  static const _optionsHeight = 344.0;
+  static const _minPreview = 120.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final settings = context.read<SettingsCubit>();
+    final board = context.select(
+      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // A amostra fica com o espaço que sobra do título e das duas
+        // fileiras de opções, para o passo caber na tela sem rolar.
+        final previewSize = math.max(
+          _minPreview,
+          math.min(
+            constraints.maxHeight - _optionsHeight,
+            constraints.maxWidth - 96,
+          ),
+        );
+        return ListView(
+          padding: const EdgeInsets.only(bottom: 8),
+          children: [
+            _ChoiceHeader(title: l10n.tourBoardTitle),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Center(
+                child: BoardPreview(
+                  boardKey: TourKeys.boardPreview,
+                  size: previewSize,
+                  // Amostra pequena: só as cores e as peças, sem as letras
+                  // e os números da borda.
+                  board: board.copyWith(coordinates: false),
+                ),
+              ),
+            ),
+            AppearanceSectionTitle(l10n.boardColors),
+            BoardColorsCarousel(
+              selected: board.colors,
+              keyOf: TourKeys.boardColors,
+              onSelected: (colors) =>
+                  settings.setBoard(board.copyWith(colors: colors)),
+            ),
+            AppearanceSectionTitle(l10n.boardPieces),
+            PieceStyleCarousel(
+              selected: board.pieces,
+              colors: board.colors,
+              keyOf: TourKeys.boardPieces,
+              onSelected: (pieces) =>
+                  settings.setBoard(board.copyWith(pieces: pieces)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

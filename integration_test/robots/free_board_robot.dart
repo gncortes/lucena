@@ -86,11 +86,18 @@ class FreeBoardRobot {
   }
 
   /// Toca na casa de origem e depois na de destino (`e2`, `e4`).
-  Future<void> move(String from, String to) async {
+  ///
+  /// Sem [settle], o cenário segue sem esperar as animações acabarem (para
+  /// conferir algo que aparece e some sozinho, como o aviso de conquista).
+  Future<void> move(String from, String to, {bool settle = true}) async {
     await $.tester.tapAt(_square(from));
     await $.pump();
     await $.tester.tapAt(_square(to));
-    await $.pumpAndSettle();
+    if (settle) {
+      await $.pumpAndSettle();
+    } else {
+      await $.pump();
+    }
   }
 
   /// Arrasta a peça da casa de origem até a de destino e solta.

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "achievementAllLevelsHint": "Complete this endgame against every Maia level, from 1000 to 2600",
+  "achievementAllLevelsHint": "Complete this endgame against every character, from the weakest to the strongest",
   "@achievementAllLevelsHint": {
     "description": "Achievement condition."
   },
@@ -113,6 +113,10 @@
         "type": "String"
       }
     }
+  },
+  "achievementUnlocked": "Achievement unlocked",
+  "@achievementUnlocked": {
+    "description": "Small caption of the animated banner shown when the player unlocks an achievement; the achievement name comes right below it."
   },
   "achievementsLockedLabel": "Locked",
   "@achievementsLockedLabel": {
@@ -571,6 +575,10 @@
   "gameResigned": "Resignation",
   "@gameResigned": {
     "description": "Reason the game ended: the player resigned."
+  },
+  "gameYourTurn": "Your turn",
+  "@gameYourTurn": {
+    "description": "Badge on the player's row during a game without a clock, when it is the player's turn to move."
   },
   "goalDraw": "Defend",
   "@goalDraw": {
@@ -1143,6 +1151,14 @@
   "@profileSave": {
     "description": "Button that saves the profile."
   },
+  "ratingHistory": "Rating history",
+  "@ratingHistory": {
+    "description": "Title above the list of games that changed the player's rating, on the rating details screen."
+  },
+  "ratingHistoryEmpty": "Play against the Maia or Stockfish and every game that moves your rating will show up here.",
+  "@ratingHistoryEmpty": {
+    "description": "Shown on the rating details screen when no game has counted for the rating yet."
+  },
   "reportRating": "Rating {rating} ({change})",
   "@reportRating": {
     "description": "After a game: the new rating and the change, e.g. \"Rating 1187 (+37)\".",
@@ -1234,6 +1250,34 @@
   "schoolTitle": "Viktor's School",
   "@schoolTitle": {
     "description": "Title of the lessons screen (the beginner course taught by Viktor)."
+  },
+  "settingsAccent": "App color",
+  "@settingsAccent": {
+    "description": "Section title above the color dots where the player picks the main color of the app (buttons and highlights)."
+  },
+  "settingsAccentBlue": "Blue",
+  "@settingsAccentBlue": {
+    "description": "App color option: blue."
+  },
+  "settingsAccentGreen": "Green",
+  "@settingsAccentGreen": {
+    "description": "App color option: green."
+  },
+  "settingsAccentOrange": "Orange",
+  "@settingsAccentOrange": {
+    "description": "App color option: orange."
+  },
+  "settingsAccentPink": "Pink",
+  "@settingsAccentPink": {
+    "description": "App color option: pink."
+  },
+  "settingsAccentPurple": "Purple",
+  "@settingsAccentPurple": {
+    "description": "App color option: purple."
+  },
+  "settingsAccentTeal": "Teal",
+  "@settingsAccentTeal": {
+    "description": "App color option: teal (blue-green)."
   },
   "settingsBoardAppearance": "Board appearance",
   "@settingsBoardAppearance": {
@@ -1587,6 +1631,10 @@
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
   },
+  "tourBoardTitle": "Choose your board",
+  "@tourBoardTitle": {
+    "description": "Title of the tour step where the player picks board colors and pieces."
+  },
   "tourEndgamesBody": "Basic mates, pawn endings, rook and queen endings: each position has a goal, win or hold the draw.",
   "@tourEndgamesBody": {
     "description": "Tour step text."
@@ -1691,6 +1739,14 @@
         "type": "int"
       }
     }
+  },
+  "tourThemeBody": "Pick a theme and the color you like best. You can change them anytime in Settings.",
+  "@tourThemeBody": {
+    "description": "Explanation under the title of the theme step of the tour."
+  },
+  "tourThemeTitle": "Make it yours",
+  "@tourThemeTitle": {
+    "description": "Title of the tour step where the player picks light or dark theme and the app color."
   },
   "resultNextChallenge": "Next challenge",
   "@resultNextChallenge": {

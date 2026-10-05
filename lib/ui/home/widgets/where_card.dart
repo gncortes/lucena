@@ -7,6 +7,7 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
+import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 
@@ -41,7 +42,15 @@ class WhereCard extends StatelessWidget {
             Row(
               children: [
                 if (character != null) ...[
-                  CharacterAvatar(character: character, size: 56),
+                  // O retrato voa até o cartão do adversário, na tela do
+                  // desafio.
+                  if (current != null)
+                    Hero(
+                      tag: opponentHeroTag(current.rung.id),
+                      child: CharacterAvatar(character: character, size: 56),
+                    )
+                  else
+                    CharacterAvatar(character: character, size: 56),
                   const SizedBox(width: 12),
                 ],
                 Expanded(
@@ -96,6 +105,7 @@ class WhereCard extends StatelessWidget {
                     fen: next.position.fen,
                     size: 64,
                     radius: 4,
+                    heroTag: challengeBoardTag(next.id),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -111,10 +121,16 @@ class WhereCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   FilledButton(
                     key: HomeKeys.whereContinue,
-                    onPressed: () => context.go(
+                    // A tela do desafio abre por cima desta, já com o
+                    // desafio pronto: o tabuleiro e o retrato voam até ela.
+                    onPressed: () => context.push(
                       Routes.journeyChallenge(
                         current.rung.id,
                         next.position.id,
+                      ),
+                      extra: JourneyState(
+                        challenge: next,
+                        characters: [?character],
                       ),
                     ),
                     child: Text(l10n.homeContinue),

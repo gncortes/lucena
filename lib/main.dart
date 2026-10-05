@@ -176,8 +176,8 @@ class _LucenaAppState extends State<LucenaApp> {
             return MaterialApp.router(
               onGenerateTitle: (context) => context.l10n.appTitle,
               debugShowCheckedModeBanner: false,
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
+              theme: AppTheme.of(Brightness.light, accent: settings.accent),
+              darkTheme: AppTheme.of(Brightness.dark, accent: settings.accent),
               themeMode: settings.themeMode.material,
               locale: localeFromCode(settings.languageCode),
               localizationsDelegates: AppLocalizations.localizationsDelegates,

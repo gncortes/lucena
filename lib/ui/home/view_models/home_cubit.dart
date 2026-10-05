@@ -34,7 +34,6 @@ class HomeState {
     this.nickname = '',
     this.level,
     this.ratingChange,
-    this.ratingCurve = const [],
     this.stats = const PlayerStats(games: 0, wins: 0, streakDays: 0),
     this.achievementsUnlocked = 0,
     this.achievementsTotal = 0,
@@ -65,9 +64,6 @@ class HomeState {
 
   /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
   final int? ratingChange;
-
-  /// O rating partida a partida, da mais antiga para a mais recente.
-  final List<double> ratingCurve;
 
   /// Partidas, vitórias e dias seguidos.
   final PlayerStats stats;
@@ -168,7 +164,6 @@ class HomeCubit extends Cubit<HomeState> {
             ? null
             : history.last.rating.rounded -
                   history[history.length - 2].rating.rounded,
-        ratingCurve: [for (final entry in history) entry.rating.rating],
         stats: PlayerStats.of(attempts, now),
         achievementsUnlocked: unlocked,
         achievementsTotal: allAchievements,

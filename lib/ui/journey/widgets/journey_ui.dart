@@ -56,9 +56,10 @@ Future<bool> playChallenge(BuildContext context, Challenge challenge) async {
   return true;
 }
 
-/// A marca do retrato do adversário que voa da trilha para a tela dele.
+/// A marca do retrato do adversário, que voa da trilha para a tela dele e,
+/// dali ou da tela inicial, para o cartão dele na tela do desafio.
 String opponentHeroTag(String rungId) => 'journey.opponent.$rungId';
 
-/// A marca do tabuleiro de um desafio, que voa da tela do adversário para a
-/// do desafio, crescendo até a largura da tela.
+/// A marca do tabuleiro de um desafio, que voa da tela do adversário ou da
+/// inicial para a do desafio, crescendo até a largura da tela.
 String challengeBoardTag(String challengeId) => 'journey.board.$challengeId';
