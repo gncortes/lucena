@@ -17,12 +17,12 @@ Antes: `cp .claude/skills/qa-release/config.env.example .claude/skills/qa-releas
 
 1. Criar o projeto no console do Firebase (ex.: `lucena`). Copiar o **ID do projeto** para `FIREBASE_PROJECT_ID` no `config.env`.
 2. Adicionar o app Android com o ID `com.gncortes.lucena`. Copiar o **App ID** (`1:...:android:...`) para `FIREBASE_ANDROID_APP_ID`.
-3. **App Distribution:** ativar, criar o grupo de testadores com alias `qa` e adicionar o seu e-mail.
+3. **App Distribution:** ativar e criar dois grupos: `qa` (versões de candidata, da `develop`; adicionar o seu e-mail) e `release` (versões finais, da `main`; todo mundo).
 4. No celular: aceitar o convite que chega por e-mail e instalar o app **Firebase App Tester** quando pedido. A partir daí, cada link do PR abre direto nele.
-5. **Test Lab:** ativar no projeto. O plano gratuito tem cota diária limitada de execuções; confira no console se basta para o seu ritmo ou se vale o plano pago (cobrança por uso).
+5. **Test Lab:** ativar no projeto (roda só na tag final, no `release.yml`). O plano gratuito tem cota diária limitada de execuções; confira no console se basta para o seu ritmo ou se vale o plano pago (cobrança por uso).
 
 ## 2. Acesso do GitHub ao Google Cloud (sem chave)
-O workflow `qa.yml` entra no Google Cloud com um token de curta duração emitido pelo próprio GitHub. O acesso é liberado só para este repositório.
+Os workflows `qa.yml` e `release.yml` entram no Google Cloud com um token de curta duração emitido pelo próprio GitHub. O acesso é liberado só para este repositório.
 
 ```bash
 source .claude/skills/qa-release/config.env
@@ -89,7 +89,7 @@ Os segredos ficam num ambiente, não no repositório inteiro: só os workflows `
    gh secret set QA_CONFIG_ENV --env release < .claude/skills/qa-release/config.env
    ```
    O `qa.yml` lê a configuração só do `QA_CONFIG_ENV`: a cada mudança no `config.env`, gravar o segredo de novo.
-4. Em *Settings → Rules → Rulesets*: proteger a `main` (exigir PR e o CI verde) e, se quiser, restringir a criação de tags `v*` a você e ao Claude.
+4. Em *Settings → Rules → Rulesets*: proteger a `main` e a `develop` (exigir PR e o CI verde) e, se quiser, restringir a criação de tags `v*` a você e ao Claude.
 
 ## 5. Ferramentas locais
 - GitHub CLI com login (`gh auth login`): é a única que a skill usa.

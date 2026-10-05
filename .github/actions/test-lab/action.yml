@@ -1,0 +1,69 @@
+name: Patrol no Firebase Test Lab
+description: >
+  Gera o build do Patrol e roda a suíte nos aparelhos do config.env (precisa do `qa-config`, do
+  `setup-flutter` e do login no Google Cloud antes). Falha de teste reprova; cota esgotada só avisa.
+
+outputs:
+  link:
+    description: Link do resultado no console do Firebase.
+    value: ${{ steps.testlab.outputs.link }}
+  result:
+    description: "'ok' ou 'sem-cota'."
+    value: ${{ steps.testlab.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Build do Patrol
+      shell: bash
+      run: |
+        dart pub global activate patrol_cli 4.8.0
+        export PATH="$PATH:${PUB_CACHE:-$HOME/.pub-cache}/bin"
+        patrol build android --dart-define=E2E=true
+
+    - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+    - name: Patrol no Test Lab
+      id: testlab
+      shell: bash
+      run: |
+        source "$QA_CONFIG"
+        device_args=()
+        while IFS= read -r d; do [[ -n "$d" ]] && device_args+=(--device "$d"); done <<< "$TEST_LAB_DEVICES"
+
+        # Bucket próprio para os resultados: o padrão do Test Lab exigiria o papel Editor no projeto inteiro.
+        bucket_args=()
+        if [[ -n "${TEST_LAB_RESULTS_BUCKET:-}" ]]; then
+          bucket_args=(--results-bucket "$TEST_LAB_RESULTS_BUCKET")
+        fi
+
+        # Uma repetição automática cobre instabilidade do aparelho; falha de teste de verdade reprova.
+        set +e
+        gcloud firebase test android run \
+          --project "$FIREBASE_PROJECT_ID" \
+          --type instrumentation \
+          --use-orchestrator \
+          --app build/app/outputs/apk/debug/app-debug.apk \
+          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          "${device_args[@]}" \
+          "${bucket_args[@]}" \
+          --timeout "$TEST_LAB_TIMEOUT" \
+          --num-flaky-test-attempts 1 \
+          --record-video \
+          --environment-variables clearPackageData=true \
+          2>&1 | tee "$RUNNER_TEMP/test_lab.log"
+        status=${PIPESTATUS[0]}
+        set -e
+
+        # O gcloud imprime o link entre colchetes: "...streamed to [https://console.firebase.google.com/project/<id>/testlab/...]."
+        link="$(grep -oE 'https://console\.firebase\.google\.com/[^] ]*testlab[^] ]*' "$RUNNER_TEMP/test_lab.log" | tail -1 || true)"
+        echo "link=$link" >> "$GITHUB_OUTPUT"
+
+        # Sem cota no Test Lab (o plano gratuito tem limite diário), os testes nem começam: só avisa.
+        if [[ "$status" -ne 0 ]] && grep -q 'TEST_QUOTA_EXCEEDED' "$RUNNER_TEMP/test_lab.log"; then
+          echo "::warning::Cota do Test Lab esgotada: seguindo sem Test Lab"
+          echo "result=sem-cota" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        echo "result=ok" >> "$GITHUB_OUTPUT"
+        exit "$status"
