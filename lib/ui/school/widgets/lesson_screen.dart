@@ -197,7 +197,13 @@ class _LessonScreenState extends State<LessonScreen>
                   ),
                 ),
                 if (viktor != null)
-                  Padding(
+                  Container(
+                    // Com tabuleiro, a fala tem altura fixa (até 5 linhas):
+                    // o tabuleiro não sobe nem desce quando ela muda.
+                    constraints: BoxConstraints(
+                      minHeight: state.fen == null ? 0 : 172,
+                    ),
+                    alignment: AlignmentDirectional.topStart,
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                     child: TeacherSpeech(
                       teacher: viktor,
