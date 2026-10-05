@@ -4,6 +4,7 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 ## Tela da partida
 
+- [ ] **Ponta do balão com defeito.** ([print](../qa/melhorias/e7a6e103.jpg)) A ponta aparece como um triângulo solto, desalinhado da curva do balão. Desenhar balão e ponta como um caminho só (sem emenda), com a ponta levemente curva, na altura do meio da foto, como no chess.com; conferir no claro, no escuro e em árabe (espelhada).
 - [ ] **Espaço entre o personagem e o tabuleiro.** Hoje o retrato e o balão encostam na borda de cima do tabuleiro. Dar um respiro (uns 8 a 12 px) entre a fileira do personagem e o tabuleiro. ([print](../qa/melhorias/38eb7dc8.jpg))
 - [ ] **Tabuleiro pequeno (prioridade).** ([print](../qa/melhorias/e7a6e103.jpg)) Com o relógio "dos lados", a fileira do personagem, a fileira do relógio do adversário, a do jogador e o espaço reservado para a lista de lances, o tabuleiro não ocupa a largura da tela, enquanto sobra um vazio embaixo ("Mova uma peça para começar"). Proposta:
   - **regra: o tabuleiro ocupa sempre toda a largura da tela, como em todo app de xadrez** (pedido do Gabriel); o que cede é a lista de lances (que rola) e não o tabuleiro;
