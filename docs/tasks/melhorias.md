@@ -24,7 +24,8 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
   - o cartão de cima fala "Maia 1000" e "Próximo: Maia 1200" em vez dos personagens, e é um bloco verde só de texto;
   - os degraus são uma lista plana igual à de configurações: não parece um caminho a subir;
   - os trancados só ficam um pouco apagados; o cadeado e a seta repetem em todos;
-  - o último degrau (Viktor) e o Stockfish ficam atrás da barra do sistema.
+  - mesmo rolando até o fim, o Stockfish fica cortado atrás da barra do sistema ([print](../qa/melhorias/dbc7d8d5.jpg));
+  - o Stockfish aparece só com um cadeado no lugar do retrato: deve ter o logo dele, como na partida.
 
   Proposta: um caminho vertical (trilha) com os retratos em círculo ligados por uma linha, o degrau atual maior e em destaque com a barra de progresso e "Continuar"; os concluídos com selo de feito, os trancados em cinza com cadeado sobre o retrato e sem a seta; o Stockfish no topo como chefe final; o cartão de cima com o retrato do adversário atual, o progresso e o próximo personagem; espaço embaixo para rolar até o fim.
 
