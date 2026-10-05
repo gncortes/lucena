@@ -7,6 +7,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/challenge_tile.dart';
+import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
 
@@ -24,6 +25,16 @@ class RungScreen extends StatelessWidget {
       (JourneyCubit cubit) => cubit.state.progress,
     );
     final rung = progress?.rung(rungId);
+    final reunion = context.select((JourneyCubit cubit) => cubit.state.reunion);
+    final characters = context.select(
+      (JourneyCubit cubit) => cubit.state.characters,
+    );
+    final teacher = [
+      for (final character in characters)
+        if (character.id == 'master' &&
+            character.level == rung?.rung.opponent.level)
+          character,
+    ].firstOrNull;
     return Scaffold(
       key: JourneyKeys.rungScreen,
       appBar: AppBar(
@@ -36,6 +47,30 @@ class RungScreen extends StatelessWidget {
           : ListView(
               padding: const EdgeInsets.only(bottom: 24),
               children: [
+                if (teacher != null && reunion != null)
+                  Card(
+                    key: JourneyKeys.reunion,
+                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    color: colors.primaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.rungReunionTitle(teacher.name),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.onPrimaryContainer,
+                                ),
+                          ),
+                          const SizedBox(height: 12),
+                          TeacherSpeech(teacher: teacher, text: reunion),
+                        ],
+                      ),
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: Text(

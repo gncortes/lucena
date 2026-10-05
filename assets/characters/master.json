@@ -7,16 +7,16 @@
     "en": "The grandmaster who teaches while he wins."
   },
   "personality": {
-    "pt": "Grande mestre veterano, de terno, gravata e mãos para trás, que já viu todos os finais do livro. Joga com técnica impecável e paciência de relojoeiro, sempre com o rei ativo. Ganhando, transforma a partida numa aula; perdendo, mantém a compostura e elogia com elegância. Fala pouco, em frases de professor sobre oposição, rei ativo e peão passado, e ajeita a gravata quando algo o incomoda.",
-    "en": "A veteran grandmaster in suit and tie, hands clasped behind his back, who has seen every ending in the book. He plays with flawless technique and a watchmaker's patience, always with an active king. When winning, he turns the game into a lesson; when losing, he keeps his composure and praises with elegance. He speaks sparingly, in teacher's maxims about opposition, the active king and passed pawns, and straightens his tie when something bothers him."
+    "pt": "Grande mestre veterano, de terno, gravata e mãos para trás, que dedicou a vida ao xadrez e a ensinar. Começou num clube pequeno, com um professor que nunca esqueceu, e hoje é o jogador que todo enxadrista admira: técnica impecável, paciência de relojoeiro e o rei sempre ativo. É o professor do iniciante na escola e o último degrau da Jornada. Ganhando, transforma a partida numa aula; perdendo, aperta a mão com alegria, porque nada orgulha mais um mestre do que o aluno que o supera. Cita Capablanca, Philidor, Lasker e os grandes mestres do país de quem joga, e é uma homenagem a todos os professores de xadrez.",
+    "en": "A veteran grandmaster in suit and tie, hands clasped behind his back, who devoted his life to chess and to teaching it. He started at a small club, with a teacher he never forgot, and is now the player every chess lover admires: flawless technique, a watchmaker's patience and an ever-active king. He is the beginner's teacher at the school and the last rung of the Journey. Winning, he turns the game into a lesson; losing, he shakes hands gladly, because nothing makes a master prouder than a student who surpasses him. He quotes Capablanca, Philidor, Lasker and the great masters of the player's country, and is a tribute to every chess teacher."
   },
   "traits": [
     "wise",
-    "sober",
-    "demanding",
     "patient",
-    "elegant",
     "teacher",
+    "elegant",
+    "demanding",
+    "generous",
     "composed"
   ],
   "avatar": "assets/characters/master/avatar.png"

@@ -185,6 +185,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       settings: context.read<SettingsRepository>(),
                       now: context.read<Now>(),
                       language: language,
+                      school: context.read<SchoolProgressRepository>(),
                     ),
                   ),
                 ],
@@ -447,6 +448,9 @@ JourneyCubit _journeyCubit(BuildContext context) => JourneyCubit(
   context.read<ProgressRepository>(),
   onboarding: context.read<OnboardingRepository>(),
   characters: context.read<CharacterRepository>(),
+  school: context.read<SchoolProgressRepository>(),
+  lessons: context.read<LessonRepository>(),
+  language: Localizations.localeOf(context).languageCode,
 );
 
 SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(

@@ -5,6 +5,8 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
+import '../../../data/repositories/school/lesson_repository.dart';
+import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
@@ -25,6 +27,10 @@ abstract class JourneyState with _$JourneyState {
 
     /// Os personagens, um por nível do Maia.
     @Default(<Character>[]) List<Character> characters,
+
+    /// O que o Viktor diz ao ex-aluno no degrau dele. Nulo para quem não fez
+    /// aulas com ele.
+    String? reunion,
   }) = _JourneyState;
 }
 
@@ -36,6 +42,9 @@ class JourneyCubit extends Cubit<JourneyState> {
     this._progress, {
     this._onboarding,
     this._characters,
+    this._school,
+    this._lessons,
+    this._language = 'en',
   }) : super(const JourneyState());
 
   final JourneyRepository _journey;
@@ -44,6 +53,9 @@ class JourneyCubit extends Cubit<JourneyState> {
   // O degrau de início escolhido no tour. Nulo: a Jornada começa do primeiro.
   final OnboardingRepository? _onboarding;
   final CharacterRepository? _characters;
+  final SchoolProgressRepository? _school;
+  final LessonRepository? _lessons;
+  final String _language;
 
   /// Lê a Jornada. Com [rungId] e [positionId], lê também o desafio e o
   /// histórico dele.
@@ -67,6 +79,10 @@ class JourneyCubit extends Cubit<JourneyState> {
         ? const <Attempt>[]
         : await _progress.attemptsForChallenge(challenge.id);
     final characters = await _characters?.characters() ?? const <Character>[];
+    final student = (await _school?.load())?.isStudent ?? false;
+    final reunion = student
+        ? (await _lessons?.texts(_language))?.say('journey.reunion')
+        : null;
     if (isClosed) return;
     emit(
       JourneyState(
@@ -74,6 +90,7 @@ class JourneyCubit extends Cubit<JourneyState> {
         challenge: challenge,
         attempts: attempts,
         characters: characters,
+        reunion: reunion,
       ),
     );
   }

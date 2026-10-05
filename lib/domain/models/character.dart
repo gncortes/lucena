@@ -55,6 +55,20 @@ enum LineCategory {
   }
 }
 
+/// Para quem é a fala, além de todo jogador.
+enum LineAudience {
+  /// Só para quem fez aulas com o personagem (o Viktor reencontrando o
+  /// ex-aluno).
+  student;
+
+  static LineAudience? fromCode(String? code) {
+    for (final a in values) {
+      if (a.name == code) return a;
+    }
+    return null;
+  }
+}
+
 /// Uma fala de personagem, já no idioma do arquivo de onde veio.
 class CharacterLine {
   const CharacterLine({
@@ -63,6 +77,7 @@ class CharacterLine {
     required this.intensity,
     required this.emotion,
     required this.text,
+    this.audience,
   });
 
   final String id;
@@ -72,6 +87,9 @@ class CharacterLine {
   final int intensity;
   final Emotion emotion;
   final String text;
+
+  /// Nula: a fala serve para qualquer jogador.
+  final LineAudience? audience;
 
   /// A fala do JSON; null se faltar campo ou a categoria ou emoção for
   /// desconhecida.
@@ -89,6 +107,7 @@ class CharacterLine {
       intensity: intensity.toInt().clamp(1, 3),
       emotion: emotion,
       text: text,
+      audience: LineAudience.fromCode(_string(json['audience'])),
     );
   }
 
@@ -101,10 +120,12 @@ class CharacterLine {
       other.category == category &&
       other.intensity == intensity &&
       other.emotion == emotion &&
-      other.text == text;
+      other.text == text &&
+      other.audience == audience;
 
   @override
-  int get hashCode => Object.hash(id, category, intensity, emotion, text);
+  int get hashCode =>
+      Object.hash(id, category, intensity, emotion, text, audience);
 }
 
 /// Um personagem: o rosto de um nível do Maia.
