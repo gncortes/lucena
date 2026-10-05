@@ -5,7 +5,7 @@ description: Cria uma aula avançada de final com o Viktor (pesquisa com referê
 
 # Aula de final com o Viktor
 
-A Escola do Viktor (T28–T31) ensina o iniciante. Estas aulas são o passo seguinte: cerca de 50 finais que todo jogador precisa dominar, ensinados a fundo, do começo até as posições-chave, no modelo dos livros do Yusupov: lição, exercícios com estrelas, nota mínima para seguir.
+A Escola do Viktor (T28–T31) ensina o iniciante. Estas aulas são o passo seguinte: cerca de 55 finais que todo jogador precisa dominar, ensinados a fundo, do começo até as posições-chave, no modelo dos livros do Yusupov: lição, exercícios com estrelas, nota mínima para seguir.
 
 Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` é a primeira do catálogo que ainda não tem `docs/aulas/<id>.md`.
 
