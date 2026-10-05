@@ -350,5 +350,14 @@
   "speedrunStageOf": "Etappe {stage} van {total}",
   "speedrunNow": "Nu",
   "paceTitle": "Kies het tempo",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Hoi, {name}",
+  "homeStatGames": "Partijen",
+  "homeStatWins": "Winst",
+  "homeStatStreak": "Dagen op rij",
+  "homeStatAchievements": "{unlocked} van {total}",
+  "homeStatBestRun": "Beste speedrun",
+  "homeTools": "Hulpmiddelen",
+  "profileRatingPeriodGames": "Laatste {count}",
+  "profileRatingPeriodAll": "Alle"
 }

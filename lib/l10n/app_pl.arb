@@ -350,5 +350,14 @@
   "speedrunStageOf": "Etap {stage} z {total}",
   "speedrunNow": "Teraz",
   "paceTitle": "Wybierz tempo",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Cześć, {name}",
+  "homeStatGames": "Partie",
+  "homeStatWins": "Wygrane",
+  "homeStatStreak": "Dni z rzędu",
+  "homeStatAchievements": "{unlocked} z {total}",
+  "homeStatBestRun": "Najlepszy speedrun",
+  "homeTools": "Narzędzia",
+  "profileRatingPeriodGames": "Ostatnie {count}",
+  "profileRatingPeriodAll": "Wszystkie"
 }

@@ -350,5 +350,14 @@
   "speedrunStageOf": "第 {stage}/{total} 阶段",
   "speedrunNow": "当前",
   "paceTitle": "选择时限",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "你好，{name}",
+  "homeStatGames": "对局",
+  "homeStatWins": "胜局",
+  "homeStatStreak": "连续天数",
+  "homeStatAchievements": "{unlocked}/{total}",
+  "homeStatBestRun": "最佳速通",
+  "homeTools": "工具",
+  "profileRatingPeriodGames": "最近 {count} 局",
+  "profileRatingPeriodAll": "全部"
 }

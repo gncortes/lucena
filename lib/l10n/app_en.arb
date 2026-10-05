@@ -1856,5 +1856,59 @@
         "type": "int"
       }
     }
+  },
+  "homeHello": "Hi, {name}",
+  "@homeHello": {
+    "description": "Greeting at the top of the home screen.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeStatGames": "Games",
+  "@homeStatGames": {
+    "description": "Home stat: games played."
+  },
+  "homeStatWins": "Wins",
+  "@homeStatWins": {
+    "description": "Home stat: games won."
+  },
+  "homeStatStreak": "Day streak",
+  "@homeStatStreak": {
+    "description": "Home stat: days in a row with at least one game."
+  },
+  "homeStatAchievements": "{unlocked} of {total}",
+  "@homeStatAchievements": {
+    "description": "Home stat: achievements unlocked out of total.",
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeStatBestRun": "Best speedrun",
+  "@homeStatBestRun": {
+    "description": "Home stat: best speedrun time."
+  },
+  "homeTools": "Tools",
+  "@homeTools": {
+    "description": "Home: title of the tools shortcuts (custom position, free board)."
+  },
+  "profileRatingPeriodGames": "Last {count}",
+  "@profileRatingPeriodGames": {
+    "description": "Rating chart period: the last N games.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileRatingPeriodAll": "All",
+  "@profileRatingPeriodAll": {
+    "description": "Rating chart period: every game."
   }
 }

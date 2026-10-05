@@ -350,5 +350,14 @@
   "speedrunStageOf": "Етап {stage} з {total}",
   "speedrunNow": "Зараз",
   "paceTitle": "Оберіть контроль",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "Привіт, {name}",
+  "homeStatGames": "Партії",
+  "homeStatWins": "Перемоги",
+  "homeStatStreak": "Днів поспіль",
+  "homeStatAchievements": "{unlocked} з {total}",
+  "homeStatBestRun": "Найкращий спідран",
+  "homeTools": "Інструменти",
+  "profileRatingPeriodGames": "Останні {count}",
+  "profileRatingPeriodAll": "Усі"
 }

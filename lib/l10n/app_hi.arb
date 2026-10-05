@@ -350,5 +350,14 @@
   "speedrunStageOf": "चरण {stage} / {total}",
   "speedrunNow": "अभी",
   "paceTitle": "समय नियंत्रण चुनें",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "नमस्ते, {name}",
+  "homeStatGames": "बाज़ियाँ",
+  "homeStatWins": "जीत",
+  "homeStatStreak": "लगातार दिन",
+  "homeStatAchievements": "{total} में से {unlocked}",
+  "homeStatBestRun": "सबसे अच्छा स्पीडरन",
+  "homeTools": "टूल",
+  "profileRatingPeriodGames": "पिछली {count}",
+  "profileRatingPeriodAll": "सभी"
 }

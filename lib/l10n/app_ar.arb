@@ -350,5 +350,14 @@
   "speedrunStageOf": "المرحلة {stage} من {total}",
   "speedrunNow": "الآن",
   "paceTitle": "اختر الإيقاع",
-  "paceShort": "{minutes}+{increment}"
+  "paceShort": "{minutes}+{increment}",
+  "homeHello": "مرحبًا، {name}",
+  "homeStatGames": "المباريات",
+  "homeStatWins": "الانتصارات",
+  "homeStatStreak": "أيام متتالية",
+  "homeStatAchievements": "{unlocked} من {total}",
+  "homeStatBestRun": "أفضل سباق وقت",
+  "homeTools": "أدوات",
+  "profileRatingPeriodGames": "آخر {count}",
+  "profileRatingPeriodAll": "الكل"
 }
