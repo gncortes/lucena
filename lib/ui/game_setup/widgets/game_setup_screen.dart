@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,20 +7,18 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/attempt.dart';
-import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_setup_cubit.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
@@ -40,43 +37,43 @@ class GameSetupScreen extends StatelessWidget {
     return Scaffold(
       key: GameSetupKeys.screen,
       appBar: AppBar(title: Text(l10n.setupTitle)),
-      body: !state.ready
-          ? const SizedBox.shrink()
-          : Column(
+      // A posição já aparece antes de a configuração ser lida: é nela que o
+      // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: 16),
               children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    children: [
-                      _Header(state: state),
-                      const _SectionTitle.yourSide(),
-                      _SidePicker(state: state),
-                      const _SectionTitle.opponent(),
-                      _OpponentPicker(state: state),
-                      const Divider(height: 24),
-                      _ClockSection(state: state),
-                      if (state.attempts.isNotEmpty) _History(state: state),
-                    ],
-                  ),
-                ),
-                SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: FilledButton(
-                      key: GameSetupKeys.startButton,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                      ),
-                      onPressed: state.canStart
-                          ? () => _start(context, state)
-                          : null,
-                      child: Text(l10n.clockStartGame),
-                    ),
-                  ),
-                ),
+                _Header(state: state),
+                if (state.ready) ...[
+                  const _SectionTitle.yourSide(),
+                  _SidePicker(state: state),
+                  const _SectionTitle.opponent(),
+                  _OpponentPicker(state: state),
+                  const Divider(height: 24),
+                  _ClockSection(state: state),
+                  if (state.attempts.isNotEmpty) _History(state: state),
+                ],
               ],
             ),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: FilledButton(
+                key: GameSetupKeys.startButton,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                onPressed: state.canStart ? () => _start(context, state) : null,
+                child: Text(l10n.clockStartGame),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -90,28 +87,22 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final board = context.select(
-      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
-    );
+    final positionId = state.positionId;
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = math.min(constraints.maxWidth - 32, 340.0);
         return Column(
           children: [
             const SizedBox(height: 8),
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: StaticChessboard(
-                key: GameSetupKeys.preview,
-                size: size,
-                orientation: state.userSide,
-                fen: state.position.fen,
-                settings: StaticChessboardSettings.fromBoardSettings(
-                  board.chessground.copyWith(
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  ),
-                ),
-              ),
+            // Posição do catálogo: o tabuleiro chega voando do cartão dela.
+            PositionBoard(
+              boardKey: GameSetupKeys.preview,
+              fen: state.position.fen,
+              size: size,
+              orientation: state.userSide,
+              coordinates: true,
+              radius: 8,
+              heroTag: positionId == null ? null : catalogBoardTag(positionId),
             ),
             const SizedBox(height: 12),
             Wrap(

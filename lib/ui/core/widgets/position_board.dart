@@ -9,15 +9,17 @@ import '../../../domain/models/board_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../board/board_settings_ui.dart';
 
-/// A miniatura de uma posição (FEN), vista pelo lado que joga, com as cores
-/// e as peças escolhidas pelo jogador.
+/// A miniatura de uma posição (FEN), vista pelo lado que joga (ou pelo
+/// [orientation] pedido), com as cores e as peças escolhidas pelo jogador.
 class PositionBoard extends StatelessWidget {
   const PositionBoard({
     required this.fen,
     required this.size,
+    this.orientation,
     this.coordinates = false,
     this.radius = 6,
     this.heroTag,
+    this.boardKey,
     super.key,
   });
 
@@ -25,8 +27,15 @@ class PositionBoard extends StatelessWidget {
   /// seguinte.
   final Object? heroTag;
 
+  /// A chave do tabuleiro em si (o `StaticChessboard`), para os testes lerem
+  /// a orientação. Fica fora do voo.
+  final Key? boardKey;
+
   final String fen;
   final double size;
+
+  /// O lado de baixo. Sem ele, o lado que joga na posição.
+  final Side? orientation;
   final bool coordinates;
   final double radius;
 
@@ -79,8 +88,9 @@ class PositionBoard extends StatelessWidget {
     final child = Directionality(
       textDirection: TextDirection.ltr,
       child: StaticChessboard(
+        key: flying ? null : boardKey,
         size: size,
-        orientation: turn,
+        orientation: orientation ?? turn,
         fen: fen,
         settings: StaticChessboardSettings(
           colorScheme: board.colors.scheme,
