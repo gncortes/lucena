@@ -47,6 +47,7 @@ flutter:
     - assets/positions/positions.json
     - assets/progression/ladder.json
     - assets/progression/speedruns.json
+    - assets/progression/speedrun_positions.json
     - assets/progression/time_controls.json
     - assets/achievements.json
     - assets/characters/

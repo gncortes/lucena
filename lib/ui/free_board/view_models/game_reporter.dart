@@ -149,8 +149,15 @@ class GameReporter {
         runs.add(SpeedrunScore.run(speedrun, attempt));
       }
     }
-    final subcategoryOf = <String, String>{};
+    // As posições das etapas dos speedruns de final ficam fora do catálogo:
+    // o final delas vem do próprio speedrun.
+    final subcategoryOf = <String, String>{
+      for (final speedrun in speedruns.values)
+        for (final stage in speedrun.stages)
+          stage.position.id: stage.position.subcategory,
+    };
     for (final id in {for (final game in games) game.positionId}) {
+      if (subcategoryOf.containsKey(id)) continue;
       final position = await _positions.byId(id);
       if (position != null) subcategoryOf[id] = position.subcategory;
     }
