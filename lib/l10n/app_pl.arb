@@ -378,7 +378,7 @@
   "homePathsTitle": "Co chcesz zrobić?",
   "homeLearn": "Naucz się grać w szachy",
   "homeLearnBody": "Lekcje z Viktorem: jak poruszają się figury, szach, mat i pierwsze końcówki.",
-  "homeJourneyBody": "Trening krok po kroku: wygraj końcówki z każdym przeciwnikiem, od najsłabszego aż po Stockfisha.",
+  "homeJourneyBody": "Kolejny krok po lekcjach: ćwicz, wygrywając końcówki z każdym przeciwnikiem, od najsłabszego aż po Stockfisha.",
   "homeSpeedrunBody": "Wybierz końcówkę i pokonaj po kolei wszystkich przeciwników, aż po Stockfisha, na czas.",
   "homeTrainBody": "Wybierz dowolną końcówkę i przeciwnika i graj ją, ile razy chcesz.",
   "setupPaceCustom": "Własne",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Linia mety",
   "achievementSpeedrunHint": "Ukończ speedrun, od pierwszego przeciwnika do Stockfisha",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Ukończ speedrun tej końcówki w tempie: {pace}"
+  "achievementSpeedrunPaceHint": "Ukończ speedrun tej końcówki w tempie: {pace}",
+  "journeyIntro": "Kolejny krok po lekcjach z Viktorem: utrwalaj zdobytą wiedzę i podejmuj nowe wyzwania, przeciwnik po przeciwniku."
 }

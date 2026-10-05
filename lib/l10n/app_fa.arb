@@ -378,7 +378,7 @@
   "homePathsTitle": "می‌خواهید چه کار کنید؟",
   "homeLearn": "یادگیری بازی شطرنج",
   "homeLearnBody": "درس‌ها با ویکتور: حرکت مهره‌ها، کیش، مات و اولین آخر بازی‌ها.",
-  "homeJourneyBody": "تمرین هدایت‌شده: آخر بازی‌های هر حریف را ببرید، از ضعیف‌ترین تا Stockfish.",
+  "homeJourneyBody": "گام بعدی پس از درس‌ها: با بردن آخر بازی‌های هر حریف تمرین کنید، از ضعیف‌ترین تا Stockfish.",
   "homeSpeedrunBody": "یک آخر بازی انتخاب کنید و در رقابت با ساعت، همهٔ حریف‌ها را پشت سر هم تا Stockfish شکست دهید.",
   "homeTrainBody": "هر آخر بازی و حریفی را که می‌خواهید انتخاب کنید و هر چند بار که خواستید بازی کنید.",
   "setupPaceCustom": "سفارشی",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "خط پایان",
   "achievementSpeedrunHint": "یک اسپیدران را از اولین حریف تا Stockfish تمام کنید",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "اسپیدران این آخر بازی را با کنترل زمان {pace} تمام کنید"
+  "achievementSpeedrunPaceHint": "اسپیدران این آخر بازی را با کنترل زمان {pace} تمام کنید",
+  "journeyIntro": "گام بعدی پس از درس‌های ویکتور: آنچه را یاد گرفته‌اید تمرین کنید و با چالش‌های تازه روبه‌رو شوید، هر بار یک حریف."
 }

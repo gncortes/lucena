@@ -378,7 +378,7 @@
   "homePathsTitle": "¿Qué quieres hacer?",
   "homeLearn": "Aprender a jugar al ajedrez",
   "homeLearnBody": "Clases con Viktor: cómo se mueven las piezas, jaque, jaque mate y los primeros finales.",
-  "homeJourneyBody": "Entrenamiento guiado: gana los finales de cada rival, del más débil hasta Stockfish.",
+  "homeJourneyBody": "El siguiente paso tras las clases: practica ganando los finales de cada rival, del más débil hasta Stockfish.",
   "homeSpeedrunBody": "Elige un final y vence a todos los rivales seguidos, hasta Stockfish, contra el reloj.",
   "homeTrainBody": "Elige cualquier final y el rival, y juégalo todas las veces que quieras.",
   "setupPaceCustom": "Personalizar",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Línea de meta",
   "achievementSpeedrunHint": "Completa un speedrun, del primer rival a Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Completa el speedrun de este final en el ritmo {pace}"
+  "achievementSpeedrunPaceHint": "Completa el speedrun de este final en el ritmo {pace}",
+  "journeyIntro": "El siguiente paso tras las clases de Viktor: practica lo que aprendiste y afronta nuevos desafíos, un rival cada vez."
 }

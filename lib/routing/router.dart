@@ -104,9 +104,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             lessons: context.read<LessonRepository>(),
             school: context.read<SchoolProgressRepository>(),
             profile: context.read<ProfileRepository>(),
-            achievements: context.read<AchievementsRepository>(),
-            speedruns: context.read<SpeedrunRepository>(),
-            now: context.read<Now>(),
           )..load(),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -403,6 +400,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               create: (context) => RatingCubit(
                 context.read<RatingRepository>(),
                 progress: context.read<ProgressRepository>(),
+                achievements: context.read<AchievementsRepository>(),
+                speedruns: context.read<SpeedrunRepository>(),
+                journey: context.read<JourneyRepository>(),
+                now: context.read<Now>(),
               )..load(),
               child: const RatingScreen(),
             ),

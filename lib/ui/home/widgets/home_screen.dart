@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/rating_level.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -75,66 +74,73 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // O painel do jogador: o topo compacto, o rating, o "Continuar", os números
-  // do progresso e os atalhos.
+  // O nome do app e os botões ficam fixos no alto; embaixo rola o painel do
+  // jogador: o rating, o "Continuar" e os caminhos.
   Widget _content(BuildContext context, ThemeData theme) {
     final l10n = context.l10n;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
-        child: ListView(
-          padding: scrollPadding(context, left: 16, top: 8, right: 16),
+        child: Column(
           children: [
-            // No alto, só o nome do app e os botões.
-            _Entrance(
-              animation: _title,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.only(start: 4),
-                      child: Text(
-                        l10n.appTitle,
-                        key: HomeKeys.title,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: _Entrance(
+                animation: _title,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 4),
+                        child: Text(
+                          l10n.appTitle,
+                          key: HomeKeys.title,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    key: HomeKeys.achievementsButton,
-                    icon: const Icon(Icons.emoji_events_outlined),
-                    tooltip: l10n.homeAchievements,
-                    onPressed: () => context.go(Routes.achievements),
-                  ),
-                  IconButton(
-                    key: HomeKeys.settingsButton,
-                    icon: const Icon(Icons.settings_outlined),
-                    tooltip: l10n.settingsTitle,
-                    onPressed: () => context.go(Routes.settings),
+                    IconButton(
+                      key: HomeKeys.achievementsButton,
+                      icon: const Icon(Icons.emoji_events_outlined),
+                      tooltip: l10n.homeAchievements,
+                      onPressed: () => context.go(Routes.achievements),
+                    ),
+                    IconButton(
+                      key: HomeKeys.settingsButton,
+                      icon: const Icon(Icons.settings_outlined),
+                      tooltip: l10n.settingsTitle,
+                      onPressed: () => context.go(Routes.settings),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: scrollPadding(context, left: 16, top: 8, right: 16),
+                children: [
+                  BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, state) {
+                      if (!state.ready) return const SizedBox.shrink();
+                      return _Entrance(
+                        animation: _actions,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            PlayerCard(state: state),
+                            const SizedBox(height: 12),
+                            WhereCard(state: state),
+                            _shortcuts(context, theme),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 12),
-            BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) {
-                if (!state.ready) return const SizedBox.shrink();
-                return _Entrance(
-                  animation: _actions,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      PlayerCard(state: state),
-                      const SizedBox(height: 12),
-                      WhereCard(state: state),
-                      _shortcuts(context, theme, state),
-                    ],
-                  ),
-                );
-              },
             ),
           ],
         ),
@@ -142,18 +148,20 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // Os caminhos do app, cada um dizendo o que se faz nele; o indicado para o
-  // jogador vem primeiro e em destaque. Depois os números e as ferramentas.
-  Widget _shortcuts(BuildContext context, ThemeData theme, HomeState state) {
+  // Os caminhos do app, na ordem de quem está aprendendo: as aulas, depois a
+  // Jornada para praticar, o speedrun e os finais avulsos. Cada um diz o que
+  // se faz nele. Depois, as ferramentas. Os números do jogador ficam nos
+  // detalhes do rating.
+  Widget _shortcuts(BuildContext context, ThemeData theme) {
     final l10n = context.l10n;
-    final learn = (
-      key: HomeKeys.schoolButton,
-      icon: Icons.school_outlined,
-      title: l10n.homeLearn,
-      body: l10n.homeLearnBody,
-      route: Routes.school,
-    );
-    final play = [
+    final paths = [
+      (
+        key: HomeKeys.schoolButton,
+        icon: Icons.school_outlined,
+        title: l10n.homeLearn,
+        body: l10n.homeLearnBody,
+        route: Routes.school,
+      ),
       (
         key: HomeKeys.journeyButton,
         icon: Icons.flag_rounded,
@@ -176,10 +184,6 @@ class _HomeScreenState extends State<HomeScreen>
         route: Routes.catalog,
       ),
     ];
-    // Quem está começando aprende a jogar antes de tudo; para os outros, as
-    // aulas ficam no fim da lista.
-    final beginner = state.level == RatingLevel.beginner;
-    final paths = beginner ? [learn, ...play] : [...play, learn];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -191,12 +195,9 @@ class _HomeScreenState extends State<HomeScreen>
             icon: path.icon,
             title: path.title,
             body: path.body,
-            highlighted: index == 0,
             onTap: () => context.go(path.route),
           ),
         ],
-        const SizedBox(height: 20),
-        StatsRow(state: state),
         _sectionTitle(theme, l10n.homeTools),
         Wrap(
           spacing: 8,

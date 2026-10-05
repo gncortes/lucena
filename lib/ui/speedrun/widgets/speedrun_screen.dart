@@ -13,10 +13,11 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/position_board.dart';
+import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../journey/widgets/journey_ui.dart';
+import '../../journey/widgets/trail_widgets.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
 
@@ -203,6 +204,16 @@ class SpeedrunScreen extends StatelessWidget {
                   ),
           ),
           _header(context, l10n.speedrunStages),
+          // Em andamento, o progresso por passos: uma barra por etapa.
+          if (ongoing != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: StepProgress(
+                key: SpeedrunKeys.progress,
+                total: speedrun.stages.length,
+                value: ongoing.currentStage.toDouble(),
+              ),
+            ),
           // A ordem das etapas, uma embaixo da outra: quem o jogador
           // enfrenta, até onde a tentativa em andamento chegou e o melhor
           // tempo de cada etapa.
@@ -343,9 +354,11 @@ enum _StageStatus {
   ahead,
 }
 
-/// Uma etapa na trilha: o número, quem o jogador enfrenta (ou o final, quando
-/// o adversário é sempre o mesmo) e o melhor tempo dela. Com uma tentativa em
-/// andamento, as etapas vencidas ganham o selo e a da vez fica em destaque.
+/// Uma etapa na trilha, no formato da Jornada: o retrato do adversário num
+/// círculo, ligado aos vizinhos por uma linha, com o nome, a etapa e o melhor
+/// tempo dela. Com uma tentativa em andamento, as etapas vencidas levam o
+/// selo de feito e a da vez fica maior e em destaque; a última é o chefe
+/// final.
 class _StageRow extends StatelessWidget {
   const _StageRow({
     required this.index,
@@ -363,7 +376,8 @@ class _StageRow extends StatelessWidget {
   final bool last;
   final _StageStatus status;
 
-  static const _avatar = 44.0;
+  // O meio da coluna dos retratos, por onde passa a linha.
+  static const _railX = 52.0;
 
   @override
   Widget build(BuildContext context) {
@@ -374,121 +388,114 @@ class _StageRow extends StatelessWidget {
       (SpeedrunCubit cubit) => cubit.state.characters,
     );
     final best = this.best;
-    final byOpponent = speedrun.kind == SpeedrunKind.ending;
-    final character = opponentCharacter(characters, stage.opponent);
     final current = status == _StageStatus.current;
     final done = status == _StageStatus.done;
-    final line = done ? colors.primary : colors.outlineVariant;
-    return Padding(
+    final ahead = status == _StageStatus.ahead;
+    final size = current ? 72.0 : 56.0;
+    final height = current ? 108.0 : 84.0;
+    final doneColor = ChangeColors.of(context, up: true);
+    final first = index == 0;
+    return SizedBox(
       key: SpeedrunKeys.stageCard(index),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // O retrato (ou a posição) e a linha que desce até a próxima.
-            Column(
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: byOpponent ? BoxShape.circle : BoxShape.rectangle,
-                    borderRadius: byOpponent ? null : BorderRadius.circular(6),
-                    border: Border.all(
-                      color: current || done
-                          ? colors.primary
-                          : colors.outlineVariant,
-                      width: current ? 3 : 2,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: byOpponent && character != null
-                        ? ClipOval(
-                            child: CharacterAvatar(
-                              character: character,
-                              size: _avatar,
-                            ),
-                          )
-                        : PositionBoard(
-                            fen: stage.position.fen,
-                            size: _avatar,
-                            radius: 4,
-                          ),
-                  ),
-                ),
-                if (!last)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      constraints: const BoxConstraints(minHeight: 14),
-                      color: line,
-                    ),
-                  ),
-              ],
+      height: height,
+      child: Stack(
+        children: [
+          // A linha da trilha, atrás dos retratos: só a metade de baixo na
+          // primeira etapa e só a de cima na última. Até a etapa da vez, ela
+          // vem na cor de feito.
+          PositionedDirectional(
+            start: _railX - 2,
+            width: 4,
+            top: first ? height / 2 : 0,
+            bottom: height / 2,
+            child: ColoredBox(
+              color: done || current ? doneColor : colors.outlineVariant,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(top: 6, bottom: last ? 0 : 18),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            byOpponent
-                                ? opponentName(l10n, characters, stage.opponent)
-                                : endgameName(l10n, stage.position.subcategory),
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: status == _StageStatus.ahead
-                                  ? colors.onSurfaceVariant
-                                  : null,
-                            ),
-                          ),
-                          Text(
-                            current
-                                ? l10n.speedrunNow
-                                : l10n.speedrunStageOf(
-                                    index + 1,
-                                    speedrun.stages.length,
-                                  ),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: current
-                                  ? colors.primary
-                                  : colors.onSurfaceVariant,
-                              fontWeight: current ? FontWeight.w700 : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (done)
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 8),
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 20,
-                          color: colors.primary,
-                        ),
-                      ),
-                    Text(
-                      best == null ? '' : RunTimeFormat.format(best),
-                      key: SpeedrunKeys.stageRecord(index),
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w700,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  ],
-                ),
+          ),
+          if (!last)
+            PositionedDirectional(
+              start: _railX - 2,
+              width: 4,
+              top: height / 2,
+              bottom: 0,
+              child: ColoredBox(
+                color: done ? doneColor : colors.outlineVariant,
               ),
             ),
-          ],
-        ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 72,
+                  child: Center(
+                    child: TrailPortrait(
+                      character: opponentCharacter(characters, stage.opponent),
+                      size: size,
+                      locked: false,
+                      completed: done,
+                      current: current,
+                      doneColor: doneColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        opponentName(l10n, characters, stage.opponent),
+                        style:
+                            (current
+                                    ? theme.textTheme.titleLarge
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: ahead ? colors.onSurfaceVariant : null,
+                                ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        [
+                          l10n.speedrunStageOf(
+                            index + 1,
+                            speedrun.stages.length,
+                          ),
+                          // Quando o final muda de etapa para etapa, o nome
+                          // dele vem junto.
+                          if (speedrun.kind != SpeedrunKind.ending)
+                            endgameName(l10n, stage.position.subcategory),
+                        ].join(' · '),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      if (current || last) ...[
+                        const SizedBox(height: 6),
+                        TrailBadge(
+                          text: current ? l10n.speedrunNow : l10n.journeyBoss,
+                          color: current ? colors.primary : colors.tertiary,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  best == null ? '' : RunTimeFormat.format(best),
+                  key: SpeedrunKeys.stageRecord(index),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

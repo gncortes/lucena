@@ -378,7 +378,7 @@
   "homePathsTitle": "何をしますか？",
   "homeLearn": "チェスを学ぶ",
   "homeLearnBody": "ヴィクトルのレッスン：駒の動かし方、チェック、チェックメイト、最初のエンドゲーム。",
-  "homeJourneyBody": "ガイド付きトレーニング：いちばん弱い相手からStockfishまで、各相手のエンドゲームに勝ちましょう。",
+  "homeJourneyBody": "レッスンの次のステップ：いちばん弱い相手からStockfishまで、各相手のエンドゲームに勝って練習しましょう。",
   "homeSpeedrunBody": "エンドゲームをひとつ選び、Stockfishまで全員に連続で勝ちましょう。時間との勝負です。",
   "homeTrainBody": "好きなエンドゲームと相手を選んで、何度でもプレイできます。",
   "setupPaceCustom": "カスタム",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "ゴールライン",
   "achievementSpeedrunHint": "最初の相手からStockfishまで、スピードランを完走する",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "このエンドゲームのスピードランを{pace}の持ち時間で完走する"
+  "achievementSpeedrunPaceHint": "このエンドゲームのスピードランを{pace}の持ち時間で完走する",
+  "journeyIntro": "ヴィクトルのレッスンの次のステップ：学んだことを練習し、一人ずつ相手に挑みながら新しいチャレンジに取り組みましょう。"
 }

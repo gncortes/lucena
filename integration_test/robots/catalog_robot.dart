@@ -58,8 +58,10 @@ class CatalogRobot {
     await $.pumpAndSettle();
   }
 
-  /// O nome de uma categoria como aparece na tela.
-  void expectCategoryName(String category, String name) {
+  /// O nome de uma categoria como aparece na tela (a lista pode passar da
+  /// altura do aparelho).
+  Future<void> expectCategoryName(String category, String name) async {
+    await $(CatalogKeys.categoryName(category)).scrollTo();
     expectText(
       $.tester
           .widget<Text>(find.byKey(CatalogKeys.categoryName(category)))

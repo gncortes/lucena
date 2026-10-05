@@ -378,7 +378,7 @@
   "homePathsTitle": "Ne yapmak istersin?",
   "homeLearn": "Satranç oynamayı öğren",
   "homeLearnBody": "Viktor ile dersler: taşların hareketleri, şah, mat ve ilk oyun sonları.",
-  "homeJourneyBody": "Rehberli antrenman: en zayıfından Stockfish'e kadar her rakibin oyun sonlarını kazan.",
+  "homeJourneyBody": "Derslerden sonraki adım: en zayıfından Stockfish'e kadar her rakibin oyun sonlarını kazanarak pratik yap.",
   "homeSpeedrunBody": "Bir oyun sonu seç ve Stockfish'e kadar tüm rakipleri art arda, saate karşı yen.",
   "homeTrainBody": "İstediğin oyun sonunu ve rakibi seç, dilediğin kadar oyna.",
   "setupPaceCustom": "Özel",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Bitiş çizgisi",
   "achievementSpeedrunHint": "İlk rakipten Stockfish'e kadar bir speedrun tamamla",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Bu oyun sonunun speedrun'ını {pace} temposunda tamamla"
+  "achievementSpeedrunPaceHint": "Bu oyun sonunun speedrun'ını {pace} temposunda tamamla",
+  "journeyIntro": "Viktor'un derslerinden sonraki adım: öğrendiklerini uygula ve her seferinde bir rakiple yeni görevlerin üstesinden gel."
 }

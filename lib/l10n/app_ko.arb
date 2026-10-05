@@ -378,7 +378,7 @@
   "homePathsTitle": "무엇을 하고 싶으세요?",
   "homeLearn": "체스 배우기",
   "homeLearnBody": "빅토르의 수업: 기물의 움직임, 체크, 체크메이트, 그리고 첫 엔드게임.",
-  "homeJourneyBody": "안내형 훈련: 가장 약한 상대부터 Stockfish까지, 각 상대의 엔드게임을 이기세요.",
+  "homeJourneyBody": "수업 다음 단계: 가장 약한 상대부터 Stockfish까지, 각 상대의 엔드게임을 이기며 연습하세요.",
   "homeSpeedrunBody": "엔드게임을 하나 골라 Stockfish까지 모든 상대를 연달아 이기세요. 시간과의 싸움입니다.",
   "homeTrainBody": "원하는 엔드게임과 상대를 골라 원하는 만큼 플레이하세요.",
   "setupPaceCustom": "사용자 지정",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "결승선",
   "achievementSpeedrunHint": "첫 상대부터 Stockfish까지 스피드런을 완료하세요",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "이 엔드게임 스피드런을 {pace} 시간 제한으로 완료하세요"
+  "achievementSpeedrunPaceHint": "이 엔드게임 스피드런을 {pace} 시간 제한으로 완료하세요",
+  "journeyIntro": "빅토르의 수업 다음 단계: 배운 것을 연습하고, 한 번에 한 상대씩 새로운 도전에 나서세요."
 }

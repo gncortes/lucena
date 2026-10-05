@@ -378,7 +378,7 @@
   "homePathsTitle": "Cosa vuoi fare?",
   "homeLearn": "Impara a giocare a scacchi",
   "homeLearnBody": "Lezioni con Viktor: come si muovono i pezzi, lo scacco, lo scacco matto e i primi finali.",
-  "homeJourneyBody": "Allenamento guidato: vinci i finali di ogni avversario, dal più debole fino a Stockfish.",
+  "homeJourneyBody": "Il passo successivo dopo le lezioni: allenati vincendo i finali di ogni avversario, dal più debole fino a Stockfish.",
   "homeSpeedrunBody": "Scegli un finale e batti tutti gli avversari di fila, fino a Stockfish, contro il tempo.",
   "homeTrainBody": "Scegli un finale qualsiasi e l'avversario, e giocalo tutte le volte che vuoi.",
   "setupPaceCustom": "Personalizza",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Traguardo",
   "achievementSpeedrunHint": "Completa uno speedrun, dal primo avversario a Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Completa lo speedrun di questo finale con cadenza {pace}"
+  "achievementSpeedrunPaceHint": "Completa lo speedrun di questo finale con cadenza {pace}",
+  "journeyIntro": "Il passo successivo dopo le lezioni di Viktor: metti in pratica ciò che hai imparato e affronta nuove sfide, un avversario alla volta."
 }

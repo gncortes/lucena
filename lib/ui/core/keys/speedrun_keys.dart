@@ -22,6 +22,9 @@ abstract final class SpeedrunKeys {
   static const paceBadge = Key('speedrun.paceBadge');
   static Key stageCard(int index) => Key('speedrun.stage.$index');
 
+  /// O progresso por passos da tentativa em andamento.
+  static const progress = Key('speedrun.progress');
+
   /// Na tentativa: a etapa da vez em destaque e o menu (desistir).
   static const current = Key('speedrun.attempt.current');
   static const menu = Key('speedrun.attempt.menu');

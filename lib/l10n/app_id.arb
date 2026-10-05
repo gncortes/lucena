@@ -378,7 +378,7 @@
   "homePathsTitle": "Apa yang ingin kamu lakukan?",
   "homeLearn": "Belajar bermain catur",
   "homeLearnBody": "Pelajaran bersama Viktor: cara buah catur melangkah, skak, skakmat, dan akhir permainan pertama.",
-  "homeJourneyBody": "Latihan terpandu: menangkan akhir permainan dari setiap lawan, dari yang terlemah sampai Stockfish.",
+  "homeJourneyBody": "Langkah berikutnya setelah pelajaran: berlatih dengan memenangkan akhir permainan dari setiap lawan, dari yang terlemah sampai Stockfish.",
   "homeSpeedrunBody": "Pilih satu akhir permainan dan kalahkan semua lawan berturut-turut, sampai Stockfish, melawan waktu.",
   "homeTrainBody": "Pilih akhir permainan apa saja dan lawannya, lalu mainkan sesering yang kamu mau.",
   "setupPaceCustom": "Kustom",
@@ -395,5 +395,6 @@
   "achievementSpeedrunTitle": "Garis finis",
   "achievementSpeedrunHint": "Selesaikan satu speedrun, dari lawan pertama sampai Stockfish",
   "achievementSpeedrunPaceTitle": "{endgame} · {pace}",
-  "achievementSpeedrunPaceHint": "Selesaikan speedrun akhir permainan ini dengan kontrol waktu {pace}"
+  "achievementSpeedrunPaceHint": "Selesaikan speedrun akhir permainan ini dengan kontrol waktu {pace}",
+  "journeyIntro": "Langkah berikutnya setelah pelajaran Viktor: latih apa yang sudah kamu pelajari dan hadapi tantangan baru, lawan demi lawan."
 }

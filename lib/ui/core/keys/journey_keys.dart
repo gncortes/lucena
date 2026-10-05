@@ -5,6 +5,9 @@ abstract final class JourneyKeys {
   static const reunion = Key('journey.reunion');
 
   static const screen = Key('journey.screen');
+
+  /// A frase do alto: a Jornada vem depois das aulas.
+  static const intro = Key('journey.intro');
   static const rungScreen = Key('journey.rung.screen');
   static const challengeScreen = Key('journey.challenge.screen');
 

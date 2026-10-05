@@ -11,6 +11,7 @@ import '../../core/widgets/rating_chart.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/rating_cubit.dart';
+import 'stats_row.dart';
 
 /// Os detalhes do rating de finais: o número, o gráfico com a escolha do
 /// período e as partidas que mexeram nele, da mais recente para a mais antiga.
@@ -69,6 +70,11 @@ class RatingScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (state.numbers case final numbers?)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: StatsRow(numbers: numbers),
+                  ),
                 if (state.history.length > 1)
                   Card(
                     margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),

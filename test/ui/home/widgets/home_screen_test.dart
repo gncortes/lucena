@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
-import 'package:lucena/ui/home/widgets/path_card.dart';
-import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -107,17 +105,23 @@ void main() {
   double top(WidgetTester tester, Key key) =>
       tester.getTopLeft(find.byKey(key)).dy;
 
-  testWidgets('cada caminho diz o que se faz nele; para quem já joga, a '
-      'Jornada vem primeiro e as aulas por último', (tester) async {
+  testWidgets('cada caminho diz o que se faz nele, na ordem de quem está '
+      'aprendendo: aulas, Jornada, speedrun e finais avulsos', (tester) async {
     await pumpTall(tester);
 
     expect(find.text('O que você quer fazer?'), findsOneWidget);
     for (final (key, title, body) in [
       (
+        HomeKeys.schoolButton,
+        'Aprender a jogar xadrez',
+        'Aulas com o Viktor: como as peças se movem, xeque, mate e os '
+            'primeiros finais.',
+      ),
+      (
         HomeKeys.journeyButton,
         'Jornada',
-        'Treino guiado: vença os finais de cada adversário, do mais fraco '
-            'até o Stockfish.',
+        'O passo seguinte às aulas: pratique vencendo os finais de cada '
+            'adversário, do mais fraco até o Stockfish.',
       ),
       (
         HomeKeys.speedrunButton,
@@ -130,12 +134,6 @@ void main() {
         'Treinar finais',
         'Escolha qualquer final e o adversário, e jogue quantas vezes '
             'quiser.',
-      ),
-      (
-        HomeKeys.schoolButton,
-        'Aprender a jogar xadrez',
-        'Aulas com o Viktor: como as peças se movem, xeque, mate e os '
-            'primeiros finais.',
       ),
     ]) {
       final card = find.byKey(key);
@@ -150,39 +148,59 @@ void main() {
     }
     final order = [
       HomeKeys.whereCard,
+      HomeKeys.schoolButton,
       HomeKeys.journeyButton,
       HomeKeys.speedrunButton,
       HomeKeys.catalogButton,
-      HomeKeys.schoolButton,
-      HomeKeys.stats,
       HomeKeys.freeBoardButton,
     ].map((key) => top(tester, key)).toList();
     expect(order, [...order]..sort());
-    expect(
-      tester.widget<PathCard>(find.byKey(HomeKeys.journeyButton)).highlighted,
-      isTrue,
-    );
+    // Os quatro caminhos têm a mesma cor: nenhum em destaque.
+    final colors = {
+      for (final key in [
+        HomeKeys.schoolButton,
+        HomeKeys.journeyButton,
+        HomeKeys.speedrunButton,
+        HomeKeys.catalogButton,
+      ])
+        tester
+            .widget<Material>(
+              find
+                  .descendant(
+                    of: find.byKey(key),
+                    matching: find.byType(Material),
+                  )
+                  .first,
+            )
+            .color,
+    };
+    expect(colors, hasLength(1));
+    // Os números do jogador saíram daqui: ficam nos detalhes do rating.
+    expect(find.text('Partidas'), findsNothing);
+    expect(find.text('Dias seguidos'), findsNothing);
   });
 
-  testWidgets('para o iniciante, "Aprender a jogar xadrez" vem primeiro e em '
-      'destaque', (tester) async {
-    await pumpTall(
-      tester,
-      profile: UserProfile(rating: RatingLevel.beginner.rating),
+  testWidgets('o nome do app e os botões ficam fixos ao rolar a tela', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 1500);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
     );
+    await tester.pumpAndSettle();
+    final before = tester.getTopLeft(find.byKey(HomeKeys.title));
 
-    expect(
-      top(tester, HomeKeys.schoolButton),
-      lessThan(top(tester, HomeKeys.journeyButton)),
+    await tester.scrollUntilVisible(
+      find.byKey(HomeKeys.freeBoardButton),
+      200,
+      scrollable: find.byType(Scrollable).first,
     );
-    expect(
-      tester.widget<PathCard>(find.byKey(HomeKeys.schoolButton)).highlighted,
-      isTrue,
-    );
-    expect(
-      tester.widget<PathCard>(find.byKey(HomeKeys.journeyButton)).highlighted,
-      isFalse,
-    );
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(find.byKey(HomeKeys.title)), before);
+    expect(find.byKey(HomeKeys.settingsButton).hitTestable(), findsOneWidget);
   });
 
   testWidgets('entra em sequência: o nome, depois o painel', (tester) async {

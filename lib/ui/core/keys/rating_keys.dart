@@ -1,12 +1,17 @@
 import 'package:flutter/widgets.dart';
 
-/// A tela de detalhes do rating: o número, o gráfico e o histórico.
+/// A tela de detalhes do rating: o número, os números do jogador, o gráfico
+/// e o histórico.
 abstract final class RatingKeys {
   static const screen = Key('rating.screen');
   static const value = Key('rating.value');
   static const delta = Key('rating.delta');
   static const games = Key('rating.games');
   static const chart = Key('rating.chart');
+
+  /// Os números do progresso (partidas, vitórias, dias seguidos...).
+  static const stats = Key('rating.stats');
+  static Key stat(int index) => Key('rating.stat.$index');
 
   /// O período do gráfico: as últimas [games] partidas ou todas.
   static Key period(int? games) => Key('rating.period.${games ?? 'all'}');
