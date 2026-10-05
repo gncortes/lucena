@@ -32,6 +32,9 @@ abstract class GameSnapshot with _$GameSnapshot {
     /// Se a tela da partida estava aberta quando isto foi gravado. Falso
     /// quando o jogador saiu da partida por conta própria.
     @Default(true) bool onScreen,
+
+    /// Quando a partida começou. Nulo nas gravações de antes da Jornada.
+    DateTime? startedAt,
   }) = _GameSnapshot;
 
   const GameSnapshot._();

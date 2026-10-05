@@ -1,0 +1,119 @@
+{
+  "rungs": [
+    {
+      "id": "1000",
+      "opponent": "maia:1000",
+      "challenges": [
+        "basic.queen.0001",
+        "basic.queen.0002",
+        "basic.rook.0001",
+        "basic.rook.0002",
+        "basic.twoRooks.0001",
+        "basic.twoRooks.0002",
+        "pawn.pawnVsKing.0001",
+        "pawn.pawnVsKing.0002",
+        "pawn.pawnVsKing.0039"
+      ]
+    },
+    {
+      "id": "1200",
+      "opponent": "maia:1200",
+      "challenges": [
+        "basic.queen.0003",
+        "basic.queen.0004",
+        "basic.rook.0003",
+        "basic.rook.0004",
+        "basic.twoRooks.0003",
+        "basic.twoRooks.0004",
+        "pawn.pawnVsKing.0003",
+        "pawn.pawnVsKing.0004",
+        "pawn.pawnVsKing.0040"
+      ]
+    },
+    {
+      "id": "1400",
+      "opponent": "maia:1400",
+      "challenges": [
+        "pawn.pawnVsKing.0005",
+        "pawn.pawnVsKing.0006",
+        "pawn.pawnVsKing.0041",
+        "rookPawn.rookVsPawn.0001",
+        "rookPawn.rookVsPawn.0002"
+      ]
+    },
+    {
+      "id": "1600",
+      "opponent": "maia:1600",
+      "challenges": [
+        "rookPawn.rookVsPawn.0003",
+        "rookPawn.rookVsPawn.0004",
+        "queen.queenVsPawn.0001",
+        "queen.queenVsPawn.0002",
+        "basic.queen.0005",
+        "basic.rook.0005"
+      ]
+    },
+    {
+      "id": "1800",
+      "opponent": "maia:1800",
+      "challenges": [
+        "queen.queenVsPawn.0003",
+        "queen.queenVsPawn.0004",
+        "queen.queenVsPawn.0005",
+        "queen.queenVsRook.0001",
+        "queen.queenVsRook.0002"
+      ]
+    },
+    {
+      "id": "2000",
+      "opponent": "maia:2000",
+      "challenges": [
+        "queen.queenVsRook.0003",
+        "queen.queenVsRook.0004",
+        "rookPawn.rookPawnVsRook.0001",
+        "rookPawn.rookPawnVsRook.0002",
+        "rookPawn.rookPawnVsRook.0072"
+      ]
+    },
+    {
+      "id": "2200",
+      "opponent": "maia:2200",
+      "challenges": [
+        "queen.queenVsRook.0005",
+        "queen.queenVsRook.0006",
+        "rookPawn.rookPawnVsRook.0003",
+        "rookPawn.rookPawnVsRook.0073"
+      ]
+    },
+    {
+      "id": "2400",
+      "opponent": "maia:2400",
+      "challenges": [
+        "rookPawn.rookPawnVsRook.0004",
+        "rookPawn.rookPawnVsRook.0005",
+        "rookPawn.rookPawnVsRook.0074",
+        "basic.twoRooks.0005",
+        "basic.twoRooks.0006"
+      ]
+    },
+    {
+      "id": "2600",
+      "opponent": "maia:2600",
+      "challenges": [
+        "queen.queenVsRook.0001",
+        "rookPawn.rookPawnVsRook.0001",
+        "queen.queenVsPawn.0001",
+        "pawn.pawnVsKing.0041"
+      ]
+    },
+    {
+      "id": "stockfish",
+      "opponent": "stockfish",
+      "challenges": [
+        "queen.queenVsRook.0002",
+        "rookPawn.rookPawnVsRook.0072",
+        "pawn.pawnVsKing.0039"
+      ]
+    }
+  ]
+}

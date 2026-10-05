@@ -163,18 +163,36 @@ class _HomeScreenState extends State<HomeScreen>
                   spacing: 12,
                   children: [
                     FilledButton.icon(
-                      key: HomeKeys.catalogButton,
+                      key: HomeKeys.journeyButton,
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(220, 52),
                         textStyle: theme.textTheme.titleMedium,
+                      ),
+                      icon: const Icon(Icons.flag_rounded),
+                      label: Text(context.l10n.homeJourney),
+                      onPressed: () => context.go(Routes.journey),
+                    ),
+                    FilledButton.tonalIcon(
+                      key: HomeKeys.catalogButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 48),
                       ),
                       icon: const Icon(Icons.play_arrow_rounded),
                       label: Text(context.l10n.homeTrain),
                       onPressed: () => context.go(Routes.catalog),
                     ),
                     FilledButton.tonalIcon(
-                      key: HomeKeys.customPositionButton,
+                      key: HomeKeys.speedrunButton,
                       style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 48),
+                      ),
+                      icon: const Icon(Icons.timer_outlined),
+                      label: Text(context.l10n.homeSpeedrun),
+                      onPressed: () => context.go(Routes.speedruns),
+                    ),
+                    OutlinedButton.icon(
+                      key: HomeKeys.customPositionButton,
+                      style: OutlinedButton.styleFrom(
                         minimumSize: const Size(220, 48),
                       ),
                       icon: const Icon(Icons.edit_outlined),

@@ -351,9 +351,17 @@
   "@goalWin": {
     "description": "Goal of a position: the player must win. Also a catalog filter option."
   },
+  "homeJourney": "Journey",
+  "@homeJourney": {
+    "description": "Main home screen button: opens the Journey, the ladder of levels from Maia 1000 to Stockfish."
+  },
   "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
   "@homeMascotLabel": {
     "description": "Screen reader label for the mascot image on the home screen."
+  },
+  "homeSpeedrun": "Speedrun",
+  "@homeSpeedrun": {
+    "description": "Home screen button: opens the timed challenges (speedruns)."
   },
   "homeTagline": "Chess endgame training",
   "@homeTagline": {
@@ -371,6 +379,85 @@
         "type": "String"
       }
     }
+  },
+  "journeyAgainst": "Against {opponent}",
+  "@journeyAgainst": {
+    "description": "Who the challenge is played against, e.g. 'Against Maia 1200'.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyChallengeTitle": "Challenge",
+  "@journeyChallengeTitle": {
+    "description": "Title of the screen of one Journey challenge."
+  },
+  "journeyCompletedLabel": "Completed",
+  "@journeyCompletedLabel": {
+    "description": "Accessibility label of the check mark of a completed challenge or level."
+  },
+  "journeyCurrent": "You are at {rung}",
+  "@journeyCurrent": {
+    "description": "Journey summary: the level the player is working on, e.g. 'You are at Maia 1000'.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyFinished": "Journey complete!",
+  "@journeyFinished": {
+    "description": "Journey summary when every level has been completed."
+  },
+  "journeyHistoryEmpty": "No games yet",
+  "@journeyHistoryEmpty": {
+    "description": "Shown in the history of a challenge that was never played."
+  },
+  "journeyLocked": "{count, plural, =1{Complete 1 more challenge at {rung} to unlock} other{Complete {count} more challenges at {rung} to unlock}}",
+  "@journeyLocked": {
+    "description": "Message when tapping a locked level: what is missing in the previous level.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyLockedLabel": "Locked",
+  "@journeyLockedLabel": {
+    "description": "Accessibility label of the lock icon of a level not yet unlocked."
+  },
+  "journeyNext": "Next: {rung}",
+  "@journeyNext": {
+    "description": "Journey summary: the level unlocked after the current one.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "journeyPlay": "Play",
+  "@journeyPlay": {
+    "description": "Button that starts the game of a challenge."
+  },
+  "journeyRungProgress": "{done} of {total} challenges",
+  "@journeyRungProgress": {
+    "description": "How many challenges of a level were completed.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyTitle": "Journey",
+  "@journeyTitle": {
+    "description": "Title of the Journey screen: a ladder of levels, each with endgame challenges."
   },
   "maiaDebugElapsed": "Computed in {ms} ms",
   "@maiaDebugElapsed": {
@@ -758,5 +845,174 @@
   "sideWhite": "White",
   "@sideWhite": {
     "description": "Name of the white side (the player with the white pieces)."
+  },
+  "speedrunAbandon": "Give up the attempt",
+  "@speedrunAbandon": {
+    "description": "Button that abandons the speedrun attempt."
+  },
+  "speedrunAbandonQuestion": "Give up this attempt? It stays in the history without a record.",
+  "@speedrunAbandonQuestion": {
+    "description": "Confirmation before abandoning a speedrun attempt."
+  },
+  "speedrunAbandoned": "Attempt abandoned: no record",
+  "@speedrunAbandoned": {
+    "description": "Shown on an attempt the player gave up."
+  },
+  "speedrunBest": "Personal record",
+  "@speedrunBest": {
+    "description": "Label of the best total time of a speedrun."
+  },
+  "speedrunContinue": "Continue",
+  "@speedrunContinue": {
+    "description": "Button at the end of a speedrun stage game: back to the attempt."
+  },
+  "speedrunContinueGame": "Continue the game",
+  "@speedrunContinueGame": {
+    "description": "Button that goes back to the stage game left on the board."
+  },
+  "speedrunEndingDescription": "From {first} to {last}",
+  "@speedrunEndingDescription": {
+    "description": "What the endgame speedrun contains: the same endgame against each level, e.g. 'From Maia 1000 to Stockfish'.",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunEndingSection": "Endgames",
+  "@speedrunEndingSection": {
+    "description": "Section of speedruns that play one endgame against every level."
+  },
+  "speedrunFinished": "Speedrun complete",
+  "@speedrunFinished": {
+    "description": "Shown at the end of an attempt that did not beat the record."
+  },
+  "speedrunHistory": "Times",
+  "@speedrunHistory": {
+    "description": "Header of the list of completed attempts, grouped by month."
+  },
+  "speedrunIntro": "Play every stage as fast as you can. Only your clock counts; a lost stage is played again with the timer running.",
+  "@speedrunIntro": {
+    "description": "Explanation at the top of the speedrun list."
+  },
+  "speedrunKeepGoing": "Keep going",
+  "@speedrunKeepGoing": {
+    "description": "Cancels giving up the attempt."
+  },
+  "speedrunLosses": "{count, plural, =0{No losses} =1{1 loss} other{{count} losses}}",
+  "@speedrunLosses": {
+    "description": "How many games were lost in a stage or attempt.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunNewRecord": "New personal record!",
+  "@speedrunNewRecord": {
+    "description": "Shown at the end of an attempt that beat the previous best time."
+  },
+  "speedrunNoRecord": "No record",
+  "@speedrunNoRecord": {
+    "description": "Shown instead of the best time when the speedrun was never completed."
+  },
+  "speedrunPauseHint": "Take a break whenever you want: the timer only runs during your games.",
+  "@speedrunPauseHint": {
+    "description": "Hint below the button of the next stage."
+  },
+  "speedrunPlayStage": "Play stage {stage}",
+  "@speedrunPlayStage": {
+    "description": "Button that starts the next stage of the attempt.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunResume": "Continue: stage {stage} of {total}",
+  "@speedrunResume": {
+    "description": "Button that goes back to the speedrun attempt in progress.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRetryStage": "Play stage {stage} again",
+  "@speedrunRetryStage": {
+    "description": "Button that plays a lost stage again.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRungDescription": "{count, plural, =1{1 challenge} other{All {count} challenges}}",
+  "@speedrunRungDescription": {
+    "description": "What the level speedrun contains.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRungSection": "Levels",
+  "@speedrunRungSection": {
+    "description": "Section of speedruns that cover all the challenges of a Journey level."
+  },
+  "speedrunRungTitle": "Level {rung}",
+  "@speedrunRungTitle": {
+    "description": "Name of the speedrun of a Journey level, e.g. 'Level Maia 1000'.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunStages": "Stages",
+  "@speedrunStages": {
+    "description": "Header of the list of stages of a speedrun, with the best time of each."
+  },
+  "speedrunStart": "Start",
+  "@speedrunStart": {
+    "description": "Button that starts a new speedrun attempt."
+  },
+  "speedrunTimeControl": "{minutes} min + {increment} s",
+  "@speedrunTimeControl": {
+    "description": "The time control of every stage of a speedrun.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "increment": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunTitle": "Speedrun",
+  "@speedrunTitle": {
+    "description": "Title of the speedrun screens."
+  },
+  "speedrunTotal": "Total",
+  "@speedrunTotal": {
+    "description": "Label of the total time of an attempt."
+  },
+  "speedrunVersusRecord": "{difference} s vs. record {record}",
+  "@speedrunVersusRecord": {
+    "description": "Difference to the previous record at the end of an attempt, e.g. '+3.2 s vs. record 4:05.3'.",
+    "placeholders": {
+      "difference": {
+        "type": "String"
+      },
+      "record": {
+        "type": "String"
+      }
+    }
   }
 }

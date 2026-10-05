@@ -21,4 +21,17 @@ class FakeProgressRepository implements ProgressRepository {
     for (final attempt in attempts)
       if (attempt.fulfilled) attempt.positionId,
   };
+
+  @override
+  Future<List<Attempt>> attemptsForChallenge(String challengeId) async =>
+      attempts.reversed
+          .where((attempt) => attempt.challengeId == challengeId)
+          .toList();
+
+  @override
+  Future<Set<String>> fulfilledChallenges() async => {
+    for (final attempt in attempts)
+      if (attempt.fulfilled && attempt.challengeId != null)
+        attempt.challengeId!,
+  };
 }
