@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -7,6 +8,8 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/pace.dart';
+import '../../../domain/use_cases/rating_period.dart';
+import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -41,61 +44,20 @@ class RatingScreen extends StatelessWidget {
           : ListView(
               padding: scrollPadding(context),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 12,
-                        children: [
-                          RatingValue(
-                            rating: current.rounded,
-                            change: state.lastChange,
-                            large: true,
-                            valueKey: RatingKeys.value,
-                            changeKey: RatingKeys.delta,
-                          ),
-                          if (state.provisional)
-                            Chip(
-                              label: Text(l10n.profileRatingProvisional),
-                              visualDensity: VisualDensity.compact,
-                              side: BorderSide.none,
-                            ),
-                        ],
-                      ),
-                      Text(
-                        state.history.isEmpty
-                            ? l10n.profileRatingStart
-                            : l10n.profileRatingGames(state.history.length),
-                        key: RatingKeys.games,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (state.numbers case final numbers?)
+                // Como no chess.com: o rating e o gráfico num cartão, com o
+                // período embaixo; depois os números e os resultados.
+                _RatingCard(state: state),
+                if (state.numbers case final numbers?) ...[
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                     child: StatsRow(numbers: numbers),
                   ),
-                if (state.history.length > 1)
-                  Card(
-                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    color: colors.surfaceContainerLow,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-                      child: _Chart(
-                        ratings: [
-                          for (final entry in state.history)
-                            entry.rating.rating,
-                        ],
-                      ),
+                  if (state.allGames.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: _Results(games: state.allGames.values),
                     ),
-                  ),
+                ],
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Text(
@@ -205,53 +167,253 @@ class RatingScreen extends StatelessWidget {
 
 /// O gráfico com a escolha do período: as últimas 10, as últimas 30 ou todas
 /// as partidas.
-class _Chart extends StatefulWidget {
-  const _Chart({required this.ratings});
+/// O rating, quanto ele mudou no período, o mais alto e o gráfico, com a
+/// escolha do período (7, 30 e 90 dias, um ano ou tudo).
+class _RatingCard extends StatefulWidget {
+  const _RatingCard({required this.state});
 
-  final List<double> ratings;
+  final RatingState state;
 
   @override
-  State<_Chart> createState() => _ChartState();
+  State<_RatingCard> createState() => _RatingCardState();
 }
 
-class _ChartState extends State<_Chart> {
-  // Quantas partidas o gráfico mostra. Nulo: todas.
-  int? _games;
+class _RatingCardState extends State<_RatingCard> {
+  RatingPeriod _period = RatingPeriod.all;
 
-  static const _periods = [10, 30, null];
+  String _label(AppLocalizations l10n, RatingPeriod period) => switch (period) {
+    RatingPeriod.all => l10n.profileRatingPeriodAll,
+    RatingPeriod.year => l10n.ratingPeriodYear,
+    _ => l10n.ratingPeriodDays(period.days!),
+  };
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = context.l10n;
-    final games = _games;
-    final ratings = games == null || widget.ratings.length <= games
-        ? widget.ratings
-        : widget.ratings.sublist(widget.ratings.length - games);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        RatingChart(key: RatingKeys.chart, ratings: ratings),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Wrap(
-            spacing: 8,
-            children: [
-              for (final period in _periods)
-                ChoiceChip(
-                  key: RatingKeys.period(period),
-                  label: Text(
-                    period == null
-                        ? l10n.profileRatingPeriodAll
-                        : l10n.profileRatingPeriodGames(period),
+    final state = widget.state;
+    final current = state.current!;
+    final now = state.now ?? DateTime.now().toUtc();
+    final entries = _period.entries(state.history, now);
+    final change = _period.change(state.history, now);
+    final highest = highestRating(state.history);
+    final locale = Localizations.localeOf(context).toString();
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      color: colors.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10,
+                        children: [
+                          RatingValue(
+                            rating: current.rounded,
+                            // A variação do período escolhido.
+                            change: change,
+                            large: true,
+                            valueKey: RatingKeys.value,
+                            changeKey: RatingKeys.delta,
+                          ),
+                          if (state.provisional)
+                            Chip(
+                              label: Text(l10n.profileRatingProvisional),
+                              visualDensity: VisualDensity.compact,
+                              side: BorderSide.none,
+                            ),
+                        ],
+                      ),
+                      Text(
+                        state.history.isEmpty
+                            ? l10n.profileRatingStart
+                            : l10n.profileRatingGames(state.history.length),
+                        key: RatingKeys.games,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                  selected: _games == period,
-                  onSelected: (_) => setState(() => _games = period),
+                ),
+                // O mais alto, como no chess.com.
+                if (highest != null && state.history.length > 1)
+                  Column(
+                    key: RatingKeys.highest,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        l10n.ratingHighest,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        '${highest.rating.rounded}',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      Text(
+                        DateFormat.yMMMd(locale).format(highest.at.toLocal()),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            if (state.history.length > 1) ...[
+              const SizedBox(height: 12),
+              AnimatedSwitcher(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 250),
+                child: entries.length > 1
+                    ? RatingChart(
+                        key: RatingKeys.chart,
+                        ratings: [
+                          for (final entry in entries) entry.rating.rating,
+                        ],
+                      )
+                    : SizedBox(
+                        key: RatingKeys.chartEmpty,
+                        height: 200,
+                        child: Center(
+                          child: Text(
+                            l10n.ratingPeriodEmpty,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 8),
+              // Os períodos numa fileira que rola para o lado em tela
+              // estreita.
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final period in RatingPeriod.values) ...[
+                      if (period != RatingPeriod.values.first)
+                        const SizedBox(width: 6),
+                      ChoiceChip(
+                        key: RatingKeys.period(period.name),
+                        label: Text(_label(l10n, period)),
+                        showCheckmark: false,
+                        selected: _period == period,
+                        onSelected: (_) => setState(() => _period = period),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Vitórias, empates e derrotas numa barra só, com a contagem e a
+/// porcentagem de cada um, como no chess.com.
+class _Results extends StatelessWidget {
+  const _Results({required this.games});
+
+  final Iterable<Attempt> games;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    var wins = 0, draws = 0, losses = 0;
+    for (final game in games) {
+      switch (game.outcome) {
+        case AttemptOutcome.win:
+          wins++;
+        case AttemptOutcome.draw:
+          draws++;
+        case AttemptOutcome.loss:
+          losses++;
+      }
+    }
+    final total = wins + draws + losses;
+    final parts = [
+      (wins, l10n.attemptWin, ChangeColors.of(context, up: true)),
+      (draws, l10n.attemptDraw, colors.outline),
+      (losses, l10n.attemptLoss, ChangeColors.of(context, up: false)),
+    ];
+    return Container(
+      key: RatingKeys.results,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: SizedBox(
+              height: 10,
+              child: Row(
+                children: [
+                  for (final (count, _, color) in parts)
+                    if (count > 0)
+                      Expanded(
+                        flex: count,
+                        child: ColoredBox(color: color),
+                      ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              for (final (count, label, color) in parts)
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        '$count',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: color,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      Text(
+                        '$label · ${(100 * count / total).round()}%',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -319,9 +481,9 @@ class _GameRow extends StatelessWidget {
     final parts = attempt.positionId.split('.');
     final endgame = parts.length > 1 ? endgameName(l10n, parts[1]) : null;
     // A linha inteira responde ao toque e ao leitor de tela como um item só.
-    return ColoredBox(
+    return InkWell(
       key: RatingKeys.entry(index),
-      color: Colors.transparent,
+      onTap: () => context.push(Routes.game(game.id)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
@@ -377,13 +539,19 @@ class _GameRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
+                  // O final numa linha e a data na outra: nada cortado.
+                  if (endgame != null)
+                    Text(
+                      endgame,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
                   Text(
-                    [?endgame, date].join(' · '),
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    date,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

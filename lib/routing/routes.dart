@@ -100,6 +100,9 @@ abstract final class Routes {
   /// Os detalhes do rating: o gráfico e o histórico das partidas.
   static const rating = '/rating';
 
+  /// Os detalhes de uma partida gravada, pelo id dela.
+  static String game(int id) => '/rating/game/$id';
+
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
   static String lesson(String id) => '/school/$id';

@@ -30,28 +30,30 @@ abstract final class ClockFormat {
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }
 
-/// Como o tempo de um speedrun é escrito: sempre com décimos (`4:05.3`,
-/// `1:02:03.4`), para dois tempos próximos não parecerem iguais.
+/// O tempo de um speedrun (ou de uma etapa), com as unidades à vista para
+/// não ser confundido com horas e minutos: `13.8 s`, `1 min 15.8 s`,
+/// `1 h 02 min 15 s`.
 abstract final class RunTimeFormat {
-  static String format(Duration time) {
+  /// [decimal] é o separador dos décimos no idioma da tela.
+  static String format(Duration time, {String decimal = '.'}) {
     if (time.isNegative) time = Duration.zero;
     final tenths = time.inMilliseconds.remainder(1000) ~/ 100;
-    final seconds = time.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final seconds = time.inSeconds.remainder(60);
     final minutes = time.inMinutes.remainder(60);
+    String two(int value) => value.toString().padLeft(2, '0');
     if (time.inHours > 0) {
-      return '${time.inHours}:${minutes.toString().padLeft(2, '0')}:'
-          '$seconds.$tenths';
+      return '${time.inHours} h ${two(minutes)} min ${two(seconds)} s';
     }
-    return '$minutes:$seconds.$tenths';
+    if (minutes > 0) return '$minutes min ${two(seconds)}$decimal$tenths s';
+    return '$seconds$decimal$tenths s';
   }
 
-  /// A diferença para o recorde, com sinal: `+3.2` ou `-1:04.0` (segundos
-  /// com décimos; minutos quando passa de um).
-  static String difference(Duration difference) {
+  /// A diferença para o recorde, com sinal, em segundos com décimos: `+3.2`
+  /// ou `-64.0`.
+  static String difference(Duration difference, {String decimal = '.'}) {
     final sign = difference.isNegative ? '-' : '+';
     final abs = difference.abs();
     final tenths = abs.inMilliseconds.remainder(1000) ~/ 100;
-    if (abs.inMinutes == 0) return '$sign${abs.inSeconds}.$tenths';
-    return '$sign${format(abs)}';
+    return '$sign${abs.inSeconds}$decimal$tenths';
   }
 }

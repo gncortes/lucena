@@ -193,6 +193,17 @@ Pedidos do Gabriel em 2026-10-05, usando a v1.11.0-rc.2 no celular. Ele valida p
 
 - [ ] **Catálogo: as posições já abertas na tela da categoria.** ([print](../qa/melhorias/f1f72395.jpg)) Pedido do Gabriel (2026-10-05): em "Finais de peão" há uma linha só ("♙ – ♚, 9 posições") e é preciso tocar nela para ver as posições. Ele prefere que a tela da categoria já mostre as posições de cada final, expandidas, para tocar e entrar; quem não quiser ver expandido recolhe a seção.
 
+  - Depois (Gabriel, 2026-10-05): as posições em grade de duas por linha, com o tabuleiro à vista, como os desafios na tela do adversário da Jornada; tocar leva o tabuleiro voando (Hero) até a tela "Nova partida". "Sempre abusando de animações para deixar as transições bem suaves."
+- [ ] **Fim da partida num painel que sobe de baixo.** ([print](../qa/melhorias/06aa9802.jpg)) Pedido do Gabriel (2026-10-05): o cartão do resultado no meio da tela "tá bem esquisito ali com os botões de avançar e voltar lá embaixo"; prefere um modal animado, com as opções lado a lado embaixo, e não um botão abaixo do outro.
+
+- [ ] **Fala do personagem cortada na partida.** ([print](../qa/melhorias/93b557f6.jpg)) Pedido do Gabriel (2026-10-05): o balão corta a segunda linha ("Vou dizer pros amigos que eu deixei. Combinado?"). Quando a fala for longa, o texto tem de caber (ele sugeriu FittedBox).
+
+- [ ] **Embaixo do tabuleiro, depois do fim: layout melhor e conquistas mais bonitas; sem "Voltar" e "Avançar".** ([print](../qa/melhorias/6dba7b0a.jpg)) Pedido do Gabriel (2026-10-05): o painel do resultado e a lista de mensagens ("Conquista: Primeiro final") estão feios; e os botões "Voltar"/"Avançar" saem do app, já que a faixa de lances no alto faz isso.
+
+- [ ] **Speedrun: escolher o ritmo no alto da lista, por categoria.** ([print](../qa/melhorias/cbe2c254.jpg)) Pedido do Gabriel (2026-10-05): o ícone do chip não muda para o bullet; no alto, Bullet, Blitz e Rápido para escolher e, escolhida a categoria, os ritmos dela. O último ritmo escolhido fica gravado e volta como padrão.
+
+- [ ] **Speedrun: o mesmo final em posições diferentes a cada etapa, às vezes de pretas.** Pedido do Gabriel (2026-10-05): em cada etapa o final é o mesmo, mas com as peças em outras casas e, em algumas etapas, o jogador com as pretas (ex.: na etapa 5 do mate de torre, ele joga de pretas), para não jogar sempre de brancas. As peças ficam pelo meio do tabuleiro, nunca numa posição que já facilite o mate (rei adversário no canto, por exemplo): a dificuldade não pode cair por causa da posição.
+
 Em aberto, para confirmar com o Gabriel:
 
 - [ ] **"Recomeçar" o speedrun.** Hoje é desistir (menu da tentativa) e começar de novo; não há um botão único.

@@ -9,6 +9,7 @@ import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -50,6 +51,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._progress,
     this._reporter,
     this._draws,
+    this._speedruns,
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -89,6 +91,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   // Quem responde as propostas de empate. Nulo: a máquina sempre recusa.
   final DrawOfferRepository? _draws;
+
+  // As tentativas de speedrun: sair no meio de uma encerra a tentativa.
+  final SpeedrunRepository? _speedruns;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -360,6 +365,25 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     }
     emit(_timed(paused, now));
     _persist(onScreen: false);
+    await _saving;
+  }
+
+  /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
+  /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
+  /// guardada para depois.
+  Future<void> quitSpeedrun() async {
+    final attemptId = state.mode.speedrunAttemptId;
+    if (attemptId == null || _left) return;
+    _left = true;
+    final now = _now();
+    final clock = state.clock;
+    if (clock != null) {
+      emit(_timed(state.copyWith(clock: ClockEngine.stop(clock, now)), now));
+    }
+    _saving = _saving.whenComplete(() async {
+      await _speedruns?.abandon(attemptId, now);
+      await _games.clear();
+    });
     await _saving;
   }
 

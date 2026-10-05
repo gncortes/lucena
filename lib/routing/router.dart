@@ -42,6 +42,8 @@ import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
+import '../ui/game_details/view_models/game_details_cubit.dart';
+import '../ui/game_details/widgets/game_details_screen.dart';
 import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home/widgets/home_screen.dart';
 import '../ui/achievements/view_models/achievements_cubit.dart';
@@ -162,6 +164,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       opponent: context.read<OpponentRepository>(),
                       progress: context.read<ProgressRepository>(),
                       draws: context.read<DrawOfferRepository>(),
+                      speedruns: context.read<SpeedrunRepository>(),
                       reporter: GameReporter(
                         rating: context.read<RatingRepository>(),
                         achievements: context.read<AchievementsRepository>(),
@@ -408,6 +411,20 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               )..load(),
               child: const RatingScreen(),
             ),
+            routes: [
+              _route(
+                path: 'game/:id',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => GameDetailsCubit(
+                    int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+                    progress: context.read<ProgressRepository>(),
+                    rating: context.read<RatingRepository>(),
+                    characters: context.read<CharacterRepository>(),
+                  )..load(),
+                  child: const GameDetailsScreen(),
+                ),
+              ),
+            ],
           ),
           _route(
             path: 'settings',

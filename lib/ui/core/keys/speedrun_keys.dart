@@ -14,6 +14,11 @@ abstract final class SpeedrunKeys {
 
   /// O ritmo da lista e a explicação do speedrun.
   static const pace = Key('speedrun.pace');
+
+  /// No alto da lista: a categoria do ritmo e cada ritmo dela (`180+2`).
+  static Key paceCategory(String category) =>
+      Key('speedrun.pace.category.$category');
+  static Key paceOption(String code) => Key('speedrun.pace.option.$code');
   static const help = Key('speedrun.help');
   static const helpText = Key('speedrun.help.text');
   static const intro = Key('speedrun.intro');
