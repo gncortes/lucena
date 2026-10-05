@@ -9,6 +9,15 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
 - [ ] **Layout do rating, no estilo do chess.com.** Hoje é uma linha solta ("📉 Rating 626 (-263)") entre o tabuleiro e os lances. Como no chess.com: o rating novo em destaque, com a variação num selo verde (+) ou vermelho (−) ao lado, dentro do painel do fim da partida. O cartão do rating no perfil segue o mesmo visual (número grande, variação da última partida e a curva com período). ([print](../qa/melhorias/4c10dc0a.jpg))
 
+## Tela do desafio (Jornada)
+
+- [ ] **Refazer o layout, hoje está feio e vazio.** ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:
+  - prévia do tabuleiro minúscula no canto, com o material (♕ – ♚) solto ao lado;
+  - o adversário aparece como "Contra Maia 1000", sem o personagem (o Coco);
+  - metade de baixo da tela vazia; o histórico é uma lista crua (ícone, "Vitória", data).
+
+  Proposta: tabuleiro grande no topo (largura da tela, como na configuração da partida); um cartão do adversário com retrato, nome, nível e a frase dele; o objetivo e o ritmo em selos; "Jogar" fixo embaixo; o histórico em cartões com o resultado colorido, o tempo gasto e a variação do rating de cada partida; e um estado vazio com convite para jogar.
+
 ## Notado nos mesmos prints (para confirmar com o Gabriel)
 
 - [ ] **Empate combinado em posição ganha derrubou o rating em 263 pontos** (889 → 626). O empate conta como objetivo não cumprido (0 ponto) e o desvio ainda está alto. Avaliar: empate aceito vale meio ponto no rating, ou não conta. ([print](../qa/melhorias/4c10dc0a.jpg))
