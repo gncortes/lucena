@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
@@ -30,6 +31,11 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update(
       (state ?? const AppSettings()).copyWith(themeMode: themeMode),
     );
+  }
+
+  /// Troca a cor predominante do app.
+  Future<void> setAccent(AppAccent accent) {
+    return _update((state ?? const AppSettings()).copyWith(accent: accent));
   }
 
   /// Troca as preferências do tabuleiro.

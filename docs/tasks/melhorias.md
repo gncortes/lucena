@@ -26,6 +26,17 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 - [x] **Tela inicial só com o título; versão nas Configurações.** Pedido do Gabriel (2026-10-05).
 - [x] **Catálogo com os finais por nome e o progresso.** Pedido do Gabriel (2026-10-05).
 
+## Aparência do app (tema, cor e tabuleiro)
+
+- [x] **Escolher a cor do app, como no Twitter.** Pedido do Gabriel (2026-10-05): além de claro/escuro, o jogador escolhe a cor predominante (azul, verde, roxo, rosa, laranja ou turquesa). Cada cor tem um tom para o tema claro e outro para o escuro, com o fundo puxado de leve para a mesma família. Sem escolha, fica como era: azul no claro e verde no escuro. Fica em Configurações → Tema.
+- [x] **Aparência já na primeira abertura.** Pedido do Gabriel (2026-10-05): logo depois das boas-vindas, o tour ganha dois passos, "Deixe o app com a sua cara" (tema e cor do app, valendo na hora) e "Escolha o seu tabuleiro" (cores e peças, com a amostra); os dois avisam que dá para mudar depois nas Configurações. O tour passa de 8 para 10 passos.
+- [x] **Voo do cartão "Continuar" até o desafio.** Pedido do Gabriel (2026-10-05): na tela inicial, o tabuleiro pequeno cresce até o da tela do desafio e o retrato do adversário voa até o cartão dele (o retrato também voa a partir da tela do adversário). O desafio abre por cima da tela inicial: voltar cai nela.
+- [x] **Curva do rating fora do cartão da tela inicial; tela de detalhes do rating.** Pedido do Gabriel (2026-10-05): a curva espremida no cartão não ficou boa. O cartão fica só com o apelido, a faixa e o rating; tocar nele abre os detalhes: o número, o gráfico com a escala (10, 30 ou todas as partidas; tocar mostra o rating de cada uma) e o histórico das partidas que contaram, com o resultado, o adversário, a data e a variação.
+- [x] **Partida sem relógio: a linha de cada lado e a vez.** Pedido do Gabriel (2026-10-05): mesmo sem relógio, o adversário fica em cima e o jogador embaixo do tabuleiro, cada um com o peão da cor dele e o nome; na ponta da linha de quem joga, "Sua vez" (ou "Jogam as brancas/pretas").
+- [x] **Lista de lances em tabela, como no chess.com.** Pedido do Gabriel (2026-10-05): volta a ser uma linha por lance (número, brancas, pretas), com as linhas alternadas e o último lance em destaque, no lugar da faixa numa linha só; ela fica com o espaço que sobra embaixo do tabuleiro e rola sozinha até o último lance.
+- [x] **Conquistas e mensagens com o nome do personagem.** Pedido do Gabriel (2026-10-05): nada de "Maia 1800" nas conquistas e nas mensagens do fim da partida; aparece o personagem ("Primeira vitória contra Zuri!").
+- [x] **Aviso animado de conquista, como o troféu do PlayStation.** Pedido do Gabriel (2026-10-05): a conquista nova desce do alto da tela por cima da partida, com o troféu dourado saltando e um brilho passando por ele, e some sozinha; várias, uma depois da outra; respeita "remover animações".
+
 ## Tela do desafio (Jornada)
 
 - [x] **Refazer o layout, hoje está feio e vazio.** (Feito, menos a variação do rating em cada partida do histórico: a tentativa ainda não guarda o rating dela.) ([print](../qa/melhorias/b785bea3.jpg)) O que incomoda no print:

@@ -66,6 +66,7 @@ import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
 import '../ui/profile/view_models/rating_cubit.dart';
+import '../ui/profile/widgets/rating_screen.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
@@ -173,6 +174,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         positions: context.read<PositionsRepository>(),
                         now: context.read<Now>(),
                         onboarding: context.read<OnboardingRepository>(),
+                        characters: context.read<CharacterRepository>(),
                       ),
                       mode: mode,
                       start: isNewGame ? start ?? GameRules.initial : null,
@@ -202,9 +204,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           _route(
             path: 'achievements',
             builder: (context, state) => BlocProvider(
-              create: (context) =>
-                  AchievementsCubit(context.read<AchievementsRepository>())
-                    ..load(),
+              create: (context) => AchievementsCubit(
+                context.read<AchievementsRepository>(),
+                characters: context.read<CharacterRepository>(),
+              )..load(),
               child: const AchievementsScreen(),
             ),
           ),
@@ -268,7 +271,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                             rungId: state.pathParameters['rung'],
                             positionId: state.pathParameters['position'],
                           ),
-                      child: const ChallengeScreen(),
+                      child: ChallengeScreen(
+                        rungId: state.pathParameters['rung']!,
+                      ),
                     ),
                   ),
                 ],
@@ -390,6 +395,16 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   CustomPositionCubit(context.read<TrainingRepository>())
                     ..load(),
               child: const CustomPositionScreen(),
+            ),
+          ),
+          _route(
+            path: 'rating',
+            builder: (context, state) => BlocProvider(
+              create: (context) => RatingCubit(
+                context.read<RatingRepository>(),
+                progress: context.read<ProgressRepository>(),
+              )..load(),
+              child: const RatingScreen(),
             ),
           ),
           _route(

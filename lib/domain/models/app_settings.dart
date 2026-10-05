@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'app_accent.dart';
 import 'app_theme_mode.dart';
 import 'board_settings.dart';
 import 'clock_settings.dart';
@@ -15,6 +16,10 @@ abstract class AppSettings with _$AppSettings {
 
     /// Tema claro, escuro ou o do aparelho.
     @Default(AppThemeMode.system) AppThemeMode themeMode,
+
+    /// Cor predominante do app. Nula: a de fábrica de cada tema (azul no
+    /// claro, verde no escuro).
+    AppAccent? accent,
 
     /// Aparência e comportamento do tabuleiro.
     @Default(BoardSettings()) BoardSettings board,

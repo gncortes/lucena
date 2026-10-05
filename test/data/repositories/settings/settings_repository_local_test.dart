@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -56,6 +57,20 @@ void main() {
     await reopen().save(const AppSettings());
 
     expect(await reopen().load(), const AppSettings());
+  });
+
+  test('sem nada gravado, nenhuma cor do app está escolhida', () async {
+    expect((await reopen().load()).accent, isNull);
+  });
+
+  test('a cor do app gravada volta ao reabrir, junto com o tema', () async {
+    const settings = AppSettings(
+      themeMode: AppThemeMode.dark,
+      accent: AppAccent.pink,
+    );
+    await reopen().save(settings);
+
+    expect(await reopen().load(), settings);
   });
 
   test(

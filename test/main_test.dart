@@ -1,6 +1,12 @@
+import 'package:lucena/ui/core/widgets/rating_sparkline.dart';
+import 'package:lucena/ui/core/keys/rating_keys.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
+import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
@@ -193,6 +199,108 @@ void main() {
     final context = tester.element(find.byKey(SettingsKeys.themeScreen));
     expect(Theme.of(context).brightness, Brightness.dark);
     expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
+  });
+
+  testWidgets('trocar a cor do app em Configurações muda o app na hora, no '
+      'claro e no escuro, e grava', (tester) async {
+    useSystemBrightness(tester, Brightness.light);
+    final settings = FakeSettingsRepository();
+    await pumpApp(tester, settings: settings);
+
+    await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.themeTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.accentOption(AppAccent.purple)));
+    await tester.pumpAndSettle();
+
+    // O tema que a tela usa: a cor principal e o fundo.
+    (Color, Color) colors(ThemeData theme) =>
+        (theme.colorScheme.primary, theme.scaffoldBackgroundColor);
+    ThemeData theme() =>
+        Theme.of(tester.element(find.byKey(SettingsKeys.themeScreen)));
+    expect(
+      colors(theme()),
+      colors(AppTheme.of(Brightness.light, accent: AppAccent.purple)),
+    );
+    expect(settings.saved, [const AppSettings(accent: AppAccent.purple)]);
+
+    await tester.tap(find.byKey(SettingsKeys.themeOption(AppThemeMode.dark)));
+    await tester.pumpAndSettle();
+    expect(
+      colors(theme()),
+      colors(AppTheme.of(Brightness.dark, accent: AppAccent.purple)),
+    );
+  });
+
+  testWidgets('"Continuar" na tela inicial abre o desafio com o tabuleiro e o '
+      'retrato voando, e voltar cai na tela inicial', (tester) async {
+    // Tela de celular: o cartão do adversário cabe embaixo do tabuleiro.
+    tester.view.physicalSize = const Size(400, 860);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpApp(tester);
+    final small = tester.getSize(find.byKey(HomeKeys.whereBoard)).width;
+
+    await tester.ensureVisible(find.byKey(HomeKeys.whereContinue));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(HomeKeys.whereContinue));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 150));
+
+    // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
+    // retrato fora dos dois cartões.
+    final screen = tester.getSize(find.byType(MaterialApp)).width;
+    final flying = tester.getSize(find.byType(StaticChessboard)).width;
+    expect(flying, greaterThan(small));
+    expect(flying, lessThan(screen));
+    expect(
+      find.descendant(
+        of: find.byKey(JourneyKeys.opponentCard),
+        matching: find.byType(CharacterAvatar),
+      ),
+      findsNothing,
+    );
+    expect(find.byType(CharacterAvatar), findsOneWidget);
+
+    await tester.pumpAndSettle();
+    expect(find.byKey(JourneyKeys.challengeScreen), findsOneWidget);
+    expect(tester.getSize(find.byType(StaticChessboard)).width, screen);
+    expect(
+      find.descendant(
+        of: find.byKey(JourneyKeys.opponentCard),
+        matching: find.byType(CharacterAvatar),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
+    expect(find.byKey(HomeKeys.whereContinue), findsOneWidget);
+  });
+
+  testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
+      'voltar cai na tela inicial', (tester) async {
+    await pumpApp(tester);
+    // O gráfico saiu do cartão: fica na tela de detalhes.
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.playerCard),
+        matching: find.byType(RatingSparkline),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(find.byKey(HomeKeys.playerCard));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.screen), findsOneWidget);
+    expect(textOf(tester, RatingKeys.value), '1150');
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.screen), findsNothing);
+    expect(find.byKey(HomeKeys.playerCard), findsOneWidget);
   });
 
   Future<void> openProfile(WidgetTester tester) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
@@ -16,13 +17,18 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     AppSettings settings = const AppSettings(),
+    ThemeMode themeMode = ThemeMode.light,
   }) async {
     repository = FakeSettingsRepository(settings);
     final cubit = SettingsCubit(repository, languages: AppLanguage.selectable);
     addTearDown(cubit.close);
     await cubit.load();
     await tester.pumpWidget(
-      TestApp(settingsCubit: cubit, child: const ThemeScreen()),
+      TestApp(
+        settingsCubit: cubit,
+        themeMode: themeMode,
+        child: const ThemeScreen(),
+      ),
     );
   }
 
@@ -65,6 +71,42 @@ void main() {
 
     expect(repository.saved, [
       const AppSettings(languageCode: 'es', themeMode: AppThemeMode.light),
+    ]);
+  });
+
+  String accentValue(WidgetTester tester) =>
+      tester.widget<Text>(find.byKey(SettingsKeys.accentValue)).data!;
+
+  testWidgets('sem cor escolhida, vale a de fábrica do tema: azul no claro', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+
+    expect(accentValue(tester), 'Blue');
+  });
+
+  testWidgets('sem cor escolhida, vale a de fábrica do tema: verde no escuro', (
+    tester,
+  ) async {
+    await pumpScreen(tester, themeMode: ThemeMode.dark);
+
+    expect(accentValue(tester), 'Green');
+  });
+
+  testWidgets('tocar numa cor marca a opção e grava, sem mexer no tema', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      settings: const AppSettings(themeMode: AppThemeMode.dark),
+    );
+
+    await tester.tap(find.byKey(SettingsKeys.accentOption(AppAccent.pink)));
+    await tester.pumpAndSettle();
+
+    expect(accentValue(tester), 'Pink');
+    expect(repository.saved, [
+      const AppSettings(themeMode: AppThemeMode.dark, accent: AppAccent.pink),
     ]);
   });
 }

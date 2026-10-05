@@ -59,13 +59,33 @@ void main() {
       expect(feedback, hasLength(2));
     } else {
       expect(feedback, contains('Achievement unlocked: First endgame'));
-      expect(feedback, contains('You beat Maia 1000 for the first time!'));
+      expect(feedback, contains('You beat Coco for the first time!'));
     }
 
     await app.restart();
     await progress.openAchievements();
     await progress.expectUnlocked('first-fulfilled');
     await progress.expectLocked('beat-stockfish');
+  });
+
+  patrolTest('conquista nova: o aviso desce por cima da partida com o nome '
+      'dela e some sozinho', ($) async {
+    final board = FreeBoardRobot($);
+    await AppRobot($).open(systemLocale: _english);
+    await board.openAt(
+      _mateInOne,
+      opponent: 'maia',
+      level: 1000,
+      user: Side.white,
+      goal: 'win',
+      position: 'basic.queen.0001',
+    );
+
+    // Sem relógio, a linha do jogador diz que é a vez dele.
+    board.expectTurn('Your turn');
+    await board.move('h1', 'h8', settle: false);
+
+    await ProgressRobot($).expectAchievementToast('First endgame');
   });
 
   patrolTest('conquista já obtida não aparece de novo como nova', ($) async {

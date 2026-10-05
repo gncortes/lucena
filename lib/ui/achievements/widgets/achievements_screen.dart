@@ -67,7 +67,7 @@ class AchievementsScreen extends StatelessWidget {
                             ),
                           ),
                           title: Text(
-                            achievement.title(l10n),
+                            achievement.title(l10n, state.characters),
                             style: unlocked
                                 ? null
                                 : TextStyle(color: colors.onSurfaceVariant),
@@ -77,7 +77,10 @@ class AchievementsScreen extends StatelessWidget {
                                 ? l10n.achievementsUnlockedOn(
                                     date.format(at.toLocal()),
                                   )
-                                : achievement.description(l10n),
+                                : achievement.description(
+                                    l10n,
+                                    state.characters,
+                                  ),
                             key: unlocked
                                 ? AchievementsKeys.unlockedOn(achievement.id)
                                 : null,

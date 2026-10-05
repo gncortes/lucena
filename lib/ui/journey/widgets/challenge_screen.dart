@@ -16,7 +16,11 @@ import 'journey_ui.dart';
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
 class ChallengeScreen extends StatelessWidget {
-  const ChallengeScreen({super.key});
+  const ChallengeScreen({required this.rungId, super.key});
+
+  /// O adversário (degrau) do desafio: o retrato dele chega voando da tela
+  /// de antes.
+  final String rungId;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +89,7 @@ class ChallengeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                _OpponentCard(opponent: challenge.opponent),
+                _OpponentCard(opponent: challenge.opponent, rungId: rungId),
                 Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
                   child: Text(
@@ -130,7 +134,7 @@ class ChallengeScreen extends StatelessWidget {
 }
 
 /// A posição na largura da tela, vista pelo lado que joga. Ela chega voando
-/// do tabuleiro pequeno da tela do adversário.
+/// do tabuleiro pequeno da tela de antes (a do adversário ou a inicial).
 class _BigBoard extends StatelessWidget {
   const _BigBoard({required this.challenge});
 
@@ -208,9 +212,10 @@ class _Chip extends StatelessWidget {
 
 /// Contra quem: o retrato, o nome, o nível e a frase do personagem.
 class _OpponentCard extends StatelessWidget {
-  const _OpponentCard({required this.opponent});
+  const _OpponentCard({required this.opponent, required this.rungId});
 
   final OpponentRef opponent;
+  final String rungId;
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +237,10 @@ class _OpponentCard extends StatelessWidget {
         child: Row(
           children: [
             if (character != null) ...[
-              CharacterAvatar(character: character, size: 64),
+              Hero(
+                tag: opponentHeroTag(rungId),
+                child: CharacterAvatar(character: character, size: 64),
+              ),
               const SizedBox(width: 12),
             ],
             Expanded(

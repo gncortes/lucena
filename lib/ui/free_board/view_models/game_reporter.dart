@@ -1,3 +1,6 @@
+import '../../../data/repositories/characters/character_repository.dart';
+import '../../../domain/models/character.dart';
+
 import 'package:dartchess/dartchess.dart';
 
 import '../../../data/repositories/achievements/achievements_repository.dart';
@@ -27,6 +30,7 @@ class GameReport {
     this.after,
     this.feedback = const [],
     this.achievements = const [],
+    this.characters = const [],
     this.next,
   });
 
@@ -34,7 +38,10 @@ class GameReport {
   final PlayerRating? before;
   final PlayerRating? after;
 
-  /// "Venceu 2600 pela primeira vez", "Novo recorde"...
+  /// Os personagens, para as mensagens dizerem o nome do adversário.
+  final List<Character> characters;
+
+  /// "Primeira vitória contra a Zuri", "Novo recorde"...
   final List<GameFeedback> feedback;
 
   /// As conquistas que a partida liberou.
@@ -55,7 +62,10 @@ class GameReporter {
     required this._positions,
     required this._now,
     this._onboarding,
+    this._characters,
   });
+
+  final CharacterRepository? _characters;
 
   final RatingRepository _rating;
   final AchievementsRepository _achievements;
@@ -148,6 +158,7 @@ class GameReporter {
           GameFeedback(FeedbackKind.achievement, achievementId: achievement.id),
       ],
       achievements: earned,
+      characters: await _characters?.characters() ?? const [],
     );
   }
 

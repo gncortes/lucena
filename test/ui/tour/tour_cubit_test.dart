@@ -43,7 +43,7 @@ void main() {
 
     final reopened = cubit();
     await reopened.load('en');
-    expect(reopened.state.step, TourStep.journey);
+    expect(reopened.state.step, TourStep.board);
   });
 
   test('escolher 1400 no fim: perfil e degrau de início', () async {

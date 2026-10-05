@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
@@ -66,6 +67,19 @@ class SettingsRobot {
 
   Future<void> chooseTheme(AppThemeMode mode) async {
     await $(SettingsKeys.themeOption(mode)).tap();
+  }
+
+  /// Na tela de tema, a cor do app.
+  Future<void> chooseAccent(AppAccent accent) async {
+    await $(SettingsKeys.accentOption(accent)).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  void expectAccentValue(String text) {
+    expectText(
+      $.tester.widget<Text>(find.byKey(SettingsKeys.accentValue)).data,
+      text,
+    );
   }
 
   Future<void> expectBoardAppearanceValue(String text) async {
