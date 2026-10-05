@@ -248,7 +248,7 @@ class _LessonScreenState extends State<LessonScreen>
               ),
             for (final mark in step.marks)
               Circle(
-                color: colors.tertiary.withValues(alpha: 0.85),
+                color: const Color(0xcc15781b),
                 orig: Square.fromName(mark),
               ),
           ],
@@ -265,7 +265,8 @@ class _LessonScreenState extends State<LessonScreen>
               dest: hint.to,
             ),
         };
-        return Center(
+        return Align(
+          alignment: Alignment.topCenter,
           child: AnimatedBuilder(
             animation: _shake,
             builder: (context, child) => Transform.translate(
@@ -351,43 +352,21 @@ class _LessonScreenState extends State<LessonScreen>
   }
 }
 
-/// A estrela de uma casa a alcançar, pulsando de leve.
-class _Star extends StatefulWidget {
+/// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
+/// animação sem fim não deixaria a tela "assentar" nos testes).
+class _Star extends StatelessWidget {
   const _Star({super.key});
 
   @override
-  State<_Star> createState() => _StarState();
-}
-
-class _StarState extends State<_Star> with SingleTickerProviderStateMixin {
-  late final _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _pulse.value = 1;
-    } else if (!_pulse.isAnimating) {
-      _pulse.repeat(reverse: true);
-    }
-  }
-
-  @override
-  void dispose() {
-    _pulse.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: Tween(
-        begin: 0.85,
-        end: 1.0,
-      ).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut)),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.3, end: 1),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 600),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) =>
+          Transform.scale(scale: value, child: child),
       child: const FittedBox(
         child: Icon(Icons.star_rounded, color: Color(0xfff2b705)),
       ),
