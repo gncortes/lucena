@@ -520,6 +520,15 @@ Exemplos:
 
 A lista final de conteúdos deve ser definida posteriormente.
 
+### Decisões do Gabriel (2026-10-04): as aulas do Viktor
+
+* O Viktor, o mestre de 2600, é o **professor** do iniciante. Ele é uma homenagem a todos os professores de xadrez: dedicou a vida ao jogo, fala com paciência e cita os grandes mestres, inclusive os do país do idioma do aluno. É o personagem com mais falas do app.
+* Quem marca "iniciante" no tour vai direto para as aulas. Quem marca outra faixa pode abrir as aulas pela tela inicial.
+* As aulas, em ordem: o movimento das peças (com promoção, xeque, xeque-mate e afogamento) → mates de duas torres e de dama → técnicas: a parede do rei (oposição), zugzwang e cortar com a torre → mate de torre → peões: rei e peão, regra do quadrado, torre e peão, torre e dois peões contra rei e peão → torre com peças menores (bispo, cavalo, dois bispos, dois cavalos, bispo e cavalo) e duas torres contra rei e cavalo → **formatura: mate com os dois bispos**.
+* Mate de bispo e cavalo não é do iniciante: fica para outro módulo.
+* Cada aula é uma conversa: o Viktor explica, o aluno joga no tabuleiro, erra, recebe dica e ouve "você está indo bem". O progresso entre os passos aparece animado.
+* No degrau 2600 da Jornada, se o jogador foi aluno do Viktor, as falas dele mudam: ele lembra onde o aluno começou e agora o enfrenta como mestre. "Uma das coisas mais lindas que o xadrez pode proporcionar."
+
 ---
 
 # 20. Speedrun
