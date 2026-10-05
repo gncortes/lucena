@@ -124,16 +124,40 @@ void main() {
   });
 
   group('como o tempo aparece', () {
-    test('minutos, segundos e décimos', () {
+    test('com as unidades à vista', () {
+      expect(
+        RunTimeFormat.format(const Duration(seconds: 13, milliseconds: 870)),
+        '13.8 s',
+      );
       expect(
         RunTimeFormat.format(const Duration(seconds: 65, milliseconds: 340)),
-        '1:05.3',
+        '1 min 05.3 s',
       );
       expect(
         RunTimeFormat.format(const Duration(hours: 1, minutes: 2, seconds: 3)),
-        '1:02:03.0',
+        '1 h 02 min 03 s',
       );
-      expect(RunTimeFormat.format(Duration.zero), '0:00.0');
+      expect(RunTimeFormat.format(Duration.zero), '0.0 s');
+      expect(
+        RunTimeFormat.format(const Duration(seconds: 3), decimal: ','),
+        '3,0 s',
+      );
+    });
+
+    test('como num relógio de xadrez', () {
+      expect(
+        RunTimeFormat.clock(const Duration(seconds: 13, milliseconds: 870)),
+        '0:13.8',
+      );
+      expect(
+        RunTimeFormat.clock(const Duration(minutes: 3, seconds: 25)),
+        '3:25.0',
+      );
+      expect(
+        RunTimeFormat.clock(const Duration(hours: 1, minutes: 2, seconds: 15)),
+        '1:02:15',
+      );
+      expect(RunTimeFormat.clock(const Duration(seconds: -1)), '0:00.0');
     });
 
     test('diferença para o recorde, com sinal', () {
@@ -144,7 +168,11 @@ void main() {
       expect(RunTimeFormat.difference(const Duration(seconds: -4)), '-4.0');
       expect(
         RunTimeFormat.difference(const Duration(minutes: -1, seconds: -4)),
-        '-1:04.0',
+        '-64.0',
+      );
+      expect(
+        RunTimeFormat.difference(const Duration(seconds: 1), decimal: ','),
+        '+1,0',
       );
     });
   });

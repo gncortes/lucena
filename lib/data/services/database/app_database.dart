@@ -39,6 +39,13 @@ class Games extends Table {
   TextColumn get moves => text().withDefault(const Constant(''))();
   TextColumn get endReason => text().nullable()();
 
+  /// Quanto cada lance levou, em milissegundos, separados por espaço. Vazio
+  /// nas partidas de antes da versão 6.
+  TextColumn get moveTimesMs => text().withDefault(const Constant(''))();
+
+  /// O lado do jogador (`white` ou `black`). Nulo antes da versão 6.
+  TextColumn get userSide => text().nullable()();
+
   /// O tempo de cada lado (`segundos+incremento`).
   TextColumn get userTime => text().nullable()();
   TextColumn get opponentTime => text().nullable()();
@@ -100,7 +107,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -109,6 +116,12 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) {
         await migrator.createTable(ratingHistory);
         await migrator.createTable(unlockedAchievements);
+      }
+      // 5 -> 6: o tempo de cada lance e o lado do jogador. Quem cria `games`
+      // agora (vindo de antes da 4) já cria com as colunas.
+      if (from >= 4 && from < 6) {
+        await migrator.addColumn(games, games.moveTimesMs);
+        await migrator.addColumn(games, games.userSide);
       }
     },
   );

@@ -9,6 +9,7 @@ import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -50,6 +51,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required this._progress,
     this._reporter,
     this._draws,
+    this._speedruns,
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -89,6 +91,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   // Quem responde as propostas de empate. Nulo: a máquina sempre recusa.
   final DrawOfferRepository? _draws;
+
+  // As tentativas de speedrun: sair no meio de uma encerra a tentativa.
+  final SpeedrunRepository? _speedruns;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -221,10 +226,22 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final played = GameRules.play(state.position, move);
     if (played == null) return;
     final now = _now();
+    final turnStartedAt = state.turnStartedAt;
     var next = state.copyWith(
       position: played.position,
       moves: [...state.moves, played.san],
       ucis: [...state.ucis, move.uci],
+      // O tempo deste lance: o que já tinha corrido antes de uma saída da
+      // tela mais o que correu desde que a vez (re)começou.
+      moveTimes: [
+        ...state.moveTimes,
+        state.turnElapsed +
+            (turnStartedAt == null
+                ? Duration.zero
+                : now.difference(turnStartedAt)),
+      ],
+      turnElapsed: Duration.zero,
+      turnStartedAt: now,
       repetitions: GameRules.repetitionsOf(state.start, [
         ...state.ucis,
         move.uci,
@@ -242,6 +259,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         clock: next.end == null ? pressed : ClockEngine.stop(pressed, now),
       );
     }
+    // Com a partida terminada, o tempo da vez para.
+    if (next.end != null) next = next.copyWith(turnStartedAt: null);
     emit(_timed(next, now));
     _changed();
   }
@@ -329,12 +348,51 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   Future<void> leave() async {
     if (!_active) return;
     _left = true;
+    final now = _now();
+    // O tempo do lance da vez para junto com o relógio.
+    final turnStartedAt = state.turnStartedAt;
+    var paused = state.copyWith(
+      turnElapsed:
+          state.turnElapsed +
+          (turnStartedAt == null
+              ? Duration.zero
+              : now.difference(turnStartedAt)),
+      turnStartedAt: null,
+    );
     final clock = state.clock;
     if (clock != null) {
-      final now = _now();
+      paused = paused.copyWith(clock: ClockEngine.stop(clock, now));
+    }
+    emit(_timed(paused, now));
+    _persist(onScreen: false);
+    await _saving;
+  }
+
+  /// Depois de perder uma etapa: uma tentativa nova do mesmo speedrun.
+  /// Devolve o id dela.
+  Future<int?> restartSpeedrun(String speedrunId) async {
+    final speedruns = _speedruns;
+    if (speedruns == null) return null;
+    await _saving;
+    return (await speedruns.start(speedrunId, _now())).id;
+  }
+
+  /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
+  /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
+  /// guardada para depois.
+  Future<void> quitSpeedrun() async {
+    final attemptId = state.mode.speedrunAttemptId;
+    if (attemptId == null || _left) return;
+    _left = true;
+    final now = _now();
+    final clock = state.clock;
+    if (clock != null) {
       emit(_timed(state.copyWith(clock: ClockEngine.stop(clock, now)), now));
     }
-    _persist(onScreen: false);
+    _saving = _saving.whenComplete(() async {
+      await _speedruns?.abandon(attemptId, now);
+      await _games.clear();
+    });
     await _saving;
   }
 
@@ -386,6 +444,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       startedAt: state.startedAt,
       startFen: state.start.fen,
       moves: state.ucis,
+      moveTimes: state.moveTimes,
+      userSide: mode.userSide,
       endReason: state.end?.reason,
       userTime: clock?.config.of(user),
       opponentTime: clock?.config.of(user.opposite),
@@ -520,6 +580,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
             mode: current.mode,
             onScreen: onScreen,
             startedAt: current.startedAt,
+            moveTimes: current.moveTimes,
+            turnElapsed: current.turnElapsed,
+            turnStartedAt: current.turnStartedAt,
           );
     _saving = _saving.whenComplete(
       () => snapshot == null ? _games.clear() : _games.save(snapshot),
@@ -555,6 +618,14 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       clock: snapshot.clock,
       mode: snapshot.mode,
       startedAt: snapshot.startedAt,
+      // Gravação de antes do tempo por lance: os lances ficam sem tempo.
+      moveTimes: snapshot.moveTimes.length == snapshot.moves.length
+          ? snapshot.moveTimes
+          : const [],
+      turnElapsed: snapshot.turnElapsed,
+      // Parado (o jogador tinha saído da tela), o tempo da vez volta a
+      // correr agora; fechado à força, ele seguiu correndo.
+      turnStartedAt: snapshot.turnStartedAt ?? now,
     );
     final clock = snapshot.clock;
     // Relógio parado numa partida em andamento: o jogador tinha saído da tela.
@@ -583,6 +654,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         orientation: orientation,
         mode: mode,
         startedAt: now,
+        turnStartedAt: GameRules.endOf(start) == null ? now : null,
         // Posição que já abre terminada (mate, afogado) não liga o relógio.
         clock: clock == null || GameRules.endOf(start) != null
             ? null

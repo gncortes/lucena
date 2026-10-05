@@ -13,8 +13,14 @@ abstract final class RatingKeys {
   static const stats = Key('rating.stats');
   static Key stat(int index) => Key('rating.stat.$index');
 
-  /// O período do gráfico: as últimas [games] partidas ou todas.
-  static Key period(int? games) => Key('rating.period.${games ?? 'all'}');
+  /// O período do gráfico (`week`, `month`, `quarter`, `year`, `all`) e o
+  /// aviso de período sem partidas.
+  static Key period(String period) => Key('rating.period.$period');
+  static const chartEmpty = Key('rating.chart.empty');
+
+  /// O rating mais alto e a barra de vitórias, empates e derrotas.
+  static const highest = Key('rating.highest');
+  static const results = Key('rating.results');
 
   static const emptyHistory = Key('rating.history.empty');
 

@@ -400,5 +400,13 @@
   "gameMoveBack": "السابق",
   "gameMoveForward": "التالي",
   "statsGamesTitle": "سجل المباريات",
-  "statsGamesEmpty": "تظهر هنا المباريات التي تلعبها، الأحدث أولًا."
+  "statsGamesEmpty": "تظهر هنا المباريات التي تلعبها، الأحدث أولًا.",
+  "speedrunRetry": "حاول مجددًا",
+  "speedrunQuitTitle": "مغادرة سباق الوقت؟",
+  "ratingPeriodDays": "{count, plural, =1{يوم واحد} two{يومان} few{{count} أيام} many{{count} يومًا} other{{count} يوم}}",
+  "ratingPeriodYear": "سنة واحدة",
+  "ratingPeriodEmpty": "لا توجد مباريات محتسبة في هذه الفترة.",
+  "ratingHighest": "الأعلى",
+  "gameDetailsTitle": "تفاصيل المباراة",
+  "gameDetailsNotFound": "لم تعد هذه المباراة محفوظة."
 }

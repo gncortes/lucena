@@ -22,7 +22,8 @@ abstract class SpeedrunSummary with _$SpeedrunSummary {
     required Speedrun speedrun,
     required SpeedrunRecords records,
 
-    /// A tentativa em andamento, se há.
+    /// A tentativa em andamento: só existe com a etapa dela no tabuleiro (o
+    /// app foi fechado no meio da partida).
     SpeedrunRun? ongoing,
 
     /// As tentativas de que o jogador desistiu, da mais recente para a mais
@@ -46,14 +47,8 @@ abstract class SpeedrunState with _$SpeedrunState {
     /// O recorde de antes de [run] terminar. Nulo se não havia.
     Duration? previousBest,
 
-    /// A partida em andamento é uma etapa de [run]: jogar continua ela.
-    @Default(false) bool gameOngoing,
-
     /// O ritmo da lista: cada ritmo tem os seus speedruns e recordes.
     @Default(SpeedrunPaces.standard) TimeControl pace,
-
-    /// As tentativas em andamento, em qualquer ritmo.
-    @Default(<SpeedrunSummary>[]) List<SpeedrunSummary> inProgress,
 
     /// Os personagens, um por nível do Maia.
     @Default(<Character>[]) List<Character> characters,
@@ -61,8 +56,8 @@ abstract class SpeedrunState with _$SpeedrunState {
 }
 
 /// Os speedruns: lista, recordes, tentativas e histórico. As partidas de cada
-/// etapa são gravadas pela partida; aqui só se começa e se abandona uma
-/// tentativa.
+/// etapa são gravadas pela partida, que segue de uma etapa para a outra; aqui
+/// só se começa uma tentativa.
 class SpeedrunCubit extends Cubit<SpeedrunState> {
   SpeedrunCubit({
     required this._journey,
@@ -87,28 +82,16 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
   /// a tentativa.
   Future<void> load({String? speedrunId, int? attemptId}) async {
     final bases = await _journey.speedruns();
+    final snapshot = await _games.load();
+    // Não há "continuar depois": a tentativa que ficou pela metade sem a
+    // etapa dela no tabuleiro foi largada, e fica no histórico como
+    // abandonada.
+    await _abandonStale(bases, playing: snapshot?.mode.speedrunAttemptId);
     final pace =
         (await _settings?.load())?.clock.speedrunTime ?? SpeedrunPaces.standard;
     final all = [
       for (final base in bases)
         await _summary(SpeedrunPaces.withTime(base, pace)),
-    ];
-    // As tentativas em andamento, em qualquer ritmo: a lista mostra todas no
-    // alto, com "Continuar".
-    // Só a lista precisa delas.
-    final inProgress = <SpeedrunSummary>[
-      if (speedrunId == null)
-        for (final base in bases)
-          for (final time in SpeedrunPaces.all)
-            if (time == pace)
-              ...all.where(
-                (s) =>
-                    s.speedrun.id == SpeedrunPaces.idFor(base.id, pace) &&
-                    s.ongoing != null,
-              )
-            else if (await _summary(SpeedrunPaces.withTime(base, time))
-                case final summary when summary.ongoing != null)
-              summary,
     ];
     // O speedrun aberto pode ser de outro ritmo que o da lista.
     final opened = SpeedrunPaces.resolve(bases, speedrunId);
@@ -121,7 +104,6 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       final attempt = await _speedruns.attempt(attemptId);
       if (attempt != null) run = SpeedrunScore.run(selected.speedrun, attempt);
     }
-    final snapshot = await _games.load();
     final characters = await _characters?.characters() ?? const <Character>[];
     if (isClosed) return;
     emit(
@@ -132,15 +114,27 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
         previousBest: selected == null || run == null
             ? null
             : SpeedrunScore.previousBest(selected.records, run),
-        gameOngoing:
-            run != null &&
-            snapshot != null &&
-            snapshot.mode.speedrunAttemptId == run.attempt.id,
         pace: pace,
-        inProgress: inProgress,
         characters: characters,
       ),
     );
+  }
+
+  // Encerra as tentativas em andamento, em qualquer ritmo, menos a que tem
+  // a etapa no tabuleiro ([playing]).
+  Future<void> _abandonStale(List<Speedrun> bases, {int? playing}) async {
+    final now = _now();
+    for (final base in bases) {
+      for (final time in SpeedrunPaces.all) {
+        final speedrun = SpeedrunPaces.withTime(base, time);
+        for (final attempt in await _speedruns.attempts(speedrun.id)) {
+          if (attempt.id == playing) continue;
+          if (SpeedrunScore.run(speedrun, attempt).inProgress) {
+            await _speedruns.abandon(attempt.id, now);
+          }
+        }
+      }
+    }
   }
 
   Future<SpeedrunSummary> _summary(Speedrun speedrun) async {
@@ -172,9 +166,9 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
   }
 
   /// Começa uma tentativa do speedrun aberto no ritmo [pace] (gravado como
-  /// o último escolhido). Devolve o id do speedrun nesse ritmo e o da
-  /// tentativa.
-  Future<(String, int)?> startWith(TimeControl pace) async {
+  /// o último escolhido). Devolve o speedrun nesse ritmo e o id da
+  /// tentativa: a primeira etapa abre em seguida.
+  Future<(Speedrun, int)?> startWith(TimeControl pace) async {
     final selected = state.selected;
     if (selected == null) return null;
     final bases = await _journey.speedruns();
@@ -183,7 +177,7 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       bases,
       SpeedrunPaces.idFor(baseId, pace),
     );
-    if (speedrun == null) return null;
+    if (speedrun == null || speedrun.stages.isEmpty) return null;
     final settings = _settings;
     if (settings != null) {
       final current = await settings.load();
@@ -192,25 +186,6 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       );
     }
     final attempt = await _speedruns.start(speedrun.id, _now());
-    return (speedrun.id, attempt.id);
-  }
-
-  /// Começa uma tentativa do speedrun aberto. Devolve o id dela.
-  Future<int?> start() async {
-    final selected = state.selected;
-    if (selected == null) return null;
-    final attempt = await _speedruns.start(selected.speedrun.id, _now());
-    return attempt.id;
-  }
-
-  /// Desiste da tentativa aberta: ela fica no histórico, sem recorde.
-  Future<void> abandon() async {
-    final run = state.run;
-    final selected = state.selected;
-    if (run == null || selected == null || !run.inProgress) return;
-    await _speedruns.abandon(run.attempt.id, _now());
-    // A etapa que estava no tabuleiro também sai.
-    if (state.gameOngoing) await _games.clear();
-    await load(speedrunId: selected.speedrun.id, attemptId: run.attempt.id);
+    return (speedrun, attempt.id);
   }
 }

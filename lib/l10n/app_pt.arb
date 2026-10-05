@@ -399,5 +399,13 @@
   "gameMoveBack": "Voltar",
   "gameMoveForward": "Avançar",
   "statsGamesTitle": "Histórico de partidas",
-  "statsGamesEmpty": "As partidas que você jogar aparecem aqui, da mais recente para a mais antiga."
+  "statsGamesEmpty": "As partidas que você jogar aparecem aqui, da mais recente para a mais antiga.",
+  "speedrunRetry": "Tentar novamente",
+  "speedrunQuitTitle": "Sair do speedrun?",
+  "ratingPeriodDays": "{count, plural, =1{1 dia} other{{count} dias}}",
+  "ratingPeriodYear": "1 ano",
+  "ratingPeriodEmpty": "Nenhuma partida contada neste período.",
+  "ratingHighest": "Mais alto",
+  "gameDetailsTitle": "Detalhes da partida",
+  "gameDetailsNotFound": "Esta partida não está mais gravada."
 }

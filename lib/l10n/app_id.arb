@@ -400,5 +400,13 @@
   "gameMoveBack": "Mundur",
   "gameMoveForward": "Maju",
   "statsGamesTitle": "Riwayat permainan",
-  "statsGamesEmpty": "Permainan yang kamu mainkan muncul di sini, dari yang terbaru."
+  "statsGamesEmpty": "Permainan yang kamu mainkan muncul di sini, dari yang terbaru.",
+  "speedrunRetry": "Coba lagi",
+  "speedrunQuitTitle": "Keluar dari speedrun?",
+  "ratingPeriodDays": "{count, plural, =1{1 hari} other{{count} hari}}",
+  "ratingPeriodYear": "1 tahun",
+  "ratingPeriodEmpty": "Tidak ada permainan berating pada periode ini.",
+  "ratingHighest": "Tertinggi",
+  "gameDetailsTitle": "Detail permainan",
+  "gameDetailsNotFound": "Permainan ini sudah tidak tersimpan."
 }

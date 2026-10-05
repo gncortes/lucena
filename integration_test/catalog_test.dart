@@ -44,19 +44,37 @@ void main() {
     catalog.expectOnlyGoal(PositionGoal.draw);
   });
 
-  patrolTest('rolar a maior lista de posições até o fim e abrir a última', (
+  patrolTest('rolar a maior categoria até o fim e abrir a última posição', (
     $,
   ) async {
     final catalog = CatalogRobot($);
     final setup = GameSetupRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));
     await catalog.open();
-    await catalog.openCategory('pawn');
-    await catalog.openSubcategory('pawnVsKing');
+    await catalog.openCategory('basic');
 
-    await catalog.openPosition('pawn.pawnVsKing.0041');
+    await catalog.openPosition('basic.twoRooks.0006');
 
     await setup.expectVisible();
+  });
+
+  patrolTest('fechar a seção de um final esconde as posições dele; abrir de '
+      'novo mostra', ($) async {
+    final catalog = CatalogRobot($);
+    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
+    await catalog.open();
+    await catalog.openCategory('basic');
+    await catalog.openSubcategory('queen');
+
+    await catalog.toggleSubcategory('queen');
+
+    catalog.expectPositionHidden('basic.queen.0001');
+    // A outra seção continua aberta.
+    await catalog.expectPositionShows('basic.rook.0001', 'Win');
+
+    await catalog.toggleSubcategory('queen');
+
+    await catalog.expectPositionShows('basic.queen.0001', 'Win');
   });
 
   patrolTest('nomes das categorias traduzidos em espanhol e em árabe', (

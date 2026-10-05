@@ -400,5 +400,13 @@
   "gameMoveBack": "Zurück",
   "gameMoveForward": "Vor",
   "statsGamesTitle": "Partienverlauf",
-  "statsGamesEmpty": "Deine gespielten Partien erscheinen hier, die neueste zuerst."
+  "statsGamesEmpty": "Deine gespielten Partien erscheinen hier, die neueste zuerst.",
+  "speedrunRetry": "Noch einmal",
+  "speedrunQuitTitle": "Speedrun verlassen?",
+  "ratingPeriodDays": "{count, plural, =1{1 Tag} other{{count} Tage}}",
+  "ratingPeriodYear": "1 Jahr",
+  "ratingPeriodEmpty": "Keine gewerteten Partien in diesem Zeitraum.",
+  "ratingHighest": "Höchstwert",
+  "gameDetailsTitle": "Partiedetails",
+  "gameDetailsNotFound": "Diese Partie ist nicht mehr gespeichert."
 }

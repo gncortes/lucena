@@ -135,12 +135,15 @@ class _PaceSheetState extends State<_PaceSheet> {
     );
   }
 
-  static IconData _icon(PaceCategory category) => switch (category) {
-    PaceCategory.bullet => Icons.bolt,
-    PaceCategory.blitz => Icons.local_fire_department_outlined,
-    _ => Icons.timer_outlined,
-  };
+  static IconData _icon(PaceCategory category) => paceIcon(category);
 }
+
+/// O ícone de cada categoria de ritmo.
+IconData paceIcon(PaceCategory category) => switch (category) {
+  PaceCategory.bullet => Icons.bolt,
+  PaceCategory.blitz => Icons.local_fire_department_outlined,
+  _ => Icons.timer_outlined,
+};
 
 /// Três opções por linha.
 class _Grid extends StatelessWidget {

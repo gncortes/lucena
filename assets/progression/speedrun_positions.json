@@ -1,0 +1,832 @@
+{
+  "speedruns": {
+    "ending.rook": [
+      {
+        "id": "basic.rook.s01",
+        "fen": "8/3R4/8/4k3/8/8/6K1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s02",
+        "fen": "8/8/1K3k2/8/6R1/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s03",
+        "fen": "8/6k1/4K3/8/8/2r5/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s04",
+        "fen": "8/8/3k4/5R2/8/8/5K2/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s05",
+        "fen": "8/5r2/3K4/8/8/5k2/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s06",
+        "fen": "8/8/8/3k4/8/5K2/2R5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s07",
+        "fen": "8/8/8/4k3/8/1R6/2K5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "basic.rook.s08",
+        "fen": "8/5r2/8/3K4/8/8/3k4/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "basic.rook.s09",
+        "fen": "8/3R4/5k2/8/8/8/1K6/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "basic.rook.s10",
+        "fen": "8/1k6/8/8/8/4K3/6r1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      }
+    ],
+    "ending.queen": [
+      {
+        "id": "basic.queen.s01",
+        "fen": "8/1K3Q2/8/8/8/4k3/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s02",
+        "fen": "8/2K5/3Q4/8/8/4k3/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s03",
+        "fen": "8/8/5K2/8/1k6/8/2q5/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s04",
+        "fen": "8/4Q3/8/8/3k4/8/6K1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s05",
+        "fen": "8/6q1/2K5/8/8/8/5k2/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s06",
+        "fen": "8/8/1KQ5/8/8/4k3/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s07",
+        "fen": "8/8/3k4/8/8/8/4Q1K1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s08",
+        "fen": "8/1q6/8/8/1k6/4K3/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s09",
+        "fen": "8/8/5k2/8/2Q5/8/2K5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      },
+      {
+        "id": "basic.queen.s10",
+        "fen": "8/2k5/2q5/8/5K2/8/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 15,
+        "dtz": 15,
+        "verified": true,
+        "mateIn": 8
+      }
+    ],
+    "ending.twoBishops": [
+      {
+        "id": "bishop.twoBishopsVsKing.s01",
+        "fen": "8/3B4/8/3k4/1B3K2/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s02",
+        "fen": "8/4K3/1B6/8/4k3/1B6/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s03",
+        "fen": "8/2b2b2/8/6k1/8/5K2/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s04",
+        "fen": "8/1K6/4BB2/8/8/3k4/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s05",
+        "fen": "8/8/8/1bb2K2/8/8/2k5/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s06",
+        "fen": "8/8/3k4/6B1/4B3/8/3K4/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s07",
+        "fen": "8/8/4k3/8/4B3/8/1K3B2/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s08",
+        "fen": "8/1b1k4/3b4/8/2K5/8/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s09",
+        "fen": "8/8/8/5B2/3k1B2/6K1/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 29,
+        "dtz": 29,
+        "verified": true,
+        "mateIn": 15
+      },
+      {
+        "id": "bishop.twoBishopsVsKing.s10",
+        "fen": "8/4k3/5b2/8/4K3/8/4b3/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 31,
+        "dtz": 31,
+        "verified": true,
+        "mateIn": 16
+      }
+    ],
+    "ending.queenVsRook": [
+      {
+        "id": "queen.queenVsRook.s01",
+        "fen": "8/8/6Q1/3k4/8/8/1r1K4/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 33,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "queen.queenVsRook.s02",
+        "fen": "8/8/8/5k2/2KQ4/6r1/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 33,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "queen.queenVsRook.s03",
+        "fen": "8/8/3k4/8/4K3/6R1/1q6/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 49,
+        "dtz": 39,
+        "verified": true,
+        "mateIn": 25
+      },
+      {
+        "id": "queen.queenVsRook.s04",
+        "fen": "8/1Q6/8/8/2kr1K2/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 49,
+        "dtz": 39,
+        "verified": true,
+        "mateIn": 25
+      },
+      {
+        "id": "queen.queenVsRook.s05",
+        "fen": "8/8/3q4/5K2/8/8/1R2k3/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 51,
+        "dtz": 41,
+        "verified": true,
+        "mateIn": 26
+      },
+      {
+        "id": "queen.queenVsRook.s06",
+        "fen": "8/6r1/5k2/8/8/8/2KQ4/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 53,
+        "dtz": 43,
+        "verified": true,
+        "mateIn": 27
+      },
+      {
+        "id": "queen.queenVsRook.s07",
+        "fen": "8/8/8/1K3k2/3r4/6Q1/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 53,
+        "dtz": 43,
+        "verified": true,
+        "mateIn": 27
+      },
+      {
+        "id": "queen.queenVsRook.s08",
+        "fen": "8/6q1/2K5/8/4R3/8/6k1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 47,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "queen.queenVsRook.s09",
+        "fen": "8/8/3r4/6K1/3k4/1Q6/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 47,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "queen.queenVsRook.s10",
+        "fen": "8/2k5/5q2/8/4K3/8/4R3/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 57,
+        "dtz": 47,
+        "verified": true,
+        "mateIn": 29
+      }
+    ],
+    "ending.rookPawnVsRook": [
+      {
+        "id": "rookPawn.rookPawnVsRook.s01",
+        "fen": "8/2r5/5K2/8/6R1/4P3/2k5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s02",
+        "fen": "8/8/2RK1k2/8/2P5/5r2/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s03",
+        "fen": "8/2K5/3R4/6p1/1r6/3k4/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 3,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s04",
+        "fen": "8/8/8/5k2/2KP4/3R4/5r2/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s05",
+        "fen": "8/6r1/8/3k4/4p3/2R5/1K6/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 57,
+        "dtz": 9,
+        "verified": true,
+        "mateIn": 29
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s06",
+        "fen": "8/6k1/1r6/5R2/3P1K2/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 57,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 29
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s07",
+        "fen": "8/1r6/4K3/8/1k6/5RP1/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 61,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 31
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s08",
+        "fen": "8/8/5p2/1R6/5r2/8/3K2k1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 69,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 35
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s09",
+        "fen": "8/5R2/2k5/5K2/8/6P1/5r2/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 73,
+        "dtz": 7,
+        "verified": true,
+        "mateIn": 37
+      },
+      {
+        "id": "rookPawn.rookPawnVsRook.s10",
+        "fen": "8/5R2/1pr5/1k6/8/8/4K3/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 75,
+        "dtz": 7,
+        "verified": true,
+        "mateIn": 38
+      }
+    ],
+    "ending.pawn": [
+      {
+        "id": "pawn.pawnVsKing.s01",
+        "fen": "8/5k2/8/4K3/6P1/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 39,
+        "dtz": 7,
+        "verified": true,
+        "mateIn": 20
+      },
+      {
+        "id": "pawn.pawnVsKing.s02",
+        "fen": "8/6k1/8/8/8/4KP2/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 39,
+        "dtz": 11,
+        "verified": true,
+        "mateIn": 20
+      },
+      {
+        "id": "pawn.pawnVsKing.s03",
+        "fen": "8/8/4kp2/8/8/6K1/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 39,
+        "dtz": 11,
+        "verified": true,
+        "mateIn": 20
+      },
+      {
+        "id": "pawn.pawnVsKing.s04",
+        "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 41,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 21
+      },
+      {
+        "id": "pawn.pawnVsKing.s05",
+        "fen": "8/8/6p1/4k3/8/8/6K1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 41,
+        "dtz": 5,
+        "verified": true,
+        "mateIn": 21
+      },
+      {
+        "id": "pawn.pawnVsKing.s06",
+        "fen": "8/8/8/8/6k1/4P3/1K6/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 41,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 21
+      },
+      {
+        "id": "pawn.pawnVsKing.s07",
+        "fen": "8/8/4k3/8/8/1P6/3K4/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 11,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "pawn.pawnVsKing.s08",
+        "fen": "8/1k6/8/1p2K3/8/8/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 11,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "pawn.pawnVsKing.s09",
+        "fen": "8/2k5/8/2K5/8/6P1/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 45,
+        "dtz": 1,
+        "verified": true,
+        "mateIn": 23
+      },
+      {
+        "id": "pawn.pawnVsKing.s10",
+        "fen": "8/8/4k1p1/8/8/4K3/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 45,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 23
+      }
+    ],
+    "ending.rookVsPawn": [
+      {
+        "id": "rookPawn.rookVsPawn.s01",
+        "fen": "8/2R5/4k3/8/5p2/8/1K6/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 9,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s02",
+        "fen": "8/2R5/6K1/4k3/6p1/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 3,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s03",
+        "fen": "8/1k6/4P3/3K4/8/1r6/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 7,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s04",
+        "fen": "8/8/6K1/4k3/2R5/5p2/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 5,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s05",
+        "fen": "8/6r1/8/1k3P2/5K2/8/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s06",
+        "fen": "8/2R5/6K1/3k4/8/4p3/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 35,
+        "dtz": 7,
+        "verified": true,
+        "mateIn": 18
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s07",
+        "fen": "8/8/1K3k2/6p1/8/8/1R6/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 35,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 18
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s08",
+        "fen": "8/8/8/1r6/5KP1/1k6/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 37,
+        "dtz": 13,
+        "verified": true,
+        "mateIn": 19
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s09",
+        "fen": "8/8/8/1R6/6p1/2K5/5k2/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 37,
+        "dtz": 11,
+        "verified": true,
+        "mateIn": 19
+      },
+      {
+        "id": "rookPawn.rookVsPawn.s10",
+        "fen": "8/8/8/8/1PK5/8/2k3r1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 5,
+        "verified": true,
+        "mateIn": 22
+      }
+    ],
+    "ending.queenVsPawn": [
+      {
+        "id": "queen.queenVsPawn.s01",
+        "fen": "8/3Q4/8/8/1K6/6k1/6p1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 23,
+        "dtz": 17,
+        "verified": true,
+        "mateIn": 12
+      },
+      {
+        "id": "queen.queenVsPawn.s02",
+        "fen": "8/8/8/3Q2K1/8/8/1pk5/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 23,
+        "dtz": 19,
+        "verified": true,
+        "mateIn": 12
+      },
+      {
+        "id": "queen.queenVsPawn.s03",
+        "fen": "8/1PK5/8/8/3q4/4k3/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 25,
+        "dtz": 19,
+        "verified": true,
+        "mateIn": 13
+      },
+      {
+        "id": "queen.queenVsPawn.s04",
+        "fen": "8/4Q3/5K2/8/8/8/1k1p4/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 25,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "queen.queenVsPawn.s05",
+        "fen": "8/4P3/6K1/8/5q2/3k4/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 27,
+        "dtz": 24,
+        "verified": true,
+        "mateIn": 14
+      },
+      {
+        "id": "queen.queenVsPawn.s06",
+        "fen": "8/3K4/8/1Q6/8/6k1/6p1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 27,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "queen.queenVsPawn.s07",
+        "fen": "8/6K1/8/8/5Q2/8/2k1p3/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 33,
+        "dtz": 30,
+        "verified": true,
+        "mateIn": 17
+      },
+      {
+        "id": "queen.queenVsPawn.s08",
+        "fen": "8/1PK5/6q1/8/8/8/1k6/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 35,
+        "dtz": 30,
+        "verified": true,
+        "mateIn": 18
+      },
+      {
+        "id": "queen.queenVsPawn.s09",
+        "fen": "8/2Q1K3/8/8/8/8/3pk3/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 37,
+        "dtz": 34,
+        "verified": true,
+        "mateIn": 19
+      },
+      {
+        "id": "queen.queenVsPawn.s10",
+        "fen": "8/1K1P4/8/8/8/8/4qk2/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 39,
+        "dtz": 34,
+        "verified": true,
+        "mateIn": 20
+      }
+    ],
+    "ending.knightBishop": [
+      {
+        "id": "knightBishop.knightBishopVsKing.s01",
+        "fen": "8/8/2K3B1/8/2N5/5k2/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 41,
+        "dtz": 41,
+        "verified": true,
+        "mateIn": 21
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s02",
+        "fen": "8/2N5/1BK5/8/2k5/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 43,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s03",
+        "fen": "8/8/3n1K2/1k6/8/4b3/8/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 43,
+        "dtz": 43,
+        "verified": true,
+        "mateIn": 22
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s04",
+        "fen": "8/8/3K4/5k2/8/8/4B1N1/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 49,
+        "dtz": 49,
+        "verified": true,
+        "mateIn": 25
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s05",
+        "fen": "8/8/2K5/8/1k6/4b3/2n5/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 51,
+        "dtz": 51,
+        "verified": true,
+        "mateIn": 26
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s06",
+        "fen": "8/8/5k2/8/8/3BNK2/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 51,
+        "dtz": 51,
+        "verified": true,
+        "mateIn": 26
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s07",
+        "fen": "8/2N5/4K3/8/2k3B1/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 53,
+        "dtz": 53,
+        "verified": true,
+        "mateIn": 27
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s08",
+        "fen": "8/1b6/8/8/8/2K3k1/6n1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 53,
+        "dtz": 53,
+        "verified": true,
+        "mateIn": 27
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s09",
+        "fen": "8/3B4/4K1N1/8/4k3/8/8/8 w - - 0 1",
+        "goal": "win",
+        "dtm": 55,
+        "dtz": 55,
+        "verified": true,
+        "mateIn": 28
+      },
+      {
+        "id": "knightBishop.knightBishopVsKing.s10",
+        "fen": "8/1nb5/4K3/8/8/8/6k1/8 b - - 0 1",
+        "goal": "win",
+        "dtm": 57,
+        "dtz": 57,
+        "verified": true,
+        "mateIn": 29
+      }
+    ]
+  }
+}

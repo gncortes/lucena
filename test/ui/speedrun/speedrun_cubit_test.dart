@@ -68,40 +68,67 @@ void main() {
     expect(cubit.state.all!.first.ongoing, isNull);
   });
 
-  test('começar cria a tentativa em andamento', () async {
+  // A etapa da tentativa [attempt] no tabuleiro (o app fechou no meio dela).
+  void onBoard(int attempt) => games.snapshot = GameSnapshot(
+    startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+    mode: GameMode(speedrunId: 'rung.1000', speedrunAttemptId: attempt),
+  );
+
+  test('começar cria a tentativa no ritmo escolhido e grava o ritmo', () async {
     final cubit = build();
     await cubit.load(speedrunId: 'rung.1000');
 
-    final id = await cubit.start();
+    final (speedrun, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
+    expect(speedrun.id, 'rung.1000');
+    expect(speedrun.stages, isNotEmpty);
+    onBoard(id);
     await cubit.load(speedrunId: 'rung.1000', attemptId: id);
 
     expect(cubit.state.selected!.ongoing!.attempt.id, id);
     expect(cubit.state.run!.currentStage, 0);
-    expect(cubit.state.gameOngoing, isFalse);
+    expect((await settings.load()).clock.speedrunTime, SpeedrunPaces.standard);
   });
 
-  test('a etapa no tabuleiro é da tentativa: jogar continua ela', () async {
+  test('a etapa no tabuleiro mantém a tentativa em andamento', () async {
     final cubit = build();
     await cubit.load(speedrunId: 'rung.1000');
-    final id = (await cubit.start())!;
-    games.snapshot = GameSnapshot(
-      startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
-      mode: GameMode(speedrunId: 'rung.1000', speedrunAttemptId: id),
-    );
+    final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
+    await win(id, 0, 20);
+    onBoard(id);
 
     await cubit.load(speedrunId: 'rung.1000', attemptId: id);
 
-    expect(cubit.state.gameOngoing, isTrue);
+    expect(cubit.state.selected!.ongoing!.attempt.id, id);
+    expect(cubit.state.run!.currentStage, 1);
+    expect(cubit.state.selected!.abandoned, isEmpty);
+  });
+
+  test('sem "continuar depois": a tentativa pela metade sem a etapa no '
+      'tabuleiro fica abandonada no histórico', () async {
+    final cubit = build();
+    await cubit.load(speedrunId: 'rung.1000');
+    final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
+    await win(id, 0, 20);
+    now.advance(const Duration(minutes: 5));
+
+    await cubit.load(speedrunId: 'rung.1000', attemptId: id);
+
+    expect(cubit.state.run!.abandoned, isTrue);
+    expect(cubit.state.run!.attempt.abandonedAt, now());
+    expect(cubit.state.selected!.ongoing, isNull);
+    // A desistência fica no resumo, para o histórico dizer até onde foi.
+    expect(cubit.state.selected!.abandoned.map((run) => run.attempt.id), [id]);
+    expect(cubit.state.selected!.records.completed, isEmpty);
   });
 
   test('concluída: vira recorde e mostra o recorde de antes', () async {
     final cubit = build();
     await cubit.load(speedrunId: 'rung.1000');
-    final first = (await cubit.start())!;
+    final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await win(first, 0, 30);
     await win(first, 1, 40);
     now.advance(const Duration(hours: 1));
-    final second = (await cubit.start())!;
+    final (_, second) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await win(second, 0, 20);
     await win(second, 1, 30);
 
@@ -111,26 +138,8 @@ void main() {
     expect(cubit.state.selected!.records.best, const Duration(seconds: 50));
     expect(cubit.state.previousBest, const Duration(seconds: 70));
     expect(cubit.state.selected!.ongoing, isNull);
-  });
-
-  test('abandonar encerra a tentativa e tira a etapa do tabuleiro', () async {
-    final cubit = build();
-    await cubit.load(speedrunId: 'rung.1000');
-    final id = (await cubit.start())!;
-    games.snapshot = GameSnapshot(
-      startFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
-      mode: GameMode(speedrunId: 'rung.1000', speedrunAttemptId: id),
-    );
-    await cubit.load(speedrunId: 'rung.1000', attemptId: id);
-
-    await cubit.abandon();
-
-    expect(cubit.state.run!.abandoned, isTrue);
-    expect(cubit.state.selected!.ongoing, isNull);
-    expect(games.snapshot, isNull);
-    // A desistência fica no resumo, para o histórico dizer até onde foi.
-    expect(cubit.state.selected!.abandoned.map((run) => run.attempt.id), [id]);
-    expect(cubit.state.selected!.records.completed, isEmpty);
+    // A concluída não é abandonada ao abrir de novo.
+    expect(cubit.state.selected!.abandoned, isEmpty);
   });
 
   group('ritmos', () {
@@ -162,8 +171,8 @@ void main() {
     test('cada ritmo tem os seus recordes', () async {
       final cubit = build();
       await cubit.load(speedrunId: 'rung.1000');
-      final (id, attempt) = (await cubit.startWith(threeTwo))!;
-      expect(id, 'rung.1000@180+2');
+      final (speedrun, attempt) = (await cubit.startWith(threeTwo))!;
+      expect(speedrun.id, 'rung.1000@180+2');
       await win(attempt, 0, 20);
       await win(attempt, 1, 30);
 
@@ -174,17 +183,17 @@ void main() {
       expect(cubit.state.all!.first.records.best, isNull);
     });
 
-    test('a tentativa em andamento aparece mesmo em outro ritmo', () async {
+    test('a tentativa pela metade de outro ritmo também é largada', () async {
       final cubit = build();
       await cubit.load(speedrunId: 'rung.1000');
-      await cubit.startWith(threeTwo);
+      final (speedrun, attempt) = (await cubit.startWith(threeTwo))!;
       await cubit.choosePace(SpeedrunPaces.standard);
 
       await cubit.load();
 
-      expect(cubit.state.inProgress.map((s) => s.speedrun.id), [
-        'rung.1000@180+2',
-      ]);
+      final attempts = await speedruns.attempts(speedrun.id);
+      expect(attempts.single.id, attempt);
+      expect(attempts.single.abandonedAt, isNotNull);
     });
   });
 }
