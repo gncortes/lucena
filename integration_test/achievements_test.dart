@@ -10,6 +10,7 @@ import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/progress_robot.dart';
 import 'robots/speedrun_robot.dart';
+import 'robots/variant.dart';
 
 // Mate em um: Dh8#.
 const _mateInOne = '3k4/8/3K4/8/8/8/8/7Q w - - 0 1';
@@ -53,8 +54,13 @@ void main() {
     await app.open(systemLocale: _english);
 
     final feedback = await win($);
-    expect(feedback, contains('Achievement unlocked: First endgame'));
-    expect(feedback, contains('You beat Maia 1000 for the first time!'));
+    if (e2eTranslated) {
+      // Em árabe: a primeira vitória e a conquista, traduzidas.
+      expect(feedback, hasLength(2));
+    } else {
+      expect(feedback, contains('Achievement unlocked: First endgame'));
+      expect(feedback, contains('You beat Maia 1000 for the first time!'));
+    }
 
     await app.restart();
     await progress.openAchievements();
