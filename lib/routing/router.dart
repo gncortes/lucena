@@ -1,5 +1,5 @@
 import 'package:dartchess/dartchess.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -79,7 +79,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
-      GoRoute(
+      _route(
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
           create: (_) => TourCubit(
@@ -91,7 +91,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           child: const TourScreen(),
         ),
       ),
-      GoRoute(
+      _route(
         path: Routes.home,
         builder: (context, state) => BlocProvider(
           create: (context) => HomeCubit(
@@ -115,7 +115,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
         ),
         routes: [
-          GoRoute(
+          _route(
             path: 'board',
             builder: (context, state) {
               // Sem parâmetros, a tela continua a partida em andamento (ou
@@ -199,7 +199,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               );
             },
           ),
-          GoRoute(
+          _route(
             path: 'achievements',
             builder: (context, state) => BlocProvider(
               create: (context) =>
@@ -208,7 +208,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               child: const AchievementsScreen(),
             ),
           ),
-          GoRoute(
+          _route(
             path: 'school',
             builder: (context, state) => BlocProvider(
               create: (_) => SchoolCubit(
@@ -226,7 +226,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ),
             routes: [
-              GoRoute(
+              _route(
                 path: ':lesson',
                 builder: (context, state) {
                   final id = state.pathParameters['lesson']!;
@@ -245,28 +245,29 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ],
           ),
-          GoRoute(
+          _route(
             path: 'journey',
             builder: (context, state) => BlocProvider(
               create: (_) => _journeyCubit(context)..load(),
               child: const JourneyScreen(),
             ),
             routes: [
-              GoRoute(
+              _route(
                 path: ':rung',
                 builder: (context, state) => BlocProvider(
-                  create: (_) => _journeyCubit(context)..load(),
+                  create: (_) =>
+                      _journeyCubit(context, initial: state.extra)..load(),
                   child: RungScreen(rungId: state.pathParameters['rung']!),
                 ),
                 routes: [
-                  GoRoute(
+                  _route(
                     path: ':position',
                     builder: (context, state) => BlocProvider(
-                      create: (_) => _journeyCubit(context)
-                        ..load(
-                          rungId: state.pathParameters['rung'],
-                          positionId: state.pathParameters['position'],
-                        ),
+                      create: (_) =>
+                          _journeyCubit(context, initial: state.extra)..load(
+                            rungId: state.pathParameters['rung'],
+                            positionId: state.pathParameters['position'],
+                          ),
                       child: const ChallengeScreen(),
                     ),
                   ),
@@ -274,7 +275,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ],
           ),
-          GoRoute(
+          _route(
             path: 'speedruns',
             builder: (context, state) => BlocProvider(
               create: (context) => _speedrunCubit(context)..load(),
@@ -286,7 +287,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ),
             routes: [
-              GoRoute(
+              _route(
                 path: ':speedrun',
                 builder: (context, state) => BlocProvider(
                   create: (context) =>
@@ -302,7 +303,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ),
                 routes: [
-                  GoRoute(
+                  _route(
                     path: ':attempt',
                     builder: (context, state) => BlocProvider(
                       // A tentativa é refeita a cada visita (as etapas
@@ -322,14 +323,14 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ],
           ),
-          GoRoute(
+          _route(
             path: 'catalog',
             builder: (context, state) => BlocProvider(
               create: (context) => _catalogCubit(context)..load(),
               child: const CatalogScreen(),
             ),
             routes: [
-              GoRoute(
+              _route(
                 path: ':category',
                 builder: (context, state) => BlocProvider(
                   create: (context) => _catalogCubit(context)..load(),
@@ -338,7 +339,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ),
                 routes: [
-                  GoRoute(
+                  _route(
                     path: ':subcategory',
                     builder: (context, state) {
                       final subcategory = state.pathParameters['subcategory']!;
@@ -357,7 +358,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ],
           ),
-          GoRoute(
+          _route(
             path: 'setup',
             builder: (context, state) {
               final query = state.uri.queryParameters;
@@ -382,7 +383,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               );
             },
           ),
-          GoRoute(
+          _route(
             path: 'custom',
             builder: (context, state) => BlocProvider(
               create: (context) =>
@@ -391,19 +392,19 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               child: const CustomPositionScreen(),
             ),
           ),
-          GoRoute(
+          _route(
             path: 'settings',
             builder: (context, state) => const SettingsScreen(),
             routes: [
-              GoRoute(
+              _route(
                 path: 'language',
                 builder: (context, state) => const LanguageScreen(),
               ),
-              GoRoute(
+              _route(
                 path: 'theme',
                 builder: (context, state) => const ThemeScreen(),
               ),
-              GoRoute(
+              _route(
                 path: 'profile',
                 builder: (context, state) => BlocProvider(
                   create: (context) =>
@@ -411,19 +412,19 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   child: const ProfileScreen(),
                 ),
               ),
-              GoRoute(
+              _route(
                 path: 'board-appearance',
                 builder: (context, state) => const BoardAppearanceScreen(),
               ),
-              GoRoute(
+              _route(
                 path: 'board-behavior',
                 builder: (context, state) => const BoardBehaviorScreen(),
               ),
-              GoRoute(
+              _route(
                 path: 'clock',
                 builder: (context, state) => const ClockSettingsScreen(),
               ),
-              GoRoute(
+              _route(
                 path: 'maia',
                 // Só existe em build de desenvolvimento e de teste.
                 redirect: (context, state) =>
@@ -448,15 +449,19 @@ CatalogCubit _catalogCubit(BuildContext context) => CatalogCubit(
   context.read<ProgressRepository>(),
 );
 
-JourneyCubit _journeyCubit(BuildContext context) => JourneyCubit(
-  context.read<JourneyRepository>(),
-  context.read<ProgressRepository>(),
-  onboarding: context.read<OnboardingRepository>(),
-  characters: context.read<CharacterRepository>(),
-  school: context.read<SchoolProgressRepository>(),
-  lessons: context.read<LessonRepository>(),
-  language: _language(context),
-);
+/// [initial]: o que a tela de antes já leu (vem no `extra` da rota). A tela
+/// abre pronta, e o retrato e o tabuleiro voam até ela.
+JourneyCubit _journeyCubit(BuildContext context, {Object? initial}) =>
+    JourneyCubit(
+      context.read<JourneyRepository>(),
+      context.read<ProgressRepository>(),
+      initial: initial is JourneyState ? initial : null,
+      onboarding: context.read<OnboardingRepository>(),
+      characters: context.read<CharacterRepository>(),
+      school: context.read<SchoolProgressRepository>(),
+      lessons: context.read<LessonRepository>(),
+      language: _language(context),
+    );
 
 /// O idioma do app, lido no `builder` da rota (no `create` de um provider não
 /// se pode ouvir o `Localizations`).
@@ -470,4 +475,20 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   now: context.read<Now>(),
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
+);
+
+/// Uma rota com página Material (com a transição do tema). O go_router 18
+/// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
+/// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
+GoRoute _route({
+  required String path,
+  required GoRouterWidgetBuilder builder,
+  GoRouterRedirect? redirect,
+  List<RouteBase> routes = const [],
+}) => GoRoute(
+  path: path,
+  redirect: redirect,
+  pageBuilder: (context, state) =>
+      MaterialPage<void>(key: state.pageKey, child: builder(context, state)),
+  routes: routes,
 );

@@ -55,7 +55,12 @@ class JourneyScreen extends StatelessWidget {
 }
 
 Future<void> _openRung(BuildContext context, String id) async {
-  await context.push(Routes.journeyRung(id));
+  // A tela do adversário abre com o que esta já leu: sem espera, e o retrato
+  // voa até ela.
+  await context.push(
+    Routes.journeyRung(id),
+    extra: context.read<JourneyCubit>().state,
+  );
   // Ao voltar, um degrau pode ter sido concluído.
   if (context.mounted) await context.read<JourneyCubit>().load();
 }
