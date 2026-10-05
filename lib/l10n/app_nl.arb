@@ -359,5 +359,6 @@
   "homeStatBestRun": "Beste speedrun",
   "homeTools": "Hulpmiddelen",
   "profileRatingPeriodGames": "Laatste {count}",
-  "profileRatingPeriodAll": "Alle"
+  "profileRatingPeriodAll": "Alle",
+  "catalogDone": "{done} van {total} gedaan"
 }

@@ -7,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/staggered_entrance.dart';
 
 /// As conquistas: as obtidas primeiro, com a data, e as bloqueadas com o que
 /// falta fazer.
@@ -42,53 +43,56 @@ class AchievementsScreen extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
-                for (final achievement in [
+                for (final (index, achievement) in [
                   ...all.where((a) => state.unlocked.containsKey(a.id)),
                   ...all.where((a) => !state.unlocked.containsKey(a.id)),
-                ])
-                  Builder(
-                    builder: (context) {
-                      final at = state.unlocked[achievement.id];
-                      final unlocked = at != null;
-                      return ListTile(
-                        key: AchievementsKeys.item(achievement.id),
-                        leading: CircleAvatar(
-                          backgroundColor: unlocked
-                              ? colors.primaryContainer
-                              : colors.surfaceContainerHighest,
-                          child: Icon(
-                            achievement.iconData,
-                            color: unlocked
-                                ? colors.onPrimaryContainer
-                                : colors.outline,
+                ].indexed)
+                  StaggeredEntrance(
+                    index: index,
+                    child: Builder(
+                      builder: (context) {
+                        final at = state.unlocked[achievement.id];
+                        final unlocked = at != null;
+                        return ListTile(
+                          key: AchievementsKeys.item(achievement.id),
+                          leading: CircleAvatar(
+                            backgroundColor: unlocked
+                                ? colors.primaryContainer
+                                : colors.surfaceContainerHighest,
+                            child: Icon(
+                              achievement.iconData,
+                              color: unlocked
+                                  ? colors.onPrimaryContainer
+                                  : colors.outline,
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          achievement.title(l10n),
-                          style: unlocked
+                          title: Text(
+                            achievement.title(l10n),
+                            style: unlocked
+                                ? null
+                                : TextStyle(color: colors.onSurfaceVariant),
+                          ),
+                          subtitle: Text(
+                            unlocked
+                                ? l10n.achievementsUnlockedOn(
+                                    date.format(at.toLocal()),
+                                  )
+                                : achievement.description(l10n),
+                            key: unlocked
+                                ? AchievementsKeys.unlockedOn(achievement.id)
+                                : null,
+                          ),
+                          trailing: unlocked
                               ? null
-                              : TextStyle(color: colors.onSurfaceVariant),
-                        ),
-                        subtitle: Text(
-                          unlocked
-                              ? l10n.achievementsUnlockedOn(
-                                  date.format(at.toLocal()),
-                                )
-                              : achievement.description(l10n),
-                          key: unlocked
-                              ? AchievementsKeys.unlockedOn(achievement.id)
-                              : null,
-                        ),
-                        trailing: unlocked
-                            ? null
-                            : Icon(
-                                Icons.lock_outline,
-                                key: AchievementsKeys.locked(achievement.id),
-                                color: colors.outline,
-                                semanticLabel: l10n.achievementsLockedLabel,
-                              ),
-                      );
-                    },
+                              : Icon(
+                                  Icons.lock_outline,
+                                  key: AchievementsKeys.locked(achievement.id),
+                                  color: colors.outline,
+                                  semanticLabel: l10n.achievementsLockedLabel,
+                                ),
+                        );
+                      },
+                    ),
                   ),
               ],
             ),

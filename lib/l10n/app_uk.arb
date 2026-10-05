@@ -359,5 +359,6 @@
   "homeStatBestRun": "Найкращий спідран",
   "homeTools": "Інструменти",
   "profileRatingPeriodGames": "Останні {count}",
-  "profileRatingPeriodAll": "Усі"
+  "profileRatingPeriodAll": "Усі",
+  "catalogDone": "{done} з {total} пройдено"
 }

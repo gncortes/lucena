@@ -359,5 +359,6 @@
   "homeStatBestRun": "بهترین اسپیدران",
   "homeTools": "ابزارها",
   "profileRatingPeriodGames": "{count} تای آخر",
-  "profileRatingPeriodAll": "همه"
+  "profileRatingPeriodAll": "همه",
+  "catalogDone": "{done} از {total} انجام شده"
 }

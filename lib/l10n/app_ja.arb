@@ -359,5 +359,6 @@
   "homeStatBestRun": "最速スピードラン",
   "homeTools": "ツール",
   "profileRatingPeriodGames": "直近{count}局",
-  "profileRatingPeriodAll": "すべて"
+  "profileRatingPeriodAll": "すべて",
+  "catalogDone": "{done}/{total} クリア"
 }
