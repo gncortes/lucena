@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
@@ -166,5 +167,62 @@ void main() {
     expect(games, hasLength(1));
     expect(await database.select(database.ratingHistory).get(), isEmpty);
     expect(await database.select(database.unlockedAchievements).get(), isEmpty);
+  });
+
+  test('da versão 5 para a 6: as partidas ficam, sem tempo por lance nem '
+      'lado, e as novas guardam os dois', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          // A tabela de partidas da versão 5, antes do tempo por lance.
+          raw
+            ..execute(profiles)
+            ..execute(
+              'CREATE TABLE games (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, position_id TEXT NOT NULL, played_at INTEGER '
+              'NOT NULL, outcome TEXT NOT NULL, fulfilled INTEGER NOT NULL, '
+              'opponent TEXT NOT NULL, opponent_level INTEGER NULL, '
+              'started_at INTEGER NULL, start_fen TEXT NULL, moves TEXT NOT '
+              "NULL DEFAULT '', end_reason TEXT NULL, user_time TEXT NULL, "
+              'opponent_time TEXT NULL, user_clock_ms INTEGER NULL, '
+              'challenge_id TEXT NULL, speedrun_attempt_id INTEGER NULL, '
+              'speedrun_stage INTEGER NULL)',
+            )
+            ..execute(
+              'CREATE TABLE speedrun_attempts (id INTEGER NOT NULL PRIMARY '
+              'KEY AUTOINCREMENT, speedrun_id TEXT NOT NULL, started_at '
+              'INTEGER NOT NULL, abandoned_at INTEGER NULL)',
+            )
+            ..execute(
+              'INSERT INTO games (position_id, played_at, outcome, fulfilled, '
+              "opponent, moves) VALUES ('basic.queen.0001', 1767268800, "
+              "'win', 1, 'maia', 'c1c7 d7e6')",
+            )
+            ..execute('PRAGMA user_version = 5');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final repository = LocalProgressRepository(database);
+
+    final old = (await repository.allAttempts()).single;
+    expect(old.moves, ['c1c7', 'd7e6']);
+    expect(old.moveTimes, isEmpty);
+    expect(old.userSide, isNull);
+
+    final fresh = Attempt(
+      positionId: 'basic.rook.0001',
+      playedAt: DateTime.utc(2026, 10, 5, 12),
+      outcome: AttemptOutcome.win,
+      fulfilled: true,
+      opponent: OpponentKind.maia,
+      moves: const ['e2e4'],
+      moveTimes: const [Duration(milliseconds: 1200)],
+      userSide: Side.black,
+    );
+    final id = await repository.addAttempt(fresh);
+    final saved = (await repository.attemptsById([id]))[id]!;
+    expect(saved.moveTimes, const [Duration(milliseconds: 1200)]);
+    expect(saved.userSide, Side.black);
   });
 }

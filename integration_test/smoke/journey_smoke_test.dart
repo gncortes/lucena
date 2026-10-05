@@ -4,6 +4,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:patrol/patrol.dart';
 
 import '../robots/app_robot.dart';
+import '../robots/free_board_robot.dart';
 import '../robots/home_robot.dart';
 import '../robots/journey_robot.dart';
 import '../robots/settings_robot.dart';
@@ -81,9 +82,9 @@ void main() {
     await app.restart();
     await speedrun.open();
     await speedrun.openSpeedrun('e2e.rung');
+    // "Começar" abre a primeira etapa no tabuleiro; ela continua ali.
     await speedrun.start();
     await app.sendToBackgroundAndReturn();
-    speedrun.expectTotal('0:00.0');
-    speedrun.expectPlayButton('Play stage 1');
+    await FreeBoardRobot($).expectVisible();
   });
 }

@@ -168,13 +168,12 @@ void main() {
     await speedrun.open();
     await speedrun.openSpeedrun('e2e.rung');
     await speedrun.start();
-    await speedrun.playStage();
     final (from, to) = E2EJourneyRepository.mate;
     await board.move(from, to);
     await progress.expectRatingChanged();
-    await speedrun.continueAfterGame();
-    // Tentativa, speedrun e lista: de volta à tela inicial.
-    for (var screen = 0; screen < 3; screen++) {
+    // Partida, speedrun e lista: de volta à tela inicial.
+    await board.leave();
+    for (var screen = 0; screen < 2; screen++) {
       await speedrun.back();
     }
     await HomeRobot($).expectVisible();

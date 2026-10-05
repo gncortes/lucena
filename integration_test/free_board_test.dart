@@ -26,7 +26,7 @@ void main() {
   });
 
   patrolTest('rever a partida: tocar num lance mostra aquele momento, sem '
-      'mexer nas peças; avançar volta para a partida', ($) async {
+      'mexer nas peças; o último volta para a partida', ($) async {
     final board = FreeBoardRobot($);
     await AppRobot($).open();
     await board.open();
@@ -44,11 +44,11 @@ void main() {
     board.expectPieceAt('d7', Piece.blackPawn);
     await board.expectMoves(['e4', 'e5', 'Nf3']);
 
-    await board.viewPrevious();
-    board.expectPieceAt('e2', Piece.whitePawn);
-    await board.viewNext();
-    await board.viewNext();
-    await board.viewNext();
+    await board.viewMove(1);
+    board.expectPieceAt('e5', Piece.blackPawn);
+    board.expectPieceAt('g1', Piece.whiteKnight);
+    // O último lance volta para a partida.
+    await board.viewMove(2);
     board.expectPieceAt('f3', Piece.whiteKnight);
     // De volta à partida: o lance entra.
     await board.move('b8', 'c6');

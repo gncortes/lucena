@@ -13,16 +13,14 @@ const _endingRun = 'e2e.ending';
 const _english = Locale('en', 'US');
 
 void main() {
-  /// Joga a etapa da vez: o relógio do jogador anda [seconds] e ele dá o mate
-  /// (ou desiste, sem [won]). Volta para a tentativa.
+  /// A etapa no tabuleiro: o relógio do jogador anda [seconds] e ele dá o
+  /// mate (ou desiste, sem [won]).
   Future<void> playStage(
     PatrolIntegrationTester $,
     int seconds, {
     bool won = true,
   }) async {
-    final speedrun = SpeedrunRobot($);
     final board = FreeBoardRobot($);
-    await speedrun.playStage();
     await AppRobot($).advanceTime(Duration(seconds: seconds));
     if (won) {
       final (from, to) = E2EJourneyRepository.mate;
@@ -30,15 +28,16 @@ void main() {
     } else {
       await board.resign();
     }
-    await speedrun.continueAfterGame();
   }
 
-  /// Uma tentativa inteira do speedrun de degrau (duas etapas).
+  /// Uma tentativa inteira do speedrun de degrau (duas etapas), até o resumo.
   Future<void> runRung(PatrolIntegrationTester $, int first, int second) async {
     final speedrun = SpeedrunRobot($);
     await speedrun.start();
     await playStage($, first);
+    await speedrun.continueToNextStage();
     await playStage($, second);
+    await speedrun.finishAttempt();
   }
 
   patrolTest('speedrun de degrau completo: parciais, total e recorde', (
@@ -52,12 +51,13 @@ void main() {
 
     await speedrun.start();
     await playStage($, 5);
-    speedrun.expectStageTime(0, '0:05.0');
-    speedrun.expectTotal('0:05.0');
-    // Tempo na tela da tentativa (entre etapas) não conta.
+    // Tempo no fim da etapa, antes de seguir, não conta.
     await app.advanceTime(const Duration(minutes: 3));
+    await speedrun.continueToNextStage();
     await playStage($, 7);
+    await speedrun.finishAttempt();
 
+    speedrun.expectStageTime(0, '0:05.0');
     speedrun.expectStageTime(1, '0:07.0');
     speedrun.expectTotal('0:12.0');
     await speedrun.expectNewRecord(record: true);
@@ -88,26 +88,31 @@ void main() {
     await speedrun.expectBest('0:10.0');
   });
 
-  patrolTest('perder uma etapa: ela se repete e o tempo perdido conta', (
-    $,
-  ) async {
+  patrolTest('perder uma etapa encerra a tentativa; "tentar novamente" '
+      'recomeça da primeira', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     await app.open(systemLocale: _english);
     await speedrun.open();
     await speedrun.openSpeedrun(_rungRun);
     await speedrun.start();
+    await playStage($, 4);
+    await speedrun.continueToNextStage();
+    await playStage($, 3, won: false);
 
-    await playStage($, 4, won: false);
-    speedrun.expectStageLosses(0, '1 loss');
-    speedrun.expectStageTime(0, '0:04.0');
-    speedrun.expectPlayButton('Play stage 1 again');
-
+    // Tentativa nova, da primeira etapa: o tempo da perdida não conta.
+    await speedrun.retry();
     await playStage($, 3);
+    await speedrun.continueToNextStage();
     await playStage($, 5);
-    speedrun.expectStageTime(0, '0:07.0');
-    speedrun.expectTotal('0:12.0');
+    await speedrun.finishAttempt();
+    speedrun.expectStageTime(0, '0:03.0');
+    speedrun.expectTotal('0:08.0');
     await speedrun.expectNewRecord(record: true);
+
+    // A perdida fica no histórico, até onde chegou.
+    await speedrun.back();
+    await speedrun.expectHistory(1, 'Gave up at stage 2 of 2');
   });
 
   patrolTest('fechar à força no meio da etapa: tentativa e relógio voltam', (
@@ -121,16 +126,14 @@ void main() {
     await speedrun.openSpeedrun(_rungRun);
     await speedrun.start();
     await playStage($, 4);
-    await speedrun.playStage();
+    await speedrun.continueToNextStage();
     await app.advanceTime(const Duration(seconds: 3));
 
     await app.restart();
     // O app reabre na partida da etapa, com o relógio correndo.
     await board.expectVisible();
-    await app.advanceTime(const Duration(seconds: 2));
-    final (from, to) = E2EJourneyRepository.mate;
-    await board.move(from, to);
-    await speedrun.continueAfterGame();
+    await playStage($, 2);
+    await speedrun.finishAttempt();
 
     speedrun.expectStageTime(0, '0:04.0');
     speedrun.expectStageTime(1, '0:05.0');
@@ -149,8 +152,11 @@ void main() {
 
     await speedrun.start();
     await playStage($, 3);
+    await speedrun.continueToNextStage();
     await playStage($, 4);
+    await speedrun.continueToNextStage();
     await playStage($, 6);
+    await speedrun.finishAttempt();
     await speedrun.expectNewRecord(record: true);
     await speedrun.back();
 
@@ -162,8 +168,8 @@ void main() {
     await speedrun.expectItemBest(_endingRun, '0:13.0');
   });
 
-  patrolTest('desistir no meio: o histórico diz até onde a tentativa foi, e '
-      'continua ao reabrir', ($) async {
+  patrolTest('sair no meio pede confirmação; o histórico diz até onde a '
+      'tentativa foi, também ao reabrir', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     await app.open(systemLocale: _english);
@@ -172,13 +178,13 @@ void main() {
 
     await speedrun.start();
     await playStage($, 3);
-    await speedrun.abandon();
-    await speedrun.back();
+    await speedrun.continueToNextStage();
+    await speedrun.quit();
 
     await speedrun.expectHistory(0, 'Gave up at stage 2 of 3');
     // Sem tentativa em andamento, dá para começar de novo.
     await speedrun.expectCanStart();
-    // Tocar na tentativa abre os detalhes dela, com a marca de cada etapa.
+    // Tocar na tentativa abre o resumo dela, com a marca de cada etapa.
     await speedrun.openHistory(0);
     await speedrun.expectAbandonedDetails(firstStage: '0:03.0');
     await speedrun.back();

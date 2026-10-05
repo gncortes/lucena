@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
 
-/// Telas do speedrun: lista, speedrun, tentativa e o fim dela.
+/// Telas do speedrun: lista, speedrun, as etapas no tabuleiro e o resumo da
+/// tentativa.
 class SpeedrunRobot {
   const SpeedrunRobot(this.$);
 
@@ -20,12 +22,15 @@ class SpeedrunRobot {
     await $(SpeedrunKeys.listScreen).waitUntilVisible();
   }
 
-  /// Troca o ritmo da lista pelo painel (`180+2` é o 3+2).
+  /// Troca o ritmo no alto da lista (`180+2` é o 3+2): a categoria e o
+  /// ritmo dela.
   Future<void> choosePace(String code) async {
-    await $(SpeedrunKeys.pace).tap();
-    await $(PaceKeys.option(code)).waitUntilVisible();
-    await $(PaceKeys.option(code)).tap();
-    await $(PaceKeys.confirm).tap();
+    final time = TimeControl.tryParse(code)!;
+    await $(SpeedrunKeys.paceCategory(PaceCategory.of(time).name))
+        .scrollTo()
+        .tap();
+    await $(SpeedrunKeys.paceOption(code)).waitUntilVisible();
+    await $(SpeedrunKeys.paceOption(code)).tap();
     await $.pumpAndSettle();
   }
 
@@ -39,41 +44,49 @@ class SpeedrunRobot {
     await $(SpeedrunKeys.screen).waitUntilVisible();
   }
 
-  /// "Começar": a tentativa abre.
+  /// "Começar": a primeira etapa abre direto no tabuleiro, no ritmo da
+  /// lista.
   Future<void> start() async {
     await $(SpeedrunKeys.start).waitUntilExists();
     await $(SpeedrunKeys.start).tap();
-    // O painel do ritmo abre com o último escolhido marcado.
-    await $(PaceKeys.confirm).waitUntilVisible();
-    await $(PaceKeys.confirm).tap();
-    await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
-    await $(SpeedrunKeys.total).waitUntilVisible();
-  }
-
-  /// O botão da etapa da vez: a partida abre no tabuleiro.
-  Future<void> playStage() async {
-    await $(SpeedrunKeys.play).scrollTo().tap();
     await $(FreeBoardKeys.board).waitUntilVisible();
   }
 
-  /// No fim da partida da etapa, volta para a tentativa.
-  Future<void> continueAfterGame() async {
+  /// Venceu a etapa e há outra: "Continuar" abre a próxima no lugar desta.
+  Future<void> continueToNextStage() async {
+    await $(FreeBoardKeys.endNewGameButton).tap();
+    await $.pumpAndSettle();
+    await $(FreeBoardKeys.board).waitUntilVisible();
+  }
+
+  /// Venceu a última etapa: "Continuar" abre o resumo da tentativa.
+  Future<void> finishAttempt() async {
     await $(FreeBoardKeys.endNewGameButton).tap();
     await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
     await $(SpeedrunKeys.total).waitUntilVisible();
   }
 
-  Future<void> back() async {
+  /// Perdeu a etapa: "Tentar novamente" começa uma tentativa nova, da
+  /// primeira etapa.
+  Future<void> retry() async {
+    await $(FreeBoardKeys.endNewGameButton).tap();
+    await $.pumpAndSettle();
+    await $(FreeBoardKeys.board).waitUntilVisible();
+  }
+
+  /// Sai da etapa no meio pelo voltar, confirmando: a tentativa termina e
+  /// a tela do speedrun volta.
+  Future<void> quit() async {
     await $(BackButton).tap();
+    await $(FreeBoardKeys.speedrunQuitConfirm).waitUntilVisible();
+    await $(FreeBoardKeys.speedrunQuitConfirm).tap();
+    await $(SpeedrunKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
 
-  /// Na tentativa: desiste dela pelo menu, confirmando.
-  Future<void> abandon() async {
-    await $(SpeedrunKeys.menu).tap();
-    await $(SpeedrunKeys.abandon).tap();
-    await $(SpeedrunKeys.abandonConfirm).tap();
-    await $(SpeedrunKeys.abandoned).waitUntilVisible();
+  Future<void> back() async {
+    await $(BackButton).tap();
+    await $.pumpAndSettle();
   }
 
   /// Na tela do speedrun: o texto da tentativa [index] do histórico (0 é a
@@ -110,12 +123,9 @@ class SpeedrunRobot {
     expect(_text(SpeedrunKeys.stageTime(stage)), time);
   }
 
-  void expectStageLosses(int stage, String text) {
-    expectText(_text(SpeedrunKeys.stageLosses(stage)), text);
-  }
-
-  void expectPlayButton(String text) {
-    expectTextIn(find.byKey(SpeedrunKeys.play), text);
+  /// No resumo: o texto da etapa [stage] (o adversário, as derrotas).
+  void expectStageText(int stage, String text) {
+    expectTextIn(find.byKey(SpeedrunKeys.stage(stage)), text);
   }
 
   Future<void> expectNewRecord({required bool record}) async {
@@ -124,7 +134,6 @@ class SpeedrunRobot {
     } else {
       expect(find.byKey(SpeedrunKeys.newRecord), findsNothing);
     }
-    expect(find.byKey(SpeedrunKeys.play), findsNothing);
   }
 
   void expectRecordDifference(String text) {
@@ -155,5 +164,10 @@ class SpeedrunRobot {
     }
   }
 
-  String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;
+  // O texto na key, simples ou com partes (os tempos têm os décimos
+  // menores).
+  String? _text(Key key) {
+    final text = $.tester.widget<Text>(find.byKey(key));
+    return text.data ?? text.textSpan?.toPlainText();
+  }
 }

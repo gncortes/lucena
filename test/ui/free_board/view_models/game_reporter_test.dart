@@ -170,4 +170,86 @@ void main() {
       contains(FeedbackKind.newSpeedrunRecord),
     );
   });
+
+  group('o passo seguinte do speedrun', () {
+    late FakeSpeedrunRepository speedruns;
+
+    setUp(() {
+      speedruns = FakeSpeedrunRepository(progress);
+      reporter = GameReporter(
+        rating: rating,
+        achievements: achievements,
+        journey: FakeJourneyRepository(),
+        progress: progress,
+        speedruns: speedruns,
+        positions: FakePositionsRepository(),
+        now: now,
+      );
+    });
+
+    Future<GameReport> stage(int attempt, int index, {bool won = true}) async {
+      final game = Attempt(
+        positionId: samplePositions[0].id,
+        playedAt: now(),
+        outcome: won ? AttemptOutcome.win : AttemptOutcome.loss,
+        fulfilled: won,
+        opponent: OpponentKind.maia,
+        opponentLevel: 1000,
+        startFen: samplePositions[0].fen,
+        userClock: const Duration(seconds: 40),
+        speedrunAttemptId: attempt,
+        speedrunStage: index,
+      );
+      final id = await progress.addAttempt(game);
+      return reporter.report(
+        game,
+        gameId: id,
+        userSide: Side.white,
+        drawGoal: false,
+      );
+    }
+
+    test('venceu uma etapa: a próxima', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+
+      final step = (await stage(attempt.id, 0)).speedrun!;
+
+      expect(step.speedrunId, 'rung.1000');
+      expect(step.attemptId, attempt.id);
+      expect(step.stage, 1);
+      expect(step.challenge, isNotNull);
+      expect(step.lost, isFalse);
+      expect(step.finished, isFalse);
+    });
+
+    test('venceu a última: o fim da tentativa', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+      await stage(attempt.id, 0);
+
+      final step = (await stage(attempt.id, 1)).speedrun!;
+
+      expect(step.finished, isTrue);
+      expect(step.stage, isNull);
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
+    });
+
+    test('perdeu: a tentativa termina ali e "tentar novamente" volta à '
+        'primeira etapa', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+      await stage(attempt.id, 0);
+
+      final step = (await stage(attempt.id, 1, won: false)).speedrun!;
+
+      expect(step.lost, isTrue);
+      expect(step.stage, 0);
+      expect(step.challenge, isNotNull);
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, now());
+    });
+
+    test('fora do speedrun, sem passo seguinte', () async {
+      final report = await play(fulfilled: true);
+
+      expect(report.speedrun, isNull);
+    });
+  });
 }
