@@ -46,6 +46,16 @@ Lista viva: o Gabriel manda prints do celular e os pontos entram aqui. Vira uma 
 
   Proposta de layout: cartões em vez de linhas; o retrato do personagem (ou o material do final) no cartão; o melhor tempo em destaque quando houver; tentativa em andamento no topo com "Continuar"; a explicação vira um ícone de ajuda (ⓘ) que abre um painel; espaço embaixo para rolar até o fim.
 
+## Animações
+
+- [ ] **Transições entre telas.** Hoje a troca de tela é a padrão do Android e parece seca. Proposta:
+  - transição única no app inteiro (deslizar com fade, ou a "shared axis" do Material) com curva suave, no tema (`pageTransitionsTheme`) e nas rotas do `go_router`;
+  - elementos compartilhados (`Hero`): o retrato do personagem da Jornada para o degrau e para a partida; o tabuleiro em miniatura do desafio para o tabuleiro da partida;
+  - listas entrando em cascata (cada item com um pequeno atraso) na Jornada, no degrau, no speedrun e nas conquistas;
+  - fim da partida: painel do resultado e mensagens surgindo em sequência; conquista nova com um destaque (brilho/escala);
+  - números que mudam (rating, tempo do speedrun) contando até o valor novo;
+  - tudo respeitando "remover animações" do sistema.
+
 ## Nomes no app
 
 - [ ] **Revisar a palavra "degrau" em todas as telas.** Usar o personagem ("Contra o Coco") ou "nível" onde "degrau" aparece para o jogador (Jornada, tour, conquistas, mensagens do fim da partida). Manter "degrau" só no código.
