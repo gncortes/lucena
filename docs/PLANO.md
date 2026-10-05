@@ -680,7 +680,7 @@ Visão completa em `docs/VISAO-GAMIFICACAO.md`. Cada tarefa é uma entrega intei
 | T23 | Speedrun de nível e de final, com parciais, recordes e histórico | T21 | `v1.3.0` | Opus 5.5 |
 | T24 | Speedrun de exercícios e completo, conquistas e feedback | T22, T23 | `v1.4.0` | Opus 5.5 |
 | T25 | Personagens: avaliação, eventos, emoção e banco de falas | T20, T22 | `v1.5.0` | Fable 5.1 |
-| T26 | Personagens: avatares e animações | T25 | `v1.6.0` | Opus 5.5 |
+| T26 | Personagens: avatares (PNGs do Gabriel, sem animação) | T25 | `v1.6.0` | Sonnet 5.5 |
 | T27 | Primeira abertura: tour e nível inicial | T24, T26 | `v1.7.0` | Sonnet 5.5 |
 
 Ordem: T20 → T21 → (T22 e T23 em paralelo) → T24 → T25 → T26 → T27. A T23 só precisa da Jornada, então pode sair antes da T22.
