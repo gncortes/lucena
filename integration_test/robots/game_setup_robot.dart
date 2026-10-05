@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
+import 'package:lucena/ui/game_setup/widgets/custom_pace_sheet.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
@@ -24,46 +25,66 @@ class GameSetupRobot {
     await $.pumpAndSettle();
   }
 
-  /// Ajusta o tempo de `user` ou `opponent` pelos botões de menos e mais.
+  /// Ajusta o tempo de `user` ou `opponent` no painel "Personalizar ritmo",
+  /// sem mexer no do outro lado: desliga "mesmo tempo para os dois".
   Future<void> setTime(
     String who, {
     required int minutes,
     required int increment,
   }) async {
-    await _stepTo(who, 'minutes', minutes);
-    await _stepTo(who, 'increment', increment);
+    await _openCustom();
+    await _slide(who, 'minutes', CustomPaceSteps.minutes, minutes);
+    await _slide(who, 'increment', CustomPaceSteps.increments, increment);
+    await $(GameSetupKeys.customConfirm).tap();
+    await $.pumpAndSettle();
   }
 
-  Future<void> _stepTo(String who, String field, int target) async {
-    // A tela é mais alta que o aparelho: o campo pode estar fora da vista.
-    await $(GameSetupKeys.value(who, field)).scrollTo();
-    for (var guard = 0; guard < 200; guard++) {
-      final current = int.parse(_text(GameSetupKeys.value(who, field)));
-      if (current == target) return;
-      final key = current < target
-          ? GameSetupKeys.increase(who, field)
-          : GameSetupKeys.decrease(who, field);
-      await $(key).scrollTo().tap();
+  Future<void> _openCustom() async {
+    await $(GameSetupKeys.customPace).scrollTo().tap();
+    await $(GameSetupKeys.customSheet).waitUntilVisible();
+    final same = $.tester.widget<SwitchListTile>(
+      find.byKey(GameSetupKeys.customSame),
+    );
+    if (same.value) {
+      await $(GameSetupKeys.customSame).tap();
+      await $.pumpAndSettle();
     }
-    fail('não chegou em $target em $who.$field');
   }
 
+  // O controle deslizante anda por passos: o cenário pede o valor direto.
+  Future<void> _slide(
+    String who,
+    String field,
+    List<int> steps,
+    int value,
+  ) async {
+    final index = steps.indexOf(value);
+    if (index == -1) fail('$value não é um passo de $field');
+    final key = GameSetupKeys.customSlider(who, field);
+    await $(key).scrollTo();
+    $.tester.widget<Slider>(find.byKey(key)).onChanged!(index.toDouble());
+    await $.pumpAndSettle();
+  }
+
+  /// Confere, no painel "Personalizar ritmo", o tempo de `user` ou
+  /// `opponent`.
   Future<void> expectTime(
     String who, {
     required int minutes,
     required int increment,
   }) async {
-    await $(GameSetupKeys.value(who, 'increment')).scrollTo();
-    expect(_text(GameSetupKeys.value(who, 'minutes')), '$minutes');
-    expect(_text(GameSetupKeys.value(who, 'increment')), '$increment');
-  }
-
-  Future<void> expectZeroTimeError() async {
-    await $(GameSetupKeys.timeError).scrollTo();
-    final start = $.tester.widget<FilledButton>(
-      find.byKey(GameSetupKeys.startButton),
+    await $(GameSetupKeys.customPace).scrollTo().tap();
+    await $(GameSetupKeys.customSheet).waitUntilVisible();
+    // Com o mesmo tempo para os dois, só o primeiro bloco aparece.
+    final shown = find.byKey(GameSetupKeys.customValue(who)).evaluate().isEmpty
+        ? 'user'
+        : who;
+    expect(
+      _text(GameSetupKeys.customValue(shown)),
+      startsWith('$minutes+$increment'),
     );
-    expect(start.onPressed, isNull);
+    await $(GameSetupKeys.customConfirm).tap();
+    await $.pumpAndSettle();
   }
 
   void expectPreviewOrientation(Side side) {

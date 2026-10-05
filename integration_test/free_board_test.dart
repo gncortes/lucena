@@ -25,6 +25,36 @@ void main() {
     );
   });
 
+  patrolTest('rever a partida: tocar num lance mostra aquele momento, sem '
+      'mexer nas peças; avançar volta para a partida', ($) async {
+    final board = FreeBoardRobot($);
+    await AppRobot($).open();
+    await board.open();
+    await board.move('e2', 'e4');
+    await board.move('e7', 'e5');
+    await board.move('g1', 'f3');
+
+    // O primeiro lance: só o peão do rei saiu.
+    await board.viewMove(0);
+    board.expectPieceAt('e4', Piece.whitePawn);
+    board.expectPieceAt('e5', null);
+    board.expectPieceAt('g1', Piece.whiteKnight);
+    // Revendo, o tabuleiro não aceita lances.
+    await board.move('d7', 'd5');
+    board.expectPieceAt('d7', Piece.blackPawn);
+    await board.expectMoves(['e4', 'e5', 'Nf3']);
+
+    await board.viewPrevious();
+    board.expectPieceAt('e2', Piece.whitePawn);
+    await board.viewNext();
+    await board.viewNext();
+    await board.viewNext();
+    board.expectPieceAt('f3', Piece.whiteKnight);
+    // De volta à partida: o lance entra.
+    await board.move('b8', 'c6');
+    await board.expectMoves(['e4', 'e5', 'Nf3', 'Nc6']);
+  });
+
   patrolTest('lance ilegal: a peça volta e nada muda', ($) async {
     final board = FreeBoardRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));

@@ -13,6 +13,9 @@ abstract final class HomeKeys {
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
 
+  /// O título dos caminhos ("O que você quer fazer?").
+  static const pathsTitle = Key('home.paths.title');
+
   static const achievementsButton = Key('home.achievements');
 
   /// O cartão "onde estou": o degrau, o próximo desafio e o botão.
@@ -23,10 +26,8 @@ abstract final class HomeKeys {
   static const rating = Key('home.rating');
   static const ratingValue = Key('home.rating.value');
 
-  /// O painel do jogador e os números do progresso.
+  /// O painel do jogador.
   static const playerCard = Key('home.player');
   static const hello = Key('home.hello');
-  static const stats = Key('home.stats');
-  static Key stat(int index) => Key('home.stat.$index');
   static const whereBoard = Key('home.where.board');
 }

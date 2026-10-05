@@ -262,30 +262,83 @@ void main() {
     expect(tester.getSemantics(chip).label, 'Nf3');
   });
 
-  testWidgets(
-    'a lista de lances é uma tabela: uma linha por lance, com o número, as '
-    'brancas e as pretas',
-    (tester) async {
-      await pumpScreen(tester);
+  testWidgets('os lances ficam numa faixa no alto, lado a lado, com o número '
+      'de cada jogada', (tester) async {
+    await pumpScreen(tester);
 
-      await move(tester, 'e2', 'e4');
-      await move(tester, 'e7', 'e5');
-      await move(tester, 'g1', 'f3');
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e7', 'e5');
+    await move(tester, 'g1', 'f3');
 
-      final white1 = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
-      final black1 = tester.getRect(find.byKey(FreeBoardKeys.move(1)));
-      final white2 = tester.getRect(find.byKey(FreeBoardKeys.move(2)));
-      // Como no chess.com: as pretas ao lado das brancas, e o lance seguinte
-      // na linha de baixo, na coluna das brancas.
-      expect(black1.center.dy, white1.center.dy);
-      expect(black1.left, greaterThan(white1.left));
-      expect(white2.top, greaterThanOrEqualTo(white1.bottom));
-      expect(white2.left, white1.left);
-      expect(find.text('1.'), findsOneWidget);
-      expect(find.text('2.'), findsOneWidget);
-      expect(white1.top, greaterThanOrEqualTo(boardRect(tester).bottom));
-    },
-  );
+    final white1 = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
+    final black1 = tester.getRect(find.byKey(FreeBoardKeys.move(1)));
+    final white2 = tester.getRect(find.byKey(FreeBoardKeys.move(2)));
+    // Como no chess.com: todos na mesma linha, um depois do outro.
+    expect(black1.center.dy, white1.center.dy);
+    expect(white2.center.dy, white1.center.dy);
+    expect(black1.left, greaterThan(white1.right - 1));
+    expect(white2.left, greaterThan(black1.right - 1));
+    expect(find.text('1.'), findsOneWidget);
+    expect(find.text('2.'), findsOneWidget);
+    // A faixa fica acima do tabuleiro, logo abaixo da barra do alto.
+    expect(white1.bottom, lessThanOrEqualTo(boardRect(tester).top));
+  });
+
+  testWidgets('tocar num lance mostra a posição daquele momento, só para ver; '
+      'voltar e avançar andam lance a lance', (tester) async {
+    await pumpScreen(tester);
+    await move(tester, 'e2', 'e4');
+    await move(tester, 'e7', 'e5');
+    await move(tester, 'g1', 'f3');
+    final live = cubit.state.position.fen;
+
+    // O primeiro lance: só o peão do rei saiu.
+    await tester.tap(find.byKey(FreeBoardKeys.move(0)));
+    await tester.pumpAndSettle();
+    expect(cubit.state.browsing, isTrue);
+    expect(cubit.state.shownPosition.board.pieceAt(Square.e4), isNotNull);
+    expect(cubit.state.shownPosition.board.pieceAt(Square.e5), isNull);
+    // A partida não mudou, e mexer nas peças não joga nada.
+    await move(tester, 'd7', 'd5');
+    expect(cubit.state.position.fen, live);
+    expect(cubit.state.moves, ['e4', 'e5', 'Nf3']);
+
+    await tester.tap(find.byKey(FreeBoardKeys.moveNext));
+    await tester.pumpAndSettle();
+    expect(cubit.state.viewedPly, 2);
+    await tester.tap(find.byKey(FreeBoardKeys.movePrevious));
+    await tester.tap(find.byKey(FreeBoardKeys.movePrevious));
+    await tester.pumpAndSettle();
+    // A posição de início: não há mais para onde voltar.
+    expect(cubit.state.viewedPly, 0);
+    expect(
+      tester
+          .widget<TextButton>(find.byKey(FreeBoardKeys.movePrevious))
+          .onPressed,
+      isNull,
+    );
+
+    // Avançar até o último lance devolve o tabuleiro à partida.
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(FreeBoardKeys.moveNext));
+      await tester.pumpAndSettle();
+    }
+    expect(cubit.state.browsing, isFalse);
+    expect(
+      tester.widget<TextButton>(find.byKey(FreeBoardKeys.moveNext)).onPressed,
+      isNull,
+    );
+    await move(tester, 'b8', 'c6');
+    expect(cubit.state.moves, ['e4', 'e5', 'Nf3', 'Nc6']);
+  });
+
+  testWidgets('sem lances, não há botões de rever a partida', (tester) async {
+    await pumpScreen(tester);
+
+    expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
+    expect(find.byKey(FreeBoardKeys.movePrevious), findsNothing);
+    expect(find.byKey(FreeBoardKeys.moveNext), findsNothing);
+  });
 
   testWidgets('promoção: o seletor aparece e o cavalo escolhido entra', (
     tester,
@@ -315,13 +368,12 @@ void main() {
 
     await move(tester, 'e7', 'e5');
 
-    // A coluna das brancas vem com reticências: o primeiro lance é das pretas.
-    expect(find.text('1.'), findsOneWidget);
-    expect(find.text('…'), findsOneWidget);
-    final gap = tester.getRect(find.text('…'));
+    // O número vem com reticências: o primeiro lance é das pretas.
+    expect(find.text('1...'), findsOneWidget);
+    final number = tester.getRect(find.text('1...'));
     final black = tester.getRect(find.byKey(FreeBoardKeys.move(0)));
-    expect(black.center.dy, gap.center.dy);
-    expect(black.left, greaterThan(gap.left));
+    expect(black.center.dy, number.center.dy);
+    expect(black.left, greaterThan(number.left));
     expect(cubit.state.moves, ['e5']);
   });
 
@@ -1029,17 +1081,18 @@ void main() {
     testWidgets('a tela inteira rola, mas arrastar uma peça não rola', (
       tester,
     ) async {
-      // Celular baixo: personagem, dois relógios e o tabuleiro não cabem.
+      // Celular baixo: personagem, dois relógios e o tabuleiro não cabem (a
+      // fileira de baixo do tabuleiro fica fora da tela).
       await pumpScreen(
         tester,
-        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        fen: '2Q5/8/8/8/2K5/8/8/5k2 w - - 0 1',
         mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1600),
         clock: ClockConfig.same(
           const TimeControl(initial: Duration(minutes: 3)),
         ),
         board: const BoardSettings(moveMethod: MoveMethod.drag),
-        // 360 x 600 na densidade do teste.
-        screen: const Size(945, 1575),
+        // 360 x 533 na densidade do teste.
+        screen: const Size(945, 1400),
       );
       // A posição é refeita quando a rolagem trava e destrava: lida de novo
       // a cada conferência.
@@ -1058,22 +1111,22 @@ void main() {
       // Arrastar a dama no tabuleiro joga o lance e não mexe na tela.
       opponent.hold();
       final board = boardRect(tester);
-      final gesture = await tester.startGesture(squareCenter(board, 'c1'));
+      final gesture = await tester.startGesture(squareCenter(board, 'c8'));
       await tester.pump();
       for (var step = 1; step <= 6; step++) {
         await gesture.moveBy(
-          (squareCenter(board, 'g5') - squareCenter(board, 'c1')) / 6,
+          (squareCenter(board, 'g4') - squareCenter(board, 'c8')) / 6,
         );
         await tester.pump();
       }
       await gesture.up();
       await tester.pumpAndSettle();
-      expect(cubit.state.moves, ['Qg5']);
+      expect(cubit.state.moves, ['Qg4']);
       expect(scroll().pixels, 0);
 
-      // Arrastar fora do tabuleiro (na linha do jogador) rola a tela.
+      // Arrastar fora do tabuleiro (na linha do adversário) rola a tela.
       await tester.drag(
-        find.byKey(FreeBoardKeys.clock(Side.white)),
+        find.byKey(FreeBoardKeys.clock(Side.black)),
         const Offset(0, -200),
       );
       await tester.pumpAndSettle();

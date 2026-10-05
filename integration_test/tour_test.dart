@@ -41,6 +41,31 @@ void main() {
     await journey.expectLocked('1600');
   });
 
+  patrolTest('o nome dado no tour aparece na tela inicial e continua ao '
+      'reabrir', ($) async {
+    final app = AppRobot($);
+    final tour = TourRobot($);
+    final home = HomeRobot($);
+    await app.open(systemLocale: _english, tour: true);
+    await tour.expectStep(TourStep.goal);
+    await tour.enterName('Gabriel');
+
+    // Fechar à força no meio do tour não perde o nome.
+    await tour.next();
+    await app.restart();
+    await tour.expectStep(TourStep.theme);
+    await tour.back();
+    await tour.expectName('Gabriel');
+
+    await tour.skip();
+    await home.expectVisible();
+    await home.expectHello('Hi, Gabriel');
+
+    await app.restart();
+    await home.expectVisible();
+    await home.expectHello('Hi, Gabriel');
+  });
+
   patrolTest('pular o tour: ao reabrir ele não aparece de novo', ($) async {
     final app = AppRobot($);
     final tour = TourRobot($);

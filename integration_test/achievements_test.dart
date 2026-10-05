@@ -55,16 +55,21 @@ void main() {
 
     final feedback = await win($);
     if (e2eTranslated) {
-      // Em árabe: a primeira vitória e a conquista, traduzidas.
-      expect(feedback, hasLength(2));
+      // Em árabe: a primeira vitória e as duas conquistas (o primeiro final e
+      // a vitória contra o personagem), traduzidas.
+      expect(feedback, hasLength(3));
     } else {
       expect(feedback, contains('Achievement unlocked: First endgame'));
+      expect(feedback, contains('Achievement unlocked: Beat Coco'));
       expect(feedback, contains('You beat Coco for the first time!'));
     }
 
     await app.restart();
     await progress.openAchievements();
     await progress.expectUnlocked('first-fulfilled');
+    // A de cada personagem só sai vencendo ele mesmo.
+    await progress.expectUnlocked('beat-1000');
+    await progress.expectLocked('beat-1200');
     await progress.expectLocked('beat-stockfish');
   });
 

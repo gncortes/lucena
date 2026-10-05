@@ -43,12 +43,14 @@ void main() {
         '1+0',
         '3+0',
         '3+2',
+        '5+0',
         '5+3',
         '10+0',
       ]);
       expect(table.named[2].time, _time(3, 2));
       expect(table.named.map((n) => n.category), [
         PaceCategory.bullet,
+        PaceCategory.blitz,
         PaceCategory.blitz,
         PaceCategory.blitz,
         PaceCategory.blitz,

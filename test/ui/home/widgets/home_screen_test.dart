@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -20,9 +21,10 @@ import '../../../../testing/fakes/fake_settings_repository.dart';
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
-  const _Home(this.child);
+  const _Home(this.child, {this.profile = const UserProfile()});
 
   final Widget child;
+  final UserProfile profile;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
@@ -43,7 +45,7 @@ class _Home extends StatelessWidget {
           rating: FakeRatingRepository(),
           lessons: FakeLessonRepository(),
           school: FakeSchoolProgressRepository(),
-          profile: FakeProfileRepository(),
+          profile: FakeProfileRepository(profile),
         )..load(),
       ),
     ],
@@ -81,6 +83,124 @@ void main() {
       findsNothing,
     );
     expect(find.text('Treino de finais de xadrez'), findsNothing);
+  });
+
+  // Uma tela alta, para a lista montar todos os caminhos de uma vez.
+  Future<void> pumpTall(
+    WidgetTester tester, {
+    UserProfile profile = const UserProfile(),
+  }) async {
+    tester.view.physicalSize = const Size(1080, 4800);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), profile: profile),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  double top(WidgetTester tester, Key key) =>
+      tester.getTopLeft(find.byKey(key)).dy;
+
+  testWidgets('cada caminho diz o que se faz nele, na ordem de quem está '
+      'aprendendo: aulas, Jornada, speedrun e finais avulsos', (tester) async {
+    await pumpTall(tester);
+
+    expect(find.text('O que você quer fazer?'), findsOneWidget);
+    for (final (key, title, body) in [
+      (
+        HomeKeys.schoolButton,
+        'Aprender a jogar xadrez',
+        'Aulas com o Viktor: como as peças se movem, xeque, mate e os '
+            'primeiros finais.',
+      ),
+      (
+        HomeKeys.journeyButton,
+        'Jornada',
+        'O passo seguinte às aulas: pratique vencendo os finais de cada '
+            'adversário, do mais fraco até o Stockfish.',
+      ),
+      (
+        HomeKeys.speedrunButton,
+        'Speedrun',
+        'Escolha um final e vença todos os adversários em sequência, até o '
+            'Stockfish, contra o relógio.',
+      ),
+      (
+        HomeKeys.catalogButton,
+        'Treinar finais',
+        'Escolha qualquer final e o adversário, e jogue quantas vezes '
+            'quiser.',
+      ),
+    ]) {
+      final card = find.byKey(key);
+      expect(
+        find.descendant(of: card, matching: find.text(title)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text(body)),
+        findsOneWidget,
+      );
+    }
+    final order = [
+      HomeKeys.whereCard,
+      HomeKeys.schoolButton,
+      HomeKeys.journeyButton,
+      HomeKeys.speedrunButton,
+      HomeKeys.catalogButton,
+      HomeKeys.freeBoardButton,
+    ].map((key) => top(tester, key)).toList();
+    expect(order, [...order]..sort());
+    // Os quatro caminhos têm a mesma cor: nenhum em destaque.
+    final colors = {
+      for (final key in [
+        HomeKeys.schoolButton,
+        HomeKeys.journeyButton,
+        HomeKeys.speedrunButton,
+        HomeKeys.catalogButton,
+      ])
+        tester
+            .widget<Material>(
+              find
+                  .descendant(
+                    of: find.byKey(key),
+                    matching: find.byType(Material),
+                  )
+                  .first,
+            )
+            .color,
+    };
+    expect(colors, hasLength(1));
+    // Os números do jogador saíram daqui: ficam nos detalhes do rating.
+    expect(find.text('Partidas'), findsNothing);
+    expect(find.text('Dias seguidos'), findsNothing);
+  });
+
+  testWidgets('o nome do app e os botões ficam fixos ao rolar a tela', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 1500);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
+    );
+    await tester.pumpAndSettle();
+    final before = tester.getTopLeft(find.byKey(HomeKeys.title));
+
+    await tester.scrollUntilVisible(
+      find.byKey(HomeKeys.freeBoardButton),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(find.byKey(HomeKeys.title)), before);
+    expect(find.byKey(HomeKeys.settingsButton).hitTestable(), findsOneWidget);
   });
 
   testWidgets('entra em sequência: o nome, depois o painel', (tester) async {

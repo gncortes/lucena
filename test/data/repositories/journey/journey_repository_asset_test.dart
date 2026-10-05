@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -9,25 +10,46 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 
-/// Lê os arquivos do próprio projeto, como o app lê os dele.
+/// Lê os arquivos do próprio projeto, como o app lê os dele. Os de
+/// [overrides] vêm do texto dado (para as modalidades de speedrun que o app
+/// ainda sabe ler mas não leva).
 class _ProjectBundle extends CachingAssetBundle {
+  _ProjectBundle([this.overrides = const {}]);
+
+  final Map<String, String> overrides;
+
   @override
   Future<ByteData> load(String key) async {
-    final bytes = await File(key).readAsBytes();
+    final text = overrides[key];
+    final bytes = text == null
+        ? await File(key).readAsBytes()
+        : Uint8List.fromList(utf8.encode(text));
     return ByteData.sublistView(bytes);
   }
 }
 
+// As modalidades fora do app: por degrau, exercícios e Jornada completa.
+const _otherKinds = '''
+{"speedruns": [
+  {"id": "rung.1000", "kind": "rung", "rung": "1000", "time": "300+3"},
+  {"id": "rung.stockfish", "kind": "rung", "rung": "stockfish", "time": "300+3"},
+  {"id": "exercises.basic", "kind": "exercises", "time": "180+2", "stages": [
+    {"position": "basic.queen.0001", "opponent": "maia:1200"},
+    {"position": "basic.rook.0001", "opponent": "maia:1400"}
+  ]},
+  {"id": "full", "kind": "full", "time": "300+3"}
+]}
+''';
+
 void main() {
   late AssetJourneyRepository repository;
 
-  setUp(() {
-    final assets = AssetService(_ProjectBundle());
-    repository = AssetJourneyRepository(
-      assets,
-      AssetPositionsRepository(assets),
-    );
-  });
+  AssetJourneyRepository build([Map<String, String> overrides = const {}]) {
+    final assets = AssetService(_ProjectBundle(overrides));
+    return AssetJourneyRepository(assets, AssetPositionsRepository(assets));
+  }
+
+  setUp(() => repository = build());
 
   test('a escada vai do Maia 1000 ao 2600 e termina no Stockfish', () async {
     final ladder = await repository.ladder();
@@ -71,12 +93,31 @@ void main() {
     );
   });
 
+  test('o app leva só speedruns de final: nove, do mate de torre ao de bispo '
+      'e cavalo', () async {
+    final speedruns = await repository.speedruns();
+
+    expect(speedruns.map((s) => s.kind).toSet(), {SpeedrunKind.ending});
+    expect(speedruns.map((s) => s.stages.first.position.subcategory), [
+      'rook',
+      'queen',
+      'twoBishopsVsKing',
+      'queenVsRook',
+      'rookPawnVsRook',
+      'pawnVsKing',
+      'rookVsPawn',
+      'queenVsPawn',
+      'knightBishopVsKing',
+    ]);
+  });
+
   test('speedrun de degrau: os desafios do degrau, com o ritmo dele', () async {
+    repository = build({AssetJourneyRepository.speedrunsPath: _otherKinds});
     final ladder = await repository.ladder();
     final speedruns = await repository.speedruns();
     final rungRuns = speedruns.where((s) => s.kind == SpeedrunKind.rung);
 
-    expect(rungRuns, hasLength(ladder.length));
+    expect(rungRuns, hasLength(2));
     for (final speedrun in rungRuns) {
       final rung = ladder.firstWhere((rung) => rung.id == speedrun.rungId);
       expect(
@@ -119,6 +160,7 @@ void main() {
 
   test('speedrun de exercícios: as posições da lista, cada uma com o seu '
       'adversário', () async {
+    repository = build({AssetJourneyRepository.speedrunsPath: _otherKinds});
     final exercises = (await repository.speedruns())
         .where((s) => s.kind == SpeedrunKind.exercises)
         .toList();
@@ -135,6 +177,7 @@ void main() {
   });
 
   test('speedrun completo: todos os desafios da Jornada, em ordem', () async {
+    repository = build({AssetJourneyRepository.speedrunsPath: _otherKinds});
     final ladder = await repository.ladder();
     final full = (await repository.speedruns()).singleWhere(
       (s) => s.kind == SpeedrunKind.full,

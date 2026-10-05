@@ -16,10 +16,14 @@ abstract final class SpeedrunKeys {
   static const pace = Key('speedrun.pace');
   static const help = Key('speedrun.help');
   static const helpText = Key('speedrun.help.text');
+  static const intro = Key('speedrun.intro');
 
   /// Na tela do speedrun: o ritmo e a etapa na grade.
   static const paceBadge = Key('speedrun.paceBadge');
   static Key stageCard(int index) => Key('speedrun.stage.$index');
+
+  /// O progresso por passos da tentativa em andamento.
+  static const progress = Key('speedrun.progress');
 
   /// Na tentativa: a etapa da vez em destaque e o menu (desistir).
   static const current = Key('speedrun.attempt.current');

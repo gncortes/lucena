@@ -26,7 +26,15 @@ void main() {
   test('o catálogo do app tem as categorias dos finais de iniciante', () async {
     final catalog = await repository.catalog();
 
-    expect(catalog.map((c) => c.key), ['basic', 'pawn', 'rookPawn', 'queen']);
+    // Os mates de dois bispos e de bispo e cavalo entraram pelo speedrun.
+    expect(catalog.map((c) => c.key), [
+      'basic',
+      'pawn',
+      'bishop',
+      'knightBishop',
+      'rookPawn',
+      'queen',
+    ]);
     final total = catalog.fold(0, (sum, c) => sum + c.count(GoalFilter.all));
     expect(total, inInclusiveRange(40, 60));
   });

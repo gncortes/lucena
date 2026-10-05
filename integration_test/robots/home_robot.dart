@@ -18,6 +18,12 @@ class HomeRobot {
     await $(HomeKeys.journeyButton).waitUntilExists();
   }
 
+  /// O cumprimento do painel do jogador, com o apelido.
+  Future<void> expectHello(String text) async {
+    await $(HomeKeys.hello).waitUntilVisible();
+    expectText($.tester.widget<Text>(find.byKey(HomeKeys.hello)).data, text);
+  }
+
   /// A tela no tema escuro (ou claro).
   void expectDark({required bool dark}) {
     final context = $.tester.element(find.byKey(HomeKeys.screen));

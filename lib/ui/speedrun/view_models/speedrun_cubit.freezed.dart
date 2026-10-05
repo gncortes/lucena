@@ -16,7 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$SpeedrunSummary {
 
  Speedrun get speedrun; SpeedrunRecords get records;/// A tentativa em andamento, se há.
- SpeedrunRun? get ongoing;
+ SpeedrunRun? get ongoing;/// As tentativas de que o jogador desistiu, da mais recente para a mais
+/// antiga: o histórico mostra até onde cada uma foi.
+ List<SpeedrunRun> get abandoned;
 /// Create a copy of SpeedrunSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +30,20 @@ $SpeedrunSummaryCopyWith<SpeedrunSummary> get copyWith => _$SpeedrunSummaryCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as SpeedrunSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunSummary&&(identical(other.speedrun, _this.speedrun) || other.speedrun == _this.speedrun)&&(identical(other.records, _this.records) || other.records == _this.records)&&(identical(other.ongoing, _this.ongoing) || other.ongoing == _this.ongoing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunSummary&&(identical(other.speedrun, _this.speedrun) || other.speedrun == _this.speedrun)&&(identical(other.records, _this.records) || other.records == _this.records)&&(identical(other.ongoing, _this.ongoing) || other.ongoing == _this.ongoing)&&const DeepCollectionEquality().equals(other.abandoned, _this.abandoned));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SpeedrunSummary;
-  return Object.hash(runtimeType,_this.speedrun,_this.records,_this.ongoing);
+  return Object.hash(runtimeType,_this.speedrun,_this.records,_this.ongoing,const DeepCollectionEquality().hash(_this.abandoned));
 }
 
 @override
 String toString() {
   final _this = this as SpeedrunSummary;
-  return 'SpeedrunSummary(speedrun: ${_this.speedrun}, records: ${_this.records}, ongoing: ${_this.ongoing})';
+  return 'SpeedrunSummary(speedrun: ${_this.speedrun}, records: ${_this.records}, ongoing: ${_this.ongoing}, abandoned: ${_this.abandoned})';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $SpeedrunSummaryCopyWith<$Res>  {
   factory $SpeedrunSummaryCopyWith(SpeedrunSummary value, $Res Function(SpeedrunSummary) _then) = _$SpeedrunSummaryCopyWithImpl;
 @useResult
 $Res call({
- Speedrun speedrun, SpeedrunRecords records, SpeedrunRun? ongoing
+ Speedrun speedrun, SpeedrunRecords records, SpeedrunRun? ongoing, List<SpeedrunRun> abandoned
 });
 
 
@@ -69,12 +71,13 @@ class _$SpeedrunSummaryCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? speedrun = null,Object? records = null,Object? ongoing = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? speedrun = null,Object? records = null,Object? ongoing = freezed,Object? abandoned = null,}) {
   return _then(SpeedrunSummary(
 speedrun: null == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
 as Speedrun,records: null == records ? _self.records : records // ignore: cast_nullable_to_non_nullable
 as SpeedrunRecords,ongoing: freezed == ongoing ? _self.ongoing : ongoing // ignore: cast_nullable_to_non_nullable
-as SpeedrunRun?,
+as SpeedrunRun?,abandoned: null == abandoned ? _self.abandoned : abandoned // ignore: cast_nullable_to_non_nullable
+as List<SpeedrunRun>,
   ));
 }
 /// Create a copy of SpeedrunSummary
@@ -189,10 +192,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing,  List<SpeedrunRun> abandoned)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SpeedrunSummary() when $default != null:
-return $default(_that.speedrun,_that.records,_that.ongoing);case _:
+return $default(_that.speedrun,_that.records,_that.ongoing,_that.abandoned);case _:
   return orElse();
 
 }
@@ -210,10 +213,10 @@ return $default(_that.speedrun,_that.records,_that.ongoing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing,  List<SpeedrunRun> abandoned)  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunSummary():
-return $default(_that.speedrun,_that.records,_that.ongoing);case _:
+return $default(_that.speedrun,_that.records,_that.ongoing,_that.abandoned);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -230,10 +233,10 @@ return $default(_that.speedrun,_that.records,_that.ongoing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Speedrun speedrun,  SpeedrunRecords records,  SpeedrunRun? ongoing,  List<SpeedrunRun> abandoned)?  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunSummary() when $default != null:
-return $default(_that.speedrun,_that.records,_that.ongoing);case _:
+return $default(_that.speedrun,_that.records,_that.ongoing,_that.abandoned);case _:
   return null;
 
 }
@@ -245,13 +248,24 @@ return $default(_that.speedrun,_that.records,_that.ongoing);case _:
 
 
 class _SpeedrunSummary implements SpeedrunSummary {
-  const _SpeedrunSummary({required this.speedrun, required this.records, this.ongoing});
+  const _SpeedrunSummary({required this.speedrun, required this.records, this.ongoing,  List<SpeedrunRun> abandoned = const <SpeedrunRun>[]}): _abandoned = abandoned;
   
 
 @override final  Speedrun speedrun;
 @override final  SpeedrunRecords records;
 /// A tentativa em andamento, se há.
 @override final  SpeedrunRun? ongoing;
+/// As tentativas de que o jogador desistiu, da mais recente para a mais
+/// antiga: o histórico mostra até onde cada uma foi.
+ final  List<SpeedrunRun> _abandoned;
+/// As tentativas de que o jogador desistiu, da mais recente para a mais
+/// antiga: o histórico mostra até onde cada uma foi.
+@override@JsonKey() List<SpeedrunRun> get abandoned {
+  if (_abandoned is EqualUnmodifiableListView) return _abandoned;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_abandoned);
+}
+
 
 /// Create a copy of SpeedrunSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -263,18 +277,18 @@ _$SpeedrunSummaryCopyWith<_SpeedrunSummary> get copyWith => __$SpeedrunSummaryCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunSummary&&(identical(other.speedrun, speedrun) || other.speedrun == speedrun)&&(identical(other.records, records) || other.records == records)&&(identical(other.ongoing, ongoing) || other.ongoing == ongoing));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunSummary&&(identical(other.speedrun, speedrun) || other.speedrun == speedrun)&&(identical(other.records, records) || other.records == records)&&(identical(other.ongoing, ongoing) || other.ongoing == ongoing)&&const DeepCollectionEquality().equals(other.abandoned, _abandoned));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,speedrun,records,ongoing);
+    return Object.hash(runtimeType,speedrun,records,ongoing,const DeepCollectionEquality().hash(_abandoned));
 }
 
 @override
 String toString() {
-    return 'SpeedrunSummary(speedrun: $speedrun, records: $records, ongoing: $ongoing)';
+    return 'SpeedrunSummary(speedrun: $speedrun, records: $records, ongoing: $ongoing, abandoned: $abandoned)';
 }
 
 
@@ -285,7 +299,7 @@ abstract mixin class _$SpeedrunSummaryCopyWith<$Res> implements $SpeedrunSummary
   factory _$SpeedrunSummaryCopyWith(_SpeedrunSummary value, $Res Function(_SpeedrunSummary) _then) = __$SpeedrunSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- Speedrun speedrun, SpeedrunRecords records, SpeedrunRun? ongoing
+ Speedrun speedrun, SpeedrunRecords records, SpeedrunRun? ongoing, List<SpeedrunRun> abandoned
 });
 
 
@@ -302,12 +316,13 @@ class __$SpeedrunSummaryCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? speedrun = null,Object? records = null,Object? ongoing = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? speedrun = null,Object? records = null,Object? ongoing = freezed,Object? abandoned = null,}) {
   return _then(_SpeedrunSummary(
 speedrun: null == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
 as Speedrun,records: null == records ? _self.records : records // ignore: cast_nullable_to_non_nullable
 as SpeedrunRecords,ongoing: freezed == ongoing ? _self.ongoing : ongoing // ignore: cast_nullable_to_non_nullable
-as SpeedrunRun?,
+as SpeedrunRun?,abandoned: null == abandoned ? _self._abandoned : abandoned // ignore: cast_nullable_to_non_nullable
+as List<SpeedrunRun>,
   ));
 }
 

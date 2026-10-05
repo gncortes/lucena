@@ -2,7 +2,9 @@ import '../models/achievement.dart';
 import '../models/attempt.dart';
 import '../models/game_setup.dart';
 import '../models/journey.dart';
+import '../models/pace.dart';
 import '../models/speedrun.dart';
+import '../models/speedrun_pace.dart';
 import 'mastery.dart';
 
 /// As regras das conquistas, todas calculadas do histórico.
@@ -45,11 +47,22 @@ abstract final class AchievementRules {
         return level != null &&
             fulfilled.any(
               (game) =>
+                  // Só o nível da conquista: vencer alguém mais forte não
+                  // libera a de outro personagem.
                   game.opponent == OpponentKind.maia &&
-                  (game.opponentLevel ?? 0) >= level,
+                  game.opponentLevel == level,
             );
       case AchievementType.beatStockfish:
         return fulfilled.any((game) => game.opponent == OpponentKind.stockfish);
+      case AchievementType.speedrunCompleted:
+        return _completed(a, f).any((run) {
+          final speedrun = f.speedruns[run.attempt.speedrunId];
+          final (baseId, _) = SpeedrunPaces.parse(run.attempt.speedrunId);
+          return (a.speedrunId == null || a.speedrunId == baseId) &&
+              (a.pace == null ||
+                  (speedrun != null &&
+                      PaceCategory.of(speedrun.time) == a.pace));
+        });
       case AchievementType.flawlessSpeedrun:
         return _completed(a, f).any((run) => run.losses == 0);
       case AchievementType.recordImproved:

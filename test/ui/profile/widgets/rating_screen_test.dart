@@ -71,6 +71,15 @@ void main() {
     expect(textOf(tester, RatingKeys.value), '1150');
     expect(find.byKey(RatingKeys.chart), findsNothing);
     expect(find.byKey(RatingKeys.emptyHistory), findsOneWidget);
+    // Os números do jogador, zerados.
+    expect(find.byKey(RatingKeys.stats), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(RatingKeys.stat(0)),
+        matching: find.text('0'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('com partidas: o gráfico e o histórico, da mais recente para a '
@@ -81,34 +90,42 @@ void main() {
 
     expect(textOf(tester, RatingKeys.value), '${history.last.rating.rounded}');
     expect(textOf(tester, RatingKeys.games), '3 rated games');
+    // Partidas e vitórias nos números do jogador.
+    for (final (index, value, label) in [(0, '3', 'Games'), (1, '2', 'Wins')]) {
+      final stat = find.byKey(RatingKeys.stat(index));
+      expect(find.descendant(of: stat, matching: find.text(value)), findsOne);
+      expect(find.descendant(of: stat, matching: find.text(label)), findsOne);
+    }
     expect(find.byKey(RatingKeys.chart), findsOneWidget);
     expect(find.byKey(RatingKeys.emptyHistory), findsNothing);
 
+    String? result(int index) => tester
+        .widget<Icon>(
+          find.descendant(
+            of: find.byKey(RatingKeys.entryResult(index)),
+            matching: find.byType(Icon),
+          ),
+        )
+        .semanticLabel;
+    expect(textOf(tester, RatingKeys.gamesCount), '3');
     // A mais recente em cima: vitória, com o rating de agora e a subida.
-    expect(
-      find.descendant(
-        of: find.byKey(RatingKeys.entry(0)),
-        matching: find.text('Win'),
-      ),
-      findsOneWidget,
-    );
+    expect(result(0), 'Win');
     expect(
       textOf(tester, RatingKeys.entryRating(0)),
       '${history.last.rating.rounded}',
     );
     expect(textOf(tester, RatingKeys.entryChange(0)), startsWith('+'));
-    expect(
-      find.descendant(
-        of: find.byKey(RatingKeys.entry(1)),
-        matching: find.text('Loss'),
-      ),
-      findsOneWidget,
-    );
+    expect(result(1), 'Loss');
     expect(textOf(tester, RatingKeys.entryChange(1)), startsWith('−'));
     // A primeira partida não tem variação (o ponto de partida não é gravado).
     expect(find.byKey(RatingKeys.entry(2)), findsOneWidget);
     expect(find.byKey(RatingKeys.entryChange(2)), findsNothing);
-    expect(find.textContaining('Maia 1000'), findsNWidgets(3));
+    // O adversário, o final jogado e a data em cada linha.
+    expect(
+      find.textContaining('Maia 1000', findRichText: true),
+      findsNWidgets(3),
+    );
+    expect(find.textContaining('Queen mate · '), findsNWidgets(3));
   });
 
   testWidgets('o período escolhe quantas partidas o gráfico mostra', (

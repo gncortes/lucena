@@ -9,6 +9,7 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/profile_rules.dart';
 
 /// Os passos do tour, na ordem. Depois das boas-vindas, a aparência do app
 /// e do tabuleiro; o último pergunta o nível.
@@ -32,6 +33,7 @@ class TourState {
     this.ready = false,
     this.step = TourStep.goal,
     this.level = RatingLevel.casual,
+    this.nickname = '',
     this.finished = false,
     this.forward = true,
     this.viktor,
@@ -50,6 +52,9 @@ class TourState {
 
   /// A faixa marcada no último passo.
   final RatingLevel level;
+
+  /// O nome dado no primeiro passo (o apelido do perfil). Vazio: o padrão.
+  final String nickname;
 
   /// O tour terminou (ou foi pulado): a tela sai.
   final bool finished;
@@ -72,12 +77,14 @@ class TourState {
     bool? ready,
     TourStep? step,
     RatingLevel? level,
+    String? nickname,
     bool? finished,
     bool? forward,
   }) => TourState(
     ready: ready ?? this.ready,
     step: step ?? this.step,
     level: level ?? this.level,
+    nickname: nickname ?? this.nickname,
     finished: finished ?? this.finished,
     forward: forward ?? this.forward,
     viktor: viktor,
@@ -102,6 +109,7 @@ class TourCubit extends Cubit<TourState> {
   final CharacterRepository _characters;
   final LessonRepository _lessons;
   Onboarding _saved = const Onboarding();
+  Future<void> _nicknameSaved = Future.value();
 
   /// As falas do Viktor vêm em [language] (as que faltam, em inglês).
   Future<void> load(String language) async {
@@ -123,6 +131,7 @@ class TourCubit extends Cubit<TourState> {
         ready: true,
         step: TourStep.values[step],
         level: profile.level,
+        nickname: profile.nickname,
         viktor: viktor,
         texts: texts,
       ),
@@ -135,8 +144,22 @@ class TourCubit extends Cubit<TourState> {
 
   void setLevel(RatingLevel level) => emit(state.copyWith(level: level));
 
+  /// O nome digitado no primeiro passo: vai para o perfil na hora (fechar o
+  /// app no meio do tour não perde o que já foi escrito).
+  Future<void> setNickname(String text) {
+    final nickname = ProfileRules.cleanNickname(text);
+    if (nickname == state.nickname) return _nicknameSaved;
+    emit(state.copyWith(nickname: nickname));
+    // Uma gravação de cada vez, na ordem em que foram digitadas.
+    return _nicknameSaved = _nicknameSaved.then((_) async {
+      final profile = await _profile.load();
+      await _profile.save(profile.copyWith(nickname: nickname));
+    });
+  }
+
   /// Pula o resto: o tour não aparece de novo.
   Future<void> skip() async {
+    await _nicknameSaved;
     await _save(_saved.copyWith(done: true, step: 0));
     emit(state.copyWith(finished: true));
   }
@@ -144,6 +167,7 @@ class TourCubit extends Cubit<TourState> {
   /// Confirma a faixa: o perfil fica com ela e a Jornada começa no degrau
   /// dela.
   Future<void> finish() async {
+    await _nicknameSaved;
     final profile = await _profile.load();
     await _profile.save(profile.copyWith(rating: state.level.rating));
     await _save(

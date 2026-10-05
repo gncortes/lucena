@@ -55,6 +55,9 @@ BEGINNER = {
     "Queen vs Pawn": (5, 0),
     "Rook Pawn vs Rook": (5, 3),
     "Rook vs Pawn": (4, 0),
+    # Mates que entram pelo speedrun (pedido do Gabriel em 2026-10-05).
+    "Two Bishops vs King": (3, 0),
+    "Knight Bishop vs King": (2, 0),
 }
 
 # Intervalo entre chamadas à tablebase (o Lichess limita o uso sem conta).
