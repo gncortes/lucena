@@ -45,14 +45,19 @@ class SpeedrunListScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                for (final kind in SpeedrunKind.values) ...[
-                  section(switch (kind) {
-                    SpeedrunKind.rung => l10n.speedrunRungSection,
-                    SpeedrunKind.ending => l10n.speedrunEndingSection,
-                  }, kind),
-                  for (final summary in all)
-                    if (summary.speedrun.kind == kind) _Item(summary: summary),
-                ],
+                for (final kind in SpeedrunKind.values)
+                  // Modalidade sem speedrun não ganha título.
+                  if (all.any((summary) => summary.speedrun.kind == kind)) ...[
+                    section(switch (kind) {
+                      SpeedrunKind.rung => l10n.speedrunRungSection,
+                      SpeedrunKind.ending => l10n.speedrunEndingSection,
+                      SpeedrunKind.exercises => l10n.speedrunExercisesSection,
+                      SpeedrunKind.full => l10n.speedrunFullSection,
+                    }, kind),
+                    for (final summary in all)
+                      if (summary.speedrun.kind == kind)
+                        _Item(summary: summary),
+                  ],
               ],
             ),
     );

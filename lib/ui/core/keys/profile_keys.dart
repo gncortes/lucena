@@ -17,4 +17,10 @@ abstract final class ProfileKeys {
   /// Opção de uma faixa no painel de escolha; só vale depois de confirmar.
   static Key levelOption(RatingLevel level) =>
       Key('profile.level.option.${level.name}');
+
+  /// O rating de finais: o cartão, o número, quantas partidas e a curva.
+  static const ratingCard = Key('profile.rating');
+  static const ratingValue = Key('profile.rating.value');
+  static const ratingGames = Key('profile.rating.games');
+  static const ratingChart = Key('profile.rating.chart');
 }

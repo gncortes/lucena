@@ -1,0 +1,860 @@
+{
+  "character": "grandpa",
+  "language": "pt",
+  "lines": [
+    {
+      "id": "grandpa.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Senta aí, meu jovem. O vovô aqui não morde... muito."
+    },
+    {
+      "id": "grandpa.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No meu tempo, a gente jogava na praça até o sol ir embora."
+    },
+    {
+      "id": "grandpa.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Deixa eu ajeitar os óculos. Pronto, agora te enxergo!"
+    },
+    {
+      "id": "grandpa.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Já joguei com gente melhor que você... acho. Faz tempo!"
+    },
+    {
+      "id": "grandpa.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Esta bengala já viu muita partida. Hoje vê mais uma!"
+    },
+    {
+      "id": "grandpa.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Hehe, o vovô ainda tem lenha pra queimar!"
+    },
+    {
+      "id": "grandpa.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Quer um chazinho, meu jovem? Vai precisar."
+    },
+    {
+      "id": "grandpa.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "No meu tempo, isso se chamava aula de graça."
+    },
+    {
+      "id": "grandpa.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Não fica triste. Até o vovô já perdeu assim. Em 1962."
+    },
+    {
+      "id": "grandpa.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Essa aqui eu vou contar pros amigos da praça!"
+    },
+    {
+      "id": "grandpa.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hmm, tá ficando do jeitinho que o vovô gosta."
+    },
+    {
+      "id": "grandpa.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Sinto um cheirinho de vitória no ar."
+    },
+    {
+      "id": "grandpa.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Devagar e sempre, meu jovem. Assim se ganha final."
+    },
+    {
+      "id": "grandpa.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Os joelhos rangem, mas a cabeça tá afiada!"
+    },
+    {
+      "id": "grandpa.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Tô um passinho na frente. E olha que eu ando de bengala!"
+    },
+    {
+      "id": "grandpa.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tudo empatadinho. Igual papo de praça: ninguém cede."
+    },
+    {
+      "id": "grandpa.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hmm... deixa o vovô pensar com calma."
+    },
+    {
+      "id": "grandpa.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Você é teimoso que nem eu era na sua idade!"
+    },
+    {
+      "id": "grandpa.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Partida boa assim me lembra os velhos tempos."
+    },
+    {
+      "id": "grandpa.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Quem piscar primeiro perde. Sorte que eu pisco devagar."
+    },
+    {
+      "id": "grandpa.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Opa, opa! Onde foi que o vovô se distraiu?"
+    },
+    {
+      "id": "grandpa.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Calma, que já saí de buraco pior que esse."
+    },
+    {
+      "id": "grandpa.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Deixa eu limpar os óculos. Isso não pode estar certo."
+    },
+    {
+      "id": "grandpa.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Ah, meu jovem, você tá apertando o velhinho!"
+    },
+    {
+      "id": "grandpa.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Isso tá mais difícil que subir escada de bengala."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Ai, ai... no meu tempo eu não perdia assim."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Essa partida tá me dando dor nas costas."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Vamos dizer que foi o sol nos óculos. Combinado?"
+    },
+    {
+      "id": "grandpa.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Meu jovem, tenha dó de um velho cansado..."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ainda não acabou! Já vi milagre na praça, viu?"
+    },
+    {
+      "id": "grandpa.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Opa! Essa até eu, sem óculos, enxerguei."
+    },
+    {
+      "id": "grandpa.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Hehe, a pressa é inimiga da perfeição, meu jovem."
+    },
+    {
+      "id": "grandpa.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Obrigado pelo presente! Nem é meu aniversário."
+    },
+    {
+      "id": "grandpa.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "No meu tempo, quem fazia isso pagava o café da turma."
+    },
+    {
+      "id": "grandpa.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Ahá! Essa vai pro meu caderninho de causos!"
+    },
+    {
+      "id": "grandpa.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ih... a mão foi mais rápida que a cabeça."
+    },
+    {
+      "id": "grandpa.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Esses óculos tão precisando de grau novo."
+    },
+    {
+      "id": "grandpa.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Que bobagem! Finge que não viu, meu jovem?"
+    },
+    {
+      "id": "grandpa.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Foi de propósito. Pra deixar mais emocionante. Claro."
+    },
+    {
+      "id": "grandpa.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Ora bolas! Cinquenta anos de praça e faço uma dessas!"
+    },
+    {
+      "id": "grandpa.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Eita! Esse lance tem cara de gente grande."
+    },
+    {
+      "id": "grandpa.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bonito, meu jovem. Bonito mesmo."
+    },
+    {
+      "id": "grandpa.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Esse aí eu queria ter visto primeiro!"
+    },
+    {
+      "id": "grandpa.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Opa! Quem te ensinou isso? Fala que foi um velhinho."
+    },
+    {
+      "id": "grandpa.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Tiro o chapéu! Se eu usasse chapéu, claro."
+    },
+    {
+      "id": "grandpa.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Devagarinho o vovô vai chegando lá!"
+    },
+    {
+      "id": "grandpa.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Achou que o velhinho tava acabado, né?"
+    },
+    {
+      "id": "grandpa.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Experiência, meu jovem. Não se compra na farmácia."
+    },
+    {
+      "id": "grandpa.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Virou! Igualzinho à final da praça de 1974!"
+    },
+    {
+      "id": "grandpa.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "A bengala é pra andar, não pra desistir!"
+    },
+    {
+      "id": "grandpa.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ué? Cadê a vantagem que tava aqui agorinha?"
+    },
+    {
+      "id": "grandpa.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Deixei escapar. Igual meus cabelos."
+    },
+    {
+      "id": "grandpa.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Isso que dá cochilar no meio da partida!"
+    },
+    {
+      "id": "grandpa.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Calma, vovô, calma. Respira fundo."
+    },
+    {
+      "id": "grandpa.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Ah, não! Tava na mão e escorregou que nem sabonete!"
+    },
+    {
+      "id": "grandpa.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Essa eu guardo no bolso do paletó."
+    },
+    {
+      "id": "grandpa.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Com licença, meu jovem. Essa é minha."
+    },
+    {
+      "id": "grandpa.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Peguei! Ainda tenho mão rápida, viu?"
+    },
+    {
+      "id": "grandpa.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Hehe, mais uma pra coleção do vovô."
+    },
+    {
+      "id": "grandpa.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Tá vendo? Na praça a gente chama isso de almoço!"
+    },
+    {
+      "id": "grandpa.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Ai, essa doeu mais que meu joelho."
+    },
+    {
+      "id": "grandpa.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ué, ela tava aí? Preciso trocar esses óculos."
+    },
+    {
+      "id": "grandpa.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Tá bom, tá bom, pode levar. Mas cuida bem dela."
+    },
+    {
+      "id": "grandpa.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Lá se vai minha peça. Igual meus tempos de mocidade."
+    },
+    {
+      "id": "grandpa.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Ora bolas! Essa peça tava comigo desde o começo!"
+    },
+    {
+      "id": "grandpa.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meu peãozinho cresceu! Que orgulho do vovô."
+    },
+    {
+      "id": "grandpa.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Esse peão andou mais que eu na caminhada da manhã!"
+    },
+    {
+      "id": "grandpa.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Coroado! Igual eu na festa da praça de 1981."
+    },
+    {
+      "id": "grandpa.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Devagar e sempre, chegou lá. Que nem eu!"
+    },
+    {
+      "id": "grandpa.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Promovido! Esse peão merece até aposentadoria."
+    },
+    {
+      "id": "grandpa.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ih, esse peãozinho escapou do vovô."
+    },
+    {
+      "id": "grandpa.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bem jogado. Eu fazia isso na sua idade."
+    },
+    {
+      "id": "grandpa.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ai, ai, peça nova. Não precisava, meu jovem."
+    },
+    {
+      "id": "grandpa.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Eu vi ele andando! Achei que ia cansar no caminho."
+    },
+    {
+      "id": "grandpa.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Agora sim o vovô tá encrencado!"
+    },
+    {
+      "id": "grandpa.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Olha o relógio, meu jovem. Ele não espera ninguém."
+    },
+    {
+      "id": "grandpa.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tique-taque! Na minha idade a gente ouve isso alto."
+    },
+    {
+      "id": "grandpa.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pressa, meu jovem? Eu tenho a tarde toda."
+    },
+    {
+      "id": "grandpa.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "O tempo voa, meu jovem. Eu que o diga!"
+    },
+    {
+      "id": "grandpa.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Seu relógio tá mais apressado que ônibus atrasado!"
+    },
+    {
+      "id": "grandpa.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Opa, o relógio tá correndo mais que eu."
+    },
+    {
+      "id": "grandpa.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Pouco tempo. Bora, vovô, sem cochilo agora."
+    },
+    {
+      "id": "grandpa.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ai, ai, no meu tempo o relógio era mais devagar!"
+    },
+    {
+      "id": "grandpa.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Gastei meu tempo contando causo. De novo!"
+    },
+    {
+      "id": "grandpa.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Rápido, mão! Rápido! Ela não obedece como antes..."
+    },
+    {
+      "id": "grandpa.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Sem pressa. O vovô tem tempo de sobra."
+    },
+    {
+      "id": "grandpa.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Vou pensar com calma. Enquanto isso, conto um causo?"
+    },
+    {
+      "id": "grandpa.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Aposentado tem tempo, meu jovem. Muito tempo."
+    },
+    {
+      "id": "grandpa.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hmm, deixa eu limpar os óculos... bem devagarinho."
+    },
+    {
+      "id": "grandpa.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Pode suar, meu jovem. Eu vou no meu ritmo."
+    },
+    {
+      "id": "grandpa.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pensa, pensa. Eu espero, já esperei muito na vida."
+    },
+    {
+      "id": "grandpa.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tá pensando ou cochilando? Eu entendo dos dois."
+    },
+    {
+      "id": "grandpa.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Vou dar uma volta no quarteirão e já volto."
+    },
+    {
+      "id": "grandpa.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "No meu tempo a gente pensava assim também. E cochilava."
+    },
+    {
+      "id": "grandpa.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Meu jovem, minha barba cresceu enquanto você pensava!"
+    },
+    {
+      "id": "grandpa.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Boa partida, meu jovem. Volta amanhã que tem mais."
+    },
+    {
+      "id": "grandpa.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "O vovô ainda tá no páreo! Hehe!"
+    },
+    {
+      "id": "grandpa.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Essa vai virar causo na praça, pode ter certeza."
+    },
+    {
+      "id": "grandpa.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Velho, sim. Aposentado do tabuleiro, nunca!"
+    },
+    {
+      "id": "grandpa.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Ganhei! Vou ligar pros netos contando!"
+    },
+    {
+      "id": "grandpa.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bem jogado, meu jovem. Você mereceu."
+    },
+    {
+      "id": "grandpa.loss.2",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Ai, ai... hoje não foi o dia do vovô."
+    },
+    {
+      "id": "grandpa.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Vou dizer pros amigos que eu deixei. Combinado?"
+    },
+    {
+      "id": "grandpa.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Perdi, mas que partida bonita! Valeu a tarde."
+    },
+    {
+      "id": "grandpa.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Revanche! O vovô quer revanche, já!"
+    },
+    {
+      "id": "grandpa.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate honesto. Aperta aqui a mão do vovô."
+    },
+    {
+      "id": "grandpa.draw.2",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Ninguém perdeu! Melhor jeito de terminar a tarde."
+    },
+    {
+      "id": "grandpa.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate! Igual discussão de futebol na praça."
+    },
+    {
+      "id": "grandpa.draw.4",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ué, acabou? Eu tava só esquentando!"
+    },
+    {
+      "id": "grandpa.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Empate? Eu queria era a vitória, meu jovem!"
+    },
+    {
+      "id": "grandpa.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá bom, meu jovem. Um empate cai bem pros meus joelhos."
+    },
+    {
+      "id": "grandpa.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Aceito! Assim sobra tempo pro meu cochilo da tarde."
+    },
+    {
+      "id": "grandpa.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ora bolas, bem na hora. Esses óculos tavam me traindo."
+    },
+    {
+      "id": "grandpa.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? No meu tempo, isso era um gesto de cavalheiro."
+    },
+    {
+      "id": "grandpa.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Muito gentil, meu jovem. O vovô agradece de coração."
+    },
+    {
+      "id": "grandpa.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Aperta aqui a mão. Pros amigos da praça, foi equilibrado!"
+    },
+    {
+      "id": "grandpa.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Calma, meu jovem. O vovô ainda quer jogar mais um pouco."
+    },
+    {
+      "id": "grandpa.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Empate? Mas eu nem cochilei ainda!"
+    },
+    {
+      "id": "grandpa.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "No meu tempo, ninguém aceitava empate numa posição dessas."
+    },
+    {
+      "id": "grandpa.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hehe, tá com medo da bengala, meu jovem?"
+    },
+    {
+      "id": "grandpa.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nem pensar! Essa eu vou contar pros amigos da praça."
+    },
+    {
+      "id": "grandpa.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Recuso! O vovô ainda tem lenha pra queimar nesse final."
+    }
+  ]
+}

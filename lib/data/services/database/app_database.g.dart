@@ -1552,6 +1552,622 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
   }
 }
 
+class $RatingHistoryTable extends RatingHistory
+    with TableInfo<$RatingHistoryTable, RatingRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RatingHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _atMeta = const VerificationMeta('at');
+  @override
+  late final GeneratedColumn<DateTime> at = GeneratedColumn<DateTime>(
+    'at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  @override
+  late final GeneratedColumn<double> rating = GeneratedColumn<double>(
+    'rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deviationMeta = const VerificationMeta(
+    'deviation',
+  );
+  @override
+  late final GeneratedColumn<double> deviation = GeneratedColumn<double>(
+    'deviation',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _volatilityMeta = const VerificationMeta(
+    'volatility',
+  );
+  @override
+  late final GeneratedColumn<double> volatility = GeneratedColumn<double>(
+    'volatility',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    gameId,
+    at,
+    rating,
+    deviation,
+    volatility,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'rating_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RatingRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    }
+    if (data.containsKey('at')) {
+      context.handle(_atMeta, at.isAcceptableOrUnknown(data['at']!, _atMeta));
+    } else if (isInserting) {
+      context.missing(_atMeta);
+    }
+    if (data.containsKey('rating')) {
+      context.handle(
+        _ratingMeta,
+        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ratingMeta);
+    }
+    if (data.containsKey('deviation')) {
+      context.handle(
+        _deviationMeta,
+        deviation.isAcceptableOrUnknown(data['deviation']!, _deviationMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviationMeta);
+    }
+    if (data.containsKey('volatility')) {
+      context.handle(
+        _volatilityMeta,
+        volatility.isAcceptableOrUnknown(data['volatility']!, _volatilityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_volatilityMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RatingRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RatingRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      ),
+      at: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}at'],
+      )!,
+      rating: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}rating'],
+      )!,
+      deviation: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}deviation'],
+      )!,
+      volatility: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}volatility'],
+      )!,
+    );
+  }
+
+  @override
+  $RatingHistoryTable createAlias(String alias) {
+    return $RatingHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class RatingRow extends DataClass implements Insertable<RatingRow> {
+  final int id;
+
+  /// A partida que mudou o rating.
+  final int? gameId;
+  final DateTime at;
+  final double rating;
+  final double deviation;
+  final double volatility;
+  const RatingRow({
+    required this.id,
+    this.gameId,
+    required this.at,
+    required this.rating,
+    required this.deviation,
+    required this.volatility,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || gameId != null) {
+      map['game_id'] = Variable<int>(gameId);
+    }
+    map['at'] = Variable<DateTime>(at);
+    map['rating'] = Variable<double>(rating);
+    map['deviation'] = Variable<double>(deviation);
+    map['volatility'] = Variable<double>(volatility);
+    return map;
+  }
+
+  RatingHistoryCompanion toCompanion(bool nullToAbsent) {
+    return RatingHistoryCompanion(
+      id: Value(id),
+      gameId: gameId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gameId),
+      at: Value(at),
+      rating: Value(rating),
+      deviation: Value(deviation),
+      volatility: Value(volatility),
+    );
+  }
+
+  factory RatingRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RatingRow(
+      id: serializer.fromJson<int>(json['id']),
+      gameId: serializer.fromJson<int?>(json['gameId']),
+      at: serializer.fromJson<DateTime>(json['at']),
+      rating: serializer.fromJson<double>(json['rating']),
+      deviation: serializer.fromJson<double>(json['deviation']),
+      volatility: serializer.fromJson<double>(json['volatility']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'gameId': serializer.toJson<int?>(gameId),
+      'at': serializer.toJson<DateTime>(at),
+      'rating': serializer.toJson<double>(rating),
+      'deviation': serializer.toJson<double>(deviation),
+      'volatility': serializer.toJson<double>(volatility),
+    };
+  }
+
+  RatingRow copyWith({
+    int? id,
+    Value<int?> gameId = const Value.absent(),
+    DateTime? at,
+    double? rating,
+    double? deviation,
+    double? volatility,
+  }) => RatingRow(
+    id: id ?? this.id,
+    gameId: gameId.present ? gameId.value : this.gameId,
+    at: at ?? this.at,
+    rating: rating ?? this.rating,
+    deviation: deviation ?? this.deviation,
+    volatility: volatility ?? this.volatility,
+  );
+  RatingRow copyWithCompanion(RatingHistoryCompanion data) {
+    return RatingRow(
+      id: data.id.present ? data.id.value : this.id,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      at: data.at.present ? data.at.value : this.at,
+      rating: data.rating.present ? data.rating.value : this.rating,
+      deviation: data.deviation.present ? data.deviation.value : this.deviation,
+      volatility: data.volatility.present
+          ? data.volatility.value
+          : this.volatility,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingRow(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('at: $at, ')
+          ..write('rating: $rating, ')
+          ..write('deviation: $deviation, ')
+          ..write('volatility: $volatility')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, gameId, at, rating, deviation, volatility);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RatingRow &&
+          other.id == this.id &&
+          other.gameId == this.gameId &&
+          other.at == this.at &&
+          other.rating == this.rating &&
+          other.deviation == this.deviation &&
+          other.volatility == this.volatility);
+}
+
+class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
+  final Value<int> id;
+  final Value<int?> gameId;
+  final Value<DateTime> at;
+  final Value<double> rating;
+  final Value<double> deviation;
+  final Value<double> volatility;
+  const RatingHistoryCompanion({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.at = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.deviation = const Value.absent(),
+    this.volatility = const Value.absent(),
+  });
+  RatingHistoryCompanion.insert({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    required DateTime at,
+    required double rating,
+    required double deviation,
+    required double volatility,
+  }) : at = Value(at),
+       rating = Value(rating),
+       deviation = Value(deviation),
+       volatility = Value(volatility);
+  static Insertable<RatingRow> custom({
+    Expression<int>? id,
+    Expression<int>? gameId,
+    Expression<DateTime>? at,
+    Expression<double>? rating,
+    Expression<double>? deviation,
+    Expression<double>? volatility,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gameId != null) 'game_id': gameId,
+      if (at != null) 'at': at,
+      if (rating != null) 'rating': rating,
+      if (deviation != null) 'deviation': deviation,
+      if (volatility != null) 'volatility': volatility,
+    });
+  }
+
+  RatingHistoryCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? gameId,
+    Value<DateTime>? at,
+    Value<double>? rating,
+    Value<double>? deviation,
+    Value<double>? volatility,
+  }) {
+    return RatingHistoryCompanion(
+      id: id ?? this.id,
+      gameId: gameId ?? this.gameId,
+      at: at ?? this.at,
+      rating: rating ?? this.rating,
+      deviation: deviation ?? this.deviation,
+      volatility: volatility ?? this.volatility,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (at.present) {
+      map['at'] = Variable<DateTime>(at.value);
+    }
+    if (rating.present) {
+      map['rating'] = Variable<double>(rating.value);
+    }
+    if (deviation.present) {
+      map['deviation'] = Variable<double>(deviation.value);
+    }
+    if (volatility.present) {
+      map['volatility'] = Variable<double>(volatility.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('at: $at, ')
+          ..write('rating: $rating, ')
+          ..write('deviation: $deviation, ')
+          ..write('volatility: $volatility')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UnlockedAchievementsTable extends UnlockedAchievements
+    with TableInfo<$UnlockedAchievementsTable, UnlockedAchievementRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UnlockedAchievementsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _achievementIdMeta = const VerificationMeta(
+    'achievementId',
+  );
+  @override
+  late final GeneratedColumn<String> achievementId = GeneratedColumn<String>(
+    'achievement_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _atMeta = const VerificationMeta('at');
+  @override
+  late final GeneratedColumn<DateTime> at = GeneratedColumn<DateTime>(
+    'at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [achievementId, at];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'unlocked_achievements';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UnlockedAchievementRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('achievement_id')) {
+      context.handle(
+        _achievementIdMeta,
+        achievementId.isAcceptableOrUnknown(
+          data['achievement_id']!,
+          _achievementIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_achievementIdMeta);
+    }
+    if (data.containsKey('at')) {
+      context.handle(_atMeta, at.isAcceptableOrUnknown(data['at']!, _atMeta));
+    } else if (isInserting) {
+      context.missing(_atMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {achievementId};
+  @override
+  UnlockedAchievementRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UnlockedAchievementRow(
+      achievementId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}achievement_id'],
+      )!,
+      at: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}at'],
+      )!,
+    );
+  }
+
+  @override
+  $UnlockedAchievementsTable createAlias(String alias) {
+    return $UnlockedAchievementsTable(attachedDatabase, alias);
+  }
+}
+
+class UnlockedAchievementRow extends DataClass
+    implements Insertable<UnlockedAchievementRow> {
+  final String achievementId;
+  final DateTime at;
+  const UnlockedAchievementRow({required this.achievementId, required this.at});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['achievement_id'] = Variable<String>(achievementId);
+    map['at'] = Variable<DateTime>(at);
+    return map;
+  }
+
+  UnlockedAchievementsCompanion toCompanion(bool nullToAbsent) {
+    return UnlockedAchievementsCompanion(
+      achievementId: Value(achievementId),
+      at: Value(at),
+    );
+  }
+
+  factory UnlockedAchievementRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UnlockedAchievementRow(
+      achievementId: serializer.fromJson<String>(json['achievementId']),
+      at: serializer.fromJson<DateTime>(json['at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'achievementId': serializer.toJson<String>(achievementId),
+      'at': serializer.toJson<DateTime>(at),
+    };
+  }
+
+  UnlockedAchievementRow copyWith({String? achievementId, DateTime? at}) =>
+      UnlockedAchievementRow(
+        achievementId: achievementId ?? this.achievementId,
+        at: at ?? this.at,
+      );
+  UnlockedAchievementRow copyWithCompanion(UnlockedAchievementsCompanion data) {
+    return UnlockedAchievementRow(
+      achievementId: data.achievementId.present
+          ? data.achievementId.value
+          : this.achievementId,
+      at: data.at.present ? data.at.value : this.at,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnlockedAchievementRow(')
+          ..write('achievementId: $achievementId, ')
+          ..write('at: $at')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(achievementId, at);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UnlockedAchievementRow &&
+          other.achievementId == this.achievementId &&
+          other.at == this.at);
+}
+
+class UnlockedAchievementsCompanion
+    extends UpdateCompanion<UnlockedAchievementRow> {
+  final Value<String> achievementId;
+  final Value<DateTime> at;
+  final Value<int> rowid;
+  const UnlockedAchievementsCompanion({
+    this.achievementId = const Value.absent(),
+    this.at = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UnlockedAchievementsCompanion.insert({
+    required String achievementId,
+    required DateTime at,
+    this.rowid = const Value.absent(),
+  }) : achievementId = Value(achievementId),
+       at = Value(at);
+  static Insertable<UnlockedAchievementRow> custom({
+    Expression<String>? achievementId,
+    Expression<DateTime>? at,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (achievementId != null) 'achievement_id': achievementId,
+      if (at != null) 'at': at,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UnlockedAchievementsCompanion copyWith({
+    Value<String>? achievementId,
+    Value<DateTime>? at,
+    Value<int>? rowid,
+  }) {
+    return UnlockedAchievementsCompanion(
+      achievementId: achievementId ?? this.achievementId,
+      at: at ?? this.at,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (achievementId.present) {
+      map['achievement_id'] = Variable<String>(achievementId.value);
+    }
+    if (at.present) {
+      map['at'] = Variable<DateTime>(at.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnlockedAchievementsCompanion(')
+          ..write('achievementId: $achievementId, ')
+          ..write('at: $at, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1560,6 +2176,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SpeedrunAttemptsTable speedrunAttempts = $SpeedrunAttemptsTable(
     this,
   );
+  late final $RatingHistoryTable ratingHistory = $RatingHistoryTable(this);
+  late final $UnlockedAchievementsTable unlockedAchievements =
+      $UnlockedAchievementsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1568,6 +2187,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     profiles,
     games,
     speedrunAttempts,
+    ratingHistory,
+    unlockedAchievements,
   ];
 }
 
@@ -2359,6 +2980,403 @@ typedef $$SpeedrunAttemptsTableProcessedTableManager =
       SpeedrunAttemptRow,
       PrefetchHooks Function()
     >;
+typedef $$RatingHistoryTableCreateCompanionBuilder =
+    RatingHistoryCompanion Function({
+      Value<int> id,
+      Value<int?> gameId,
+      required DateTime at,
+      required double rating,
+      required double deviation,
+      required double volatility,
+    });
+typedef $$RatingHistoryTableUpdateCompanionBuilder =
+    RatingHistoryCompanion Function({
+      Value<int> id,
+      Value<int?> gameId,
+      Value<DateTime> at,
+      Value<double> rating,
+      Value<double> deviation,
+      Value<double> volatility,
+    });
+
+class $$RatingHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $RatingHistoryTable> {
+  $$RatingHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get deviation => $composableBuilder(
+    column: $table.deviation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get volatility => $composableBuilder(
+    column: $table.volatility,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RatingHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $RatingHistoryTable> {
+  $$RatingHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get deviation => $composableBuilder(
+    column: $table.deviation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get volatility => $composableBuilder(
+    column: $table.volatility,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RatingHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RatingHistoryTable> {
+  $$RatingHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get at =>
+      $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<double> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<double> get deviation =>
+      $composableBuilder(column: $table.deviation, builder: (column) => column);
+
+  GeneratedColumn<double> get volatility => $composableBuilder(
+    column: $table.volatility,
+    builder: (column) => column,
+  );
+}
+
+class $$RatingHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RatingHistoryTable,
+          RatingRow,
+          $$RatingHistoryTableFilterComposer,
+          $$RatingHistoryTableOrderingComposer,
+          $$RatingHistoryTableAnnotationComposer,
+          $$RatingHistoryTableCreateCompanionBuilder,
+          $$RatingHistoryTableUpdateCompanionBuilder,
+          (
+            RatingRow,
+            BaseReferences<_$AppDatabase, $RatingHistoryTable, RatingRow>,
+          ),
+          RatingRow,
+          PrefetchHooks Function()
+        > {
+  $$RatingHistoryTableTableManager(_$AppDatabase db, $RatingHistoryTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RatingHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RatingHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RatingHistoryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> gameId = const Value.absent(),
+                Value<DateTime> at = const Value.absent(),
+                Value<double> rating = const Value.absent(),
+                Value<double> deviation = const Value.absent(),
+                Value<double> volatility = const Value.absent(),
+              }) => RatingHistoryCompanion(
+                id: id,
+                gameId: gameId,
+                at: at,
+                rating: rating,
+                deviation: deviation,
+                volatility: volatility,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> gameId = const Value.absent(),
+                required DateTime at,
+                required double rating,
+                required double deviation,
+                required double volatility,
+              }) => RatingHistoryCompanion.insert(
+                id: id,
+                gameId: gameId,
+                at: at,
+                rating: rating,
+                deviation: deviation,
+                volatility: volatility,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RatingHistoryTable, RatingRow>(table),
+                  BaseReferences<_$AppDatabase, $RatingHistoryTable, RatingRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RatingHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RatingHistoryTable,
+      RatingRow,
+      $$RatingHistoryTableFilterComposer,
+      $$RatingHistoryTableOrderingComposer,
+      $$RatingHistoryTableAnnotationComposer,
+      $$RatingHistoryTableCreateCompanionBuilder,
+      $$RatingHistoryTableUpdateCompanionBuilder,
+      (
+        RatingRow,
+        BaseReferences<_$AppDatabase, $RatingHistoryTable, RatingRow>,
+      ),
+      RatingRow,
+      PrefetchHooks Function()
+    >;
+typedef $$UnlockedAchievementsTableCreateCompanionBuilder =
+    UnlockedAchievementsCompanion Function({
+      required String achievementId,
+      required DateTime at,
+      Value<int> rowid,
+    });
+typedef $$UnlockedAchievementsTableUpdateCompanionBuilder =
+    UnlockedAchievementsCompanion Function({
+      Value<String> achievementId,
+      Value<DateTime> at,
+      Value<int> rowid,
+    });
+
+class $$UnlockedAchievementsTableFilterComposer
+    extends Composer<_$AppDatabase, $UnlockedAchievementsTable> {
+  $$UnlockedAchievementsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get achievementId => $composableBuilder(
+    column: $table.achievementId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UnlockedAchievementsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UnlockedAchievementsTable> {
+  $$UnlockedAchievementsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get achievementId => $composableBuilder(
+    column: $table.achievementId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UnlockedAchievementsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UnlockedAchievementsTable> {
+  $$UnlockedAchievementsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get achievementId => $composableBuilder(
+    column: $table.achievementId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get at =>
+      $composableBuilder(column: $table.at, builder: (column) => column);
+}
+
+class $$UnlockedAchievementsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UnlockedAchievementsTable,
+          UnlockedAchievementRow,
+          $$UnlockedAchievementsTableFilterComposer,
+          $$UnlockedAchievementsTableOrderingComposer,
+          $$UnlockedAchievementsTableAnnotationComposer,
+          $$UnlockedAchievementsTableCreateCompanionBuilder,
+          $$UnlockedAchievementsTableUpdateCompanionBuilder,
+          (
+            UnlockedAchievementRow,
+            BaseReferences<
+              _$AppDatabase,
+              $UnlockedAchievementsTable,
+              UnlockedAchievementRow
+            >,
+          ),
+          UnlockedAchievementRow,
+          PrefetchHooks Function()
+        > {
+  $$UnlockedAchievementsTableTableManager(
+    _$AppDatabase db,
+    $UnlockedAchievementsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UnlockedAchievementsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UnlockedAchievementsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$UnlockedAchievementsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> achievementId = const Value.absent(),
+                Value<DateTime> at = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UnlockedAchievementsCompanion(
+                achievementId: achievementId,
+                at: at,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String achievementId,
+                required DateTime at,
+                Value<int> rowid = const Value.absent(),
+              }) => UnlockedAchievementsCompanion.insert(
+                achievementId: achievementId,
+                at: at,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $UnlockedAchievementsTable,
+                    UnlockedAchievementRow
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $UnlockedAchievementsTable,
+                    UnlockedAchievementRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UnlockedAchievementsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UnlockedAchievementsTable,
+      UnlockedAchievementRow,
+      $$UnlockedAchievementsTableFilterComposer,
+      $$UnlockedAchievementsTableOrderingComposer,
+      $$UnlockedAchievementsTableAnnotationComposer,
+      $$UnlockedAchievementsTableCreateCompanionBuilder,
+      $$UnlockedAchievementsTableUpdateCompanionBuilder,
+      (
+        UnlockedAchievementRow,
+        BaseReferences<
+          _$AppDatabase,
+          $UnlockedAchievementsTable,
+          UnlockedAchievementRow
+        >,
+      ),
+      UnlockedAchievementRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2369,4 +3387,8 @@ class $AppDatabaseManager {
       $$GamesTableTableManager(_db, _db.games);
   $$SpeedrunAttemptsTableTableManager get speedrunAttempts =>
       $$SpeedrunAttemptsTableTableManager(_db, _db.speedrunAttempts);
+  $$RatingHistoryTableTableManager get ratingHistory =>
+      $$RatingHistoryTableTableManager(_db, _db.ratingHistory);
+  $$UnlockedAchievementsTableTableManager get unlockedAchievements =>
+      $$UnlockedAchievementsTableTableManager(_db, _db.unlockedAchievements);
 }

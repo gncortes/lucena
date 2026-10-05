@@ -1212,7 +1212,8 @@ $RungCopyWith<$Res> get rung {
 /// @nodoc
 mixin _$JourneyProgress {
 
- List<RungProgress> get rungs;
+ List<RungProgress> get rungs;/// O degrau por onde o jogador começou (o escolhido no tour).
+ int get start;
 /// Create a copy of JourneyProgress
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1224,20 +1225,20 @@ $JourneyProgressCopyWith<JourneyProgress> get copyWith => _$JourneyProgressCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as JourneyProgress;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JourneyProgress&&const DeepCollectionEquality().equals(other.rungs, _this.rungs));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JourneyProgress&&const DeepCollectionEquality().equals(other.rungs, _this.rungs)&&(identical(other.start, _this.start) || other.start == _this.start));
 }
 
 
 @override
 int get hashCode {
   final _this = this as JourneyProgress;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.rungs));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.rungs),_this.start);
 }
 
 @override
 String toString() {
   final _this = this as JourneyProgress;
-  return 'JourneyProgress(rungs: ${_this.rungs})';
+  return 'JourneyProgress(rungs: ${_this.rungs}, start: ${_this.start})';
 }
 
 
@@ -1248,7 +1249,7 @@ abstract mixin class $JourneyProgressCopyWith<$Res>  {
   factory $JourneyProgressCopyWith(JourneyProgress value, $Res Function(JourneyProgress) _then) = _$JourneyProgressCopyWithImpl;
 @useResult
 $Res call({
- List<RungProgress> rungs
+ List<RungProgress> rungs, int start
 });
 
 
@@ -1265,10 +1266,11 @@ class _$JourneyProgressCopyWithImpl<$Res>
 
 /// Create a copy of JourneyProgress
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? rungs = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? rungs = null,Object? start = null,}) {
   return _then(JourneyProgress(
 rungs: null == rungs ? _self.rungs : rungs // ignore: cast_nullable_to_non_nullable
-as List<RungProgress>,
+as List<RungProgress>,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -1353,10 +1355,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<RungProgress> rungs)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<RungProgress> rungs,  int start)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JourneyProgress() when $default != null:
-return $default(_that.rungs);case _:
+return $default(_that.rungs,_that.start);case _:
   return orElse();
 
 }
@@ -1374,10 +1376,10 @@ return $default(_that.rungs);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<RungProgress> rungs)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<RungProgress> rungs,  int start)  $default,) {final _that = this;
 switch (_that) {
 case _JourneyProgress():
-return $default(_that.rungs);case _:
+return $default(_that.rungs,_that.start);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1394,10 +1396,10 @@ return $default(_that.rungs);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<RungProgress> rungs)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<RungProgress> rungs,  int start)?  $default,) {final _that = this;
 switch (_that) {
 case _JourneyProgress() when $default != null:
-return $default(_that.rungs);case _:
+return $default(_that.rungs,_that.start);case _:
   return null;
 
 }
@@ -1409,7 +1411,7 @@ return $default(_that.rungs);case _:
 
 
 class _JourneyProgress extends JourneyProgress {
-  const _JourneyProgress({required  List<RungProgress> rungs}): _rungs = rungs,super._();
+  const _JourneyProgress({required  List<RungProgress> rungs, this.start = 0}): _rungs = rungs,super._();
   
 
  final  List<RungProgress> _rungs;
@@ -1419,6 +1421,8 @@ class _JourneyProgress extends JourneyProgress {
   return EqualUnmodifiableListView(_rungs);
 }
 
+/// O degrau por onde o jogador começou (o escolhido no tour).
+@override@JsonKey() final  int start;
 
 /// Create a copy of JourneyProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -1430,18 +1434,18 @@ _$JourneyProgressCopyWith<_JourneyProgress> get copyWith => __$JourneyProgressCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JourneyProgress&&const DeepCollectionEquality().equals(other.rungs, _rungs));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _JourneyProgress&&const DeepCollectionEquality().equals(other.rungs, _rungs)&&(identical(other.start, start) || other.start == start));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_rungs));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_rungs),start);
 }
 
 @override
 String toString() {
-    return 'JourneyProgress(rungs: $rungs)';
+    return 'JourneyProgress(rungs: $rungs, start: $start)';
 }
 
 
@@ -1452,7 +1456,7 @@ abstract mixin class _$JourneyProgressCopyWith<$Res> implements $JourneyProgress
   factory _$JourneyProgressCopyWith(_JourneyProgress value, $Res Function(_JourneyProgress) _then) = __$JourneyProgressCopyWithImpl;
 @override @useResult
 $Res call({
- List<RungProgress> rungs
+ List<RungProgress> rungs, int start
 });
 
 
@@ -1469,10 +1473,11 @@ class __$JourneyProgressCopyWithImpl<$Res>
 
 /// Create a copy of JourneyProgress
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? rungs = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? rungs = null,Object? start = null,}) {
   return _then(_JourneyProgress(
 rungs: null == rungs ? _self._rungs : rungs // ignore: cast_nullable_to_non_nullable
-as List<RungProgress>,
+as List<RungProgress>,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

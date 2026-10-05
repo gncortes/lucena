@@ -89,6 +89,84 @@
       "kind": "ending",
       "position": "rookPawn.rookPawnVsRook.0001",
       "time": "180+2"
+    },
+    {
+      "id": "exercises.basic",
+      "kind": "exercises",
+      "time": "180+2",
+      "stages": [
+        {
+          "position": "basic.queen.0001",
+          "opponent": "maia:1200"
+        },
+        {
+          "position": "basic.rook.0001",
+          "opponent": "maia:1200"
+        },
+        {
+          "position": "basic.twoRooks.0001",
+          "opponent": "maia:1200"
+        },
+        {
+          "position": "basic.queen.0003",
+          "opponent": "maia:1600"
+        },
+        {
+          "position": "basic.rook.0003",
+          "opponent": "maia:1600"
+        }
+      ]
+    },
+    {
+      "id": "exercises.pawn",
+      "kind": "exercises",
+      "time": "180+2",
+      "stages": [
+        {
+          "position": "pawn.pawnVsKing.0001",
+          "opponent": "maia:1400"
+        },
+        {
+          "position": "pawn.pawnVsKing.0003",
+          "opponent": "maia:1400"
+        },
+        {
+          "position": "pawn.pawnVsKing.0005",
+          "opponent": "maia:1800"
+        },
+        {
+          "position": "pawn.pawnVsKing.0041",
+          "opponent": "maia:1800"
+        }
+      ]
+    },
+    {
+      "id": "exercises.queen",
+      "kind": "exercises",
+      "time": "300+3",
+      "stages": [
+        {
+          "position": "queen.queenVsPawn.0001",
+          "opponent": "maia:1800"
+        },
+        {
+          "position": "queen.queenVsPawn.0003",
+          "opponent": "maia:1800"
+        },
+        {
+          "position": "queen.queenVsRook.0001",
+          "opponent": "maia:2000"
+        },
+        {
+          "position": "queen.queenVsRook.0003",
+          "opponent": "maia:2200"
+        }
+      ]
+    },
+    {
+      "id": "full",
+      "kind": "full",
+      "time": "300+3"
     }
   ]
 }

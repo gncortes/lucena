@@ -1,5 +1,148 @@
 {
   "@@locale": "en",
+  "achievementAllLevelsHint": "Complete this endgame against every Maia level, from 1000 to 2600",
+  "@achievementAllLevelsHint": {
+    "description": "Achievement condition."
+  },
+  "achievementAllLevelsQueenTitle": "Queen mate against everyone",
+  "@achievementAllLevelsQueenTitle": {
+    "description": "Achievement name."
+  },
+  "achievementAllLevelsRookTitle": "Rook mate against everyone",
+  "@achievementAllLevelsRookTitle": {
+    "description": "Achievement name."
+  },
+  "achievementAllLevelsTitle": "One endgame, every level",
+  "@achievementAllLevelsTitle": {
+    "description": "Achievement name."
+  },
+  "achievementBeatLevelHint": "Complete a goal against {opponent} or stronger",
+  "@achievementBeatLevelHint": {
+    "description": "Achievement condition.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementBeatStockfishHint": "Complete a goal against Stockfish at full strength",
+  "@achievementBeatStockfishHint": {
+    "description": "Achievement condition."
+  },
+  "achievementBeatTitle": "Beat {opponent}",
+  "@achievementBeatTitle": {
+    "description": "Achievement name, e.g. \"Beat Maia 2600\".",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementFastHint": "Complete a Journey challenge using less than {seconds} s of your clock",
+  "@achievementFastHint": {
+    "description": "Achievement condition.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementFastSpeedrunHint": "Complete a level speedrun in under {minutes} min",
+  "@achievementFastSpeedrunHint": {
+    "description": "Achievement condition.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementFastSpeedrunTitle": "Lightning level",
+  "@achievementFastSpeedrunTitle": {
+    "description": "Achievement name."
+  },
+  "achievementFastTitle": "Fast hands",
+  "@achievementFastTitle": {
+    "description": "Achievement name."
+  },
+  "achievementFirstHint": "Complete the goal of an endgame for the first time",
+  "@achievementFirstHint": {
+    "description": "Achievement condition."
+  },
+  "achievementFirstTitle": "First endgame",
+  "@achievementFirstTitle": {
+    "description": "Achievement name."
+  },
+  "achievementFlawlessEndingHint": "Complete an endgame speedrun without losing a single game",
+  "@achievementFlawlessEndingHint": {
+    "description": "Achievement condition."
+  },
+  "achievementFlawlessEndingTitle": "Flawless endgame run",
+  "@achievementFlawlessEndingTitle": {
+    "description": "Achievement name."
+  },
+  "achievementFlawlessHint": "Complete a speedrun without losing a single game",
+  "@achievementFlawlessHint": {
+    "description": "Achievement condition."
+  },
+  "achievementFlawlessTitle": "Flawless speedrun",
+  "@achievementFlawlessTitle": {
+    "description": "Achievement name."
+  },
+  "achievementRecordHint": "Beat your own record in a speedrun",
+  "@achievementRecordHint": {
+    "description": "Achievement condition."
+  },
+  "achievementRecordTitle": "Personal best",
+  "@achievementRecordTitle": {
+    "description": "Achievement name."
+  },
+  "achievementRungHint": "Complete every challenge against {rung}",
+  "@achievementRungHint": {
+    "description": "Achievement condition.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementRungTitle": "{rung} conquered",
+  "@achievementRungTitle": {
+    "description": "Achievement name: every challenge of a level done, e.g. \"Maia 1600 conquered\".",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsLockedLabel": "Locked",
+  "@achievementsLockedLabel": {
+    "description": "Accessibility label of an achievement not yet unlocked."
+  },
+  "achievementsProgress": "{done} of {total} unlocked",
+  "@achievementsProgress": {
+    "description": "How many achievements were unlocked.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsTitle": "Achievements",
+  "@achievementsTitle": {
+    "description": "Title of the achievements screen."
+  },
+  "achievementsUnlockedOn": "Unlocked on {date}",
+  "@achievementsUnlockedOn": {
+    "description": "Date an achievement was unlocked.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "appTitle": "Lucena",
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
@@ -162,6 +305,30 @@
   "@catalogTitle": {
     "description": "Title of the catalog screen with the categories of endgame positions."
   },
+  "characterNameLevel": "{name} · {level}",
+  "@characterNameLevel": {
+    "description": "Character name with the Maia level they play at, e.g. \"Valdini · 1600\".",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "characterSays": "{name} says: {text}",
+  "@characterSays": {
+    "description": "Accessibility label of the speech bubble of the opponent character.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "clockBothSides": "Both sides",
   "@clockBothSides": {
     "description": "Section title of the time options when white and black get the same time."
@@ -250,6 +417,60 @@
   "@customToolMove": {
     "description": "Board editor tool: drag pieces around the board."
   },
+  "feedbackAchievement": "Achievement unlocked: {title}",
+  "@feedbackAchievement": {
+    "description": "After a game: an achievement was unlocked.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackFirstWin": "You beat {opponent} for the first time!",
+  "@feedbackFirstWin": {
+    "description": "After a game: first time the goal was completed against this opponent, e.g. \"Maia 2600\".",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackImproved": "You improved your time by {time}",
+  "@feedbackImproved": {
+    "description": "At the end of a speedrun: how much faster than the previous record, e.g. \"0:18.0\".",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackNewRecord": "New personal record: {time}",
+  "@feedbackNewRecord": {
+    "description": "At the end of a speedrun: the new best total time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackRungCompleted": "Every endgame against {rung} completed!",
+  "@feedbackRungCompleted": {
+    "description": "After a game: every challenge of a Journey level is done.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackStageRecord": "New record against {opponent}",
+  "@feedbackStageRecord": {
+    "description": "After a speedrun stage: best time ever against this opponent.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
   "freeBoardBlackToMove": "Black to move",
   "@freeBoardBlackToMove": {
     "description": "Status above the board: it is Black's turn."
@@ -269,6 +490,10 @@
   "freeBoardDraw": "Draw",
   "@freeBoardDraw": {
     "description": "Game result: draw."
+  },
+  "freeBoardDrawAgreed": "Draw by agreement",
+  "@freeBoardDrawAgreed": {
+    "description": "Game end reason: the player offered a draw and the machine accepted."
   },
   "freeBoardFiftyMoves": "Fifty-move rule",
   "@freeBoardFiftyMoves": {
@@ -318,6 +543,10 @@
   "@freeBoardWhiteWins": {
     "description": "Game result: White won."
   },
+  "gameDrawDeclined": "Draw declined",
+  "@gameDrawDeclined": {
+    "description": "Short notice when the machine refuses the draw offer."
+  },
   "gameMachineThinking": "{name} is thinking…",
   "@gameMachineThinking": {
     "description": "Shown while the computer opponent chooses its move; {name} is the opponent, e.g. 'Maia 1400' or 'Stockfish'.",
@@ -326,6 +555,10 @@
         "type": "String"
       }
     }
+  },
+  "gameOfferDraw": "Offer a draw",
+  "@gameOfferDraw": {
+    "description": "Training game button: the player offers a draw to the machine."
   },
   "gameResign": "Resign",
   "@gameResign": {
@@ -351,6 +584,14 @@
   "@goalWin": {
     "description": "Goal of a position: the player must win. Also a catalog filter option."
   },
+  "homeAchievements": "Achievements",
+  "@homeAchievements": {
+    "description": "Tooltip of the home screen button that opens the achievements."
+  },
+  "homeContinue": "Continue",
+  "@homeContinue": {
+    "description": "Home card button that opens the next challenge."
+  },
   "homeJourney": "Journey",
   "@homeJourney": {
     "description": "Main home screen button: opens the Journey, the ladder of levels from Maia 1000 to Stockfish."
@@ -358,6 +599,15 @@
   "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
   "@homeMascotLabel": {
     "description": "Screen reader label for the mascot image on the home screen."
+  },
+  "homeRating": "Rating {rating}",
+  "@homeRating": {
+    "description": "Home card chip with the player rating.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
   },
   "homeSpeedrun": "Speedrun",
   "@homeSpeedrun": {
@@ -376,6 +626,43 @@
     "description": "App version shown at the bottom of the home screen, e.g. Version 0.3.2.",
     "placeholders": {
       "version": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhereDone": "Journey complete! Try the speedruns.",
+  "@homeWhereDone": {
+    "description": "Home card when the whole Journey is done."
+  },
+  "homeWhereNext": "Next: {position} against {opponent}",
+  "@homeWhereNext": {
+    "description": "Home card: the next challenge, e.g. \"Next: ♕ vs ♚ against Coco\".",
+    "placeholders": {
+      "position": {
+        "type": "String"
+      },
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhereProgress": "{done} of {total} challenges",
+  "@homeWhereProgress": {
+    "description": "Home card: progress in the current level.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWhereTitle": "You are at {rung}",
+  "@homeWhereTitle": {
+    "description": "Home card: the Journey level the player is working on.",
+    "placeholders": {
+      "rung": {
         "type": "String"
       }
     }
@@ -539,6 +826,34 @@
       }
     }
   },
+  "paceBlitz": "Blitz",
+  "@paceBlitz": {
+    "description": "Time control category: fast games (3 to 8 minutes)."
+  },
+  "paceBullet": "Bullet",
+  "@paceBullet": {
+    "description": "Time control category: very fast games (under 3 minutes)."
+  },
+  "paceChip": "{time} · {category}",
+  "@paceChip": {
+    "description": "Chip of a named time control, e.g. \"3+2 · Blitz\".",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "paceClassical": "Classical",
+  "@paceClassical": {
+    "description": "Time control category: long games."
+  },
+  "paceRapid": "Rapid",
+  "@paceRapid": {
+    "description": "Time control category: games of 8 to 25 minutes."
+  },
   "pieceBishop": "Bishop",
   "@pieceBishop": {
     "description": "Chess piece name."
@@ -631,6 +946,10 @@
   "@positionErrorTooManyKings": {
     "description": "Error: a side has more than one king."
   },
+  "profileEndgameRating": "Endgame rating",
+  "@profileEndgameRating": {
+    "description": "Title of the player rating card in the profile (the rating that changes with every game)."
+  },
   "profileLevelAbove": "{min} or more",
   "@profileLevelAbove": {
     "description": "Rating range of the highest level, e.g. '2200 or more'.",
@@ -701,13 +1020,50 @@
   "@profileRating": {
     "description": "Label of the profile field with the player's approximate chess rating; also the title of the panel where the range is picked."
   },
+  "profileRatingGames": "{count, plural, =1{1 rated game} other{{count} rated games}}",
+  "@profileRatingGames": {
+    "description": "How many games changed the rating.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileRatingHint": "It changes after every game against the Maia or Stockfish, taking into account how hard the position was. It measures endgames against the Maia: it is not comparable to Lichess or chess.com ratings.",
+  "@profileRatingHint": {
+    "description": "Explanation under the player rating."
+  },
+  "profileRatingHistory": "History",
+  "@profileRatingHistory": {
+    "description": "Header of the list of rating changes."
+  },
+  "profileRatingProvisional": "Provisional",
+  "@profileRatingProvisional": {
+    "description": "Badge shown while the rating is still uncertain (few games)."
+  },
   "profileRatingSheetHint": "Pick the range closest to your rating, online or over the board.",
   "@profileRatingSheetHint": {
     "description": "Explanation at the top of the panel where the player picks a rating range."
   },
+  "profileRatingStart": "Starting point: your level above",
+  "@profileRatingStart": {
+    "description": "Shown before the first rated game: the rating starts from the chosen level."
+  },
   "profileSave": "Save",
   "@profileSave": {
     "description": "Button that saves the profile."
+  },
+  "reportRating": "Rating {rating} ({change})",
+  "@reportRating": {
+    "description": "After a game: the new rating and the change, e.g. \"Rating 1187 (+37)\".",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
   },
   "resultFulfilled": "Goal achieved!",
   "@resultFulfilled": {
@@ -728,6 +1084,14 @@
   "settingsBoardBehavior": "Board behavior",
   "@settingsBoardBehavior": {
     "description": "Settings entry and title of the screen with how the board reacts: moving pieces, legal move hints, animation, premoves and notation."
+  },
+  "settingsCharacterTalk": "Opponent comments",
+  "@settingsCharacterTalk": {
+    "description": "Settings switch: the opponent characters comment on the game in a speech bubble."
+  },
+  "settingsCharacterTalkHint": "The characters react to the game in a speech bubble",
+  "@settingsCharacterTalkHint": {
+    "description": "Subtitle of the switch that turns the character lines on or off."
   },
   "settingsClock": "Clock",
   "@settingsClock": {
@@ -765,6 +1129,10 @@
   "@settingsTitle": {
     "description": "Title of the settings screen; also the tooltip of the button that opens it."
   },
+  "settingsTour": "Show the tour again",
+  "@settingsTour": {
+    "description": "Settings item that opens the first-run tour again."
+  },
   "setupDecrease": "Decrease",
   "@setupDecrease": {
     "description": "Tooltip of the minus button of a time selector."
@@ -794,6 +1162,10 @@
   "@setupOpponent": {
     "description": "Section title: who the player plays against."
   },
+  "setupOpponentCharacter": "Opponent",
+  "@setupOpponentCharacter": {
+    "description": "Title above the list of Maia characters, one per level."
+  },
   "setupOpponentMaia": "Maia",
   "@setupOpponentMaia": {
     "description": "Name of the Maia opponent (a neural network that plays like a human). Proper noun: do not translate."
@@ -821,6 +1193,23 @@
   "setupOpponentTwoPlayersHint": "You move the pieces of both sides",
   "@setupOpponentTwoPlayersHint": {
     "description": "Explanation under the two players opponent option."
+  },
+  "setupPace": "Time control",
+  "@setupPace": {
+    "description": "Section of the game setup with the named time controls (1+0, 3+2...)."
+  },
+  "setupPaceHint": "The Maia keeps its strength in every time control: in bullet it plays more on instinct and faster.",
+  "@setupPaceHint": {
+    "description": "Hint under the time control chips."
+  },
+  "setupSuggestedRating": "Suggested for your rating ({rating})",
+  "@setupSuggestedRating": {
+    "description": "Hint under the opponents: the star marks the level that matches the player rating.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
   },
   "setupTimeZero": "The starting time must be more than zero.",
   "@setupTimeZero": {
@@ -886,9 +1275,21 @@
   "@speedrunEndingSection": {
     "description": "Section of speedruns that play one endgame against every level."
   },
+  "speedrunExercisesSection": "Exercises",
+  "@speedrunExercisesSection": {
+    "description": "Section of speedruns that play a fixed sequence of positions."
+  },
   "speedrunFinished": "Speedrun complete",
   "@speedrunFinished": {
     "description": "Shown at the end of an attempt that did not beat the record."
+  },
+  "speedrunFullSection": "Campaign",
+  "@speedrunFullSection": {
+    "description": "Section with the big speedrun that covers the whole Journey."
+  },
+  "speedrunFullTitle": "Full Journey",
+  "@speedrunFullTitle": {
+    "description": "Name of the speedrun that plays every Journey challenge, from Maia 1000 to Stockfish."
   },
   "speedrunHistory": "Times",
   "@speedrunHistory": {
@@ -1012,6 +1413,107 @@
       },
       "record": {
         "type": "String"
+      }
+    }
+  },
+  "tourBack": "Back",
+  "@tourBack": {
+    "description": "Button that goes to the previous step of the tour."
+  },
+  "tourEndgamesBody": "Basic mates, pawn endings, rook and queen endings: each position has a goal, win or hold the draw.",
+  "@tourEndgamesBody": {
+    "description": "Tour step text."
+  },
+  "tourEndgamesTitle": "Endgames",
+  "@tourEndgamesTitle": {
+    "description": "Tour step title."
+  },
+  "tourGoalBody": "Lucena puts you in typical endgames against the Maia, an AI that plays like real people of each rating. Everything works offline.",
+  "@tourGoalBody": {
+    "description": "Tour step text."
+  },
+  "tourGoalTitle": "Train endgames against people",
+  "@tourGoalTitle": {
+    "description": "Tour step title: the purpose of the app."
+  },
+  "tourJourneyBody": "Climb from Maia 1000 to Stockfish. Complete every challenge of a level to unlock the next one.",
+  "@tourJourneyBody": {
+    "description": "Tour step text."
+  },
+  "tourJourneyTitle": "The Journey",
+  "@tourJourneyTitle": {
+    "description": "Tour step title."
+  },
+  "tourLevelBody": "The Journey starts at the matching level, and you can still play the ones below.",
+  "@tourLevelBody": {
+    "description": "Text of the level step of the tour."
+  },
+  "tourLevelStart": "Journey starts at {rung}",
+  "@tourLevelStart": {
+    "description": "Under the level choice: where the Journey will start.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "tourLevelTitle": "What is your current level?",
+  "@tourLevelTitle": {
+    "description": "Last tour step: the player picks a rating band; the Journey starts at the matching level."
+  },
+  "tourNext": "Next",
+  "@tourNext": {
+    "description": "Button that goes to the next step of the tour."
+  },
+  "tourOpponentsBody": "Each Maia level is a character with its own personality, who comments the game in a speech bubble.",
+  "@tourOpponentsBody": {
+    "description": "Tour step text."
+  },
+  "tourOpponentsTitle": "Your opponents",
+  "@tourOpponentsTitle": {
+    "description": "Tour step title."
+  },
+  "tourRatingBody": "Every game against the Maia or Stockfish moves your endgame rating, taking into account how good the starting position was.",
+  "@tourRatingBody": {
+    "description": "Tour step text."
+  },
+  "tourRatingTitle": "Your rating",
+  "@tourRatingTitle": {
+    "description": "Tour step title."
+  },
+  "tourRecordsBody": "Beat your own times, unlock achievements and see every game in the history.",
+  "@tourRecordsBody": {
+    "description": "Tour step text."
+  },
+  "tourRecordsTitle": "Records and achievements",
+  "@tourRecordsTitle": {
+    "description": "Tour step title."
+  },
+  "tourSkip": "Skip",
+  "@tourSkip": {
+    "description": "Button that skips the first-run tour."
+  },
+  "tourSpeedrunBody": "Play a sequence of stages as fast as you can. Only your clock counts and you can pause between stages.",
+  "@tourSpeedrunBody": {
+    "description": "Tour step text."
+  },
+  "tourSpeedrunTitle": "Speedrun",
+  "@tourSpeedrunTitle": {
+    "description": "Tour step title."
+  },
+  "tourStart": "Start",
+  "@tourStart": {
+    "description": "Last button of the tour: confirms the level and opens the app."
+  },
+  "tourStep": "Step {step} of {total}",
+  "@tourStep": {
+    "description": "Accessibility label of the tour progress dots.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
       }
     }
   }

@@ -1,0 +1,867 @@
+{
+  "character": "foodie",
+  "language": "en",
+  "lines": [
+    {
+      "id": "foodie.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Have a seat. I play and I eat, both without hurry."
+    },
+    {
+      "id": "foodie.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Hot pizza, an endgame on the board. Good day."
+    },
+    {
+      "id": "foodie.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Want a slice? No? Then I'll eat yours too."
+    },
+    {
+      "id": "foodie.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Endgames are like dough: you give them time to rise."
+    },
+    {
+      "id": "foodie.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Relax. I serve slowly, but I always serve the full meal."
+    },
+    {
+      "id": "foodie.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Let me wipe my fingers before I touch the pieces."
+    },
+    {
+      "id": "foodie.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "This position is done. Just need to take it out of the oven."
+    },
+    {
+      "id": "foodie.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I'm already thinking about dessert."
+    },
+    {
+      "id": "foodie.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "You can go ahead and ask for the check, friend."
+    },
+    {
+      "id": "foodie.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Starter's gone, main course's gone... now it's coffee."
+    },
+    {
+      "id": "foodie.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "No escape from here. I don't waste food."
+    },
+    {
+      "id": "foodie.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Mm. Something smells good on my side."
+    },
+    {
+      "id": "foodie.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Good dough. Just needs a bit more time in the oven."
+    },
+    {
+      "id": "foodie.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I like this seasoning. Let me add a little more."
+    },
+    {
+      "id": "foodie.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "One slice ahead. That's a start."
+    },
+    {
+      "id": "foodie.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "No rush. Low heat is where the flavor comes from."
+    },
+    {
+      "id": "foodie.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Half and half, like a two-topping pizza."
+    },
+    {
+      "id": "foodie.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It's lukewarm. Not hot, not cold."
+    },
+    {
+      "id": "foodie.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "There's still a lot of meal left."
+    },
+    {
+      "id": "foodie.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Splitting the bill right down the middle, huh?"
+    },
+    {
+      "id": "foodie.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Balanced position. This is where the real cook shows up."
+    },
+    {
+      "id": "foodie.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A little overcooked. Still salvageable."
+    },
+    {
+      "id": "foodie.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Let me put the slice down and think properly."
+    },
+    {
+      "id": "foodie.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Oops, burnt the crust."
+    },
+    {
+      "id": "foodie.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Bit too salty for me. But I've eaten worse."
+    },
+    {
+      "id": "foodie.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Hm. That slice went down the wrong way."
+    },
+    {
+      "id": "foodie.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "I think I'm paying for this pizza."
+    },
+    {
+      "id": "foodie.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Burnt the whole thing. Even the cheese."
+    },
+    {
+      "id": "foodie.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "That's fine. Bad food still fills you up."
+    },
+    {
+      "id": "foodie.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "You ate my plate and licked the fork too."
+    },
+    {
+      "id": "foodie.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "As long as there are crumbs on the table, I keep eating."
+    },
+    {
+      "id": "foodie.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Mm! Served to me on a platter."
+    },
+    {
+      "id": "foodie.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "That was a free slice, you know?"
+    },
+    {
+      "id": "foodie.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Thanks for the complimentary appetizer."
+    },
+    {
+      "id": "foodie.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "You left the pizza on the table and walked away."
+    },
+    {
+      "id": "foodie.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "I don't turn that down. I never turn that down."
+    },
+    {
+      "id": "foodie.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Uh-oh, dropped my slice on the floor."
+    },
+    {
+      "id": "foodie.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Played with greasy fingers. It slipped."
+    },
+    {
+      "id": "foodie.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Got the salt wrong. Happens to the best chefs."
+    },
+    {
+      "id": "foodie.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Burnt my tongue. Rushing never works."
+    },
+    {
+      "id": "foodie.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "I should've chewed that move a bit longer."
+    },
+    {
+      "id": "foodie.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ooh. That move has some seasoning."
+    },
+    {
+      "id": "foodie.strongMove.2",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A chef's move. Respect."
+    },
+    {
+      "id": "foodie.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Hm. I'll have to stop eating to answer that."
+    },
+    {
+      "id": "foodie.strongMove.4",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Now that's fine work. Thin crust, crispy edge."
+    },
+    {
+      "id": "foodie.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Pretty. But I can cook too."
+    },
+    {
+      "id": "foodie.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Warmed it up and it's good again."
+    },
+    {
+      "id": "foodie.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Day-old pizza tastes the best, you know?"
+    },
+    {
+      "id": "foodie.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "See? Low heat, patience, and the dough comes back."
+    },
+    {
+      "id": "foodie.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Menu's flipped! Dessert's on my side tonight."
+    },
+    {
+      "id": "foodie.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I never leave the table before the meal is over."
+    },
+    {
+      "id": "foodie.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Huh. Where's the pizza that was right here?"
+    },
+    {
+      "id": "foodie.collapse.2",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "It was perfect and I left it in the oven."
+    },
+    {
+      "id": "foodie.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "I got distracted by dessert before the main course."
+    },
+    {
+      "id": "foodie.collapse.4",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Celebrated with my mouth full. Rookie mistake."
+    },
+    {
+      "id": "foodie.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "I let it get cold. Cold pizza is no fun."
+    },
+    {
+      "id": "foodie.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Mm, I'll eat that one."
+    },
+    {
+      "id": "foodie.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Nom. That was delicious."
+    },
+    {
+      "id": "foodie.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "One more slice for my plate."
+    },
+    {
+      "id": "foodie.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "That piece came with a stuffed crust."
+    },
+    {
+      "id": "foodie.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Compliments to the chef. That means you."
+    },
+    {
+      "id": "foodie.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Go ahead, take it. There's more in the kitchen."
+    },
+    {
+      "id": "foodie.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Hey, that slice was mine."
+    },
+    {
+      "id": "foodie.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ate it without asking? How rude."
+    },
+    {
+      "id": "foodie.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "You took the slice with the most pepperoni."
+    },
+    {
+      "id": "foodie.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "All right. Now I'm actually hungry."
+    },
+    {
+      "id": "foodie.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Fresh queen, straight out of the oven."
+    },
+    {
+      "id": "foodie.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Ordered a pawn, got a queen. On the house."
+    },
+    {
+      "id": "foodie.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "The little pawn rose. That's good yeast."
+    },
+    {
+      "id": "foodie.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Now that's a family-size pizza!"
+    },
+    {
+      "id": "foodie.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Main course served. Bon appétit to me."
+    },
+    {
+      "id": "foodie.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Oh, you know how to make dough rise too."
+    },
+    {
+      "id": "foodie.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "New queen at the table. I'd better put the slice down."
+    },
+    {
+      "id": "foodie.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Called for backup from the kitchen, huh?"
+    },
+    {
+      "id": "foodie.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "I should've eaten that pawn on the way."
+    },
+    {
+      "id": "foodie.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Fine. A big queen still cuts into slices."
+    },
+    {
+      "id": "foodie.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Eat slowly, but your clock is running."
+    },
+    {
+      "id": "foodie.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Your time's vanishing like pizza at a party."
+    },
+    {
+      "id": "foodie.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Not much time, lots on your plate. Tricky."
+    },
+    {
+      "id": "foodie.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Kitchen's about to close, friend. Order now."
+    },
+    {
+      "id": "foodie.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Breathe. Swallowing too fast gives you hiccups."
+    },
+    {
+      "id": "foodie.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hm, spent too much time eating. Literally."
+    },
+    {
+      "id": "foodie.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Slice is down. Now it's serious."
+    },
+    {
+      "id": "foodie.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Delivery mode: fast and still hot."
+    },
+    {
+      "id": "foodie.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "No time even to chew!"
+    },
+    {
+      "id": "foodie.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Fine. I've baked with the oven alarm going off."
+    },
+    {
+      "id": "foodie.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I've got time to spare. Grabbing another slice."
+    },
+    {
+      "id": "foodie.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Let me just finish this bite..."
+    },
+    {
+      "id": "foodie.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "My clock's a full plate. Yours is down to crumbs."
+    },
+    {
+      "id": "foodie.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "No rush. The pizza's hot and the clock is mine."
+    },
+    {
+      "id": "foodie.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I'll chew every move. You're the one in a hurry."
+    },
+    {
+      "id": "foodie.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. I have pizza."
+    },
+    {
+      "id": "foodie.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meanwhile, another slice. Thanks."
+    },
+    {
+      "id": "foodie.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Picking a topping? Go with pepperoni."
+    },
+    {
+      "id": "foodie.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Any longer and I'm ordering another pizza."
+    },
+    {
+      "id": "foodie.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Friend, my pizza's gone cold over here."
+    },
+    {
+      "id": "foodie.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Good game. Want the last slice as consolation?"
+    },
+    {
+      "id": "foodie.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Full meal. Starter, main course and dessert."
+    },
+    {
+      "id": "foodie.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Cooked to perfection. Just like I said."
+    },
+    {
+      "id": "foodie.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "No rush, no panic. That's how you eat."
+    },
+    {
+      "id": "foodie.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "The check's on you, but the pizza was mine."
+    },
+    {
+      "id": "foodie.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Well played. You can really cook."
+    },
+    {
+      "id": "foodie.loss.2",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "I lost and the pizza's gone. Rough day."
+    },
+    {
+      "id": "foodie.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Well deserved. Dessert is yours."
+    },
+    {
+      "id": "foodie.loss.4",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Got distracted by the stuffed crust. Rematch?"
+    },
+    {
+      "id": "foodie.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "That's fine. Tomorrow there's new pizza and a new game."
+    },
+    {
+      "id": "foodie.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Half and half. We each pay our share."
+    },
+    {
+      "id": "foodie.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A draw. We can split the dessert."
+    },
+    {
+      "id": "foodie.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Stalemate? All that food and nobody eats."
+    },
+    {
+      "id": "foodie.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Going back for seconds again? Me too."
+    },
+    {
+      "id": "foodie.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Not much left on the table. No dinner for anyone."
+    },
+    {
+      "id": "foodie.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw? Deal. Better to split the pizza than pay the whole check."
+    },
+    {
+      "id": "foodie.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Half and half. Fair, and nobody leaves hungry."
+    },
+    {
+      "id": "foodie.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Phew. That dough was about to burn in my oven. Deal."
+    },
+    {
+      "id": "foodie.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "You're a good cook. I accept and take the rest to go."
+    },
+    {
+      "id": "foodie.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "I accept before you eat my last slice."
+    },
+    {
+      "id": "foodie.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "You saved my dinner. Draw, and dessert's on me."
+    },
+    {
+      "id": "foodie.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw? The pizza's not even out of the oven yet."
+    },
+    {
+      "id": "foodie.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Thanks, but I'm still hungry."
+    },
+    {
+      "id": "foodie.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Split the check? No, tonight it's on you."
+    },
+    {
+      "id": "foodie.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Declined. There are plenty of slices left on this board."
+    },
+    {
+      "id": "foodie.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "I never leave a plate half eaten. Down to the crust."
+    },
+    {
+      "id": "foodie.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Low heat, no rush. This ending is still rising."
+    }
+  ]
+}

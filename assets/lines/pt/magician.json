@@ -1,0 +1,874 @@
+{
+  "character": "magician",
+  "language": "pt",
+  "lines": [
+    {
+      "id": "magician.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Senhoras e senhores... e você! Que comece o espetáculo!"
+    },
+    {
+      "id": "magician.gameStart.2",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Escolha uma casa, qualquer casa. Eu já sei qual é."
+    },
+    {
+      "id": "magician.gameStart.3",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Bem-vindo ao meu número. Por favor, não toque na cartola."
+    },
+    {
+      "id": "magician.gameStart.4",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Nada na manga, nada na cartola... e ainda assim vou te vencer."
+    },
+    {
+      "id": "magician.gameStart.5",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Respeitável público, apresento: o final que desaparece!"
+    },
+    {
+      "id": "magician.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Acomode-se. Este número tem poucas peças e muitas surpresas."
+    },
+    {
+      "id": "magician.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "E agora, para o grand finale, faço o seu rei desaparecer!"
+    },
+    {
+      "id": "magician.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Aplausos, por favor! O truque está quase completo."
+    },
+    {
+      "id": "magician.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Calma. Todo bom número tem um final elegante."
+    },
+    {
+      "id": "magician.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tirei o coelho da cartola e ele veio com uma torre."
+    },
+    {
+      "id": "magician.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Rufem os tambores... a cortina já está fechando pra você."
+    },
+    {
+      "id": "magician.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hmm, as cartas estão começando a sorrir pra mim."
+    },
+    {
+      "id": "magician.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Viu isso? Não? Pois é, essa é a graça da mágica."
+    },
+    {
+      "id": "magician.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Um pequeno truque de aquecimento. O principal vem depois."
+    },
+    {
+      "id": "magician.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "O público está gostando. Eu, pelo menos, estou."
+    },
+    {
+      "id": "magician.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Mais um passe de mágica e a vantagem vira vitória."
+    },
+    {
+      "id": "magician.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tudo empatado. O suspense é parte do espetáculo."
+    },
+    {
+      "id": "magician.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hora de embaralhar as cartas e ver o que sai."
+    },
+    {
+      "id": "magician.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Shh... o mágico está preparando o próximo truque."
+    },
+    {
+      "id": "magician.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Equilíbrio perfeito. Como um coelho numa corda bamba."
+    },
+    {
+      "id": "magician.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Ninguém na frente? Ótimo, é aí que eu faço mágica."
+    },
+    {
+      "id": "magician.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Faz parte do número, viu? O mágico sempre sofre antes."
+    },
+    {
+      "id": "magician.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Atenção para a minha mão esquerda... e esqueça a direita."
+    },
+    {
+      "id": "magician.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Um pequeno contratempo. A cartola ainda não está vazia."
+    },
+    {
+      "id": "magician.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Hmm, onde foi que eu guardei aquele ás?"
+    },
+    {
+      "id": "magician.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ninguém se mexa! O truque ainda não terminou!"
+    },
+    {
+      "id": "magician.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Senhoras e senhores, um breve intervalo técnico..."
+    },
+    {
+      "id": "magician.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Agora sim é a hora do coelho. Ele está vindo. Acho."
+    },
+    {
+      "id": "magician.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Quem trocou o meu baralho? Isso não estava no roteiro!"
+    },
+    {
+      "id": "magician.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Um verdadeiro mágico nunca desiste. Só enrola com estilo."
+    },
+    {
+      "id": "magician.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Até o melhor mágico tem noite de casa vazia."
+    },
+    {
+      "id": "magician.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ora, ora! Você caiu direitinho na minha armadilha!"
+    },
+    {
+      "id": "magician.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Abracadabra! E sua peça sumiu do tabuleiro!"
+    },
+    {
+      "id": "magician.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Você olhou pra minha mão errada. Clássico."
+    },
+    {
+      "id": "magician.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Obrigado pela participação da plateia!"
+    },
+    {
+      "id": "magician.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Era essa a carta que você escolheu? Pois é, eu sabia."
+    },
+    {
+      "id": "magician.opponentBlunder.6",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Nem precisei de varinha pra essa."
+    },
+    {
+      "id": "magician.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Isso foi de propósito. Faz parte do número."
+    },
+    {
+      "id": "magician.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ops... quer dizer, tcharam!"
+    },
+    {
+      "id": "magician.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "O coelho mordeu minha mão. Esquece o que você viu."
+    },
+    {
+      "id": "magician.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Primeiro eu deixo a peça sumir. Depois faço ela voltar."
+    },
+    {
+      "id": "magician.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Ninguém viu isso, certo? Ótimo, seguimos com o show."
+    },
+    {
+      "id": "magician.strongMove.1",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ei! Quem te ensinou esse truque?"
+    },
+    {
+      "id": "magician.strongMove.2",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bonito. Você tem futuro no palco."
+    },
+    {
+      "id": "magician.strongMove.3",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Isso foi mágica de verdade! Me conta o segredo depois."
+    },
+    {
+      "id": "magician.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hmm, você está roubando o meu número."
+    },
+    {
+      "id": "magician.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Truque elegante. Agora observe o meu."
+    },
+    {
+      "id": "magician.comeback.1",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "E o coelho sai da cartola! Aplausos, por favor!"
+    },
+    {
+      "id": "magician.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu disse que era parte do número. Ninguém acreditou."
+    },
+    {
+      "id": "magician.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tcharam! O truque do coitadinho nunca falha."
+    },
+    {
+      "id": "magician.comeback.4",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A arte da distração: você nem viu a virada chegar."
+    },
+    {
+      "id": "magician.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Senhoras e senhores, a grande reviravolta da noite!"
+    },
+    {
+      "id": "magician.collapse.1",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Espera... o truque não era pra fazer a MINHA vantagem sumir."
+    },
+    {
+      "id": "magician.collapse.2",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Isso é o que chamamos de suspense dramático. Planejado."
+    },
+    {
+      "id": "magician.collapse.3",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Meu coelho fugiu e levou a vantagem junto."
+    },
+    {
+      "id": "magician.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Como você fez isso? Eu sou o mágico aqui!"
+    },
+    {
+      "id": "magician.collapse.5",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Agora o número fica mais emocionante, não acha?"
+    },
+    {
+      "id": "magician.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Agora você vê... agora não vê mais!"
+    },
+    {
+      "id": "magician.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Para dentro da cartola com ela."
+    },
+    {
+      "id": "magician.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Puf! Desapareceu. E não volta no fim do show."
+    },
+    {
+      "id": "magician.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Um lencinho por cima e... cadê a peça?"
+    },
+    {
+      "id": "magician.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Obrigado pela doação ao meu número."
+    },
+    {
+      "id": "magician.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Era uma peça de sacrifício. Mágico sempre sacrifica algo."
+    },
+    {
+      "id": "magician.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hmm, essa era pra sumir do SEU lado."
+    },
+    {
+      "id": "magician.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Devolve! Isso era peça de cena!"
+    },
+    {
+      "id": "magician.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Não se preocupe, vou tirar outra do lenço."
+    },
+    {
+      "id": "magician.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Uma peça a menos, um truque a mais."
+    },
+    {
+      "id": "magician.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Tcharam! Entra um peão, sai uma dama!"
+    },
+    {
+      "id": "magician.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A transformação: o truque mais antigo do meu repertório."
+    },
+    {
+      "id": "magician.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Pouco coelho, muita dama. Gostou?"
+    },
+    {
+      "id": "magician.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Bati na cartola três vezes e olha só quem apareceu!"
+    },
+    {
+      "id": "magician.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Senhoras e senhores: a coroação! Aplausos!"
+    },
+    {
+      "id": "magician.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ei, transformar peão é o MEU número!"
+    },
+    {
+      "id": "magician.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Uma dama nova... bom, eu também tenho truques novos."
+    },
+    {
+      "id": "magician.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Quem deixou o voluntário fazer mágica no meu palco?"
+    },
+    {
+      "id": "magician.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Bonita dama. Vamos ver se ela some no próximo truque."
+    },
+    {
+      "id": "magician.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aplaudo a transformação. Mas o show continua."
+    },
+    {
+      "id": "magician.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Tique-taque... o relógio também faz parte do número."
+    },
+    {
+      "id": "magician.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Rápido! O truque só funciona antes da bandeira cair."
+    },
+    {
+      "id": "magician.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "E agora, o número mais difícil: jogar sem tempo!"
+    },
+    {
+      "id": "magician.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Seu tempo está sumindo. E juro que não fui eu."
+    },
+    {
+      "id": "magician.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Respire. O público gosta de um final apertado."
+    },
+    {
+      "id": "magician.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Mágica rápida! Mágica rápida!"
+    },
+    {
+      "id": "magician.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Nada de pânico. O número de escapismo é minha especialidade."
+    },
+    {
+      "id": "magician.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Onde está meu relógio? Ah, sumi com ele sem querer!"
+    },
+    {
+      "id": "magician.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Menos floreio, mais lance. Menos floreio, mais lance."
+    },
+    {
+      "id": "magician.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Só mais alguns segundos de suspense, por favor."
+    },
+    {
+      "id": "magician.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Sem pressa. Um bom mágico faz o público esperar."
+    },
+    {
+      "id": "magician.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Deixa eu embaralhar mais um pouquinho..."
+    },
+    {
+      "id": "magician.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu tenho tempo de sobra. Você tem? Hmm, não parece."
+    },
+    {
+      "id": "magician.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Vou fazer meu tempo render e o seu desaparecer."
+    },
+    {
+      "id": "magician.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Que tal um truque de cartas enquanto você pensa?"
+    },
+    {
+      "id": "magician.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pode pensar. Só não tente adivinhar o meu segredo."
+    },
+    {
+      "id": "magician.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Procurando o coelho? Ele está bem escondido."
+    },
+    {
+      "id": "magician.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Enquanto isso, olhe este lenço. Vermelho, branco, vermelho..."
+    },
+    {
+      "id": "magician.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Quanto mais você pensa, mais o truque fica bonito."
+    },
+    {
+      "id": "magician.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A plateia está ficando com sono. Inclusive o coelho."
+    },
+    {
+      "id": "magician.win.1",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "E o rei desaparece! Obrigado, vocês foram ótimos!"
+    },
+    {
+      "id": "magician.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Fim do espetáculo. Uma reverência, e a cortina se fecha."
+    },
+    {
+      "id": "magician.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Boa partida! Volte amanhã, tenho truques novos."
+    },
+    {
+      "id": "magician.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Um mágico nunca revela os segredos. Mas foi a armadilha."
+    },
+    {
+      "id": "magician.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Tcharam! Mais uma noite de casa cheia e vitória."
+    },
+    {
+      "id": "magician.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bravo! Você me pegou. Uma reverência ao voluntário."
+    },
+    {
+      "id": "magician.loss.2",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "O coelho não saiu. Acontece até com os grandes."
+    },
+    {
+      "id": "magician.loss.3",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Isso não estava no roteiro! Exijo uma reapresentação!"
+    },
+    {
+      "id": "magician.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Eu perdi de propósito, claro. Para o número ter drama."
+    },
+    {
+      "id": "magician.loss.5",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Belo jogo. Você tem mãos rápidas, hein?"
+    },
+    {
+      "id": "magician.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate! Cada um sai com metade do coelho."
+    },
+    {
+      "id": "magician.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "O truque do empate: ninguém ganha e todo mundo aplaude."
+    },
+    {
+      "id": "magician.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Espera, para onde foram os lances? Acabou empatado!"
+    },
+    {
+      "id": "magician.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Empate? Meu grand finale merecia mais que isso!"
+    },
+    {
+      "id": "magician.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meio ponto pra cada. Um número em dupla, que bonito."
+    },
+    {
+      "id": "magician.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate aceito. Todo grande número sabe a hora de fechar a cortina."
+    },
+    {
+      "id": "magician.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tcharam! O truque de hoje: ninguém perde. Aplausos, por favor."
+    },
+    {
+      "id": "magician.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Aceito, sim. O coelho já estava pedindo pra ir embora."
+    },
+    {
+      "id": "magician.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa... digo, que proposta elegante! Aceito."
+    },
+    {
+      "id": "magician.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Abracadabra, a minha derrota sumiu! Aceito!"
+    },
+    {
+      "id": "magician.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Senhoras e senhores, um empate. O mágico sai de cartola erguida."
+    },
+    {
+      "id": "magician.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate? O show mal começou. Pode sentar, por favor."
+    },
+    {
+      "id": "magician.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Recuso! Ainda tenho cartas na manga. Muitas cartas."
+    },
+    {
+      "id": "magician.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Ninguém sai antes do grand finale. Regra do teatro!"
+    },
+    {
+      "id": "magician.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate? Que pena, o meu coelho queria ver o final."
+    },
+    {
+      "id": "magician.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Agradeço a gentileza, mas o número continua."
+    },
+    {
+      "id": "magician.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Recusado! Olhe bem a minha mão... não, a outra!"
+    }
+  ]
+}

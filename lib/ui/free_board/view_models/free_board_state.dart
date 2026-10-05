@@ -6,9 +6,21 @@ import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
+import '../../../domain/use_cases/draw_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import 'game_reporter.dart';
 
 part 'free_board_state.freezed.dart';
+
+/// A proposta de empate do jogador.
+enum DrawOffer {
+  none,
+
+  /// A máquina está pensando na resposta.
+  pending,
+  accepted,
+  declined,
+}
 
 @freezed
 abstract class FreeBoardState with _$FreeBoardState {
@@ -59,6 +71,15 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// Quando a partida começou (ou recomeçou).
     DateTime? startedAt,
+
+    /// A última proposta de empate e em que lance (quantos lances já tinham
+    /// sido jogados) ela foi recusada.
+    @Default(DrawOffer.none) DrawOffer drawOffer,
+    int? drawDeclinedAt,
+
+    /// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
+    /// enquanto ela continua ou até a conta terminar.
+    GameReport? report,
   }) = _FreeBoardState;
 
   const FreeBoardState._();
@@ -94,6 +115,18 @@ abstract class FreeBoardState with _$FreeBoardState {
       PositionGoal.win => outcome == AttemptOutcome.win,
       PositionGoal.draw => outcome != AttemptOutcome.loss,
     };
+  }
+
+  /// O jogador pode propor empate agora: partida contra a máquina, sem
+  /// resposta pendente e com uns lances desde a última recusa.
+  bool get canOfferDraw {
+    if (end != null || !mode.opponent.isMachine || mode.userSide == null) {
+      return false;
+    }
+    if (drawOffer == DrawOffer.pending) return false;
+    final declinedAt = drawDeclinedAt;
+    return declinedAt == null ||
+        ucis.length - declinedAt >= DrawRules.cooldownPlies;
   }
 
   /// Quanto falta para [side], como aparece na tela.

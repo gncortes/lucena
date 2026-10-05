@@ -32,6 +32,47 @@ class StockfishService {
     return move == '(none)' ? null : move;
   }
 
+  /// A avaliação de [fen] em [depth] lances, do ponto de vista de quem joga:
+  /// centipeões ou mate em N (negativo: quem joga leva o mate). Nula se a
+  /// posição já acabou.
+  Future<({int? centipawns, int? mate})?> evaluate(
+    String fen, {
+    required int depth,
+  }) {
+    final result = _queue.then((_) => _evaluate(fen, depth));
+    _queue = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  Future<({int? centipawns, int? mate})?> _evaluate(
+    String fen,
+    int depth,
+  ) async {
+    final engine = await _ready();
+    ({int? centipawns, int? mate})? score;
+    final done = Completer<void>();
+    final listening = engine.stdout.listen((line) {
+      final match = _score.firstMatch(line);
+      if (match != null) {
+        final value = int.parse(match.group(2)!);
+        score = match.group(1) == 'mate'
+            ? (centipawns: null, mate: value)
+            : (centipawns: value, mate: null);
+      }
+      if (line.startsWith('bestmove') && !done.isCompleted) done.complete();
+    });
+    try {
+      engine.stdin = 'position fen $fen';
+      engine.stdin = 'go depth $depth';
+      await done.future.timeout(const Duration(seconds: 10));
+    } finally {
+      await listening.cancel();
+    }
+    return score;
+  }
+
+  static final _score = RegExp(r' score (cp|mate) (-?\d+)');
+
   Future<Stockfish> _ready() async {
     final engine = _engine;
     if (engine != null && engine.state.value == StockfishState.ready) {

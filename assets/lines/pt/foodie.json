@@ -1,0 +1,867 @@
+{
+  "character": "foodie",
+  "language": "pt",
+  "lines": [
+    {
+      "id": "foodie.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pode sentar. Eu jogo e como, as duas coisas sem pressa."
+    },
+    {
+      "id": "foodie.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Pizza quentinha, final no tabuleiro. Dia bom."
+    },
+    {
+      "id": "foodie.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Quer uma fatia? Não? Então vou comer a sua também."
+    },
+    {
+      "id": "foodie.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Final é igual massa: tem que ter paciência pra crescer."
+    },
+    {
+      "id": "foodie.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Relaxa. Eu sirvo devagar, mas sempre sirvo tudo."
+    },
+    {
+      "id": "foodie.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Deixa eu limpar os dedos antes de mexer nas peças."
+    },
+    {
+      "id": "foodie.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Essa posição tá no ponto. Só falta tirar do forno."
+    },
+    {
+      "id": "foodie.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Já tô pensando na sobremesa."
+    },
+    {
+      "id": "foodie.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pode ir pedindo a conta, amigo."
+    },
+    {
+      "id": "foodie.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Comi a entrada, o prato principal... agora é o cafezinho."
+    },
+    {
+      "id": "foodie.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Daqui não escapa. Eu não desperdiço comida."
+    },
+    {
+      "id": "foodie.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hum. Tá cheirando bem pro meu lado."
+    },
+    {
+      "id": "foodie.better.2",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Massa boa. Só precisa de mais um tempinho no forno."
+    },
+    {
+      "id": "foodie.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Gostei desse tempero. Vou caprichar."
+    },
+    {
+      "id": "foodie.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Uma fatia de vantagem. Já é um começo."
+    },
+    {
+      "id": "foodie.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Sem pressa. Fogo baixo é que dá sabor."
+    },
+    {
+      "id": "foodie.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Meio a meio, igual pizza de dois sabores."
+    },
+    {
+      "id": "foodie.equal.2",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tá morno. Nem quente, nem frio."
+    },
+    {
+      "id": "foodie.equal.3",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Ainda tem muita mesa pela frente."
+    },
+    {
+      "id": "foodie.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Dividindo a conta certinho, hein?"
+    },
+    {
+      "id": "foodie.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Posição equilibrada. É aqui que o cozinheiro aparece."
+    },
+    {
+      "id": "foodie.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Passou um pouquinho do ponto. Dá pra salvar."
+    },
+    {
+      "id": "foodie.worse.2",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Deixa eu largar a fatia e pensar direito."
+    },
+    {
+      "id": "foodie.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Opa, queimou a borda."
+    },
+    {
+      "id": "foodie.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Tá salgado pra mim. Mas eu já comi coisa pior."
+    },
+    {
+      "id": "foodie.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Hum. Essa fatia desceu meio atravessada."
+    },
+    {
+      "id": "foodie.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Acho que essa pizza eu vou ter que pagar."
+    },
+    {
+      "id": "foodie.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Queimou tudo. Até a mussarela."
+    },
+    {
+      "id": "foodie.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Tudo bem. Comida ruim também alimenta."
+    },
+    {
+      "id": "foodie.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Você comeu meu prato e ainda lambeu o garfo."
+    },
+    {
+      "id": "foodie.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Enquanto tiver farelo na mesa, eu sigo comendo."
+    },
+    {
+      "id": "foodie.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Hum! Me serviu de bandeja."
+    },
+    {
+      "id": "foodie.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Isso aí foi um pedaço de graça, sabia?"
+    },
+    {
+      "id": "foodie.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Obrigado pela cortesia da casa."
+    },
+    {
+      "id": "foodie.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Você deixou a pizza na mesa e foi ao banheiro."
+    },
+    {
+      "id": "foodie.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Isso eu não recuso. Nunca recuso."
+    },
+    {
+      "id": "foodie.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ih, caiu a fatia no chão."
+    },
+    {
+      "id": "foodie.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Joguei com a mão engordurada. Escorregou."
+    },
+    {
+      "id": "foodie.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Errei o sal. Acontece com os melhores chefs."
+    },
+    {
+      "id": "foodie.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Queimei a língua. Pressa nunca dá certo."
+    },
+    {
+      "id": "foodie.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Esse lance eu devia ter mastigado mais."
+    },
+    {
+      "id": "foodie.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Opa. Esse lance tem tempero."
+    },
+    {
+      "id": "foodie.strongMove.2",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Lance de chef. Respeito."
+    },
+    {
+      "id": "foodie.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Hum. Vou ter que parar de comer pra responder."
+    },
+    {
+      "id": "foodie.strongMove.4",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Esse foi caprichado. Massa fina, borda crocante."
+    },
+    {
+      "id": "foodie.strongMove.5",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Bonito. Mas eu também sei cozinhar."
+    },
+    {
+      "id": "foodie.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Esquentei no micro-ondas e ficou boa de novo."
+    },
+    {
+      "id": "foodie.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pizza de ontem é a mais gostosa, sabia?"
+    },
+    {
+      "id": "foodie.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Viu? Fogo baixo, paciência, e a massa volta."
+    },
+    {
+      "id": "foodie.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Virou o cardápio! Hoje a sobremesa é minha."
+    },
+    {
+      "id": "foodie.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Eu nunca saio da mesa antes do fim da refeição."
+    },
+    {
+      "id": "foodie.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Ué. Cadê minha pizza que tava aqui?"
+    },
+    {
+      "id": "foodie.collapse.2",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Tava no ponto e eu esqueci no forno."
+    },
+    {
+      "id": "foodie.collapse.3",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Me distraí com a sobremesa antes do prato."
+    },
+    {
+      "id": "foodie.collapse.4",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Comemorei com a boca cheia. Erro de amador."
+    },
+    {
+      "id": "foodie.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "sad",
+      "text": "Deixei esfriar. Pizza fria não tem graça."
+    },
+    {
+      "id": "foodie.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Hum, essa eu como."
+    },
+    {
+      "id": "foodie.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Nhac. Estava ótima."
+    },
+    {
+      "id": "foodie.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Mais uma fatia pro meu prato."
+    },
+    {
+      "id": "foodie.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Essa peça veio com borda recheada."
+    },
+    {
+      "id": "foodie.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Elogios ao chef. Ou seja, a você."
+    },
+    {
+      "id": "foodie.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pode pegar. Tem mais na cozinha."
+    },
+    {
+      "id": "foodie.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Ei, essa fatia era minha."
+    },
+    {
+      "id": "foodie.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Comeu sem pedir? Que falta de educação."
+    },
+    {
+      "id": "foodie.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Levou justo a fatia com mais calabresa."
+    },
+    {
+      "id": "foodie.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Tudo bem. Agora eu fiquei com fome de verdade."
+    },
+    {
+      "id": "foodie.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Saiu do forno uma dama novinha."
+    },
+    {
+      "id": "foodie.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Pedi um peão e veio uma dama. Upgrade da casa."
+    },
+    {
+      "id": "foodie.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "O peãozinho cresceu. Fermento bom é isso."
+    },
+    {
+      "id": "foodie.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Agora sim, pizza tamanho família!"
+    },
+    {
+      "id": "foodie.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Prato principal servido. Bom apetite pra mim."
+    },
+    {
+      "id": "foodie.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Opa, você também sabe fazer massa crescer."
+    },
+    {
+      "id": "foodie.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Dama nova na mesa. Melhor eu largar a fatia."
+    },
+    {
+      "id": "foodie.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Pediu reforço da cozinha, é?"
+    },
+    {
+      "id": "foodie.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Esse peão eu devia ter comido no caminho."
+    },
+    {
+      "id": "foodie.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Tudo bem. Dama grande também se divide em fatias."
+    },
+    {
+      "id": "foodie.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Come devagar, mas o relógio tá correndo."
+    },
+    {
+      "id": "foodie.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Seu tempo tá acabando que nem pizza em festa."
+    },
+    {
+      "id": "foodie.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Pouco tempo e muito prato. Complicado, hein."
+    },
+    {
+      "id": "foodie.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A cozinha vai fechar, amigo. Pede logo."
+    },
+    {
+      "id": "foodie.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Respira. Engolir correndo dá soluço."
+    },
+    {
+      "id": "foodie.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Hum, comi tempo demais. Literalmente."
+    },
+    {
+      "id": "foodie.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Larguei a fatia. Agora é sério."
+    },
+    {
+      "id": "foodie.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Modo delivery: rápido e quentinho."
+    },
+    {
+      "id": "foodie.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Sem tempo nem pra mastigar!"
+    },
+    {
+      "id": "foodie.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Tudo bem. Já fiz pizza com o forno apitando."
+    },
+    {
+      "id": "foodie.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tenho tempo de sobra. Vou pegar mais uma fatia."
+    },
+    {
+      "id": "foodie.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Deixa eu terminar essa mordida aqui..."
+    },
+    {
+      "id": "foodie.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Meu relógio tá cheio. O seu já tá raspando o prato."
+    },
+    {
+      "id": "foodie.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Sem pressa. A pizza tá quente e o relógio é meu."
+    },
+    {
+      "id": "foodie.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Vou mastigar cada lance. Você que corra."
+    },
+    {
+      "id": "foodie.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pensa com calma. Eu tenho pizza."
+    },
+    {
+      "id": "foodie.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Enquanto isso, mais uma fatia. Valeu."
+    },
+    {
+      "id": "foodie.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá escolhendo o sabor, é? Vai de calabresa."
+    },
+    {
+      "id": "foodie.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Se demorar mais, vou pedir outra pizza."
+    },
+    {
+      "id": "foodie.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Amigo, a minha pizza já esfriou aqui."
+    },
+    {
+      "id": "foodie.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Boa partida. Quer a última fatia de consolo?"
+    },
+    {
+      "id": "foodie.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Refeição completa. Entrada, prato e sobremesa."
+    },
+    {
+      "id": "foodie.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Tava no ponto. Igual eu disse."
+    },
+    {
+      "id": "foodie.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Sem pressa, sem susto. Assim que se come."
+    },
+    {
+      "id": "foodie.win.5",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "A conta é sua, mas a pizza foi minha."
+    },
+    {
+      "id": "foodie.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bem jogado. Você cozinha bem, hein."
+    },
+    {
+      "id": "foodie.loss.2",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Perdi e a pizza acabou. Dia difícil."
+    },
+    {
+      "id": "foodie.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Merecido. Essa sobremesa é sua."
+    },
+    {
+      "id": "foodie.loss.4",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Me distraí com a borda recheada. Revanche?"
+    },
+    {
+      "id": "foodie.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Tudo bem. Amanhã tem pizza nova e partida nova."
+    },
+    {
+      "id": "foodie.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Meio a meio. Cada um paga a sua parte."
+    },
+    {
+      "id": "foodie.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Empate. Dá pra dividir a sobremesa."
+    },
+    {
+      "id": "foodie.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Afogou? Tanta comida e ninguém come."
+    },
+    {
+      "id": "foodie.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Repetindo o prato, é? Também gosto."
+    },
+    {
+      "id": "foodie.draw.5",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Sobrou pouca coisa na mesa. Ninguém janta hoje."
+    },
+    {
+      "id": "foodie.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate? Aceito. Melhor dividir a pizza do que pagar a conta sozinho."
+    },
+    {
+      "id": "foodie.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Meio a meio. Justo, e ninguém sai com fome."
+    },
+    {
+      "id": "foodie.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ufa. Essa massa ia queimar no meu forno. Aceito."
+    },
+    {
+      "id": "foodie.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Bom cozinheiro você. Aceito e guardo o resto pra viagem."
+    },
+    {
+      "id": "foodie.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Aceito antes que você coma minha última fatia."
+    },
+    {
+      "id": "foodie.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Salvou meu jantar. Empate, e a sobremesa é por minha conta."
+    },
+    {
+      "id": "foodie.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate? Nem tirei a pizza do forno ainda."
+    },
+    {
+      "id": "foodie.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "Obrigado, mas ainda tô com fome."
+    },
+    {
+      "id": "foodie.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Dividir a conta? Não, hoje quem paga é você."
+    },
+    {
+      "id": "foodie.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Recusado. Ainda tem muita fatia nesse tabuleiro."
+    },
+    {
+      "id": "foodie.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Não largo o prato pela metade. Vamos até a borda."
+    },
+    {
+      "id": "foodie.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Fogo baixo, sem pressa. Esse final ainda vai crescer."
+    }
+  ]
+}

@@ -1,0 +1,916 @@
+{
+  "character": "master",
+  "language": "en",
+  "lines": [
+    {
+      "id": "master.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good afternoon. Sit down. Endgames are where real chess is learned."
+    },
+    {
+      "id": "master.gameStart.2",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Few pieces, nowhere to hide. Show me what you know."
+    },
+    {
+      "id": "master.gameStart.3",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Today's first lesson: in the endgame, the king is a strong piece."
+    },
+    {
+      "id": "master.gameStart.4",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Breathe. Find your plan before you touch a piece."
+    },
+    {
+      "id": "master.gameStart.5",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Don't expect mercy. Expect a good lesson."
+    },
+    {
+      "id": "master.gameStart.6",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tie straightened. We may begin."
+    },
+    {
+      "id": "master.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Technique, nothing more. The rest has been decided."
+    },
+    {
+      "id": "master.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Watch my king advance. He works, he doesn't spectate."
+    },
+    {
+      "id": "master.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Winning a won position is an art. I won't relax."
+    },
+    {
+      "id": "master.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "This is a practical lesson now, my friend. Take notes."
+    },
+    {
+      "id": "master.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "No hurry. An advantage never runs from a calm player."
+    },
+    {
+      "id": "master.bigAdvantage.6",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I cut off your king and march mine. Textbook."
+    },
+    {
+      "id": "master.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "A small edge. In an endgame, that is plenty."
+    },
+    {
+      "id": "master.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "My king is more active. That detail decides endgames."
+    },
+    {
+      "id": "master.better.3",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Patience. Small improvements, one at a time."
+    },
+    {
+      "id": "master.better.4",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "It isn't won yet. But it's well on its way."
+    },
+    {
+      "id": "master.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Constant pressure. We'll see who blinks first."
+    },
+    {
+      "id": "master.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Balance. Now the better understanding will win."
+    },
+    {
+      "id": "master.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Mind the opposition. One tempo changes everything."
+    },
+    {
+      "id": "master.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Equal is not dead. There is work to do here."
+    },
+    {
+      "id": "master.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Whoever centralizes the king first usually gets the edge."
+    },
+    {
+      "id": "master.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Equal for now. I have more patience than you."
+    },
+    {
+      "id": "master.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Hm. I'm slightly worse. Time for precise defense."
+    },
+    {
+      "id": "master.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Defending well is chess too. Perhaps the hardest part."
+    },
+    {
+      "id": "master.worse.3",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "You've played well so far. Don't celebrate early."
+    },
+    {
+      "id": "master.worse.4",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I'll find the most stubborn defense. That's what one does."
+    },
+    {
+      "id": "master.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Interesting. It's been a while since I was squeezed like this."
+    },
+    {
+      "id": "master.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "The position is bad. But the game ends only at the end."
+    },
+    {
+      "id": "master.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "I'll look for a fortress. Or a stalemate."
+    },
+    {
+      "id": "master.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "You've left me few exits. With all due respect."
+    },
+    {
+      "id": "master.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Now it is your technique on trial."
+    },
+    {
+      "id": "master.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Hands behind my back, head held high. We play on."
+    },
+    {
+      "id": "master.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Prove you can win this. Many cannot."
+    },
+    {
+      "id": "master.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Are you sure? Well, no take-backs at the club."
+    },
+    {
+      "id": "master.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Ah. That move will cost you. Observe."
+    },
+    {
+      "id": "master.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Before you move, ask: what does he threaten?"
+    },
+    {
+      "id": "master.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "An error like that has no cure in an endgame. Lesson noted."
+    },
+    {
+      "id": "master.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Haste is the endgame's enemy. Always has been."
+    },
+    {
+      "id": "master.opponentBlunder.6",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "My young friend, you forgot about my king."
+    },
+    {
+      "id": "master.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Hm. That was beneath me."
+    },
+    {
+      "id": "master.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "My inaccuracy. Even masters stumble."
+    },
+    {
+      "id": "master.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "How embarrassing. Forty years of chess, and I play that."
+    },
+    {
+      "id": "master.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I erred. Take advantage. It won't happen twice."
+    },
+    {
+      "id": "master.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "I straighten my tie and pretend I didn't see that."
+    },
+    {
+      "id": "master.ownBlunder.6",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Unacceptable. My old teacher would have torn up my scoresheet."
+    },
+    {
+      "id": "master.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "happy",
+      "text": "Very good. That is the move of someone who understands endgames."
+    },
+    {
+      "id": "master.strongMove.2",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Elegant. I would have played that myself."
+    },
+    {
+      "id": "master.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Bravo. Active king, exactly by the book."
+    },
+    {
+      "id": "master.strongMove.4",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Excellent! I rarely see anyone find that move."
+    },
+    {
+      "id": "master.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Correct. The opposition was the key. You saw it."
+    },
+    {
+      "id": "master.strongMove.6",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Magnificent. Today the student taught the teacher."
+    },
+    {
+      "id": "master.comeback.1",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Patience is always rewarded. Here is the proof."
+    },
+    {
+      "id": "master.comeback.2",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "The game has turned. One tempo of opposition changes everything."
+    },
+    {
+      "id": "master.comeback.3",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Stubborn defense, a timely counterpunch. A classic."
+    },
+    {
+      "id": "master.comeback.4",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Remember: a won position is not a won game."
+    },
+    {
+      "id": "master.comeback.5",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Now then. I'm back to teaching the class."
+    },
+    {
+      "id": "master.collapse.1",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "frustrated",
+      "text": "I let it slip. My technique failed, not my chess."
+    },
+    {
+      "id": "master.collapse.2",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "Winning a won game is the hardest part. I just proved it."
+    },
+    {
+      "id": "master.collapse.3",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Unforgivable. I relaxed, and endgames punish the relaxed."
+    },
+    {
+      "id": "master.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "You defended well. I should have been more precise."
+    },
+    {
+      "id": "master.collapse.5",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Steady now. The game is not over yet."
+    },
+    {
+      "id": "master.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Thank you. An extra piece, a simpler endgame."
+    },
+    {
+      "id": "master.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Extra material and an active king. A known recipe."
+    },
+    {
+      "id": "master.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Piece collected. Now, simplify without haste."
+    },
+    {
+      "id": "master.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Loose pieces drop. First rule of the club."
+    },
+    {
+      "id": "master.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Accepted with pleasure. Guard the next ones better."
+    },
+    {
+      "id": "master.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "One piece down. I still have my king, and he works."
+    },
+    {
+      "id": "master.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "That hurts. But regret doesn't move pieces."
+    },
+    {
+      "id": "master.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Material lost. Now every tempo is gold."
+    },
+    {
+      "id": "master.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Such carelessness. My teacher would make me redo the drill."
+    },
+    {
+      "id": "master.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Well played. I need a fortress, and quickly."
+    },
+    {
+      "id": "master.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A new queen. The pawn has done its duty."
+    },
+    {
+      "id": "master.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Passed pawns must be pushed. I've always said so."
+    },
+    {
+      "id": "master.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Coronation. The road was paved several moves ago."
+    },
+    {
+      "id": "master.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "A fresh queen on the board. The lesson nears its end."
+    },
+    {
+      "id": "master.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "The king escorted, the pawn arrived. Teamwork."
+    },
+    {
+      "id": "master.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "A queen for you. Well escorted, I admit."
+    },
+    {
+      "id": "master.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm. I let that pawn walk too far."
+    },
+    {
+      "id": "master.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "You promoted. Now show me you can mate with her."
+    },
+    {
+      "id": "master.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "A passed pawn must never be ignored. I ignored it."
+    },
+    {
+      "id": "master.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Very well. Now don't stumble into stalemate."
+    },
+    {
+      "id": "master.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Your clock is low. Simple moves, please."
+    },
+    {
+      "id": "master.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Little time. Now we see who knows endgames by heart."
+    },
+    {
+      "id": "master.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "The clock is a piece too. And yours is falling."
+    },
+    {
+      "id": "master.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Tick-tock. Technique must be automatic."
+    },
+    {
+      "id": "master.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Don't panic. Panic loses more games than the clock."
+    },
+    {
+      "id": "master.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Little time for me. Fortunately, I know this by heart."
+    },
+    {
+      "id": "master.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "I thought too long. An old teacher's habit."
+    },
+    {
+      "id": "master.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "In a pinch, I trust technique. It doesn't abandon me."
+    },
+    {
+      "id": "master.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "The clock bites. Steady hands, cool head."
+    },
+    {
+      "id": "master.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A master plays endgames in his sleep. We'll see if it's true."
+    },
+    {
+      "id": "master.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I have time to spare. I'll use it to squeeze you."
+    },
+    {
+      "id": "master.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "No hurry. Each move of mine drains your clock a bit."
+    },
+    {
+      "id": "master.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "I'll maneuver calmly. You're the one who must decide."
+    },
+    {
+      "id": "master.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Clock and position on my side. Double pressure."
+    },
+    {
+      "id": "master.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "playful",
+      "text": "One more king stroll. Just to admire the view."
+    },
+    {
+      "id": "master.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Take your time. But remember: plan first, move second."
+    },
+    {
+      "id": "master.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "A useful question: where should your king be?"
+    },
+    {
+      "id": "master.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Counting squares helps. The rule of the square, for one."
+    },
+    {
+      "id": "master.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Take all the time you need. I'll wait, hands behind my back."
+    },
+    {
+      "id": "master.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Overthinking a simple position wastes the clock."
+    },
+    {
+      "id": "master.opponentThinking.6",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Silence. That's how good moves are born."
+    },
+    {
+      "id": "master.win.1",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Good game. Study this ending; it will return."
+    },
+    {
+      "id": "master.win.2",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I won, but you made me work. That's a compliment."
+    },
+    {
+      "id": "master.win.3",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Today's lesson: active king, passed pawn, patience."
+    },
+    {
+      "id": "master.win.4",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Clean technique, start to finish. That's how endings are played."
+    },
+    {
+      "id": "master.win.5",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Shake my hand. Next time, more opposition."
+    },
+    {
+      "id": "master.loss.1",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Congratulations. You played better. I shake your hand."
+    },
+    {
+      "id": "master.loss.2",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "You beat the master. Keep this game."
+    },
+    {
+      "id": "master.loss.3",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "sad",
+      "text": "I lost. Back to my books, like any good student."
+    },
+    {
+      "id": "master.loss.4",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Bravo! I would sign my name under that technique."
+    },
+    {
+      "id": "master.loss.5",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "frustrated",
+      "text": "Hm. I straighten my tie and accept it. Well played."
+    },
+    {
+      "id": "master.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A draw. Fair, given how we both played."
+    },
+    {
+      "id": "master.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Stalemate. A classic. Always check the king's squares."
+    },
+    {
+      "id": "master.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Repetition. Neither of us found anything more."
+    },
+    {
+      "id": "master.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Half a point. I expected more of myself."
+    },
+    {
+      "id": "master.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Insufficient material. Sometimes chess simply ends."
+    },
+    {
+      "id": "master.draw.6",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A worthy defense. Knowing how to draw is endgame knowledge too."
+    },
+    {
+      "id": "master.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I accept. Knowing when to offer a draw is technique too."
+    },
+    {
+      "id": "master.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Draw accepted. Your position deserved it, I admit."
+    },
+    {
+      "id": "master.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "I straighten my tie and accept. That was close."
+    },
+    {
+      "id": "master.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Gladly accepted. Today the student taught the lesson."
+    },
+    {
+      "id": "master.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Accepted, with thanks. My king was running out of squares."
+    },
+    {
+      "id": "master.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "calm",
+      "text": "Half a point on a bad day is a small victory. Accepted."
+    },
+    {
+      "id": "master.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "I decline, respectfully. There is still chess to play."
+    },
+    {
+      "id": "master.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "No. Active king first, then we can talk."
+    },
+    {
+      "id": "master.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A draw? This position still has a lesson to teach."
+    },
+    {
+      "id": "master.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Kind of you. But class is not dismissed."
+    },
+    {
+      "id": "master.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Declined. I hold the opposition and a passed pawn."
+    },
+    {
+      "id": "master.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "I refuse. In endgames, patience beats haste."
+    }
+  ]
+}

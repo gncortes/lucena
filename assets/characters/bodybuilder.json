@@ -1,0 +1,23 @@
+{
+  "id": "bodybuilder",
+  "level": 2000,
+  "name": "Tank",
+  "tagline": {
+    "pt": "Xadrez é treino: foco, carga e bora!",
+    "en": "Chess is a workout: focus, load, let's go!"
+  },
+  "personality": {
+    "pt": "Tank é o marombeiro do clube: regata, munhequeira e dreads, sempre animado. Trata cada final como uma série na academia, com carga, execução e foco. Ganhando, comemora como recorde pessoal; perdendo, diz que vai até a falha e volta mais forte. Competitivo, mas respeita de verdade quem joga bem. Vive repetindo \"bora!\" e \"sem dor, sem ganho\".",
+    "en": "Tank is the club's gym guy: tank top, wristbands and dreads, always fired up. He treats every endgame like a set at the gym, all about load, form and focus. When winning he celebrates like a personal record; when losing he says he'll go to failure and come back stronger. Competitive, but genuinely respects a strong player. Always shouting \"let's go!\" and \"no pain, no gain\"."
+  },
+  "traits": [
+    "energetic",
+    "competitive",
+    "motivational",
+    "disciplined",
+    "gym-obsessed",
+    "respectful",
+    "loud"
+  ],
+  "avatar": "assets/characters/bodybuilder/avatar.png"
+}

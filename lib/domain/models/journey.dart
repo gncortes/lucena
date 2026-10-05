@@ -93,15 +93,19 @@ abstract class RungProgress with _$RungProgress {
 /// A Jornada inteira com o progresso do jogador.
 @freezed
 abstract class JourneyProgress with _$JourneyProgress {
-  const factory JourneyProgress({required List<RungProgress> rungs}) =
-      _JourneyProgress;
+  const factory JourneyProgress({
+    required List<RungProgress> rungs,
+
+    /// O degrau por onde o jogador começou (o escolhido no tour).
+    @Default(0) int start,
+  }) = _JourneyProgress;
 
   const JourneyProgress._();
 
-  /// Onde o jogador está: o primeiro degrau liberado e não concluído. Nulo
-  /// quando a Jornada inteira foi concluída.
+  /// Onde o jogador está: o primeiro degrau liberado e não concluído, a
+  /// partir do degrau de início. Nulo quando a Jornada inteira foi concluída.
   RungProgress? get current {
-    for (final rung in rungs) {
+    for (final rung in [...rungs.skip(start), ...rungs.take(start)]) {
       if (rung.status == RungStatus.open) return rung;
     }
     return null;

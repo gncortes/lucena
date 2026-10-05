@@ -36,4 +36,7 @@ abstract final class SettingsKeys {
   static const maiaDebugTile = Key('settings.maiaDebug');
   static const boardBehaviorTile = Key('settings.boardBehavior');
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
+
+  static const characterTalkSwitch = Key('settings.characterTalk');
+  static const tourTile = Key('settings.tour');
 }

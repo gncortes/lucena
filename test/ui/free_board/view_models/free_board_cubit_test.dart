@@ -15,6 +15,7 @@ import 'package:lucena/domain/use_cases/think_time_policy.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 
+import '../../../../testing/fakes/fake_draw_offer_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_opponent_repository.dart';
@@ -29,8 +30,10 @@ void main() {
   late FakeOngoingGameRepository games;
   late FakeOpponentRepository opponent;
   late FakeProgressRepository progress;
+  late FakeDrawOfferRepository draws;
 
   setUp(() {
+    draws = FakeDrawOfferRepository();
     now = FakeNow(DateTime.utc(2026, 1, 1, 12));
     haptics = FakeHapticsRepository();
     settings = FakeSettingsRepository();
@@ -53,6 +56,7 @@ void main() {
       games: games,
       opponent: opponent,
       progress: progress,
+      draws: draws,
       start: start,
       playerSide: playerSide,
       clock: clock,
@@ -1133,6 +1137,63 @@ void main() {
 
       expect(cubit.state.end, isNull);
       expect(cubit.state.ucis, hasLength(12));
+    });
+  });
+
+  group('proposta de empate', () {
+    final queenMate = GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!;
+    const vsMachine = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1600,
+      userSide: Side.white,
+      goal: PositionGoal.win,
+      positionId: 'basic.queen.0001',
+    );
+
+    test('a máquina aceita: a partida termina empatada e é gravada', () async {
+      draws.accept = true;
+      final cubit = build(start: queenMate, mode: vsMachine);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      await cubit.offerDraw();
+      await cubit.saved();
+
+      expect(cubit.state.end, const GameEnd(GameEndReason.drawAgreed));
+      expect(cubit.state.drawOffer, DrawOffer.accepted);
+      expect(cubit.state.outcome, AttemptOutcome.draw);
+      expect(progress.attempts.single.endReason, GameEndReason.drawAgreed);
+      expect(progress.attempts.single.fulfilled, isFalse);
+    });
+
+    test('a máquina recusa: a partida segue e só dá para propor de novo '
+        'depois de uns lances', () async {
+      final cubit = build(start: queenMate, mode: vsMachine);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      await cubit.offerDraw();
+      expect(cubit.state.end, isNull);
+      expect(cubit.state.drawOffer, DrawOffer.declined);
+      expect(cubit.state.canOfferDraw, isFalse);
+      await cubit.offerDraw();
+      expect(draws.offers, 1);
+
+      for (final uci in ['c1d1', 'd1c1', 'c1d1']) {
+        cubit.play(NormalMove.fromUci(uci));
+        await settle();
+      }
+      expect(cubit.state.canOfferDraw, isTrue);
+    });
+
+    test('no tabuleiro livre não há proposta de empate', () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      expect(cubit.state.canOfferDraw, isFalse);
+      await cubit.offerDraw();
+      expect(draws.offers, 0);
     });
   });
 }

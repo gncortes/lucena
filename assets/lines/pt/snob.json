@@ -1,0 +1,867 @@
+{
+  "character": "snob",
+  "language": "pt",
+  "lines": [
+    {
+      "id": "snob.gameStart.1",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Boa sorte. Você vai precisar, eu tenho medalha."
+    },
+    {
+      "id": "snob.gameStart.2",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Bronze no Aberto do Bairro. Só pra você saber com quem fala."
+    },
+    {
+      "id": "snob.gameStart.3",
+      "category": "gameStart",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Vou jogar devagar, pra você acompanhar."
+    },
+    {
+      "id": "snob.gameStart.4",
+      "category": "gameStart",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Final? Eu nasci num final. Figurativamente."
+    },
+    {
+      "id": "snob.gameStart.5",
+      "category": "gameStart",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Ajeito os óculos e começamos. Tente não me entediar."
+    },
+    {
+      "id": "snob.bigAdvantage.1",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Previsível. Igual à final do Aberto do Bairro."
+    },
+    {
+      "id": "snob.bigAdvantage.2",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Isso aqui eu resolvo de braços cruzados. Literalmente."
+    },
+    {
+      "id": "snob.bigAdvantage.3",
+      "category": "bigAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Calma, não precisa ficar nervoso. Ainda."
+    },
+    {
+      "id": "snob.bigAdvantage.4",
+      "category": "bigAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Quer que eu explique o que deu errado? Cobro pouco."
+    },
+    {
+      "id": "snob.bigAdvantage.5",
+      "category": "bigAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Técnica de medalhista. Anota aí."
+    },
+    {
+      "id": "snob.better.1",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Hm. Exatamente como planejei."
+    },
+    {
+      "id": "snob.better.2",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Vantagem pequena, mas é minha. Como a medalha."
+    },
+    {
+      "id": "snob.better.3",
+      "category": "better",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Agora é só técnica. Coisa que eu tenho de sobra."
+    },
+    {
+      "id": "snob.better.4",
+      "category": "better",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Sente essa pressãozinha? Sou eu."
+    },
+    {
+      "id": "snob.better.5",
+      "category": "better",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Mais uns lances e você vai pedir autógrafo."
+    },
+    {
+      "id": "snob.equal.1",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Igual? Só no tabuleiro. No talento, não."
+    },
+    {
+      "id": "snob.equal.2",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Interessante. Você está me dando algum trabalho."
+    },
+    {
+      "id": "snob.equal.3",
+      "category": "equal",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Estou só esperando você errar. Paciência de campeão."
+    },
+    {
+      "id": "snob.equal.4",
+      "category": "equal",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empatado por enquanto. Estou sendo generoso."
+    },
+    {
+      "id": "snob.equal.5",
+      "category": "equal",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Por que isso ainda está igual? Eu tenho medalha!"
+    },
+    {
+      "id": "snob.worse.1",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Estou te dando corda. Faz parte do plano."
+    },
+    {
+      "id": "snob.worse.2",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm. Esses óculos estão embaçando."
+    },
+    {
+      "id": "snob.worse.3",
+      "category": "worse",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Uma pequena concessão estratégica. Você não entenderia."
+    },
+    {
+      "id": "snob.worse.4",
+      "category": "worse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Esse paletó de tweed esquenta demais, sabia?"
+    },
+    {
+      "id": "snob.worse.5",
+      "category": "worse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Estou só... testando uma teoria nova."
+    },
+    {
+      "id": "snob.bigDisadvantage.1",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Isso nunca aconteceria no Aberto do Bairro."
+    },
+    {
+      "id": "snob.bigDisadvantage.2",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "A luz daqui está péssima. Ninguém consegue jogar assim."
+    },
+    {
+      "id": "snob.bigDisadvantage.3",
+      "category": "bigDisadvantage",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Estou jogando com metade da concentração. Por educação."
+    },
+    {
+      "id": "snob.bigDisadvantage.4",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Sorte de principiante. É estatística pura."
+    },
+    {
+      "id": "snob.bigDisadvantage.5",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Alguém viu minha medalha? Ela me dá sorte."
+    },
+    {
+      "id": "snob.opponentBlunder.1",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Ah, que gracinha. Você achou que esse lance funcionava?"
+    },
+    {
+      "id": "snob.opponentBlunder.2",
+      "category": "opponentBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Tsc, tsc. Previsível."
+    },
+    {
+      "id": "snob.opponentBlunder.3",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Isso foi um presente? Vou pendurar do lado da medalha."
+    },
+    {
+      "id": "snob.opponentBlunder.4",
+      "category": "opponentBlunder",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu vi isso três lances atrás. Claro que vi."
+    },
+    {
+      "id": "snob.opponentBlunder.5",
+      "category": "opponentBlunder",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Esse lance eu vou contar no clube. Sem dizer seu nome."
+    },
+    {
+      "id": "snob.ownBlunder.1",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Foi de propósito. Para deixar mais emocionante."
+    },
+    {
+      "id": "snob.ownBlunder.2",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Escorregou a mão. O tweed é escorregadio."
+    },
+    {
+      "id": "snob.ownBlunder.3",
+      "category": "ownBlunder",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Isso foi um sacrifício. Muito profundo pra você."
+    },
+    {
+      "id": "snob.ownBlunder.4",
+      "category": "ownBlunder",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Quem mexeu nessa peça? Não fui eu."
+    },
+    {
+      "id": "snob.ownBlunder.5",
+      "category": "ownBlunder",
+      "intensity": 1,
+      "emotion": "nervous",
+      "text": "Os óculos. Foi culpa dos óculos."
+    },
+    {
+      "id": "snob.strongMove.1",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "surprised",
+      "text": "Hm. Até um relógio parado acerta duas vezes por dia."
+    },
+    {
+      "id": "snob.strongMove.2",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Lance razoável. Eu teria jogado igual, só que antes."
+    },
+    {
+      "id": "snob.strongMove.3",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Você leu isso em algum livro, né? Confessa."
+    },
+    {
+      "id": "snob.strongMove.4",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Certo. Vou descruzar os braços agora."
+    },
+    {
+      "id": "snob.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Bom lance. Para o seu nível, ótimo lance."
+    },
+    {
+      "id": "snob.comeback.1",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Tudo calculado. Eu só estava te iludindo."
+    },
+    {
+      "id": "snob.comeback.2",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "É assim que se vira um jogo. Foi assim que ganhei a medalha."
+    },
+    {
+      "id": "snob.comeback.3",
+      "category": "comeback",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "A ordem natural das coisas foi restaurada."
+    },
+    {
+      "id": "snob.comeback.4",
+      "category": "comeback",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Gostou da emoção? Eu dei de brinde."
+    },
+    {
+      "id": "snob.comeback.5",
+      "category": "comeback",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Viu? Campeão nunca está perdendo. Só esperando."
+    },
+    {
+      "id": "snob.collapse.1",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Isso não conta. Eu estava ajeitando a medalha."
+    },
+    {
+      "id": "snob.collapse.2",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Espera, espera. Estava ganho. Estava ganho!"
+    },
+    {
+      "id": "snob.collapse.3",
+      "category": "collapse",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Quis te dar uma chance. Me arrependo."
+    },
+    {
+      "id": "snob.collapse.4",
+      "category": "collapse",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Alguém espirrou. Perdi a linha de raciocínio."
+    },
+    {
+      "id": "snob.collapse.5",
+      "category": "collapse",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Isso é um erro de digitação do tabuleiro."
+    },
+    {
+      "id": "snob.pieceCaptured.1",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Obrigado. Vou guardar com carinho."
+    },
+    {
+      "id": "snob.pieceCaptured.2",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Mais uma pra coleção. Ao lado da medalha."
+    },
+    {
+      "id": "snob.pieceCaptured.3",
+      "category": "pieceCaptured",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Você nem viu de onde veio, né?"
+    },
+    {
+      "id": "snob.pieceCaptured.4",
+      "category": "pieceCaptured",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Delícia. Quer tentar proteger as outras?"
+    },
+    {
+      "id": "snob.pieceCaptured.5",
+      "category": "pieceCaptured",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Essa peça estava pedindo pra sair."
+    },
+    {
+      "id": "snob.pieceLost.1",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pode levar. Eu nem gostava dela."
+    },
+    {
+      "id": "snob.pieceLost.2",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Peça? Que peça? Eu tenho medalha, não preciso de peça."
+    },
+    {
+      "id": "snob.pieceLost.3",
+      "category": "pieceLost",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Isso foi um empréstimo. Vou querer de volta."
+    },
+    {
+      "id": "snob.pieceLost.4",
+      "category": "pieceLost",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Ei! Eu estava ajeitando os óculos!"
+    },
+    {
+      "id": "snob.pieceLost.5",
+      "category": "pieceLost",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Sacrifício posicional. Você vai entender em uns dez anos."
+    },
+    {
+      "id": "snob.ownPromotion.1",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Uma dama nova. Combina com o meu paletó."
+    },
+    {
+      "id": "snob.ownPromotion.2",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Promoção. Como a que eu mereço no clube."
+    },
+    {
+      "id": "snob.ownPromotion.3",
+      "category": "ownPromotion",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Coroado! Agora são duas majestades aqui: ela e eu."
+    },
+    {
+      "id": "snob.ownPromotion.4",
+      "category": "ownPromotion",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Peão vira dama. Igual a mim no Aberto do Bairro."
+    },
+    {
+      "id": "snob.ownPromotion.5",
+      "category": "ownPromotion",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Técnica de final básica. Pra mim, claro."
+    },
+    {
+      "id": "snob.opponentPromotion.1",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Uma dama. Que fofo. Ainda não é medalha."
+    },
+    {
+      "id": "snob.opponentPromotion.2",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Eu deixei aquele peão passar. Por pena."
+    },
+    {
+      "id": "snob.opponentPromotion.3",
+      "category": "opponentPromotion",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Isso... isso não estava no meu plano A. Nem no B."
+    },
+    {
+      "id": "snob.opponentPromotion.4",
+      "category": "opponentPromotion",
+      "intensity": 2,
+      "emotion": "surprised",
+      "text": "Quem deixou esse peão andar tanto?"
+    },
+    {
+      "id": "snob.opponentPromotion.5",
+      "category": "opponentPromotion",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Uma dama a mais não assusta um medalhista."
+    },
+    {
+      "id": "snob.opponentLowTime.1",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "O relógio está correndo. O seu, no caso."
+    },
+    {
+      "id": "snob.opponentLowTime.2",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tique-taque. Quer que eu pense por você?"
+    },
+    {
+      "id": "snob.opponentLowTime.3",
+      "category": "opponentLowTime",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Medalhista administra o tempo. Você, nem tanto."
+    },
+    {
+      "id": "snob.opponentLowTime.4",
+      "category": "opponentLowTime",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Se apressa, eu tenho um jantar de premiação."
+    },
+    {
+      "id": "snob.opponentLowTime.5",
+      "category": "opponentLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Respira. Ah, não, não dá tempo."
+    },
+    {
+      "id": "snob.ownLowTime.1",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Eu jogo melhor sob pressão. Sempre."
+    },
+    {
+      "id": "snob.ownLowTime.2",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Esse relógio está adiantado. Certeza."
+    },
+    {
+      "id": "snob.ownLowTime.3",
+      "category": "ownLowTime",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Rápido, rápido! Digo, com elegância!"
+    },
+    {
+      "id": "snob.ownLowTime.4",
+      "category": "ownLowTime",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Gastei tempo te analisando. Valeu a pena? Não."
+    },
+    {
+      "id": "snob.ownLowTime.5",
+      "category": "ownLowTime",
+      "intensity": 1,
+      "emotion": "focused",
+      "text": "Pouco tempo, muito talento. Equilibra."
+    },
+    {
+      "id": "snob.timeAdvantage.1",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Vou tomar meu tempo. Eu tenho de sobra."
+    },
+    {
+      "id": "snob.timeAdvantage.2",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Deixa eu admirar a posição mais um pouquinho."
+    },
+    {
+      "id": "snob.timeAdvantage.3",
+      "category": "timeAdvantage",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Olha meu relógio. Agora olha o seu."
+    },
+    {
+      "id": "snob.timeAdvantage.4",
+      "category": "timeAdvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Vou polir a medalha enquanto você se apressa."
+    },
+    {
+      "id": "snob.timeAdvantage.5",
+      "category": "timeAdvantage",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Sem pressa. Campeão não corre."
+    },
+    {
+      "id": "snob.opponentThinking.1",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Pensando? Leve o tempo que precisar. Muito tempo."
+    },
+    {
+      "id": "snob.opponentThinking.2",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Quer uma dica? Não. Eu também não daria."
+    },
+    {
+      "id": "snob.opponentThinking.3",
+      "category": "opponentThinking",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu já sei o que você vai jogar. E está errado."
+    },
+    {
+      "id": "snob.opponentThinking.4",
+      "category": "opponentThinking",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Deu tempo de eu reler meu certificado inteiro."
+    },
+    {
+      "id": "snob.opponentThinking.5",
+      "category": "opponentThinking",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Fico aqui, de braços cruzados, esperando."
+    },
+    {
+      "id": "snob.win.1",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Como esperado. Pode guardar as peças."
+    },
+    {
+      "id": "snob.win.2",
+      "category": "win",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Mais uma vitória para o currículo do medalhista."
+    },
+    {
+      "id": "snob.win.3",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Boa partida. Para você foi uma aula."
+    },
+    {
+      "id": "snob.win.4",
+      "category": "win",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Quer um autógrafo de consolação?"
+    },
+    {
+      "id": "snob.win.5",
+      "category": "win",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Nada mal. Quer dizer, para mim, nada mal."
+    },
+    {
+      "id": "snob.loss.1",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Eu estava sem a minha caneta da sorte. Não vale."
+    },
+    {
+      "id": "snob.loss.2",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Revanche. Agora. Essa foi de aquecimento."
+    },
+    {
+      "id": "snob.loss.3",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "sad",
+      "text": "Deixei você ganhar. Faz bem pra autoestima."
+    },
+    {
+      "id": "snob.loss.4",
+      "category": "loss",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Não conta pro pessoal do clube, tá?"
+    },
+    {
+      "id": "snob.loss.5",
+      "category": "loss",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "O tabuleiro estava torto. Eu juro que estava."
+    },
+    {
+      "id": "snob.loss.6",
+      "category": "loss",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Parabéns. Mas medalha, só eu tenho."
+    },
+    {
+      "id": "snob.draw.1",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Empate. Considero uma vitória moral minha."
+    },
+    {
+      "id": "snob.draw.2",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Empate? Contra você? Vou fingir que não vi."
+    },
+    {
+      "id": "snob.draw.3",
+      "category": "draw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Dividimos o ponto. Mas a medalha continua minha."
+    },
+    {
+      "id": "snob.draw.4",
+      "category": "draw",
+      "intensity": 3,
+      "emotion": "surprised",
+      "text": "Como assim acabou? Eu ainda ia ganhar!"
+    },
+    {
+      "id": "snob.draw.5",
+      "category": "draw",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Fui generoso hoje. Não se acostume."
+    },
+    {
+      "id": "snob.drawAccepted.1",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Aceito. Por cortesia, claro, não por necessidade."
+    },
+    {
+      "id": "snob.drawAccepted.2",
+      "category": "drawAccepted",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate. Considere uma honra dividir o ponto com um medalhista."
+    },
+    {
+      "id": "snob.drawAccepted.3",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Hm, sim, aceito. Essa luz está péssima pra jogar."
+    },
+    {
+      "id": "snob.drawAccepted.4",
+      "category": "drawAccepted",
+      "intensity": 2,
+      "emotion": "frustrated",
+      "text": "Aceito, mas só porque o tabuleiro está torto."
+    },
+    {
+      "id": "snob.drawAccepted.5",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Ufa. Quer dizer, que gesto elegante. Aceito, claro."
+    },
+    {
+      "id": "snob.drawAccepted.6",
+      "category": "drawAccepted",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Fechado. Era meu plano desde o início, você não entenderia."
+    },
+    {
+      "id": "snob.drawDeclined.1",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "calm",
+      "text": "Não, obrigado. Medalhista não divide ponto à toa."
+    },
+    {
+      "id": "snob.drawDeclined.2",
+      "category": "drawDeclined",
+      "intensity": 1,
+      "emotion": "confident",
+      "text": "Empate? Comigo? Recusado, com todo o respeito."
+    },
+    {
+      "id": "snob.drawDeclined.3",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Que fofo. Mas eu tenho bronze no Aberto do Bairro."
+    },
+    {
+      "id": "snob.drawDeclined.4",
+      "category": "drawDeclined",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Recuso. Eu jogo pela vitória, não pela simpatia."
+    },
+    {
+      "id": "snob.drawDeclined.5",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Empate? Posso autografar a sua derrota, se preferir."
+    },
+    {
+      "id": "snob.drawDeclined.6",
+      "category": "drawDeclined",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Recusado. Até de braços cruzados eu estou melhor."
+    }
+  ]
+}

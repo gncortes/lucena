@@ -33,8 +33,22 @@ import '../ui/custom_position/widgets/custom_position_screen.dart';
 import '../ui/game_setup/view_models/game_setup_cubit.dart';
 import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
+import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
+import '../data/repositories/achievements/achievements_repository.dart';
+import '../data/repositories/characters/character_repository.dart';
+import '../data/repositories/characters/talk_repository.dart';
+import '../data/repositories/evaluation/evaluation_repository.dart';
+import '../data/repositories/rating/rating_repository.dart';
+import '../data/repositories/pace/pace_repository.dart';
+import '../data/repositories/draw/draw_offer_repository.dart';
+import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home/widgets/home_screen.dart';
+import '../ui/achievements/view_models/achievements_cubit.dart';
+import '../ui/achievements/widgets/achievements_screen.dart';
+import '../ui/tour/view_models/tour_cubit.dart';
+import '../ui/tour/widgets/tour_screen.dart';
+import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../ui/journey/view_models/journey_cubit.dart';
 import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
@@ -45,6 +59,7 @@ import '../ui/speedrun/widgets/speedrun_list_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
+import '../ui/profile/view_models/rating_cubit.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
@@ -59,8 +74,32 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
     initialLocation: initialLocation,
     routes: [
       GoRoute(
+        path: Routes.tour,
+        builder: (context, state) => BlocProvider(
+          create: (context) => TourCubit(
+            onboarding: context.read<OnboardingRepository>(),
+            profile: context.read<ProfileRepository>(),
+          )..load(),
+          child: const TourScreen(),
+        ),
+      ),
+      GoRoute(
         path: Routes.home,
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => HomeCubit(
+            journey: context.read<JourneyRepository>(),
+            progress: context.read<ProgressRepository>(),
+            onboarding: context.read<OnboardingRepository>(),
+            characters: context.read<CharacterRepository>(),
+            rating: context.read<RatingRepository>(),
+          )..load(),
+          child: Builder(
+            builder: (context) => ReloadOnReturn(
+              onReturn: () => context.read<HomeCubit>().load(),
+              child: const HomeScreen(),
+            ),
+          ),
+        ),
         routes: [
           GoRoute(
             path: 'board',
@@ -97,26 +136,61 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 speedrunStage: int.tryParse(query['stage'] ?? ''),
               );
               final start = fen == null ? null : GameRules.fromFen(fen);
-              return BlocProvider(
+              // As falas vêm no idioma do app (as que faltam, em inglês).
+              final language = Localizations.localeOf(context).languageCode;
+              return MultiBlocProvider(
                 key: ValueKey(state.uri),
-                create: (context) => FreeBoardCubit(
-                  now: context.read<Now>(),
-                  haptics: context.read<HapticsRepository>(),
-                  settings: context.read<SettingsRepository>(),
-                  games: context.read<OngoingGameRepository>(),
-                  opponent: context.read<OpponentRepository>(),
-                  progress: context.read<ProgressRepository>(),
-                  mode: mode,
-                  start: isNewGame ? start ?? GameRules.initial : null,
-                  playerSide: Side.values.asNameMap()[side],
-                  orientation: Side.values.asNameMap()[view],
-                  clock: white == null || black == null
-                      ? null
-                      : ClockConfig(white: white, black: black),
-                )..open(),
+                providers: [
+                  BlocProvider(
+                    create: (context) => FreeBoardCubit(
+                      now: context.read<Now>(),
+                      haptics: context.read<HapticsRepository>(),
+                      settings: context.read<SettingsRepository>(),
+                      games: context.read<OngoingGameRepository>(),
+                      opponent: context.read<OpponentRepository>(),
+                      progress: context.read<ProgressRepository>(),
+                      draws: context.read<DrawOfferRepository>(),
+                      reporter: GameReporter(
+                        rating: context.read<RatingRepository>(),
+                        achievements: context.read<AchievementsRepository>(),
+                        journey: context.read<JourneyRepository>(),
+                        progress: context.read<ProgressRepository>(),
+                        speedruns: context.read<SpeedrunRepository>(),
+                        positions: context.read<PositionsRepository>(),
+                        now: context.read<Now>(),
+                      ),
+                      mode: mode,
+                      start: isNewGame ? start ?? GameRules.initial : null,
+                      playerSide: Side.values.asNameMap()[side],
+                      orientation: Side.values.asNameMap()[view],
+                      clock: white == null || black == null
+                          ? null
+                          : ClockConfig(white: white, black: black),
+                    )..open(),
+                  ),
+                  BlocProvider(
+                    create: (context) => TalkCubit(
+                      characters: context.read<CharacterRepository>(),
+                      evaluation: context.read<EvaluationRepository>(),
+                      talk: context.read<TalkRepository>(),
+                      settings: context.read<SettingsRepository>(),
+                      now: context.read<Now>(),
+                      language: language,
+                    ),
+                  ),
+                ],
                 child: const FreeBoardScreen(),
               );
             },
+          ),
+          GoRoute(
+            path: 'achievements',
+            builder: (context, state) => BlocProvider(
+              create: (context) =>
+                  AchievementsCubit(context.read<AchievementsRepository>())
+                    ..load(),
+              child: const AchievementsScreen(),
+            ),
           ),
           GoRoute(
             path: 'journey',
@@ -244,6 +318,9 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   position: position,
                   progress: context.read<ProgressRepository>(),
                   profile: context.read<ProfileRepository>(),
+                  rating: context.read<RatingRepository>(),
+                  pace: context.read<PaceRepository>(),
+                  characters: context.read<CharacterRepository>(),
                   goal:
                       PositionGoal.fromCode(query['goal']) ?? PositionGoal.win,
                   positionId: query['position'],
@@ -275,7 +352,11 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
               GoRoute(
                 path: 'profile',
-                builder: (context, state) => const ProfileScreen(),
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      RatingCubit(context.read<RatingRepository>())..load(),
+                  child: const ProfileScreen(),
+                ),
               ),
               GoRoute(
                 path: 'board-appearance',
@@ -317,6 +398,8 @@ CatalogCubit _catalogCubit(BuildContext context) => CatalogCubit(
 JourneyCubit _journeyCubit(BuildContext context) => JourneyCubit(
   context.read<JourneyRepository>(),
   context.read<ProgressRepository>(),
+  onboarding: context.read<OnboardingRepository>(),
+  characters: context.read<CharacterRepository>(),
 );
 
 SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
