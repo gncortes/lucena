@@ -2624,5 +2624,155 @@
   "tourSoundOff": "No sound",
   "@tourSoundOff": {
     "description": "Tour choice: turn the game sounds off."
+  },
+  "reviewStart": "Review with Stockfish",
+  "@reviewStart": {
+    "description": "Game details: button that analyses every move of the game with the chess engine."
+  },
+  "reviewRunning": "Analysing move {done} of {total}",
+  "@reviewRunning": {
+    "description": "Game details: progress while the engine reviews the game.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewAccuracy": "Accuracy",
+  "@reviewAccuracy": {
+    "description": "Game details: title of the accuracy (0 to 100) of each side, computed from the engine review."
+  },
+  "reviewYou": "You",
+  "@reviewYou": {
+    "description": "Game details: the user's column in the review summary."
+  },
+  "reviewHint": "Each move rated by Stockfish. Accuracy as on Lichess.",
+  "@reviewHint": {
+    "description": "Game details: note under the review summary explaining where the ratings come from."
+  },
+  "qualityForced": "Forced",
+  "@qualityForced": {
+    "description": "Move rating: the only legal move."
+  },
+  "qualityGreat": "Great move",
+  "@qualityGreat": {
+    "description": "Move rating: the best move, and the only one that keeps the position."
+  },
+  "qualityBest": "Best move",
+  "@qualityBest": {
+    "description": "Move rating: the move the engine would play."
+  },
+  "qualityExcellent": "Excellent",
+  "@qualityExcellent": {
+    "description": "Move rating: almost as good as the best move."
+  },
+  "qualityGood": "Good",
+  "@qualityGood": {
+    "description": "Move rating: a good move."
+  },
+  "qualityInaccuracy": "Inaccuracy",
+  "@qualityInaccuracy": {
+    "description": "Move rating (?!): lost a little."
+  },
+  "qualityMistake": "Mistake",
+  "@qualityMistake": {
+    "description": "Move rating (?)."
+  },
+  "qualityMiss": "Miss",
+  "@qualityMiss": {
+    "description": "Move rating: had a winning position and let it slip."
+  },
+  "qualityBlunder": "Blunder",
+  "@qualityBlunder": {
+    "description": "Move rating (??): a serious mistake."
+  },
+  "reviewMoveQuality": "{move}: {quality}",
+  "@reviewMoveQuality": {
+    "description": "Game details: the rating of the move on the board, e.g. 'Qg6: Blunder'. {quality} is one of the move ratings.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "quality": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewBestWas": "Best was {move}",
+  "@reviewBestWas": {
+    "description": "Game details: the engine's best move in the position before the move shown.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewStartPosition": "Starting position",
+  "@reviewStartPosition": {
+    "description": "Game details: the board shows the position before the first move."
+  },
+  "reviewFirst": "First move",
+  "@reviewFirst": {
+    "description": "Game details: tooltip of the button that goes to the starting position."
+  },
+  "reviewPrevious": "Previous move",
+  "@reviewPrevious": {
+    "description": "Game details: tooltip of the button that goes one move back."
+  },
+  "reviewNext": "Next move",
+  "@reviewNext": {
+    "description": "Game details: tooltip of the button that goes one move forward."
+  },
+  "reviewLast": "Last move",
+  "@reviewLast": {
+    "description": "Game details: tooltip of the button that goes to the final position."
+  },
+  "reviewEngine": "Engine",
+  "@reviewEngine": {
+    "description": "Game details: toggle that shows the engine's best lines in the position on the board."
+  },
+  "reviewEngineThinking": "Thinking…",
+  "@reviewEngineThinking": {
+    "description": "Game details: the engine is still analysing the position."
+  },
+  "reviewEngineOver": "Game over in this position",
+  "@reviewEngineOver": {
+    "description": "Game details: the engine has no lines because the game ended in this position."
+  },
+  "reviewDepth": "Depth {depth}",
+  "@reviewDepth": {
+    "description": "Game details: how deep the engine searched.",
+    "placeholders": {
+      "depth": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewMore": "More options",
+  "@reviewMore": {
+    "description": "Game details: tooltip of the menu with export options."
+  },
+  "reviewOpenLichess": "Open on Lichess",
+  "@reviewOpenLichess": {
+    "description": "Game details menu: opens the position in the Lichess analysis board."
+  },
+  "reviewOpenChessCom": "Open on chess.com",
+  "@reviewOpenChessCom": {
+    "description": "Game details menu: opens the position in the chess.com analysis board."
+  },
+  "reviewCopyFen": "Copy position (FEN)",
+  "@reviewCopyFen": {
+    "description": "Game details menu: copies the position on the board as FEN."
+  },
+  "reviewCopyPgn": "Copy game (PGN)",
+  "@reviewCopyPgn": {
+    "description": "Game details menu: copies the whole game as PGN."
+  },
+  "reviewCopied": "Copied",
+  "@reviewCopied": {
+    "description": "Game details: snackbar after copying FEN or PGN."
   }
 }
