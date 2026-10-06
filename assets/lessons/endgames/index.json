@@ -28,7 +28,8 @@
       "lessons": [
         "rook.lucena",
         "rook.philidor",
-        "rook.backRank"
+        "rook.backRank",
+        "rook.shortSide"
       ]
     }
   ]
