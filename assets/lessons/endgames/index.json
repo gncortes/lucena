@@ -16,6 +16,12 @@
       ]
     },
     {
+      "id": "queen",
+      "lessons": [
+        "queen.vsRook.philidor"
+      ]
+    },
+    {
       "id": "rook",
       "lessons": [
         "rook.lucena"
