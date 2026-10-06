@@ -42,6 +42,19 @@ void main() {
     }
   });
 
+  test('nenhum passo usa um id reservado (apagaria o resumo da aula)', () {
+    const reserved = {'title', 'summary', 'history', 'practice'};
+    for (final lesson in lessons) {
+      for (final step in lesson.lesson.steps) {
+        expect(
+          reserved.contains(step.id),
+          isFalse,
+          reason: '${lesson.id}.${step.id}',
+        );
+      }
+    }
+  });
+
   test('toda aula tem lição, de 8 a 12 exercícios e nota mínima válida', () {
     for (final lesson in lessons) {
       expect(lesson.lesson.steps, isNotEmpty, reason: lesson.id);

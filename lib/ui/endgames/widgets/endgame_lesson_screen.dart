@@ -15,6 +15,7 @@ import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgame_lesson_cubit.dart';
+import 'endgame_ui.dart';
 import 'stars_row.dart';
 
 /// Uma aula de final em três partes: a lição, os exercícios com as estrelas
@@ -333,7 +334,12 @@ class _ExerciseTile extends StatelessWidget {
         leading: SizedBox(
           width: 44,
           height: 44,
-          child: PositionBoard(fen: exercise.fen, size: 44, radius: 4),
+          child: PositionBoard(
+            fen: exercise.fen,
+            size: 44,
+            radius: 4,
+            heroTag: exerciseHeroTag(lessonId, exercise.id),
+          ),
         ),
         title: Text(l10n.endgameExerciseTitle(index + 1)),
         subtitle: Text(l10n.endgameStars(exercise.stars)),
