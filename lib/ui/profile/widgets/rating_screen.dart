@@ -14,6 +14,7 @@ import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/rating_chart.dart';
@@ -462,7 +463,10 @@ class _GameRow extends StatelessWidget {
     final change = rated?.change;
     return InkWell(
       key: RatingKeys.entry(index),
-      onTap: () => context.push(Routes.game(game.id)),
+      // Na volta, a partida pode ter ganhado a revisão (e a precisão).
+      onTap: () => context.push(Routes.game(game.id)).then((_) {
+        if (context.mounted) context.read<RatingCubit>().load();
+      }),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -516,6 +520,37 @@ class _GameRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            // A precisão do jogador, nas partidas já revisadas (como no
+            // histórico do chess.com).
+            if (game.accuracy case final accuracy?) ...[
+              const SizedBox(width: 8),
+              Tooltip(
+                message: l10n.reviewAccuracy,
+                child: Container(
+                  key: RatingKeys.entryAccuracy(index),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    formatAccuracy(
+                      accuracy,
+                      Localizations.localeOf(context).toString(),
+                    ),
+                    semanticsLabel:
+                        '${l10n.reviewAccuracy} ${formatAccuracy(accuracy, Localizations.localeOf(context).toString())}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(width: 10),
             Container(
               key: RatingKeys.entryResult(index),

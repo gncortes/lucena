@@ -1,0 +1,62 @@
+# Histórias do Viktor durante a revisão (`review.stories`)
+
+As 10 primeiras foram escritas na sessão da T37 (fontes já citadas nas aulas: Browne x Belle, Philidor, Wikipedia). As seguintes foram escritas por dois agentes em 2026-10-06, cada fato conferido numa fonte aberta:
+
+- Réti publicou o estudo em 1921; o rei ameaça dois objetivos ao mesmo tempo e empata — https://en.wikipedia.org/wiki/Réti_endgame_study
+- Saavedra, padre espanhol em Glasgow e amador fraco, achou a subpromoção a torre em 1895 — https://en.wikipedia.org/wiki/Saavedra_position
+- A posição não está no livro de Lucena (1497); primeiro registro em Il Puttino, de Salvio (1634); técnica de construir a ponte — https://en.wikipedia.org/wiki/Lucena_position
+- Philidor analisou em 1777 a defesa pela terceira fileira e os xeques por trás — https://en.wikipedia.org/wiki/Philidor_position
+- Dois cavalos não forçam mate contra rei só; Troitsky estudou o final com peão e publicou em 1937 — https://en.wikipedia.org/wiki/Two_knights_endgame
+- Troitsky, fundador do estudo moderno, morreu de fome no cerco de Leningrado em 1942; notas perdidas na guerra — https://en.wikipedia.org/wiki/Alexey_Troitzky
+- Kling e Horwitz publicaram Chess Studies (1851); Kling foi professor de música e abriu café com xadrez em Londres, onde Horwitz trabalhava às vezes — https://en.wikipedia.org/wiki/Josef_Kling
+- Kling e Horwitz (1851): dois bispos contra cavalo em geral vencem; tabelas de Thompson confirmaram — https://en.wikipedia.org/wiki/Pawnless_chess_endgame
+- Regra dos 50 lances introduzida por Ruy López em 1561; no shatranj era de 70 lances — https://en.wikipedia.org/wiki/Fifty-move_rule
+- Exceções à regra dos 50 lances a partir de 1928; volta à regra estrita por volta de 1992 após pesquisas de computador — https://en.wikipedia.org/wiki/Fifty-move_rule
+- Centurini (1820–1900), jurista de Gênova, analisou bispo e peão contra bispo da mesma cor em 1856 — https://en.wikipedia.org/wiki/Luigi_Centurini
+- Josef Vančura (1898–1921), posição publicada em 1924, defesa atacando o peão de lado — https://en.wikipedia.org/wiki/Rook_and_pawn_versus_rook_endgame
+- Final de bispo e cavalo ocorre em cerca de 1 a cada 6.000 partidas; Ushenina empatou pela regra dos 50 lances contra Girya em 2013 — https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate
+- Bellman propôs a análise retrógrada em 1965; tabelas de 6 peças (Nalimov) completas em 2005, ~1,2 TB — https://en.wikipedia.org/wiki/Endgame_tablebase
+- Syzygy lançadas por Ronald de Man em 2013, feitas para motores e menores; 7 peças completas em 2018 — https://en.wikipedia.org/wiki/Endgame_tablebase
+- Steinitz, nascido em Praga, primeiro campeão oficial em 1886 contra Zukertort; jogo posicional; morreu pobre em 1900 — https://en.wikipedia.org/wiki/Wilhelm_Steinitz
+- Lasker campeão de 1894 a 1921 (27 anos, recorde); doutor em matemática; anéis laskerianos; amigo de Einstein — https://en.wikipedia.org/wiki/Emanuel_Lasker
+- Alekhine perdeu para Euwe em 1935, recuperou em 1937, único a morrer campeão (1946, Estoril); 32 partidas às cegas em Chicago, 1933 — https://en.wikipedia.org/wiki/Alexander_Alekhine
+- Botvinnik, doutor em engenharia elétrica; sua escola formou Karpov, Kasparov e Kramnik — https://en.wikipedia.org/wiki/Mikhail_Botvinnik
+- Petrosian, campeão de 1963 a 1969, 'Iron Tigran', estilo defensivo, sacrifício posicional de qualidade — https://en.wikipedia.org/wiki/Tigran_Petrosian
+- Match de 1984–85: 48 partidas, 40 empates, Karpov 5–3; Campomanes encerrou em 15/02/1985 citando a saúde dos jogadores; Kasparov venceu o novo match de 1985 — https://en.wikipedia.org/wiki/World_Chess_Championship_1984
+- Henri Rinck, compositor francês nascido em Lyon, publicou cerca de 1670 estudos, 58 com primeiro prêmio; primeiros estudos em 1902 — https://en.wikipedia.org/wiki/Henri_Rinck
+- Hou Yifan, campeã mundial feminina mais jovem (16 anos, 2010); bolsa Rhodes em Oxford; professora universitária — https://en.wikipedia.org/wiki/Hou_Yifan
+- Menchik, primeira campeã mundial feminina (1927) até a morte em 1944; Clube Vera Menchik; venceu Euwe duas vezes em Hastings — https://en.wikipedia.org/wiki/Vera_Menchik
+- O Turco de Kempelen (1770), feito para impressionar Maria Teresa; um mestre escondido o operava com alavancas e ímãs; venceu a maioria dos adversários — https://en.wikipedia.org/wiki/Mechanical_Turk
+- AlphaZero (2017) treinou nove horas só com as regras; contra Stockfish 8 em 100 partidas: 28 vitórias, 72 empates, 0 derrotas — https://en.wikipedia.org/wiki/AlphaZero
+- A antiga dama (ferz) andava uma casa na diagonal; a dama moderna surgiu na Espanha no fim do século XV; livro de Lucena de 1497; apelido 'madwoman's chess' — https://en.wikipedia.org/wiki/Queen_(chess)
+- Avanço duplo do peão para acelerar o jogo; en passant citado por Ruy López no século XVI; Itália adotou em 1880 antes do torneio de Milão de 1881 — https://en.wikipedia.org/wiki/En_passant
+- Relógio de xadrez usado em larga escala no torneio de Londres de 1883, inventado por Thomas Bright Wilson; Fischer pediu patente do incremento em 1988 — https://en.wikipedia.org/wiki/Chess_clock
+- Smyslov, campeão em 1957, preciso nos finais; Rook Endings com Levenfish; escolheu o xadrez após teste fracassado no Bolshoi em 1950 — https://en.wikipedia.org/wiki/Vasily_Smyslov
+- Mecking: campeão nacional aos 13, primeiro GM brasileiro, 3º do mundo em 1978, miastenia grave, sem jogar nos anos 80, volta em 1991 — https://en.wikipedia.org/wiki/Henrique_Mecking
+- Leitão: Mundial de Jovens sub-12 (1991) e sub-18 (1996), 7 vezes campeão brasileiro, GM ICCF em 2012 — https://en.wikipedia.org/wiki/Rafael_Leit%C3%A3o
+- Supi venceu Carlsen em blitz online em 18 lances com sacrifício de dama (maio 2020); 1º lugar no Chess.com Immortal Game Contest (2021) — https://en.wikipedia.org/wiki/Luis_Paulo_Supi
+- Mekhitarian: aprendeu aos 7, normas de GM em 8 meses (2009-2010), bicampeão brasileiro, diretor de conteúdo em português do Chess.com — https://en.wikipedia.org/wiki/Krikor_Sevag_Mekhitarian
+- Damiano: farmacêutico de Odemira, livro de 1512 em Roma, atribuiu 'xadrez' a Xerxes, condenou 2...f6 (Defesa Damiano) — https://en.wikipedia.org/wiki/Pedro_Damiano
+- Réti: 29 partidas às cegas em São Paulo (1925), recorde; esqueceu a pasta e comentou sua má memória — https://en.wikipedia.org/wiki/Blindfold_chess
+- Najdorf: 45 partidas às cegas em São Paulo (1947), +39 =4 -2; recordes para avisar a família, que morreu no Holocausto — https://en.wikipedia.org/wiki/Blindfold_chess
+- Olimpíada de 1939: finais começaram em 1º de setembro, início da guerra; muitos ficaram na América do Sul; navio Piriápolis, 'arca de Noé' — https://en.wikipedia.org/wiki/8th_Chess_Olympiad
+- Mishra: GM aos 12a 4m 25d (2021), recorde de Karjakin durou 19 anos; aos 16 venceu Gukesh no Grand Swiss 2025 — https://en.wikipedia.org/wiki/Abhimanyu_Mishra
+- Gareyev: 48 partidas às cegas em Las Vegas (dez. 2016), numa bicicleta ergométrica, +35 =7 -6 — https://en.wikipedia.org/wiki/Blindfold_chess
+- Mundial 1892, partida 23: Chigorin com peça a mais jogou 32.Bb4?? e deixou mate em 2; relato da imprensa cubana — https://en.wikipedia.org/wiki/World_Chess_Championship_1892
+- Mundial 2014, partida 6: duplo erro 26.Kd2?? a4??; Carlsen venceu — https://en.wikipedia.org/wiki/World_Chess_Championship_2014
+- URSS x Resto do Mundo 1970: Portisch empatou por repetição tripla em posição ganha contra Korchnoi; Fischer irritado — https://en.wikipedia.org/wiki/USSR_vs._Rest_of_the_World
+- Larsen exigiu o 1º tabuleiro à frente de Fischer em 1970; perdeu 0-6 para Fischer em 1971 e culpou o calor — https://en.wikipedia.org/wiki/Bent_Larsen
+- Mundial 1978 (Baguio): iogurte de mirtilo para Karpov, protesto de código, hipnotizador Zukhar, raio-X das cadeiras — https://en.wikipedia.org/wiki/World_Chess_Championship_1978
+- Tal: saúde frágil, rim removido em 1969; em 28/05/1992 saiu do hospital para blitz em Moscou e venceu Kasparov; morreu um mês depois — https://en.wikipedia.org/wiki/Mikhail_Tal
+- Petrosian: aparelho auditivo desligado, não ouviu Gligorić reoferecer empate e venceu — https://en.wikipedia.org/wiki/Tigran_Petrosian
+- Gaprindashvili: campeã 1962-1978, venceu Lone Pine 1977, primeira mulher GM (1978), processo contra a Netflix com acordo em 2022 — https://en.wikipedia.org/wiki/Nona_Gaprindashvili
+- Polgár: acordada à noite para resolver um final que Susan e o treinador não achavam — https://en.wikipedia.org/wiki/Judit_Polg%C3%A1r
+- Polgár: GM aos 15a 4m (1991), um mês antes do recorde de Fischer; venceu Kasparov em 2002; Kasparov revisou opinião — https://en.wikipedia.org/wiki/Judit_Polg%C3%A1r
+- Carlsen: pico de 2882 (2014), maior da FIDE; 125 partidas clássicas invicto (42 vitórias, 83 empates) — https://en.wikipedia.org/wiki/Magnus_Carlsen
+- Nakamura: GM aos 15a 79d, 3 meses antes do recorde de Fischer; streamer; venceu Carlsen na final do Speed Chess Championship 2022 — https://en.wikipedia.org/wiki/Hikaru_Nakamura
+- O Gambito da Rainha (2020): vendas de tabuleiros da Goliath Games +1000%, milhões de novos usuários no Chess.com — https://en.wikipedia.org/wiki/The_Queen%27s_Gambit_(miniseries)
+- O Sétimo Selo (1957): cavaleiro joga xadrez com a Morte; inspirado em pintura de Albertus Pictor na igreja de Täby — https://en.wikipedia.org/wiki/The_Seventh_Seal
+- Número de Shannon: ~10^120 partidas (artigo de 1950) — https://en.wikipedia.org/wiki/Shannon_number
+- Gibaud-Lazard em 4 lances é apócrifa; Gibaud negou — https://en.wikipedia.org/wiki/Am%C3%A9d%C3%A9e_Gibaud
+- Kasparov x Mundo (1999): +50 mil pessoas de 75 países, Irina Krush (15 anos), 62 lances em 4 meses, 'maior partida da história' — https://en.wikipedia.org/wiki/Kasparov_versus_the_World
+- Soyuz 9 (1970): Nikolayev e Sevastyanov jogaram contra Kamanin e Gorbatko; primeira partida documentada no espaço; peças com pinos; empate — https://en.wikipedia.org/wiki/Soyuz_9

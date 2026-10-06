@@ -1,3 +1,4 @@
+import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,6 @@ import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
-import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -86,8 +86,10 @@ void main() {
     return cubit;
   }
 
-  String boardFen(WidgetTester tester) =>
-      tester.widget<PositionBoard>(find.byKey(GameDetailsKeys.board)).fen;
+  String boardFen(WidgetTester tester) => tester
+      .widget<Chessboard>(find.byKey(GameDetailsKeys.board))
+      .controller
+      .fen;
 
   String plain(WidgetTester tester, Key key) {
     final text = tester.widget<Text>(find.byKey(key));

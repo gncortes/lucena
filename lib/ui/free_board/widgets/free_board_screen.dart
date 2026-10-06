@@ -510,7 +510,19 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       onClose: () => setState(() => _resultOpen = false),
       onNewGame: () => _newGame(context, cubit, mode),
       onNext: next == null ? null : () => _nextChallenge(context, cubit, next),
+      // Só as partidas de uma posição ficam no histórico; no speedrun o
+      // relógio da tentativa corre: a revisão fica para depois.
+      onReview: mode.positionId == null || mode.isSpeedrun
+          ? null
+          : () => _review(context, cubit),
     );
+  }
+
+  // Os detalhes da partida que acabou, para revisá-la com a engine.
+  Future<void> _review(BuildContext context, FreeBoardCubit cubit) async {
+    final id = await cubit.savedGameId();
+    if (id == null || !context.mounted) return;
+    unawaited(context.push(Routes.game(id)));
   }
 
   Future<void> _newGame(
@@ -621,6 +633,7 @@ class _End extends StatefulWidget {
     required this.onClose,
     required this.onNewGame,
     required this.onNext,
+    this.onReview,
   });
 
   final GameEnd end;
@@ -643,6 +656,9 @@ class _End extends StatefulWidget {
 
   /// Ir para o próximo desafio da Jornada. Nulo quando não há.
   final VoidCallback? onNext;
+
+  /// Abrir a partida para revisar. Nulo quando não dá (speedrun).
+  final VoidCallback? onReview;
 
   @override
   State<_End> createState() => _EndState();
@@ -740,6 +756,15 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
           child: again,
         ),
     ];
+    final onReview = widget.onReview;
+    final review = onReview == null
+        ? null
+        : OutlinedButton.icon(
+            key: FreeBoardKeys.endReviewButton,
+            onPressed: onReview,
+            icon: const Icon(Icons.insights),
+            label: Text(l10n.resultReview, textAlign: TextAlign.center),
+          );
     final goal = switch (widget.fulfilled) {
       final done? => Row(
         mainAxisSize: MainAxisSize.min,
@@ -802,7 +827,16 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
     }
 
     if (!widget.card) {
-      return _panel(theme, end, reason, result, goal, rating, buttons);
+      return _panel(
+        theme,
+        end,
+        reason,
+        result,
+        goal,
+        rating,
+        buttons,
+        onReview: widget.onReview,
+      );
     }
 
     // O título do ponto de vista do jogador, quando ele joga contra a
@@ -917,17 +951,18 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
                       Center(child: ratingWidget),
                     ],
                     const SizedBox(height: 20),
-                    // As opções lado a lado; a principal à direita.
+                    // As opções uma embaixo da outra; a principal em cima.
                     SafeArea(
                       top: false,
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          for (final (index, button)
-                              in buttons.reversed.indexed) ...[
-                            if (index > 0) const SizedBox(width: 10),
-                            Expanded(
-                              child: SizedBox(height: 52, child: button),
-                            ),
+                          for (final (index, button) in [
+                            ...buttons,
+                            ?review,
+                          ].indexed) ...[
+                            if (index > 0) const SizedBox(height: 10),
+                            SizedBox(height: 52, child: button),
                           ],
                         ],
                       ),
@@ -951,8 +986,9 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
     String result,
     Widget? goal,
     Widget? Function(CrossAxisAlignment, {required bool large}) rating,
-    List<Widget> buttons,
-  ) {
+    List<Widget> buttons, {
+    VoidCallback? onReview,
+  }) {
     final colors = theme.colorScheme;
     final onColor = colors.onSecondaryContainer;
     final ratingWidget = rating(CrossAxisAlignment.end, large: false);
@@ -1010,6 +1046,16 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
           const SizedBox(height: 10),
           Row(
             children: [
+              // Aqui o espaço é pouco: a revisão vai num botão só de ícone.
+              if (onReview != null) ...[
+                IconButton.outlined(
+                  key: FreeBoardKeys.endReviewButton,
+                  onPressed: onReview,
+                  tooltip: context.l10n.resultReview,
+                  icon: const Icon(Icons.insights),
+                ),
+                const SizedBox(width: 8),
+              ],
               for (final (index, button) in buttons.reversed.indexed) ...[
                 if (index > 0) const SizedBox(width: 8),
                 Expanded(child: button),
