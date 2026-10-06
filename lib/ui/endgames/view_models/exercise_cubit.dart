@@ -230,8 +230,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final played = GameRules.play(position, move);
     if (played == null) return;
     final turn = step.line[state.turn];
-    final last = state.turn + 1 >= step.line.length;
-    if (last) {
+    final ends = LessonRules.endsLine(step, state.turn, move.uci);
+    if (ends) {
       await _solve(played.position.fen, move);
       return;
     }
@@ -254,8 +254,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       if (isClosed) return;
       final answered = GameRules.play(after, reply);
       if (answered == null) {
-        // O aluno jogou outro lance aceito e a resposta combinada não cabe
-        // mais: a linha acaba aqui, com o exercício resolvido.
+        // A resposta combinada não cabe no tabuleiro (aula com dado
+        // inconsistente): a linha acaba aqui, com o exercício resolvido.
         await _solve(after.fen, move);
         return;
       }

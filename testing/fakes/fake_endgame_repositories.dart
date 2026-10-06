@@ -55,7 +55,8 @@ class FakeEndgameLessonRepository implements EndgameLessonRepository {
                 fen: lucenaFen,
                 goal: PositionGoal.win,
                 line: [
-                  MoveTurn(accept: {'c1c4'}, reply: 'a2a1'),
+                  // O ensinado é c1c4; c1c5 também é bom, mas sai da linha.
+                  MoveTurn(accept: {'c1c4', 'c1c5'}, reply: 'a2a1'),
                   MoveTurn(accept: {'c4c5'}),
                 ],
               ),

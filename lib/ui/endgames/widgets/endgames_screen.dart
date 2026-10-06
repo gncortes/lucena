@@ -235,11 +235,8 @@ class _LessonTile extends StatelessWidget {
               fontWeight: isNext ? FontWeight.w700 : null,
             ),
           ),
-          subtitle: Text(
-            texts.lessonSummary(lesson.id) ?? '',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          // O resumo inteiro: é ele que diz o que a aula ensina.
+          subtitle: Text(texts.lessonSummary(lesson.id) ?? ''),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

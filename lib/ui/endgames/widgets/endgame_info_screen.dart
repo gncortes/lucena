@@ -22,9 +22,8 @@ class EndgameInfoScreen extends StatelessWidget {
     final texts = state.texts;
     return Scaffold(
       key: EndgameInfoKeys.screen,
-      appBar: AppBar(
-        title: Text(lesson == null ? '' : texts.lessonTitle(lesson.id)),
-      ),
+      // O título da aula pode ser longo: ele vem no corpo, inteiro.
+      appBar: AppBar(title: Text(l10n.endgameInfoTooltip)),
       body: lesson == null
           ? const SizedBox.shrink()
           : ListView(
@@ -36,6 +35,12 @@ class EndgameInfoScreen extends StatelessWidget {
                 bottom: 32,
               ),
               children: [
+                Text(
+                  texts.lessonTitle(lesson.id),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 _header(theme, l10n.endgameInfoHistory),
                 Text(
                   texts.say('${lesson.id}.history') ?? '',

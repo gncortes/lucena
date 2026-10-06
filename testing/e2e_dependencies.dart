@@ -26,6 +26,7 @@ import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/domain/models/speedrun.dart';
@@ -254,6 +255,11 @@ Future<void> resetE2EData() async {
   await database.deleteEverything();
   await database.close();
 }
+
+/// Grava o progresso das aulas de finais como se o aluno já o tivesse feito.
+/// O próximo `AppRobot.restart` abre o app com ele.
+Future<void> seedEndgameProgress(EndgameProgress progress) =>
+    LocalEndgameProgressRepository(PreferencesService()).save(progress);
 
 /// A Jornada de verdade e, antes dos speedruns de verdade, dois curtos de
 /// mate em um lance: os cenários percorrem um speedrun inteiro em segundos.

@@ -405,8 +405,8 @@ class LessonCubit extends Cubit<LessonState> {
     final played = GameRules.play(position, move);
     if (played == null) return;
     final turn = step.line[state.turn];
-    final last = state.turn + 1 >= step.line.length;
-    if (last) {
+    final ends = LessonRules.endsLine(step, state.turn, move.uci);
+    if (ends) {
       emit(
         state.copyWith(
           fen: played.position.fen,
@@ -438,8 +438,8 @@ class LessonCubit extends Cubit<LessonState> {
       if (isClosed) return;
       final answered = GameRules.play(after, reply);
       if (answered == null) {
-        // O aluno jogou outro lance aceito e a resposta combinada não cabe
-        // mais: o passo acaba aqui, cumprido.
+        // A resposta combinada não cabe no tabuleiro (aula com dado
+        // inconsistente): o passo acaba aqui, cumprido.
         emit(
           state.copyWith(
             turn: step.line.length,

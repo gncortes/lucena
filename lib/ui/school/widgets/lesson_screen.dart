@@ -122,10 +122,11 @@ class _LessonScreenState extends State<LessonScreen>
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          state.texts.lessonTitle(lesson.id),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        // Título longo (aulas de finais) diminui, sem cortar.
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(state.texts.lessonTitle(lesson.id)),
                         ),
                         Text(
                           l10n.lessonNumber(

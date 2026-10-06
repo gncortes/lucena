@@ -91,6 +91,18 @@ void main() {
     expect(exercise.state.earned, 2);
   });
 
+  test('outro lance bom que não o ensinado resolve o exercício ali', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e02', 'en');
+    await exercise.play(move('c1c5'));
+    final state = exercise.state;
+    // A resposta e a vez seguinte valem só para o lance ensinado.
+    expect(state.phase, ExercisePhase.done);
+    expect(state.lastMove, move('c1c5'));
+    expect(state.earned, 2);
+    expect(progress.saved.of('rook.lucena').stars, {'e02': 2});
+  });
+
   test('fechar no meio volta no mesmo exercício, com os erros', () async {
     final first = cubit();
     await first.load('rook.lucena', 'e02', 'en');
