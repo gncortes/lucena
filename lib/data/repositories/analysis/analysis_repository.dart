@@ -6,10 +6,12 @@ import '../../../domain/models/game_review.dart';
 abstract class AnalysisRepository {
   /// As [lines] melhores linhas em [position], com profundidade [depth],
   /// do ponto de vista das brancas. Lista vazia se a engine não respondeu ou
-  /// a posição não tem lance.
+  /// a posição não tem lance. [urgent]: o jogador está olhando a posição
+  /// agora; passa na frente dos pedidos comuns.
   Future<List<EngineLine>> analyse(
     Position position, {
     required int depth,
     int lines = 1,
+    bool urgent = false,
   });
 }

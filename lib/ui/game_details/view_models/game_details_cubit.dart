@@ -50,6 +50,7 @@ class GameDetailsState {
     this.barScores = const {},
     this.live = const {},
     this.annotating = const {},
+    this.engineDepths = const {},
   });
 
   final bool ready;
@@ -91,6 +92,9 @@ class GameDetailsState {
   /// Os lances já anotados antes da revisão completa: os que o jogador foi
   /// passando (a engine avalia na hora) e os que a revisão já cobriu.
   final Map<int, ReviewedMove> live;
+
+  /// A profundidade das linhas já mostradas, por posição.
+  final Map<int, int> engineDepths;
 
   /// Os lances sendo avaliados agora.
   final Set<int> annotating;
@@ -147,6 +151,7 @@ class GameDetailsState {
     Map<int, EngineScore>? barScores,
     Map<int, ReviewedMove>? live,
     Set<int>? annotating,
+    Map<int, int>? engineDepths,
   }) => GameDetailsState(
     ready: ready,
     attempt: attempt,
@@ -164,6 +169,7 @@ class GameDetailsState {
     barScores: barScores ?? this.barScores,
     live: live ?? this.live,
     annotating: annotating ?? this.annotating,
+    engineDepths: engineDepths ?? this.engineDepths,
   );
 }
 
@@ -307,7 +313,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
 
   /// Avalia a posição [k] com profundidade [depth], se ainda não foi avaliada
   /// com essa profundidade ou mais.
-  Future<void> _linesAt(int k, int depth) async {
+  Future<void> _linesAt(int k, int depth, {bool urgent = false}) async {
     while (true) {
       if ((_positionDepth[k] ?? 0) >= depth) return;
       final running = _pending[k];
@@ -318,7 +324,12 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
       final position = _positionAt(k);
       final lines = position.isGameOver
           ? null
-          : await _analysis!.analyse(position, depth: depth, lines: 2);
+          : await _analysis!.analyse(
+              position,
+              depth: depth,
+              lines: 2,
+              urgent: urgent,
+            );
       _positionLines[k] = lines == null || lines.isEmpty ? null : lines;
       _positionDepth[k] = position.isGameOver ? 1 << 20 : depth;
     }();
@@ -341,13 +352,16 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// Anota na hora o lance [index] que o jogador está vendo (sem revisão
   /// completa): a engine avalia a posição antes e a depois dele.
   Future<void> _annotate(int index) async {
-    if (_analysis == null || state.review != null || state.reviewing) return;
+    if (_analysis == null || state.review != null) return;
     if (index < 0 || state.live.containsKey(index)) return;
     if (state.annotating.contains(index)) return;
     emit(state.copyWith(annotating: {...state.annotating, index}));
-    await _linesAt(index, liveDepth);
-    await _linesAt(index + 1, liveDepth);
+    await Future.wait([
+      _linesAt(index, liveDepth, urgent: true),
+      _linesAt(index + 1, liveDepth, urgent: true),
+    ]);
     if (isClosed) return;
+    if (state.review != null) return;
     emit(
       state.copyWith(
         live: {...state.live, index: _moveReview(index)},
@@ -380,20 +394,48 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (state.engine) await _analyseShown();
   }
 
+  /// As linhas da engine na posição mostrada: primeiro rasas, na hora, e
+  /// depois as fundas no lugar delas.
   Future<void> _analyseShown() async {
     final analysis = _analysis;
     final index = state.shownIndex;
     final position = state.shownPosition;
     if (analysis == null || position == null) return;
-    if (state.engineLines.containsKey(index)) return;
-    final lines = position.isGameOver
-        ? const <EngineLine>[]
-        : await analysis.analyse(
-            position,
-            depth: engineDepth,
-            lines: engineLineCount,
-          );
-    if (isClosed) return;
-    emit(state.copyWith(engineLines: {...state.engineLines, index: lines}));
+    if ((state.engineDepths[index] ?? 0) >= engineDepth) return;
+    if (_engineRunning.contains(index)) return;
+    _engineRunning.add(index);
+    try {
+      if (position.isGameOver) {
+        emit(
+          state.copyWith(
+            engineLines: {...state.engineLines, index: const []},
+            engineDepths: {...state.engineDepths, index: engineDepth},
+          ),
+        );
+        return;
+      }
+      for (final depth in const [liveDepth, engineDepth]) {
+        if ((state.engineDepths[index] ?? 0) >= depth) continue;
+        final lines = await analysis.analyse(
+          position,
+          depth: depth,
+          lines: engineLineCount,
+          urgent: true,
+        );
+        if (isClosed) return;
+        emit(
+          state.copyWith(
+            engineLines: {...state.engineLines, index: lines},
+            engineDepths: {...state.engineDepths, index: depth},
+          ),
+        );
+        // O jogador já foi para outra posição: a funda fica para depois.
+        if (!state.engine || state.shownIndex != index) return;
+      }
+    } finally {
+      _engineRunning.remove(index);
+    }
   }
+
+  final _engineRunning = <int>{};
 }

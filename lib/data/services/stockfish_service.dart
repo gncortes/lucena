@@ -6,19 +6,55 @@ import 'package:multistockfish/multistockfish.dart';
 /// a rede neural pequena vem dentro do app e o motor joga offline).
 ///
 /// O motor é ligado no primeiro pedido e fica ligado. Os pedidos entram em
-/// fila: um termina antes de o próximo começar.
+/// fila: um termina antes de o próximo começar; os urgentes (o que o jogador
+/// está olhando) passam na frente dos outros que ainda não começaram.
 class StockfishService {
   StockfishService();
 
   Stockfish? _engine;
-  Future<void> _queue = Future.value();
+  final _waiting = <({bool urgent, Future<void> Function() run})>[];
+  bool _running = false;
+
+  /// Põe [job] na fila e devolve o resultado dele.
+  Future<T> _enqueue<T>(Future<T> Function() job, {bool urgent = false}) {
+    final done = Completer<T>();
+    final entry = (
+      urgent: urgent,
+      run: () async {
+        try {
+          done.complete(await job());
+        } on Object catch (error, stack) {
+          done.completeError(error, stack);
+        }
+      },
+    );
+    if (urgent) {
+      // Depois dos outros urgentes, antes dos comuns.
+      final index = _waiting.indexWhere((waiting) => !waiting.urgent);
+      _waiting.insert(index < 0 ? _waiting.length : index, entry);
+    } else {
+      _waiting.add(entry);
+    }
+    unawaited(_drain());
+    return done.future;
+  }
+
+  Future<void> _drain() async {
+    if (_running) return;
+    _running = true;
+    try {
+      while (_waiting.isNotEmpty) {
+        await _waiting.removeAt(0).run();
+      }
+    } finally {
+      _running = false;
+    }
+  }
 
   /// O melhor lance (UCI, `e2e4`) na posição [fen], pensando [moveTime]. Nulo
   /// se a posição não tem lance.
   Future<String?> bestMove(String fen, Duration moveTime) {
-    final result = _queue.then((_) => _bestMove(fen, moveTime));
-    _queue = result.then((_) {}, onError: (_) {});
-    return result;
+    return _enqueue(() => _bestMove(fen, moveTime));
   }
 
   Future<String?> _bestMove(String fen, Duration moveTime) async {
@@ -39,9 +75,7 @@ class StockfishService {
     String fen, {
     required int depth,
   }) {
-    final result = _queue.then((_) => _evaluate(fen, depth));
-    _queue = result.then((_) {}, onError: (_) {});
-    return result;
+    return _enqueue(() => _evaluate(fen, depth));
   }
 
   Future<({int? centipawns, int? mate})?> _evaluate(
@@ -80,10 +114,9 @@ class StockfishService {
     String fen, {
     required int depth,
     int lines = 1,
+    bool urgent = false,
   }) {
-    final result = _queue.then((_) => _analyse(fen, depth, lines));
-    _queue = result.then((_) {}, onError: (_) {});
-    return result;
+    return _enqueue(() => _analyse(fen, depth, lines), urgent: urgent);
   }
 
   Future<List<({int? centipawns, int? mate, List<String> moves})>> _analyse(
