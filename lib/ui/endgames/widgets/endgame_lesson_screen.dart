@@ -329,8 +329,10 @@ class _ExerciseTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         dense: true,
-        onTap: () =>
-            context.push(Routes.endgameExercise(lessonId, exercise.id)),
+        onTap: () => context.push(
+          Routes.endgameExercise(lessonId, exercise.id),
+          extra: exercise.fen,
+        ),
         leading: SizedBox(
           width: 44,
           height: 44,
