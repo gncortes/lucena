@@ -186,6 +186,10 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   static const engineDepth = 18;
   static const barDepth = 12;
 
+  /// A profundidade da anotação na hora, ao passar os lances: rápida; a
+  /// revisão completa refaz essas posições na [reviewDepth].
+  static const liveDepth = 10;
+
   /// Quantas linhas a engine mostra ligada.
   static const engineLineCount = 3;
 
@@ -273,9 +277,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     emit(state.copyWith(reviewing: true, reviewProgress: 0));
     final total = state.moves.length + 1;
     for (var k = 0; k < total; k++) {
-      await _linesAt(k);
+      await _linesAt(k, reviewDepth);
       if (isClosed) return;
-      final live = k == 0 || state.live.containsKey(k - 1)
+      final live = k == 0
           ? state.live
           : {...state.live, k - 1: _moveReview(k - 1)};
       emit(state.copyWith(reviewProgress: (k + 1) / total, live: live));
@@ -295,20 +299,35 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// depois do lance k − 1), já pedidas. Nulo: a partida acabou ali ou a
   /// engine não respondeu.
   final _positionLines = <int, List<EngineLine>?>{};
+  final _positionDepth = <int, int>{};
   final _pending = <int, Future<void>>{};
 
   Position _positionAt(int k) =>
       k == 0 ? state.start! : state.moves[k - 1].position;
 
-  Future<void> _linesAt(int k) {
-    if (_positionLines.containsKey(k)) return Future.value();
-    return _pending[k] ??= () async {
+  /// Avalia a posição [k] com profundidade [depth], se ainda não foi avaliada
+  /// com essa profundidade ou mais.
+  Future<void> _linesAt(int k, int depth) async {
+    while (true) {
+      if ((_positionDepth[k] ?? 0) >= depth) return;
+      final running = _pending[k];
+      if (running == null) break;
+      await running;
+    }
+    final job = () async {
       final position = _positionAt(k);
       final lines = position.isGameOver
           ? null
-          : await _analysis!.analyse(position, depth: reviewDepth, lines: 2);
+          : await _analysis!.analyse(position, depth: depth, lines: 2);
       _positionLines[k] = lines == null || lines.isEmpty ? null : lines;
+      _positionDepth[k] = position.isGameOver ? 1 << 20 : depth;
     }();
+    _pending[k] = job;
+    try {
+      await job;
+    } finally {
+      _pending.remove(k);
+    }
   }
 
   /// A anotação do lance [index], com as posições antes e depois dele já
@@ -326,8 +345,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (index < 0 || state.live.containsKey(index)) return;
     if (state.annotating.contains(index)) return;
     emit(state.copyWith(annotating: {...state.annotating, index}));
-    await _linesAt(index);
-    await _linesAt(index + 1);
+    await _linesAt(index, liveDepth);
+    await _linesAt(index + 1, liveDepth);
     if (isClosed) return;
     emit(
       state.copyWith(

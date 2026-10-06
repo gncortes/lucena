@@ -75,8 +75,9 @@ void main() {
     expect(review.moves.single.best, 'g1g7');
     expect(progress, contains(0.5));
     expect(cubit.state.reviewProgress, 1);
-    // A posição final (afogado) não vai para a engine.
-    expect(analysis.requests, [start]);
+    // A posição final (afogado) não vai para a engine: só a de início, na
+    // avaliação rápida da abertura e de novo, mais funda, na revisão.
+    expect(analysis.requests.toSet(), {start});
     expect(reviews.reviews[id], same(review));
   });
 
@@ -151,7 +152,7 @@ void main() {
   });
 
   test(
-    'a revisão anota lance a lance e reaproveita o que já foi avaliado',
+    'a revisão anota lance a lance, mais funda que a avaliação rápida',
     () async {
       final id = await save(['g1g2', 'h8h7', 'g2g7']);
       final cubit = build(id);
@@ -166,9 +167,18 @@ void main() {
 
       expect(seen, containsAllInOrder([1, 2, 3]));
       expect(cubit.state.review!.moves, hasLength(3));
-      // A posição final (mate) não vai para a engine e as já avaliadas não
-      // se repetem: uma posição a mais por lance que faltava.
-      expect(analysis.requests.length, lessThanOrEqualTo(before + 2));
+      // A revisão refaz, mais funda, as posições da avaliação rápida; a
+      // final (mate) não vai para a engine.
+      expect(analysis.requests.length - before, 3);
+
+      // Com a revisão feita, passar pelos lances não chama mais a engine.
+      final after = analysis.requests.length;
+      cubit
+        ..first()
+        ..next()
+        ..last();
+      await Future<void>.delayed(Duration.zero);
+      expect(analysis.requests.length, after);
     },
   );
 }
