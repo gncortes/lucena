@@ -23,6 +23,8 @@ export type Dictionary = {
     note: string;
     chips: string[];
   };
+  stats: { value: string; label: string }[];
+  marquee: string[];
   message: {
     kicker: string;
     title: string;
@@ -31,6 +33,8 @@ export type Dictionary = {
     body: string[];
     boardLabel: string;
     boardCaption: string;
+    boardMoves: string[];
+    boardWin: string;
   };
   story: { kicker: string; title: string; paragraphs: string[]; signature: string };
   features: {

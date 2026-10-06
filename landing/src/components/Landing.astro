@@ -66,7 +66,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="wrap hero__grid">
-      <div class="hero__text">
+      <div class="hero__text" data-hero>
         <p class="eyebrow">{t.hero.eyebrow}</p>
         <h1 id="hero-title">
           {t.hero.title} <em>{t.hero.titleAccent}</em>.
@@ -78,7 +78,8 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </div>
         <p class="hero__note">{t.hero.note}</p>
       </div>
-      <div class="hero__media">
+      <div class="hero__media" data-hero>
+        <Phone {...phone('analysis')} class="phone--back" />
         <Phone {...phone('hero')} class="phone--hero" />
         <ul class="chips" aria-hidden="true">
           {t.hero.chips.map((chip) => <li>{chip}</li>)}
@@ -88,6 +89,29 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       </div>
     </div>
   </section>
+
+  <div class="stats">
+    <ul class="wrap stats__grid">
+      {
+        t.stats.map((stat) => (
+          <li data-reveal>
+            <strong data-count={stat.value}>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {[0, 1].map(() => (
+        <ul>
+          {t.marquee.map((name) => <li>{name}</li>)}
+        </ul>
+      ))}
+    </div>
+  </div>
 
   <section class="message" aria-labelledby="message-title">
     <div class="wrap message__grid">
@@ -100,8 +124,8 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </blockquote>
         {t.message.body.map((p) => <p class="body">{p}</p>)}
       </div>
-      <figure class="message__board">
-        <LucenaBoard label={t.message.boardLabel} />
+      <figure class="message__board" data-reveal>
+        <LucenaBoard label={t.message.boardLabel} moves={t.message.boardMoves} win={t.message.boardWin} />
         <figcaption>{t.message.boardCaption}</figcaption>
       </figure>
     </div>
@@ -109,7 +133,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
 
   <section class="story" aria-labelledby="story-title">
     <div class="wrap">
-      <article class="letter">
+      <article class="letter" data-reveal>
         <p class="kicker">{t.story.kicker}</p>
         <h2 id="story-title">{t.story.title}</h2>
         {t.story.paragraphs.map((p) => <p>{p}</p>)}
@@ -123,16 +147,16 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
 
   <section class="features" id="recursos" aria-labelledby="features-title">
     <div class="wrap">
-      <header class="section-head">
+      <header class="section-head" data-reveal>
         <p class="kicker">{t.features.kicker}</p>
         <h2 id="features-title">{t.features.title}</h2>
       </header>
 
-      <article class="feature">
+      <article class="feature" data-reveal>
         <div class="feature__text">
           <h3>{f.progression.title}</h3>
           <p>{f.progression.body}</p>
-          <ol class="ladder" aria-label={f.progression.bullets[0]}>
+          <ol class="ladder" aria-label={f.progression.bullets[0]} data-reveal>
             {ladder.map((level) => <li><small>Maia</small>{level}</li>)}
             <li class="ladder__top">Stockfish</li>
           </ol>
@@ -144,7 +168,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </div>
       </article>
 
-      <article class="feature feature--flip">
+      <article class="feature feature--flip" data-reveal>
         <div class="feature__text">
           <h3>{f.lessons.title}</h3>
           <p>{f.lessons.body}</p>
@@ -156,7 +180,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </div>
       </article>
 
-      <article class="feature">
+      <article class="feature" data-reveal>
         <div class="feature__text">
           <h3>{f.levels.title}</h3>
           <p>{f.levels.body}</p>
@@ -169,7 +193,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       </article>
 
       <div class="feature-duo">
-        <article class="feature feature--card">
+        <article class="feature feature--card" data-reveal>
           <Phone {...phone('speedrun')} />
           <div class="feature__text">
             <h3>{f.speedrun.title}</h3>
@@ -177,7 +201,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
             <ul class="ticks">{f.speedrun.bullets.map((b) => <li>{b}</li>)}</ul>
           </div>
         </article>
-        <article class="feature feature--card">
+        <article class="feature feature--card" data-reveal>
           <Phone {...phone('analysis')} />
           <div class="feature__text">
             <h3>{f.analysis.title}</h3>
@@ -187,7 +211,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </article>
       </div>
 
-      <article class="feature feature--flip feature--slim">
+      <article class="feature feature--flip feature--slim" data-reveal>
         <div class="feature__text">
           <h3>{f.custom.title}</h3>
           <p>{f.custom.body}</p>
@@ -201,17 +225,17 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
 
   <section class="levels" aria-labelledby="levels-title">
     <div class="wrap">
-      <header class="section-head">
+      <header class="section-head" data-reveal>
         <p class="kicker">{t.levels.kicker}</p>
         <h2 id="levels-title">{t.levels.title}</h2>
       </header>
       <div class="levels__grid">
-        <article class="level-card">
+        <article class="level-card" data-reveal>
           <img src={asset('pieces/wP.webp')} alt="" width="96" height="96" loading="lazy" />
           <h3>{t.levels.beginner.title}</h3>
           <p>{t.levels.beginner.body}</p>
         </article>
-        <article class="level-card level-card--strong">
+        <article class="level-card level-card--strong" data-reveal>
           <img src={asset('pieces/wQ.webp')} alt="" width="96" height="96" loading="lazy" />
           <h3>{t.levels.advanced.title}</h3>
           <p>{t.levels.advanced.body}</p>
@@ -222,14 +246,14 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
 
   <section class="roadmap" id="roadmap" aria-labelledby="roadmap-title">
     <div class="wrap">
-      <header class="section-head">
+      <header class="section-head" data-reveal>
         <p class="kicker">{t.roadmap.kicker}</p>
         <h2 id="roadmap-title">{t.roadmap.title}</h2>
       </header>
       <ol class="timeline">
         {
           t.roadmap.items.map((item, i) => (
-            <li class:list={['timeline__item', { 'timeline__item--now': i === 0 }]}>
+            <li class:list={['timeline__item', { 'timeline__item--now': i === 0 }]} data-reveal style={`--delay:${i * 120}ms`}>
               <span class="timeline__status">{item.status}</span>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
@@ -247,7 +271,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         <h2 id="support-title">{t.support.title}</h2>
         {t.support.body.map((p) => <p class="body">{p}</p>)}
       </div>
-      <div class="price-card">
+      <div class="price-card" data-reveal>
         <p class="price-card__value">{t.support.price}</p>
         <p class="price-card__note">{t.support.priceNote}</p>
         {
@@ -267,7 +291,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
 
   <section class="tester" id="testador" aria-labelledby="tester-title">
     <div class="wrap">
-      <div class="tester__panel">
+      <div class="tester__panel" data-reveal>
         <img class="tester__mascot" src={asset('mascot-dark.webp')} alt="" width="480" height="480" loading="lazy" />
         <p class="kicker">{t.tester.kicker}</p>
         <h2 id="tester-title">{t.tester.title}</h2>
@@ -280,7 +304,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
   </section>
 
   <section class="vision" aria-labelledby="vision-title">
-    <div class="wrap vision__inner">
+    <div class="wrap vision__inner" data-reveal>
       <p class="kicker">{t.vision.kicker}</p>
       <h2 id="vision-title">{t.vision.title}</h2>
       <p class="body">{t.vision.body}</p>
@@ -320,6 +344,31 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       localStorage.setItem('theme', next);
     } catch {}
   });
+
+  // Entrada das seções ao rolar e contagem dos números. Sem JS, tudo aparece.
+  const reveal = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        el.classList.add('is-in');
+        reveal.unobserve(el);
+        const counter = el.querySelector<HTMLElement>('[data-count]');
+        if (counter && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const target = Number(counter.dataset.count);
+          const start = performance.now();
+          const tick = (now: number) => {
+            const k = Math.min(1, (now - start) / 1200);
+            counter.textContent = String(Math.round(target * (1 - (1 - k) ** 3)));
+            if (k < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      }
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+  );
+  for (const el of document.querySelectorAll('[data-reveal]')) reveal.observe(el);
 
   // Vídeos: só baixam e tocam quando aparecem na tela, e param ao sair.
   // Com movimento reduzido, nada toca sozinho: o botão dá o play.

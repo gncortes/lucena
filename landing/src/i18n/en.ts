@@ -27,6 +27,22 @@ const en: Dictionary = {
     note: 'Android, testing version. Coming soon to Google Play.',
     chips: ['Maia 1000–2600', 'Stockfish', 'Interactive lessons'],
   },
+  stats: [
+    { value: '9', label: 'Maia levels, from 1000 to 2600' },
+    { value: '12', label: 'lessons on classic endgames' },
+    { value: '25', label: 'lessons for beginners' },
+    { value: '55', label: 'endgames to train as often as you like' },
+  ],
+  marquee: [
+    'Lucena position',
+    'Philidor position',
+    'Queen vs rook',
+    'Bishop and knight mate',
+    'Key squares',
+    'Distant opposition',
+    'Back-rank defence',
+    'Short-side defence',
+  ],
   message: {
     kicker: 'Learn chess through the endgame',
     title: 'Start at the end of the board',
@@ -41,6 +57,8 @@ const en: Dictionary = {
       'The Lucena position: white king on b8, pawn on b7 and rook on c1; black king on d8 and rook on a2.',
     boardCaption:
       'The Lucena position, the rook endgame the app is named after. Winning from here is a technique, and the app teaches it step by step.',
+    boardMoves: ['1. Rd1+', '1... Ke7', '2. Rd4!', '2... Ra1', '3. Kc7', '3... Rc1+', '4. Kb6', '4... Rb1+', '5. Kc6', '5... Rc1+', '6. Kb5', '6... Rb1+', '7. Rb4'],
+    boardWin: 'The bridge: the pawn will queen.',
   },
   story: {
     kicker: 'Why Lucena exists',
