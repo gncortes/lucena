@@ -71,6 +71,8 @@ import '../ui/school/widgets/school_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
 import '../ui/tour/widgets/tour_screen.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
+import '../data/repositories/analysis/analysis_repository.dart';
+import '../data/repositories/review/game_review_repository.dart';
 import '../ui/journey/view_models/journey_cubit.dart';
 import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
@@ -615,6 +617,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     progress: context.read<ProgressRepository>(),
                     rating: context.read<RatingRepository>(),
                     characters: context.read<CharacterRepository>(),
+                    analysis: context.read<AnalysisRepository>(),
+                    reviews: context.read<GameReviewRepository>(),
                   )..load(),
                   child: const GameDetailsScreen(),
                 ),
