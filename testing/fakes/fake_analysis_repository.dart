@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/data/repositories/analysis/analysis_repository.dart';
 import 'package:lucena/domain/models/game_review.dart';
@@ -9,6 +11,9 @@ class FakeAnalysisRepository implements AnalysisRepository {
   final requests = <String>[];
   final answer = <String, List<EngineLine>>{};
 
+  /// Enquanto houver, cada análise espera ele terminar (a engine "pensando").
+  Completer<void>? hold;
+
   @override
   Future<List<EngineLine>> analyse(
     Position position, {
@@ -17,6 +22,8 @@ class FakeAnalysisRepository implements AnalysisRepository {
     bool urgent = false,
   }) async {
     requests.add(position.fen);
+    final gate = hold;
+    if (gate != null) await gate.future;
     final fixed = answer[position.fen];
     if (fixed != null) return fixed.take(lines).toList();
     final moves = [

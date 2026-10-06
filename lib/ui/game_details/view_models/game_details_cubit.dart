@@ -8,6 +8,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/review/game_review_repository.dart';
+import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
@@ -52,6 +53,8 @@ class GameDetailsState {
     this.annotating = const {},
     this.engineDepths = const {},
     this.liveDepths = const {},
+    this.viktor,
+    this.stories = const [],
   });
 
   final bool ready;
@@ -93,6 +96,10 @@ class GameDetailsState {
   /// Os lances já anotados antes da revisão completa: os que o jogador foi
   /// passando (a engine avalia na hora) e os que a revisão já cobriu.
   final Map<int, ReviewedMove> live;
+
+  /// O professor e as histórias que ele conta enquanto a revisão roda.
+  final Character? viktor;
+  final List<String> stories;
 
   /// A profundidade de cada anotação na hora, por lance.
   final Map<int, int> liveDepths;
@@ -179,6 +186,8 @@ class GameDetailsState {
     annotating: annotating ?? this.annotating,
     engineDepths: engineDepths ?? this.engineDepths,
     liveDepths: liveDepths ?? this.liveDepths,
+    viktor: viktor,
+    stories: stories,
   );
 }
 
@@ -197,6 +206,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     this._characters,
     this._analysis,
     this._reviews,
+    this._lessons,
   }) : super(const GameDetailsState());
 
   /// A profundidade da engine na revisão: rápida, média (a de fábrica) ou
@@ -228,8 +238,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   final CharacterRepository? _characters;
   final AnalysisRepository? _analysis;
   final GameReviewRepository? _reviews;
+  final LessonRepository? _lessons;
 
-  Future<void> load() async {
+  Future<void> load({String language = 'en'}) async {
     final attempt = (await _progress.attemptsById([_gameId]))[_gameId];
     final characters = await _characters?.characters() ?? const <Character>[];
     // O que a partida fez no rating: o ponto dela e o anterior.
@@ -263,6 +274,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
       }
     }
     final review = await _reviews?.load(_gameId);
+    final texts = await _lessons?.texts(language);
+    final viktor = characters.where((c) => c.id == 'master').firstOrNull;
     if (isClosed) return;
     emit(
       GameDetailsState(
@@ -276,6 +289,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         ratingChange: change,
         ratingAfter: after,
         characters: characters,
+        viktor: viktor,
+        stories: texts?.all('review.stories') ?? const [],
       ),
     );
     // Sem revisão, o lance na tela já é avaliado.

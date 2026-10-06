@@ -20,6 +20,9 @@ abstract final class GameDetailsKeys {
   static const reviewQuick = Key('gameDetails.review.quick');
   static const reviewDeep = Key('gameDetails.review.deep');
   static const reviewProgress = Key('gameDetails.review.progress');
+
+  /// A história que o Viktor conta enquanto a revisão roda.
+  static const story = Key('gameDetails.review.story');
   static const reviewSummary = Key('gameDetails.review.summary');
   static const accuracyWhite = Key('gameDetails.review.accuracy.white');
   static const accuracyBlack = Key('gameDetails.review.accuracy.black');
