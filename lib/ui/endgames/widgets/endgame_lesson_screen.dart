@@ -30,26 +30,8 @@ class EndgameLessonScreen extends StatelessWidget {
         final lesson = state.lesson;
         return Scaffold(
           key: EndgameLessonKeys.screen,
+          // O número e o título da aula, que pode ser longo, vêm no corpo.
           appBar: AppBar(
-            title: lesson == null
-                ? null
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        state.texts.lessonTitle(lesson.id),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        l10n.lessonNumber(
-                          state.lessonNumber,
-                          state.lessonCount,
-                        ),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
             actions: [
               if (lesson != null)
                 IconButton(
@@ -96,6 +78,20 @@ class _Body extends StatelessWidget {
     return ListView(
       padding: scrollPadding(context, left: 16, top: 8, right: 16, bottom: 32),
       children: [
+        Text(
+          l10n.lessonNumber(state.lessonNumber, state.lessonCount),
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          texts.lessonTitle(lesson.id),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 12),
         if (viktor != null)
           TeacherSpeech(
             teacher: viktor,

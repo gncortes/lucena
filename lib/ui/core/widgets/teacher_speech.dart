@@ -24,7 +24,8 @@ class TeacherSpeech extends StatelessWidget {
   final Emotion emotion;
   final double avatarSize;
 
-  /// Linhas no máximo; nulo deixa crescer.
+  /// A altura do balão em linhas, no máximo; nulo deixa crescer. A fala
+  /// mais longa não é cortada: rola dentro do balão.
   final int? maxLines;
   final Key? bubbleKey;
 
@@ -97,14 +98,13 @@ class TeacherSpeech extends StatelessWidget {
                               text,
                             ),
                             excludeSemantics: true,
-                            child: Text(
-                              text,
-                              key: bubbleKey,
-                              maxLines: maxLines,
-                              overflow: maxLines == null
-                                  ? null
-                                  : TextOverflow.ellipsis,
-                              style: theme.textTheme.bodyLarge,
+                            child: _limited(
+                              context,
+                              Text(
+                                text,
+                                key: bubbleKey,
+                                style: theme.textTheme.bodyLarge,
+                              ),
                             ),
                           ),
                         ),
@@ -116,4 +116,49 @@ class TeacherSpeech extends StatelessWidget {
       ],
     );
   }
+
+  /// Com [maxLines], o texto fica numa caixa dessa altura e rola nela.
+  Widget _limited(BuildContext context, Text text) {
+    final lines = maxLines;
+    if (lines == null) return text;
+    final style = DefaultTextStyle.of(context).style.merge(text.style);
+    final lineHeight = MediaQuery.textScalerOf(context)
+        .scale((style.fontSize ?? 14) * (style.height ?? 1.2));
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: lineHeight * lines),
+      child: _ScrollingText(text: text),
+    );
+  }
+}
+
+/// A fala que não cabe no balão: rola, com a barra à vista.
+class _ScrollingText extends StatefulWidget {
+  const _ScrollingText({required this.text});
+
+  final Text text;
+
+  @override
+  State<_ScrollingText> createState() => _ScrollingTextState();
+}
+
+class _ScrollingTextState extends State<_ScrollingText> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scrollbar(
+    controller: _controller,
+    thumbVisibility: true,
+    child: SingleChildScrollView(
+      controller: _controller,
+      // Espaço para a barra não cobrir o texto.
+      padding: const EdgeInsetsDirectional.only(end: 8),
+      child: widget.text,
+    ),
+  );
 }

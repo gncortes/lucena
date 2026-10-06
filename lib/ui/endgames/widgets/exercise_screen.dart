@@ -100,23 +100,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           final lesson = state.lesson;
           return Scaffold(
             key: ExerciseKeys.screen,
+            // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: AppBar(
               title: lesson == null
                   ? null
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          state.texts.lessonTitle(lesson.id),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          l10n.exerciseTitle(state.number, state.count),
-                          key: ExerciseKeys.counter,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
+                  : Text(
+                      l10n.exerciseTitle(state.number, state.count),
+                      key: ExerciseKeys.counter,
                     ),
             ),
             body: SafeArea(child: _body(context, state, boardSettings)),

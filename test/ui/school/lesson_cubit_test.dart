@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -255,6 +257,58 @@ void main() {
       await reopened.load('rook.lucena', 'en');
       expect(reopened.state.step, 1);
       expect(reopened.state.current, isA<MoveStep>());
+    });
+
+    test('outro lance bom que não o ensinado cumpre o passo ali', () async {
+      const fen = FakeEndgameLessonRepository.lucenaFen;
+      final lessons = FakeEndgameLessonRepository(
+        trail: const EndgameTrail(
+          modules: [
+            EndgameModule(
+              id: 'rook',
+              lessons: [
+                EndgameLesson(
+                  id: 'rook.lucena',
+                  module: 'rook',
+                  lesson: Lesson(
+                    id: 'rook.lucena',
+                    steps: [
+                      MoveStep(
+                        id: 'bridge',
+                        fen: fen,
+                        line: [
+                          MoveTurn(accept: {'c1c4', 'c1c5'}, reply: 'a2a1'),
+                          MoveTurn(accept: {'c4c5'}),
+                        ],
+                      ),
+                    ],
+                  ),
+                  exercises: [],
+                  passScore: 0,
+                  keyPositions: [],
+                  practice: Practice(
+                    fen: fen,
+                    goal: PositionGoal.win,
+                    positionId: null,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      final lesson = LessonCubit(
+        source: EndgameLessonSource(lessons, endgames),
+        characters: FakeCharacterRepository(),
+        opponent: opponent,
+        replyDelay: Duration.zero,
+      );
+      addTearDown(lesson.close);
+      await lesson.load('rook.lucena', 'en');
+      await lesson.play(move('c1c5'));
+      // A resposta e a vez seguinte valem só para o lance ensinado.
+      expect(lesson.state.phase, StepPhase.done);
+      expect(lesson.state.lastMove, move('c1c5'));
     });
 
     test('sair pelo voltar guarda o passo fechado', () async {

@@ -127,10 +127,13 @@ class SpeedrunScreen extends StatelessWidget {
                               color: colors.onSecondaryContainer,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              paceLabel(l10n, speedrun.time),
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: colors.onSecondaryContainer,
+                            // Rótulo longo (outros idiomas) quebra a linha.
+                            Flexible(
+                              child: Text(
+                                paceLabel(l10n, speedrun.time),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: colors.onSecondaryContainer,
+                                ),
                               ),
                             ),
                           ],
