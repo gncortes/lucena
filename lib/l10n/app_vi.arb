@@ -529,5 +529,6 @@
   "reviewQuick": "Nhanh",
   "reviewMedium": "Vừa",
   "reviewDeep": "Sâu",
-  "reviewSpeedHint": "Càng sâu càng chính xác và càng lâu. Độ chính xác hiện khi mọi nước đã được đánh giá."
+  "reviewSpeedHint": "Càng sâu càng chính xác và càng lâu. Độ chính xác hiện khi mọi nước đã được đánh giá.",
+  "reviewDeeper": "Phân tích sâu hơn"
 }

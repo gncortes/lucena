@@ -529,5 +529,6 @@
   "reviewQuick": "Szybka",
   "reviewMedium": "Średnia",
   "reviewDeep": "Głęboka",
-  "reviewSpeedHint": "Im głębsza, tym dokładniejsza i wolniejsza. Dokładność pojawi się, gdy wszystkie ruchy zostaną ocenione."
+  "reviewSpeedHint": "Im głębsza, tym dokładniejsza i wolniejsza. Dokładność pojawi się, gdy wszystkie ruchy zostaną ocenione.",
+  "reviewDeeper": "Przeanalizuj dokładniej"
 }

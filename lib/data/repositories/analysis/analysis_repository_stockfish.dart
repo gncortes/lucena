@@ -17,6 +17,7 @@ class StockfishAnalysisRepository implements AnalysisRepository {
     int lines = 1,
     bool urgent = false,
     Duration? time,
+    bool preemptible = false,
   }) async {
     try {
       final found = await _stockfish.analyse(
@@ -25,6 +26,7 @@ class StockfishAnalysisRepository implements AnalysisRepository {
         lines: lines,
         urgent: urgent,
         time: time,
+        preemptible: preemptible,
       );
       // O motor responde do ponto de vista de quem joga.
       final sign = position.turn == Side.white ? 1 : -1;
@@ -41,6 +43,8 @@ class StockfishAnalysisRepository implements AnalysisRepository {
             depth: line.depth,
           ),
       ];
+    } on AnalysisStopped {
+      throw const AnalysisInterrupted();
     } on Object {
       return const [];
     }

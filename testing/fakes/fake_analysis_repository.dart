@@ -6,13 +6,20 @@ import 'package:lucena/domain/models/game_review.dart';
 
 /// Uma engine de mentira, determinística: avalia pelo material (100 por
 /// peão, do ponto de vista das brancas) e sugere os lances legais em ordem
-/// alfabética (UCI). [answer] troca a resposta de uma posição (FEN).
+/// alfabética (UCI). [answer] troca a resposta de uma posição (FEN), e
+/// [answerAt] a de uma posição numa profundidade.
 class FakeAnalysisRepository implements AnalysisRepository {
   final requests = <String>[];
   final answer = <String, List<EngineLine>>{};
+  final answerAt = <(String, int), List<EngineLine>>{};
 
   /// Enquanto houver, cada análise espera ele terminar (a engine "pensando").
   Completer<void>? hold;
+
+  /// Os pedidos interrompíveis (FEN e profundidade) e quantos dos próximos
+  /// interrompíveis param no meio.
+  final preemptible = <(String, int)>[];
+  int interrupt = 0;
 
   @override
   Future<List<EngineLine>> analyse(
@@ -21,11 +28,17 @@ class FakeAnalysisRepository implements AnalysisRepository {
     int lines = 1,
     bool urgent = false,
     Duration? time,
+    bool preemptible = false,
   }) async {
     requests.add(position.fen);
+    if (preemptible) this.preemptible.add((position.fen, depth));
     final gate = hold;
     if (gate != null) await gate.future;
-    final fixed = answer[position.fen];
+    if (preemptible && interrupt > 0) {
+      interrupt--;
+      throw const AnalysisInterrupted();
+    }
+    final fixed = answerAt[(position.fen, depth)] ?? answer[position.fen];
     if (fixed != null) return fixed.take(lines).toList();
     final moves = [
       for (final MapEntry(key: from, value: targets)

@@ -146,6 +146,27 @@ void main() {
       expect(GameReview.fromJson({'version': 0}), isNull);
     });
 
+    test('compõe a revisão de lances anotados com pesos diferentes', () {
+      const even = EngineScore(centipawns: 0);
+      ReviewedMove move(double accuracy, int weight) => ReviewedMove(
+        before: even,
+        after: even,
+        quality: MoveQuality.best,
+        accuracy: accuracy,
+        weight: weight,
+      );
+      final review = ReviewRules.compose([
+        move(100, 2),
+        move(50, 5),
+        move(100, 1),
+      ], whiteFirst: true);
+      expect(review.depth, 1);
+      expect(review.whiteAccuracy, 100);
+      expect(review.blackAccuracy, closeTo(50, 0.01));
+      final again = GameReview.fromJson(review.toJson())!;
+      expect([for (final m in again.moves) m.weight], [2, 5, 1]);
+    });
+
     test('a contagem separa os lados', () {
       final review = GameReview(
         moves: [

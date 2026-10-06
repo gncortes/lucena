@@ -2830,5 +2830,9 @@
   "reviewSpeedHint": "The deeper, the more accurate and the slower. Accuracy appears when every move has been rated.",
   "@reviewSpeedHint": {
     "description": "Game details: note above the review speed buttons."
+  },
+  "reviewDeeper": "Review deeper",
+  "@reviewDeeper": {
+    "description": "Game details: label above the buttons that review the game again with more engine time, after a lighter review."
   }
 }

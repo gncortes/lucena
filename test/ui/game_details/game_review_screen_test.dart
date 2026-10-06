@@ -237,7 +237,10 @@ void main() {
     await tester.tap(find.byKey(GameDetailsKeys.reviewDeep));
     await tester.pumpAndSettle();
 
-    expect(cubit.state.review!.depth, 18);
+    expect(
+      cubit.state.review!.depth,
+      GameDetailsCubit.reviewWeights[ReviewSpeed.deep],
+    );
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
   });
 

@@ -87,115 +87,66 @@ class ReviewSummary extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final review = state.review;
+    final total = state.moves.length;
+    final done = (state.reviewProgress * total).round();
     final Widget child;
-    if (review == null) {
-      final total = state.moves.length + 1;
-      final done = (state.reviewProgress * total).round();
-      child = state.reviewing
-          ? Column(
-              key: GameDetailsKeys.reviewProgress,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (state.viktor case final viktor?
-                    when state.stories.isNotEmpty) ...[
-                  _StoryTeller(
-                    viktor: viktor,
-                    stories: state.stories,
-                    first: state.attempt?.playedAt.millisecond ?? 0,
-                  ),
-                  const SizedBox(height: 14),
-                ],
-                Text(
-                  l10n.reviewRunning(math.min(done + 1, total), total),
-                  style: theme.textTheme.titleSmall,
-                ),
-                const SizedBox(height: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: state.reviewProgress,
-                    minHeight: 8,
-                  ),
-                ),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.insights, color: colors.primary),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        l10n.reviewStart,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.reviewSpeedHint,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
+    if (state.reviewing) {
+      child = Column(
+        key: GameDetailsKeys.reviewProgress,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (state.viktor case final viktor?
+              when state.stories.isNotEmpty) ...[
+            _StoryTeller(
+              viktor: viktor,
+              stories: state.stories,
+              first: state.attempt?.playedAt.millisecond ?? 0,
+            ),
+            const SizedBox(height: 14),
+          ],
+          Text(
+            l10n.reviewRunning(math.min(done + 1, total), total),
+            style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: state.reviewProgress,
+              minHeight: 8,
+            ),
+          ),
+        ],
+      );
+    } else if (review == null) {
+      child = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.insights, color: colors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.reviewStart,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    for (final (speed, key, label) in [
-                      (
-                        ReviewSpeed.quick,
-                        GameDetailsKeys.reviewQuick,
-                        l10n.reviewQuick,
-                      ),
-                      (
-                        ReviewSpeed.medium,
-                        GameDetailsKeys.reviewButton,
-                        l10n.reviewMedium,
-                      ),
-                      (
-                        ReviewSpeed.deep,
-                        GameDetailsKeys.reviewDeep,
-                        l10n.reviewDeep,
-                      ),
-                    ]) ...[
-                      if (speed != ReviewSpeed.quick) const SizedBox(width: 8),
-                      Expanded(
-                        child: speed == ReviewSpeed.medium
-                            ? FilledButton(
-                                key: key,
-                                style: FilledButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(46),
-                                ),
-                                onPressed: state.moves.isEmpty
-                                    ? null
-                                    : () => context
-                                          .read<GameDetailsCubit>()
-                                          .review(speed: speed),
-                                child: Text(label),
-                              )
-                            : FilledButton.tonal(
-                                key: key,
-                                style: FilledButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(46),
-                                ),
-                                onPressed: state.moves.isEmpty
-                                    ? null
-                                    : () => context
-                                          .read<GameDetailsCubit>()
-                                          .review(speed: speed),
-                                child: Text(label),
-                              ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            );
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.reviewSpeedHint,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _speedButtons(context, 0),
+        ],
+      );
     } else {
       child = Column(
         key: GameDetailsKeys.reviewSummary,
@@ -232,6 +183,20 @@ class ReviewSummary extends StatelessWidget {
               ),
             ],
           ),
+          // Revisada às pressas (ou só passando os lances): dá para revisar
+          // de novo com mais tempo de engine.
+          if (review.depth <
+              GameDetailsCubit.reviewWeights[ReviewSpeed.deep]!) ...[
+            const SizedBox(height: 14),
+            Text(
+              l10n.reviewDeeper,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _speedButtons(context, review.depth),
+          ],
         ],
       );
     }
@@ -239,6 +204,46 @@ class ReviewSummary extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       color: colors.surfaceContainerLow,
       child: Padding(padding: const EdgeInsets.all(14), child: child),
+    );
+  }
+
+  /// Os botões das revisões mais pesadas que [above].
+  Widget _speedButtons(BuildContext context, int above) {
+    final l10n = context.l10n;
+    final speeds = [
+      (ReviewSpeed.quick, GameDetailsKeys.reviewQuick, l10n.reviewQuick),
+      (ReviewSpeed.medium, GameDetailsKeys.reviewButton, l10n.reviewMedium),
+      (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
+    ].where((s) => GameDetailsCubit.reviewWeights[s.$1]! > above);
+    final style = FilledButton.styleFrom(
+      minimumSize: const Size.fromHeight(46),
+    );
+    return Row(
+      children: [
+        for (final (i, (speed, key, label)) in speeds.indexed) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(
+            child: () {
+              void onPressed() =>
+                  context.read<GameDetailsCubit>().review(speed: speed);
+              final enabled = state.moves.isNotEmpty;
+              return speed == ReviewSpeed.medium
+                  ? FilledButton(
+                      key: key,
+                      style: style,
+                      onPressed: enabled ? onPressed : null,
+                      child: Text(label),
+                    )
+                  : FilledButton.tonal(
+                      key: key,
+                      style: style,
+                      onPressed: enabled ? onPressed : null,
+                      child: Text(label),
+                    );
+            }(),
+          ),
+        ],
+      ],
     );
   }
 
@@ -1075,7 +1080,7 @@ class EngineLinesPanel extends StatelessWidget {
             ...children,
             const SizedBox(height: 4),
             Text(
-              'Stockfish · ${l10n.reviewDepth(state.engineDepths[state.shownIndex] ?? GameDetailsCubit.liveDepth)}',
+              'Stockfish · ${l10n.reviewDepth(state.engineDepths[state.shownIndex] ?? GameDetailsCubit.engineDepths.first)}',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
