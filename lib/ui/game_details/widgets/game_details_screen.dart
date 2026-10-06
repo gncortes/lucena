@@ -18,14 +18,17 @@ import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_board.dart';
+import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/game_details_cubit.dart';
+import 'review_widgets.dart';
 
-/// Os detalhes de uma partida: contra quem, o final, quando, o ritmo, o
-/// resultado e o rating; o tabuleiro no lance escolhido e a tabela de lances
-/// com o tempo que cada um levou. A análise vem depois.
+/// Os detalhes de uma partida: o resultado e contra quem; a revisão pela
+/// engine (precisão e qualidade de cada lance); o tabuleiro com a anotação
+/// do lance, a barra de avaliação e a navegação lance a lance; a engine
+/// ligável com as melhores linhas; e a tabela de lances, com a qualidade e o
+/// tempo de cada um.
 class GameDetailsScreen extends StatelessWidget {
   const GameDetailsScreen({super.key});
 
@@ -49,31 +52,61 @@ class GameDetailsScreen extends StatelessWidget {
           : LayoutBuilder(
               builder: (context, constraints) {
                 final board = math.min(constraints.maxWidth - 32, 480.0);
+                final user = attempt.userSide;
+                final opponent = _opponentName(context, state, attempt);
+                final you = l10n.reviewYou;
+                final (whiteName, blackName) = switch (user) {
+                  Side.white => (you, opponent),
+                  Side.black => (opponent, you),
+                  null => (l10n.sideWhite, l10n.sideBlack),
+                };
                 return ListView(
                   padding: scrollPadding(context),
                   children: [
                     _Header(state: state, attempt: attempt),
-                    if (state.shownPosition case final position?)
+                    ReviewSummary(
+                      state: state,
+                      whiteName: whiteName,
+                      blackName: blackName,
+                    ),
+                    if (state.shownPosition != null) ...[
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                         child: Center(
-                          child: PositionBoard(
-                            key: GameDetailsKeys.board,
-                            fen: position.fen,
+                          child: ReviewBoard(
+                            state: state,
                             size: board,
-                            radius: 10,
-                            coordinates: true,
-                            lastMove: state.shownMove,
-                            orientation: attempt.userSide ?? Side.white,
+                            orientation: user ?? Side.white,
                           ),
                         ),
                       ),
+                      ReviewNavigation(state: state, attempt: attempt),
+                      MoveExplanation(state: state),
+                      if (state.engine) EngineLinesPanel(state: state),
+                    ],
                     _MoveTable(state: state),
                   ],
                 );
               },
             ),
     );
+  }
+
+  static String _opponentName(
+    BuildContext context,
+    GameDetailsState state,
+    Attempt attempt,
+  ) {
+    final level = attempt.opponent == OpponentKind.maia
+        ? attempt.opponentLevel
+        : null;
+    final character = switch (attempt.opponent) {
+      OpponentKind.stockfish => Character.stockfish,
+      OpponentKind.maia => state.characters.forLevel(attempt.opponentLevel),
+      OpponentKind.twoPlayers => null,
+    };
+    return character?.name ??
+        attempt.opponent.label(context.l10n, level: level);
   }
 }
 
@@ -126,73 +159,113 @@ class _Header extends StatelessWidget {
       null => null,
     };
     final after = state.ratingAfter;
+    final icon = switch (attempt.outcome) {
+      AttemptOutcome.win => Icons.emoji_events,
+      AttemptOutcome.draw => Icons.handshake_outlined,
+      AttemptOutcome.loss => Icons.flag_outlined,
+    };
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       color: colors.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            if (character != null)
-              CharacterAvatar(character: character, size: 56)
-            else
-              Icon(Icons.person_outline, size: 40, color: colors.outline),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text:
-                              character?.name ??
-                              attempt.opponent.label(l10n, level: level),
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        if (level != null && character != null)
-                          TextSpan(
-                            text: ' ($level)',
-                            style: TextStyle(color: colors.onSurfaceVariant),
-                          ),
-                      ],
-                    ),
-                    key: GameDetailsKeys.opponent,
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  if (endgame != null)
-                    Text(endgame, style: theme.textTheme.bodyMedium),
-                  Text(
-                    [
-                      DateFormat.yMMMd(locale)
-                          .add_Hm()
-                          .format(attempt.playedAt.toLocal()),
-                      if (time != null)
-                        paceLabel(l10n, time)
-                      else
-                        l10n.challengeNoClock,
-                    ].join(' · '),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // O resultado numa faixa da cor dele, com o rating à direita.
+          Container(
+            color: color.withValues(alpha: 0.14),
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+            child: Row(
+              children: [
+                Icon(icon, color: color, size: 26),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
                     [label, ?reason].join(' · '),
                     key: GameDetailsKeys.result,
-                    style: theme.textTheme.labelLarge?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       color: color,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                ],
-              ),
+                ),
+                if (after != null)
+                  RatingValue(rating: after, change: state.ratingChange),
+              ],
             ),
-            if (after != null)
-              RatingValue(rating: after, change: state.ratingChange),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            child: Row(
+              children: [
+                if (character != null)
+                  CharacterAvatar(character: character, size: 52)
+                else
+                  Icon(Icons.person_outline, size: 40, color: colors.outline),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text:
+                                  character?.name ??
+                                  attempt.opponent.label(l10n, level: level),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            if (level != null && character != null)
+                              TextSpan(
+                                text: ' ($level)',
+                                style: TextStyle(
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                        key: GameDetailsKeys.opponent,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      if (endgame != null)
+                        Text(endgame, style: theme.textTheme.bodyMedium),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            size: 14,
+                            color: colors.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              [
+                                DateFormat.yMMMd(locale)
+                                    .add_Hm()
+                                    .format(attempt.playedAt.toLocal()),
+                                if (time != null)
+                                  paceLabel(l10n, time)
+                                else
+                                  l10n.challengeNoClock,
+                              ].join(' · '),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -299,6 +372,15 @@ class _MoveTable extends StatelessWidget {
                 maxLines: 1,
               ),
             ),
+            if (state.review case final review?
+                when index < review.moves.length) ...[
+              MoveQualityBadge(
+                review.moves[index].quality,
+                size: 18,
+                key: GameDetailsKeys.moveQuality(index),
+              ),
+              const SizedBox(width: 6),
+            ],
             // Quanto o lance levou, discreto à direita.
             if (time != null)
               Text(
