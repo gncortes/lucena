@@ -84,9 +84,12 @@ void main() {
     await tester.tapAt(squareCenter(rect, star.name));
     await tester.pumpAndSettle();
     expect(
-      tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data,
-      '1',
+      int.parse(
+        tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
+      ),
+      cubit.state.points,
     );
+    expect(cubit.state.points, greaterThan(0));
 
     now.advance(const Duration(seconds: 61));
     cubit.tick();

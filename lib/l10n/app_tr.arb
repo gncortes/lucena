@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Süre doldu!",
   "starChallengeNewBest": "Yeni rekor!",
   "starChallengePlayAgain": "Tekrar oyna",
-  "starChallengePaused": "Duraklatıldı"
+  "starChallengePaused": "Duraklatıldı",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Yıldız görevi: {piece}",
+  "starChallengePoints": "{count} puan",
+  "starChallengePointsTotal": "Toplam {count} puan",
+  "starChallengeLegend": "Her yıldız bir süre sonra kaybolur: önce altın olan."
 }

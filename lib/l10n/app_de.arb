@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Zeit um!",
   "starChallengeNewBest": "Neuer Rekord!",
   "starChallengePlayAgain": "Noch einmal",
-  "starChallengePaused": "Pausiert"
+  "starChallengePaused": "Pausiert",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Sterne-Challenge: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 Punkt} other{{count} Punkte}}",
+  "starChallengePointsTotal": "{count} Punkte insgesamt",
+  "starChallengeLegend": "Jeder Stern verschwindet nach einer Weile: der goldene zuerst."
 }

@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "وقت تمام شد!",
   "starChallengeNewBest": "رکورد جدید!",
   "starChallengePlayAgain": "دوباره بازی کن",
-  "starChallengePaused": "متوقف"
+  "starChallengePaused": "متوقف",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "چالش ستاره: {piece}",
+  "starChallengePoints": "{count} امتیاز",
+  "starChallengePointsTotal": "در مجموع {count} امتیاز",
+  "starChallengeLegend": "هر ستاره پس از مدتی ناپدید می‌شود: طلایی زودتر."
 }

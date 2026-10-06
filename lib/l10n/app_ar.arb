@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "انتهى الوقت!",
   "starChallengeNewBest": "رقم قياسي جديد!",
   "starChallengePlayAgain": "العب مجددًا",
-  "starChallengePaused": "متوقف مؤقتًا"
+  "starChallengePaused": "متوقف مؤقتًا",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "تحدي النجوم: {piece}",
+  "starChallengePoints": "{count, plural, =1{نقطة واحدة} other{{count} نقطة}}",
+  "starChallengePointsTotal": "{count} نقطة في المجموع",
+  "starChallengeLegend": "كل نجمة تختفي بعد فترة: الذهبية أولًا."
 }

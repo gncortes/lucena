@@ -1,14 +1,17 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../routing/routes.dart';
+import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/figurine.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../endgames/widgets/stars_row.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
 
@@ -76,19 +79,40 @@ class _PieceCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
-                  Figurine.ofLetter[piece.letter] ?? '',
-                  style: TextStyle(
-                    fontFamily: Figurine.fontFamily,
-                    fontSize: 30,
-                    color: colors.onSurface,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  pieceName(l10n, piece),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+                _PieceTile(piece: piece),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pieceName(l10n, piece),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 16,
+                            color: StarsRow.color,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.starChallengePointsTotal(
+                              [
+                                for (final level in ChallengeLevel.values)
+                                  progress.bestOf(piece, level) ?? 0,
+                              ].fold(0, (sum, each) => sum + each),
+                            ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -132,8 +156,11 @@ class _LevelButton extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final best = this.best;
+    final played = best != null;
     return Material(
-      color: colors.surfaceContainerHighest,
+      color: played
+          ? colors.secondaryContainer
+          : colors.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         key: StarChallengeKeys.challenge(piece.name, level.name),
@@ -150,8 +177,10 @@ class _LevelButton extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 6),
+              // O nível vale tantas estrelas quanto a dificuldade; acendem
+              // pela melhor marca.
               StarsRow(
-                total: 3,
+                total: level.stars,
                 earned: best == null ? 0 : earnedOf(level, best),
                 size: 16,
               ),
@@ -167,6 +196,38 @@ class _LevelButton extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A peça do conjunto escolhido pelo jogador, numa casa do tabuleiro.
+class _PieceTile extends StatelessWidget {
+  const _PieceTile({required this.piece});
+
+  final ChallengePiece piece;
+
+  @override
+  Widget build(BuildContext context) {
+    final boardSettings = context.select(
+      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
+    );
+    final settings = boardSettings.chessground;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: ColoredBox(
+        color: settings.colorScheme.lightSquare,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          // A imagem direto do conjunto: o PieceWidget depende do cache que
+          // só o tabuleiro enche.
+          child: Image(
+            image: settings
+                .pieceAssets[Piece(color: Side.white, role: piece.role).kind]!,
+            width: 48,
+            height: 48,
           ),
         ),
       ),

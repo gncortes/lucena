@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Acabou o tempo!",
   "starChallengeNewBest": "Novo recorde!",
   "starChallengePlayAgain": "Jogar outra vez",
-  "starChallengePaused": "Em pausa"
+  "starChallengePaused": "Em pausa",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Desafio das estrelas: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 ponto} other{{count} pontos}}",
+  "starChallengePointsTotal": "{count} pontos no total",
+  "starChallengeLegend": "Cada estrela desaparece ao fim de um tempo: a de ouro vai primeiro."
 }

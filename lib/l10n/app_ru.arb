@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Время вышло!",
   "starChallengeNewBest": "Новый рекорд!",
   "starChallengePlayAgain": "Ещё раз",
-  "starChallengePaused": "Пауза"
+  "starChallengePaused": "Пауза",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Звёздное испытание: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очка} other{{count} очков}}",
+  "starChallengePointsTotal": "Всего очков: {count}",
+  "starChallengeLegend": "Каждая звезда гаснет через время: золотая первой."
 }

@@ -25,8 +25,13 @@ class StarChallengeState {
     this.level,
     this.fen,
     this.star,
+    this.starKind = StarKind.bronze,
+    this.starTimeLeft = Duration.zero,
+    this.starLifetime = Duration.zero,
     this.lastMove,
     this.collected = 0,
+    this.points = 0,
+    this.lastPoints = 0,
     this.phase = ChallengePhase.ready,
     this.timeLeft = Duration.zero,
     this.best,
@@ -38,14 +43,21 @@ class StarChallengeState {
   final ChallengeLevel? level;
   final String? fen;
 
-  /// A estrela a pegar.
+  /// A estrela a pegar, o tipo dela e quanto tempo ainda fica na tela.
   final Square? star;
+  final StarKind starKind;
+  final Duration starTimeLeft;
+  final Duration starLifetime;
   final Move? lastMove;
+
+  /// Estrelas pegas e os pontos delas; [lastPoints] é o que a última valeu.
   final int collected;
+  final int points;
+  final int lastPoints;
   final ChallengePhase phase;
   final Duration timeLeft;
 
-  /// O melhor resultado anterior neste nível.
+  /// O melhor resultado anterior neste nível (pontos).
   final int? best;
 
   /// A nota (0 a 3) no fim.
@@ -54,6 +66,10 @@ class StarChallengeState {
 
   bool get ready => fen != null;
   bool get interactive => phase == ChallengePhase.running;
+
+  /// A estrela está para sumir (o último segundo): pisca.
+  bool get starBlinking =>
+      star != null && starTimeLeft <= const Duration(milliseconds: 1200);
 
   /// Quanto do tempo já passou (0 a 1).
   double get elapsedFraction {
@@ -68,9 +84,14 @@ class StarChallengeState {
     String? fen,
     Square? star,
     bool clearStar = false,
+    StarKind? starKind,
+    Duration? starTimeLeft,
+    Duration? starLifetime,
     Move? lastMove,
     bool clearLastMove = false,
     int? collected,
+    int? points,
+    int? lastPoints,
     ChallengePhase? phase,
     Duration? timeLeft,
     int? best,
@@ -81,8 +102,13 @@ class StarChallengeState {
     level: level ?? this.level,
     fen: fen ?? this.fen,
     star: clearStar ? null : star ?? this.star,
+    starKind: starKind ?? this.starKind,
+    starTimeLeft: starTimeLeft ?? this.starTimeLeft,
+    starLifetime: starLifetime ?? this.starLifetime,
     lastMove: clearLastMove ? null : lastMove ?? this.lastMove,
     collected: collected ?? this.collected,
+    points: points ?? this.points,
+    lastPoints: lastPoints ?? this.lastPoints,
     phase: phase ?? this.phase,
     timeLeft: timeLeft ?? this.timeLeft,
     best: best ?? this.best,
@@ -91,9 +117,9 @@ class StarChallengeState {
   );
 }
 
-/// Um desafio das estrelas: a peça anda, a estrela muda de lugar, o relógio
-/// corre. O tempo vem de [Now] e o tique de um [Timer]; os testes chamam
-/// [tick] por conta própria.
+/// Um desafio das estrelas: a peça anda, a estrela muda de lugar (e some no
+/// prazo dela), o relógio corre. O tempo vem de [Now] e o tique de um
+/// [Timer]; os testes chamam [tick] por conta própria.
 class StarChallengeCubit extends Cubit<StarChallengeState> {
   StarChallengeCubit({
     required this._progress,
@@ -113,11 +139,13 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   DateTime? _startedAt;
   DateTime? _pausedAt;
   Duration _pausedTotal = Duration.zero;
+  DateTime? _starExpiresAt;
 
   Future<void> load(ChallengePiece piece, ChallengeLevel level) async {
     final best = (await _progress.load()).bestOf(piece, level);
     if (isClosed) return;
     _board = StarChallengeRules.start(piece, level, _random);
+    _starExpiresAt = null;
     emit(
       StarChallengeState(
         piece: piece,
@@ -137,21 +165,38 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     _startedAt = _now();
     _pausedTotal = Duration.zero;
     emit(
-      state.copyWith(
-        phase: ChallengePhase.running,
-        star: StarChallengeRules.nextStar(
-          _board,
-          square,
-          state.level!,
-          _random,
+      _spawn(
+        state.copyWith(
+          phase: ChallengePhase.running,
+          timeLeft: state.level!.duration,
         ),
-        timeLeft: state.level!.duration,
+        square,
       ),
     );
     _startTimer();
   }
 
-  /// O relógio: quanto falta, e o fim quando chega a zero.
+  /// Acende a próxima estrela a partir de [square]: casa, tipo e prazo.
+  StarChallengeState _spawn(StarChallengeState base, Square square) {
+    final level = base.level!;
+    final star = StarChallengeRules.nextStar(_board, square, level, _random);
+    if (star == null) {
+      _starExpiresAt = null;
+      return base.copyWith(clearStar: true);
+    }
+    final kind = StarChallengeRules.pickKind(_random);
+    final lifetime = level.starLifetime(kind);
+    _starExpiresAt = _now().add(lifetime);
+    return base.copyWith(
+      star: star,
+      starKind: kind,
+      starLifetime: lifetime,
+      starTimeLeft: lifetime,
+    );
+  }
+
+  /// O relógio: quanto falta, o fim quando chega a zero, e a estrela que
+  /// some no prazo (outra acende, sem ponto).
   void tick() {
     if (state.phase != ChallengePhase.running) return;
     final elapsed = _now().difference(_startedAt!) - _pausedTotal;
@@ -160,7 +205,16 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
       unawaited(_finish());
       return;
     }
-    emit(state.copyWith(timeLeft: left));
+    final expiresAt = _starExpiresAt;
+    final starLeft = expiresAt == null
+        ? Duration.zero
+        : expiresAt.difference(_now());
+    if (state.star != null && starLeft <= Duration.zero) {
+      final square = StarChallengeRules.pieceSquare(_board)!;
+      emit(_spawn(state.copyWith(timeLeft: left), square));
+      return;
+    }
+    emit(state.copyWith(timeLeft: left, starTimeLeft: starLeft));
   }
 
   /// O aluno moveu a peça.
@@ -168,25 +222,31 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     if (!state.interactive || move is! NormalMove) return;
     final moved = StarChallengeRules.move(_board, move.from, move.to);
     if (moved == null) return;
-    final level = state.level!;
     final caught = move.to == state.star;
     _board = StarChallengeRules.respawnIfStuck(moved, _random);
     final square = StarChallengeRules.pieceSquare(_board)!;
-    final star = caught
-        ? StarChallengeRules.nextStar(_board, square, level, _random)
-        : state.star;
+    final after = state.copyWith(
+      fen: StarChallengeRules.fen(_board),
+      lastMove: move,
+    );
+    if (!caught) {
+      emit(after);
+      return;
+    }
+    final worth = state.starKind.points;
     emit(
-      state.copyWith(
-        fen: StarChallengeRules.fen(_board),
-        lastMove: move,
-        collected: caught ? state.collected + 1 : state.collected,
-        star: star,
-        clearStar: star == null,
+      _spawn(
+        after.copyWith(
+          collected: state.collected + 1,
+          points: state.points + worth,
+          lastPoints: worth,
+        ),
+        square,
       ),
     );
   }
 
-  /// Em segundo plano: o relógio para.
+  /// Em segundo plano: o relógio (e o prazo da estrela) param.
   void pause() {
     if (state.phase != ChallengePhase.running) return;
     _pausedAt = _now();
@@ -196,7 +256,9 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   void resume() {
     if (state.phase != ChallengePhase.paused) return;
-    _pausedTotal += _now().difference(_pausedAt!);
+    final paused = _now().difference(_pausedAt!);
+    _pausedTotal += paused;
+    _starExpiresAt = _starExpiresAt?.add(paused);
     _pausedAt = null;
     emit(state.copyWith(phase: ChallengePhase.running));
     _startTimer();
@@ -212,13 +274,13 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     _timer?.cancel();
     final piece = state.piece!;
     final level = state.level!;
-    final collected = state.collected;
-    final earned = StarChallengeRules.earned(level, collected);
-    // Zero estrela não é recorde.
-    final newBest = collected > 0 && collected > (state.best ?? 0);
+    final points = state.points;
+    final earned = StarChallengeRules.earned(level, points);
+    // Zero ponto não é recorde.
+    final newBest = points > 0 && points > (state.best ?? 0);
     if (newBest) {
       final all = await _progress.load();
-      await _progress.save(all.withBest(piece, level, collected));
+      await _progress.save(all.withBest(piece, level, points));
     }
     if (isClosed) return;
     emit(
@@ -228,7 +290,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
         clearStar: true,
         earned: earned,
         newBest: newBest,
-        best: newBest ? collected : state.best,
+        best: newBest ? points : state.best,
       ),
     );
   }
@@ -245,7 +307,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   }
 }
 
-/// A lista dos desafios: os melhores resultados e o Viktor.
+/// A lista dos desafios: os melhores resultados.
 class StarChallengesState {
   const StarChallengesState({
     this.ready = false,

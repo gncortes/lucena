@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Hết giờ!",
   "starChallengeNewBest": "Kỷ lục mới!",
   "starChallengePlayAgain": "Chơi lại",
-  "starChallengePaused": "Tạm dừng"
+  "starChallengePaused": "Tạm dừng",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Thử thách ngôi sao: {piece}",
+  "starChallengePoints": "{count} điểm",
+  "starChallengePointsTotal": "Tổng {count} điểm",
+  "starChallengeLegend": "Mỗi ngôi sao biến mất sau một lúc: sao vàng đi trước."
 }

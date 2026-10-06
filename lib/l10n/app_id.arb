@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Waktu habis!",
   "starChallengeNewBest": "Rekor baru!",
   "starChallengePlayAgain": "Main lagi",
-  "starChallengePaused": "Dijeda"
+  "starChallengePaused": "Dijeda",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Tantangan bintang: {piece}",
+  "starChallengePoints": "{count} poin",
+  "starChallengePointsTotal": "{count} poin total",
+  "starChallengeLegend": "Tiap bintang hilang setelah beberapa saat: yang emas lebih dulu."
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/l10n/l10n.dart';
@@ -42,3 +44,10 @@ extension ChallengePieceLetter on ChallengePiece {
     ChallengePiece.pawn => 'P',
   };
 }
+
+/// A cor de cada tipo de estrela.
+Color starColor(StarKind kind) => switch (kind) {
+  StarKind.gold => const Color(0xfff2b705),
+  StarKind.silver => const Color(0xffb0b8c1),
+  StarKind.bronze => const Color(0xffcd7f32),
+};

@@ -147,11 +147,20 @@ abstract final class StarChallengeRules {
         .setPieceAt(free[random.nextInt(free.length)], piece);
   }
 
-  /// A nota (0 a 3 estrelas) pelas estrelas pegas no nível.
-  static int earned(ChallengeLevel level, int collected) {
+  /// O tipo da próxima estrela: metade bronze, três em dez prata, uma em
+  /// cinco ouro.
+  static StarKind pickKind(Random random) {
+    final roll = random.nextInt(10);
+    if (roll < 5) return StarKind.bronze;
+    if (roll < 8) return StarKind.silver;
+    return StarKind.gold;
+  }
+
+  /// A nota (0 a 3 estrelas) pelos pontos no nível.
+  static int earned(ChallengeLevel level, int points) {
     var earned = 0;
     for (final threshold in level.thresholds) {
-      if (collected >= threshold) earned++;
+      if (points >= threshold) earned++;
     }
     return earned;
   }
