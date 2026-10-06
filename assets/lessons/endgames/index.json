@@ -11,7 +11,8 @@
     {
       "id": "pawns",
       "lessons": [
-        "pawns.keySquares"
+        "pawns.keySquares",
+        "pawns.distantOpposition"
       ]
     },
     {
