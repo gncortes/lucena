@@ -321,10 +321,11 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   bool _following = false;
 
   /// Revisa a partida inteira com a engine, lance a lance e com o tabuleiro
-  /// andando junto: mostra o lance, a engine avalia a posição depois dele no
-  /// orçamento da revisão, a anotação aparece e segue para o próximo. Lances
-  /// que já têm anotação de peso igual ou maior passam direto. A revisão
-  /// fica gravada.
+  /// andando junto: começa na posição de início já avaliada; a engine avalia
+  /// a posição depois do próximo lance no orçamento da revisão e o tabuleiro
+  /// vai para ele com a avaliação (barra) e a anotação juntas. Lances que já
+  /// têm anotação de peso igual ou maior passam direto. A revisão fica
+  /// gravada.
   Future<void> review({ReviewSpeed speed = ReviewSpeed.medium}) async {
     final weight = reviewWeights[speed]!;
     if (_analysis == null || state.start == null || state.reviewing) return;
@@ -339,28 +340,19 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
       ),
     );
     final total = state.moves.length;
+    // A posição de início primeiro: a barra já abre com a avaliação dela.
+    if (!await _reviewLines(0, weight)) return;
     for (var index = 0; index < total; index++) {
+      if ((state.live[index]?.weight ?? -1) < weight) {
+        emit(state.copyWith(annotating: {...state.annotating, index}));
+        // Enquanto a engine pensa, o tabuleiro fica na posição de antes (já
+        // avaliada); o lance entra junto com a avaliação e a anotação dele.
+        if (!await _reviewLines(index + 1, weight)) return;
+        _setAnnotation(index, weight);
+      }
       if (_following) {
         emit(state.copyWith(selected: index));
         if (state.engine) unawaited(_analyseShown());
-      }
-      if ((state.live[index]?.weight ?? -1) < weight) {
-        emit(state.copyWith(annotating: {...state.annotating, index}));
-        // Uma posição de cada vez (uma não interrompe a outra); se o jogador
-        // pedir outra coisa no meio, a engine atende e a revisão pede de
-        // novo.
-        for (final k in [index, index + 1]) {
-          while (true) {
-            try {
-              await _linesAt(k, weight, preemptible: true);
-              break;
-            } on AnalysisInterrupted {
-              if (isClosed) return;
-            }
-          }
-        }
-        if (isClosed) return;
-        _setAnnotation(index, weight);
       }
       emit(state.copyWith(reviewProgress: (index + 1) / total));
     }
@@ -369,6 +361,20 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     await _save();
     // Ficando no lance mostrado, a engine continua aprofundando.
     unawaited(_annotate(state.shownIndex));
+  }
+
+  /// As linhas da posição [k] no peso da revisão. Se o jogador pedir outra
+  /// coisa no meio, a engine atende e a revisão pede de novo. Falso se a tela
+  /// fechou.
+  Future<bool> _reviewLines(int k, int weight) async {
+    while (true) {
+      try {
+        await _linesAt(k, weight, preemptible: true);
+        return !isClosed;
+      } on AnalysisInterrupted {
+        if (isClosed) return false;
+      }
+    }
   }
 
   /// As linhas da engine por posição (0: a de início; k: a depois do lance

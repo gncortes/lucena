@@ -72,15 +72,19 @@ void main() {
 
     final shown = <int>[];
     final progress = <double>[];
+    final unscored = <int>[];
     final listening = cubit.stream.listen((s) {
       if (shown.lastOrNull != s.shownIndex) shown.add(s.shownIndex);
       progress.add(s.reviewProgress);
+      // O tabuleiro só chega no lance com a avaliação dele na barra.
+      if (s.reviewing && s.shownScore == null) unscored.add(s.shownIndex);
     });
     await cubit.review();
     await settle();
     await listening.cancel();
 
-    expect(shown, containsAllInOrder([0, 1, 2]));
+    expect(shown, containsAllInOrder([-1, 0, 1, 2]));
+    expect(unscored, isEmpty);
     expect(progress, containsAllInOrder([1 / 3, 2 / 3, 1.0]));
     expect(cubit.state.reviewing, isFalse);
     final review = cubit.state.review!;
