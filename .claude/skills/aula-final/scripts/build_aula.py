@@ -37,6 +37,8 @@ import chess.engine
 ROOT = Path(__file__).resolve().parents[4]
 SRC = ROOT / 'tools' / 'lessons' / 'endgames'
 OUT = ROOT / 'assets' / 'lessons' / 'endgames'
+TRAIL = SRC / 'trail.json'
+INDEX = OUT / 'index.json'
 TEXTS = ROOT / 'assets' / 'lessons'
 CACHE = ROOT / 'tools' / '.cache' / 'tablebase'
 TABLEBASE = 'https://tablebase.lichess.ovh/standard?fen='
@@ -393,6 +395,21 @@ def build(source, oracle):
     return lesson, problems, report
 
 
+def write_index():
+    """`index.json`: os módulos da trilha (`trail.json`) só com as aulas que
+    já têm o JSON gerado. É o que o app lê para montar a trilha."""
+    trail = json.loads(TRAIL.read_text())
+    modules = []
+    for module in trail['modules']:
+        lessons = [lesson for lesson in module['lessons']
+                   if (OUT / f'{lesson}.json').exists()]
+        if lessons:
+            modules.append({'id': module['id'], 'lessons': lessons})
+    INDEX.write_text(json.dumps({'modules': modules}, ensure_ascii=False,
+                                indent=2) + '\n')
+    return sum(len(module['lessons']) for module in modules)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('id', help='id da aula (ex.: mates.bishopKnight.w)')
@@ -428,6 +445,8 @@ def main():
     out = OUT / f'{args.id}.json'
     out.write_text(json.dumps(lesson, ensure_ascii=False, indent=2) + '\n')
     print(f'Gerado {out.relative_to(ROOT)}')
+    count = write_index()
+    print(f'Índice {INDEX.relative_to(ROOT)}: {count} aulas na trilha')
 
 
 if __name__ == '__main__':

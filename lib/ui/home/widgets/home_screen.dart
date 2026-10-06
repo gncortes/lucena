@@ -163,6 +163,13 @@ class _HomeScreenState extends State<HomeScreen>
         route: Routes.school,
       ),
       (
+        key: HomeKeys.endgamesButton,
+        icon: Icons.auto_stories_outlined,
+        title: l10n.homeEndgames,
+        body: l10n.homeEndgamesBody,
+        route: Routes.endgames,
+      ),
+      (
         key: HomeKeys.journeyButton,
         icon: Icons.flag_rounded,
         title: l10n.homeJourney,

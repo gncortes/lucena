@@ -47,7 +47,17 @@ import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home/widgets/home_screen.dart';
 import '../ui/achievements/view_models/achievements_cubit.dart';
 import '../ui/achievements/widgets/achievements_screen.dart';
+import '../data/repositories/endgames/endgame_lesson_repository.dart';
+import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/lesson_source.dart';
+import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
+import '../ui/endgames/view_models/endgames_cubit.dart';
+import '../ui/endgames/view_models/exercise_cubit.dart';
+import '../ui/endgames/widgets/endgame_info_screen.dart';
+import '../ui/endgames/widgets/endgame_lesson_screen.dart';
+import '../ui/endgames/widgets/endgames_screen.dart';
+import '../ui/endgames/widgets/exercise_screen.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
@@ -244,6 +254,106 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     child: LessonScreen(key: ValueKey('lesson.$id')),
                   );
                 },
+              ),
+            ],
+          ),
+          _route(
+            path: 'endgames',
+            builder: (context, state) => BlocProvider(
+              create: (_) => EndgamesCubit(
+                lessons: context.read<EndgameLessonRepository>(),
+                progress: context.read<EndgameProgressRepository>(),
+                characters: context.read<CharacterRepository>(),
+              )..load(_language(context)),
+              child: Builder(
+                builder: (context) => ReloadOnReturn(
+                  onReturn: () =>
+                      context.read<EndgamesCubit>().load(_language(context)),
+                  child: const EndgamesScreen(),
+                ),
+              ),
+            ),
+            routes: [
+              _route(
+                path: ':lesson',
+                builder: (context, state) {
+                  final id = state.pathParameters['lesson']!;
+                  return BlocProvider(
+                    key: ValueKey(id),
+                    create: (_) => EndgameLessonCubit(
+                      lessons: context.read<EndgameLessonRepository>(),
+                      progress: context.read<EndgameProgressRepository>(),
+                      journey: context.read<JourneyRepository>(),
+                      characters: context.read<CharacterRepository>(),
+                    )..load(id, _language(context)),
+                    child: Builder(
+                      builder: (context) => ReloadOnReturn(
+                        onReturn: () => context.read<EndgameLessonCubit>().load(
+                          id,
+                          _language(context),
+                        ),
+                        child: EndgameLessonScreen(
+                          key: ValueKey('endgameLesson.$id'),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                routes: [
+                  // A lição: a mesma tela das aulas da escola.
+                  _route(
+                    path: 'lesson',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      return BlocProvider(
+                        key: ValueKey('steps.$id'),
+                        create: (_) => LessonCubit(
+                          source: EndgameLessonSource(
+                            context.read<EndgameLessonRepository>(),
+                            context.read<EndgameProgressRepository>(),
+                          ),
+                          characters: context.read<CharacterRepository>(),
+                          opponent: context.read<OpponentRepository>(),
+                        )..load(id, _language(context)),
+                        child: LessonScreen(key: ValueKey('lesson.$id')),
+                      );
+                    },
+                  ),
+                  _route(
+                    path: 'info',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      return BlocProvider(
+                        create: (_) => EndgameLessonCubit(
+                          lessons: context.read<EndgameLessonRepository>(),
+                          progress: context.read<EndgameProgressRepository>(),
+                          journey: context.read<JourneyRepository>(),
+                          characters: context.read<CharacterRepository>(),
+                        )..load(id, _language(context)),
+                        child: const EndgameInfoScreen(),
+                      );
+                    },
+                  ),
+                  _route(
+                    path: 'ex/:exercise',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      final exercise = state.pathParameters['exercise']!;
+                      return BlocProvider(
+                        // O exercício seguinte troca o view model.
+                        key: ValueKey('$id.$exercise'),
+                        create: (_) => ExerciseCubit(
+                          lessons: context.read<EndgameLessonRepository>(),
+                          progress: context.read<EndgameProgressRepository>(),
+                          characters: context.read<CharacterRepository>(),
+                        )..load(id, exercise, _language(context)),
+                        child: ExerciseScreen(
+                          key: ValueKey('exercise.$id.$exercise'),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

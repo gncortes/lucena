@@ -382,5 +382,22 @@
   "coach.graduation": [
     "Você se formou. Lembra da primeira aula, quando a torre ainda andava devagar pelo tabuleiro? Olhe até onde chegou. Agora suba a Jornada degrau por degrau. Lá no alto, eu espero por você, não mais como professor, mas como adversário."
   ],
-  "journey.reunion": "Você voltou. Lembro do seu primeiro dia na escola, quando a torre ainda andava devagar. Hoje sou o último degrau entre você e o topo. Venha, meu aluno: me mostre tudo o que aprendeu. Ser superado pelo aluno é a maior honra de um professor."
+  "journey.reunion": "Você voltou. Lembro do seu primeiro dia na escola, quando a torre ainda andava devagar. Hoje sou o último degrau entre você e o topo. Venha, meu aluno: me mostre tudo o que aprendeu. Ser superado pelo aluno é a maior honra de um professor.",
+  "endgames.welcome": "Estas são as aulas de finais. Cada uma vai fundo num final que todo jogador precisa dominar: a lição, os exercícios com estrelas e, no fim, o final de verdade. Escolha por onde começar.",
+  "endgames.welcomeBack": [
+    "Que bom ver você de novo. Os finais não têm pressa, mas têm método.",
+    "Voltou. Cada estrela conquistada é uma posição que você não vai mais perder.",
+    "O tabuleiro está arrumado. Vamos continuar de onde paramos."
+  ],
+  "endgames.allPassed": "Você passou em todas as aulas de finais. Agora o conhecimento é seu: leve-o para as partidas.",
+  "endgames.module.mates": "Mates difíceis",
+  "endgames.module.pawns": "Finais de peões",
+  "endgames.module.queen": "Finais de dama",
+  "endgames.module.rookPawns": "Torre contra peões",
+  "endgames.module.rook": "Finais de torre",
+  "endgames.module.minor": "Peças menores",
+  "endgames.module.rookMinor": "Torre e peça menor",
+  "endgames.lesson.intro": "Primeiro a lição, depois os exercícios. Quando a nota passar do mínimo, eu libero o final de verdade.",
+  "endgames.lesson.passed": "Aprovado. Agora só falta provar isso contra um adversário de carne e osso: ou de silício.",
+  "endgames.lesson.failed": "Ainda não foi desta vez. Releia a lição se quiser e refaça os exercícios: a segunda vez costuma ser bem melhor."
 }

@@ -4,6 +4,7 @@ abstract final class SchoolKeys {
   static const screen = Key('school.screen');
   static const continueButton = Key('school.continue');
   static const graduated = Key('school.graduated');
+  static const endgamesButton = Key('school.endgames');
 
   /// Uma aula na trilha.
   static Key lesson(String id) => Key('school.lesson.$id');
@@ -26,6 +27,9 @@ abstract final class LessonKeys {
   static const nextLessonButton = Key('lesson.nextLesson');
   static const trailButton = Key('lesson.trail');
   static const journeyButton = Key('lesson.journey');
+
+  /// No fim da lição de uma aula de final: volta para a aula e os exercícios.
+  static const exercisesButton = Key('lesson.exercises');
 
   /// O passo aberto (`<aula>.<passo>`).
   static Key step(String lessonId, String stepId) =>

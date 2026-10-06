@@ -63,6 +63,18 @@ class SchoolScreen extends StatelessWidget {
                   onPressed: () => context.go(Routes.lesson(next)),
                 ),
               ],
+              if (state.graduated) ...[
+                const SizedBox(height: 12),
+                FilledButton.tonalIcon(
+                  key: SchoolKeys.endgamesButton,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  icon: const Icon(Icons.auto_stories_outlined),
+                  label: Text(l10n.endgamesTitle),
+                  onPressed: () => context.push(Routes.endgames),
+                ),
+              ],
               for (final (index, module) in state.course.modules.indexed)
                 _ModuleSection(index: index, module: module, state: state),
             ],
