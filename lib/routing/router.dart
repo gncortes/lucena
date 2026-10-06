@@ -106,7 +106,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
       _route(
         path: Routes.home,
         builder: (context, state) => BlocProvider(
-          create: (context) => HomeCubit(
+          create: (_) => HomeCubit(
             journey: context.read<JourneyRepository>(),
             progress: context.read<ProgressRepository>(),
             onboarding: context.read<OnboardingRepository>(),
@@ -115,10 +115,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             lessons: context.read<LessonRepository>(),
             school: context.read<SchoolProgressRepository>(),
             profile: context.read<ProfileRepository>(),
-          )..load(),
+            endgameLessons: context.read<EndgameLessonRepository>(),
+            endgameProgress: context.read<EndgameProgressRepository>(),
+          )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
-              onReturn: () => context.read<HomeCubit>().load(),
+              onReturn: () =>
+                  context.read<HomeCubit>().load(_language(context)),
               child: const HomeScreen(),
             ),
           ),
