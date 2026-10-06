@@ -16,6 +16,7 @@ class StockfishAnalysisRepository implements AnalysisRepository {
     required int depth,
     int lines = 1,
     bool urgent = false,
+    Duration? time,
   }) async {
     try {
       final found = await _stockfish.analyse(
@@ -23,6 +24,7 @@ class StockfishAnalysisRepository implements AnalysisRepository {
         depth: depth,
         lines: lines,
         urgent: urgent,
+        time: time,
       );
       // O motor responde do ponto de vista de quem joga.
       final sign = position.turn == Side.white ? 1 : -1;
@@ -36,6 +38,7 @@ class StockfishAnalysisRepository implements AnalysisRepository {
               mate: line.mate == null ? null : line.mate! * sign,
             ),
             moves: line.moves,
+            depth: line.depth,
           ),
       ];
     } on Object {

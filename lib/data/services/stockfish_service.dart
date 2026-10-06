@@ -107,25 +107,26 @@ class StockfishService {
 
   static final _score = RegExp(r' score (cp|mate) (-?\d+)');
 
-  /// As [lines] melhores linhas em [fen], com profundidade [depth]: para cada
-  /// uma, a avaliação do ponto de vista de quem joga e os lances (UCI). Lista
-  /// vazia se a posição não tem lance.
-  Future<List<({int? centipawns, int? mate, List<String> moves})>> analyse(
+  /// As [lines] melhores linhas em [fen], até a profundidade [depth] (ou até
+  /// [time], o que vier antes): para cada uma, a avaliação do ponto de vista
+  /// de quem joga, os lances (UCI) e a profundidade alcançada. Lista vazia se
+  /// a posição não tem lance.
+  Future<List<({int? centipawns, int? mate, List<String> moves, int depth})>>
+  analyse(
     String fen, {
     required int depth,
     int lines = 1,
     bool urgent = false,
+    Duration? time,
   }) {
-    return _enqueue(() => _analyse(fen, depth, lines), urgent: urgent);
+    return _enqueue(() => _analyse(fen, depth, lines, time), urgent: urgent);
   }
 
-  Future<List<({int? centipawns, int? mate, List<String> moves})>> _analyse(
-    String fen,
-    int depth,
-    int lines,
-  ) async {
+  Future<List<({int? centipawns, int? mate, List<String> moves, int depth})>>
+  _analyse(String fen, int depth, int lines, Duration? time) async {
     final engine = await _ready();
-    final found = <int, ({int? centipawns, int? mate, List<String> moves})>{};
+    final found =
+        <int, ({int? centipawns, int? mate, List<String> moves, int depth})>{};
     final done = Completer<void>();
     final listening = engine.stdout.listen((line) {
       if (parseInfo(line) case (final index, final result)?) {
@@ -136,8 +137,12 @@ class StockfishService {
     try {
       engine.stdin = 'setoption name MultiPV value $lines';
       engine.stdin = 'position fen $fen';
-      engine.stdin = 'go depth $depth';
-      await done.future.timeout(const Duration(seconds: 30));
+      engine.stdin = time == null
+          ? 'go depth $depth'
+          : 'go depth $depth movetime ${time.inMilliseconds}';
+      await done.future.timeout(
+        (time ?? Duration.zero) + const Duration(seconds: 30),
+      );
     } finally {
       await listening.cancel();
       engine.stdin = 'setoption name MultiPV value 1';
@@ -147,9 +152,8 @@ class StockfishService {
 
   /// Lê uma linha `info` com avaliação e lances: o número da linha
   /// (`multipv`, 1 se não vier) e a linha. Nula para as outras.
-  static (int, ({int? centipawns, int? mate, List<String> moves}))? parseInfo(
-    String line,
-  ) {
+  static (int, ({int? centipawns, int? mate, List<String> moves, int depth}))?
+  parseInfo(String line) {
     if (line.contains('lowerbound') || line.contains('upperbound')) return null;
     final info = _info.firstMatch(line);
     if (info == null) return null;
@@ -160,9 +164,12 @@ class StockfishService {
         centipawns: info.group(2) == 'cp' ? value : null,
         mate: info.group(2) == 'mate' ? value : null,
         moves: info.group(4)!.trim().split(' '),
+        depth: int.tryParse(_depth.firstMatch(line)?.group(1) ?? '') ?? 0,
       ),
     );
   }
+
+  static final _depth = RegExp(r'^info depth (\d+)');
 
   // `info depth 14 ... multipv 2 score cp -35 ... pv e2e4 e7e5 ...`
   static final _info = RegExp(

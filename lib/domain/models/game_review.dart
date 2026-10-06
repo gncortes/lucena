@@ -69,16 +69,24 @@ enum MatedSide { white, black }
 
 /// Uma linha da engine: a avaliação e os lances (UCI) a partir da posição.
 class EngineLine {
-  const EngineLine({required this.score, required this.moves});
+  const EngineLine({required this.score, required this.moves, this.depth = 0});
 
   final EngineScore score;
   final List<String> moves;
 
-  Map<String, Object?> toJson() => {'score': score.toJson(), 'moves': moves};
+  /// A profundidade que a engine alcançou.
+  final int depth;
+
+  Map<String, Object?> toJson() => {
+    'score': score.toJson(),
+    'moves': moves,
+    'depth': depth,
+  };
 
   static EngineLine fromJson(Map<String, Object?> json) => EngineLine(
     score: EngineScore.fromJson(json['score']! as Map<String, Object?>),
     moves: (json['moves']! as List).cast<String>(),
+    depth: json['depth'] as int? ?? 0,
   );
 }
 
@@ -170,7 +178,7 @@ class GameReview {
   });
 
   /// Muda quando o cálculo muda: revisão de outra versão é refeita.
-  static const version = 1;
+  static const version = 2;
 
   final List<ReviewedMove> moves;
 
@@ -178,7 +186,9 @@ class GameReview {
   final double? whiteAccuracy;
   final double? blackAccuracy;
 
-  /// A profundidade da engine em cada posição.
+  /// O peso da revisão: quanto a engine trabalhou em cada posição (o índice
+  /// do orçamento de tempo e profundidade, ver `GameDetailsCubit.budgets`).
+  /// Uma anotação de peso maior troca a de peso menor.
   final int depth;
 
   /// Quantos lances de cada qualidade o lado que começa ([firstIsWhite])

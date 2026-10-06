@@ -74,9 +74,16 @@ class E2EAnalysis extends FakeAnalysisRepository {
     required int depth,
     int lines = 1,
     bool urgent = false,
+    Duration? time,
   }) => useStockfish
-      ? _stockfish.analyse(position, depth: depth, lines: lines, urgent: urgent)
-      : super.analyse(position, depth: depth, lines: lines);
+      ? _stockfish.analyse(
+          position,
+          depth: depth,
+          lines: lines,
+          urgent: urgent,
+          time: time,
+        )
+      : super.analyse(position, depth: depth, lines: lines, time: time);
 }
 
 /// Grava uma partida terminada no histórico do app aberto e devolve o id.
