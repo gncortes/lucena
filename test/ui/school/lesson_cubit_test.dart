@@ -14,9 +14,16 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 
+import 'package:lucena/domain/models/game_sound.dart';
+import 'package:lucena/ui/core/sound/game_sounds.dart';
+
+import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_sound_repository.dart';
+
 void main() {
   late FakeSchoolProgressRepository progress;
   late FakeOpponentRepository opponent;
+  late FakeSoundRepository sound;
 
   LessonCubit cubit({Course? course}) {
     final cubit = LessonCubit(
@@ -24,6 +31,7 @@ void main() {
       progress: progress,
       characters: FakeCharacterRepository(),
       opponent: opponent,
+      sounds: GameSounds(FakeSettingsRepository(), sound),
       replyDelay: Duration.zero,
     );
     addTearDown(cubit.close);
@@ -35,6 +43,7 @@ void main() {
   setUp(() {
     progress = FakeSchoolProgressRepository();
     opponent = FakeOpponentRepository();
+    sound = FakeSoundRepository();
   });
 
   test('abre no primeiro passo, com o Viktor falando', () async {
@@ -319,4 +328,16 @@ void main() {
       expect(endgames.saved.lessons, isEmpty);
     });
   });
+
+  test(
+    'no passo das estrelas, cada lance da peça faz o som de lance',
+    () async {
+      final lesson = cubit();
+      await lesson.load('pieces.rook', 'en');
+      await lesson.next();
+
+      await lesson.play(move('a1a5'));
+      expect(sound.played, [GameSound.move]);
+    },
+  );
 }

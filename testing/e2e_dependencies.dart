@@ -245,6 +245,7 @@ Future<void> resetE2EData() async {
   e2eNow.value = _e2eStart;
   e2eOpponent.reset();
   e2eMaia.reset();
+  e2eSound.played.clear();
   e2eDraws
     ..accept = false
     ..offers = 0;
