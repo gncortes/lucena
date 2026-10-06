@@ -450,5 +450,13 @@
   "exerciseBack": "العودة إلى الدرس",
   "exerciseHint": "تلميح (يكلّف نجمة)",
   "exerciseMissing": "هذا التمرين غير موجود.",
-  "lessonToExercises": "انتقل إلى التمارين"
+  "lessonToExercises": "انتقل إلى التمارين",
+  "exerciseGoal": "{side, select, white{الأبيض يلعب} other{الأسود يلعب}} و{goal, select, win{يفوز} other{يصمد}}",
+  "exerciseSolution": "الحل",
+  "lessonGuideTalk": "انظر إلى الرقعة ثم تابع.",
+  "lessonGuideStars": "دورك: اجمع كل النجوم.",
+  "lessonGuideMove": "{side, select, white{دورك، بالقطع البيضاء.} other{دورك، بالقطع السوداء.}}",
+  "lessonGuidePlay": "{goal, select, mate{واصل اللعب حتى كش مات.} other{واصل اللعب حتى ترقية البيدق.}}",
+  "lessonGuideDone": "تم. تابع إلى الخطوة التالية.",
+  "exerciseYourMove": "دورك"
 }

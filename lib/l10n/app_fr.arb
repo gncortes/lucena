@@ -450,5 +450,13 @@
   "exerciseBack": "Retour à la leçon",
   "exerciseHint": "Indice (coûte une étoile)",
   "exerciseMissing": "Cet exercice n'existe pas.",
-  "lessonToExercises": "Aller aux exercices"
+  "lessonToExercises": "Aller aux exercices",
+  "exerciseGoal": "{side, select, white{Les Blancs jouent} other{Les Noirs jouent}} et {goal, select, win{gagnent} other{tiennent}}",
+  "exerciseSolution": "Solution",
+  "lessonGuideTalk": "Regardez l’échiquier, puis continuez.",
+  "lessonGuideStars": "À vous : ramassez toutes les étoiles.",
+  "lessonGuideMove": "{side, select, white{À vous de jouer, avec les Blancs.} other{À vous de jouer, avec les Noirs.}}",
+  "lessonGuidePlay": "{goal, select, mate{Jouez jusqu’au mat.} other{Jouez jusqu’à la promotion du pion.}}",
+  "lessonGuideDone": "Terminé. Passez à l’étape suivante.",
+  "exerciseYourMove": "À vous de jouer"
 }

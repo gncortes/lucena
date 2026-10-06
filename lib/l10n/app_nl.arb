@@ -450,5 +450,13 @@
   "exerciseBack": "Terug naar de les",
   "exerciseHint": "Hint (kost een ster)",
   "exerciseMissing": "Deze oefening bestaat niet.",
-  "lessonToExercises": "Naar de oefeningen"
+  "lessonToExercises": "Naar de oefeningen",
+  "exerciseGoal": "{side, select, white{Wit} other{Zwart}} aan zet en {goal, select, win{wint} other{houdt}}",
+  "exerciseSolution": "Oplossing",
+  "lessonGuideTalk": "Bekijk het bord en ga verder.",
+  "lessonGuideStars": "Jouw beurt: verzamel alle sterren.",
+  "lessonGuideMove": "{side, select, white{Jouw beurt, met wit.} other{Jouw beurt, met zwart.}}",
+  "lessonGuidePlay": "{goal, select, mate{Speel door tot schaakmat.} other{Speel door tot de pion promoveert.}}",
+  "lessonGuideDone": "Klaar. Ga verder naar de volgende stap.",
+  "exerciseYourMove": "Jouw beurt"
 }

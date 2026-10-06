@@ -450,5 +450,13 @@
   "exerciseBack": "Volver a la clase",
   "exerciseHint": "Pista (cuesta una estrella)",
   "exerciseMissing": "Este ejercicio no existe.",
-  "lessonToExercises": "Ir a los ejercicios"
+  "lessonToExercises": "Ir a los ejercicios",
+  "exerciseGoal": "{side, select, white{Juegan blancas} other{Juegan negras}} y {goal, select, win{ganan} other{aguantan}}",
+  "exerciseSolution": "Solución",
+  "lessonGuideTalk": "Mira el tablero y continúa.",
+  "lessonGuideStars": "Tu turno: recoge todas las estrellas.",
+  "lessonGuideMove": "{side, select, white{Tu turno, con blancas.} other{Tu turno, con negras.}}",
+  "lessonGuidePlay": "{goal, select, mate{Sigue jugando hasta dar mate.} other{Sigue jugando hasta coronar el peón.}}",
+  "lessonGuideDone": "Hecho. Continúa al siguiente paso.",
+  "exerciseYourMove": "Tu turno"
 }

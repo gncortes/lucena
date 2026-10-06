@@ -450,5 +450,13 @@
   "exerciseBack": "Назад к уроку",
   "exerciseHint": "Подсказка (стоит одну звезду)",
   "exerciseMissing": "Такого упражнения нет.",
-  "lessonToExercises": "К упражнениям"
+  "lessonToExercises": "К упражнениям",
+  "exerciseGoal": "{side, select, white{Ход белых} other{Ход чёрных}}: {goal, select, win{выиграть} other{удержать}}",
+  "exerciseSolution": "Решение",
+  "lessonGuideTalk": "Посмотрите на доску и продолжайте.",
+  "lessonGuideStars": "Ваш ход: соберите все звёзды.",
+  "lessonGuideMove": "{side, select, white{Ваш ход, вы играете белыми.} other{Ваш ход, вы играете чёрными.}}",
+  "lessonGuidePlay": "{goal, select, mate{Играйте до мата.} other{Играйте до превращения пешки.}}",
+  "lessonGuideDone": "Готово. Переходите к следующему шагу.",
+  "exerciseYourMove": "Ваш ход"
 }

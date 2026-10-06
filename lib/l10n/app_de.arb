@@ -450,5 +450,13 @@
   "exerciseBack": "Zurück zur Lektion",
   "exerciseHint": "Tipp (kostet einen Stern)",
   "exerciseMissing": "Diese Übung gibt es nicht.",
-  "lessonToExercises": "Zu den Übungen"
+  "lessonToExercises": "Zu den Übungen",
+  "exerciseGoal": "{side, select, white{Weiß} other{Schwarz}} am Zug: {goal, select, win{gewinnen} other{halten}}",
+  "exerciseSolution": "Lösung",
+  "lessonGuideTalk": "Sieh dir das Brett an und fahre fort.",
+  "lessonGuideStars": "Du bist dran: sammle alle Sterne.",
+  "lessonGuideMove": "{side, select, white{Du bist dran, mit Weiß.} other{Du bist dran, mit Schwarz.}}",
+  "lessonGuidePlay": "{goal, select, mate{Spiele weiter bis zum Matt.} other{Spiele weiter, bis der Bauer umwandelt.}}",
+  "lessonGuideDone": "Geschafft. Weiter zum nächsten Schritt.",
+  "exerciseYourMove": "Du bist dran"
 }

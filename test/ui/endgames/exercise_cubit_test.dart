@@ -64,12 +64,17 @@ void main() {
     await exercise.play(move('c1c2'));
     expect(exercise.state.mistakes, 1);
     expect(exercise.state.fen, FakeEndgameLessonRepository.lucenaFen);
-    expect(exercise.state.speech, 'Same idea.');
+    // O erro mostra o lance errado e um "não é esse"; a pista fica para a
+    // dica.
+    expect(exercise.state.wrongMove, move('c1c2'));
+    expect(exercise.state.speech, isNot('Same idea.'));
     expect(exercise.state.hint, isNull);
 
     await exercise.askHint();
     expect(exercise.state.hints, 1);
     expect(exercise.state.hint, move('c1c4'));
+    expect(exercise.state.wrongMove, isNull);
+    expect(exercise.state.speech, 'Same idea.');
     // A mesma dica de novo não custa outra estrela.
     await exercise.askHint();
     expect(exercise.state.hints, 1);
