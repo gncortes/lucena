@@ -10,6 +10,7 @@ import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
+import '../../core/widgets/figurine.dart';
 import '../../core/widgets/scroll_padding.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com
@@ -315,7 +316,7 @@ class _LessonNode extends StatelessWidget {
 }
 
 /// A entrada dos desafios das estrelas: pegar as estrelas com cada peça
-/// contra o relógio.
+/// contra o relógio. As seis peças em figurino convidam a jogar.
 class _ChallengesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -323,20 +324,28 @@ class _ChallengesCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Material(
-      color: colors.surfaceContainerHigh,
+      color: colors.primaryContainer,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         key: SchoolKeys.challengesButton,
         borderRadius: BorderRadius.circular(16),
         onTap: () => context.push(Routes.starChallenges),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 8, 14),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 12, 14),
           child: Row(
             children: [
-              Icon(
-                Icons.star_rounded,
-                size: 40,
-                color: colors.onTertiaryContainer,
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: Color(0xfff2b705),
+                  size: 38,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -347,13 +356,24 @@ class _ChallengesCard extends StatelessWidget {
                       l10n.starChallengesTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
+                        color: colors.onPrimaryContainer,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       l10n.starChallengesBody,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '♖ ♗ ♘ ♕ ♔ ♙',
+                      style: TextStyle(
+                        fontFamily: Figurine.fontFamily,
+                        fontSize: 22,
+                        letterSpacing: 2,
+                        color: colors.onPrimaryContainer,
                       ),
                     ),
                   ],
@@ -364,7 +384,7 @@ class _ChallengesCard extends StatelessWidget {
                 Directionality.of(context) == TextDirection.rtl
                     ? Icons.chevron_left
                     : Icons.chevron_right,
-                color: colors.onSurfaceVariant,
+                color: colors.onPrimaryContainer,
               ),
             ],
           ),

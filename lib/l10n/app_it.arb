@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Tempo scaduto!",
   "starChallengeNewBest": "Nuovo record!",
   "starChallengePlayAgain": "Gioca ancora",
-  "starChallengePaused": "In pausa"
+  "starChallengePaused": "In pausa",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Sfida delle stelle: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 punto} other{{count} punti}}",
+  "starChallengePointsTotal": "{count} punti in totale",
+  "starChallengeLegend": "Ogni stella sparisce dopo un po’: quella d’oro per prima."
 }

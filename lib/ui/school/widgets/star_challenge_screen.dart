@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -108,7 +109,12 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           appBar: AppBar(
             title: piece == null || level == null
                 ? null
-                : Text('${pieceName(l10n, piece)} · ${levelName(l10n, level)}'),
+                : Text(
+                    l10n.starChallengeTitle(
+                      pieceName(l10n, piece),
+                      levelName(l10n, level),
+                    ),
+                  ),
           ),
           body: SafeArea(child: _body(context, state, boardSettings)),
         );
@@ -168,7 +174,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 const Icon(Icons.star_rounded, color: StarsRow.color, size: 22),
                 const SizedBox(width: 2),
                 Text(
-                  '${state.collected}',
+                  '${state.points}',
                   key: StarChallengeKeys.collected,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -195,7 +201,11 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                   CustomShape(
                     orig: star,
                     scale: 0.75,
-                    child: StarShape(key: StarChallengeKeys.star(star.name)),
+                    child: StarShape(
+                      key: StarChallengeKeys.star(star.name),
+                      color: starColor(state.starKind),
+                      blinking: state.starBlinking,
+                    ),
                   ),
               },
               onMove: (move, {viaDragAndDrop}) =>
@@ -228,7 +238,38 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
+              // A legenda: ouro 3, prata 2, bronze 1.
+              Wrap(
+                spacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (final kind in StarKind.values.reversed)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          color: starColor(kind),
+                          size: 22,
+                        ),
+                        Text(
+                          '${kind.points}',
+                          style: theme.textTheme.labelLarge,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.starChallengeLegend,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 14),
               FilledButton.icon(
                 key: StarChallengeKeys.goButton,
                 style: FilledButton.styleFrom(
@@ -245,13 +286,71 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       case ChallengePhase.running:
       case ChallengePhase.paused:
         return Center(
-          child: Text(
-            state.phase == ChallengePhase.paused
-                ? l10n.starChallengePaused
-                : l10n.exerciseYourMove,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // A conta grande, que pula a cada estrela.
+              // O "+N" da última estrela sobe e some.
+              SizedBox(
+                height: 24,
+                child: state.collected == 0
+                    ? null
+                    : TweenAnimationBuilder<double>(
+                        key: ValueKey(state.collected),
+                        tween: Tween(begin: 0, end: 1),
+                        duration: const Duration(milliseconds: 700),
+                        builder: (context, t, child) => Opacity(
+                          opacity: 1 - t,
+                          child: Transform.translate(
+                            offset: Offset(0, -12 * t),
+                            child: child,
+                          ),
+                        ),
+                        child: Text(
+                          '+${state.lastPoints}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ),
+              ),
+              TweenAnimationBuilder<double>(
+                key: ValueKey(state.collected),
+                tween: Tween(begin: state.collected == 0 ? 1 : 1.5, end: 1),
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.elasticOut,
+                builder: (context, scale, child) =>
+                    Transform.scale(scale: scale, child: child),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.star_rounded,
+                      color: StarsRow.color,
+                      size: 44,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${state.points}',
+                      style: theme.textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                state.phase == ChallengePhase.paused
+                    ? l10n.starChallengePaused
+                    : l10n.exerciseYourMove,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
         );
       case ChallengePhase.finished:
@@ -269,18 +368,19 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               ),
               const SizedBox(height: 6),
               Semantics(
-                label: l10n.endgameEarnedStars(state.earned, 3),
+                label: l10n.endgameEarnedStars(state.earned, level.stars),
                 excludeSemantics: true,
                 child: StarsRow(
                   key: StarChallengeKeys.earned,
-                  total: 3,
+                  total: level.stars,
                   earned: state.earned,
                   size: 36,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                l10n.endgameStars(state.collected),
+                '${l10n.starChallengePoints(state.points)} · '
+                '${l10n.endgameStars(state.collected)}',
                 style: theme.textTheme.bodyLarge,
               ),
               Text(

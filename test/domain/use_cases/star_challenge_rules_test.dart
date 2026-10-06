@@ -74,12 +74,40 @@ void main() {
     expect(StarChallengeRules.respawnIfStuck(rook, Random(1)), rook);
   });
 
-  test('a nota pelas estrelas pegas', () {
+  test('a nota pelos pontos', () {
+    // O nível vale tantas estrelas quanto a dificuldade.
+    expect(ChallengeLevel.easy.stars, 1);
+    expect(ChallengeLevel.medium.stars, 2);
+    expect(ChallengeLevel.hard.stars, 3);
     expect(StarChallengeRules.earned(ChallengeLevel.easy, 0), 0);
-    expect(StarChallengeRules.earned(ChallengeLevel.easy, 10), 1);
-    expect(StarChallengeRules.earned(ChallengeLevel.easy, 16), 2);
-    expect(StarChallengeRules.earned(ChallengeLevel.easy, 30), 3);
-    expect(StarChallengeRules.earned(ChallengeLevel.hard, 14), 3);
+    expect(StarChallengeRules.earned(ChallengeLevel.easy, 15), 1);
+    expect(StarChallengeRules.earned(ChallengeLevel.easy, 40), 1);
+    expect(StarChallengeRules.earned(ChallengeLevel.medium, 24), 2);
+    expect(StarChallengeRules.earned(ChallengeLevel.hard, 18), 2);
+    expect(StarChallengeRules.earned(ChallengeLevel.hard, 27), 3);
+  });
+
+  test('os tipos de estrela: valor, prazo por nível e sorteio', () {
+    expect(StarKind.gold.points, 3);
+    expect(StarKind.silver.points, 2);
+    expect(StarKind.bronze.points, 1);
+    expect(
+      ChallengeLevel.easy.starLifetime(StarKind.bronze),
+      const Duration(seconds: 6),
+    );
+    expect(
+      ChallengeLevel.easy.starLifetime(StarKind.gold),
+      const Duration(seconds: 3),
+    );
+    expect(
+      ChallengeLevel.hard.starLifetime(StarKind.gold),
+      lessThan(ChallengeLevel.easy.starLifetime(StarKind.gold)),
+    );
+    final random = Random(11);
+    final kinds = {
+      for (var i = 0; i < 200; i++) StarChallengeRules.pickKind(random),
+    };
+    expect(kinds, StarKind.values.toSet());
   });
 
   test('o progresso vai e volta do JSON', () {

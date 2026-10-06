@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Час вийшов!",
   "starChallengeNewBest": "Новий рекорд!",
   "starChallengePlayAgain": "Ще раз",
-  "starChallengePaused": "Пауза"
+  "starChallengePaused": "Пауза",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Зоряне випробування: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очки} other{{count} очок}}",
+  "starChallengePointsTotal": "Усього очок: {count}",
+  "starChallengeLegend": "Кожна зірка гасне через час: золота першою."
 }

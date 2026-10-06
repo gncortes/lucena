@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "时间到！",
   "starChallengeNewBest": "新纪录！",
   "starChallengePlayAgain": "再来一次",
-  "starChallengePaused": "已暂停"
+  "starChallengePaused": "已暂停",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "星星挑战：{piece}",
+  "starChallengePoints": "{count} 分",
+  "starChallengePointsTotal": "共 {count} 分",
+  "starChallengeLegend": "每颗星星过一会儿就会消失：金色的最先消失。"
 }

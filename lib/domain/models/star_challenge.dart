@@ -21,29 +21,45 @@ enum ChallengePiece {
   }
 }
 
-/// O nível de um desafio: quanto tempo, quantos peões no caminho e a que
-/// distância (em lances) a próxima estrela aparece.
+/// O tipo da estrela: quanto vale e quanto tempo fica na tela (a de ouro
+/// vale mais e some mais depressa).
+enum StarKind {
+  bronze(points: 1, lifetimeFactor: 1.0),
+  silver(points: 2, lifetimeFactor: 0.75),
+  gold(points: 3, lifetimeFactor: 0.5);
+
+  const StarKind({required this.points, required this.lifetimeFactor});
+
+  final int points;
+  final double lifetimeFactor;
+}
+
+/// O nível de um desafio: quanto tempo, quantos peões no caminho, a que
+/// distância (em lances) a próxima estrela aparece e quanto ela dura.
 enum ChallengeLevel {
   easy(
     seconds: 60,
     obstacles: 0,
     minMoves: 1,
     maxMoves: 1,
-    thresholds: [10, 16, 22],
+    starMillis: 6000,
+    thresholds: [15],
   ),
   medium(
     seconds: 60,
     obstacles: 3,
     minMoves: 1,
     maxMoves: 2,
-    thresholds: [8, 13, 18],
+    starMillis: 4500,
+    thresholds: [12, 24],
   ),
   hard(
     seconds: 45,
     obstacles: 6,
     minMoves: 2,
     maxMoves: 3,
-    thresholds: [6, 10, 14],
+    starMillis: 3500,
+    thresholds: [9, 18, 27],
   );
 
   const ChallengeLevel({
@@ -51,6 +67,7 @@ enum ChallengeLevel {
     required this.obstacles,
     required this.minMoves,
     required this.maxMoves,
+    required this.starMillis,
     required this.thresholds,
   });
 
@@ -59,10 +76,21 @@ enum ChallengeLevel {
   final int minMoves;
   final int maxMoves;
 
-  /// Quantas estrelas valem 1, 2 e 3 estrelas de nota.
+  /// Quanto uma estrela de bronze fica na tela (as outras, menos).
+  final int starMillis;
+
+  /// Os patamares de pontos de cada estrela da nota: o nível vale tantas
+  /// estrelas quanto a dificuldade (fácil 1, médio 2, difícil 3).
   final List<int> thresholds;
 
+  /// Quantas estrelas o nível pode dar.
+  int get stars => thresholds.length;
+
   Duration get duration => Duration(seconds: seconds);
+
+  /// Quanto uma estrela de [kind] fica na tela neste nível.
+  Duration starLifetime(StarKind kind) =>
+      Duration(milliseconds: (starMillis * kind.lifetimeFactor).round());
 
   static ChallengeLevel? byName(String name) {
     for (final level in values) {
@@ -72,7 +100,7 @@ enum ChallengeLevel {
   }
 }
 
-/// Os melhores resultados por peça e nível (estrelas pegas).
+/// Os melhores resultados por peça e nível (pontos).
 class StarChallengeProgress {
   const StarChallengeProgress({this.best = const {}});
 

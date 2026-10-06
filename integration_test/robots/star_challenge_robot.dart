@@ -55,8 +55,10 @@ class StarChallengeRobot {
     await $.pumpAndSettle();
   }
 
-  String get collected =>
-      $.tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!;
+  /// Os pontos no alto da tela.
+  int get points => int.parse(
+    $.tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
+  );
 
   Future<void> back() async {
     await $(BackButton).tap();

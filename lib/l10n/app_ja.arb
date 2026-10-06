@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "時間切れ！",
   "starChallengeNewBest": "新記録！",
   "starChallengePlayAgain": "もう一度",
-  "starChallengePaused": "一時停止中"
+  "starChallengePaused": "一時停止中",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "星チャレンジ：{piece}",
+  "starChallengePoints": "{count} 点",
+  "starChallengePointsTotal": "合計 {count} 点",
+  "starChallengeLegend": "星はしばらくすると消える。金の星が最初に消える。"
 }

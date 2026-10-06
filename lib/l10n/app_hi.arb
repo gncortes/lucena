@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "समय समाप्त!",
   "starChallengeNewBest": "नया रिकॉर्ड!",
   "starChallengePlayAgain": "फिर खेलें",
-  "starChallengePaused": "रुका हुआ"
+  "starChallengePaused": "रुका हुआ",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "तारा चुनौती: {piece}",
+  "starChallengePoints": "{count} अंक",
+  "starChallengePointsTotal": "कुल {count} अंक",
+  "starChallengeLegend": "हर तारा कुछ देर बाद गायब हो जाता है: सुनहरा सबसे पहले।"
 }

@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Temps écoulé !",
   "starChallengeNewBest": "Nouveau record !",
   "starChallengePlayAgain": "Rejouer",
-  "starChallengePaused": "En pause"
+  "starChallengePaused": "En pause",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Défi des étoiles : {piece}",
+  "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
+  "starChallengePointsTotal": "{count} points au total",
+  "starChallengeLegend": "Chaque étoile disparaît au bout d’un moment : celle en or la première."
 }

@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "시간 종료!",
   "starChallengeNewBest": "새 기록!",
   "starChallengePlayAgain": "다시 하기",
-  "starChallengePaused": "일시정지"
+  "starChallengePaused": "일시정지",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "별 도전: {piece}",
+  "starChallengePoints": "{count}점",
+  "starChallengePointsTotal": "총 {count}점",
+  "starChallengeLegend": "별은 잠시 후 사라집니다. 금색이 먼저 사라집니다."
 }

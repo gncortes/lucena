@@ -20,11 +20,12 @@ void main() {
     await challenge.openChallenge('rook', 'easy');
 
     await challenge.go();
-    expect(challenge.collected, '0');
+    expect(challenge.points, 0);
     await challenge.collect();
-    expect(challenge.collected, '1');
+    final first = challenge.points;
+    expect(first, greaterThan(0));
     await challenge.collect();
-    expect(challenge.collected, '2');
+    expect(challenge.points, greaterThan(first));
 
     // Sai no meio: volta à lista, sem marca gravada.
     await challenge.back();

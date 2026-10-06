@@ -472,5 +472,10 @@
   "starChallengeTimeUp": "Koniec czasu!",
   "starChallengeNewBest": "Nowy rekord!",
   "starChallengePlayAgain": "Zagraj ponownie",
-  "starChallengePaused": "Pauza"
+  "starChallengePaused": "Pauza",
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Wyzwanie gwiazdek: {piece}",
+  "starChallengePoints": "{count, plural, =1{1 punkt} few{{count} punkty} other{{count} punktów}}",
+  "starChallengePointsTotal": "Łącznie punktów: {count}",
+  "starChallengeLegend": "Każda gwiazdka znika po chwili: złota pierwsza."
 }

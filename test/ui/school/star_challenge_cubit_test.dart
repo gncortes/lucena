@@ -49,30 +49,59 @@ void main() {
     challenge.start();
     expect(challenge.state.phase, ChallengePhase.running);
     expect(challenge.state.star, isNotNull);
-    now.advance(const Duration(seconds: 20));
+    now.advance(const Duration(seconds: 2));
     challenge.tick();
-    expect(challenge.state.timeLeft, const Duration(seconds: 40));
+    expect(challenge.state.timeLeft, const Duration(seconds: 58));
   });
 
-  test('pegar a estrela conta uma e acende outra; errar não conta', () async {
+  test(
+    'pegar a estrela vale os pontos dela e acende outra; errar não',
+    () async {
+      final challenge = cubit();
+      await challenge.load(ChallengePiece.rook, ChallengeLevel.easy);
+      challenge.start();
+      final first = challenge.state.star!;
+      final move = toStar(challenge.state)!;
+      final elsewhere = StarChallengeRules.movesOf(
+        LessonRules.starsBoard(challenge.state.fen!),
+        move.from,
+      ).firstWhere((square) => square != first);
+
+      challenge.play(NormalMove(from: move.from, to: elsewhere));
+      expect(challenge.state.collected, 0);
+      expect(challenge.state.star, first);
+
+      final again = toStar(challenge.state)!;
+      final worth = challenge.state.starKind.points;
+      challenge.play(again);
+      expect(challenge.state.collected, 1);
+      expect(challenge.state.points, worth);
+      expect(challenge.state.lastPoints, worth);
+      expect(challenge.state.star, isNot(first));
+    },
+  );
+
+  test('a estrela some no prazo dela e outra acende, sem ponto', () async {
     final challenge = cubit();
-    await challenge.load(ChallengePiece.rook, ChallengeLevel.easy);
+    await challenge.load(ChallengePiece.queen, ChallengeLevel.easy);
     challenge.start();
     final first = challenge.state.star!;
-    final move = toStar(challenge.state)!;
-    final elsewhere = StarChallengeRules.movesOf(
-      LessonRules.starsBoard(challenge.state.fen!),
-      move.from,
-    ).firstWhere((square) => square != first);
+    final lifetime = challenge.state.starLifetime;
+    expect(
+      lifetime,
+      ChallengeLevel.easy.starLifetime(challenge.state.starKind),
+    );
 
-    challenge.play(NormalMove(from: move.from, to: elsewhere));
-    expect(challenge.state.collected, 0);
+    now.advance(lifetime - const Duration(milliseconds: 500));
+    challenge.tick();
     expect(challenge.state.star, first);
+    expect(challenge.state.starBlinking, isTrue);
 
-    final again = toStar(challenge.state)!;
-    challenge.play(again);
-    expect(challenge.state.collected, 1);
-    expect(challenge.state.star, isNot(first));
+    now.advance(const Duration(milliseconds: 600));
+    challenge.tick();
+    expect(challenge.state.star, isNotNull);
+    expect(challenge.state.starTimeLeft, challenge.state.starLifetime);
+    expect(challenge.state.points, 0);
   });
 
   test(
@@ -81,27 +110,37 @@ void main() {
       final challenge = cubit();
       await challenge.load(ChallengePiece.knight, ChallengeLevel.easy);
       challenge.start();
+      var points = 0;
       for (var i = 0; i < 12; i++) {
+        points += challenge.state.starKind.points;
         challenge.play(toStar(challenge.state)!);
       }
-      now.advance(const Duration(seconds: 30));
+      expect(challenge.state.points, points);
+      now.advance(const Duration(seconds: 1));
+      final starLeft =
+          challenge.state.starLifetime - const Duration(seconds: 1);
       challenge.pause();
       now.advance(const Duration(minutes: 5));
       challenge.resume();
       challenge.tick();
       expect(challenge.state.phase, ChallengePhase.running);
-      expect(challenge.state.timeLeft, const Duration(seconds: 30));
+      expect(challenge.state.timeLeft, const Duration(seconds: 59));
+      // A pausa também não gastou o prazo da estrela.
+      expect(challenge.state.starTimeLeft, starLeft);
 
-      now.advance(const Duration(seconds: 31));
+      now.advance(const Duration(seconds: 60));
       challenge.tick();
       await Future<void>.delayed(Duration.zero);
       expect(challenge.state.phase, ChallengePhase.finished);
       expect(challenge.state.collected, 12);
-      expect(challenge.state.earned, 1);
+      expect(
+        challenge.state.earned,
+        StarChallengeRules.earned(ChallengeLevel.easy, points),
+      );
       expect(challenge.state.newBest, isTrue);
       expect(
         progress.saved.bestOf(ChallengePiece.knight, ChallengeLevel.easy),
-        12,
+        points,
       );
     },
   );
@@ -125,6 +164,6 @@ void main() {
     expect(challenge.state.newBest, isFalse);
     await challenge.retry();
     expect(challenge.state.phase, ChallengePhase.ready);
-    expect(challenge.state.collected, 0);
+    expect(challenge.state.points, 0);
   });
 }

@@ -2550,5 +2550,51 @@
   "starChallengePaused": "Paused",
   "@starChallengePaused": {
     "description": "Shown while the challenge clock is paused (app in background)."
+  },
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Star challenge: {piece}",
+  "@starChallengeTitle": {
+    "description": "App bar of a star challenge: the piece and the level.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "Rook"
+      },
+      "level": {
+        "type": "String",
+        "example": "Easy"
+      }
+    }
+  },
+  "@lessonToChallenge": {
+    "description": "Button at the end of a piece lesson that opens that piece's star challenge.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "Rook"
+      }
+    }
+  },
+  "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
+  "starChallengePointsTotal": "{count} points in all",
+  "starChallengeLegend": "Each star fades after a while: the gold one goes first.",
+  "@starChallengePoints": {
+    "description": "Points of a star challenge.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@starChallengePointsTotal": {
+    "description": "Sum of the best scores of a piece across levels.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@starChallengeLegend": {
+    "description": "Before starting: stars fade after a while, the gold one fastest."
   }
 }
