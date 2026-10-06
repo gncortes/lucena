@@ -28,6 +28,22 @@ const pt: Dictionary = {
     note: 'Android, versão de testes. Em breve no Google Play.',
     chips: ['Maia 1000–2600', 'Stockfish', 'Aulas interativas'],
   },
+  stats: [
+    { value: '9', label: 'níveis do Maia, de 1000 a 2600' },
+    { value: '12', label: 'aulas de finais clássicos' },
+    { value: '25', label: 'aulas para quem está começando' },
+    { value: '55', label: 'finais para treinar quantas vezes quiser' },
+  ],
+  marquee: [
+    'Posição de Lucena',
+    'Posição de Philidor',
+    'Dama contra torre',
+    'Mate de bispo e cavalo',
+    'Casas-chave',
+    'Oposição à distância',
+    'Defesa pela última fileira',
+    'Defesa pelo lado curto',
+  ],
   message: {
     kicker: 'Aprender xadrez pelos finais',
     title: 'Comece pelo fim do tabuleiro',
@@ -42,6 +58,8 @@ const pt: Dictionary = {
       'Posição de Lucena: rei branco em b8, peão em b7 e torre em c1; rei preto em d8 e torre em a2.',
     boardCaption:
       'A posição de Lucena, o final de torre que dá nome ao app. Ganhar daqui é uma técnica, e o app ensina passo a passo.',
+    boardMoves: ['1. Td1+', '1... Re7', '2. Td4!', '2... Ta1', '3. Rc7', '3... Tc1+', '4. Rb6', '4... Tb1+', '5. Rc6', '5... Tc1+', '6. Rb5', '6... Tb1+', '7. Tb4'],
+    boardWin: 'A ponte: o peão vai coroar.',
   },
   story: {
     kicker: 'Por que o Lucena existe',

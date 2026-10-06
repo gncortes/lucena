@@ -85,6 +85,7 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <!-- Aplica o tema salvo antes de pintar, para não piscar. -->
     <script is:inline>
+      document.documentElement.classList.add('js');
       try {
         const theme = localStorage.getItem('theme');
         if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
