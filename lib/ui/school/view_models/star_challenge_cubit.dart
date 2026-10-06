@@ -214,7 +214,8 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     final level = state.level!;
     final collected = state.collected;
     final earned = StarChallengeRules.earned(level, collected);
-    final newBest = collected > (state.best ?? -1);
+    // Zero estrela não é recorde.
+    final newBest = collected > 0 && collected > (state.best ?? 0);
     if (newBest) {
       final all = await _progress.load();
       await _progress.save(all.withBest(piece, level, collected));
