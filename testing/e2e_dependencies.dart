@@ -43,6 +43,7 @@ import 'package:lucena/data/repositories/endgames/endgame_progress_repository.da
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
+import 'package:lucena/data/repositories/review/game_review_repository.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/use_cases/position_assessment.dart';
@@ -50,9 +51,13 @@ import 'package:lucena/domain/use_cases/position_assessment.dart';
 import 'fakes/fake_draw_offer_repository.dart';
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_analysis_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_opponent_repository.dart';
+
+/// A engine da revisão nos cenários: a de mentira, determinística.
+final e2eAnalysis = FakeAnalysisRepository();
 
 /// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
 final e2eSound = FakeSoundRepository();
@@ -155,6 +160,8 @@ Future<Dependencies> e2eDependencies() async {
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: FakeHapticsRepository(),
     soundRepository: e2eSound,
+    analysisRepository: e2eAnalysis,
+    gameReviewRepository: LocalGameReviewRepository(PreferencesService()),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: positions,
@@ -246,6 +253,9 @@ Future<void> resetE2EData() async {
   e2eOpponent.reset();
   e2eMaia.reset();
   e2eSound.played.clear();
+  e2eAnalysis
+    ..requests.clear()
+    ..answer.clear();
   e2eDraws
     ..accept = false
     ..offers = 0;

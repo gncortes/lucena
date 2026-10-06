@@ -73,6 +73,69 @@ class StockfishService {
 
   static final _score = RegExp(r' score (cp|mate) (-?\d+)');
 
+  /// As [lines] melhores linhas em [fen], com profundidade [depth]: para cada
+  /// uma, a avaliação do ponto de vista de quem joga e os lances (UCI). Lista
+  /// vazia se a posição não tem lance.
+  Future<List<({int? centipawns, int? mate, List<String> moves})>> analyse(
+    String fen, {
+    required int depth,
+    int lines = 1,
+  }) {
+    final result = _queue.then((_) => _analyse(fen, depth, lines));
+    _queue = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  Future<List<({int? centipawns, int? mate, List<String> moves})>> _analyse(
+    String fen,
+    int depth,
+    int lines,
+  ) async {
+    final engine = await _ready();
+    final found = <int, ({int? centipawns, int? mate, List<String> moves})>{};
+    final done = Completer<void>();
+    final listening = engine.stdout.listen((line) {
+      if (parseInfo(line) case (final index, final result)?) {
+        found[index] = result;
+      }
+      if (line.startsWith('bestmove') && !done.isCompleted) done.complete();
+    });
+    try {
+      engine.stdin = 'setoption name MultiPV value $lines';
+      engine.stdin = 'position fen $fen';
+      engine.stdin = 'go depth $depth';
+      await done.future.timeout(const Duration(seconds: 30));
+    } finally {
+      await listening.cancel();
+      engine.stdin = 'setoption name MultiPV value 1';
+    }
+    return [for (final index in found.keys.toList()..sort()) found[index]!];
+  }
+
+  /// Lê uma linha `info` com avaliação e lances: o número da linha
+  /// (`multipv`, 1 se não vier) e a linha. Nula para as outras.
+  static (int, ({int? centipawns, int? mate, List<String> moves}))? parseInfo(
+    String line,
+  ) {
+    if (line.contains('lowerbound') || line.contains('upperbound')) return null;
+    final info = _info.firstMatch(line);
+    if (info == null) return null;
+    final value = int.parse(info.group(3)!);
+    return (
+      int.parse(info.group(1) ?? '1'),
+      (
+        centipawns: info.group(2) == 'cp' ? value : null,
+        mate: info.group(2) == 'mate' ? value : null,
+        moves: info.group(4)!.trim().split(' '),
+      ),
+    );
+  }
+
+  // `info depth 14 ... multipv 2 score cp -35 ... pv e2e4 e7e5 ...`
+  static final _info = RegExp(
+    r'^info .*?(?:multipv (\d+) .*?)?score (cp|mate) (-?\d+).* pv ((?:\S+ ?)+)$',
+  );
+
   Future<Stockfish> _ready() async {
     final engine = _engine;
     if (engine != null && engine.state.value == StockfishState.ready) {
