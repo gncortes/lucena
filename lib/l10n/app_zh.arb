@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "损失了一点：有更精确的着法",
   "qualityMistakeHint": "让局面明显变差",
   "qualityMissHint": "本已胜势却让它溜走",
-  "qualityBlunderHint": "葬送了结果：严重的错误"
+  "qualityBlunderHint": "葬送了结果：严重的错误",
+  "reviewQuick": "快速",
+  "reviewMedium": "中等",
+  "reviewDeep": "深度",
+  "reviewSpeedHint": "越深越准确，也越慢。所有着法评估完后显示准确率。"
 }

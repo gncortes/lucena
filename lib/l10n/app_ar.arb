@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "خسارة طفيفة: كانت هناك نقلة أدق",
   "qualityMistakeHint": "جعلت الوضعية أسوأ بوضوح",
   "qualityMissHint": "كان الفوز في المتناول وضاع",
-  "qualityBlunderHint": "ضيّعت النتيجة: خطأ جسيم"
+  "qualityBlunderHint": "ضيّعت النتيجة: خطأ جسيم",
+  "reviewQuick": "سريعة",
+  "reviewMedium": "متوسطة",
+  "reviewDeep": "عميقة",
+  "reviewSpeedHint": "كلما كانت أعمق كانت أدق وأبطأ. تظهر الدقة بعد تقييم كل النقلات."
 }

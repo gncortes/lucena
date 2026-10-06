@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Ha perso un po': c'era una mossa più precisa",
   "qualityMistakeHint": "Ha peggiorato chiaramente la posizione",
   "qualityMissHint": "Aveva la vittoria e se l'è lasciata sfuggire",
-  "qualityBlunderHint": "Ha buttato via il risultato: un errore serio"
+  "qualityBlunderHint": "Ha buttato via il risultato: un errore serio",
+  "reviewQuick": "Rapida",
+  "reviewMedium": "Media",
+  "reviewDeep": "Approfondita",
+  "reviewSpeedHint": "Più è approfondita, più è precisa e lenta. La precisione appare quando tutte le mosse sono valutate."
 }

@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Iets verloren: er was een nauwkeurigere zet",
   "qualityMistakeHint": "Maakte de stelling duidelijk slechter",
   "qualityMissHint": "Stond gewonnen en liet het glippen",
-  "qualityBlunderHint": "Gooide het resultaat weg: een zware fout"
+  "qualityBlunderHint": "Gooide het resultaat weg: een zware fout",
+  "reviewQuick": "Snel",
+  "reviewMedium": "Gemiddeld",
+  "reviewDeep": "Diep",
+  "reviewSpeedHint": "Hoe dieper, hoe nauwkeuriger en trager. De nauwkeurigheid verschijnt als alle zetten beoordeeld zijn."
 }

@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "کمی از دست رفت: حرکتی دقیق‌تر وجود داشت",
   "qualityMistakeHint": "وضعیت را به‌وضوح بدتر کرد",
   "qualityMissHint": "برد در دست بود و از دست رفت",
-  "qualityBlunderHint": "نتیجه را دور ریخت: اشتباهی جدی"
+  "qualityBlunderHint": "نتیجه را دور ریخت: اشتباهی جدی",
+  "reviewQuick": "سریع",
+  "reviewMedium": "متوسط",
+  "reviewDeep": "عمیق",
+  "reviewSpeedHint": "هرچه عمیق‌تر، دقیق‌تر و کندتر. دقت پس از ارزیابی همه حرکت‌ها نمایش داده می‌شود."
 }

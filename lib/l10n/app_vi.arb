@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Mất một chút: có nước chính xác hơn",
   "qualityMistakeHint": "Làm thế cờ xấu đi rõ rệt",
   "qualityMissHint": "Đang thắng nhưng để tuột mất",
-  "qualityBlunderHint": "Vứt bỏ kết quả: một sai lầm nghiêm trọng"
+  "qualityBlunderHint": "Vứt bỏ kết quả: một sai lầm nghiêm trọng",
+  "reviewQuick": "Nhanh",
+  "reviewMedium": "Vừa",
+  "reviewDeep": "Sâu",
+  "reviewSpeedHint": "Càng sâu càng chính xác và càng lâu. Độ chính xác hiện khi mọi nước đã được đánh giá."
 }

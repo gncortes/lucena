@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Stracił trochę: był dokładniejszy ruch",
   "qualityMistakeHint": "Wyraźnie pogorszył pozycję",
   "qualityMissHint": "Miał wygraną i ją wypuścił",
-  "qualityBlunderHint": "Zmarnował wynik: poważny błąd"
+  "qualityBlunderHint": "Zmarnował wynik: poważny błąd",
+  "reviewQuick": "Szybka",
+  "reviewMedium": "Średnia",
+  "reviewDeep": "Głęboka",
+  "reviewSpeedHint": "Im głębsza, tym dokładniejsza i wolniejsza. Dokładność pojawi się, gdy wszystkie ruchy zostaną ocenione."
 }

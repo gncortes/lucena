@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Sedikit merugi: ada langkah yang lebih tepat",
   "qualityMistakeHint": "Membuat posisi jelas lebih buruk",
   "qualityMissHint": "Sudah menang tapi melepaskannya",
-  "qualityBlunderHint": "Membuang hasil: kesalahan serius"
+  "qualityBlunderHint": "Membuang hasil: kesalahan serius",
+  "reviewQuick": "Cepat",
+  "reviewMedium": "Sedang",
+  "reviewDeep": "Mendalam",
+  "reviewSpeedHint": "Makin dalam, makin akurat dan makin lama. Akurasi muncul setelah semua langkah dinilai."
 }

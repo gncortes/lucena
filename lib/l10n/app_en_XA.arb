@@ -524,5 +524,9 @@
   "qualityInaccuracyHint": "[Löšt å lîttlé: å möŕé pŕéçîšé mövé éxîštéd one two three four]",
   "qualityMistakeHint": "[Mådé thé pöšîtîöñ çléåŕlý wöŕšé one two three]",
   "qualityMissHint": "[Håd å wîññîñĝ pöšîtîöñ åñd lét ît šlîp one two three four]",
-  "qualityBlunderHint": "[Thŕéw åwåý thé ŕéšûlt: å šéŕîöûš mîštåké one two three four]"
+  "qualityBlunderHint": "[Thŕéw åwåý thé ŕéšûlt: å šéŕîöûš mîštåké one two three four]",
+  "reviewQuick": "[Qûîçk one]",
+  "reviewMedium": "[Médîûm one]",
+  "reviewDeep": "[Déép one]",
+  "reviewSpeedHint": "[Thé déépéŕ, thé möŕé åççûŕåté åñd thé šlöwéŕ. Åççûŕåçý åppéåŕš whéñ évéŕý mövé håš bééñ ŕåtéd. one two three four five six seven eight]"
 }

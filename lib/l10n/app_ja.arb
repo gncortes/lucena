@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "少し損をした：より正確な手があった",
   "qualityMistakeHint": "局面を明らかに悪くした",
   "qualityMissHint": "勝ちがあったのに逃した",
-  "qualityBlunderHint": "結果を投げ捨てた：重大なミス"
+  "qualityBlunderHint": "結果を投げ捨てた：重大なミス",
+  "reviewQuick": "クイック",
+  "reviewMedium": "標準",
+  "reviewDeep": "詳細",
+  "reviewSpeedHint": "深いほど正確で時間がかかります。全ての手の評価が終わると精度が表示されます。"
 }

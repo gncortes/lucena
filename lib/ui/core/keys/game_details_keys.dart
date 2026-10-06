@@ -17,6 +17,8 @@ abstract final class GameDetailsKeys {
 
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.
   static const reviewButton = Key('gameDetails.review.button');
+  static const reviewQuick = Key('gameDetails.review.quick');
+  static const reviewDeep = Key('gameDetails.review.deep');
   static const reviewProgress = Key('gameDetails.review.progress');
   static const reviewSummary = Key('gameDetails.review.summary');
   static const accuracyWhite = Key('gameDetails.review.accuracy.white');
