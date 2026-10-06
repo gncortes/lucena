@@ -35,4 +35,7 @@ abstract final class RatingKeys {
   static Key entry(int index) => Key('rating.history.$index');
   static Key entryRating(int index) => Key('rating.history.$index.rating');
   static Key entryChange(int index) => Key('rating.history.$index.change');
+
+  /// A precisão do jogador na partida, se ela já foi revisada.
+  static Key entryAccuracy(int index) => Key('rating.history.$index.accuracy');
 }

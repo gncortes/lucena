@@ -530,5 +530,6 @@
   "reviewMedium": "Moyenne",
   "reviewDeep": "Approfondie",
   "reviewSpeedHint": "Plus elle est approfondie, plus elle est précise et lente. La précision apparaît quand tous les coups sont évalués.",
-  "reviewDeeper": "Revoir plus en profondeur"
+  "reviewDeeper": "Revoir plus en profondeur",
+  "resultReview": "Revoir la partie"
 }

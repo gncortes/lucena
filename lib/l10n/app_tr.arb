@@ -530,5 +530,6 @@
   "reviewMedium": "Orta",
   "reviewDeep": "Derin",
   "reviewSpeedHint": "Ne kadar derin, o kadar doğru ve yavaş. Doğruluk tüm hamleler değerlendirildiğinde görünür.",
-  "reviewDeeper": "Daha derin incele"
+  "reviewDeeper": "Daha derin incele",
+  "resultReview": "Oyunu incele"
 }

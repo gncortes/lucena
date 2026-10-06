@@ -530,5 +530,6 @@
   "reviewMedium": "متوسطة",
   "reviewDeep": "عميقة",
   "reviewSpeedHint": "كلما كانت أعمق كانت أدق وأبطأ. تظهر الدقة بعد تقييم كل النقلات.",
-  "reviewDeeper": "مراجعة أعمق"
+  "reviewDeeper": "مراجعة أعمق",
+  "resultReview": "مراجعة المباراة"
 }

@@ -92,6 +92,8 @@ void main() {
     expect(review.moves[0].best, 'g1g7');
     expect(review.whiteAccuracy, isNotNull);
     expect(reviews.reviews[id], same(review));
+    // A barra recebe a avaliação de cada posição assim que a engine termina.
+    expect(cubit.state.barScores.keys, containsAll([-1, 0, 1, 2]));
   });
 
   test('passando por todos os lances, sem revisar, a precisão aparece e fica '

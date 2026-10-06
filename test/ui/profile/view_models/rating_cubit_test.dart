@@ -1,12 +1,14 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 
 import '../../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -196,5 +198,58 @@ void main() {
       expect(cubit.state.games.single.attempt, isNull);
       expect(cubit.state.numbers, isNull);
     });
+
+    test(
+      'no histórico, a precisão do jogador nas partidas já revisadas',
+      () async {
+        final progress = FakeProgressRepository();
+        final reviews = FakeGameReviewRepository();
+        final reviewed = await progress.addAttempt(
+          Attempt(
+            positionId: 'basic.queen.0001',
+            playedAt: at,
+            outcome: AttemptOutcome.win,
+            fulfilled: true,
+            opponent: OpponentKind.maia,
+            opponentLevel: 1000,
+            userSide: Side.white,
+          ),
+        );
+        final black = await progress.addAttempt(
+          Attempt(
+            positionId: 'basic.queen.0001',
+            playedAt: at,
+            outcome: AttemptOutcome.loss,
+            fulfilled: false,
+            opponent: OpponentKind.maia,
+            opponentLevel: 1000,
+            userSide: Side.black,
+          ),
+        );
+        final plain = await progress.addAttempt(game(AttemptOutcome.loss));
+        for (final id in [reviewed, black]) {
+          await reviews.save(
+            id,
+            const GameReview(
+              moves: [],
+              whiteAccuracy: 91.4,
+              blackAccuracy: 62.5,
+            ),
+          );
+        }
+        final cubit = RatingCubit(
+          FakeRatingRepository(),
+          progress: progress,
+          reviews: reviews,
+        );
+        addTearDown(cubit.close);
+        await cubit.load();
+
+        final log = {for (final game in cubit.state.log) game.id: game};
+        expect(log[reviewed]!.accuracy, 91.4);
+        expect(log[black]!.accuracy, 62.5);
+        expect(log[plain]!.accuracy, isNull);
+      },
+    );
   });
 }

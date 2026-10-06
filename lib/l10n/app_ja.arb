@@ -530,5 +530,6 @@
   "reviewMedium": "標準",
   "reviewDeep": "詳細",
   "reviewSpeedHint": "深いほど正確で時間がかかります。全ての手の評価が終わると精度が表示されます。",
-  "reviewDeeper": "さらに深く検討する"
+  "reviewDeeper": "さらに深く検討する",
+  "resultReview": "対局を振り返る"
 }

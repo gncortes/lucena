@@ -530,5 +530,6 @@
   "reviewMedium": "Media",
   "reviewDeep": "Approfondita",
   "reviewSpeedHint": "Più è approfondita, più è precisa e lenta. La precisione appare quando tutte le mosse sono valutate.",
-  "reviewDeeper": "Rivedi più a fondo"
+  "reviewDeeper": "Rivedi più a fondo",
+  "resultReview": "Rivedi la partita"
 }

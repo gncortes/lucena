@@ -448,11 +448,7 @@ class _AccuracyBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
     final value = this.value;
-    final text = value == null
-        ? '–'
-        : locale.startsWith('en')
-        ? value.toStringAsFixed(1)
-        : value.toStringAsFixed(1).replaceAll('.', ',');
+    final text = value == null ? '–' : formatAccuracy(value, locale);
     return Container(
       constraints: const BoxConstraints(minWidth: 96),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -521,6 +517,9 @@ class _ReviewBoardState extends State<ReviewBoard> {
     }
   }
 
+  /// A última avaliação mostrada na barra.
+  EngineScore? _lastScore;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -536,13 +535,17 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final showBar = context.select(
       (SettingsCubit cubit) => cubit.state?.evalBar ?? true,
     );
-    final score = state.shownScore;
-    if (showBar && score == null) {
-      // Sem revisão nem engine: uma avaliação rápida só para a barra.
+    final shown = state.shownScore;
+    if (showBar && shown == null) {
+      // Sem anotação nem engine: uma avaliação rápida só para a barra.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.read<GameDetailsCubit>().scoreShown();
       });
     }
+    // Enquanto a engine avalia a posição nova, a barra fica onde estava (não
+    // volta para o meio).
+    final score = shown ?? _lastScore;
+    _lastScore = score;
     final boardSize = showBar ? widget.size - _barWidth - 6 : widget.size;
     final locale = Localizations.localeOf(context).toString();
     final reviewed = state.shownReview;

@@ -530,5 +530,6 @@
   "reviewMedium": "中等",
   "reviewDeep": "深度",
   "reviewSpeedHint": "越深越准确，也越慢。所有着法评估完后显示准确率。",
-  "reviewDeeper": "更深入地复盘"
+  "reviewDeeper": "更深入地复盘",
+  "resultReview": "复盘对局"
 }

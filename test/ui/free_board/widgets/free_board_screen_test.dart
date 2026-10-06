@@ -422,6 +422,19 @@ void main() {
     expect(cubit.state.moves, isEmpty);
   });
 
+  testWidgets('no tabuleiro livre a partida não fica no histórico: sem o '
+      'botão de revisar', (tester) async {
+    await pumpScreen(
+      tester,
+      fen:
+          'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+    );
+    await move(tester, 'h5', 'f7');
+
+    expect(find.byKey(FreeBoardKeys.endPanel), findsOneWidget);
+    expect(find.byKey(FreeBoardKeys.endReviewButton), findsNothing);
+  });
+
   testWidgets('em árabe o tabuleiro e a lista não espelham', (tester) async {
     await pumpScreen(tester, locale: const Locale('ar'));
 
@@ -1021,6 +1034,9 @@ void main() {
 
       expect(find.byKey(FreeBoardKeys.endNextButton), findsNothing);
       expect(find.byKey(FreeBoardKeys.endNewGameButton), findsOneWidget);
+      // A partida ficou no histórico: dá para abrir e revisar.
+      expect(find.byKey(FreeBoardKeys.endReviewButton), findsOneWidget);
+      expect(await cubit.savedGameId(), isNotNull);
     });
 
     testWidgets('celular pequeno: o tabuleiro ainda ocupa a largura toda e '

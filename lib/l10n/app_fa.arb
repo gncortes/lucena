@@ -530,5 +530,6 @@
   "reviewMedium": "متوسط",
   "reviewDeep": "عمیق",
   "reviewSpeedHint": "هرچه عمیق‌تر، دقیق‌تر و کندتر. دقت پس از ارزیابی همه حرکت‌ها نمایش داده می‌شود.",
-  "reviewDeeper": "بررسی عمیق‌تر"
+  "reviewDeeper": "بررسی عمیق‌تر",
+  "resultReview": "بررسی بازی"
 }

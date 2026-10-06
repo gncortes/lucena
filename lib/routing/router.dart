@@ -604,6 +604,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 speedruns: context.read<SpeedrunRepository>(),
                 journey: context.read<JourneyRepository>(),
                 characters: context.read<CharacterRepository>(),
+                reviews: context.read<GameReviewRepository>(),
                 now: context.read<Now>(),
               )..load(),
               child: const RatingScreen(),

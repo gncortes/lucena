@@ -530,5 +530,6 @@
   "reviewMedium": "Vừa",
   "reviewDeep": "Sâu",
   "reviewSpeedHint": "Càng sâu càng chính xác và càng lâu. Độ chính xác hiện khi mọi nước đã được đánh giá.",
-  "reviewDeeper": "Phân tích sâu hơn"
+  "reviewDeeper": "Phân tích sâu hơn",
+  "resultReview": "Xem lại ván cờ"
 }
