@@ -1,5 +1,5 @@
 import 'package:chessground/chessground.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
@@ -53,10 +53,21 @@ class EndgamesRobot {
     await $.pumpAndSettle();
   }
 
+  /// Rola a tela da aula até [key]. O `scrollTo` do Patrol só desce, e a
+  /// lista descarta o que ficou acima: se o item não existe, volta ao topo
+  /// (a fala do Viktor) antes de descer.
+  Future<PatrolFinder> _show(Key key) async {
+    if (!$(key).exists) {
+      await $(EndgameLessonKeys.speech)
+          .scrollTo(scrollDirection: AxisDirection.up);
+    }
+    return $(key).scrollTo();
+  }
+
   // A lição (os passos, na tela das aulas da escola).
 
   Future<void> openSteps() async {
-    await $(EndgameLessonKeys.lessonButton).scrollTo().tap();
+    await _show(EndgameLessonKeys.lessonButton).tap();
     await $(LessonKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
@@ -107,13 +118,13 @@ class EndgamesRobot {
   }
 
   Future<void> expectLessonDone() async {
-    await $(EndgameLessonKeys.lessonDone).scrollTo();
+    await _show(EndgameLessonKeys.lessonDone);
   }
 
   // Os exercícios.
 
   Future<void> openExercise(String lessonId, String exerciseId) async {
-    await $(EndgameLessonKeys.exercise(exerciseId)).scrollTo().tap();
+    await _show(EndgameLessonKeys.exercise(exerciseId)).tap();
     await expectExercise(lessonId, exerciseId);
   }
 
@@ -208,20 +219,21 @@ class EndgamesRobot {
     earned,
   );
 
-  /// O voltar da barra (ou do aparelho): de volta à aula.
+  /// O voltar da barra: de volta à aula (pelo widget, não pela dica
+  /// "Back", que muda com o idioma).
   Future<void> back() async {
-    await $.tester.pageBack();
+    await $(BackButton).tap();
     await expectLessonScreen();
   }
 
   // A nota e o passo final.
 
   Future<void> expectPassed() async {
-    await $(EndgameLessonKeys.passed).scrollTo();
+    await _show(EndgameLessonKeys.passed);
   }
 
   Future<void> expectFailed() async {
-    await $(EndgameLessonKeys.failed).scrollTo();
+    await _show(EndgameLessonKeys.failed);
   }
 
   /// A nota da aula ("11 of 23 stars").
@@ -233,16 +245,16 @@ class EndgamesRobot {
       expect(find.byKey(EndgameLessonKeys.failed), findsNothing);
 
   Future<void> redo() async {
-    await $(EndgameLessonKeys.redoButton).scrollTo().tap();
+    await _show(EndgameLessonKeys.redoButton).tap();
     await $.pumpAndSettle();
   }
 
   Future<void> expectFinalLocked() async {
-    await $(EndgameLessonKeys.finalLocked).scrollTo();
+    await _show(EndgameLessonKeys.finalLocked);
   }
 
   Future<void> expectFinalStep() async {
-    await $(EndgameLessonKeys.finalStep).scrollTo();
+    await _show(EndgameLessonKeys.finalStep);
   }
 
   /// Desafia o speedrun do final no ritmo [pace] (`180+2`).
