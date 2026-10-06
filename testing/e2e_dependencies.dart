@@ -50,8 +50,12 @@ import 'package:lucena/domain/use_cases/position_assessment.dart';
 import 'fakes/fake_draw_offer_repository.dart';
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_opponent_repository.dart';
+
+/// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
+final e2eSound = FakeSoundRepository();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
@@ -150,6 +154,7 @@ Future<Dependencies> e2eDependencies() async {
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: FakeHapticsRepository(),
+    soundRepository: e2eSound,
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: positions,

@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} puan",
   "starChallengePointsTotal": "Toplam {count} puan",
   "starChallengeLegend": "Her yıldız bir süre sonra kaybolur: önce altın olan.",
-  "starChallengeObstacles": "Siyah piyonlar sadece yolu kapatır: alınamazlar. Topladığın şey yıldızlardır."
+  "starChallengeObstacles": "Siyah piyonlar sadece yolu kapatır: alınamazlar. Topladığın şey yıldızlardır.",
+  "settingsSound": "Sesler",
+  "settingsSoundHint": "Taş hamleleri ve süren azalınca bir uyarı",
+  "tourSoundTitle": "Sesli mi, sessiz mi?",
+  "tourSoundBody": "Her hamlede taşları ve saat bitmek üzereyken bir uyarı duy.",
+  "tourSoundOn": "Sesli",
+  "tourSoundOff": "Sessiz"
 }

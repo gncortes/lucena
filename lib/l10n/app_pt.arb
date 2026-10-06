@@ -477,5 +477,11 @@
   "starChallengePoints": "{count, plural, =1{1 ponto} other{{count} pontos}}",
   "starChallengePointsTotal": "{count} pontos no total",
   "starChallengeLegend": "Cada estrela some depois de um tempo: a de ouro vai primeiro.",
-  "starChallengeObstacles": "Os peões pretos só atrapalham: não dá para capturá-los. O que você pega são as estrelas."
+  "starChallengeObstacles": "Os peões pretos só atrapalham: não dá para capturá-los. O que você pega são as estrelas.",
+  "settingsSound": "Sons",
+  "settingsSoundHint": "Lances das peças e um aviso quando o seu tempo estiver acabando",
+  "tourSoundTitle": "Com som ou sem som?",
+  "tourSoundBody": "Ouça as peças a cada lance e um aviso quando o relógio estiver acabando.",
+  "tourSoundOn": "Com som",
+  "tourSoundOff": "Sem som"
 }

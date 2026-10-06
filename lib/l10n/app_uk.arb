@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очки} other{{count} очок}}",
   "starChallengePointsTotal": "Усього очок: {count}",
   "starChallengeLegend": "Кожна зірка гасне через час: золота першою.",
-  "starChallengeObstacles": "Чорні пішаки лише заважають: їх не можна взяти. Ви збираєте зірки."
+  "starChallengeObstacles": "Чорні пішаки лише заважають: їх не можна взяти. Ви збираєте зірки.",
+  "settingsSound": "Звуки",
+  "settingsSoundHint": "Ходи фігур і сигнал, коли час закінчується",
+  "tourSoundTitle": "Зі звуком чи без?",
+  "tourSoundBody": "Слухайте фігури під час кожного ходу і сигнал, коли час на годиннику закінчується.",
+  "tourSoundOn": "Зі звуком",
+  "tourSoundOff": "Без звуку"
 }

@@ -29,5 +29,8 @@ abstract class AppSettings with _$AppSettings {
 
     /// Os personagens comentam a partida num balão de fala.
     @Default(true) bool characterTalk,
+
+    /// Os sons do jogo: o das peças a cada lance e o aviso do relógio.
+    @Default(true) bool sound,
   }) = _AppSettings;
 }

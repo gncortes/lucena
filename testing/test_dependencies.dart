@@ -40,6 +40,7 @@ import 'fakes/fake_star_challenge_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_journey_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
 import 'fakes/fake_maia_repository.dart';
@@ -87,6 +88,7 @@ Dependencies testDependencies({
     settingsRepository: settingsRepository ?? FakeSettingsRepository(),
     profileRepository: profileRepository ?? FakeProfileRepository(),
     hapticsRepository: hapticsRepository ?? FakeHapticsRepository(),
+    soundRepository: FakeSoundRepository(),
     ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
     positionsRepository: positionsRepository ?? FakePositionsRepository(),
     trainingRepository: trainingRepository ?? FakeTrainingRepository(),
