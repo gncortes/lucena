@@ -74,6 +74,7 @@ class TalkStep extends LessonStep {
     super.fen,
     this.arrows = const [],
     this.marks = const [],
+    this.view,
   });
 
   /// Setas, cada uma `de` → `para` (`d4`, `d8`).
@@ -81,6 +82,13 @@ class TalkStep extends LessonStep {
 
   /// Casas marcadas com um círculo (`e4`).
   final List<String> marks;
+
+  /// De que lado o tabuleiro é visto. Nulo: do lado que joga no FEN. Serve
+  /// para mostrar do lado do aluno uma posição em que joga o outro lado.
+  final Side? view;
+
+  @override
+  Side get side => view ?? super.side;
 }
 
 /// Aprender o movimento: levar a peça às estrelas, em qualquer ordem. O

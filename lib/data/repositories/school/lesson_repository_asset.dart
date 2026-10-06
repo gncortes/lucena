@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:dartchess/dartchess.dart';
+
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/lesson.dart';
@@ -97,6 +99,11 @@ class AssetLessonRepository implements LessonRepository {
           for (final mark in json['marks'] as List? ?? const [])
             if (mark is String) mark,
         ],
+        view: switch (json['side']) {
+          'white' => Side.white,
+          'black' => Side.black,
+          _ => null,
+        },
       ),
       'stars' when fen != null => StarsStep(
         id: id,
