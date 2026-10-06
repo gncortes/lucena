@@ -47,6 +47,9 @@ import 'package:lucena/data/repositories/review/game_review_repository.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/use_cases/position_assessment.dart';
+import 'package:lucena/data/repositories/analysis/analysis_repository_stockfish.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_review.dart';
 
 import 'fakes/fake_draw_offer_repository.dart';
 import 'fakes/fake_evaluation_repository.dart';
@@ -56,8 +59,28 @@ import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_opponent_repository.dart';
 
-/// A engine da revisão nos cenários: a de mentira, determinística.
-final e2eAnalysis = FakeAnalysisRepository();
+/// A engine da revisão nos cenários: a de mentira, determinística; com
+/// [E2EAnalysis.useStockfish], o Stockfish de verdade (para ver a revisão
+/// real no emulador).
+final e2eAnalysis = E2EAnalysis();
+
+class E2EAnalysis extends FakeAnalysisRepository {
+  bool useStockfish = false;
+  late final _stockfish = StockfishAnalysisRepository(StockfishService());
+
+  @override
+  Future<List<EngineLine>> analyse(
+    Position position, {
+    required int depth,
+    int lines = 1,
+  }) => useStockfish
+      ? _stockfish.analyse(position, depth: depth, lines: lines)
+      : super.analyse(position, depth: depth, lines: lines);
+}
+
+/// Grava uma partida terminada no histórico do app aberto e devolve o id.
+Future<int> seedAttempt(Attempt attempt) =>
+    LocalProgressRepository(_database!).addAttempt(attempt);
 
 /// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
 final e2eSound = FakeSoundRepository();
@@ -254,6 +277,7 @@ Future<void> resetE2EData() async {
   e2eMaia.reset();
   e2eSound.played.clear();
   e2eAnalysis
+    ..useStockfish = false
     ..requests.clear()
     ..answer.clear();
   e2eDraws
