@@ -38,8 +38,11 @@ def turns(fen, sans, accept='best'):
     return out
 
 
-def talk(id, fen, arrows=(), marks=()):
+def talk(id, fen, arrows=(), marks=(), side='white'):
+    """Passo de fala, visto do lado `side` (o do aluno), jogue quem jogar."""
     step = {'type': 'talk', 'id': id, 'fen': fen}
+    if fen.split()[1] != side[0]:
+        step['side'] = side
     if arrows:
         step['arrows'] = list(arrows)
     if marks:

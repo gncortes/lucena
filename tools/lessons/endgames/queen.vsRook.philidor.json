@@ -6,6 +6,7 @@
       "type": "talk",
       "id": "intro",
       "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "a5a8",
         "c6c7"
@@ -20,6 +21,7 @@
       "type": "talk",
       "id": "near",
       "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "b7a7",
         "b7c7",
@@ -50,6 +52,7 @@
       "type": "talk",
       "id": "far",
       "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+      "side": "white",
       "marks": [
         "b1",
         "b2",
@@ -219,6 +222,7 @@
       "type": "talk",
       "id": "squeeze",
       "fen": "1k6/2r5/QK6/8/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "c7c6"
       ],
@@ -230,6 +234,7 @@
       "type": "talk",
       "id": "false",
       "fen": "1k6/1r6/K7/2Q5/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "b7d7"
       ],
@@ -242,6 +247,7 @@
       "type": "talk",
       "id": "recap",
       "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "a5e5"
       ],
