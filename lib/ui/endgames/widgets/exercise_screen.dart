@@ -12,6 +12,7 @@ import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -22,7 +23,19 @@ import 'stars_row.dart';
 /// Um exercício: o Viktor dá o enunciado, o aluno acha os lances no
 /// tabuleiro; no fim, a solução, as estrelas ganhas e o próximo exercício.
 class ExerciseScreen extends StatefulWidget {
-  const ExerciseScreen({super.key});
+  const ExerciseScreen({
+    this.lessonId,
+    this.exerciseId,
+    this.previewFen,
+    super.key,
+  });
+
+  /// A aula e o exercício (da rota), para o voo da miniatura da lista até o
+  /// tabuleiro: [previewFen] é a posição, mostrada parada enquanto o
+  /// exercício carrega, porque o voo precisa do destino já no primeiro quadro.
+  final String? lessonId;
+  final String? exerciseId;
+  final String? previewFen;
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -117,13 +130,17 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
+  /// O tabuleiro fica com chave: a coluna troca de filhos quando o exercício
+  /// carrega, e o voo da miniatura só continua se o widget for o mesmo.
+  static const _boardAreaKey = ValueKey('exercise.boardArea');
+
   Widget _body(
     BuildContext context,
     ExerciseState state,
     BoardSettings boardSettings,
   ) {
     final l10n = context.l10n;
-    if (!state.ready) return const SizedBox.shrink();
+    if (!state.ready) return _loading(context, state, boardSettings);
     final exercise = state.exercise;
     if (state.missing || exercise == null) {
       return Center(
@@ -173,8 +190,41 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               bubbleKey: ExerciseKeys.speech,
             ),
           ),
-        Expanded(child: _boardArea(context, state, boardSettings)),
+        Expanded(
+          key: _boardAreaKey,
+          child: _boardArea(context, state, boardSettings),
+        ),
         _actions(context, state),
+      ],
+    );
+  }
+
+  /// Enquanto o exercício carrega: o mesmo desenho, com a posição parada no
+  /// lugar do tabuleiro (se a rota a trouxe), para a miniatura pousar nela.
+  Widget _loading(
+    BuildContext context,
+    ExerciseState state,
+    BoardSettings boardSettings,
+  ) {
+    if (widget.previewFen == null) return const SizedBox.shrink();
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Row(
+            children: [
+              const Expanded(child: StepProgress(total: 1, value: 0)),
+              const SizedBox(width: 12),
+              const StarsRow(total: 1, earned: 0),
+            ],
+          ),
+        ),
+        Container(constraints: const BoxConstraints(minHeight: 172)),
+        Expanded(
+          key: _boardAreaKey,
+          child: _boardArea(context, state, boardSettings),
+        ),
+        const SizedBox(height: 64),
       ],
     );
   }
@@ -185,10 +235,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     BoardSettings boardSettings,
   ) {
     final board = _board;
-    if (board == null) return const SizedBox.shrink();
+    final previewFen = widget.previewFen;
+    if (board == null && previewFen == null) return const SizedBox.shrink();
+    final lessonId = state.lesson?.id ?? widget.lessonId ?? '';
+    final exerciseId = state.exercise?.id ?? widget.exerciseId ?? '';
     return LayoutBuilder(
       builder: (context, constraints) {
-        final size = min(constraints.maxWidth - 16, constraints.maxHeight - 8);
+        final size = max(
+          min(constraints.maxWidth - 16, constraints.maxHeight - 8),
+          120.0,
+        );
         final hint = state.hint;
         return Align(
           alignment: Alignment.topCenter,
@@ -203,27 +259,34 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             ),
             // A miniatura da lista voa até aqui e vira o tabuleiro.
             child: Hero(
-              tag: exerciseHeroTag(state.lesson!.id, state.exercise!.id),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: Chessboard(
-                  key: ExerciseKeys.board,
-                  size: max(size, 120),
-                  controller: board,
-                  settings: boardSettings.chessground,
-                  orientation: state.side,
-                  shapes: {
-                    if (hint is NormalMove)
-                      Arrow(
-                        color: const Color(0xcc15781b),
-                        orig: hint.from,
-                        dest: hint.to,
+              tag: exerciseHeroTag(lessonId, exerciseId),
+              child: board == null
+                  ? PositionBoard(
+                      fen: previewFen!,
+                      size: size,
+                      radius: 0,
+                      coordinates: true,
+                    )
+                  : Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Chessboard(
+                        key: ExerciseKeys.board,
+                        size: size,
+                        controller: board,
+                        settings: boardSettings.chessground,
+                        orientation: state.side,
+                        shapes: {
+                          if (hint is NormalMove)
+                            Arrow(
+                              color: const Color(0xcc15781b),
+                              orig: hint.from,
+                              dest: hint.to,
+                            ),
+                        },
+                        onMove: (move, {viaDragAndDrop}) =>
+                            context.read<ExerciseCubit>().play(move),
                       ),
-                  },
-                  onMove: (move, {viaDragAndDrop}) =>
-                      context.read<ExerciseCubit>().play(move),
-                ),
-              ),
+                    ),
             ),
           ),
         );

@@ -352,6 +352,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         )..load(id, exercise, _language(context)),
                         child: ExerciseScreen(
                           key: ValueKey('exercise.$id.$exercise'),
+                          lessonId: id,
+                          exerciseId: exercise,
+                          // A lista manda a posição, para a miniatura voar.
+                          previewFen: state.extra as String?,
                         ),
                       );
                     },
