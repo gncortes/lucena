@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} điểm",
   "starChallengePointsTotal": "Tổng {count} điểm",
   "starChallengeLegend": "Mỗi ngôi sao biến mất sau một lúc: sao vàng đi trước.",
-  "starChallengeObstacles": "Các tốt đen chỉ cản đường: không thể bắt chúng. Thứ bạn thu là các ngôi sao."
+  "starChallengeObstacles": "Các tốt đen chỉ cản đường: không thể bắt chúng. Thứ bạn thu là các ngôi sao.",
+  "settingsSound": "Âm thanh",
+  "settingsSoundHint": "Tiếng quân cờ và cảnh báo khi bạn sắp hết giờ",
+  "tourSoundTitle": "Bật hay tắt âm thanh?",
+  "tourSoundBody": "Nghe tiếng quân cờ ở mỗi nước đi và cảnh báo khi đồng hồ sắp hết.",
+  "tourSoundOn": "Bật âm thanh",
+  "tourSoundOff": "Tắt âm thanh"
 }

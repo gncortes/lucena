@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} امتیاز",
   "starChallengePointsTotal": "در مجموع {count} امتیاز",
   "starChallengeLegend": "هر ستاره پس از مدتی ناپدید می‌شود: طلایی زودتر.",
-  "starChallengeObstacles": "پیاده‌های سیاه فقط سد راه‌اند: نمی‌توان آن‌ها را زد. چیزی که جمع می‌کنی ستاره‌هاست."
+  "starChallengeObstacles": "پیاده‌های سیاه فقط سد راه‌اند: نمی‌توان آن‌ها را زد. چیزی که جمع می‌کنی ستاره‌هاست.",
+  "settingsSound": "صداها",
+  "settingsSoundHint": "حرکت مهره‌ها و هشدار وقتی زمان شما رو به پایان است",
+  "tourSoundTitle": "با صدا یا بی‌صدا؟",
+  "tourSoundBody": "صدای مهره‌ها را در هر حرکت و هشداری هنگام تمام شدن زمان ساعت بشنوید.",
+  "tourSoundOn": "با صدا",
+  "tourSoundOff": "بی‌صدا"
 }

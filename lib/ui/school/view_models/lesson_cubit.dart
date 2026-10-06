@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,6 +12,8 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
+import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/game_sound.dart';
 
 /// Em que pé está o passo aberto.
 enum StepPhase {
@@ -213,6 +217,7 @@ class LessonCubit extends Cubit<LessonState> {
     LessonSource? source,
     required this._characters,
     required this._opponent,
+    this._sounds,
     this.replyDelay = const Duration(milliseconds: 450),
   }) : _source = source ?? SchoolLessonSource(lessons!, progress!),
        super(const LessonState());
@@ -220,6 +225,9 @@ class LessonCubit extends Cubit<LessonState> {
   final LessonSource _source;
   final CharacterRepository _characters;
   final OpponentRepository _opponent;
+
+  // Os sons do jogo; nulo: a lição fica muda.
+  final GameSounds? _sounds;
 
   /// A pausa antes da resposta combinada do outro lado, para o aluno ver o
   /// próprio lance antes.
@@ -357,6 +365,7 @@ class LessonCubit extends Cubit<LessonState> {
     final board = LessonRules.starsBoard(state.fen!);
     final moved = LessonRules.moveStar(board, step.side, move.from, move.to);
     if (moved == null) return;
+    unawaited(_sounds?.play(GameSound.move));
     final star = move.to.name;
     final collected = [
       ...state.collected,
@@ -404,6 +413,7 @@ class LessonCubit extends Cubit<LessonState> {
     }
     final played = GameRules.play(position, move);
     if (played == null) return;
+    unawaited(_sounds?.move(played.san));
     final turn = step.line[state.turn];
     final ends = LessonRules.endsLine(step, state.turn, move.uci);
     if (ends) {
@@ -452,6 +462,7 @@ class LessonCubit extends Cubit<LessonState> {
         await _save();
         return;
       }
+      unawaited(_sounds?.move(answered.san));
       after = answered.position;
     }
     emit(
@@ -470,6 +481,7 @@ class LessonCubit extends Cubit<LessonState> {
     if (position == null) return;
     final played = GameRules.play(position, move);
     if (played == null) return;
+    unawaited(_sounds?.move(played.san));
     var moves = [...state.moves, move.uci];
     final start = GameRules.fromFen(step.fen)!;
     var result = LessonRules.resultOf(
@@ -513,6 +525,7 @@ class LessonCubit extends Cubit<LessonState> {
       emit(state.copyWith(phase: StepPhase.active));
       return;
     }
+    unawaited(_sounds?.move(answered.san));
     moves = [...moves, reply!.uci];
     result = LessonRules.resultOf(
       answered.position,

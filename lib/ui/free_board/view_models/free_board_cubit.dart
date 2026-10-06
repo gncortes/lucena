@@ -22,6 +22,8 @@ import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/think_time_policy.dart';
+import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/game_sound.dart';
 import 'free_board_state.dart';
 import 'game_reporter.dart';
 
@@ -52,6 +54,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     this._reporter,
     this._draws,
     this._speedruns,
+    this._sounds,
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -94,6 +97,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   // As tentativas de speedrun: sair no meio de uma encerra a tentativa.
   final SpeedrunRepository? _speedruns;
+
+  // Os sons do jogo; nulo: a partida fica muda.
+  final GameSounds? _sounds;
 
   // Os lados que já receberam o aviso de pouco tempo.
   final _lowTimeWarned = <Side>{};
@@ -225,6 +231,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (!_active || state.end != null) return;
     final played = GameRules.play(state.position, move);
     if (played == null) return;
+    unawaited(_sounds?.move(played.san));
     final now = _now();
     final turnStartedAt = state.turnStartedAt;
     var next = state.copyWith(
@@ -689,6 +696,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final playerSide = state.playerSide;
     if (playerSide != null && playerSide != running) return;
     unawaited(_vibrateIfEnabled());
+    unawaited(_sounds?.play(GameSound.lowTime));
   }
 
   Future<void> _vibrateIfEnabled() async {

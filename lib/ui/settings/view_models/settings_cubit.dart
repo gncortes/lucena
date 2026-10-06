@@ -1,18 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../data/repositories/sound/sound_repository.dart';
 import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
+import '../../../domain/models/game_sound.dart';
 
 /// Preferências do app. O estado é nulo até a primeira leitura terminar.
 class SettingsCubit extends Cubit<AppSettings?> {
-  SettingsCubit(this._repository, {required this.languages}) : super(null);
+  SettingsCubit(this._repository, {required this.languages, this._sound})
+    : super(null);
 
   final SettingsRepository _repository;
+
+  // Para tocar a amostra ao ligar os sons; nulo nos testes que não ligam.
+  final SoundRepository? _sound;
 
   /// Idiomas oferecidos na tela de idioma.
   final List<AppLanguage> languages;
@@ -53,6 +59,13 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update(
       (state ?? const AppSettings()).copyWith(characterTalk: enabled),
     );
+  }
+
+  /// Liga ou desliga os sons do jogo. Ao ligar, toca o som de um lance,
+  /// para o usuário ouvir o que escolheu.
+  Future<void> setSound({required bool enabled}) async {
+    await _update((state ?? const AppSettings()).copyWith(sound: enabled));
+    if (enabled) await _sound?.play(GameSound.move);
   }
 
   /// Cores, peças e coordenadas de fábrica; o resto do tabuleiro não muda.

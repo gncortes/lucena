@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 punkt} few{{count} punkty} other{{count} punktów}}",
   "starChallengePointsTotal": "Łącznie punktów: {count}",
   "starChallengeLegend": "Każda gwiazdka znika po chwili: złota pierwsza.",
-  "starChallengeObstacles": "Czarne piony tylko przeszkadzają: nie można ich bić. Zbierasz gwiazdki."
+  "starChallengeObstacles": "Czarne piony tylko przeszkadzają: nie można ich bić. Zbierasz gwiazdki.",
+  "settingsSound": "Dźwięki",
+  "settingsSoundHint": "Ruchy figur i sygnał, gdy kończy ci się czas",
+  "tourSoundTitle": "Z dźwiękiem czy bez?",
+  "tourSoundBody": "Usłysz figury przy każdym ruchu i sygnał, gdy zegar dobiega końca.",
+  "tourSoundOn": "Z dźwiękiem",
+  "tourSoundOff": "Bez dźwięku"
 }

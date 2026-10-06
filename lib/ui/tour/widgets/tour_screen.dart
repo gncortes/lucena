@@ -132,6 +132,7 @@ class TourScreen extends StatelessWidget {
                       child: switch (step) {
                         TourStep.theme => _ThemeStep(key: currentKey),
                         TourStep.board => _BoardStep(key: currentKey),
+                        TourStep.sound => _SoundStep(key: currentKey),
                         TourStep.level => _LevelStep(
                           key: currentKey,
                           state: state,
@@ -236,6 +237,7 @@ class _InfoStep extends StatelessWidget {
       ),
       TourStep.theme ||
       TourStep.board ||
+      TourStep.sound ||
       TourStep.level => (Icons.person_outline, '', ''),
     };
     return Center(
@@ -415,6 +417,43 @@ class _ThemeStep extends StatelessWidget {
             onSelected: settings.setAccent,
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Com som ou sem som. A escolha vale na hora e fica gravada; ao escolher
+/// "com som", o app toca o som de um lance.
+class _SoundStep extends StatelessWidget {
+  const _SoundStep({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final settings = context.read<SettingsCubit>();
+    final sound = context.select(
+      (SettingsCubit cubit) => cubit.state?.sound ?? true,
+    );
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
+      children: [
+        _ChoiceHeader(title: l10n.tourSoundTitle, body: l10n.tourSoundBody),
+        const SizedBox(height: 8),
+        for (final enabled in const [true, false])
+          ListTile(
+            key: TourKeys.sound(enabled: enabled),
+            selected: sound == enabled,
+            leading: Icon(
+              enabled ? Icons.volume_up_outlined : Icons.volume_off_outlined,
+            ),
+            title: Text(enabled ? l10n.tourSoundOn : l10n.tourSoundOff),
+            trailing: Icon(
+              sound == enabled
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+            ),
+            onTap: () => settings.setSound(enabled: enabled),
+          ),
       ],
     );
   }
