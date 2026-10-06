@@ -377,10 +377,9 @@ class _MoveTable extends StatelessWidget {
                 maxLines: 1,
               ),
             ),
-            if (state.review case final review?
-                when index < review.moves.length) ...[
+            if (state.reviewOf(index) case final reviewed?) ...[
               MoveQualityBadge(
-                review.moves[index].quality,
+                reviewed.quality,
                 size: 18,
                 key: GameDetailsKeys.moveQuality(index),
               ),
