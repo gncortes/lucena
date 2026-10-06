@@ -489,7 +489,6 @@
   "reviewRunning": "{total}수 중 {done}번째 수 분석 중",
   "reviewAccuracy": "정확도",
   "reviewYou": "나",
-  "reviewHint": "모든 수를 Stockfish가 평가. 정확도는 Lichess와 같은 방식으로 계산.",
   "qualityForced": "강제 수",
   "qualityGreat": "훌륭한 수",
   "qualityBest": "최선의 수",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "chess.com에서 열기",
   "reviewCopyFen": "포지션 복사 (FEN)",
   "reviewCopyPgn": "대국 복사 (PGN)",
-  "reviewCopied": "복사됨"
+  "reviewCopied": "복사됨",
+  "reviewLegend": "범례",
+  "reviewEvalBar": "평가 막대",
+  "qualityForcedHint": "유일하게 가능한 수",
+  "qualityGreatHint": "최선의 수이자 포지션을 지킨 유일한 수",
+  "qualityBestHint": "Stockfish가 둘 수",
+  "qualityExcellentHint": "최선의 수만큼 좋은 수",
+  "qualityGoodHint": "무난한 수지만 더 좋은 수가 있었음",
+  "qualityInaccuracyHint": "조금 손해: 더 정확한 수가 있었음",
+  "qualityMistakeHint": "포지션을 분명히 나쁘게 만듦",
+  "qualityMissHint": "이긴 판을 놓침",
+  "qualityBlunderHint": "결과를 날림: 심각한 실수"
 }

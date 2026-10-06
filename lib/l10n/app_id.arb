@@ -489,7 +489,6 @@
   "reviewRunning": "Menganalisis langkah {done} dari {total}",
   "reviewAccuracy": "Akurasi",
   "reviewYou": "Kamu",
-  "reviewHint": "Setiap langkah dinilai oleh Stockfish. Akurasi dihitung seperti di Lichess.",
   "qualityForced": "Langkah terpaksa",
   "qualityGreat": "Langkah hebat",
   "qualityBest": "Langkah terbaik",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Buka di chess.com",
   "reviewCopyFen": "Salin posisi (FEN)",
   "reviewCopyPgn": "Salin permainan (PGN)",
-  "reviewCopied": "Disalin"
+  "reviewCopied": "Disalin",
+  "reviewLegend": "Keterangan",
+  "reviewEvalBar": "Bilah evaluasi",
+  "qualityForcedHint": "Satu-satunya langkah yang mungkin",
+  "qualityGreatHint": "Langkah terbaik, dan satu-satunya yang mempertahankan posisi",
+  "qualityBestHint": "Langkah yang akan dimainkan Stockfish",
+  "qualityExcellentHint": "Hampir sebaik langkah terbaik",
+  "qualityGoodHint": "Langkah yang benar, tapi ada yang lebih baik",
+  "qualityInaccuracyHint": "Sedikit merugi: ada langkah yang lebih tepat",
+  "qualityMistakeHint": "Membuat posisi jelas lebih buruk",
+  "qualityMissHint": "Sudah menang tapi melepaskannya",
+  "qualityBlunderHint": "Membuang hasil: kesalahan serius"
 }

@@ -489,7 +489,6 @@
   "reviewRunning": "Đang phân tích nước {done} trên {total}",
   "reviewAccuracy": "Độ chính xác",
   "reviewYou": "Bạn",
-  "reviewHint": "Mỗi nước được Stockfish đánh giá. Độ chính xác tính như trên Lichess.",
   "qualityForced": "Nước bắt buộc",
   "qualityGreat": "Nước tuyệt vời",
   "qualityBest": "Nước tốt nhất",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Mở trên chess.com",
   "reviewCopyFen": "Sao chép thế cờ (FEN)",
   "reviewCopyPgn": "Sao chép ván cờ (PGN)",
-  "reviewCopied": "Đã sao chép"
+  "reviewCopied": "Đã sao chép",
+  "reviewLegend": "Chú thích",
+  "reviewEvalBar": "Thanh đánh giá",
+  "qualityForcedHint": "Nước đi duy nhất có thể",
+  "qualityGreatHint": "Nước tốt nhất và là nước duy nhất giữ được thế cờ",
+  "qualityBestHint": "Nước Stockfish sẽ đi",
+  "qualityExcellentHint": "Gần tốt bằng nước tốt nhất",
+  "qualityGoodHint": "Nước đi ổn nhưng có nước tốt hơn",
+  "qualityInaccuracyHint": "Mất một chút: có nước chính xác hơn",
+  "qualityMistakeHint": "Làm thế cờ xấu đi rõ rệt",
+  "qualityMissHint": "Đang thắng nhưng để tuột mất",
+  "qualityBlunderHint": "Vứt bỏ kết quả: một sai lầm nghiêm trọng"
 }

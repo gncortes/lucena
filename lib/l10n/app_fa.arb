@@ -489,7 +489,6 @@
   "reviewRunning": "در حال تحلیل حرکت {done} از {total}",
   "reviewAccuracy": "دقت",
   "reviewYou": "شما",
-  "reviewHint": "هر حرکت با Stockfish ارزیابی شده است. دقت مانند Lichess محاسبه می‌شود.",
   "qualityForced": "حرکت اجباری",
   "qualityGreat": "حرکت عالی",
   "qualityBest": "بهترین حرکت",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "باز کردن در chess.com",
   "reviewCopyFen": "کپی وضعیت (FEN)",
   "reviewCopyPgn": "کپی بازی (PGN)",
-  "reviewCopied": "کپی شد"
+  "reviewCopied": "کپی شد",
+  "reviewLegend": "راهنما",
+  "reviewEvalBar": "نوار ارزیابی",
+  "qualityForcedHint": "تنها حرکت ممکن",
+  "qualityGreatHint": "بهترین حرکت و تنها حرکتی که وضعیت را حفظ می‌کرد",
+  "qualityBestHint": "حرکتی که Stockfish انجام می‌داد",
+  "qualityExcellentHint": "تقریباً به خوبی بهترین حرکت",
+  "qualityGoodHint": "حرکتی درست، اما بهتر هم بود",
+  "qualityInaccuracyHint": "کمی از دست رفت: حرکتی دقیق‌تر وجود داشت",
+  "qualityMistakeHint": "وضعیت را به‌وضوح بدتر کرد",
+  "qualityMissHint": "برد در دست بود و از دست رفت",
+  "qualityBlunderHint": "نتیجه را دور ریخت: اشتباهی جدی"
 }

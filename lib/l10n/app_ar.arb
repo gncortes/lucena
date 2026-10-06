@@ -489,7 +489,6 @@
   "reviewRunning": "تحليل النقلة {done} من {total}",
   "reviewAccuracy": "الدقة",
   "reviewYou": "أنت",
-  "reviewHint": "كل نقلة قيّمها Stockfish. تُحسب الدقة كما في Lichess.",
   "qualityForced": "نقلة إجبارية",
   "qualityGreat": "نقلة رائعة",
   "qualityBest": "أفضل نقلة",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "فتح في chess.com",
   "reviewCopyFen": "نسخ الوضعية (FEN)",
   "reviewCopyPgn": "نسخ المباراة (PGN)",
-  "reviewCopied": "تم النسخ"
+  "reviewCopied": "تم النسخ",
+  "reviewLegend": "دليل الرموز",
+  "reviewEvalBar": "شريط التقييم",
+  "qualityForcedHint": "النقلة الوحيدة الممكنة",
+  "qualityGreatHint": "أفضل نقلة والوحيدة التي حافظت على الوضعية",
+  "qualityBestHint": "النقلة التي سيلعبها Stockfish",
+  "qualityExcellentHint": "تكاد تكون بجودة الأفضل",
+  "qualityGoodHint": "نقلة سليمة لكن كان هناك أفضل",
+  "qualityInaccuracyHint": "خسارة طفيفة: كانت هناك نقلة أدق",
+  "qualityMistakeHint": "جعلت الوضعية أسوأ بوضوح",
+  "qualityMissHint": "كان الفوز في المتناول وضاع",
+  "qualityBlunderHint": "ضيّعت النتيجة: خطأ جسيم"
 }

@@ -489,7 +489,6 @@
   "reviewRunning": "Zet {done} van {total} analyseren",
   "reviewAccuracy": "Nauwkeurigheid",
   "reviewYou": "Jij",
-  "reviewHint": "Elke zet beoordeeld door Stockfish. Nauwkeurigheid berekend zoals op Lichess.",
   "qualityForced": "Gedwongen",
   "qualityGreat": "Geweldige zet",
   "qualityBest": "Beste zet",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Openen op chess.com",
   "reviewCopyFen": "Stelling kopiëren (FEN)",
   "reviewCopyPgn": "Partij kopiëren (PGN)",
-  "reviewCopied": "Gekopieerd"
+  "reviewCopied": "Gekopieerd",
+  "reviewLegend": "Legenda",
+  "reviewEvalBar": "Evaluatiebalk",
+  "qualityForcedHint": "De enige mogelijke zet",
+  "qualityGreatHint": "De beste zet, en de enige die de stelling hield",
+  "qualityBestHint": "De zet die Stockfish zou spelen",
+  "qualityExcellentHint": "Bijna zo goed als de beste",
+  "qualityGoodHint": "Een degelijke zet, maar er was beter",
+  "qualityInaccuracyHint": "Iets verloren: er was een nauwkeurigere zet",
+  "qualityMistakeHint": "Maakte de stelling duidelijk slechter",
+  "qualityMissHint": "Stond gewonnen en liet het glippen",
+  "qualityBlunderHint": "Gooide het resultaat weg: een zware fout"
 }

@@ -489,7 +489,6 @@
   "reviewRunning": "Analyse du coup {done} sur {total}",
   "reviewAccuracy": "Précision",
   "reviewYou": "Vous",
-  "reviewHint": "Chaque coup évalué par Stockfish. Précision calculée comme sur Lichess.",
   "qualityForced": "Coup forcé",
   "qualityGreat": "Très bon coup",
   "qualityBest": "Meilleur coup",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Ouvrir sur chess.com",
   "reviewCopyFen": "Copier la position (FEN)",
   "reviewCopyPgn": "Copier la partie (PGN)",
-  "reviewCopied": "Copié"
+  "reviewCopied": "Copié",
+  "reviewLegend": "Légende",
+  "reviewEvalBar": "Barre d'évaluation",
+  "qualityForcedHint": "Le seul coup possible",
+  "qualityGreatHint": "Le meilleur coup, et le seul qui tenait la position",
+  "qualityBestHint": "Le coup que jouerait Stockfish",
+  "qualityExcellentHint": "Presque aussi bon que le meilleur",
+  "qualityGoodHint": "Un coup correct, mais il y avait mieux",
+  "qualityInaccuracyHint": "A perdu un peu : un coup plus précis existait",
+  "qualityMistakeHint": "A nettement empiré la position",
+  "qualityMissHint": "Avait la victoire et l'a laissée filer",
+  "qualityBlunderHint": "A gâché le résultat : une faute grave"
 }

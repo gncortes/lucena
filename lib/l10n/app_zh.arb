@@ -489,7 +489,6 @@
   "reviewRunning": "正在分析第 {done} 步，共 {total} 步",
   "reviewAccuracy": "准确率",
   "reviewYou": "你",
-  "reviewHint": "每一步都由 Stockfish 评估。准确率按 Lichess 的方法计算。",
   "qualityForced": "被迫着",
   "qualityGreat": "妙着",
   "qualityBest": "最佳着",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "在 chess.com 打开",
   "reviewCopyFen": "复制局面 (FEN)",
   "reviewCopyPgn": "复制棋谱 (PGN)",
-  "reviewCopied": "已复制"
+  "reviewCopied": "已复制",
+  "reviewLegend": "图例",
+  "reviewEvalBar": "评估条",
+  "qualityForcedHint": "唯一可走的着法",
+  "qualityGreatHint": "最佳着法，也是唯一能守住局面的着法",
+  "qualityBestHint": "Stockfish 会走的着法",
+  "qualityExcellentHint": "几乎和最佳着法一样好",
+  "qualityGoodHint": "稳健的着法，但还有更好的",
+  "qualityInaccuracyHint": "损失了一点：有更精确的着法",
+  "qualityMistakeHint": "让局面明显变差",
+  "qualityMissHint": "本已胜势却让它溜走",
+  "qualityBlunderHint": "葬送了结果：严重的错误"
 }

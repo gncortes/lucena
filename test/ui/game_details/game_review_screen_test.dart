@@ -165,9 +165,50 @@ void main() {
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.engineLine(0)), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.engineLine(1)), findsOneWidget);
-    expect(find.text('M1'), findsOneWidget);
+    // A primeira linha e a barra mostram o mate.
+    expect(find.text('M1'), findsNWidgets(2));
     final board = tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board));
     expect(board.shapes.whereType<Arrow>().single.dest, Square.g7);
     expect(text(tester, GameDetailsKeys.result), contains('Win'));
+  });
+
+  testWidgets('a legenda no fim explica os símbolos e, depois da revisão, '
+      'conta os lances de cada lado', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id);
+    expect(find.byKey(GameDetailsKeys.legend), findsOneWidget);
+    expect(find.text('The move Stockfish would play'), findsOneWidget);
+    expect(find.textContaining('Lichess'), findsNothing);
+    expect(
+      find.byKey(GameDetailsKeys.count('best', white: true)),
+      findsNothing,
+    );
+
+    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(GameDetailsKeys.count('best', white: true)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a barra de avaliação mostra o número e some pelo menu', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id);
+    await tester.tap(find.byKey(GameDetailsKeys.first));
+    await tester.pumpAndSettle();
+    // Sem revisão, a barra pede uma avaliação rápida da posição.
+    expect(find.byKey(GameDetailsKeys.evalBar), findsOneWidget);
+    expect(find.text('M1'), findsOneWidget);
+
+    await tester.tap(find.byKey(GameDetailsKeys.moreButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.evalBarToggle));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GameDetailsKeys.evalBar), findsNothing);
   });
 }

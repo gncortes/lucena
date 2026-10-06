@@ -489,7 +489,6 @@
   "reviewRunning": "{total} hamlenin {done}. hamlesi analiz ediliyor",
   "reviewAccuracy": "Doğruluk",
   "reviewYou": "Sen",
-  "reviewHint": "Her hamle Stockfish tarafından değerlendirildi. Doğruluk Lichess'teki gibi hesaplanır.",
   "qualityForced": "Zorunlu hamle",
   "qualityGreat": "Harika hamle",
   "qualityBest": "En iyi hamle",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "chess.com'da aç",
   "reviewCopyFen": "Pozisyonu kopyala (FEN)",
   "reviewCopyPgn": "Oyunu kopyala (PGN)",
-  "reviewCopied": "Kopyalandı"
+  "reviewCopied": "Kopyalandı",
+  "reviewLegend": "Açıklama",
+  "reviewEvalBar": "Değerlendirme çubuğu",
+  "qualityForcedHint": "Mümkün olan tek hamle",
+  "qualityGreatHint": "En iyi hamle ve pozisyonu tutan tek hamle",
+  "qualityBestHint": "Stockfish'in oynayacağı hamle",
+  "qualityExcellentHint": "Neredeyse en iyisi kadar iyi",
+  "qualityGoodHint": "Sağlam bir hamle ama daha iyisi vardı",
+  "qualityInaccuracyHint": "Biraz kaybettirdi: daha kesin bir hamle vardı",
+  "qualityMistakeHint": "Pozisyonu açıkça kötüleştirdi",
+  "qualityMissHint": "Kazanç vardı ama kaçırıldı",
+  "qualityBlunderHint": "Sonucu çöpe attı: ciddi bir hata"
 }

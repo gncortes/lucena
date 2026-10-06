@@ -30,6 +30,10 @@ abstract final class GameDetailsKeys {
   static const explanation = Key('gameDetails.explanation');
   static const evalBar = Key('gameDetails.evalBar');
 
+  /// A legenda dos símbolos, no fim, e a opção de mostrar a barra.
+  static const legend = Key('gameDetails.legend');
+  static const evalBarToggle = Key('gameDetails.more.evalBar');
+
   /// A navegação entre os lances.
   static const first = Key('gameDetails.nav.first');
   static const previous = Key('gameDetails.nav.previous');

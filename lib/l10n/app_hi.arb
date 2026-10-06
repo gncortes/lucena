@@ -489,7 +489,6 @@
   "reviewRunning": "{total} में से चाल {done} का विश्लेषण",
   "reviewAccuracy": "सटीकता",
   "reviewYou": "आप",
-  "reviewHint": "हर चाल Stockfish द्वारा आंकी गई। सटीकता Lichess की तरह गिनी गई।",
   "qualityForced": "मजबूरी की चाल",
   "qualityGreat": "शानदार चाल",
   "qualityBest": "सबसे अच्छी चाल",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "chess.com पर खोलें",
   "reviewCopyFen": "स्थिति कॉपी करें (FEN)",
   "reviewCopyPgn": "खेल कॉपी करें (PGN)",
-  "reviewCopied": "कॉपी हो गया"
+  "reviewCopied": "कॉपी हो गया",
+  "reviewLegend": "संकेत",
+  "reviewEvalBar": "मूल्यांकन पट्टी",
+  "qualityForcedHint": "एकमात्र संभव चाल",
+  "qualityGreatHint": "सबसे अच्छी चाल, और अकेली जो स्थिति बचाए रखती थी",
+  "qualityBestHint": "वह चाल जो Stockfish खेलता",
+  "qualityExcellentHint": "लगभग सबसे अच्छी चाल जितनी अच्छी",
+  "qualityGoodHint": "ठीक चाल, पर इससे बेहतर थी",
+  "qualityInaccuracyHint": "थोड़ा नुकसान: ज़्यादा सटीक चाल थी",
+  "qualityMistakeHint": "स्थिति साफ़ तौर पर बिगड़ गई",
+  "qualityMissHint": "जीत हाथ में थी पर निकल गई",
+  "qualityBlunderHint": "नतीजा गँवा दिया: गंभीर गलती"
 }

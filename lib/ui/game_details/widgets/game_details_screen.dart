@@ -85,6 +85,11 @@ class GameDetailsScreen extends StatelessWidget {
                       if (state.engine) EngineLinesPanel(state: state),
                     ],
                     _MoveTable(state: state),
+                    ReviewLegend(
+                      state: state,
+                      whiteName: whiteName,
+                      blackName: blackName,
+                    ),
                   ],
                 );
               },

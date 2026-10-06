@@ -488,7 +488,6 @@
   "reviewRunning": "[Åñålýšîñĝ mövé {done} öf {total} one two three]",
   "reviewAccuracy": "[Åççûŕåçý one]",
   "reviewYou": "[Ýöû one]",
-  "reviewHint": "[Éåçh mövé ŕåtéd bý Štöçkfîšh. Åççûŕåçý åš öñ Lîçhéšš. one two three four five]",
   "qualityForced": "[Föŕçéd one]",
   "qualityGreat": "[Ĝŕéåt mövé one]",
   "qualityBest": "[Béšt mövé one]",
@@ -514,5 +513,16 @@
   "reviewOpenChessCom": "[Öpéñ öñ çhéšš.çöm one two]",
   "reviewCopyFen": "[Çöpý pöšîtîöñ (FÉÑ) one two]",
   "reviewCopyPgn": "[Çöpý ĝåmé (PĜÑ) one two]",
-  "reviewCopied": "[Çöpîéd one]"
+  "reviewCopied": "[Çöpîéd one]",
+  "reviewLegend": "[Léĝéñd one]",
+  "reviewEvalBar": "[Évålûåtîöñ båŕ one two]",
+  "qualityForcedHint": "[Thé öñlý léĝål mövé one two]",
+  "qualityGreatHint": "[Thé béšt mövé, åñd thé öñlý öñé thåt héld thé pöšîtîöñ one two three four five]",
+  "qualityBestHint": "[Thé mövé Štöçkfîšh wöûld plåý one two three]",
+  "qualityExcellentHint": "[Ålmöšt åš ĝööd åš thé béšt mövé one two three]",
+  "qualityGoodHint": "[Å šöûñd mövé, bût théŕé wåš béttéŕ one two three]",
+  "qualityInaccuracyHint": "[Löšt å lîttlé: å möŕé pŕéçîšé mövé éxîštéd one two three four]",
+  "qualityMistakeHint": "[Mådé thé pöšîtîöñ çléåŕlý wöŕšé one two three]",
+  "qualityMissHint": "[Håd å wîññîñĝ pöšîtîöñ åñd lét ît šlîp one two three four]",
+  "qualityBlunderHint": "[Thŕéw åwåý thé ŕéšûlt: å šéŕîöûš mîštåké one two three four]"
 }
