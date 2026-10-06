@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -18,13 +19,19 @@ import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 import '../../../../testing/test_app.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_endgame_repositories.dart';
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
-  const _Home(this.child, {this.profile = const UserProfile()});
+  const _Home(
+    this.child, {
+    this.profile = const UserProfile(),
+    this.endgames = const EndgameProgress(),
+  });
 
   final Widget child;
   final UserProfile profile;
+  final EndgameProgress endgames;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
@@ -46,6 +53,8 @@ class _Home extends StatelessWidget {
           lessons: FakeLessonRepository(),
           school: FakeSchoolProgressRepository(),
           profile: FakeProfileRepository(profile),
+          endgameLessons: FakeEndgameLessonRepository(),
+          endgameProgress: FakeEndgameProgressRepository(endgames),
         )..load(),
       ),
     ],
@@ -83,6 +92,40 @@ void main() {
       findsNothing,
     );
     expect(find.text('Treino de finais de xadrez'), findsNothing);
+  });
+
+  testWidgets('a aula de final aberta: o cartão diz onde parou e continua '
+      'direto no exercício', (tester) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: Locale('en'),
+        child: _Home(
+          HomeScreen(),
+          endgames: EndgameProgress(
+            lessons: {
+              'rook.lucena': EndgameLessonProgress(
+                lessonDone: true,
+                stars: {'e01': 1},
+                exercise: ExerciseCheckpoint(exerciseId: 'e02'),
+              ),
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(HomeKeys.endgameCard), findsOneWidget);
+    expect(find.byKey(HomeKeys.schoolCard), findsNothing);
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.endgameTitle)).data,
+      'The Lucena position',
+    );
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.endgameWhere)).data,
+      'Exercise 2 of 3',
+    );
+    expect(find.byKey(HomeKeys.endgameContinue), findsOneWidget);
   });
 
   // Uma tela alta, para a lista montar todos os caminhos de uma vez.

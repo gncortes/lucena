@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
@@ -8,6 +10,7 @@ import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
@@ -19,11 +22,13 @@ import '../../../testing/fakes/fake_school_repositories.dart';
 void main() {
   late FakeProgressRepository progress;
   late FakeRatingRepository rating;
+  late FakeEndgameProgressRepository endgames;
   final now = FakeNow(DateTime(2026, 10, 5, 15));
 
   setUp(() {
     progress = FakeProgressRepository();
     rating = FakeRatingRepository();
+    endgames = FakeEndgameProgressRepository();
   });
 
   HomeCubit cubit({Onboarding onboarding = const Onboarding(done: true)}) {
@@ -38,6 +43,8 @@ void main() {
       profile: FakeProfileRepository(
         const UserProfile(nickname: 'Ana', rating: 1150),
       ),
+      endgameLessons: FakeEndgameLessonRepository(),
+      endgameProgress: endgames,
     );
     addTearDown(cubit.close);
     return cubit;
@@ -88,5 +95,92 @@ void main() {
     expect(home.state.nickname, 'Ana');
     expect(home.state.level, RatingLevel.of(1150));
     expect(home.state.ratingChange, greaterThan(0));
+  });
+
+  group('aula de final em andamento', () {
+    test('sem aula começada, o cartão não aparece', () async {
+      final home = cubit();
+      await home.load();
+      expect(home.state.endgame, isNull);
+    });
+
+    test('o exercício aberto, com a posição dele na lista', () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          lessons: {
+            'rook.lucena': EndgameLessonProgress(
+              lessonDone: true,
+              stars: {'e01': 1},
+              exercise: ExerciseCheckpoint(exerciseId: 'e02'),
+            ),
+          },
+        ),
+      );
+      final home = cubit();
+      await home.load();
+
+      final endgame = home.state.endgame!;
+      expect(endgame.lessonId, 'rook.lucena');
+      expect(endgame.title, 'The Lucena position');
+      expect(endgame.openExerciseId, 'e02');
+      expect(endgame.exerciseNumber, 2);
+      expect(endgame.exerciseCount, 3);
+      expect(endgame.lessonOpen, isFalse);
+      expect(endgame.score, 1);
+      expect(endgame.maxScore, 6);
+    });
+
+    test('a lição aberta, no passo em que parou', () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          ongoing: LessonCheckpoint(lessonId: 'rook.lucena', step: 1),
+        ),
+      );
+      final home = cubit();
+      await home.load();
+
+      final endgame = home.state.endgame!;
+      expect(endgame.lessonOpen, isTrue);
+      expect(endgame.step, 2);
+      expect(endgame.stepCount, 2);
+      expect(endgame.openExerciseId, isNull);
+    });
+
+    test('nada aberto: a aula começada e ainda não aprovada', () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          lessons: {
+            'rook.lucena': EndgameLessonProgress(
+              lessonDone: true,
+              stars: {'e01': 1, 'e02': 1},
+            ),
+          },
+        ),
+      );
+      final home = cubit();
+      await home.load();
+
+      final endgame = home.state.endgame!;
+      expect(endgame.lessonId, 'rook.lucena');
+      expect(endgame.openExerciseId, isNull);
+      expect(endgame.lessonOpen, isFalse);
+      expect(endgame.score, 2);
+    });
+
+    test('aula aprovada não volta para a tela inicial', () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          lessons: {
+            'rook.lucena': EndgameLessonProgress(
+              lessonDone: true,
+              stars: {'e01': 1, 'e02': 2, 'e03': 3},
+            ),
+          },
+        ),
+      );
+      final home = cubit();
+      await home.load();
+      expect(home.state.endgame, isNull);
+    });
   });
 }

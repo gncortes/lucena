@@ -11,6 +11,12 @@ abstract final class HomeKeys {
   static const endgamesButton = Key('home.endgames');
   static const schoolCard = Key('home.schoolCard');
   static const schoolContinue = Key('home.schoolContinue');
+
+  /// O cartão da aula de final em andamento.
+  static const endgameCard = Key('home.endgameCard');
+  static const endgameTitle = Key('home.endgameCard.title');
+  static const endgameWhere = Key('home.endgameCard.where');
+  static const endgameContinue = Key('home.endgameContinue');
   static const customPositionButton = Key('home.customPosition');
   static const settingsButton = Key('home.settings');
 
