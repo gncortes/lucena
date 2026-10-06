@@ -1,0 +1,602 @@
+{
+  "id": "rook.philidor",
+  "module": "rook",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "a3h3"
+      ],
+      "marks": [
+        "e1",
+        "f3",
+        "g3",
+        "e3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "take",
+      "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "b1b3",
+          "accept": [
+            "b1b3",
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8"
+          ],
+          "reply": "a2h2"
+        },
+        {
+          "teach": "b3a3",
+          "accept": [
+            "b3a3",
+            "b3b5",
+            "b3b6",
+            "b3b7",
+            "b3b8",
+            "b3c3",
+            "e1d1",
+            "e1f1"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "pawn",
+      "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
+      "arrows": [
+        "f4f3",
+        "h2h1",
+        "a3a8"
+      ],
+      "marks": [
+        "e3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "behind",
+      "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "a3a8",
+          "accept": [
+            "a3a5",
+            "a3a6",
+            "a3a7",
+            "a3a8"
+          ],
+          "reply": "f4f3"
+        },
+        {
+          "teach": "a8f8",
+          "accept": [
+            "a8f8"
+          ],
+          "reply": "f3e4"
+        },
+        {
+          "teach": "f8e8",
+          "accept": [
+            "e1d1",
+            "e1f1",
+            "f8a8",
+            "f8b8",
+            "f8c8",
+            "f8d8",
+            "f8e8",
+            "f8f6",
+            "f8f7",
+            "f8g8"
+          ],
+          "reply": "e4d3"
+        },
+        {
+          "teach": "e8d8",
+          "accept": [
+            "e8d8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "early",
+      "fen": "5R2/8/8/8/4p3/4k3/r7/4K3 w - - 0 1",
+      "arrows": [
+        "a2a1"
+      ],
+      "marks": [
+        "e3"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "passive",
+      "fen": "8/8/8/8/8/1R2pk2/7r/4K3 w - - 0 1",
+      "arrows": [
+        "h2h1"
+      ],
+      "marks": [
+        "f3"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "trade",
+      "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
+      "arrows": [
+        "g8d8",
+        "a5d5"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "endgame",
+      "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "g8d8",
+          "accept": [
+            "d1c2",
+            "d1e1",
+            "d1e2",
+            "g8b8",
+            "g8c8",
+            "g8d8",
+            "g8e8",
+            "g8f8",
+            "g8g6",
+            "g8g7",
+            "g8h8"
+          ],
+          "reply": "a5d5"
+        },
+        {
+          "teach": "d8d5",
+          "accept": [
+            "d8a8",
+            "d8b8",
+            "d8c8",
+            "d8d5",
+            "d8e8",
+            "d8f8",
+            "d8g8",
+            "d8h8"
+          ],
+          "reply": "d4d5"
+        },
+        {
+          "teach": "d1e2",
+          "accept": [
+            "d1e1",
+            "d1e2"
+          ],
+          "reply": "d5d4"
+        },
+        {
+          "teach": "e2e1",
+          "accept": [
+            "e2e1"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "bishop",
+      "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+      "arrows": [
+        "g8g3"
+      ],
+      "marks": [
+        "c1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "limits",
+      "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
+      "arrows": [
+        "f4f8"
+      ],
+      "marks": [
+        "f3"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "a3h3",
+        "a3a8"
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "practice",
+      "line": [
+        {
+          "teach": "b1b3",
+          "accept": [
+            "b1b3",
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a3a8",
+          "accept": [
+            "a3a5",
+            "a3a6",
+            "a3a7",
+            "a3a8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "R7/8/8/8/8/4pk2/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a8f8",
+          "accept": [
+            "a8f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+      "goal": "draw",
+      "origin": "yuri61",
+      "line": [
+        {
+          "teach": "g8g3",
+          "accept": [
+            "d1c1",
+            "g8g3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/8/8/8/3k4/4p3/4K3/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e2e1",
+          "accept": [
+            "e2e1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/8/8/4pk2/R7/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "a3b3",
+          "accept": [
+            "a3a5",
+            "a3a6",
+            "a3a7",
+            "a3a8",
+            "a3b3",
+            "a3c3",
+            "e1d1",
+            "e1f1"
+          ],
+          "reply": "e4e3"
+        },
+        {
+          "teach": "b3b8",
+          "accept": [
+            "b3b5",
+            "b3b6",
+            "b3b7",
+            "b3b8"
+          ],
+          "reply": "f4f3"
+        },
+        {
+          "teach": "b8f8",
+          "accept": [
+            "b8f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "4R3/8/8/8/8/3kp3/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e8d8",
+          "accept": [
+            "e8d8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
+      "goal": "draw",
+      "origin": "ehenkes",
+      "line": [
+        {
+          "teach": "g8d8",
+          "accept": [
+            "d1c2",
+            "d1e1",
+            "d1e2",
+            "g8b8",
+            "g8c8",
+            "g8d8",
+            "g8e8",
+            "g8f8",
+            "g8g6",
+            "g8g7",
+            "g8h8"
+          ],
+          "reply": "a5d5"
+        },
+        {
+          "teach": "d8d5",
+          "accept": [
+            "d8a8",
+            "d8b8",
+            "d8c8",
+            "d8d5",
+            "d8e8",
+            "d8f8",
+            "d8g8",
+            "d8h8"
+          ],
+          "reply": "d4d5"
+        },
+        {
+          "teach": "d1e2",
+          "accept": [
+            "d1e1",
+            "d1e2"
+          ],
+          "reply": "d5d4"
+        },
+        {
+          "teach": "e2e1",
+          "accept": [
+            "e2e1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
+      "goal": "draw",
+      "origin": "noseknows",
+      "line": [
+        {
+          "teach": "e1e2",
+          "accept": [
+            "e1d2",
+            "e1e2",
+            "e1f2"
+          ],
+          "reply": "h1h2"
+        },
+        {
+          "teach": "e2e1",
+          "accept": [
+            "e2d1",
+            "e2e1",
+            "e2f1"
+          ],
+          "reply": "e4e3"
+        },
+        {
+          "teach": "a3a8",
+          "accept": [
+            "a3a5",
+            "a3a6",
+            "a3a7",
+            "a3a8"
+          ],
+          "reply": "f4f3"
+        },
+        {
+          "teach": "a8f8",
+          "accept": [
+            "a8f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "practice2",
+      "line": [
+        {
+          "teach": "f4f7",
+          "accept": [
+            "f4f5",
+            "f4f6",
+            "f4f7",
+            "f4f8"
+          ],
+          "reply": "d4d3"
+        },
+        {
+          "teach": "f7e7",
+          "accept": [
+            "f7e7"
+          ],
+          "reply": "h2h1"
+        },
+        {
+          "teach": "e1f2",
+          "accept": [
+            "e1f2"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 11,
+  "keyPositions": [
+    {
+      "id": "classic",
+      "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "reach",
+      "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+      "ref": "practice"
+    },
+    {
+      "id": "bishop",
+      "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+      "ref": "yuri61"
+    },
+    {
+      "id": "advanced",
+      "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
+      "ref": "practice2"
+    }
+  ],
+  "practice": {
+    "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+    "goal": "draw",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "wikipedia",
+      "kind": "web",
+      "title": "Philidor position (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Philidor_position"
+    },
+    {
+      "id": "rookPawn",
+      "kind": "web",
+      "title": "Rook and pawn versus rook endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Rook_and_pawn_versus_rook_endgame"
+    },
+    {
+      "id": "stripes",
+      "kind": "web",
+      "title": "James Stripes: Kling and Horwitz Defense (Chess Skills)",
+      "url": "https://chessskill.blogspot.com/2024/04/kling-and-horwitz-defense.html"
+    },
+    {
+      "id": "practice",
+      "kind": "study",
+      "author": "Lichess",
+      "title": "Lichess Practice: Basic Rook Endgames",
+      "url": "https://lichess.org/study/pqUSUw8Y"
+    },
+    {
+      "id": "practice2",
+      "kind": "study",
+      "author": "Lichess",
+      "title": "Lichess Practice: Intermediate Rook Endings",
+      "url": "https://lichess.org/study/heQDnvq7"
+    },
+    {
+      "id": "profangel",
+      "kind": "study",
+      "author": "ProfAngel",
+      "title": "Rook Endings. The Philidor Position.",
+      "url": "https://lichess.org/study/a1ss97T0"
+    },
+    {
+      "id": "ehenkes",
+      "kind": "study",
+      "author": "ehenkes",
+      "title": "Ending: Rook Philidor",
+      "url": "https://lichess.org/study/imxK73yH"
+    },
+    {
+      "id": "yuri61",
+      "kind": "study",
+      "author": "Yuri61",
+      "title": "Rook Endgames: Lucena & Philidor",
+      "url": "https://lichess.org/study/dDyC6HS6"
+    },
+    {
+      "id": "noseknows",
+      "kind": "study",
+      "author": "NoseKnowsAll",
+      "title": "Rook Endgames You Must Know!",
+      "url": "https://lichess.org/study/bnboDhFM"
+    },
+    {
+      "id": "nunn",
+      "kind": "book",
+      "author": "John Nunn",
+      "title": "Secrets of Rook Endings",
+      "publisher": "Gambit Publications",
+      "year": 1999
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 18
+}
