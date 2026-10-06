@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/lesson.dart';
@@ -161,5 +163,23 @@ void main() {
     expect(texts.say('rook.lucena.history'), 'History');
     // As falas comuns da escola ficam por baixo.
     expect(texts.say('coach.praise'), 'Excellent.');
+  });
+
+  test('passo de fala com `side` mostra o tabuleiro desse lado, mesmo com o '
+      'outro lado jogando no FEN', () {
+    final lesson = AssetLessonRepository.parseLesson({
+      'id': 'x',
+      'steps': [
+        {
+          'type': 'talk',
+          'id': 'a',
+          'fen': '1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1',
+          'side': 'white',
+        },
+        {'type': 'talk', 'id': 'b', 'fen': '1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1'},
+      ],
+    });
+    expect(lesson.steps[0].side, Side.white);
+    expect(lesson.steps[1].side, Side.black);
   });
 }

@@ -16,6 +16,14 @@
       ]
     },
     {
+      "id": "queen",
+      "lessons": [
+        "queen.vsRook.philidor",
+        "queen.vsRook.approach",
+        "queen.vsRook.thirdRank"
+      ]
+    },
+    {
       "id": "rook",
       "lessons": [
         "rook.lucena"

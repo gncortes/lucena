@@ -1,0 +1,640 @@
+{
+  "id": "queen.vsRook.thirdRank",
+  "module": "queen",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "b6h6"
+      ],
+      "marks": [
+        "a6",
+        "b6",
+        "c6",
+        "d6",
+        "e6",
+        "f6",
+        "g6",
+        "h6"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "seven",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "f7f6",
+        "f7g6",
+        "d5c6",
+        "d5d6",
+        "d5e6"
+      ],
+      "marks": [
+        "b6"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "quietMove",
+      "fen": "3k4/8/1r6/3K4/5Q2/8/8/8 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "f4b8",
+        "f4f8",
+        "f4h6"
+      ],
+      "marks": [
+        "a6",
+        "c6",
+        "g6",
+        "h6"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "rg6",
+      "fen": "3k4/8/6r1/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "f4f8",
+          "accept": "best",
+          "reply": "d8d7"
+        },
+        {
+          "teach": "f8f7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "ra6",
+      "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "f4b8",
+          "accept": "best",
+          "reply": "d8e7"
+        },
+        {
+          "teach": "b8b7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "rb7",
+      "fen": "3k4/1r6/8/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "d5c6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "switch",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "f7f4",
+          "accept": "best",
+          "reply": "d8d7"
+        },
+        {
+          "teach": "f4a4",
+          "accept": "best",
+          "reply": "d7c7"
+        },
+        {
+          "teach": "a4a7",
+          "accept": "best",
+          "reply": "b6b7"
+        },
+        {
+          "teach": "a7c5",
+          "accept": "best",
+          "reply": "c7b8"
+        },
+        {
+          "teach": "d5d6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "home",
+      "fen": "1k6/6r1/3K4/2Q5/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "c5e5",
+          "accept": "best",
+          "reply": "g7c7"
+        },
+        {
+          "teach": "e5f4",
+          "accept": "best",
+          "reply": "b8c8"
+        },
+        {
+          "teach": "f4f5",
+          "accept": "best",
+          "reply": "c8b8"
+        },
+        {
+          "teach": "f5e5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "a6",
+      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "d5c5",
+        "c5b5"
+      ],
+      "marks": [
+        "a6"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "around",
+      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "d5c5",
+          "accept": "best",
+          "reply": "d8c8"
+        },
+        {
+          "teach": "f7e7",
+          "accept": "best",
+          "reply": "c8b8"
+        },
+        {
+          "teach": "c5b5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "fourth",
+      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "arrows": [
+        "a5h5",
+        "e4d3",
+        "d3c3",
+        "c3b4"
+      ],
+      "marks": [
+        "a1",
+        "d4"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "fourthA",
+      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "f6f7",
+          "accept": "best",
+          "reply": "d7d8"
+        },
+        {
+          "teach": "f7e6",
+          "accept": "best",
+          "reply": "d8c7"
+        },
+        {
+          "teach": "e4d3",
+          "accept": "best",
+          "reply": "a5c5"
+        },
+        {
+          "teach": "d3d4",
+          "accept": "best",
+          "reply": "c5c1"
+        },
+        {
+          "teach": "e6e3",
+          "accept": "best",
+          "reply": "c1c6"
+        },
+        {
+          "teach": "e3e7",
+          "accept": "best",
+          "reply": "c7b6"
+        },
+        {
+          "teach": "d4d5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "ponziani",
+      "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "f7g7",
+        "g7h7"
+      ],
+      "marks": [
+        "g6",
+        "h7"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "desperado",
+      "fen": "8/8/8/8/8/5KQ1/7r/7k b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "h2f2"
+      ],
+      "marks": [
+        "g1",
+        "g2",
+        "h2"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "moro",
+      "fen": "8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "e1e5",
+          "accept": "only",
+          "reply": "g2g1"
+        },
+        {
+          "teach": "g4g3",
+          "accept": "best",
+          "reply": "h2g2"
+        },
+        {
+          "teach": "g3h3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "map",
+      "fen": "2KQ4/8/8/8/2r5/2k5/8/8 w - - 0 1"
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "f7f4"
+      ]
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "f7f4",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "3k4/8/6r1/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "cgbarros",
+      "turns": [
+        {
+          "teach": "f4f8",
+          "accept": "best",
+          "reply": "d8d7"
+        },
+        {
+          "teach": "f8f7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "cgbarros",
+      "turns": [
+        {
+          "teach": "f4b8",
+          "accept": "best",
+          "reply": "d8e7"
+        },
+        {
+          "teach": "b8b7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "3k4/8/8/3K4/5Q2/8/1r6/8 w - - 0 1",
+      "goal": "win",
+      "origin": "cgbarros",
+      "turns": [
+        {
+          "teach": "f4f6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/3k4/1r6/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "f4a4",
+          "accept": "best",
+          "reply": "d7c7"
+        },
+        {
+          "teach": "a4a7",
+          "accept": "best",
+          "reply": "b6b7"
+        },
+        {
+          "teach": "a7c5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "d5c5",
+          "accept": "best",
+          "reply": "d8c8"
+        },
+        {
+          "teach": "f7e7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1",
+      "goal": "win",
+      "origin": "moro",
+      "turns": [
+        {
+          "teach": "e1e5",
+          "accept": "only",
+          "reply": "g2g1"
+        },
+        {
+          "teach": "g4g3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "3k4/1Q6/3r4/5K2/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "parker",
+      "turns": [
+        {
+          "teach": "b7f7",
+          "accept": "best",
+          "reply": "d6b6"
+        },
+        {
+          "teach": "f5e5",
+          "accept": "best",
+          "reply": "b6c6"
+        },
+        {
+          "teach": "e5d5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "f6f7",
+          "accept": "best",
+          "reply": "d7d8"
+        },
+        {
+          "teach": "f7e6",
+          "accept": "best",
+          "reply": "d8c7"
+        },
+        {
+          "teach": "e4d3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "2k5/8/1r6/3K4/5Q2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "d5c5",
+          "accept": "best",
+          "reply": "b6a6"
+        },
+        {
+          "teach": "f4e4",
+          "accept": "best",
+          "reply": "c8c7"
+        },
+        {
+          "teach": "e4e7",
+          "accept": "best",
+          "reply": "c7b8"
+        },
+        {
+          "teach": "c5b5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 3,
+      "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "f7g7",
+          "accept": "hold",
+          "reply": "g5f6"
+        },
+        {
+          "teach": "g7g6",
+          "accept": "hold"
+        }
+      ]
+    }
+  ],
+  "passScore": 13,
+  "keyPositions": [
+    {
+      "id": "third",
+      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "thirdA",
+      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "fourth",
+      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "ponziani",
+      "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "browne",
+      "fen": "2KQ4/8/8/8/2r5/2k5/8/8 w - - 0 1",
+      "ref": "belle"
+    }
+  ],
+  "practice": {
+    "fen": "2KQ4/8/8/8/2r5/2k5/8/8 w - - 0 1",
+    "goal": "win",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "wikipedia",
+      "kind": "web",
+      "title": "Queen versus rook endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Queen_versus_rook_endgame"
+    },
+    {
+      "id": "pawnless",
+      "kind": "web",
+      "title": "Pawnless chess endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Pawnless_chess_endgame"
+    },
+    {
+      "id": "moro",
+      "kind": "game",
+      "white": "Alexander Morozevich",
+      "black": "Dmitry Jakovenko",
+      "event": "Pamplona",
+      "year": 2006
+    },
+    {
+      "id": "belle",
+      "kind": "game",
+      "white": "Walter Browne",
+      "black": "Belle (computador)",
+      "event": "Desafio de dama contra torre, revanche",
+      "year": 1978
+    },
+    {
+      "id": "belle1979",
+      "kind": "web",
+      "title": "Stenberg, Conway e Larkins: Queen vs. Rook (1979, cópia Usenet)",
+      "url": "http://quux.org:70/Archives/usenet-a-news/NET.chess/82.01.07_sri-unix.458_net.chess.txt"
+    },
+    {
+      "id": "methurst",
+      "kind": "study",
+      "author": "methurst",
+      "title": "Queen vs Rook, Third Rank Defense",
+      "url": "https://lichess.org/study/34ArhgQa"
+    },
+    {
+      "id": "cgbarros",
+      "kind": "study",
+      "author": "cgbarros",
+      "title": "Queen  vs rook - Crappy rook moves on the third rank defense",
+      "url": "https://lichess.org/study/jW4DCegI"
+    },
+    {
+      "id": "parker",
+      "kind": "study",
+      "author": "ColinParker",
+      "title": "Q vs R endgame (From Nunn's Secrets of Pawnless Endings)",
+      "url": "https://lichess.org/study/dPt5h0yM"
+    },
+    {
+      "id": "nunn",
+      "kind": "book",
+      "author": "John Nunn",
+      "title": "Secrets of Pawnless Endings",
+      "publisher": "Gambit Publications",
+      "year": 2002
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

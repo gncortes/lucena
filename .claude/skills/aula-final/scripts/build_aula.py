@@ -339,6 +339,9 @@ def build(source, oracle):
             if step.get('fen'):
                 board_of(step['fen'], where, problems)
             check_squares(where, step, problems)
+            if step.get('side') not in (None, 'white', 'black'):
+                problems.append(f"{where}: side {step['side']!r} (use 'white' ou "
+                                "'black')")
         elif step['type'] == 'move':
             out['line'] = resolve_line(
                 oracle, where, step['fen'], step.get('turns', []),

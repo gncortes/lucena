@@ -152,104 +152,125 @@ class _LessonScreenState extends State<LessonScreen>
       child: state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
           : LayoutBuilder(
-              builder: (context, constraints) => Column(
+              builder: (context, constraints) => Stack(
                 children: [
-                  SizedBox.shrink(
-                    key: LessonKeys.step(state.lesson!.id, step.id),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Semantics(
-                            label: l10n.lessonStep(
-                              state.step + 1,
-                              state.stepCount,
+                  Column(
+                    children: [
+                      SizedBox.shrink(
+                        key: LessonKeys.step(state.lesson!.id, step.id),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Semantics(
+                                label: l10n.lessonStep(
+                                  state.step + 1,
+                                  state.stepCount,
+                                ),
+                                child: ExcludeSemantics(
+                                  child: StepProgress(
+                                    key: LessonKeys.progress,
+                                    total: state.stepCount,
+                                    value: state.progress * state.stepCount,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: ExcludeSemantics(
-                              child: StepProgress(
-                                key: LessonKeys.progress,
-                                total: state.stepCount,
-                                value: state.progress * state.stepCount,
+                            const SizedBox(width: 12),
+                            Text(
+                              l10n.lessonStepShort(
+                                state.step + 1,
+                                state.stepCount,
+                              ),
+                              key: LessonKeys.stepCounter,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (hasBoard) ...[
+                        // Com tabuleiro: ele no alto (até metade da tela), o
+                        // título e o que fazer, e a fala do Viktor embaixo, com
+                        // o espaço que sobra (rola se for longa).
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: _boardArea(
+                            context,
+                            state,
+                            boardSettings,
+                            board,
+                            size: max(
+                              min(
+                                constraints.maxWidth - 16,
+                                constraints.maxHeight * 0.5,
+                              ),
+                              120.0,
+                            ),
+                          ),
+                        ),
+                        _guide(context, state, step),
+                        if (viktor != null)
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                8,
+                                16,
+                                _actionsHeight,
+                              ),
+                              child: TeacherSpeech(
+                                teacher: viktor,
+                                text: state.speech,
+                                emotion: state.emotion,
+                                avatarSize: 44,
+                                bubbleKey: LessonKeys.speech,
+                                stacked: true,
+                                typed: true,
+                              ),
+                            ),
+                          )
+                        else
+                          const Spacer(),
+                      ] else ...[
+                        if (viktor != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                            child: TeacherSpeech(
+                              teacher: viktor,
+                              text: state.speech,
+                              emotion: state.emotion,
+                              avatarSize: 72,
+                              bubbleKey: LessonKeys.speech,
+                            ),
+                          ),
+                        // Passo só de conversa: o espaço fica com o símbolo da
+                        // aula, para a fala ter destaque.
+                        Expanded(
+                          child: Center(
+                            child: Icon(
+                              Icons.school_outlined,
+                              size: 96,
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.18,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          l10n.lessonStepShort(state.step + 1, state.stepCount),
-                          key: LessonKeys.stepCounter,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
                       ],
-                    ),
+                    ],
                   ),
-                  if (hasBoard) ...[
-                    // Com tabuleiro: ele no alto (até metade da tela), o
-                    // título e o que fazer, e a fala do Viktor embaixo, com
-                    // o espaço que sobra (rola se for longa).
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: _boardArea(
-                        context,
-                        state,
-                        boardSettings,
-                        board,
-                        size: max(
-                          min(
-                            constraints.maxWidth - 16,
-                            constraints.maxHeight * 0.5,
-                          ),
-                          120.0,
-                        ),
-                      ),
-                    ),
-                    _guide(context, state, step),
-                    if (viktor != null)
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                          child: TeacherSpeech(
-                            teacher: viktor,
-                            text: state.speech,
-                            emotion: state.emotion,
-                            avatarSize: 56,
-                            bubbleKey: LessonKeys.speech,
-                          ),
-                        ),
-                      )
-                    else
-                      const Spacer(),
-                  ] else ...[
-                    if (viktor != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                        child: TeacherSpeech(
-                          teacher: viktor,
-                          text: state.speech,
-                          emotion: state.emotion,
-                          avatarSize: 72,
-                          bubbleKey: LessonKeys.speech,
-                        ),
-                      ),
-                    // Passo só de conversa: o espaço fica com o símbolo da
-                    // aula, para a fala ter destaque.
-                    Expanded(
-                      child: Center(
-                        child: Icon(
-                          Icons.school_outlined,
-                          size: 96,
-                          color: theme.colorScheme.primary.withValues(
-                            alpha: 0.18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  _actions(context, state),
+                  // Os botões flutuam sobre a tela: a fala usa a altura
+                  // toda e passa por baixo deles.
+                  PositionedDirectional(
+                    start: 0,
+                    end: 0,
+                    bottom: 0,
+                    child: _actions(context, state),
+                  ),
                 ],
               ),
             ),
@@ -368,49 +389,76 @@ class _LessonScreenState extends State<LessonScreen>
     final canGo =
         state.phase == StepPhase.done ||
         (step is TalkStep && state.phase == StepPhase.active);
+    final colors = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Row(
         children: [
           if (canHint)
-            OutlinedButton.icon(
+            FloatingActionButton.extended(
               key: LessonKeys.hintButton,
+              heroTag: null,
+              shape: const StadiumBorder(),
+              elevation: 2,
+              backgroundColor: colors.surface,
+              foregroundColor: colors.primary,
               onPressed: cubit.askHint,
               icon: const Icon(Icons.lightbulb_outline),
               label: Text(l10n.lessonHint),
             ),
           if (state.phase == StepPhase.waiting)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox.square(
-                  dimension: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+            Material(
+              elevation: 2,
+              color: colors.surface,
+              shape: const StadiumBorder(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-                const SizedBox(width: 10),
-                Text(l10n.lessonThinking),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(l10n.lessonThinking),
+                  ],
+                ),
+              ),
             ),
           const Spacer(),
           if (state.phase == StepPhase.failed)
-            FilledButton.icon(
+            FloatingActionButton.extended(
               key: LessonKeys.retryButton,
-              style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
+              heroTag: null,
+              shape: const StadiumBorder(),
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
               onPressed: cubit.retry,
               icon: const Icon(Icons.refresh),
               label: Text(l10n.lessonRetry),
             ),
           if (canGo)
-            FilledButton(
+            FloatingActionButton.extended(
               key: LessonKeys.nextButton,
-              style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
+              heroTag: null,
+              shape: const StadiumBorder(),
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
               onPressed: cubit.next,
-              child: Text(isLast ? l10n.lessonFinish : l10n.lessonContinue),
+              label: Text(isLast ? l10n.lessonFinish : l10n.lessonContinue),
             ),
         ],
       ),
     );
   }
+
+  /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
+  /// passar deles.
+  static const _actionsHeight = 88.0;
 }
 
 /// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
