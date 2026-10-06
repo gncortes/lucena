@@ -50,6 +50,7 @@ abstract final class StarChallengeKeys {
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');
   static const goButton = Key('starChallenge.go');
+  static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
   static const collected = Key('starChallenge.collected');
   static const result = Key('starChallenge.result');

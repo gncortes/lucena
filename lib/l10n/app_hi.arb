@@ -477,5 +477,6 @@
   "lessonToChallenge": "तारा चुनौती: {piece}",
   "starChallengePoints": "{count} अंक",
   "starChallengePointsTotal": "कुल {count} अंक",
-  "starChallengeLegend": "हर तारा कुछ देर बाद गायब हो जाता है: सुनहरा सबसे पहले।"
+  "starChallengeLegend": "हर तारा कुछ देर बाद गायब हो जाता है: सुनहरा सबसे पहले।",
+  "starChallengeObstacles": "काले प्यादे सिर्फ़ रास्ते में हैं: उन्हें पकड़ा नहीं जा सकता। आप तारे इकट्ठा करते हैं।"
 }

@@ -2596,5 +2596,9 @@
   },
   "@starChallengeLegend": {
     "description": "Before starting: stars fade after a while, the gold one fastest."
+  },
+  "starChallengeObstacles": "The black pawns only get in the way: you cannot capture them. You collect the stars.",
+  "@starChallengeObstacles": {
+    "description": "Before starting a level with black pawns: they only block, cannot be captured; stars are what you collect."
   }
 }

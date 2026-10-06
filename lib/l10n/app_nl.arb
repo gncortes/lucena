@@ -477,5 +477,6 @@
   "lessonToChallenge": "Sterrenuitdaging: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punt} other{{count} punten}}",
   "starChallengePointsTotal": "{count} punten in totaal",
-  "starChallengeLegend": "Elke ster verdwijnt na een tijdje: de gouden het eerst."
+  "starChallengeLegend": "Elke ster verdwijnt na een tijdje: de gouden het eerst.",
+  "starChallengeObstacles": "De zwarte pionnen staan alleen in de weg: je kunt ze niet slaan. Je verzamelt de sterren."
 }

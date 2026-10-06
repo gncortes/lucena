@@ -477,5 +477,6 @@
   "lessonToChallenge": "تحدي النجوم: {piece}",
   "starChallengePoints": "{count, plural, =1{نقطة واحدة} other{{count} نقطة}}",
   "starChallengePointsTotal": "{count} نقطة في المجموع",
-  "starChallengeLegend": "كل نجمة تختفي بعد فترة: الذهبية أولًا."
+  "starChallengeLegend": "كل نجمة تختفي بعد فترة: الذهبية أولًا.",
+  "starChallengeObstacles": "البيادق السوداء تعترض الطريق فقط: لا يمكن أسرها. ما تجمعه هو النجوم."
 }

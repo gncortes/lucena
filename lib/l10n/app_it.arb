@@ -477,5 +477,6 @@
   "lessonToChallenge": "Sfida delle stelle: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punto} other{{count} punti}}",
   "starChallengePointsTotal": "{count} punti in totale",
-  "starChallengeLegend": "Ogni stella sparisce dopo un po’: quella d’oro per prima."
+  "starChallengeLegend": "Ogni stella sparisce dopo un po’: quella d’oro per prima.",
+  "starChallengeObstacles": "I pedoni neri intralciano soltanto: non si possono catturare. Quello che raccogli sono le stelle."
 }

@@ -477,5 +477,6 @@
   "lessonToChallenge": "Звёздное испытание: {piece}",
   "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очка} other{{count} очков}}",
   "starChallengePointsTotal": "Всего очков: {count}",
-  "starChallengeLegend": "Каждая звезда гаснет через время: золотая первой."
+  "starChallengeLegend": "Каждая звезда гаснет через время: золотая первой.",
+  "starChallengeObstacles": "Чёрные пешки только мешают: их нельзя взять. Вы собираете звёзды."
 }

@@ -269,6 +269,18 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                   color: colors.onSurfaceVariant,
                 ),
               ),
+              // Com peões no tabuleiro: eles só atrapalham, não se capturam.
+              if (level.obstacles > 0) ...[
+                const SizedBox(height: 4),
+                Text(
+                  l10n.starChallengeObstacles,
+                  key: StarChallengeKeys.obstacles,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
               const SizedBox(height: 14),
               FilledButton.icon(
                 key: StarChallengeKeys.goButton,

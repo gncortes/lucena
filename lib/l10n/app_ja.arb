@@ -477,5 +477,6 @@
   "lessonToChallenge": "星チャレンジ：{piece}",
   "starChallengePoints": "{count} 点",
   "starChallengePointsTotal": "合計 {count} 点",
-  "starChallengeLegend": "星はしばらくすると消える。金の星が最初に消える。"
+  "starChallengeLegend": "星はしばらくすると消える。金の星が最初に消える。",
+  "starChallengeObstacles": "黒のポーンは邪魔なだけで、取ることはできない。集めるのは星だ。"
 }

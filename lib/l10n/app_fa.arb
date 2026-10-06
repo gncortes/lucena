@@ -477,5 +477,6 @@
   "lessonToChallenge": "چالش ستاره: {piece}",
   "starChallengePoints": "{count} امتیاز",
   "starChallengePointsTotal": "در مجموع {count} امتیاز",
-  "starChallengeLegend": "هر ستاره پس از مدتی ناپدید می‌شود: طلایی زودتر."
+  "starChallengeLegend": "هر ستاره پس از مدتی ناپدید می‌شود: طلایی زودتر.",
+  "starChallengeObstacles": "پیاده‌های سیاه فقط سد راه‌اند: نمی‌توان آن‌ها را زد. چیزی که جمع می‌کنی ستاره‌هاست."
 }
