@@ -37,7 +37,11 @@ class GameDetailsRobot {
   }
 
   Future<void> expectReviewed() async {
-    await $(GameDetailsKeys.reviewSummary).scrollTo();
+    // A revisão anda com o tabuleiro: o resumo pode ter ficado acima da tela
+    // (o `scrollTo` só desce).
+    await $(GameDetailsKeys.reviewSummary).waitUntilExists();
+    await $.tester.ensureVisible(find.byKey(GameDetailsKeys.reviewSummary));
+    await $.pumpAndSettle();
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.reviewButton), findsNothing);
   }
