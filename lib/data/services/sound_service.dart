@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sound_effect/sound_effect.dart';
 
 /// Embrulha o toque de sons curtos do aparelho. Um erro de áudio nunca chega
@@ -15,8 +16,9 @@ class SoundService {
       for (final asset in assets) {
         await _player.load(asset, asset);
       }
-    } on Object {
+    } on Object catch (error) {
       // Aparelho sem áudio, arquivo ilegível: fica sem som.
+      debugPrint('SoundService.load: $error');
     }
   }
 
@@ -24,8 +26,8 @@ class SoundService {
   Future<void> play(String asset) async {
     try {
       await _player.play(asset);
-    } on Object {
-      // Idem.
+    } on Object catch (error) {
+      debugPrint('SoundService.play: $error');
     }
   }
 }
