@@ -20,6 +20,7 @@ class FakeAnalysisRepository implements AnalysisRepository {
     required int depth,
     int lines = 1,
     bool urgent = false,
+    Duration? time,
   }) async {
     requests.add(position.fen);
     final gate = hold;
@@ -34,7 +35,7 @@ class FakeAnalysisRepository implements AnalysisRepository {
     final score = EngineScore(centipawns: _material(position.board));
     return [
       for (final move in moves.take(lines))
-        EngineLine(score: score, moves: [move]),
+        EngineLine(score: score, moves: [move], depth: depth),
     ];
   }
 
