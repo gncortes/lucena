@@ -55,12 +55,12 @@ void main() {
   testWidgets('o enunciado, as estrelas e a dica com a seta', (tester) async {
     await pump(tester, 'e03');
     expect(find.text('Exercise 3 of 3'), findsOneWidget);
-    expect(speech(tester), 'The hard one.');
+    expect(speech(tester), 'Your move.');
     expect(find.byKey(ExerciseKeys.stars), findsOneWidget);
 
     await tester.tap(find.byKey(ExerciseKeys.hintButton));
     await tester.pumpAndSettle();
-    expect(speech(tester), 'Same idea.');
+    expect(speech(tester), 'The hard one. Same idea.');
     final board = tester.widget<Chessboard>(find.byKey(ExerciseKeys.board));
     expect(
       board.shapes.whereType<Arrow>().any(

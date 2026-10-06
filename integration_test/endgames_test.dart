@@ -50,10 +50,12 @@ void main() {
     await endgames.exerciseMove('h7g8');
     expect(endgames.exerciseSpeech, isNot(contains('d7')));
     await endgames.hint();
-    expectText(
+    expect(
       endgames.exerciseSpeech,
-      "The square d7 is dark: the knight's job. From where does it cover d7 "
-      'and still stay on the path of the W?',
+      endsWith(
+        "The square d7 is dark: the knight's job. From where does it cover "
+        'd7 and still stay on the path of the W?',
+      ),
     );
     await endgames.solveExercise(lesson.exercise('e05')!);
     expectText(endgames.earned, '0 of 2 stars');

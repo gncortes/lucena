@@ -352,6 +352,11 @@
     "Este é o lance que eu jogaria.",
     "Veja a seta e tente entender a ideia."
   ],
+  "coach.exerciseStart": [
+    "Sua vez. Ache o melhor plano.",
+    "Pense antes de tocar numa peça.",
+    "Sua vez. O que a posição pede?"
+  ],
   "coach.keepGoing": [
     "Continue assim.",
     "Sem pressa.",
