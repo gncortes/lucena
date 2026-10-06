@@ -15,12 +15,14 @@ class StockfishAnalysisRepository implements AnalysisRepository {
     Position position, {
     required int depth,
     int lines = 1,
+    bool urgent = false,
   }) async {
     try {
       final found = await _stockfish.analyse(
         position.fen,
         depth: depth,
         lines: lines,
+        urgent: urgent,
       );
       // O motor responde do ponto de vista de quem joga.
       final sign = position.turn == Side.white ? 1 : -1;

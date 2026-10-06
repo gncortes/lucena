@@ -73,8 +73,9 @@ class E2EAnalysis extends FakeAnalysisRepository {
     Position position, {
     required int depth,
     int lines = 1,
+    bool urgent = false,
   }) => useStockfish
-      ? _stockfish.analyse(position, depth: depth, lines: lines)
+      ? _stockfish.analyse(position, depth: depth, lines: lines, urgent: urgent)
       : super.analyse(position, depth: depth, lines: lines);
 }
 

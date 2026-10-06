@@ -14,6 +14,7 @@ class FakeAnalysisRepository implements AnalysisRepository {
     Position position, {
     required int depth,
     int lines = 1,
+    bool urgent = false,
   }) async {
     requests.add(position.fen);
     final fixed = answer[position.fen];

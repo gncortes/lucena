@@ -439,17 +439,18 @@ class _ReviewBoardState extends State<ReviewBoard> {
             ),
             const SizedBox(width: 6),
           ],
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Chessboard(
-              key: GameDetailsKeys.board,
-              size: boardSize,
-              controller: _controller,
-              orientation: widget.orientation,
-              settings: settings.chessground,
-              annotations: annotations,
-              shapes: shapes,
+          // Sem recorte em volta: a anotação do lance passa um pouco da casa
+          // (na fileira de cima, da borda do tabuleiro).
+          Chessboard(
+            key: GameDetailsKeys.board,
+            size: boardSize,
+            controller: _controller,
+            orientation: widget.orientation,
+            settings: settings.chessground.copyWith(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
             ),
+            annotations: annotations,
+            shapes: shapes,
           ),
         ],
       ),
@@ -944,7 +945,7 @@ class EngineLinesPanel extends StatelessWidget {
             ...children,
             const SizedBox(height: 4),
             Text(
-              'Stockfish · ${l10n.reviewDepth(GameDetailsCubit.engineDepth)}',
+              'Stockfish · ${l10n.reviewDepth(state.engineDepths[state.shownIndex] ?? GameDetailsCubit.liveDepth)}',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
