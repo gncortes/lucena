@@ -336,12 +336,12 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         reviewing: true,
         reviewProgress: 0,
         reviewWeight: weight,
-        selected: -1,
       ),
     );
     final total = state.moves.length;
     // A posição de início primeiro: a barra já abre com a avaliação dela.
     if (!await _reviewLines(0, weight)) return;
+    if (_following) emit(state.copyWith(selected: -1));
     for (var index = 0; index < total; index++) {
       if ((state.live[index]?.weight ?? -1) < weight) {
         emit(state.copyWith(annotating: {...state.annotating, index}));
