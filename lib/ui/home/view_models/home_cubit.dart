@@ -70,11 +70,15 @@ class SchoolSummary {
     required this.done,
     required this.total,
     required this.teacher,
+    this.ongoingLessonId,
   });
 
   final int done;
   final int total;
   final Character? teacher;
+
+  /// A lição começada e não terminada: "continuar" abre direto nela.
+  final String? ongoingLessonId;
 }
 
 /// A aula de final em andamento na tela inicial: a que estava aberta (a
@@ -182,12 +186,15 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  /// Só para quem marcou "iniciante" e ainda não se formou.
+  /// Para quem marcou "iniciante" e ainda não se formou, ou para quem tem
+  /// uma lição começada (qualquer perfil): o cartão leva direto a ela.
   Future<SchoolSummary?> _schoolSummary(List<Character> characters) async {
     final profile = await _profile.load();
-    if (profile.level != RatingLevel.beginner) return null;
+    final progress = await _school.load();
+    final ongoing = progress.ongoing;
+    if (profile.level != RatingLevel.beginner && ongoing == null) return null;
     final lessons = (await _lessons.course()).lessons;
-    final completed = (await _school.load()).completed;
+    final completed = progress.completed;
     final done = lessons.where((lesson) => completed.contains(lesson.id));
     if (lessons.isEmpty || done.length == lessons.length) return null;
     Character? teacher;
@@ -198,6 +205,7 @@ class HomeCubit extends Cubit<HomeState> {
       done: done.length,
       total: lessons.length,
       teacher: teacher,
+      ongoingLessonId: ongoing?.lessonId,
     );
   }
 

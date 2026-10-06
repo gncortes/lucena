@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:patrol/patrol.dart';
 
@@ -43,18 +44,21 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
 
-    // Lance errado: o Viktor dá a pista e a estrela vai embora.
+    // Lance errado: o Viktor diz que não é esse (a pista fica para a dica) e
+    // a estrela vai embora; a dica dá a pista e custa a outra.
     await endgames.openExercise(_lessonId, 'e05');
     await endgames.exerciseMove('h7g8');
+    expect(endgames.exerciseSpeech, isNot(contains('d7')));
+    await endgames.hint();
     expectText(
       endgames.exerciseSpeech,
       "The square d7 is dark: the knight's job. From where does it cover d7 "
       'and still stay on the path of the W?',
     );
     await endgames.solveExercise(lesson.exercise('e05')!);
-    expectText(endgames.earned, '1 of 2 stars');
+    expectText(endgames.earned, '0 of 2 stars');
     await endgames.back();
-    endgames.expectExerciseStars('e05', 1);
+    endgames.expectExerciseStars('e05', 0);
 
     // A dica mostra a seta do lance e também custa a estrela.
     await endgames.openExercise(_lessonId, 'e01');

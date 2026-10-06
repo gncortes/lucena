@@ -97,6 +97,30 @@ void main() {
     expect(home.state.ratingChange, greaterThan(0));
   });
 
+  test('lição da escola começada aparece para qualquer perfil', () async {
+    final home = HomeCubit(
+      journey: FakeJourneyRepository(),
+      progress: progress,
+      onboarding: FakeOnboardingRepository(const Onboarding(done: true)),
+      characters: FakeCharacterRepository(),
+      rating: rating,
+      lessons: FakeLessonRepository(),
+      school: FakeSchoolProgressRepository(
+        const SchoolProgress(
+          ongoing: LessonCheckpoint(lessonId: 'pieces.rook', step: 2),
+        ),
+      ),
+      profile: FakeProfileRepository(
+        const UserProfile(nickname: 'Ana', rating: 1150),
+      ),
+      endgameLessons: FakeEndgameLessonRepository(),
+      endgameProgress: endgames,
+    );
+    addTearDown(home.close);
+    await home.load();
+    expect(home.state.school?.ongoingLessonId, 'pieces.rook');
+  });
+
   group('aula de final em andamento', () {
     test('sem aula começada, o cartão não aparece', () async {
       final home = cubit();
