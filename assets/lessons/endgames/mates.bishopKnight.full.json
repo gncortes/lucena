@@ -49,6 +49,7 @@
       "goal": "win",
       "line": [
         {
+          "teach": "e4g5",
           "accept": [
             "e2e1",
             "e4d2",
@@ -58,12 +59,14 @@
           "reply": "g1h1"
         },
         {
+          "teach": "e2f2",
           "accept": [
             "e2f2"
           ],
           "reply": "h1h2"
         },
         {
+          "teach": "g5f3",
           "accept": [
             "f1h3",
             "g5f3"
@@ -71,6 +74,7 @@
           "reply": "h2h1"
         },
         {
+          "teach": "f1g2",
           "accept": [
             "f1g2"
           ]
@@ -98,6 +102,7 @@
       "goal": "win",
       "line": [
         {
+          "teach": "g6h5",
           "accept": [
             "g6h5"
           ]
@@ -111,6 +116,7 @@
       "goal": "win",
       "line": [
         {
+          "teach": "g4h3",
           "accept": [
             "e4d6",
             "g4h3"
@@ -118,6 +124,7 @@
           "reply": "g1h2"
         },
         {
+          "teach": "h3f1",
           "accept": [
             "h3f1"
           ]
@@ -141,30 +148,35 @@
       "goal": "win",
       "line": [
         {
+          "teach": "f1g2",
           "accept": [
             "f1g2"
           ],
           "reply": "e3d4"
         },
         {
+          "teach": "e1d2",
           "accept": [
             "e1d2"
           ],
           "reply": "d4e5"
         },
         {
+          "teach": "d2e3",
           "accept": [
             "d2e3"
           ],
           "reply": "e5f5"
         },
         {
+          "teach": "c1d3",
           "accept": [
             "c1d3"
           ],
           "reply": "f5g5"
         },
         {
+          "teach": "g2e4",
           "accept": [
             "g2e4"
           ]
@@ -220,6 +232,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "c8b7",
           "accept": [
             "c8b7"
           ]
@@ -234,6 +247,7 @@
       "origin": "lichessPractice",
       "line": [
         {
+          "teach": "d5b4",
           "accept": [
             "c7b6",
             "c8a6",
@@ -244,6 +258,7 @@
           "reply": "a8a7"
         },
         {
+          "teach": "b4c6",
           "accept": [
             "b4c6",
             "c8a6"
@@ -251,6 +266,7 @@
           "reply": "a7a8"
         },
         {
+          "teach": "c8b7",
           "accept": [
             "c8b7"
           ]
@@ -265,12 +281,14 @@
       "origin": "own",
       "line": [
         {
+          "teach": "d7c7",
           "accept": [
             "d7c7"
           ],
           "reply": "a8a7"
         },
         {
+          "teach": "b4c6",
           "accept": [
             "b4c6",
             "c8a6"
@@ -278,6 +296,7 @@
           "reply": "a7a8"
         },
         {
+          "teach": "c8b7",
           "accept": [
             "c8b7"
           ]
@@ -292,6 +311,7 @@
       "origin": "lichessPractice",
       "line": [
         {
+          "teach": "d5b3",
           "accept": [
             "d5a2",
             "d5b3",
@@ -310,6 +330,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "b3a4",
           "accept": [
             "b3a4"
           ]
@@ -324,6 +345,7 @@
       "origin": "lichessPractice",
       "line": [
         {
+          "teach": "e7e6",
           "accept": [
             "e7e6"
           ]
@@ -338,6 +360,7 @@
       "origin": "wikipedia",
       "line": [
         {
+          "teach": "e8b5",
           "accept": [
             "c4a5",
             "c4b2",
@@ -360,6 +383,7 @@
       "origin": "wikipedia",
       "line": [
         {
+          "teach": "e3d2",
           "accept": [
             "e3d2"
           ]
@@ -374,6 +398,7 @@
       "origin": "ushenina",
       "line": [
         {
+          "teach": "d4e2",
           "accept": [
             "a2f7",
             "d4e2"
@@ -389,6 +414,7 @@
       "origin": "wikipedia",
       "line": [
         {
+          "teach": "e5f7",
           "accept": [
             "e5f7",
             "e5g6"
@@ -404,18 +430,21 @@
       "origin": "wikipedia",
       "line": [
         {
+          "teach": "c1d1",
           "accept": [
             "c1d1"
           ],
           "reply": "e3f2"
         },
         {
+          "teach": "d1d2",
           "accept": [
             "d1d2"
           ],
           "reply": "f2f3"
         },
         {
+          "teach": "d2d3",
           "accept": [
             "d2d3"
           ]
