@@ -14,7 +14,7 @@ import 'robots/game_details_robot.dart';
 const _english = Locale('en', 'US');
 
 /// Mate de dama contra o Maia, com dois lances fracos das brancas.
-final _game = Attempt(
+final reviewGame = Attempt(
   positionId: 'basic.queen.0001',
   playedAt: DateTime.utc(2026, 1, 1, 11),
   outcome: AttemptOutcome.win,
@@ -37,7 +37,7 @@ void main() {
     final app = AppRobot($);
     final details = GameDetailsRobot($);
     await app.open(systemLocale: _english);
-    final id = await seedAttempt(_game);
+    final id = await seedAttempt(reviewGame);
 
     await details.open(id);
     expect(find.byKey(GameDetailsKeys.reviewSummary), findsNothing);
@@ -45,7 +45,7 @@ void main() {
     await details.expectReviewed();
     await $(GameDetailsKeys.moveQuality(0)).scrollTo();
     // Uma posição por lance e a de início.
-    expect(e2eAnalysis.requests.length, _game.moves.length);
+    expect(e2eAnalysis.requests.length, reviewGame.moves.length);
 
     await details.first();
     details.expectShown(-1);
@@ -53,7 +53,7 @@ void main() {
     await details.next();
     details.expectShown(1);
     await details.last();
-    details.expectShown(_game.moves.length - 1);
+    details.expectShown(reviewGame.moves.length - 1);
     await details.previous();
     await details.toggleEngine();
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);

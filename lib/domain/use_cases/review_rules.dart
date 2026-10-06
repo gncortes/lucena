@@ -14,6 +14,31 @@ abstract final class ReviewRules {
   static const blunderLoss = 15.0;
   static const excellentLoss = 2.0;
 
+  /// Com mate forçado na tabela, cada lance a mais até o mate (ou, de quem
+  /// leva o mate, a menos) vale esta perda; a soma para antes do erro grave:
+  /// a partida continua ganha. Perder o mate forçado ficando com vantagem
+  /// decisiva vale uma imprecisão (como no Lichess).
+  static const mateDelayLoss = 2.0;
+  static const mateDelayCap = 14.9;
+  static const mateLostLoss = 5.0;
+
+  /// A perda equivalente pela distância do mate, do ponto de vista de quem
+  /// jogou: [before] é o mate na posição antes do lance e [after] o mate
+  /// depois (positivo: quem jogou dá o mate; nulo: sem mate forçado).
+  static double mateLoss({int? before, int? after}) {
+    if (before == null || before == 0) return 0;
+    if (before > 0) {
+      // Quem jogou dava mate em [before]: depois, o certo é [before] − 1.
+      if (after == null || after < 0) return mateLostLoss;
+      final delay = after - (before - 1);
+      return (delay * mateDelayLoss).clamp(0, mateDelayCap).toDouble();
+    }
+    // Quem jogou levava mate em −[before]: o certo é segurar a mesma conta.
+    if (after == null || after >= 0) return 0;
+    final hurry = after.abs() < before.abs() ? before.abs() - after.abs() : 0;
+    return (hurry * mateDelayLoss).clamp(0, mateDelayCap).toDouble();
+  }
+
   /// O melhor lance é "ótimo" quando o segundo melhor perde isto ou mais.
   static const greatGap = 10.0;
 
@@ -46,10 +71,11 @@ abstract final class ReviewRules {
     bool forced = false,
     bool isBest = false,
     double? secondBest,
+    double extraLoss = 0,
   }) {
     if (forced) return MoveQuality.forced;
-    final loss = math.max(0, before - after);
-    if (isBest) {
+    final loss = math.max(math.max(0, before - after), extraLoss);
+    if (isBest && extraLoss == 0) {
       if (secondBest != null && before - secondBest >= greatGap) {
         return MoveQuality.great;
       }
@@ -88,6 +114,7 @@ abstract final class ReviewRules {
     int depth = 0,
   }) {
     final reviewed = <ReviewedMove>[];
+    final accuracies = <double>[];
     final positions = <Position>[start];
     for (final move in moves) {
       positions.add(positions.last.play(move));
@@ -116,13 +143,19 @@ abstract final class ReviewRules {
       final second = lines != null && lines.length > 1
           ? winPercent(lines[1].score, side)
           : null;
+      final extra = mateLoss(
+        before: _mateFor(scores[index], side),
+        after: _mateFor(scores[index + 1], side),
+      );
+      final accuracy = moveAccuracy(before, math.min(after, before - extra));
+      accuracies.add(accuracy);
       reviewed.add(
         ReviewedMove(
           before: scores[index],
           after: scores[index + 1],
           best: best,
           bestLine: best == null ? const [] : lines!.first.moves,
-          accuracy: moveAccuracy(before, after),
+          accuracy: accuracy,
           quality: classify(
             before: before,
             after: after,
@@ -134,6 +167,7 @@ abstract final class ReviewRules {
                 1,
             isBest: best != null && _same(position, best, move),
             secondBest: second,
+            extraLoss: extra,
           ),
         ),
       );
@@ -143,9 +177,28 @@ abstract final class ReviewRules {
     return GameReview(
       moves: reviewed,
       depth: depth,
-      whiteAccuracy: sideAccuracy(win, whiteFirst: whiteFirst, white: true),
-      blackAccuracy: sideAccuracy(win, whiteFirst: whiteFirst, white: false),
+      whiteAccuracy: sideAccuracy(
+        win,
+        accuracies,
+        whiteFirst: whiteFirst,
+        white: true,
+      ),
+      blackAccuracy: sideAccuracy(
+        win,
+        accuracies,
+        whiteFirst: whiteFirst,
+        white: false,
+      ),
     );
+  }
+
+  /// O mate da avaliação do ponto de vista de [side] (positivo: [side] dá o
+  /// mate). Nulo sem mate forçado; zero na posição já em mate.
+  static int? _mateFor(EngineScore score, Side side) {
+    if (score.mated != null) return 0;
+    final mate = score.mate;
+    if (mate == null) return null;
+    return side == Side.white ? mate : -mate;
   }
 
   /// O lance [uci] da engine é o lance [move] jogado (o roque pode vir
@@ -162,9 +215,11 @@ abstract final class ReviewRules {
   /// A precisão de um lado (Lichess): a média entre a média ponderada pela
   /// volatilidade da partida e a média harmônica das precisões dos lances.
   /// [win] é a chance de vitória das brancas em cada posição, a de início
-  /// primeiro. Nula se o lado não jogou.
+  /// primeiro; [moveAccuracies], a precisão de cada lance (com a distância
+  /// do mate). Nula se o lado não jogou.
   static double? sideAccuracy(
-    List<double> win, {
+    List<double> win,
+    List<double> moveAccuracies, {
     required bool whiteFirst,
     required bool white,
   }) {
@@ -189,9 +244,12 @@ abstract final class ReviewRules {
     for (var i = 0; i < moves && i < weights.length; i++) {
       final isWhite = i.isEven == whiteFirst;
       if (isWhite != white) continue;
-      final before = isWhite ? win[i] : 100 - win[i];
-      final after = isWhite ? win[i + 1] : 100 - win[i + 1];
-      final accuracy = moveAccuracy(before, after);
+      final accuracy = i < moveAccuracies.length
+          ? moveAccuracies[i]
+          : moveAccuracy(
+              isWhite ? win[i] : 100 - win[i],
+              isWhite ? win[i + 1] : 100 - win[i + 1],
+            );
       accuracies.add(accuracy);
       weighted.add((accuracy, weights[i]));
     }
