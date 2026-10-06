@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
+import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
@@ -50,6 +51,7 @@ class LessonState {
     this.lessonCount = 0,
     this.mistakes = 0,
     this.nextLesson,
+    this.endgame = false,
   });
 
   final bool ready;
@@ -104,6 +106,10 @@ class LessonState {
 
   /// Com a aula terminada, a próxima da trilha. Nula na última.
   final String? nextLesson;
+
+  /// É a lição de uma aula de final: o fim volta para a aula, com os
+  /// exercícios, em vez de seguir a trilha da escola.
+  final bool endgame;
 
   LessonStep? get current {
     final steps = lesson?.steps;
@@ -167,6 +173,7 @@ class LessonState {
     int? lessonCount,
     int? mistakes,
     String? nextLesson,
+    bool? endgame,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -190,6 +197,7 @@ class LessonState {
     lessonCount: lessonCount ?? this.lessonCount,
     mistakes: mistakes ?? this.mistakes,
     nextLesson: nextLesson ?? this.nextLesson,
+    endgame: endgame ?? this.endgame,
   );
 }
 
@@ -197,16 +205,19 @@ class LessonState {
 /// cada mudança é gravada (o app fechado à força volta no mesmo passo, com o
 /// mesmo tabuleiro).
 class LessonCubit extends Cubit<LessonState> {
+  /// Com [source], a aula vem de lá (a trilha de finais); sem ela, da escola
+  /// ([lessons] e [progress]).
   LessonCubit({
-    required this._lessons,
-    required this._progress,
+    LessonRepository? lessons,
+    SchoolProgressRepository? progress,
+    LessonSource? source,
     required this._characters,
     required this._opponent,
     this.replyDelay = const Duration(milliseconds: 450),
-  }) : super(const LessonState());
+  }) : _source = source ?? SchoolLessonSource(lessons!, progress!),
+       super(const LessonState());
 
-  final LessonRepository _lessons;
-  final SchoolProgressRepository _progress;
+  final LessonSource _source;
   final CharacterRepository _characters;
   final OpponentRepository _opponent;
 
@@ -221,11 +232,11 @@ class LessonCubit extends Cubit<LessonState> {
   final _said = <String, int>{};
 
   Future<void> load(String lessonId, String language) async {
-    final course = await _lessons.course();
-    final texts = await _lessons.texts(language);
+    final lesson = await _source.lesson(lessonId);
+    final texts = await _source.texts(language);
     final characters = await _characters.characters();
-    final progress = await _progress.load();
-    final lesson = course.lesson(lessonId);
+    final saved = await _source.checkpoint();
+    final (number, count) = await _source.placeOf(lessonId);
     if (isClosed) return;
     if (lesson == null || lesson.steps.isEmpty) {
       emit(const LessonState(ready: true, missing: true));
@@ -235,16 +246,15 @@ class LessonCubit extends Cubit<LessonState> {
     for (final character in characters) {
       if (character.id == viktorId) viktor = character;
     }
-    final lessons = course.lessons;
     final base = LessonState(
       ready: true,
       lesson: lesson,
       texts: texts,
       viktor: viktor,
-      lessonNumber: lessons.indexOf(lesson) + 1,
-      lessonCount: lessons.length,
+      lessonNumber: number,
+      lessonCount: count,
+      endgame: _source.endgame,
     );
-    final saved = progress.ongoing;
     if (saved != null &&
         saved.lessonId == lessonId &&
         saved.step < lesson.steps.length) {
@@ -291,12 +301,8 @@ class LessonCubit extends Cubit<LessonState> {
   /// Sai da aula pelo voltar: o passo fica guardado, mas o app não reabre
   /// nela.
   Future<void> leave() async {
-    final progress = await _progress.load();
-    final ongoing = progress.ongoing;
-    if (ongoing == null || state.finished) return;
-    await _progress.save(
-      progress.copyWith(ongoing: ongoing.copyWith(open: false)),
-    );
+    if (state.finished) return;
+    await _source.leave();
   }
 
   /// O aluno moveu uma peça no tabuleiro.
@@ -431,7 +437,21 @@ class LessonCubit extends Cubit<LessonState> {
       await Future<void>.delayed(replyDelay);
       if (isClosed) return;
       final answered = GameRules.play(after, reply);
-      if (answered == null) return;
+      if (answered == null) {
+        // O aluno jogou outro lance aceito e a resposta combinada não cabe
+        // mais: o passo acaba aqui, cumprido.
+        emit(
+          state.copyWith(
+            turn: step.line.length,
+            phase: StepPhase.done,
+            speech:
+                state.texts.done(_lessonId, step.id) ?? _pick('coach.praise'),
+            emotion: Emotion.happy,
+          ),
+        );
+        await _save();
+        return;
+      }
       after = answered.position;
     }
     emit(
@@ -541,24 +561,16 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _finish() async {
     final lesson = state.lesson!;
-    final course = await _lessons.course();
-    final progress = await _progress.load();
-    final completed = {...progress.completed, lesson.id};
-    final lessons = course.lessons;
-    final courseFinished =
-        lessons.last.id == lesson.id ||
-        lessons.every((each) => completed.contains(each.id));
-    final index = lessons.indexWhere((each) => each.id == lesson.id);
-    final nextLesson = index >= 0 && index + 1 < lessons.length
-        ? lessons[index + 1].id
-        : null;
-    await _progress.save(SchoolProgress(completed: completed));
+    final outcome = await _source.complete(lesson.id);
     if (isClosed) return;
+    // A formatura é só da escola: na trilha de finais, a última lição
+    // termina como as outras.
+    final courseFinished = outcome.last && !state.endgame;
     emit(
       state.copyWith(
         finished: true,
         courseFinished: courseFinished,
-        nextLesson: nextLesson,
+        nextLesson: outcome.next,
         speech: courseFinished
             ? _pick('coach.graduation')
             : _pick('coach.lessonDone'),
@@ -578,6 +590,7 @@ class LessonCubit extends Cubit<LessonState> {
       viktor: base.viktor,
       lessonNumber: base.lessonNumber,
       lessonCount: base.lessonCount,
+      endgame: base.endgame,
       step: index,
       fen: step.fen,
       speech: base.texts.step(lessonId, step.id),
@@ -654,17 +667,14 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> _save() async {
     final lesson = state.lesson;
     if (lesson == null || state.finished) return;
-    final progress = await _progress.load();
-    await _progress.save(
-      progress.copyWith(
-        ongoing: LessonCheckpoint(
-          lessonId: lesson.id,
-          step: state.step,
-          fen: state.fen,
-          collected: state.collected,
-          turn: state.turn,
-          moves: state.moves,
-        ),
+    await _source.saveCheckpoint(
+      LessonCheckpoint(
+        lessonId: lesson.id,
+        step: state.step,
+        fen: state.fen,
+        collected: state.collected,
+        turn: state.turn,
+        moves: state.moves,
       ),
     );
   }

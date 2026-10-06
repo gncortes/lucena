@@ -66,6 +66,10 @@ flutter:
     - assets/lessons/course.json
     - assets/lessons/en/
     - assets/lessons/pt/
+    # As aulas de finais (.claude/skills/aula-final) e as falas delas
+    - assets/lessons/endgames/
+    - assets/lessons/en/endgames/
+    - assets/lessons/pt/endgames/
     # Pesos do Maia-3 (tools/maia/export_weights.py)
     - assets/models/maia3-5m.bin
 

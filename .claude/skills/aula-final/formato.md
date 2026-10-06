@@ -83,17 +83,17 @@ FEN válido; lances e respostas legais; lance ensinado entre os aceitos; nenhum 
 
 Vitória que só existe sem a regra dos 50 lances (a tabela responde `cursed-win`) não passa como `win`. Em dois cavalos contra peão isso é parte da aula: escolha posições que ganham dentro da regra e conte o resto na fala.
 
-## O que falta no app
+## A trilha e o índice
 
-O app ainda não lê estas aulas. Falta uma tarefa do plano para o motor, com o que o Gabriel pediu em 2026-10-05:
+`tools/lessons/endgames/trail.json` tem os módulos e as aulas na ordem do catálogo (todas as 55, feitas ou não). A cada aula gerada, o script reescreve `assets/lessons/endgames/index.json` só com as aulas que já têm JSON: é o índice que o app lê para montar a trilha. Aula nova no catálogo entra no `trail.json`.
 
-- trilha das aulas de finais, separada da escola do iniciante;
-- lista de exercícios da aula, cada um com as estrelas, e a tela de resolver;
-- nota no fim (estrelas ganhas, mínimo da aula) com as saídas "refazer exercícios" e "ir para o final";
-- passo final: escolher o ritmo e desafiar no speedrun do final, ou abrir o treino personalizado;
-- botão de informações com referências, posições-base e história;
-- `assets/lessons/endgames/` e as falas declarados no `pubspec.yaml`, e a checagem das aulas no CI.
+## Como o app lê (T32)
 
-Regra de pontos sugerida, a confirmar na tarefa: acerto de primeira vale todas as estrelas do exercício; cada erro ou dica tira uma.
+- Trilha das aulas de finais (`/endgames`), separada da escola do iniciante, com os módulos do índice.
+- Tela da aula: a lição (os passos, na mesma tela das aulas da escola), os exercícios com as estrelas, a nota e o passo final.
+- Pontos: acerto de primeira vale todas as estrelas do exercício; cada erro ou dica tira uma (mínimo zero). "Refazer exercícios" zera a nota.
+- Passo final (liberado com a nota ≥ `passScore`): escolher o ritmo e desafiar no speedrun do final (quando `practice.positionId` é a posição de um speedrun `ending`), ou abrir o treino na posição (`/setup`).
+- Botão de informações: referências, posições-base com crédito e história.
+- O teste `test/data/repositories/endgames/endgame_lessons_content_test.dart` confere no CI cada aula gerada: FEN, lances, falas nos dois idiomas.
 
-Até a tarefa sair, o formato acima é o contrato: se ela precisar mudar um campo, muda aqui e no script juntos.
+O formato acima é o contrato: para mudar um campo, muda aqui, no script e no app juntos.

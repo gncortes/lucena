@@ -1,0 +1,105 @@
+{
+  "title": "Bispo e cavalo I: a manobra em W",
+  "summary": "Do canto errado ao canto certo, com o cavalo desenhando um W.",
+
+  "step.corner": "Este é o mate que mais envergonha os mestres. De la Villa conta que alguns voltaram para casa de cabeça baixa por não saber dá-lo. Olhe a posição: o rei preto já está na borda, encolhido em h8. Parece quase acabado, mas h8 é uma casa escura, e o seu bispo só anda nas claras. Esse é o canto errado. O mate só existe no canto da cor do bispo: a8 ou h1. A nossa viagem é levar o rei de h8 até a8, pela oitava fileira.",
+  "step.whyWrong": "Por que o canto importa? Veja o mate pronto no canto certo. O rei preto em a8, numa casa clara. O seu rei em b6 toma a7 e b7, o cavalo em a6 toma b8, e o bispo dá o xeque pela diagonal grande. Tudo encaixa. No canto escuro, o bispo não alcança o rei nem a casa do canto, e sobra trabalho demais para o cavalo. A tabela de finais confirma: dali o mate não é forçado. Então o canto errado se esvazia, e o certo se fecha.",
+  "step.wShape": "Agora o segredo, que Philidor já apontava em 1777: o caminho do cavalo. Da oitava fileira, as casas escuras são h8, f8, d8 e b8, e é delas que o rei preto precisa. O cavalo vai tirá-las uma por uma: f7, e5, d7, c5, b7. Desenhe no tabuleiro e verá um W. Cada ponta do W tira uma casa escura; o bispo faz o resto nas claras. Vamos jogar este W juntos, lance a lance.",
+
+  "step.w1": "Primeira ponta do W. O rei está em h8 e o seu cavalo em e5. Tire h8 dele com xeque.",
+  "step.w1.hint": "O cavalo de e5 dá xeque na casa que também cobre h8. Procure a casa da sétima fileira.",
+  "step.w1.done": "Cf7+. O rei só tem g8, e h8 ficou para trás para sempre. Primeira ponta feita.",
+
+  "step.w2": "O rei foi para g8 e quer voltar. A próxima casa a tirar é g8, que é clara: tarefa do bispo. Mas ele não chega lá num lance só. Primeiro prepare o bispo na diagonal, depois leve-o a h7, e quando o rei pisar em e8, traga o cavalo de volta ao centro, em e5. Três lances seus.",
+  "step.w2.hint": "Bispo na diagonal b1–h7 primeiro: de f5 ele alcança h7. Depois de Bh7, o rei vai para e8 e o cavalo volta para e5, de onde cobre d7.",
+  "step.w2.done": "Bf5, Bh7 e Ce5. O rei perdeu g8 e f8 e está em e8, e o cavalo já cobre d7, a porta para o centro. Segunda ponta do W.",
+
+  "step.w3": "O rei preto entrou em d8 e vai tentar escapar pela sétima fileira: c7, depois b6 ou c5. Primeiro leve o seu rei a e6, para tomar d7 e e7. Quando ele for para c7, a terceira ponta do W, em d7, tira b6 e c5 dele.",
+  "step.w3.hint": "Rei para e6 primeiro. Depois do rei preto em c7, o cavalo de e5 salta para d7 e cobre b6 e c5.",
+  "step.w3.done": "Re6 e Cd7. O rei fugiu para b7, mas olhe o que ele tem: b6 e c5 são do cavalo, c7 e d7 são seus. Terceira ponta.",
+
+  "step.w4": "O rei preto está em b7 e olha para c6, de onde quer alcançar b5 e c4. Antes que ele saia, feche essas duas casas com o bispo, de uma vez só.",
+  "step.w4.hint": "Uma casa da diagonal b1–h7 cobre b5 e c4 ao mesmo tempo. O bispo volta pelo mesmo caminho que veio.",
+  "step.w4.done": "Bd3. Agora o rei preto vai a c6 e para: b5 e c4 são do bispo, b6, c5 e d7 são do cavalo e do seu rei. A rede está fechada.",
+
+  "step.w5": "O rei preto está em c6, sem saída. Você precisa passar a vez a ele sem soltar nada. O bispo faz isso: um lance de espera pela diagonal, e no lance seguinte ele ocupa a diagonal grande, a8–h1, que vai ser a casa dele até o mate.",
+  "step.w5.hint": "Bispo para e2, esperando; o rei preto volta a c7. Então bispo para f3, na diagonal grande.",
+  "step.w5.done": "Be2 e Bf3. O rei preto não pode mais ficar na sétima e volta para a oitava. Repare: o bispo em f3 cobre b7, o lugar onde o rei preto gostaria de ficar.",
+
+  "step.w6": "Agora o avanço final pela oitava. O rei preto está em d8. Tome d6 com o seu rei; ele vai para e8, tentando a borda do outro lado. Expulse-o com xeque de bispo em h5, e leve o bispo a f7, onde ele cobre e8 e g8. Então o cavalo faz as duas últimas pontas do W: c5 e b7 com xeque. Cinco lances seus.",
+  "step.w6.hint": "Rd6, depois Bh5+ e Bf7. Com o bispo em f7, o cavalo vai de d7 para c5 e de c5 para b7 com xeque.",
+  "step.w6.done": "Rd6, Bh5+, Bf7, Cc5 e Cb7+. O W está completo: f7, e5, d7, c5, b7. O rei preto está preso em c8 e só pode ir para b8. Falta o mate.",
+
+  "step.escape": "Volte um pouco. Depois de Bh7 e Re8, nem todo rei vai para d8. Alguns tentam voltar para o canto errado: Rf8, de olho em g8 e h8. Karttunen venceu Rasik assim em 2003, castigando cada volta. Castigue esta: xeque de cavalo, e o rei branco ocupa e6.",
+  "step.escape.hint": "O cavalo de e5 dá xeque em d7 e ao mesmo tempo cobre f8. Depois de Re8, o seu rei vai para e6.",
+  "step.escape.done": "Cd7+ e Re6. O rei preto perdeu f8 e g8 de uma vez, e o seu rei já está em e6. Voltar ao canto errado só encurta o caminho dele.",
+
+  "step.trap": "Perto do canto certo mora uma armadilha, descoberta por Frederick Rhine em 2000. Brancas jogam, e Cb6+ parece natural: xeque e o rei vai para b7, não é? Não. O rei vai para d8 e ataca o bispo em e8. Agora todo lance de bispo deixa o rei preto sem jogada: afogamento. E qualquer outro lance perde o bispo, e rei e cavalo não dão mate. Empate. Regra: perto do canto, antes de cada xeque de cavalo, veja se o bispo está seguro e se o rei preto ainda tem uma casa.",
+
+  "step.finish": "O W terminou. O rei preto está em c8, o cavalo em b7, o bispo em f7. Agora o mate: leve o seu rei a c6 e b6, dê xeque de bispo em e6 quando o rei preto estiver em c8, traga o cavalo para c5, espere com o bispo em d7, e feche com Ca6+ e Bc6. Sete lances, e nenhum afogamento no caminho.",
+  "step.finish.hint": "Rc6 e Rb6 primeiro. O rei preto em c8 leva Be6+. Depois Cc5, Bd7 de espera, Ca6+ e o mate com o bispo em c6.",
+  "step.finish.done": "Xeque-mate. Rei em b6, cavalo em a6, bispo em c6: o padrão que vimos no começo. Você levou o rei do canto errado ao certo e fechou a porta.",
+
+  "step.rules": "Três regras para levar para a partida. Primeira: o mate é no canto da cor do bispo; se o rei está no outro, a viagem é pela borda. Segunda: o cavalo tira as casas escuras da borda no W: f7, e5, d7, c5, b7; o bispo tira as claras e dá o xeque final. Terceira: perto do canto, antes de cada xeque de cavalo, confira o afogamento e o bispo. Agora jogue você.",
+
+  "step.playW": "A posição do W inteira. O rei preto em h8, o canto errado. Leve-o a a8 e dê o mate. Sem pressa: a regra dos cinquenta lances é generosa para quem sabe o caminho.",
+  "step.playFar": "Um pouco mais longe. O cavalo ainda está em d3 e o rei preto em g8. Monte o W primeiro: cavalo para e5, rei para f6, cavalo para f7. Depois, o caminho que você já conhece.",
+
+  "ex.e01": "Brancas jogam e dão mate. O rei preto está em a8, o canto certo. Falta o lance do bispo.",
+  "ex.e01.hint": "O rei em b6 e o cavalo em a6 já tomaram todas as casas do rei preto. Só o bispo pode dar o xeque, e só pela diagonal grande.",
+  "ex.e01.solution": "Bg2 é mate: o xeque vem pela diagonal a8–h1, b8 é do cavalo, a7 e b7 são do rei. Repare que qualquer outro lance de bispo afogava o rei preto: ele não tinha casa nenhuma.",
+
+  "ex.e02": "Brancas jogam e ganham. O rei preto está em b8. Dois lances seus até o mate.",
+  "ex.e02.hint": "Tire b8 com xeque de cavalo: o rei preto só terá a8. Então o bispo fecha a diagonal grande.",
+  "ex.e02.solution": "Ca6+ obriga Ra8 (c8 é do bispo, a7 e b7 são do rei), e Bc6 dá mate pela diagonal grande. É o padrão final do W.",
+
+  "ex.e03": "Brancas jogam e ganham. O rei preto acabou de ir para g8. O cavalo em f7 já tira h8. Qual é o próximo passo?",
+  "ex.e03.hint": "A próxima casa a tirar é g8, que é clara. O bispo vai cobri-la de h7, mas primeiro precisa chegar à diagonal certa.",
+  "ex.e03.solution": "Bf5 (ou outra casa da diagonal b1–h7, como Be4 ou Bg6). O rei preto é obrigado a ir para f8, e Bh7 toma g8 dele. O bispo sempre precisa de um lance de preparação aqui.",
+
+  "ex.e04": "Brancas jogam e ganham. A posição-chave da aula: rei preto em h8, o canto errado. Comece o W.",
+  "ex.e04.hint": "O rei preto só tem uma casa. Tire h8 dele de uma vez, com o cavalo.",
+  "ex.e04.solution": "Cf7+, a primeira ponta do W: o rei vai para g8 e nunca mais volta a h8. Um lance de espera com o bispo na diagonal b1–h7 também serve, porque o rei preto está obrigado a sair de qualquer jeito; mas o W começa com o cavalo.",
+
+  "ex.e05": "Brancas jogam e ganham. O rei preto chegou a e8 e quer sair da borda por d7. Impeça.",
+  "ex.e05.hint": "A casa d7 é escura: trabalho do cavalo. De onde ele cobre d7 e ainda fica no caminho do W?",
+  "ex.e05.solution": "Ce5, a segunda ponta do W. O cavalo cobre d7 e f7, e o rei preto tem de escolher entre d8 e f8. Qualquer outro lance deixava o rei sair para d7 e atrasava muito o mate.",
+
+  "ex.e06": "Brancas jogam e ganham. O rei preto está em a8 e você está perto do mate. Mas cuidado: o lance que parece óbvio empata. Três lances seus.",
+  "ex.e06.hint": "Ca6 agora tira a última casa do rei preto sem dar xeque: afogamento. Mova o bispo para uma casa de onde ele alcance a diagonal grande no momento certo.",
+  "ex.e06.solution": "Bg4 (ou Be2) deixa b8 para o rei preto. Depois de Rb8, Ca6+ obriga Ra8 e Bf3 dá mate pela diagonal grande. O bispo esperou a um passo da diagonal e só entrou nela quando o xeque era mate.",
+
+  "ex.e07": "Brancas jogam e ganham. A armadilha de Rhine: o xeque de cavalo em b6 parece ganhar. Encontre um lance que não empate.",
+  "ex.e07.hint": "Depois de Cb6+ Rd8 o bispo em e8 fica preso, e todo lance de bispo afoga. Antes de qualquer xeque, tire o bispo do alcance do rei preto, ou traga o cavalo por outro caminho.",
+  "ex.e07.solution": "Bb5 (ou Ba4, Bc6, Ca5, Re7) mantém o rei preto preso no canto e o bispo seguro. Um caminho: Bb5 Rd8, Ca5 Rc8, Bd7+ Rb8, Rc6 Ra7, Bc8 Rb8, Rd7 Ra7, Rc7 Ra8, Bb7+ Ra7, Cc6 mate. O que não serve é Cb6+?? Rd8!, que empata.",
+
+  "ex.e08": "Brancas jogam e ganham. O rei preto escapou para b7 e olha para c6, b5 e c4. Feche a rede.",
+  "ex.e08.hint": "Duas casas claras precisam de dono: b5 e c4. Uma casa da diagonal b1–h7 cobre as duas.",
+  "ex.e08.solution": "Bd3 cobre b5 e c4. O rei preto vai a c6 e não passa dali: b6, c5 e d7 são do cavalo e do seu rei. Aproximar o rei por d5 ou d6 também ganha, mas o bispo fecha a rede com mais clareza.",
+
+  "ex.e09": "Brancas jogam e ganham. Agora o bispo é das casas escuras e o rei preto está em h1, canto claro. O canto errado de novo, só que embaixo. Comece o W.",
+  "ex.e09.hint": "O W é o mesmo, virado. O cavalo de e4 dá xeque na casa que também cobre h1.",
+  "ex.e09.solution": "Cf2+, a primeira ponta do W de baixo: f2, e4, d2, c4, b2. O rei preto vai para g1 e o mate será em a1, o canto escuro, a casa do seu bispo.",
+
+  "ex.e10": "Brancas jogam e ganham. O rei preto voltou para e8 depois de Cd7+. Três lances seus para empurrá-lo rumo ao canto certo.",
+  "ex.e10.hint": "Rei para e6 e para d6, tomando a sétima fileira. Quando o rei preto for para e8, um xeque de bispo o devolve a d8.",
+  "ex.e10.solution": "Re6 Rd8, Rd6 Re8, Bg6+ (ou Bg8): o rei preto é obrigado a d8 e perde e8 para sempre. Dali, o cavalo vai a c5 e o mate segue como na aula.",
+
+  "ex.e11": "Brancas jogam e ganham. O rei preto está em g8, mas as suas peças ainda não formaram o W: o cavalo está em d3. Monte a posição-chave em três lances.",
+  "ex.e11.hint": "Cavalo para o centro, em e5; rei para f6; e então o cavalo entra em f7, a primeira ponta do W.",
+  "ex.e11.solution": "Ce5 Rf8, Rf6 Rg8, Cf7: a posição do W, com o bispo já na diagonal b1–h7. O rei preto fica entre f8 e g8 e o caminho da aula começa. Rf6 primeiro também serve.",
+
+  "ex.e12": "Brancas jogam e ganham. O W espelhado: bispo das casas escuras, rei preto em b8 depois do primeiro xeque, e o mate será em h8. Três lances seus.",
+  "ex.e12.hint": "É a mesma ideia de Bf5, Bh7 e Ce5, espelhada: o bispo prepara e toma b8 de a7, e o cavalo volta ao centro para cobrir e7.",
+  "ex.e12.solution": "Bc5 (ou outra casa da diagonal a7–g1) Rc8, Ba7 Rd8, Cd5: o rei preto perdeu c8 e b8 e o cavalo cobre e7. Dali o W segue pela oitava até h8.",
+
+  "key.wStart": "A posição-chave do W: rei preto em h8, o canto errado. A linha inteira, com crédito a Müller e Lamprecht, está no artigo da Wikipedia sobre o mate.",
+  "key.mateCorner": "O padrão de mate no canto certo: rei em b6, cavalo em a6, bispo em c6. É o mesmo padrão de Müller e Lamprecht que a aula ensina a alcançar.",
+  "key.rhineTrap": "A armadilha de Rhine (2000): Cb6+?? Rd8! e o bispo fica preso. Todo lance de bispo afoga; qualquer outro perde o bispo.",
+  "key.escapeBack": "A volta ao canto errado (4...Rf8) e o castigo: Cd7+. Posição da aula, tirada da linha do W.",
+  "key.stalemateAlert": "O alerta de afogamento: Ca6?? deixa o rei preto sem lance. O bispo espera a um passo da diagonal grande.",
+
+  "history": "Philidor, em 1777, foi o primeiro a descrever o caminho do cavalo que hoje chamamos de W. Em 1923, o francês Daniel Delétang publicou outro método, o dos triângulos, que a seção de prática do Lichess ensina até hoje. O mate é raro: Müller e Lamprecht contam uma vez a cada seis mil partidas. Por isso Silman o deixou fora do seu curso de finais, e Soltis responde que aprendê-lo ensina a coordenar peças como nenhum outro. Em 1997, Tal Shaked venceu Morozevich com este mate na penúltima rodada do Mundial Juvenil e levou o título. Em 2003, Karttunen venceu Rasik com o W do cavalo. E grandes mestres já falharam: Epishin afogou o rei de Kempinski em 2001, e Anna Ushenina, campeã mundial, não conseguiu dar o mate contra Olga Girya em Genebra, 2013.",
+
+  "practice": "Agora o final de verdade. Nesta posição o rei preto está perto de h1, o canto certo para o seu bispo: feche a rede e dê o mate sem afogar. Escolha o ritmo e desafie o relógio, ou monte o seu próprio treino."
+}

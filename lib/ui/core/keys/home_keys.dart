@@ -8,6 +8,7 @@ abstract final class HomeKeys {
   static const speedrunButton = Key('home.speedrun');
   static const catalogButton = Key('home.catalog');
   static const schoolButton = Key('home.school');
+  static const endgamesButton = Key('home.endgames');
   static const schoolCard = Key('home.schoolCard');
   static const schoolContinue = Key('home.schoolContinue');
   static const customPositionButton = Key('home.customPosition');

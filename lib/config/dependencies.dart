@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 import '../data/repositories/draw/draw_offer_repository.dart';
+import '../data/repositories/endgames/endgame_lesson_repository.dart';
+import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
@@ -86,6 +89,8 @@ class Dependencies {
     required this.paceRepository,
     required this.lessonRepository,
     required this.schoolProgressRepository,
+    required this.endgameLessonRepository,
+    required this.endgameProgressRepository,
     required this.drawOfferRepository,
     required this.languages,
   });
@@ -102,6 +107,7 @@ class Dependencies {
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
+    final lessons = AssetLessonRepository(assets);
     return Dependencies(
       now: now,
       settingsRepository: LocalSettingsRepository(preferences),
@@ -131,8 +137,13 @@ class Dependencies {
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: LocalOnboardingRepository(preferences),
       paceRepository: pace,
-      lessonRepository: AssetLessonRepository(assets),
+      lessonRepository: lessons,
       schoolProgressRepository: LocalSchoolProgressRepository(preferences),
+      endgameLessonRepository: AssetEndgameLessonRepository(
+        assets,
+        school: lessons,
+      ),
+      endgameProgressRepository: LocalEndgameProgressRepository(preferences),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
         evaluation: evaluation,
@@ -162,6 +173,8 @@ class Dependencies {
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final SchoolProgressRepository schoolProgressRepository;
+  final EndgameLessonRepository endgameLessonRepository;
+  final EndgameProgressRepository endgameProgressRepository;
   final DrawOfferRepository drawOfferRepository;
 
   /// Idiomas oferecidos em Configurações.

@@ -24,6 +24,8 @@ import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
+import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
 
 import 'fakes/fake_rating_repository.dart';
 import 'fakes/fake_achievements_repository.dart';
@@ -33,6 +35,7 @@ import 'fakes/fake_talk_repository.dart';
 import 'fakes/fake_onboarding_repository.dart';
 import 'fakes/fake_pace_repository.dart';
 import 'fakes/fake_school_repositories.dart';
+import 'fakes/fake_endgame_repositories.dart';
 
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_journey_repository.dart';
@@ -70,6 +73,8 @@ Dependencies testDependencies({
   PaceRepository? paceRepository,
   LessonRepository? lessonRepository,
   SchoolProgressRepository? schoolProgressRepository,
+  EndgameLessonRepository? endgameLessonRepository,
+  EndgameProgressRepository? endgameProgressRepository,
   DrawOfferRepository? drawOfferRepository,
   List<AppLanguage>? languages,
 }) {
@@ -104,6 +109,10 @@ Dependencies testDependencies({
     lessonRepository: lessonRepository ?? FakeLessonRepository(),
     schoolProgressRepository:
         schoolProgressRepository ?? FakeSchoolProgressRepository(),
+    endgameLessonRepository:
+        endgameLessonRepository ?? FakeEndgameLessonRepository(),
+    endgameProgressRepository:
+        endgameProgressRepository ?? FakeEndgameProgressRepository(),
     drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

@@ -1,0 +1,16 @@
+{
+  "modules": [
+    {
+      "id": "mates",
+      "lessons": [
+        "mates.bishopKnight.full"
+      ]
+    },
+    {
+      "id": "rook",
+      "lessons": [
+        "rook.lucena"
+      ]
+    }
+  ]
+}

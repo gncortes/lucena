@@ -2155,5 +2155,280 @@
   "gameDetailsNotFound": "This game is no longer saved.",
   "@gameDetailsNotFound": {
     "description": "Game details: shown when the game was not found."
+  },
+  "homeEndgames": "Endgame lessons",
+  "@homeEndgames": {
+    "description": "Home card that opens the endgame lessons trail."
+  },
+  "homeEndgamesBody": "Lucena, Philidor, bishop and knight: the endgames every player must master.",
+  "@homeEndgamesBody": {
+    "description": "One line under the endgame lessons card on the home screen."
+  },
+  "endgamesTitle": "Endgame lessons",
+  "@endgamesTitle": {
+    "description": "Title of the endgame lessons trail."
+  },
+  "endgamesPassedCount": "{passed} of {total} passed",
+  "@endgamesPassedCount": {
+    "description": "Beside the progress bar of the endgame lessons trail.",
+    "placeholders": {
+      "passed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "endgamesLessonLabel": "{status, select, passed{{title}, passed} started{{title}, in progress} other{{title}, open}}",
+  "@endgamesLessonLabel": {
+    "description": "Accessibility label of a lesson in the endgame trail.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameLessonPartLesson": "The lesson",
+  "@endgameLessonPartLesson": {
+    "description": "First part of an endgame lesson: Viktor teaches."
+  },
+  "endgameLessonPartExercises": "The exercises",
+  "@endgameLessonPartExercises": {
+    "description": "Second part of an endgame lesson: the exercises with stars."
+  },
+  "endgameLessonPartFinal": "The real endgame",
+  "@endgameLessonPartFinal": {
+    "description": "Third part of an endgame lesson: play the real endgame."
+  },
+  "endgameLessonStart": "Start the lesson",
+  "@endgameLessonStart": {
+    "description": "Button that opens the lesson steps for the first time."
+  },
+  "endgameLessonContinue": "Continue the lesson",
+  "@endgameLessonContinue": {
+    "description": "Button that reopens a lesson started and not finished."
+  },
+  "endgameLessonReview": "Review the lesson",
+  "@endgameLessonReview": {
+    "description": "Button that reopens a lesson already done."
+  },
+  "endgameLessonDone": "Lesson done",
+  "@endgameLessonDone": {
+    "description": "Mark on a lesson whose steps were all completed."
+  },
+  "endgameExercisesSolved": "{solved} of {count} solved",
+  "@endgameExercisesSolved": {
+    "description": "How many exercises of the lesson were solved.",
+    "placeholders": {
+      "solved": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameExercisesStart": "Start the exercises",
+  "@endgameExercisesStart": {
+    "description": "Button that opens the first exercise."
+  },
+  "endgameExercisesContinue": "Continue the exercises",
+  "@endgameExercisesContinue": {
+    "description": "Button that opens the next unsolved exercise."
+  },
+  "endgameScore": "{score} of {max} stars",
+  "@endgameScore": {
+    "description": "The score of a lesson: stars earned over the total.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameScoreMinimum": "Minimum to pass: {min}",
+  "@endgameScoreMinimum": {
+    "description": "The minimum stars to unlock the final step.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameExerciseTitle": "Exercise {number}",
+  "@endgameExerciseTitle": {
+    "description": "Title of an exercise in the list.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameStars": "{count, plural, =1{1 star} other{{count} stars}}",
+  "@endgameStars": {
+    "description": "How many stars an exercise is worth.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameEarnedStars": "{earned} of {stars}",
+  "@endgameEarnedStars": {
+    "description": "Stars earned in a solved exercise, over its value.",
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "endgamePassedTitle": "Passed!",
+  "@endgamePassedTitle": {
+    "description": "Title of the score card when the minimum was reached."
+  },
+  "endgameFailedTitle": "Not enough stars",
+  "@endgameFailedTitle": {
+    "description": "Title of the score card when the minimum was not reached."
+  },
+  "endgameRedoExercises": "Redo the exercises",
+  "@endgameRedoExercises": {
+    "description": "Button that clears the score and reopens all exercises."
+  },
+  "endgameFinalLocked": "Finish the lesson and reach the minimum score to unlock the real endgame.",
+  "@endgameFinalLocked": {
+    "description": "Explanation on the locked final step."
+  },
+  "endgameSpeedrunChallenge": "Challenge the speedrun",
+  "@endgameSpeedrunChallenge": {
+    "description": "Button that opens the speedrun of this endgame."
+  },
+  "endgameSpeedrunBody": "Choose the pace and play this endgame against every level, with the clock running.",
+  "@endgameSpeedrunBody": {
+    "description": "Explanation beside the speedrun button of an endgame lesson."
+  },
+  "endgameTrain": "Train this position",
+  "@endgameTrain": {
+    "description": "Button that opens the game setup on the practice position."
+  },
+  "endgameInfoTooltip": "About this endgame",
+  "@endgameInfoTooltip": {
+    "description": "Tooltip of the information button of an endgame lesson."
+  },
+  "endgameInfoReferences": "References",
+  "@endgameInfoReferences": {
+    "description": "Section with the books, studies and games of the lesson."
+  },
+  "endgameInfoKeyPositions": "Key positions",
+  "@endgameInfoKeyPositions": {
+    "description": "Section with the base positions of the lesson."
+  },
+  "endgameInfoHistory": "History",
+  "@endgameInfoHistory": {
+    "description": "Section with the history of the endgame."
+  },
+  "endgameReferenceBook": "{author}. {title}. {publisher}, {year}.",
+  "@endgameReferenceBook": {
+    "description": "A book reference.",
+    "placeholders": {
+      "author": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "publisher": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameReferenceStudy": "{author}. {title}. Lichess study.",
+  "@endgameReferenceStudy": {
+    "description": "A Lichess study reference.",
+    "placeholders": {
+      "author": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameReferenceGame": "{white} – {black}, {event}, {year}.",
+  "@endgameReferenceGame": {
+    "description": "A game reference.",
+    "placeholders": {
+      "white": {
+        "type": "String"
+      },
+      "black": {
+        "type": "String"
+      },
+      "event": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseTitle": "Exercise {number} of {count}",
+  "@exerciseTitle": {
+    "description": "Under the lesson title on the exercise screen.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseSolved": "Solved!",
+  "@exerciseSolved": {
+    "description": "Title of the card after solving an exercise."
+  },
+  "exerciseEarned": "{earned} of {stars} stars",
+  "@exerciseEarned": {
+    "description": "Stars earned after solving an exercise.",
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseNext": "Next exercise",
+  "@exerciseNext": {
+    "description": "Button that opens the next exercise."
+  },
+  "exerciseBack": "Back to the lesson",
+  "@exerciseBack": {
+    "description": "Button that goes back to the endgame lesson screen."
+  },
+  "exerciseHint": "Hint (costs a star)",
+  "@exerciseHint": {
+    "description": "Button that asks for a hint in an exercise."
+  },
+  "exerciseMissing": "This exercise does not exist.",
+  "@exerciseMissing": {
+    "description": "When the exercise in the link does not exist."
+  },
+  "lessonToExercises": "Go to the exercises",
+  "@lessonToExercises": {
+    "description": "Button at the end of an endgame lesson that goes back to the lesson with its exercises."
   }
 }

@@ -107,6 +107,15 @@ abstract final class Routes {
   static const school = '/school';
   static String lesson(String id) => '/school/$id';
 
+  /// As aulas de finais: a trilha, uma aula, a lição dela, as informações e
+  /// um exercício.
+  static const endgames = '/endgames';
+  static String endgameLesson(String id) => '/endgames/$id';
+  static String endgameLessonSteps(String id) => '/endgames/$id/lesson';
+  static String endgameInfo(String id) => '/endgames/$id/info';
+  static String endgameExercise(String id, String exercise) =>
+      '/endgames/$id/ex/$exercise';
+
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 
