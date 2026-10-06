@@ -79,6 +79,9 @@ abstract final class FreeBoardKeys {
   static const ratingValue = Key('freeBoard.report.rating.value');
   static const ratingDelta = Key('freeBoard.report.rating.delta');
   static const endNextButton = Key('freeBoard.end.next');
+
+  /// Abre os detalhes da partida que acabou, para revisá-la.
+  static const endReviewButton = Key('freeBoard.end.review');
   static const scrollArea = Key('freeBoard.scroll');
   static const characterName = Key('freeBoard.character.name');
   static const resultCard = Key('freeBoard.result');

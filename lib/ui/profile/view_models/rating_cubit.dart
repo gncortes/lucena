@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/achievements/achievements_repository.dart';
@@ -5,6 +6,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
+import '../../../data/repositories/review/game_review_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
@@ -49,7 +51,12 @@ class PlayerNumbers {
 
 /// Uma partida do histórico geral.
 class LoggedGame {
-  const LoggedGame({required this.id, required this.attempt, this.rated});
+  const LoggedGame({
+    required this.id,
+    required this.attempt,
+    this.rated,
+    this.accuracy,
+  });
 
   /// O id da partida gravada: abre os detalhes dela.
   final int id;
@@ -57,6 +64,9 @@ class LoggedGame {
 
   /// Como o rating ficou depois dela e quanto mudou. Nulo se ela não contou.
   final RatedGame? rated;
+
+  /// A precisão do jogador na partida, se ela já foi revisada.
+  final double? accuracy;
 }
 
 /// O rating do jogador, o histórico dele e os números do progresso.
@@ -69,7 +79,11 @@ class RatingState {
     this.allGames = const {},
     this.characters = const [],
     this.now,
+    this.accuracies = const {},
   });
+
+  /// A precisão do jogador em cada partida já revisada, pelo id.
+  final Map<int, double> accuracies;
 
   /// Nulo enquanto é lido.
   final PlayerRating? current;
@@ -100,7 +114,12 @@ class RatingState {
     final rated = {for (final game in games) ?game.entry.gameId: game};
     return [
       for (final MapEntry(key: id, value: attempt) in allGames.entries)
-        LoggedGame(id: id, attempt: attempt, rated: rated[id]),
+        LoggedGame(
+          id: id,
+          attempt: attempt,
+          rated: rated[id],
+          accuracy: accuracies[id],
+        ),
     ];
   }
 
@@ -137,8 +156,11 @@ class RatingCubit extends Cubit<RatingState> {
     this._speedruns,
     this._journey,
     this._characters,
+    this._reviews,
     this._now = const SystemNow(),
   }) : super(const RatingState());
+
+  final GameReviewRepository? _reviews;
 
   final RatingRepository _rating;
 
@@ -163,6 +185,12 @@ class RatingCubit extends Cubit<RatingState> {
     final achievements = _achievements;
     final all = await progress?.allAttemptsById() ?? const <int, Attempt>{};
     final now = _now();
+    final sides = await _reviews?.accuracies(all.keys) ?? const {};
+    // A precisão do lado do jogador.
+    final accuracies = <int, double>{
+      for (final MapEntry(key: id, value: side) in sides.entries)
+        id: ?(all[id]!.userSide == Side.white ? side.white : side.black),
+    };
     final numbers = progress == null
         ? null
         : PlayerNumbers(
@@ -184,6 +212,7 @@ class RatingCubit extends Cubit<RatingState> {
         numbers: numbers,
         allGames: _recentFirst(all),
         now: now,
+        accuracies: accuracies,
         characters: await _characters?.characters() ?? const <Character>[],
       ),
     );

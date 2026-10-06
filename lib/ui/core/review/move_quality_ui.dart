@@ -106,6 +106,11 @@ class MoveQualityBadge extends StatelessWidget {
 }
 
 /// A avaliação como os sites mostram: `+1,2`, `−0,4`, `M3`, `−M2`, `#`.
+/// A precisão com uma casa decimal, com a vírgula fora do inglês.
+String formatAccuracy(double value, String locale) => locale.startsWith('en')
+    ? value.toStringAsFixed(1)
+    : value.toStringAsFixed(1).replaceAll('.', ',');
+
 String formatScore(EngineScore score, String locale) {
   if (score.mated != null) return '#';
   final mate = score.mate;

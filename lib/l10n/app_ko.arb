@@ -530,5 +530,6 @@
   "reviewMedium": "보통",
   "reviewDeep": "깊게",
   "reviewSpeedHint": "깊을수록 정확하고 오래 걸립니다. 모든 수가 평가되면 정확도가 표시됩니다.",
-  "reviewDeeper": "더 깊이 검토하기"
+  "reviewDeeper": "더 깊이 검토하기",
+  "resultReview": "대국 검토"
 }

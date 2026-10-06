@@ -530,5 +530,6 @@
   "reviewMedium": "Gemiddeld",
   "reviewDeep": "Diep",
   "reviewSpeedHint": "Hoe dieper, hoe nauwkeuriger en trager. De nauwkeurigheid verschijnt als alle zetten beoordeeld zijn.",
-  "reviewDeeper": "Dieper analyseren"
+  "reviewDeeper": "Dieper analyseren",
+  "resultReview": "Partij analyseren"
 }

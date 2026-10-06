@@ -530,5 +530,6 @@
   "reviewMedium": "Media",
   "reviewDeep": "Profunda",
   "reviewSpeedHint": "Cuanto más profunda, más precisa y más lenta. La precisión aparece cuando se evalúan todas las jugadas.",
-  "reviewDeeper": "Revisar más a fondo"
+  "reviewDeeper": "Revisar más a fondo",
+  "resultReview": "Revisar partida"
 }

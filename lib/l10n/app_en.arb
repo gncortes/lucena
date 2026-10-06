@@ -2834,5 +2834,9 @@
   "reviewDeeper": "Review deeper",
   "@reviewDeeper": {
     "description": "Game details: label above the buttons that review the game again with more engine time, after a lighter review."
+  },
+  "resultReview": "Review game",
+  "@resultReview": {
+    "description": "End of game panel: button that opens the game details to review it with the engine."
   }
 }

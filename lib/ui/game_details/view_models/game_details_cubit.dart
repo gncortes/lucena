@@ -92,8 +92,9 @@ class GameDetailsState {
   /// [shownIndex]).
   final Map<int, List<EngineLine>> engineLines;
 
-  /// Avaliações rápidas para a barra, por posição, quando ainda não há
-  /// anotação nem a engine ligada.
+  /// A avaliação de cada posição para a barra (índice como [shownIndex]): a
+  /// mais pesada que a engine já fez dela, assim que sai (na revisão, na
+  /// passagem pelo lance ou só para a barra).
   final Map<int, EngineScore> barScores;
 
   /// A anotação de cada lance, a mais pesada que já saiu (da revisão, de ter
@@ -118,11 +119,12 @@ class GameDetailsState {
   EngineScore? get shownScore {
     final lines = engineLines[shownIndex];
     if (engine && lines != null && lines.isNotEmpty) return lines.first.score;
+    // A avaliação mais pesada que a engine já fez desta posição.
+    if (barScores[shownIndex] case final score?) return score;
     if (live[shownIndex] case final move?) return move.after;
-    if (shownIndex < 0 && live[0] != null) return live[0]!.before;
     if (live[shownIndex + 1] case final move?) return move.before;
     if (lines != null && lines.isNotEmpty) return lines.first.score;
-    return barScores[shownIndex];
+    return null;
   }
 
   int get shownIndex => selected ?? moves.length - 1;
@@ -406,6 +408,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
                 preemptible: preemptible,
               );
         _lines[key] = lines == null || lines.isEmpty ? null : lines;
+        _scoreBar(k - 1, ReviewRules.scoreOf(position, _lines[key]), weight);
       } finally {
         _pending.remove(key);
       }
@@ -495,21 +498,35 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
 
   /// A avaliação rápida da posição mostrada, para a barra, se ainda não
   /// existe nenhuma.
+  /// Durante a revisão, ela mesma avalia a posição (pedir à parte só a
+  /// atrasaria).
   Future<void> scoreShown() async {
     final analysis = _analysis;
     final index = state.shownIndex;
     final position = state.shownPosition;
-    if (analysis == null || position == null) return;
-    if (state.shownScore != null || state.barScores.containsKey(index)) return;
+    if (analysis == null || position == null || state.reviewing) return;
+    if (state.shownScore != null || !_barAsked.add(index)) return;
     final score = position.isGameOver
         ? ReviewRules.scoreOf(position, null)
         : (await analysis.analyse(
             position,
             depth: barDepth,
           )).firstOrNull?.score;
+    _scoreBar(index, score, 0);
+  }
+
+  final _barAsked = <int>{};
+
+  /// A avaliação da posição [index] para a barra, se for mais pesada que a
+  /// que ela já tem.
+  void _scoreBar(int index, EngineScore? score, int weight) {
     if (isClosed || score == null) return;
+    if ((_barWeights[index] ?? -1) > weight) return;
+    _barWeights[index] = weight;
     emit(state.copyWith(barScores: {...state.barScores, index: score}));
   }
+
+  final _barWeights = <int, int>{};
 
   /// Liga ou desliga a engine na posição do tabuleiro.
   Future<void> toggleEngine() async {

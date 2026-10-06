@@ -529,5 +529,6 @@
   "reviewMedium": "Média",
   "reviewDeep": "Profunda",
   "reviewSpeedHint": "Quanto mais profunda, mais precisa e mais demorada. A precisão aparece quando todos os lances forem avaliados.",
-  "reviewDeeper": "Revisar mais a fundo"
+  "reviewDeeper": "Revisar mais a fundo",
+  "resultReview": "Revisar partida"
 }

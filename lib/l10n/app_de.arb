@@ -530,5 +530,6 @@
   "reviewMedium": "Mittel",
   "reviewDeep": "Gründlich",
   "reviewSpeedHint": "Je gründlicher, desto genauer und langsamer. Die Genauigkeit erscheint, wenn alle Züge bewertet sind.",
-  "reviewDeeper": "Gründlicher analysieren"
+  "reviewDeeper": "Gründlicher analysieren",
+  "resultReview": "Partie analysieren"
 }
