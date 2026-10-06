@@ -1,0 +1,25 @@
+{
+  "modules": [
+    {
+      "id": "mates",
+      "lessons": [
+        "mates.bishopKnight.w",
+        "mates.bishopKnight.edge",
+        "mates.bishopKnight.full"
+      ]
+    },
+    {
+      "id": "pawns",
+      "lessons": [
+        "pawns.keySquares",
+        "pawns.distantOpposition"
+      ]
+    },
+    {
+      "id": "rook",
+      "lessons": [
+        "rook.lucena"
+      ]
+    }
+  ]
+}

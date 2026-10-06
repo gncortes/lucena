@@ -51,10 +51,10 @@ class PositionBoard extends StatelessWidget {
     return Hero(
       tag: tag,
       flightShuttleBuilder: (context, animation, direction, from, to) {
-        final fromBoard = from.widget as Hero;
-        final toBoard = to.widget as Hero;
-        final start = (fromBoard.child as _BoardFrame).radius;
-        final finish = (toBoard.child as _BoardFrame).radius;
+        // A outra ponta pode ser um tabuleiro de jogar (sem moldura): cantos
+        // retos.
+        final start = _radiusOf(from.widget as Hero);
+        final finish = _radiusOf(to.widget as Hero);
         // O voo já vem numa curva suave (acelera e freia).
         return AnimatedBuilder(
           animation: animation,
@@ -78,6 +78,9 @@ class PositionBoard extends StatelessWidget {
       child: board,
     );
   }
+
+  static double _radiusOf(Hero hero) =>
+      hero.child is _BoardFrame ? (hero.child as _BoardFrame).radius : 0;
 
   Widget _board(
     BuildContext context,

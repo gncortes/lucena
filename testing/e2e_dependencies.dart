@@ -26,6 +26,7 @@ import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/domain/models/speedrun.dart';
@@ -37,6 +38,8 @@ import 'package:lucena/data/repositories/maia/maia_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
@@ -140,6 +143,7 @@ Future<Dependencies> e2eDependencies() async {
   await _database?.close();
   final database = _database = AppDatabase();
   final positions = AssetPositionsRepository(const AssetService());
+  final lessons = AssetLessonRepository(const AssetService());
   return Dependencies(
     now: e2eNow,
     settingsRepository: LocalSettingsRepository(PreferencesService()),
@@ -175,8 +179,15 @@ Future<Dependencies> e2eDependencies() async {
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
-    lessonRepository: AssetLessonRepository(const AssetService()),
+    lessonRepository: lessons,
     schoolProgressRepository: LocalSchoolProgressRepository(
+      PreferencesService(),
+    ),
+    endgameLessonRepository: AssetEndgameLessonRepository(
+      const AssetService(),
+      school: lessons,
+    ),
+    endgameProgressRepository: LocalEndgameProgressRepository(
       PreferencesService(),
     ),
     drawOfferRepository: e2eDraws,
@@ -244,6 +255,11 @@ Future<void> resetE2EData() async {
   await database.deleteEverything();
   await database.close();
 }
+
+/// Grava o progresso das aulas de finais como se o aluno já o tivesse feito.
+/// O próximo `AppRobot.restart` abre o app com ele.
+Future<void> seedEndgameProgress(EndgameProgress progress) =>
+    LocalEndgameProgressRepository(PreferencesService()).save(progress);
 
 /// A Jornada de verdade e, antes dos speedruns de verdade, dois curtos de
 /// mate em um lance: os cenários percorrem um speedrun inteiro em segundos.

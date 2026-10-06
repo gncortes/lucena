@@ -195,6 +195,9 @@ class LessonTexts {
   LessonTexts over(LessonTexts fallback) =>
       LessonTexts({...fallback._texts, ..._texts});
 
+  /// As falas como no JSON (`{"chave": ["fala", "fala"]}`).
+  Map<String, dynamic> toJson() => {..._texts};
+
   /// Lê o JSON `{"chave": "fala"}` ou `{"chave": ["fala", "fala"]}`.
   static LessonTexts fromJson(Map<String, dynamic> json) => LessonTexts({
     for (final MapEntry(:key, :value) in json.entries)

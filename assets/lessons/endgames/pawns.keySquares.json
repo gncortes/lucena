@@ -1,0 +1,633 @@
+{
+  "id": "pawns.keySquares",
+  "module": "pawns",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "k7/8/8/8/4P3/8/4K3/8 w - - 0 1",
+      "marks": [
+        "d6",
+        "e6",
+        "f6"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "count",
+      "fen": "k7/8/8/4P3/8/8/4K3/8 w - - 0 1",
+      "marks": [
+        "d6",
+        "e6",
+        "f6",
+        "d7",
+        "e7",
+        "f7"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "why",
+      "fen": "4k3/8/4K3/8/4P3/8/8/8 w - - 0 1",
+      "marks": [
+        "d6",
+        "e6",
+        "f6"
+      ],
+      "arrows": [
+        "e6d7",
+        "e6f7"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "keyWin",
+      "fen": "4k3/8/4K3/8/4P3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "e4e5",
+          "accept": [
+            "e4e5",
+            "e6d6",
+            "e6f6"
+          ],
+          "reply": "e8d8"
+        },
+        {
+          "teach": "e6f7",
+          "accept": [
+            "e6d6",
+            "e6f6",
+            "e6f7"
+          ],
+          "reply": "d8d7"
+        },
+        {
+          "teach": "e5e6",
+          "accept": [
+            "e5e6",
+            "f7f6"
+          ],
+          "reply": "d7d6"
+        },
+        {
+          "teach": "e6e7",
+          "accept": [
+            "e6e7",
+            "f7f6"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "front",
+      "fen": "8/8/2k5/8/3K4/8/2P5/8 w - - 0 1",
+      "marks": [
+        "b4",
+        "c4",
+        "d4"
+      ],
+      "arrows": [
+        "d4c4"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "tool",
+      "fen": "8/8/2k5/8/3K4/8/2P5/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "d4c4",
+          "accept": [
+            "d4c4"
+          ],
+          "reply": "c6b6"
+        },
+        {
+          "teach": "c4d5",
+          "accept": [
+            "c4b4",
+            "c4d3",
+            "c4d4",
+            "c4d5"
+          ],
+          "reply": "b6c7"
+        },
+        {
+          "teach": "d5c5",
+          "accept": [
+            "c2c3",
+            "d5c4",
+            "d5c5",
+            "d5d4",
+            "d5e4",
+            "d5e5"
+          ],
+          "reply": "c7d7"
+        },
+        {
+          "teach": "c5b6",
+          "accept": [
+            "c2c3",
+            "c5b4",
+            "c5b5",
+            "c5b6",
+            "c5c4",
+            "c5d4",
+            "c5d5"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "early",
+      "fen": "8/8/3k4/8/8/2K5/3P4/8 w - - 0 1",
+      "marks": [
+        "c4",
+        "d4",
+        "e4"
+      ],
+      "arrows": [
+        "d2d4"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "earlyMove",
+      "fen": "8/8/3k4/8/8/2K5/3P4/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "c3d4",
+          "accept": [
+            "c3c4",
+            "c3d4"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "defend",
+      "fen": "5k2/8/2K1P3/8/8/8/8/8 b - - 0 1",
+      "marks": [
+        "e7",
+        "e8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "defendMove",
+      "fen": "5k2/8/2K1P3/8/8/8/8/8 b - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "f8e7",
+          "accept": [
+            "f8e7",
+            "f8e8"
+          ],
+          "reply": "c6d5"
+        },
+        {
+          "teach": "e7e8",
+          "accept": [
+            "e7e8"
+          ],
+          "reply": "d5d6"
+        },
+        {
+          "teach": "e8d8",
+          "accept": [
+            "e8d8"
+          ],
+          "reply": "e6e7"
+        },
+        {
+          "teach": "d8e8",
+          "accept": [
+            "d8e8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "6k1/8/8/8/8/8/3K2P1/8 w - - 0 1",
+      "marks": [
+        "f4",
+        "g4",
+        "h4"
+      ]
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "2k5/8/8/8/8/5P2/8/4K3 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "4k3/8/8/3K4/4P3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "d5d6",
+          "accept": [
+            "d5d6",
+            "d5e6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/6k1/8/8/5K2/6P1/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "f4g5",
+          "accept": [
+            "f4f5",
+            "f4g5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "3k4/8/8/2KP4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c5d6",
+          "accept": [
+            "c5c6",
+            "c5d6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 2,
+      "fen": "4k3/8/3KP3/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e6e7",
+          "accept": [
+            "e6e7"
+          ],
+          "reply": "e8f7"
+        },
+        {
+          "teach": "d6d7",
+          "accept": [
+            "d6d7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/4k3/8/3K4/4P3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "d5e5",
+          "accept": [
+            "d5e5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKpk",
+      "line": [
+        {
+          "teach": "d4c5",
+          "accept": [
+            "d4c5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/2k5/8/3K4/3P4/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "strategically",
+      "line": [
+        {
+          "teach": "d5e6",
+          "accept": [
+            "d5c5",
+            "d5e5",
+            "d5e6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "7k/8/6K1/6P1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKpk",
+      "line": [
+        {
+          "teach": "g6f7",
+          "accept": [
+            "g6f6",
+            "g6f7",
+            "g6h6"
+          ],
+          "reply": "h8h7"
+        },
+        {
+          "teach": "g5g6",
+          "accept": [
+            "f7f6",
+            "g5g6"
+          ],
+          "reply": "h7h8"
+        },
+        {
+          "teach": "g6g7",
+          "accept": [
+            "f7f6",
+            "g6g7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 2,
+      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "gligoricFischer",
+      "line": [
+        {
+          "teach": "c8b8",
+          "accept": [
+            "c8b8"
+          ],
+          "reply": "c4c5"
+        },
+        {
+          "teach": "b8c7",
+          "accept": [
+            "b8c7"
+          ],
+          "reply": "b4b5"
+        },
+        {
+          "teach": "c7b7",
+          "accept": [
+            "c7b7"
+          ],
+          "reply": "b5b6"
+        },
+        {
+          "teach": "b7b8",
+          "accept": [
+            "b7b8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKpk",
+      "line": [
+        {
+          "teach": "d1c2",
+          "accept": [
+            "d1c2"
+          ],
+          "reply": "f8e7"
+        },
+        {
+          "teach": "c2b3",
+          "accept": [
+            "c2b3"
+          ],
+          "reply": "e7d6"
+        },
+        {
+          "teach": "b3b4",
+          "accept": [
+            "b3b4"
+          ],
+          "reply": "d6c6"
+        },
+        {
+          "teach": "b4c4",
+          "accept": [
+            "b4c4"
+          ],
+          "reply": "c6d6"
+        },
+        {
+          "teach": "c4b5",
+          "accept": [
+            "c4b4",
+            "c4b5",
+            "c4d4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 3,
+      "fen": "8/8/8/3k4/8/8/1KP5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "b2b3",
+          "accept": [
+            "b2b3"
+          ],
+          "reply": "d5c5"
+        },
+        {
+          "teach": "b3c3",
+          "accept": [
+            "b3c3"
+          ],
+          "reply": "c5d5"
+        },
+        {
+          "teach": "c3b4",
+          "accept": [
+            "c3b3",
+            "c3b4",
+            "c3d3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 3,
+      "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKpk",
+      "line": [
+        {
+          "teach": "g6h6",
+          "accept": [
+            "g6f6",
+            "g6h6"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "g5g6",
+          "accept": [
+            "g5g6",
+            "h6g6"
+          ],
+          "reply": "h8g8"
+        },
+        {
+          "teach": "g6g7",
+          "accept": [
+            "g6g7"
+          ],
+          "reply": "g8f7"
+        },
+        {
+          "teach": "h6h7",
+          "accept": [
+            "h6h7"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 15,
+  "keyPositions": [
+    {
+      "id": "count",
+      "fen": "k7/8/8/8/4P3/8/4K3/8 w - - 0 1"
+    },
+    {
+      "id": "averbakh",
+      "fen": "8/8/2k5/8/3K4/8/2P5/8 w - - 0 1",
+      "ref": "wikiKpk"
+    },
+    {
+      "id": "opposition",
+      "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
+      "ref": "wikiKpk"
+    },
+    {
+      "id": "drtina",
+      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+      "ref": "wikiKpk"
+    },
+    {
+      "id": "gligoricFischer",
+      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+      "ref": "gligoricFischer"
+    },
+    {
+      "id": "kamskyKramnik",
+      "fen": "5k2/8/2K1P3/8/8/8/8/8 b - - 0 1",
+      "ref": "kamskyKramnik"
+    }
+  ],
+  "practice": {
+    "fen": "6k1/8/8/8/8/8/3K2P1/8 w - - 0 1",
+    "goal": "win",
+    "positionId": "pawn.pawnVsKing.0001"
+  },
+  "references": [
+    {
+      "id": "mullerLamprecht",
+      "kind": "book",
+      "author": "Karsten Müller e Frank Lamprecht",
+      "title": "Fundamental Chess Endings",
+      "publisher": "Gambit Publications",
+      "year": 2001
+    },
+    {
+      "id": "practice",
+      "kind": "study",
+      "author": "arex",
+      "title": "Lichess Practice: Key Squares",
+      "url": "https://lichess.org/study/xebrDvFe"
+    },
+    {
+      "id": "strategically",
+      "kind": "study",
+      "author": "Strategically_Endgam",
+      "title": "Key Squares",
+      "url": "https://lichess.org/study/LVDJbQe3"
+    },
+    {
+      "id": "wikiKpk",
+      "kind": "web",
+      "title": "Wikipedia: King and pawn versus king endgame",
+      "url": "https://en.wikipedia.org/wiki/King_and_pawn_versus_king_endgame"
+    },
+    {
+      "id": "wikiKeySquare",
+      "kind": "web",
+      "title": "Wikipedia: Key square",
+      "url": "https://en.wikipedia.org/wiki/Key_square"
+    },
+    {
+      "id": "gligoricFischer",
+      "kind": "game",
+      "white": "Svetozar Gligorić",
+      "black": "Bobby Fischer",
+      "event": "Torneio de Candidatos, Bled/Zagreb/Belgrado",
+      "year": 1959
+    },
+    {
+      "id": "kamskyKramnik",
+      "kind": "game",
+      "white": "Gata Kamsky",
+      "black": "Vladimir Kramnik",
+      "event": "Torneio Amber (às cegas), Nice",
+      "year": 2009
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 24
+}

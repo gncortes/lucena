@@ -61,6 +61,13 @@ abstract final class LessonRules {
     return step.line[turn].accept.contains(uci);
   }
 
+  /// O lance aceito [uci] na vez [turn] encerra a linha de [step]: é a última
+  /// vez, ou é outro lance aceito que não o ensinado (o primeiro). A resposta
+  /// combinada e as vezes seguintes valem só para o lance ensinado; depois de
+  /// outro lance bom, a linha acaba ali, cumprida.
+  static bool endsLine(MoveStep step, int turn, String uci) =>
+      turn + 1 >= step.line.length || step.line[turn].accept.first != uci;
+
   /// O resultado de [position] num [PlayStep] de objetivo [goal], com o aluno
   /// jogando de [student]. [lastMove] é o último lance jogado (a promoção
   /// conta no lance em que acontece).

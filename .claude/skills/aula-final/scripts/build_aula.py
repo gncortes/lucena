@@ -37,6 +37,8 @@ import chess.engine
 ROOT = Path(__file__).resolve().parents[4]
 SRC = ROOT / 'tools' / 'lessons' / 'endgames'
 OUT = ROOT / 'assets' / 'lessons' / 'endgames'
+TRAIL = SRC / 'trail.json'
+INDEX = OUT / 'index.json'
 TEXTS = ROOT / 'assets' / 'lessons'
 CACHE = ROOT / 'tools' / '.cache' / 'tablebase'
 TABLEBASE = 'https://tablebase.lichess.ovh/standard?fen='
@@ -204,7 +206,9 @@ def resolve_line(oracle, where, fen, turns, goal, problems, report):
         for uci in sorted(accept & set(moves) - keeps):
             problems.append(f'{at}: {uci} é aceito mas joga fora o objetivo '
                             f'({goal})')
-        entry = {'accept': sorted(accept)}
+        # O lance ensinado vai junto: a resposta combinada é para ele, e é
+        # ele que a dica mostra.
+        entry = {'teach': teach, 'accept': sorted(accept)}
         report.append(f'{at}: aceita {" ".join(sorted(accept))} '
                       f'(de {len(moves)} lances)')
         board.push_uci(teach)
@@ -309,9 +313,16 @@ def check_texts(source, problems):
                 problems.append(f'falas ({lang}): {key} diz "mate em N"')
 
 
+RESERVED_STEP_IDS = {'title', 'summary', 'history', 'practice'}
+
+
 def unique(where, ids, problems):
     if len(ids) != len(set(ids)):
         problems.append(f'{where}: ids repetidos')
+    # As falas dos passos ficam na mesma chave da aula (`<aula>.<passo>`):
+    # um passo chamado `summary` apagaria o resumo da aula na trilha.
+    for reserved in RESERVED_STEP_IDS & set(ids):
+        problems.append(f'{where}: id reservado "{reserved}" (use outro nome)')
 
 
 def build(source, oracle):
@@ -393,6 +404,21 @@ def build(source, oracle):
     return lesson, problems, report
 
 
+def write_index():
+    """`index.json`: os módulos da trilha (`trail.json`) só com as aulas que
+    já têm o JSON gerado. É o que o app lê para montar a trilha."""
+    trail = json.loads(TRAIL.read_text())
+    modules = []
+    for module in trail['modules']:
+        lessons = [lesson for lesson in module['lessons']
+                   if (OUT / f'{lesson}.json').exists()]
+        if lessons:
+            modules.append({'id': module['id'], 'lessons': lessons})
+    INDEX.write_text(json.dumps({'modules': modules}, ensure_ascii=False,
+                                indent=2) + '\n')
+    return sum(len(module['lessons']) for module in modules)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('id', help='id da aula (ex.: mates.bishopKnight.w)')
@@ -428,6 +454,8 @@ def main():
     out = OUT / f'{args.id}.json'
     out.write_text(json.dumps(lesson, ensure_ascii=False, indent=2) + '\n')
     print(f'Gerado {out.relative_to(ROOT)}')
+    count = write_index()
+    print(f'Índice {INDEX.relative_to(ROOT)}: {count} aulas na trilha')
 
 
 if __name__ == '__main__':

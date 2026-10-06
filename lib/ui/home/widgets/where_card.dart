@@ -20,6 +20,9 @@ class WhereCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (state.endgame case final endgame?) {
+      return _EndgameCard(endgame: endgame);
+    }
     if (state.school case final school?) return _SchoolCard(school: school);
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -200,6 +203,92 @@ class _SchoolCard extends StatelessWidget {
             FilledButton(
               key: HomeKeys.schoolContinue,
               onPressed: () => context.go(Routes.school),
+              child: Text(l10n.homeContinue),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A aula de final em andamento: o título, onde parou e "continuar", que
+/// volta direto ao exercício ou à lição aberta.
+class _EndgameCard extends StatelessWidget {
+  const _EndgameCard({required this.endgame});
+
+  final EndgameSummary endgame;
+
+  String _where(AppLocalizations l10n) {
+    final exercise = endgame.exerciseNumber;
+    final step = endgame.step;
+    if (exercise != null) {
+      return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
+    }
+    if (step != null) return l10n.lessonStep(step, endgame.stepCount!);
+    return l10n.endgameScore(endgame.score, endgame.maxScore);
+  }
+
+  String get _route {
+    final exerciseId = endgame.openExerciseId;
+    if (exerciseId != null) {
+      return Routes.endgameExercise(endgame.lessonId, exerciseId);
+    }
+    if (endgame.lessonOpen) return Routes.endgameLessonSteps(endgame.lessonId);
+    return Routes.endgameLesson(endgame.lessonId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final teacher = endgame.teacher;
+    return Card(
+      key: HomeKeys.endgameCard,
+      margin: EdgeInsets.zero,
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        child: Row(
+          children: [
+            if (teacher != null) ...[
+              CharacterAvatar(character: teacher, size: 48),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homeEndgames,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                  Text(
+                    endgame.title,
+                    key: HomeKeys.endgameTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _where(l10n),
+                    key: HomeKeys.endgameWhere,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            FilledButton(
+              key: HomeKeys.endgameContinue,
+              onPressed: () => context.push(_route),
               child: Text(l10n.homeContinue),
             ),
           ],

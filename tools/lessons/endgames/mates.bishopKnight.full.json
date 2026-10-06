@@ -1,0 +1,445 @@
+{
+  "id": "mates.bishopKnight.full",
+  "module": "mates",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "4k3/8/8/8/8/8/8/4KBN1 w - - 0 1"
+    },
+    {
+      "type": "talk",
+      "id": "net1",
+      "fen": "8/8/4N1B1/8/5K2/7k/8/8 w - - 0 1",
+      "arrows": [
+        "b1h7"
+      ],
+      "marks": [
+        "h1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "net2",
+      "fen": "8/8/8/7B/4NK2/8/6k1/8 w - - 0 1",
+      "arrows": [
+        "d1h5"
+      ],
+      "marks": [
+        "h1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "net3",
+      "fen": "8/8/8/8/4N3/8/4K3/5Bk1 w - - 0 1",
+      "arrows": [
+        "f1h3"
+      ],
+      "marks": [
+        "g1",
+        "h1",
+        "h2"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "mate",
+      "fen": "8/8/8/8/4N3/8/4K3/5Bk1 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "e4g5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e2f2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g5f3",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f1g2",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "shrink",
+      "fen": "8/8/6B1/8/4NK2/8/6k1/8 w - - 0 1",
+      "arrows": [
+        "g6h5",
+        "d1h5"
+      ],
+      "marks": [
+        "f2",
+        "g3",
+        "f3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "close2",
+      "fen": "8/8/6B1/8/4NK2/8/6k1/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "g6h5",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "close3",
+      "fen": "8/8/8/8/4N1B1/8/4K3/6k1 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "g4h3",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "h3f1",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "edge",
+      "fen": "8/8/8/8/8/4k3/8/2N1KB2 w - - 0 1",
+      "arrows": [
+        "f1g2",
+        "e1e3",
+        "c1d3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "wall",
+      "fen": "8/8/8/8/8/4k3/8/2N1KB2 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "f1g2",
+          "accept": "only",
+          "reply": "auto"
+        },
+        {
+          "teach": "e1d2",
+          "accept": "only",
+          "reply": "auto"
+        },
+        {
+          "teach": "d2e3",
+          "accept": "only",
+          "reply": "auto"
+        },
+        {
+          "teach": "c1d3",
+          "accept": "only",
+          "reply": "auto"
+        },
+        {
+          "teach": "g2e4",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "corner",
+      "fen": "6k1/8/5K2/4N3/4B3/8/8/8 w - - 0 1",
+      "arrows": [
+        "e5f7"
+      ],
+      "marks": [
+        "h8",
+        "h6"
+      ]
+    },
+    {
+      "type": "play",
+      "id": "play1",
+      "fen": "8/8/4N1B1/8/8/8/1K1k4/8 w - - 0 1",
+      "goal": "win"
+    },
+    {
+      "type": "talk",
+      "id": "traps",
+      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
+      "arrows": [
+        "c4b6"
+      ],
+      "marks": [
+        "d8"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "rules"
+    },
+    {
+      "type": "play",
+      "id": "play2",
+      "fen": "4k3/8/8/8/8/8/8/4KBN1 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "k1B5/2K5/2N5/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c8b7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "k1B5/2K5/8/3N4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "lichessPractice",
+      "turns": [
+        {
+          "teach": "d5b4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "b4c6",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "c8b7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "k1B5/3K4/8/8/1N6/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d7c7",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "b4c6",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "c8b7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "8/8/3k2K1/3B4/8/3N4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "lichessPractice",
+      "turns": [
+        {
+          "teach": "d5b3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/8/k7/2KN4/8/1B6/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b3a4",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/4K3/2k5/8/8/1B1N4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "lichessPractice",
+      "turns": [
+        {
+          "teach": "e7e6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "e8b5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/8/8/8/4N1B1/4K3/8/5k2 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "e3d2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/8/8/8/3N4/3K4/B4k2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "ushenina",
+      "turns": [
+        {
+          "teach": "d4e2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "6k1/8/5K2/4N3/4B3/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "e5f7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 3,
+      "fen": "8/8/4N1B1/8/8/4k3/8/2K5 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "c1d1",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d1d2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d2d3",
+          "accept": "best"
+        }
+      ]
+    }
+  ],
+  "passScore": 13,
+  "keyPositions": [
+    {
+      "id": "net1",
+      "fen": "8/8/4N1B1/8/5K2/7k/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "net2",
+      "fen": "8/8/8/7B/4NK2/8/6k1/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "net3",
+      "fen": "8/8/8/8/4N3/8/4K3/5Bk1 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "deletangStart",
+      "fen": "8/8/4N1B1/8/8/8/1K1k4/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "rhineTrap",
+      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "practiceStart",
+      "fen": "4k3/8/8/8/8/8/8/4KBN1 w - - 0 1",
+      "ref": "lichessPractice"
+    }
+  ],
+  "practice": {
+    "fen": "8/8/3N4/3B4/4K3/7k/8/8 w - - 0 1",
+    "goal": "win",
+    "positionId": "knightBishop.knightBishopVsKing.0001"
+  },
+  "references": [
+    {
+      "id": "lichessPractice",
+      "kind": "study",
+      "author": "arex (Lichess Practice)",
+      "title": "(BETA) Lichess Practice: Checkmating with a Knight and Bishop",
+      "url": "https://lichess.org/study/ByhlXnmM"
+    },
+    {
+      "id": "wikipedia",
+      "kind": "web",
+      "title": "Bishop and knight checkmate (Wikipedia, em inglês)",
+      "url": "https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate"
+    },
+    {
+      "id": "deletang1923",
+      "kind": "web",
+      "title": "Daniel Delétang, \"Mat avec le Fou et le Cavalier\", La Stratégie, fevereiro de 1923, pp. 25–32 (Wikimedia Commons)",
+      "url": "https://commons.wikimedia.org/wiki/File:Daniel_Del%C3%A9tang_-_Mat_avec_le_fou_et_le_cavalier_(La_Strat%C3%A9gie,_1923).pdf"
+    },
+    {
+      "id": "ushenina",
+      "kind": "game",
+      "white": "Anna Ushenina",
+      "black": "Olga Girya",
+      "event": "FIDE Women's Grand Prix, Genebra",
+      "year": 2013
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

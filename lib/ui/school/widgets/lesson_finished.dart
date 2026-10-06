@@ -73,7 +73,17 @@ class LessonFinished extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: 12,
                 children: [
-                  if (graduation)
+                  if (state.endgame)
+                    FilledButton.icon(
+                      key: LessonKeys.exercisesButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(220, 52),
+                      ),
+                      icon: const Icon(Icons.star_rounded),
+                      label: Text(l10n.lessonToExercises),
+                      onPressed: () => context.pop(),
+                    )
+                  else if (graduation)
                     FilledButton.icon(
                       key: LessonKeys.journeyButton,
                       style: FilledButton.styleFrom(
@@ -95,14 +105,15 @@ class LessonFinished extends StatelessWidget {
                       ),
                       onPressed: () => openLesson(context, next),
                     ),
-                  OutlinedButton(
-                    key: LessonKeys.trailButton,
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(220, 48),
+                  if (!state.endgame)
+                    OutlinedButton(
+                      key: LessonKeys.trailButton,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(220, 48),
+                      ),
+                      onPressed: () => context.go(Routes.school),
+                      child: Text(l10n.lessonBackToSchool),
                     ),
-                    onPressed: () => context.go(Routes.school),
-                    child: Text(l10n.lessonBackToSchool),
-                  ),
                 ],
               ),
             ),
