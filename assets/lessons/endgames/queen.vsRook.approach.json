@@ -1,0 +1,784 @@
+{
+  "id": "queen.vsRook.approach",
+  "module": "queen",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "e7e6",
+        "e7b7"
+      ],
+      "marks": [
+        "c8",
+        "e7"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "stale",
+      "fen": "2k5/8/1rKQ4/8/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "c6b6",
+        "d6b6"
+      ],
+      "marks": [
+        "b6"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "open",
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "d5f5",
+          "accept": [
+            "d5f5"
+          ],
+          "reply": "c8d8"
+        },
+        {
+          "teach": "b6c5",
+          "accept": [
+            "b6c5"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "fork3",
+      "fen": "3k4/4r3/8/2K2Q2/8/8/8/8 b - - 0 1",
+      "arrows": [
+        "d8c7",
+        "d8e8",
+        "e7e1"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "a1",
+      "fen": "8/2k1r3/8/2K2Q2/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "f5d5",
+          "accept": [
+            "f5d5"
+          ],
+          "reply": "e7d7"
+        },
+        {
+          "teach": "d5e5",
+          "accept": [
+            "d5e5"
+          ],
+          "reply": "c7b7"
+        },
+        {
+          "teach": "c5b5",
+          "accept": [
+            "c5b5",
+            "e5f4"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "a2",
+      "fen": "8/1kr5/8/1K2Q3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "e5e8",
+          "accept": [
+            "e5e4",
+            "e5e8",
+            "e5f5"
+          ],
+          "reply": "b7a7"
+        },
+        {
+          "teach": "e8e4",
+          "accept": [
+            "e8e4"
+          ],
+          "reply": "c7b7"
+        },
+        {
+          "teach": "b5c6",
+          "accept": [
+            "b5c6"
+          ],
+          "reply": "a7a8"
+        },
+        {
+          "teach": "e4d5",
+          "accept": [
+            "e4a4",
+            "e4c4",
+            "e4d4",
+            "e4d5",
+            "e4e1",
+            "e4e2",
+            "e4e5",
+            "e4e6",
+            "e4e8",
+            "e4f3",
+            "e4g2",
+            "e4g4",
+            "e4h1",
+            "e4h4"
+          ],
+          "reply": "a8a7"
+        },
+        {
+          "teach": "d5d8",
+          "accept": [
+            "d5a2",
+            "d5d8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "c1",
+      "fen": "4k3/4r3/8/2K2Q2/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "f5c8",
+          "accept": [
+            "f5c8"
+          ],
+          "reply": "e8f7"
+        },
+        {
+          "teach": "c5d6",
+          "accept": [
+            "c5d6"
+          ],
+          "reply": "e7a7"
+        },
+        {
+          "teach": "c8c4",
+          "accept": [
+            "c8c4"
+          ],
+          "reply": "f7f8"
+        },
+        {
+          "teach": "d6e6",
+          "accept": [
+            "d6e6"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "c2",
+      "fen": "5k2/5r2/4K3/8/2Q5/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "c4c5",
+          "accept": [
+            "c4c5"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "c5d5",
+          "accept": [
+            "c5d5"
+          ],
+          "reply": "f7g7"
+        },
+        {
+          "teach": "e6f6",
+          "accept": [
+            "e6f6"
+          ],
+          "reply": "g8h7"
+        },
+        {
+          "teach": "d5h1",
+          "accept": [
+            "d5d3",
+            "d5d4",
+            "d5e4",
+            "d5e5",
+            "d5f5",
+            "d5h1"
+          ],
+          "reply": "h7g8"
+        },
+        {
+          "teach": "h1h5",
+          "accept": [
+            "h1a8",
+            "h1h5"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "checks",
+      "fen": "4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "f7f5",
+        "f7g7"
+      ],
+      "marks": [
+        "g7"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "quiet",
+      "fen": "4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "e8d8",
+          "accept": [
+            "e8d8"
+          ],
+          "reply": "g7h7"
+        },
+        {
+          "teach": "d8d4",
+          "accept": [
+            "d8d4"
+          ],
+          "reply": "f7g7"
+        },
+        {
+          "teach": "g5f6",
+          "accept": [
+            "g5f6"
+          ],
+          "reply": "g7g6"
+        },
+        {
+          "teach": "f6f7",
+          "accept": [
+            "f6f7"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "diagonal",
+      "fen": "1k6/2r5/3K4/4Q3/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "e5b8"
+      ],
+      "marks": [
+        "b8",
+        "c7",
+        "d6",
+        "e5"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "discover",
+      "fen": "1k6/2r5/3K4/4Q3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "e5f4",
+          "accept": [
+            "e5d5",
+            "e5e3",
+            "e5f4"
+          ],
+          "reply": "b8c8"
+        },
+        {
+          "teach": "f4f5",
+          "accept": [
+            "f4f5"
+          ],
+          "reply": "c8b8"
+        },
+        {
+          "teach": "f5e5",
+          "accept": [
+            "f5e5"
+          ],
+          "reply": "c7b7"
+        },
+        {
+          "teach": "d6c6",
+          "accept": [
+            "d6c6"
+          ],
+          "reply": "b8a8"
+        },
+        {
+          "teach": "e5a1",
+          "accept": [
+            "e5a1",
+            "e5c3",
+            "e5d4",
+            "e5d5",
+            "e5e1",
+            "e5e2",
+            "e5e4",
+            "e5e6",
+            "e5e8",
+            "e5f6",
+            "e5g5",
+            "e5h8"
+          ],
+          "reply": "a8b8"
+        },
+        {
+          "teach": "a1a5",
+          "accept": [
+            "a1a5",
+            "a1h8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "ladder",
+      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
+      "arrows": [
+        "h7g7",
+        "e5e4"
+      ],
+      "marks": [
+        "g5",
+        "g3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "climb",
+      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "h7g7",
+          "accept": [
+            "h7g7"
+          ],
+          "reply": "g5h4"
+        },
+        {
+          "teach": "g7h6",
+          "accept": [
+            "g7h6"
+          ],
+          "reply": "h4g4"
+        },
+        {
+          "teach": "e5e4",
+          "accept": [
+            "e5e4"
+          ],
+          "reply": "g3g2"
+        },
+        {
+          "teach": "h6g6",
+          "accept": [
+            "h6g6"
+          ],
+          "reply": "g4h3"
+        },
+        {
+          "teach": "g6h5",
+          "accept": [
+            "g6h5"
+          ],
+          "reply": "h3g3"
+        },
+        {
+          "teach": "e4e3",
+          "accept": [
+            "e4e3"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "d5f5",
+        "b6c5"
+      ]
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "d5f5",
+          "accept": [
+            "d5f5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "3k4/4r3/1K6/5Q2/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "b6c5",
+          "accept": [
+            "b6c5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "1k6/1r6/3K4/4Q3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "unto",
+      "line": [
+        {
+          "teach": "d6c6",
+          "accept": [
+            "d6c6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "belle",
+      "line": [
+        {
+          "teach": "h7g7",
+          "accept": [
+            "h7g7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/rk6/8/1KQ5/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "c5e5",
+          "accept": [
+            "c5d4",
+            "c5e5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "e8d8",
+          "accept": [
+            "e8d8"
+          ],
+          "reply": "g7h7"
+        },
+        {
+          "teach": "d8d4",
+          "accept": [
+            "d8d4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/k7/1r6/2K5/3Q4/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "vince",
+      "line": [
+        {
+          "teach": "d4e3",
+          "accept": [
+            "d4d5",
+            "d4e3",
+            "d4f4"
+          ],
+          "reply": "a7a6"
+        },
+        {
+          "teach": "e3d3",
+          "accept": [
+            "e3d3"
+          ],
+          "reply": "a6a7"
+        },
+        {
+          "teach": "d3d4",
+          "accept": [
+            "d3d4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/8/7Q/8/4K1k1/8/6r1/8 w - - 0 1",
+      "goal": "win",
+      "origin": "belle",
+      "line": [
+        {
+          "teach": "h6g6",
+          "accept": [
+            "h6g6"
+          ],
+          "reply": "g4h3"
+        },
+        {
+          "teach": "g6h5",
+          "accept": [
+            "g6h5"
+          ],
+          "reply": "h3g3"
+        },
+        {
+          "teach": "e4e3",
+          "accept": [
+            "e4e3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 2,
+      "fen": "8/8/8/8/7Q/8/4K1k1/r7 w - - 0 1",
+      "goal": "win",
+      "origin": "belle",
+      "line": [
+        {
+          "teach": "h4e4",
+          "accept": [
+            "h4e4",
+            "h4g5"
+          ],
+          "reply": "g2h3"
+        },
+        {
+          "teach": "e4h7",
+          "accept": [
+            "e2f2",
+            "e4h7"
+          ],
+          "reply": "h3g3"
+        },
+        {
+          "teach": "h7g7",
+          "accept": [
+            "h7g7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/1kr5/8/1K2Q3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "e5e8",
+          "accept": [
+            "e5e4",
+            "e5e8",
+            "e5f5"
+          ],
+          "reply": "b7a7"
+        },
+        {
+          "teach": "e8e4",
+          "accept": [
+            "e8e4"
+          ],
+          "reply": "c7b7"
+        },
+        {
+          "teach": "b5c6",
+          "accept": [
+            "b5c6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 3,
+      "fen": "2Q5/r4k2/3K4/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "c8c4",
+          "accept": [
+            "c8c4"
+          ],
+          "reply": "f7f8"
+        },
+        {
+          "teach": "d6e6",
+          "accept": [
+            "d6e6"
+          ],
+          "reply": "a7f7"
+        },
+        {
+          "teach": "c4c5",
+          "accept": [
+            "c4c5"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "c5d5",
+          "accept": [
+            "c5d5"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 13,
+  "keyPositions": [
+    {
+      "id": "second",
+      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    },
+    {
+      "id": "diagonal",
+      "fen": "1k6/2r5/3K4/4Q3/8/8/8/8 w - - 0 1",
+      "ref": "unto"
+    },
+    {
+      "id": "ladder",
+      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
+      "ref": "belle"
+    },
+    {
+      "id": "berger",
+      "fen": "8/rk6/8/1KQ5/8/8/8/8 w - - 0 1",
+      "ref": "wikipedia"
+    }
+  ],
+  "practice": {
+    "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+    "goal": "win",
+    "positionId": "queen.queenVsRook.0002"
+  },
+  "references": [
+    {
+      "id": "wikipedia",
+      "kind": "web",
+      "title": "Queen versus rook endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Queen_versus_rook_endgame"
+    },
+    {
+      "id": "belle",
+      "kind": "game",
+      "white": "Walter Browne",
+      "black": "Belle (computador)",
+      "event": "Desafio de dama contra torre, revanche",
+      "year": 1978
+    },
+    {
+      "id": "belle1979",
+      "kind": "web",
+      "title": "Stenberg, Conway e Larkins: Queen vs. Rook (1979, cópia Usenet)",
+      "url": "http://quux.org:70/Archives/usenet-a-news/NET.chess/82.01.07_sri-unix.458_net.chess.txt"
+    },
+    {
+      "id": "calmodee",
+      "kind": "study",
+      "author": "calmodee",
+      "title": "Queen Vs. Rook Endgame (Intro)",
+      "url": "https://lichess.org/study/enHKHI2k"
+    },
+    {
+      "id": "unto",
+      "kind": "study",
+      "author": "Unto",
+      "title": "Queen vs Rook",
+      "url": "https://lichess.org/study/LTWpoOgD"
+    },
+    {
+      "id": "vince",
+      "kind": "study",
+      "author": "Coach_Vince",
+      "title": "Queen versus Rook endgame",
+      "url": "https://lichess.org/study/zfcueYR4"
+    },
+    {
+      "id": "parker",
+      "kind": "study",
+      "author": "ColinParker",
+      "title": "Q vs R endgame (From Nunn's Secrets of Pawnless Endings)",
+      "url": "https://lichess.org/study/dPt5h0yM"
+    },
+    {
+      "id": "nunn",
+      "kind": "book",
+      "author": "John Nunn",
+      "title": "Secrets of Pawnless Endings",
+      "publisher": "Gambit Publications",
+      "year": 2002
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 20
+}
