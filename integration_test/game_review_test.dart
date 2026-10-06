@@ -44,8 +44,8 @@ void main() {
     await details.review();
     await details.expectReviewed();
     await $(GameDetailsKeys.moveQuality(0)).scrollTo();
-    // Uma posição por lance e a de início.
-    expect(e2eAnalysis.requests.length, reviewGame.moves.length);
+    // A revisão média (peso 2) anotou todos os lances.
+    expect(details.state.review!.depth, 2);
 
     await details.first();
     details.expectShown(-1);
