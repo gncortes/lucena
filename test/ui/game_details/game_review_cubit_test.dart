@@ -131,4 +131,44 @@ void main() {
     await cubit.toggleEngine();
     expect(cubit.state.engine, isFalse);
   });
+
+  test('em tempo real: o lance mostrado é avaliado ao abrir e ao passar '
+      'para ele, sem revisar a partida', () async {
+    analysis.answer[start] = [line('g1g7', mate: 1)];
+    final id = await save(['g1g2', 'h8h7', 'g2g7']);
+    final cubit = build(id);
+    await cubit.load();
+    await Future<void>.delayed(Duration.zero);
+    // Abre no último lance (o mate): já anotado.
+    expect(cubit.state.live[2], isNotNull);
+    expect(cubit.state.review, isNull);
+
+    cubit.select(0);
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.shownReview, isNotNull);
+    expect(cubit.state.shownReview!.best, 'g1g7');
+    expect(cubit.state.annotating, isEmpty);
+  });
+
+  test(
+    'a revisão anota lance a lance e reaproveita o que já foi avaliado',
+    () async {
+      final id = await save(['g1g2', 'h8h7', 'g2g7']);
+      final cubit = build(id);
+      await cubit.load();
+      await Future<void>.delayed(Duration.zero);
+      final before = analysis.requests.length;
+
+      final seen = <int>[];
+      final listening = cubit.stream.listen((s) => seen.add(s.live.length));
+      await cubit.review();
+      await listening.cancel();
+
+      expect(seen, containsAllInOrder([1, 2, 3]));
+      expect(cubit.state.review!.moves, hasLength(3));
+      // A posição final (mate) não vai para a engine e as já avaliadas não
+      // se repetem: uma posição a mais por lance que faltava.
+      expect(analysis.requests.length, lessThanOrEqualTo(before + 2));
+    },
+  );
 }

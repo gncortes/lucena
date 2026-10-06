@@ -595,6 +595,13 @@ class MoveExplanation extends StatelessWidget {
           '$number ${move.san}',
           style: theme.textTheme.titleSmall,
         );
+        // A engine está avaliando este lance agora.
+        if (state.annotating.contains(index)) {
+          trailing = const SizedBox.square(
+            dimension: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          );
+        }
       } else {
         leading = MoveQualityBadge(reviewed.quality, size: 28);
         title = Text.rich(

@@ -48,6 +48,8 @@ class GameDetailsState {
     this.engine = false,
     this.engineLines = const {},
     this.barScores = const {},
+    this.live = const {},
+    this.annotating = const {},
   });
 
   final bool ready;
@@ -86,6 +88,22 @@ class GameDetailsState {
   /// revisão nem a engine ligada.
   final Map<int, EngineScore> barScores;
 
+  /// Os lances já anotados antes da revisão completa: os que o jogador foi
+  /// passando (a engine avalia na hora) e os que a revisão já cobriu.
+  final Map<int, ReviewedMove> live;
+
+  /// Os lances sendo avaliados agora.
+  final Set<int> annotating;
+
+  /// A anotação do lance [index]: a da revisão ou a feita na hora.
+  ReviewedMove? reviewOf(int index) {
+    final review = this.review;
+    if (review != null && index >= 0 && index < review.moves.length) {
+      return review.moves[index];
+    }
+    return live[index];
+  }
+
   /// A avaliação da posição mostrada: a da engine ligada, a da revisão ou a
   /// rápida da barra. Nula enquanto nenhuma existe.
   EngineScore? get shownScore {
@@ -98,6 +116,8 @@ class GameDetailsState {
           : review.moves[shownIndex].after;
     }
     if (lines != null && lines.isNotEmpty) return lines.first.score;
+    if (live[shownIndex] case final move?) return move.after;
+    if (shownIndex < 0 && live[0] != null) return live[0]!.before;
     return barScores[shownIndex];
   }
 
@@ -109,11 +129,7 @@ class GameDetailsState {
   Move? get shownMove => shownIndex < 0 ? null : moves[shownIndex].move;
 
   /// A revisão do lance mostrado. Nula sem revisão ou no início.
-  ReviewedMove? get shownReview {
-    final review = this.review;
-    if (review == null || shownIndex < 0) return null;
-    return shownIndex < review.moves.length ? review.moves[shownIndex] : null;
-  }
+  ReviewedMove? get shownReview => reviewOf(shownIndex);
 
   /// As linhas da engine na posição mostrada. Nulas enquanto calculam.
   List<EngineLine>? get shownLines => engineLines[shownIndex];
@@ -129,6 +145,8 @@ class GameDetailsState {
     bool? engine,
     Map<int, List<EngineLine>>? engineLines,
     Map<int, EngineScore>? barScores,
+    Map<int, ReviewedMove>? live,
+    Set<int>? annotating,
   }) => GameDetailsState(
     ready: ready,
     attempt: attempt,
@@ -144,6 +162,8 @@ class GameDetailsState {
     engine: engine ?? this.engine,
     engineLines: engineLines ?? this.engineLines,
     barScores: barScores ?? this.barScores,
+    live: live ?? this.live,
+    annotating: annotating ?? this.annotating,
   );
 }
 
@@ -225,6 +245,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         characters: characters,
       ),
     );
+    // Sem revisão, o lance na tela já é avaliado.
+    unawaited(_annotate(state.shownIndex));
   }
 
   /// Mostra a posição depois do lance [index] (-1: a de início).
@@ -233,6 +255,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     final target = index.clamp(-1, state.moves.length - 1);
     emit(state.copyWith(selected: target));
     if (state.engine) unawaited(_analyseShown());
+    unawaited(_annotate(target));
   }
 
   void first() => select(-1);
@@ -241,33 +264,77 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   void last() => select(state.moves.length - 1);
 
   /// Revisa a partida inteira com a engine: cada posição (a de início e a
-  /// depois de cada lance), com o progresso na tela. A revisão fica gravada.
+  /// depois de cada lance), com o progresso na tela e cada lance anotado assim
+  /// que a posição depois dele é avaliada. A revisão fica gravada.
   Future<void> review() async {
-    final analysis = _analysis;
     final start = state.start;
-    if (analysis == null || start == null || state.reviewing) return;
+    if (_analysis == null || start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;
     emit(state.copyWith(reviewing: true, reviewProgress: 0));
-    final positions = [start, for (final move in state.moves) move.position];
-    final analyses = <List<EngineLine>?>[];
-    for (final (index, position) in positions.indexed) {
-      final over = position.isGameOver;
-      final lines = over
-          ? null
-          : await analysis.analyse(position, depth: reviewDepth, lines: 2);
+    final total = state.moves.length + 1;
+    for (var k = 0; k < total; k++) {
+      await _linesAt(k);
       if (isClosed) return;
-      analyses.add(lines == null || lines.isEmpty ? null : lines);
-      emit(state.copyWith(reviewProgress: (index + 1) / positions.length));
+      final live = k == 0 || state.live.containsKey(k - 1)
+          ? state.live
+          : {...state.live, k - 1: _moveReview(k - 1)};
+      emit(state.copyWith(reviewProgress: (k + 1) / total, live: live));
     }
     final review = ReviewRules.review(
       start: start,
       moves: [for (final move in state.moves) move.move],
-      analyses: analyses,
+      analyses: [for (var k = 0; k < total; k++) _positionLines[k]],
       depth: reviewDepth,
     );
     await _reviews?.save(_gameId, review);
     if (isClosed) return;
     emit(state.copyWith(review: review, reviewing: false, reviewProgress: 1));
+  }
+
+  /// As linhas da engine em cada posição da partida (0: a de início; k: a
+  /// depois do lance k − 1), já pedidas. Nulo: a partida acabou ali ou a
+  /// engine não respondeu.
+  final _positionLines = <int, List<EngineLine>?>{};
+  final _pending = <int, Future<void>>{};
+
+  Position _positionAt(int k) =>
+      k == 0 ? state.start! : state.moves[k - 1].position;
+
+  Future<void> _linesAt(int k) {
+    if (_positionLines.containsKey(k)) return Future.value();
+    return _pending[k] ??= () async {
+      final position = _positionAt(k);
+      final lines = position.isGameOver
+          ? null
+          : await _analysis!.analyse(position, depth: reviewDepth, lines: 2);
+      _positionLines[k] = lines == null || lines.isEmpty ? null : lines;
+    }();
+  }
+
+  /// A anotação do lance [index], com as posições antes e depois dele já
+  /// avaliadas.
+  ReviewedMove _moveReview(int index) => ReviewRules.review(
+    start: _positionAt(index),
+    moves: [state.moves[index].move],
+    analyses: [_positionLines[index], _positionLines[index + 1]],
+  ).moves.single;
+
+  /// Anota na hora o lance [index] que o jogador está vendo (sem revisão
+  /// completa): a engine avalia a posição antes e a depois dele.
+  Future<void> _annotate(int index) async {
+    if (_analysis == null || state.review != null || state.reviewing) return;
+    if (index < 0 || state.live.containsKey(index)) return;
+    if (state.annotating.contains(index)) return;
+    emit(state.copyWith(annotating: {...state.annotating, index}));
+    await _linesAt(index);
+    await _linesAt(index + 1);
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        live: {...state.live, index: _moveReview(index)},
+        annotating: {...state.annotating}..remove(index),
+      ),
+    );
   }
 
   /// A avaliação rápida da posição mostrada, para a barra, se ainda não
