@@ -61,6 +61,10 @@ abstract final class ExerciseKeys {
   static const backButton = Key('exercise.back');
   static const counter = Key('exercise.counter');
 
+  /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.
+  static const goal = Key('exercise.goal');
+  static const solution = Key('exercise.solution');
+
   /// O exercício aberto (`<aula>.<exercício>`).
   static Key open(String lessonId, String exerciseId) =>
       Key('exercise.open.$lessonId.$exerciseId');

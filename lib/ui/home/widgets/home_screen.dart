@@ -149,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   // Os caminhos do app, na ordem de quem está aprendendo: as aulas, depois a
-  // Jornada para praticar, o speedrun e os finais avulsos. Cada um diz o que
+  // Jornada para praticar, as aulas de finais (mais fundas), o speedrun e os
+  // finais avulsos. Cada um diz o que
   // se faz nele. Depois, as ferramentas. Os números do jogador ficam nos
   // detalhes do rating.
   Widget _shortcuts(BuildContext context, ThemeData theme) {
@@ -163,18 +164,18 @@ class _HomeScreenState extends State<HomeScreen>
         route: Routes.school,
       ),
       (
-        key: HomeKeys.endgamesButton,
-        icon: Icons.auto_stories_outlined,
-        title: l10n.homeEndgames,
-        body: l10n.homeEndgamesBody,
-        route: Routes.endgames,
-      ),
-      (
         key: HomeKeys.journeyButton,
         icon: Icons.flag_rounded,
         title: l10n.homeJourney,
         body: l10n.homeJourneyBody,
         route: Routes.journey,
+      ),
+      (
+        key: HomeKeys.endgamesButton,
+        icon: Icons.auto_stories_outlined,
+        title: l10n.homeEndgames,
+        body: l10n.homeEndgamesBody,
+        route: Routes.endgames,
       ),
       (
         key: HomeKeys.speedrunButton,

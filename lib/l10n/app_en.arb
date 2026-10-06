@@ -2430,5 +2430,175 @@
   "lessonToExercises": "Go to the exercises",
   "@lessonToExercises": {
     "description": "Button at the end of an endgame lesson that goes back to the lesson with its exercises."
+  },
+  "exerciseGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{hold}}",
+  "@exerciseGoal": {
+    "description": "Under the exercise board before solving: whose move it is and the goal.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      },
+      "goal": {
+        "type": "String",
+        "example": "win"
+      }
+    }
+  },
+  "exerciseSolution": "Solution",
+  "@exerciseSolution": {
+    "description": "Label before the solution line of a solved exercise (e.g. 'Solution: 1.Kd4 Kg5')."
+  },
+  "lessonGuideTalk": "Look at the board, then continue.",
+  "@lessonGuideTalk": {
+    "description": "Under the lesson board on a talk step: what to do."
+  },
+  "lessonGuideStars": "Your move: collect every star.",
+  "@lessonGuideStars": {
+    "description": "Under the lesson board on a stars step."
+  },
+  "lessonGuideMove": "{side, select, white{Your move, with White.} other{Your move, with Black.}}",
+  "@lessonGuideMove": {
+    "description": "Under the lesson board when it is the student's move.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "lessonGuidePlay": "{goal, select, mate{Play on and checkmate.} other{Play on and promote the pawn.}}",
+  "@lessonGuidePlay": {
+    "description": "Under the lesson board on a play step: the goal.",
+    "placeholders": {
+      "goal": {
+        "type": "String",
+        "example": "mate"
+      }
+    }
+  },
+  "lessonGuideDone": "Done. Continue to the next step.",
+  "@lessonGuideDone": {
+    "description": "Under the lesson board when the step is done."
+  },
+  "exerciseYourMove": "Your move",
+  "@exerciseYourMove": {
+    "description": "Under the exercise board while the student has to move."
+  },
+  "starChallengesTitle": "Star challenges",
+  "@starChallengesTitle": {
+    "description": "Title of the star challenges list and of the school card."
+  },
+  "starChallengesBody": "Collect the stars with each piece against the clock. Three levels per piece.",
+  "@starChallengesBody": {
+    "description": "School card body for the star challenges."
+  },
+  "starChallengesIntro": "Pick a piece and a level. A star appears; take the piece there and another one lights up. How many can you collect before the time runs out?",
+  "@starChallengesIntro": {
+    "description": "Intro text at the top of the star challenges list."
+  },
+  "challengeLevelEasy": "Easy",
+  "@challengeLevelEasy": {
+    "description": "Challenge level."
+  },
+  "challengeLevelMedium": "Medium",
+  "@challengeLevelMedium": {
+    "description": "Challenge level."
+  },
+  "challengeLevelHard": "Hard",
+  "@challengeLevelHard": {
+    "description": "Challenge level."
+  },
+  "starChallengeBest": "Best: {count}",
+  "@starChallengeBest": {
+    "description": "Best score of a challenge (stars collected).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeNotPlayed": "Not played yet",
+  "@starChallengeNotPlayed": {
+    "description": "Challenge never played."
+  },
+  "starChallengeRule": "{seconds} seconds. Take the piece to each star as it appears.",
+  "@starChallengeRule": {
+    "description": "Before starting a challenge: the time and what to do.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeGo": "Go!",
+  "@starChallengeGo": {
+    "description": "Button that starts the challenge."
+  },
+  "starChallengeTimeUp": "Time's up!",
+  "@starChallengeTimeUp": {
+    "description": "Title when the challenge time ends."
+  },
+  "starChallengeNewBest": "New best!",
+  "@starChallengeNewBest": {
+    "description": "The score beat the best."
+  },
+  "starChallengePlayAgain": "Play again",
+  "@starChallengePlayAgain": {
+    "description": "Button to play the challenge again."
+  },
+  "starChallengePaused": "Paused",
+  "@starChallengePaused": {
+    "description": "Shown while the challenge clock is paused (app in background)."
+  },
+  "starChallengeTitle": "{piece} · {level}",
+  "lessonToChallenge": "Star challenge: {piece}",
+  "@starChallengeTitle": {
+    "description": "App bar of a star challenge: the piece and the level.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "Rook"
+      },
+      "level": {
+        "type": "String",
+        "example": "Easy"
+      }
+    }
+  },
+  "@lessonToChallenge": {
+    "description": "Button at the end of a piece lesson that opens that piece's star challenge.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "Rook"
+      }
+    }
+  },
+  "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
+  "starChallengePointsTotal": "{count} points in all",
+  "starChallengeLegend": "Each star fades after a while: the gold one goes first.",
+  "@starChallengePoints": {
+    "description": "Points of a star challenge.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@starChallengePointsTotal": {
+    "description": "Sum of the best scores of a piece across levels.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@starChallengeLegend": {
+    "description": "Before starting: stars fade after a while, the gold one fastest."
+  },
+  "starChallengeObstacles": "The black pawns only get in the way: you cannot capture them. You collect the stars.",
+  "@starChallengeObstacles": {
+    "description": "Before starting a level with black pawns: they only block, cannot be captured; stars are what you collect."
   }
 }

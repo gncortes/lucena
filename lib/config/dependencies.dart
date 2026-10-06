@@ -14,6 +14,7 @@ import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
 import '../data/repositories/school/school_progress_repository.dart';
+import '../data/repositories/school/star_challenge_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
 import '../data/repositories/rating/rating_repository_local.dart';
 import '../data/repositories/achievements/achievements_repository_local.dart';
@@ -89,6 +90,7 @@ class Dependencies {
     required this.paceRepository,
     required this.lessonRepository,
     required this.schoolProgressRepository,
+    required this.starChallengeRepository,
     required this.endgameLessonRepository,
     required this.endgameProgressRepository,
     required this.drawOfferRepository,
@@ -139,6 +141,7 @@ class Dependencies {
       paceRepository: pace,
       lessonRepository: lessons,
       schoolProgressRepository: LocalSchoolProgressRepository(preferences),
+      starChallengeRepository: LocalStarChallengeRepository(preferences),
       endgameLessonRepository: AssetEndgameLessonRepository(
         assets,
         school: lessons,
@@ -173,6 +176,7 @@ class Dependencies {
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final SchoolProgressRepository schoolProgressRepository;
+  final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
   final EndgameProgressRepository endgameProgressRepository;
   final DrawOfferRepository drawOfferRepository;
