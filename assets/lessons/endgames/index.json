@@ -18,7 +18,8 @@
     {
       "id": "queen",
       "lessons": [
-        "queen.vsRook.philidor"
+        "queen.vsRook.philidor",
+        "queen.vsRook.approach"
       ]
     },
     {
