@@ -3,7 +3,14 @@
     {
       "id": "mates",
       "lessons": [
+        "mates.bishopKnight.w",
         "mates.bishopKnight.full"
+      ]
+    },
+    {
+      "id": "pawns",
+      "lessons": [
+        "pawns.keySquares"
       ]
     },
     {

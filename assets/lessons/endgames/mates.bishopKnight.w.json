@@ -50,10 +50,23 @@
       "id": "w1",
       "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "e5f7",
-          "accept": "best"
+          "accept": [
+            "d3a6",
+            "d3b1",
+            "d3b5",
+            "d3c2",
+            "d3c4",
+            "d3e2",
+            "d3e4",
+            "d3f1",
+            "d3f5",
+            "d3g6",
+            "e5f7",
+            "e5g6"
+          ]
         }
       ]
     },
@@ -62,20 +75,30 @@
       "id": "w2",
       "fen": "6k1/5N2/5K2/8/8/3B4/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "d3f5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d3b1",
+            "d3c2",
+            "d3e4",
+            "d3f5",
+            "d3g6"
+          ],
+          "reply": "g8f8"
         },
         {
           "teach": "f5h7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "f5h7"
+          ],
+          "reply": "f8e8"
         },
         {
           "teach": "f7e5",
-          "accept": "best"
+          "accept": [
+            "f7e5"
+          ]
         }
       ]
     },
@@ -84,15 +107,22 @@
       "id": "w3",
       "fen": "3k4/7B/5K2/4N3/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "f6e6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "f6e6",
+            "h7c2",
+            "h7e4"
+          ],
+          "reply": "d8c7"
         },
         {
           "teach": "e5d7",
-          "accept": "best"
+          "accept": [
+            "e5d7",
+            "h7c2"
+          ]
         }
       ]
     },
@@ -101,10 +131,14 @@
       "id": "w4",
       "fen": "8/1k1N3B/4K3/8/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "h7d3",
-          "accept": "best"
+          "accept": [
+            "e6d5",
+            "e6d6",
+            "h7d3"
+          ]
         }
       ]
     },
@@ -113,15 +147,25 @@
       "id": "w5",
       "fen": "8/3N4/2k1K3/8/8/3B4/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "d3e2",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d3a6",
+            "d3c4",
+            "d3e2",
+            "d3f1"
+          ],
+          "reply": "c6c7"
         },
         {
           "teach": "e2f3",
-          "accept": "best"
+          "accept": [
+            "e2b5",
+            "e2c4",
+            "e2f3",
+            "e6e7"
+          ]
         }
       ]
     },
@@ -130,30 +174,49 @@
       "id": "w6",
       "fen": "3k4/3N4/4K3/8/8/5B2/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "e6d6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "e6d6"
+          ],
+          "reply": "d8e8"
         },
         {
           "teach": "f3h5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "f3d5",
+            "f3h5"
+          ],
+          "reply": "e8d8"
         },
         {
           "teach": "h5f7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d7c5",
+            "d7f8",
+            "h5f7",
+            "h5g6"
+          ],
+          "reply": "d8c8"
         },
         {
           "teach": "d7c5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d7c5",
+            "f7g6",
+            "f7h5"
+          ],
+          "reply": "c8d8"
         },
         {
           "teach": "c5b7",
-          "accept": "best"
+          "accept": [
+            "c5b7",
+            "c5e6",
+            "f7g6",
+            "f7h5"
+          ]
         }
       ]
     },
@@ -162,15 +225,19 @@
       "id": "escape",
       "fen": "5k2/7B/5K2/4N3/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "e5d7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "e5d7"
+          ],
+          "reply": "f8e8"
         },
         {
           "teach": "f6e6",
-          "accept": "best"
+          "accept": [
+            "f6e6"
+          ]
         }
       ]
     },
@@ -192,40 +259,78 @@
       "id": "finish",
       "fen": "2k5/1N3B2/3K4/8/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "turns": [
+      "line": [
         {
           "teach": "d6c6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d6c6",
+            "f7d5"
+          ],
+          "reply": "c8b8"
         },
         {
           "teach": "c6b6",
-          "accept": "best",
+          "accept": [
+            "b7d6",
+            "c6b6",
+            "f7a2",
+            "f7b3",
+            "f7c4",
+            "f7d5",
+            "f7e6",
+            "f7e8",
+            "f7g6",
+            "f7g8",
+            "f7h5"
+          ],
           "reply": "b8c8"
         },
         {
           "teach": "f7e6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "f7e6",
+            "f7e8"
+          ],
+          "reply": "c8b8"
         },
         {
           "teach": "b7c5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "b7a5",
+            "b7c5",
+            "b7d6",
+            "b7d8",
+            "e6d7",
+            "e6f5",
+            "e6g4",
+            "e6h3"
+          ],
+          "reply": "b8a8"
         },
         {
           "teach": "e6d7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "e6c4",
+            "e6c8",
+            "e6d7",
+            "e6f5",
+            "e6g4",
+            "e6h3"
+          ],
+          "reply": "a8b8"
         },
         {
           "teach": "c5a6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "c5a6"
+          ],
+          "reply": "b8a8"
         },
         {
           "teach": "d7c6",
-          "accept": "only"
+          "accept": [
+            "d7c6"
+          ]
         }
       ]
     },
@@ -257,10 +362,12 @@
       "fen": "k7/8/NK6/8/8/8/8/5B2 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "f1g2",
-          "accept": "only"
+          "accept": [
+            "f1g2"
+          ]
         }
       ]
     },
@@ -270,15 +377,19 @@
       "fen": "1k6/3B4/1K6/2N5/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "c5a6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "c5a6"
+          ],
+          "reply": "b8a8"
         },
         {
           "teach": "d7c6",
-          "accept": "only"
+          "accept": [
+            "d7c6"
+          ]
         }
       ]
     },
@@ -288,10 +399,16 @@
       "fen": "6k1/5N2/5K2/8/8/3B4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "d3f5",
-          "accept": "best"
+          "accept": [
+            "d3b1",
+            "d3c2",
+            "d3e4",
+            "d3f5",
+            "d3g6"
+          ]
         }
       ]
     },
@@ -301,10 +418,23 @@
       "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
-      "turns": [
+      "line": [
         {
           "teach": "e5f7",
-          "accept": "best"
+          "accept": [
+            "d3a6",
+            "d3b1",
+            "d3b5",
+            "d3c2",
+            "d3c4",
+            "d3e2",
+            "d3e4",
+            "d3f1",
+            "d3f5",
+            "d3g6",
+            "e5f7",
+            "e5g6"
+          ]
         }
       ]
     },
@@ -314,10 +444,12 @@
       "fen": "4k3/5N1B/5K2/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "f7e5",
-          "accept": "best"
+          "accept": [
+            "f7e5"
+          ]
         }
       ]
     },
@@ -327,20 +459,27 @@
       "fen": "k7/8/1K6/2N5/8/8/8/3B4 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "d1g4",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d1e2",
+            "d1g4"
+          ],
+          "reply": "a8b8"
         },
         {
           "teach": "c5a6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "c5a6"
+          ],
+          "reply": "b8a8"
         },
         {
           "teach": "g4f3",
-          "accept": "only"
+          "accept": [
+            "g4f3"
+          ]
         }
       ]
     },
@@ -350,10 +489,20 @@
       "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
-      "turns": [
+      "line": [
         {
           "teach": "e8b5",
-          "accept": "best"
+          "accept": [
+            "c4a5",
+            "c4b2",
+            "c4d2",
+            "c4e5",
+            "d6e7",
+            "e8a4",
+            "e8b5",
+            "e8c6",
+            "e8d7"
+          ]
         }
       ]
     },
@@ -363,10 +512,14 @@
       "fen": "8/1k1N3B/4K3/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "h7d3",
-          "accept": "best"
+          "accept": [
+            "e6d5",
+            "e6d6",
+            "h7d3"
+          ]
         }
       ]
     },
@@ -376,10 +529,23 @@
       "fen": "8/8/3B4/8/4N3/5K2/8/7k w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "e4f2",
-          "accept": "best"
+          "accept": [
+            "d6a3",
+            "d6b4",
+            "d6b8",
+            "d6c5",
+            "d6c7",
+            "d6e5",
+            "d6e7",
+            "d6f4",
+            "d6f8",
+            "d6g3",
+            "e4f2",
+            "e4g3"
+          ]
         }
       ]
     },
@@ -389,20 +555,27 @@
       "fen": "4k3/3N3B/5K2/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "f6e6",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "f6e6"
+          ],
+          "reply": "e8d8"
         },
         {
           "teach": "e6d6",
-          "accept": "best",
+          "accept": [
+            "e6d6"
+          ],
           "reply": "d8e8"
         },
         {
           "teach": "h7g6",
-          "accept": "best"
+          "accept": [
+            "h7g6",
+            "h7g8"
+          ]
         }
       ]
     },
@@ -412,20 +585,28 @@
       "fen": "7k/8/5K2/8/4B3/3N4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "d3e5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "d3e5",
+            "d3f4"
+          ],
+          "reply": "h8g8"
         },
         {
           "teach": "e5f7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "e5f7",
+            "e5g6"
+          ],
+          "reply": "g8f8"
         },
         {
           "teach": "e4h7",
-          "accept": "best"
+          "accept": [
+            "e4h7"
+          ]
         }
       ]
     },
@@ -435,20 +616,30 @@
       "fen": "1k6/2N5/2K5/8/8/4B3/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
-      "turns": [
+      "line": [
         {
           "teach": "e3c5",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "e3b6",
+            "e3c5",
+            "e3d4",
+            "e3f2",
+            "e3g1"
+          ],
+          "reply": "b8c8"
         },
         {
           "teach": "c5a7",
-          "accept": "best",
-          "reply": "auto"
+          "accept": [
+            "c5a7"
+          ],
+          "reply": "c8d8"
         },
         {
           "teach": "c7d5",
-          "accept": "best"
+          "accept": [
+            "c7d5"
+          ]
         }
       ]
     }
@@ -536,5 +727,6 @@
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
-  ]
+  ],
+  "maxScore": 23
 }

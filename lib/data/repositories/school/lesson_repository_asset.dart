@@ -67,11 +67,16 @@ class AssetLessonRepository implements LessonRepository {
     ],
   );
 
-  /// As vezes do aluno de um passo de lance: os aceitos e a resposta.
+  /// As vezes do aluno de um passo de lance: os aceitos e a resposta. O
+  /// lance ensinado (`teach`), quando vem, fica em primeiro entre os aceitos:
+  /// é ele que a dica mostra e a quem a resposta combinada serve.
   static List<MoveTurn> parseLine(List<dynamic> line) => [
     for (final turn in line.cast<Map<String, dynamic>>())
       MoveTurn(
-        accept: {for (final move in turn['accept'] as List) move as String},
+        accept: {
+          if (turn['teach'] case final String teach) teach,
+          for (final move in turn['accept'] as List) move as String,
+        },
         reply: turn['reply'] as String?,
       ),
   ];

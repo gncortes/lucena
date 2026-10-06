@@ -45,6 +45,7 @@
   | lista | exatamente esses lances | quando nenhuma regra serve; o script acusa lance da lista que joga fora o objetivo |
 
   Em finais como bispo e cavalo, `win` aceita quase todos os lances legais e o exercício não ensina nada: use `best` ou lista. `best` precisa da distância do mate, que a tabela só dá até 5 peças.
+- No JSON gerado, cada vez vira `{"teach": …, "accept": […], "reply": …}`: o app põe o lance ensinado em primeiro entre os aceitos (é ele que a dica mostra e a quem a resposta combinada serve; outro lance aceito que deixe a resposta ilegal encerra a linha como cumprida).
 - `exercises`: de 8 a 12. `stars` de 1 a 3. `origin` é `own` (posição própria) ou o id de uma referência.
 - `passScore`: o mínimo de estrelas para liberar o passo final. Padrão: 60% do total, arredondado para cima. O script exige entre a metade e o total.
 - `keyPositions`: as posições-base que o botão de informações mostra. `ref` (opcional) aponta a referência do crédito.

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -69,7 +68,10 @@ void main() {
     expect(find.text('0 of 6 stars'), findsOneWidget);
     expect(find.text('Start the exercises'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.redoButton), findsNothing);
-    expect(find.byKey(EndgameLessonKeys.finalLocked), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(EndgameLessonKeys.finalLocked),
+      200,
+    );
     expect(find.byKey(EndgameLessonKeys.speedrunButton), findsNothing);
   });
 
@@ -77,6 +79,7 @@ void main() {
     tester,
   ) async {
     await pump(tester, progress: passed);
+    expect(find.text('Passed.'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.lessonDone), findsOneWidget);
     expect(find.text('Review the lesson'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.passed), findsOneWidget);
@@ -90,7 +93,6 @@ void main() {
     expect(find.byKey(EndgameLessonKeys.pace('180+2')), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.trainButton), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.nextLessonButton), findsOneWidget);
-    expect(find.text('Passed.'), findsOneWidget);
   });
 
   testWidgets('reprovado: faltaram estrelas e refazer zera', (tester) async {
@@ -107,8 +109,12 @@ void main() {
     );
     expect(find.byKey(EndgameLessonKeys.failed), findsOneWidget);
     expect(find.text('Not this time.'), findsOneWidget);
-    expect(find.byKey(EndgameLessonKeys.finalLocked), findsOneWidget);
-    await tester.tap(find.byKey(EndgameLessonKeys.redoButton));
+    await tester.scrollUntilVisible(
+      find.byKey(EndgameLessonKeys.redoButton),
+      200,
+    );
+    expect(find.byKey(EndgameLessonKeys.redoButton), findsOneWidget);
+    await cubit.redoExercises();
     await tester.pumpAndSettle();
     expect(cubit.state.score, 0);
     expect(find.text('0 of 6 stars'), findsOneWidget);

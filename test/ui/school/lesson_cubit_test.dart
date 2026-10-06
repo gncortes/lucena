@@ -6,7 +6,6 @@ import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 
 import 'package:lucena/data/repositories/school/lesson_source.dart';
-import 'package:lucena/domain/models/endgame_lesson.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';

@@ -38,12 +38,14 @@
       "goal": "win",
       "line": [
         {
+          "teach": "c1d1",
           "accept": [
             "c1d1"
           ],
           "reply": "d8e7"
         },
         {
+          "teach": "d1d4",
           "accept": [
             "d1d4"
           ]
@@ -57,30 +59,35 @@
       "goal": "win",
       "line": [
         {
+          "teach": "b8c7",
           "accept": [
             "b8c7"
           ],
           "reply": "a1c1"
         },
         {
+          "teach": "c7b6",
           "accept": [
             "c7b6"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "b6c6",
           "accept": [
             "b6c6"
           ],
           "reply": "b1c1"
         },
         {
+          "teach": "c6b5",
           "accept": [
             "c6b5"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "d4b4",
           "accept": [
             "d4b4"
           ]
@@ -121,24 +128,28 @@
       "goal": "win",
       "line": [
         {
+          "teach": "d4d6",
           "accept": [
             "d4d6"
           ],
           "reply": "e6e7"
         },
         {
+          "teach": "d6d5",
           "accept": [
             "d6d5"
           ],
           "reply": "b1c1"
         },
         {
+          "teach": "c6b6",
           "accept": [
             "c6b6"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "d5b5",
           "accept": [
             "d5b5"
           ]
@@ -167,12 +178,14 @@
       "goal": "win",
       "line": [
         {
+          "teach": "b6b7",
           "accept": [
             "b6b7"
           ],
           "reply": "a2b2"
         },
         {
+          "teach": "c1c4",
           "accept": [
             "c1c4"
           ]
@@ -225,6 +238,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "d4b4",
           "accept": [
             "d4b4"
           ]
@@ -239,12 +253,14 @@
       "origin": "wikiLucena",
       "line": [
         {
+          "teach": "c1d1",
           "accept": [
             "c1d1"
           ],
           "reply": "d8e7"
         },
         {
+          "teach": "d1d4",
           "accept": [
             "d1d4",
             "d1d5"
@@ -260,6 +276,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "e1e4",
           "accept": [
             "e1e4",
             "e1e5"
@@ -275,6 +292,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "d5b5",
           "accept": [
             "d5b5"
           ]
@@ -289,6 +307,7 @@
       "origin": "own",
       "line": [
         {
+          "teach": "d4d6",
           "accept": [
             "d4a4",
             "d4d6",
@@ -306,12 +325,14 @@
       "origin": "own",
       "line": [
         {
+          "teach": "d1d5",
           "accept": [
             "d1d5"
           ],
           "reply": "b2a2"
         },
         {
+          "teach": "a6b6",
           "accept": [
             "a6b6",
             "d5a5"
@@ -327,12 +348,14 @@
       "origin": "own",
       "line": [
         {
+          "teach": "b7b8",
           "accept": [
             "b7b8"
           ],
           "reply": "a2b2"
         },
         {
+          "teach": "b6b7",
           "accept": [
             "b6b7"
           ]
@@ -347,12 +370,14 @@
       "origin": "own",
       "line": [
         {
+          "teach": "c6b6",
           "accept": [
             "c6b6"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "d5b5",
           "accept": [
             "d5b5"
           ]
@@ -367,12 +392,14 @@
       "origin": "wikiLucena",
       "line": [
         {
+          "teach": "a2a8",
           "accept": [
             "a2a8"
           ],
           "reply": "e8d7"
         },
         {
+          "teach": "a8a7",
           "accept": [
             "a8a7"
           ]
@@ -387,30 +414,35 @@
       "origin": "own",
       "line": [
         {
+          "teach": "b8c7",
           "accept": [
             "b8c7"
           ],
           "reply": "a1c1"
         },
         {
+          "teach": "c7b6",
           "accept": [
             "c7b6"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "b6c6",
           "accept": [
             "b6c6"
           ],
           "reply": "b1c1"
         },
         {
+          "teach": "c6b5",
           "accept": [
             "c6b5"
           ],
           "reply": "c1b1"
         },
         {
+          "teach": "d4b4",
           "accept": [
             "d4b4"
           ]
@@ -425,18 +457,21 @@
       "origin": "wikiLucena",
       "line": [
         {
+          "teach": "f1g1",
           "accept": [
             "f1g1"
           ],
           "reply": "g7h7"
         },
         {
+          "teach": "g1g4",
           "accept": [
             "g1g4"
           ],
           "reply": "a2a1"
         },
         {
+          "teach": "e8f7",
           "accept": [
             "e8d7",
             "e8f7"

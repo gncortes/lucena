@@ -206,7 +206,9 @@ def resolve_line(oracle, where, fen, turns, goal, problems, report):
         for uci in sorted(accept & set(moves) - keeps):
             problems.append(f'{at}: {uci} é aceito mas joga fora o objetivo '
                             f'({goal})')
-        entry = {'accept': sorted(accept)}
+        # O lance ensinado vai junto: a resposta combinada é para ele, e é
+        # ele que a dica mostra.
+        entry = {'teach': teach, 'accept': sorted(accept)}
         report.append(f'{at}: aceita {" ".join(sorted(accept))} '
                       f'(de {len(moves)} lances)')
         board.push_uci(teach)

@@ -75,7 +75,24 @@ Lição (aluno de brancas, bispo das casas claras, rei preto em h8):
 14. `playW` (play): a posição do W inteira contra a máquina.
 15. `playFar` (play): um pouco mais longe, com o cavalo ainda em d3 e o rei preto em g8.
 
-Exercícios previstos (estrelas): o mate com o bispo na diagonal grande (1), xeque de cavalo e mate (1), o bispo prepara h7 (1), o cavalo tira d7 (2), alerta de afogamento (2), a armadilha de Rhine (2), fechar a rede em b7 (2), o W no outro canto, h1 com bispo escuro (2), castigar a volta ao canto errado (3), chegar ao W de mais longe (3), o W espelhado em a8 com bispo escuro (3). Os ids e as estrelas definitivas estão na fonte da aula.
+Exercícios (12, 23 estrelas, mínimo 14):
+
+| id | ★ | Posição | O que pede |
+|---|---|---|---|
+| e01 | 1 | `k7/8/NK6/8/8/8/8/5B2 w` | o mate com o bispo entrando na diagonal grande (Bg2#; qualquer outro lance de bispo afoga) |
+| e02 | 1 | `1k6/3B4/1K6/2N5/8/8/8/8 w` | Ca6+ e Bc6# |
+| e03 | 1 | `6k1/5N2/5K2/8/8/3B4/8/8 w` | o bispo prepara h7 (qualquer casa da diagonal b1–h7) |
+| e04 | 1 | `7k/8/5K2/4N3/8/3B4/8/8 w` | a primeira ponta do W, Cf7+ (a tabela aceita também os lances de espera do bispo) |
+| e05 | 2 | `4k3/5N1B/5K2/8/8/8/8/8 w` | Ce5, o único que tira d7 sem perder tempo |
+| e06 | 2 | `k7/8/1K6/2N5/8/8/8/3B4 w` | alerta de afogamento: Bg4 (ou Be2), Rb8, Ca6+, Ra8, Bf3# |
+| e07 | 2 | `2k1B3/8/3K4/8/2N5/8/8/8 w` | a armadilha de Rhine: qualquer lance que não seja Cb6+?? (Bb5, Ba4, Bc6, Ca5, Re7…) |
+| e08 | 2 | `8/1k1N3B/4K3/8/8/8/8/8 w` | fechar a rede: Bd3 (ou Rd5, Rd6) |
+| e09 | 2 | `8/8/3B4/8/4N3/5K2/8/7k w` | o W de baixo, com bispo escuro: Cf2+ |
+| e10 | 3 | `4k3/3N3B/5K2/8/8/8/8/8 w` | castigar a volta: Re6 Rd8, Rd6 Re8, Bg6+ (ou Bg8) |
+| e11 | 3 | `7k/8/5K2/8/4B3/3N4/8/8 w` | montar o W de mais longe: Ce5 Rg8, Cf7 Rf8, Bh7 |
+| e12 | 3 | `1k6/2N5/2K5/8/8/4B3/8/8 w` | o W espelhado em a8 com bispo escuro: Bc5 Rc8, Ba7 Rd8, Cd5 |
+
+Todas as posições são próprias (variações das posições da linha do W), exceto e04 (a posição-chave) e e07 (a armadilha de Rhine), com origem na Wikipedia.
 
 ## Treino final
 
