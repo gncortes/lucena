@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} अंक",
   "starChallengePointsTotal": "कुल {count} अंक",
   "starChallengeLegend": "हर तारा कुछ देर बाद गायब हो जाता है: सुनहरा सबसे पहले।",
-  "starChallengeObstacles": "काले प्यादे सिर्फ़ रास्ते में हैं: उन्हें पकड़ा नहीं जा सकता। आप तारे इकट्ठा करते हैं।"
+  "starChallengeObstacles": "काले प्यादे सिर्फ़ रास्ते में हैं: उन्हें पकड़ा नहीं जा सकता। आप तारे इकट्ठा करते हैं।",
+  "settingsSound": "ध्वनियाँ",
+  "settingsSoundHint": "मोहरों की चालें और समय कम होने पर चेतावनी",
+  "tourSoundTitle": "आवाज़ के साथ या बिना?",
+  "tourSoundBody": "हर चाल पर मोहरों की आवाज़ और घड़ी का समय खत्म होने से पहले चेतावनी सुनें।",
+  "tourSoundOn": "आवाज़ के साथ",
+  "tourSoundOff": "बिना आवाज़"
 }

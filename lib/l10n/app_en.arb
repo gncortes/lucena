@@ -2600,5 +2600,29 @@
   "starChallengeObstacles": "The black pawns only get in the way: you cannot capture them. You collect the stars.",
   "@starChallengeObstacles": {
     "description": "Before starting a level with black pawns: they only block, cannot be captured; stars are what you collect."
+  },
+  "settingsSound": "Sounds",
+  "@settingsSound": {
+    "description": "Settings switch: turns the game sounds on or off (piece moves and the low-time warning)."
+  },
+  "settingsSoundHint": "Piece moves and a warning when your time is running out",
+  "@settingsSoundHint": {
+    "description": "Subtitle of the switch that turns the game sounds on or off."
+  },
+  "tourSoundTitle": "Sound on or off?",
+  "@tourSoundTitle": {
+    "description": "Tour step where the user chooses whether the app plays sounds. Title."
+  },
+  "tourSoundBody": "Hear the pieces as they move and a warning when the clock is running out.",
+  "@tourSoundBody": {
+    "description": "Tour step where the user chooses whether the app plays sounds. Body."
+  },
+  "tourSoundOn": "With sound",
+  "@tourSoundOn": {
+    "description": "Tour choice: turn the game sounds on."
+  },
+  "tourSoundOff": "No sound",
+  "@tourSoundOff": {
+    "description": "Tour choice: turn the game sounds off."
   }
 }

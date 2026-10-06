@@ -7,14 +7,22 @@ import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 
+import 'package:lucena/domain/models/game_sound.dart';
+import 'package:lucena/ui/core/sound/game_sounds.dart';
+
+import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_sound_repository.dart';
+
 void main() {
   late FakeEndgameProgressRepository progress;
+  late FakeSoundRepository sound;
 
   ExerciseCubit cubit() {
     final cubit = ExerciseCubit(
       lessons: FakeEndgameLessonRepository(),
       progress: progress,
       characters: FakeCharacterRepository(),
+      sounds: GameSounds(FakeSettingsRepository(), sound),
       replyDelay: Duration.zero,
     );
     addTearDown(cubit.close);
@@ -23,7 +31,10 @@ void main() {
 
   Move move(String uci) => Move.parse(uci)!;
 
-  setUp(() => progress = FakeEndgameProgressRepository());
+  setUp(() {
+    progress = FakeEndgameProgressRepository();
+    sound = FakeSoundRepository();
+  });
 
   test('abre com o enunciado e grava o exercício aberto', () async {
     final exercise = cubit();
@@ -150,5 +161,16 @@ void main() {
     final exercise = cubit();
     await exercise.load('rook.lucena', 'e03', 'en');
     expect(exercise.state.nextExercise, isNull);
+  });
+
+  test('o lance certo faz som; o errado, que volta, não', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+
+    await exercise.play(move('c1c2'));
+    expect(sound.played, isEmpty);
+
+    await exercise.play(move('c1c4'));
+    expect(sound.played, [GameSound.move]);
   });
 }

@@ -44,6 +44,9 @@ class SettingsScreen extends StatelessWidget {
     final characterTalk = context.select(
       (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
     );
+    final sound = context.select(
+      (SettingsCubit cubit) => cubit.state?.sound ?? true,
+    );
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: AppBar(
@@ -116,6 +119,15 @@ class SettingsScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsClock),
+          ),
+          SwitchListTile(
+            key: SettingsKeys.soundSwitch,
+            secondary: const Icon(Icons.volume_up_outlined),
+            title: Text(context.l10n.settingsSound),
+            subtitle: Text(context.l10n.settingsSoundHint),
+            value: sound,
+            onChanged: (value) =>
+                context.read<SettingsCubit>().setSound(enabled: value),
           ),
           SwitchListTile(
             key: SettingsKeys.characterTalkSwitch,

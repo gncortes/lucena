@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} 分",
   "starChallengePointsTotal": "共 {count} 分",
   "starChallengeLegend": "每颗星星过一会儿就会消失：金色的最先消失。",
-  "starChallengeObstacles": "黑兵只是挡路，不能吃掉。你要收集的是星星。"
+  "starChallengeObstacles": "黑兵只是挡路，不能吃掉。你要收集的是星星。",
+  "settingsSound": "声音",
+  "settingsSoundHint": "棋子走动的声音，以及时间快用完时的提示",
+  "tourSoundTitle": "要开启声音吗？",
+  "tourSoundBody": "每走一步都能听到棋子的声音，棋钟快到时还会有提示。",
+  "tourSoundOn": "开启声音",
+  "tourSoundOff": "关闭声音"
 }

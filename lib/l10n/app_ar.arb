@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{نقطة واحدة} other{{count} نقطة}}",
   "starChallengePointsTotal": "{count} نقطة في المجموع",
   "starChallengeLegend": "كل نجمة تختفي بعد فترة: الذهبية أولًا.",
-  "starChallengeObstacles": "البيادق السوداء تعترض الطريق فقط: لا يمكن أسرها. ما تجمعه هو النجوم."
+  "starChallengeObstacles": "البيادق السوداء تعترض الطريق فقط: لا يمكن أسرها. ما تجمعه هو النجوم.",
+  "settingsSound": "الأصوات",
+  "settingsSoundHint": "نقلات القطع وتنبيه عندما يوشك وقتك على الانتهاء",
+  "tourSoundTitle": "مع الصوت أم بدونه؟",
+  "tourSoundBody": "اسمع القطع مع كل نقلة وتنبيهًا عندما توشك الساعة على الانتهاء.",
+  "tourSoundOn": "مع الصوت",
+  "tourSoundOff": "بدون صوت"
 }

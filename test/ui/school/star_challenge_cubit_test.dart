@@ -10,19 +10,28 @@ import 'package:lucena/ui/school/view_models/star_challenge_cubit.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_star_challenge_repository.dart';
 
+import 'package:lucena/domain/models/game_sound.dart';
+import 'package:lucena/ui/core/sound/game_sounds.dart';
+
+import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_sound_repository.dart';
+
 void main() {
   late FakeNow now;
   late FakeStarChallengeRepository progress;
+  late FakeSoundRepository sound;
 
   setUp(() {
     now = FakeNow(DateTime(2026, 10, 6, 10));
     progress = FakeStarChallengeRepository();
+    sound = FakeSoundRepository();
   });
 
   StarChallengeCubit cubit() {
     final cubit = StarChallengeCubit(
       progress: progress,
       now: now,
+      sounds: GameSounds(FakeSettingsRepository(), sound),
       random: Random(7),
       tickEvery: const Duration(hours: 1),
     );
@@ -166,4 +175,46 @@ void main() {
     expect(challenge.state.phase, ChallengePhase.ready);
     expect(challenge.state.points, 0);
   });
+
+  test(
+    'pegar a estrela faz o som de captura; outro lance, o de lance',
+    () async {
+      final challenge = cubit();
+      await challenge.load(ChallengePiece.rook, ChallengeLevel.easy);
+      challenge.start();
+      final first = challenge.state.star!;
+      final move = toStar(challenge.state)!;
+      final elsewhere = StarChallengeRules.movesOf(
+        LessonRules.starsBoard(challenge.state.fen!),
+        move.from,
+      ).firstWhere((square) => square != first);
+
+      challenge.play(NormalMove(from: move.from, to: elsewhere));
+      challenge.play(toStar(challenge.state)!);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(sound.played, [GameSound.move, GameSound.capture]);
+    },
+  );
+
+  test(
+    'o relógio do desafio avisa uma vez quando faltam dez segundos',
+    () async {
+      final challenge = cubit();
+      await challenge.load(ChallengePiece.rook, ChallengeLevel.easy);
+      challenge.start();
+
+      now.advance(const Duration(seconds: 49));
+      challenge.tick();
+      await Future<void>.delayed(Duration.zero);
+      expect(sound.played, isEmpty);
+
+      now.advance(const Duration(seconds: 2));
+      challenge.tick();
+      now.advance(const Duration(seconds: 1));
+      challenge.tick();
+      await Future<void>.delayed(Duration.zero);
+      expect(sound.played, [GameSound.lowTime]);
+    },
+  );
 }

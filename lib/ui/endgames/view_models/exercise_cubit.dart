@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,6 +13,7 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../school/view_models/lesson_cubit.dart';
+import '../../core/sound/game_sounds.dart';
 
 /// Em que pé está o exercício.
 enum ExercisePhase {
@@ -146,12 +149,16 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._lessons,
     required this._progress,
     required this._characters,
+    this._sounds,
     this.replyDelay = const Duration(milliseconds: 450),
   }) : super(const ExerciseState());
 
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
   final CharacterRepository _characters;
+
+  // Os sons do jogo; nulo: o exercício fica mudo.
+  final GameSounds? _sounds;
 
   /// A pausa antes da resposta do outro lado.
   final Duration replyDelay;
@@ -239,6 +246,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
     final played = GameRules.play(position, move);
     if (played == null) return;
+    unawaited(_sounds?.move(played.san));
     final turn = step.line[state.turn];
     final ends = LessonRules.endsLine(step, state.turn, move.uci);
     if (ends) {
@@ -270,6 +278,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         await _solve(after.fen, move);
         return;
       }
+      unawaited(_sounds?.move(answered.san));
       after = answered.position;
     }
     emit(

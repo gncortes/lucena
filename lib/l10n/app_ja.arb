@@ -478,5 +478,11 @@
   "starChallengePoints": "{count} 点",
   "starChallengePointsTotal": "合計 {count} 点",
   "starChallengeLegend": "星はしばらくすると消える。金の星が最初に消える。",
-  "starChallengeObstacles": "黒のポーンは邪魔なだけで、取ることはできない。集めるのは星だ。"
+  "starChallengeObstacles": "黒のポーンは邪魔なだけで、取ることはできない。集めるのは星だ。",
+  "settingsSound": "サウンド",
+  "settingsSoundHint": "駒の動きと、残り時間が少なくなったときの警告",
+  "tourSoundTitle": "サウンドはオンにしますか？",
+  "tourSoundBody": "一手ごとの駒の音と、時計の残り時間が少なくなったときの警告が鳴ります。",
+  "tourSoundOn": "サウンドあり",
+  "tourSoundOff": "サウンドなし"
 }

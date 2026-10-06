@@ -14,6 +14,23 @@ class SettingsRobot {
 
   final PatrolIntegrationTester $;
 
+  /// Liga ou desliga os sons do jogo.
+  Future<void> toggleSound() async {
+    await $(SettingsKeys.soundSwitch).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  /// O interruptor dos sons está ligado ou desligado.
+  Future<void> expectSound({required bool enabled}) async {
+    await $(SettingsKeys.soundSwitch).scrollTo();
+    expect(
+      $.tester
+          .widget<SwitchListTile>(find.byKey(SettingsKeys.soundSwitch))
+          .value,
+      enabled,
+    );
+  }
+
   Future<void> expectVisible() async {
     await $(SettingsKeys.screen).waitUntilVisible();
   }

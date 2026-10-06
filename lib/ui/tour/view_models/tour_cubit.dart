@@ -12,11 +12,12 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/profile_rules.dart';
 
 /// Os passos do tour, na ordem. Depois das boas-vindas, a aparência do app
-/// e do tabuleiro; o último pergunta o nível.
+/// e do tabuleiro e a pergunta do som; o último pergunta o nível.
 enum TourStep {
   goal,
   theme,
   board,
+  sound,
   rating,
   journey,
   endgames,

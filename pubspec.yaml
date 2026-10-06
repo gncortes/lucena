@@ -22,6 +22,7 @@ dependencies:
   intl: ^0.20.3
   multistockfish: ^0.6.1
   shared_preferences: ^2.5.5
+  sound_effect: ^0.2.0
   url_launcher: ^6.3.3
 
 dev_dependencies:
@@ -45,6 +46,8 @@ flutter:
     - assets/branding/mascot_light.png
     - assets/branding/mascot_dark.png
     - assets/branding/stockfish.png
+    # Sons do jogo: conjunto "sfx" do Lichess (ver THIRD-PARTY-NOTICES.md).
+    - assets/sounds/
     - assets/positions/positions.json
     - assets/progression/ladder.json
     - assets/progression/speedruns.json

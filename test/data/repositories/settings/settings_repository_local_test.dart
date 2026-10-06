@@ -153,4 +153,10 @@ void main() {
       expect((await reopen().load()).characterTalk, isFalse);
     },
   );
+
+  test('sons: ligados de fábrica, desligar fica gravado', () async {
+    expect((await reopen().load()).sound, isTrue);
+    await reopen().save(const AppSettings(sound: false));
+    expect((await reopen().load()).sound, isFalse);
+  });
 }

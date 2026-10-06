@@ -88,6 +88,7 @@ import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/theme_screen.dart';
 import '../ui/core/widgets/reload_on_return.dart';
+import '../ui/core/sound/game_sounds.dart';
 import 'routes.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
@@ -174,6 +175,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 providers: [
                   BlocProvider(
                     create: (context) => FreeBoardCubit(
+                      sounds: context.read<GameSounds>(),
                       now: context.read<Now>(),
                       haptics: context.read<HapticsRepository>(),
                       settings: context.read<SettingsRepository>(),
@@ -271,6 +273,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         key: ValueKey('starChallenge.$piece.$level'),
                         create: (_) {
                           final cubit = StarChallengeCubit(
+                            sounds: context.read<GameSounds>(),
                             progress: context.read<StarChallengeRepository>(),
                             now: context.read<Now>(),
                           );
@@ -295,6 +298,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     // A aula seguinte (pela tela de fim) troca o view model.
                     key: ValueKey(id),
                     create: (_) => LessonCubit(
+                      sounds: context.read<GameSounds>(),
                       lessons: context.read<LessonRepository>(),
                       progress: context.read<SchoolProgressRepository>(),
                       characters: context.read<CharacterRepository>(),
@@ -348,6 +352,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         key: ValueKey('starChallenge.$piece.$level'),
                         create: (_) {
                           final cubit = StarChallengeCubit(
+                            sounds: context.read<GameSounds>(),
                             progress: context.read<StarChallengeRepository>(),
                             now: context.read<Now>(),
                           );
@@ -398,6 +403,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       return BlocProvider(
                         key: ValueKey('steps.$id'),
                         create: (_) => LessonCubit(
+                          sounds: context.read<GameSounds>(),
                           source: EndgameLessonSource(
                             context.read<EndgameLessonRepository>(),
                             context.read<EndgameProgressRepository>(),
@@ -433,6 +439,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
+                          sounds: context.read<GameSounds>(),
                           lessons: context.read<EndgameLessonRepository>(),
                           progress: context.read<EndgameProgressRepository>(),
                           characters: context.read<CharacterRepository>(),

@@ -9,6 +9,10 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
 
+import 'package:lucena/domain/models/game_sound.dart';
+
+import '../../../../testing/fakes/fake_sound_repository.dart';
+
 void main() {
   late FakeSettingsRepository repository;
 
@@ -140,4 +144,46 @@ void main() {
     expect: () => [const AppSettings(themeMode: AppThemeMode.dark)],
     verify: (cubit) => expect(repository.saved, [cubit.state]),
   );
+
+  group('sons', () {
+    test('desligar grava a escolha e não toca nada', () async {
+      final repository = FakeSettingsRepository();
+      final sound = FakeSoundRepository();
+      final cubit = SettingsCubit(
+        repository,
+        languages: AppLanguage.selectable,
+        sound: sound,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      await cubit.setSound(enabled: false);
+
+      expect(cubit.state!.sound, isFalse);
+      expect(repository.saved.last.sound, isFalse);
+      expect(sound.played, isEmpty);
+    });
+
+    test(
+      'ligar grava a escolha e toca o som de um lance, de amostra',
+      () async {
+        final repository = FakeSettingsRepository(
+          const AppSettings(sound: false),
+        );
+        final sound = FakeSoundRepository();
+        final cubit = SettingsCubit(
+          repository,
+          languages: AppLanguage.selectable,
+          sound: sound,
+        );
+        addTearDown(cubit.close);
+        await cubit.load();
+
+        await cubit.setSound(enabled: true);
+
+        expect(repository.saved.last.sound, isTrue);
+        expect(sound.played, [GameSound.move]);
+      },
+    );
+  });
 }

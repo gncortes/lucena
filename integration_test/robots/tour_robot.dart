@@ -60,6 +60,10 @@ class TourRobot {
     }
   }
 
+  /// No passo do som: com som ou sem som.
+  Future<void> chooseSound({required bool enabled}) =>
+      _tap(TourKeys.sound(enabled: enabled));
+
   /// No passo do tema: claro, escuro ou o do aparelho.
   Future<void> chooseThemeMode(AppThemeMode mode) =>
       _tap(TourKeys.themeMode(mode));
