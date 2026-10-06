@@ -1,4 +1,16 @@
 {
+  "review.stories": [
+    "While the engine thinks, a story. In 1978 grandmaster Walter Browne bet he could win a queen against rook ending from the computer Belle within fifty moves. He couldn't. He studied, asked for a rematch and won the rook on exactly the fiftieth move.",
+    "Did you know that Philidor, of the Philidor position, was also a famous composer? His operas were hits in eighteenth-century Paris, and he played blindfold chess in public.",
+    "In 1858 Paul Morphy played a game in a box at the Paris Opera, during the performance, against the Duke of Brunswick and Count Isouard. He won with one beautiful sacrifice after another. It became known as the Opera Game.",
+    "The longest game ever played in a master tournament was Nikolić against Arsović, Belgrade 1989: 269 moves and more than twenty hours. It ended in a draw.",
+    "Capablanca learned chess at the age of four just by watching his father play. They say that in his first game he beat his own father. Years later he became world champion and kept saying: start with the endgames.",
+    "In 1997 IBM's computer Deep Blue beat Garry Kasparov in a six-game match. It was the first time a world champion lost a match to a machine at tournament time controls.",
+    "The seven-piece endgame tablebases hold the perfect result of every position with up to seven pieces. The longest one needs 549 moves to mate: no human could play that from memory.",
+    "Marcel Duchamp, one of the most famous artists of the twentieth century, gave up painting to devote himself to chess. He played for France in several Olympiads and wrote a book on pawn endings.",
+    "In 1851, in London, Adolf Anderssen sacrificed both rooks, a bishop and his queen against Kieseritzky and mated with his minor pieces. The game became known as the Immortal Game.",
+    "In 1972, in Reykjavík, Bobby Fischer beat Boris Spassky in the most famous match in history, in the middle of the Cold War. Chess made the front page all over the world."
+  ],
   "tour.goal": "Welcome. I am Viktor. I have spent my whole life in front of a chessboard, and I learned one thing: whoever masters the endgame masters chess. Let me show you around your new home.",
   "tour.theme": "First, make this home your own. Light or dark, and the color you like best. You can change everything later in Settings.",
   "tour.board": "Now the board. Choose the colors and pieces you like best. You can swap them whenever you wish.",

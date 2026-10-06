@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
@@ -18,6 +21,7 @@ import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -62,6 +66,14 @@ void main() {
       characters: FakeCharacterRepository(),
       analysis: analysis,
       reviews: FakeGameReviewRepository(),
+      lessons: FakeLessonRepository(
+        texts: const LessonTexts({
+          'review.stories': [
+            'A story about Morphy.',
+            'A story about Capablanca.',
+          ],
+        }),
+      ),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -227,5 +239,25 @@ void main() {
 
     expect(cubit.state.review!.depth, 18);
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  });
+
+  testWidgets('enquanto a revisão roda, o Viktor conta uma história', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    analysis.hold = Completer<void>();
+
+    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(cubit.state.reviewing, isTrue);
+    expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
+    expect(find.textContaining('A story about'), findsOneWidget);
+
+    analysis.hold!.complete();
+    analysis.hold = null;
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.story), findsNothing);
   });
 }

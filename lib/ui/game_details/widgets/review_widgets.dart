@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
@@ -9,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -17,6 +19,7 @@ import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/figurine.dart';
+import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 
@@ -93,6 +96,15 @@ class ReviewSummary extends StatelessWidget {
               key: GameDetailsKeys.reviewProgress,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (state.viktor case final viktor?
+                    when state.stories.isNotEmpty) ...[
+                  _StoryTeller(
+                    viktor: viktor,
+                    stories: state.stories,
+                    first: state.attempt?.playedAt.millisecond ?? 0,
+                  ),
+                  const SizedBox(height: 14),
+                ],
                 Text(
                   l10n.reviewRunning(math.min(done + 1, total), total),
                   style: theme.textTheme.titleSmall,
@@ -237,6 +249,58 @@ class ReviewSummary extends StatelessWidget {
     overflow: TextOverflow.ellipsis,
     style: Theme.of(context).textTheme.titleSmall
         ?.copyWith(fontWeight: FontWeight.w700),
+  );
+}
+
+/// Enquanto a revisão roda, o Viktor conta uma história de xadrez, e troca
+/// de história de tempos em tempos.
+class _StoryTeller extends StatefulWidget {
+  const _StoryTeller({
+    required this.viktor,
+    required this.stories,
+    required this.first,
+  });
+
+  final Character viktor;
+  final List<String> stories;
+
+  /// A primeira história (cada partida começa por uma).
+  final int first;
+
+  /// Quanto tempo cada história fica.
+  static const every = Duration(seconds: 18);
+
+  @override
+  State<_StoryTeller> createState() => _StoryTellerState();
+}
+
+class _StoryTellerState extends State<_StoryTeller> {
+  late int _index = widget.first;
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(
+      _StoryTeller.every,
+      (_) => setState(() => _index++),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => TeacherSpeech(
+    key: GameDetailsKeys.story,
+    teacher: widget.viktor,
+    text: widget.stories[_index % widget.stories.length],
+    avatarSize: 40,
+    stacked: true,
+    typed: true,
   );
 }
 

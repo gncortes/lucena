@@ -1,4 +1,16 @@
 {
+  "review.stories": [
+    "Enquanto a engine pensa, uma história. Em 1978, o grande mestre Walter Browne apostou que ganharia um final de dama contra torre do computador Belle em cinquenta lances. Não conseguiu. Estudou, pediu revanche e ganhou a torre exatamente no quinquagésimo lance.",
+    "Sabia que Philidor, o mesmo da posição de Philidor, também era um compositor famoso? Ele escreveu óperas que fizeram sucesso em Paris no século dezoito, e jogava xadrez às cegas em público.",
+    "Em 1858, Paul Morphy jogou uma partida num camarote da Ópera de Paris, durante a apresentação, contra o duque de Brunswick e o conde Isouard. Ganhou com um sacrifício bonito atrás do outro. Ficou conhecida como a Partida da Ópera.",
+    "A partida mais longa já jogada num torneio de mestres foi Nikolić contra Arsović, em Belgrado, em 1989: 269 lances e mais de vinte horas. Terminou empatada.",
+    "Capablanca aprendeu xadrez com quatro anos, só de olhar o pai jogar. Dizem que, na primeira partida, ganhou do próprio pai. Anos depois foi campeão do mundo e insistia: comece pelos finais.",
+    "Em 1997, o computador Deep Blue, da IBM, venceu Garry Kasparov num match de seis partidas. Foi a primeira vez que um campeão do mundo perdeu um match para uma máquina em ritmo de torneio.",
+    "As tabelas de finais de sete peças guardam o resultado perfeito de todas as posições com até sete peças. A mais longa delas precisa de 549 lances para dar o mate: nenhum ser humano jogaria aquilo de cabeça.",
+    "Marcel Duchamp, um dos artistas mais famosos do século vinte, largou a pintura para se dedicar ao xadrez. Jogou pela França em várias Olimpíadas e escreveu um livro sobre finais de peões.",
+    "Em 1851, em Londres, Adolf Anderssen sacrificou as duas torres, um bispo e a dama contra Kieseritzky e deu mate com as peças menores. A partida ficou conhecida como a Imortal.",
+    "Em 1972, em Reykjavík, Bobby Fischer venceu Boris Spassky no match mais famoso da história, em plena Guerra Fria. O xadrez virou notícia de primeira página no mundo inteiro."
+  ],
   "tour.goal": "Seja bem-vindo. Sou o Viktor. Passei a vida inteira diante de um tabuleiro e aprendi uma coisa: quem domina os finais domina o xadrez. Vou mostrar como funciona a sua casa nova.",
   "tour.theme": "Antes de tudo, deixe a casa com a sua cara. Claro ou escuro, e a cor de que você mais gosta. Dá para mudar tudo depois, nas Configurações.",
   "tour.board": "Agora o tabuleiro. Escolha as cores e as peças de que mais gosta. Dá para trocar quando quiser.",
