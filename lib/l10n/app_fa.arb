@@ -450,5 +450,13 @@
   "exerciseBack": "بازگشت به درس",
   "exerciseHint": "راهنما (یک ستاره هزینه دارد)",
   "exerciseMissing": "این تمرین وجود ندارد.",
-  "lessonToExercises": "رفتن به تمرین‌ها"
+  "lessonToExercises": "رفتن به تمرین‌ها",
+  "exerciseGoal": "{side, select, white{سفید بازی می‌کند} other{سیاه بازی می‌کند}} و {goal, select, win{می‌برد} other{نگه می‌دارد}}",
+  "exerciseSolution": "راه‌حل",
+  "lessonGuideTalk": "به صفحه نگاه کن و ادامه بده.",
+  "lessonGuideStars": "نوبت تو: همهٔ ستاره‌ها را جمع کن.",
+  "lessonGuideMove": "{side, select, white{نوبت تو، با سفید.} other{نوبت تو، با سیاه.}}",
+  "lessonGuidePlay": "{goal, select, mate{تا مات ادامه بده.} other{تا ارتقای پیاده ادامه بده.}}",
+  "lessonGuideDone": "انجام شد. به گام بعد برو.",
+  "exerciseYourMove": "نوبت تو"
 }

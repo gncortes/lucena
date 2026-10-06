@@ -450,5 +450,13 @@
   "exerciseBack": "Kembali ke pelajaran",
   "exerciseHint": "Petunjuk (mengurangi satu bintang)",
   "exerciseMissing": "Latihan ini tidak ada.",
-  "lessonToExercises": "Ke latihan"
+  "lessonToExercises": "Ke latihan",
+  "exerciseGoal": "{side, select, white{Putih jalan} other{Hitam jalan}} dan {goal, select, win{menang} other{bertahan}}",
+  "exerciseSolution": "Solusi",
+  "lessonGuideTalk": "Lihat papan, lalu lanjutkan.",
+  "lessonGuideStars": "Giliranmu: kumpulkan semua bintang.",
+  "lessonGuideMove": "{side, select, white{Giliranmu, dengan putih.} other{Giliranmu, dengan hitam.}}",
+  "lessonGuidePlay": "{goal, select, mate{Main terus sampai sekakmat.} other{Main terus sampai pion promosi.}}",
+  "lessonGuideDone": "Selesai. Lanjut ke langkah berikutnya.",
+  "exerciseYourMove": "Giliranmu"
 }

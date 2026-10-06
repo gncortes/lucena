@@ -20,6 +20,10 @@ abstract final class LessonKeys {
   static const speech = Key('lesson.speech');
   static const progress = Key('lesson.progress');
   static const stepCounter = Key('lesson.stepCounter');
+
+  /// Sob o tabuleiro: o título da aula e o que fazer no passo.
+  static const title = Key('lesson.title');
+  static const guide = Key('lesson.guide');
   static const nextButton = Key('lesson.next');
   static const hintButton = Key('lesson.hint');
   static const retryButton = Key('lesson.retry');

@@ -450,5 +450,13 @@
   "exerciseBack": "Voltar à aula",
   "exerciseHint": "Dica (custa uma estrela)",
   "exerciseMissing": "Este exercício não existe.",
-  "lessonToExercises": "Ir para os exercícios"
+  "lessonToExercises": "Ir para os exercícios",
+  "exerciseGoal": "{side, select, white{Brancas jogam} other{Pretas jogam}} e {goal, select, win{ganham} other{aguentam}}",
+  "exerciseSolution": "Solução",
+  "lessonGuideTalk": "Olhe para o tabuleiro e continue.",
+  "lessonGuideStars": "A sua vez: apanhe todas as estrelas.",
+  "lessonGuideMove": "{side, select, white{A sua vez, com as brancas.} other{A sua vez, com as pretas.}}",
+  "lessonGuidePlay": "{goal, select, mate{Jogue até dar mate.} other{Jogue até promover o peão.}}",
+  "lessonGuideDone": "Feito. Continue para o passo seguinte.",
+  "exerciseYourMove": "A sua vez"
 }

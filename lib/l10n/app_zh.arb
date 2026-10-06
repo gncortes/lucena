@@ -450,5 +450,13 @@
   "exerciseBack": "返回课程",
   "exerciseHint": "提示（花费一颗星）",
   "exerciseMissing": "这个练习不存在。",
-  "lessonToExercises": "前往练习"
+  "lessonToExercises": "前往练习",
+  "exerciseGoal": "{side, select, white{白方走棋} other{黑方走棋}}：{goal, select, win{取胜} other{守住}}",
+  "exerciseSolution": "解答",
+  "lessonGuideTalk": "看看棋盘，然后继续。",
+  "lessonGuideStars": "轮到你：收集所有星星。",
+  "lessonGuideMove": "{side, select, white{轮到你，执白。} other{轮到你，执黑。}}",
+  "lessonGuidePlay": "{goal, select, mate{继续下到将杀。} other{继续下到兵升变。}}",
+  "lessonGuideDone": "完成。继续下一步。",
+  "exerciseYourMove": "轮到你"
 }

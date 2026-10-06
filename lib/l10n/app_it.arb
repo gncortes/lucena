@@ -450,5 +450,13 @@
   "exerciseBack": "Torna alla lezione",
   "exerciseHint": "Suggerimento (costa una stella)",
   "exerciseMissing": "Questo esercizio non esiste.",
-  "lessonToExercises": "Vai agli esercizi"
+  "lessonToExercises": "Vai agli esercizi",
+  "exerciseGoal": "{side, select, white{Muove il Bianco} other{Muove il Nero}} e {goal, select, win{vince} other{tiene}}",
+  "exerciseSolution": "Soluzione",
+  "lessonGuideTalk": "Guarda la scacchiera, poi continua.",
+  "lessonGuideStars": "Tocca a te: raccogli tutte le stelle.",
+  "lessonGuideMove": "{side, select, white{Tocca a te, con il Bianco.} other{Tocca a te, con il Nero.}}",
+  "lessonGuidePlay": "{goal, select, mate{Gioca fino allo scacco matto.} other{Gioca fino a promuovere il pedone.}}",
+  "lessonGuideDone": "Fatto. Continua al passo successivo.",
+  "exerciseYourMove": "Tocca a te"
 }

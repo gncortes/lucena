@@ -450,5 +450,13 @@
   "exerciseBack": "Về bài học",
   "exerciseHint": "Gợi ý (mất một sao)",
   "exerciseMissing": "Bài tập này không tồn tại.",
-  "lessonToExercises": "Đến bài tập"
+  "lessonToExercises": "Đến bài tập",
+  "exerciseGoal": "{side, select, white{Trắng đi} other{Đen đi}} và {goal, select, win{thắng} other{cầm hòa}}",
+  "exerciseSolution": "Lời giải",
+  "lessonGuideTalk": "Nhìn bàn cờ rồi tiếp tục.",
+  "lessonGuideStars": "Lượt bạn: thu hết các ngôi sao.",
+  "lessonGuideMove": "{side, select, white{Lượt bạn, cầm Trắng.} other{Lượt bạn, cầm Đen.}}",
+  "lessonGuidePlay": "{goal, select, mate{Chơi tiếp đến khi chiếu hết.} other{Chơi tiếp đến khi phong cấp tốt.}}",
+  "lessonGuideDone": "Xong. Tiếp tục bước sau.",
+  "exerciseYourMove": "Lượt bạn"
 }

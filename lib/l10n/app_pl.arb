@@ -450,5 +450,13 @@
   "exerciseBack": "Wróć do lekcji",
   "exerciseHint": "Podpowiedź (kosztuje gwiazdkę)",
   "exerciseMissing": "To ćwiczenie nie istnieje.",
-  "lessonToExercises": "Przejdź do ćwiczeń"
+  "lessonToExercises": "Przejdź do ćwiczeń",
+  "exerciseGoal": "{side, select, white{Białe} other{Czarne}} na posunięciu: {goal, select, win{wygrać} other{utrzymać}}",
+  "exerciseSolution": "Rozwiązanie",
+  "lessonGuideTalk": "Spójrz na szachownicę i kontynuuj.",
+  "lessonGuideStars": "Twój ruch: zbierz wszystkie gwiazdki.",
+  "lessonGuideMove": "{side, select, white{Twój ruch, białymi.} other{Twój ruch, czarnymi.}}",
+  "lessonGuidePlay": "{goal, select, mate{Graj dalej aż do mata.} other{Graj dalej aż do promocji piona.}}",
+  "lessonGuideDone": "Gotowe. Przejdź do następnego kroku.",
+  "exerciseYourMove": "Twój ruch"
 }

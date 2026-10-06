@@ -105,7 +105,7 @@ class EndgameSummary {
   final int? exerciseNumber;
   final int? exerciseCount;
 
-  /// A lição (os passos) aberta, e o passo em que parou.
+  /// A lição (os passos) começada e não terminada, e o passo em que parou.
   final bool lessonOpen;
   final int? step;
   final int? stepCount;
@@ -212,7 +212,9 @@ class HomeCubit extends Cubit<HomeState> {
     EndgameLesson? lesson;
     if (openExercise != null) {
       lesson = trail.lesson(openExercise.$1);
-    } else if (ongoing != null && ongoing.open) {
+    } else if (ongoing != null) {
+      // A lição começada e não terminada, aberta ou não (como o botão
+      // "continuar" da tela da aula).
       lesson = trail.lesson(ongoing.lessonId);
     } else {
       for (final each in trail.lessons) {
@@ -232,7 +234,11 @@ class HomeCubit extends Cubit<HomeState> {
         : lesson.exercises.indexWhere(
             (each) => each.id == openExercise.$2.exerciseId,
           );
-    final lessonOpen = openExercise == null && ongoing != null && ongoing.open;
+    final lessonOpen =
+        openExercise == null &&
+        ongoing != null &&
+        ongoing.lessonId == lesson.id &&
+        !done.lessonDone;
     Character? teacher;
     for (final character in characters) {
       if (character.id == 'master') teacher = character;

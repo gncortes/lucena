@@ -146,6 +146,24 @@ void main() {
       expect(endgame.openExerciseId, isNull);
     });
 
+    test('a lição interrompida (saiu no meio) também continua', () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          ongoing: LessonCheckpoint(
+            lessonId: 'rook.lucena',
+            step: 1,
+            open: false,
+          ),
+        ),
+      );
+      final home = cubit();
+      await home.load();
+
+      final endgame = home.state.endgame!;
+      expect(endgame.lessonOpen, isTrue);
+      expect(endgame.step, 2);
+    });
+
     test('nada aberto: a aula começada e ainda não aprovada', () async {
       endgames = FakeEndgameProgressRepository(
         const EndgameProgress(

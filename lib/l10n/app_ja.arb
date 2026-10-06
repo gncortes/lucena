@@ -450,5 +450,13 @@
   "exerciseBack": "レッスンに戻る",
   "exerciseHint": "ヒント（星 1 個を消費）",
   "exerciseMissing": "この練習問題はありません。",
-  "lessonToExercises": "練習問題へ"
+  "lessonToExercises": "練習問題へ",
+  "exerciseGoal": "{side, select, white{白番} other{黒番}}：{goal, select, win{勝つ} other{守る}}",
+  "exerciseSolution": "解答",
+  "lessonGuideTalk": "盤面を見てから続けてください。",
+  "lessonGuideStars": "あなたの手番：星をすべて集めましょう。",
+  "lessonGuideMove": "{side, select, white{あなたの手番（白）。} other{あなたの手番（黒）。}}",
+  "lessonGuidePlay": "{goal, select, mate{チェックメイトまで指しましょう。} other{ポーンが昇格するまで指しましょう。}}",
+  "lessonGuideDone": "完了。次のステップへ進みましょう。",
+  "exerciseYourMove": "あなたの手番"
 }

@@ -449,5 +449,13 @@
   "exerciseBack": "[Båçk tö thé léššöñ one two]",
   "exerciseHint": "[Hîñt (çöštš å štåŕ) one two]",
   "exerciseMissing": "[Thîš éxéŕçîšé döéš ñöt éxîšt. one two three]",
-  "lessonToExercises": "[Ĝö tö thé éxéŕçîšéš one two]"
+  "lessonToExercises": "[Ĝö tö thé éxéŕçîšéš one two]",
+  "exerciseGoal": "[{side, select, white{Whîté} other{Blåçk}} tö plåý åñd {goal, select, win{wîñ} other{höld}} one two three four five six seven eight]",
+  "exerciseSolution": "[Šölûtîöñ one]",
+  "lessonGuideTalk": "[Löök åt thé böåŕd, théñ çöñtîñûé. one two three]",
+  "lessonGuideStars": "[Ýöûŕ mövé: çölléçt évéŕý štåŕ. one two three]",
+  "lessonGuideMove": "{side, select, white{[Ýöûŕ mövé, wîth Whîté. one two three]} other{[Ýöûŕ mövé, wîth Blåçk. one two three]}}",
+  "lessonGuidePlay": "{goal, select, mate{[Plåý öñ åñd çhéçkmåté. one two three]} other{[Plåý öñ åñd pŕömöté thé påwñ. one two three]}}",
+  "lessonGuideDone": "[Döñé. Çöñtîñûé tö thé ñéxt štép. one two three]",
+  "exerciseYourMove": "[Ýöûŕ mövé one]"
 }

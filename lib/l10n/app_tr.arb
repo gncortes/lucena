@@ -450,5 +450,13 @@
   "exerciseBack": "Derse dön",
   "exerciseHint": "İpucu (bir yıldıza mal olur)",
   "exerciseMissing": "Bu alıştırma yok.",
-  "lessonToExercises": "Alıştırmalara git"
+  "lessonToExercises": "Alıştırmalara git",
+  "exerciseGoal": "{side, select, white{Beyaz} other{Siyah}} oynar ve {goal, select, win{kazanır} other{tutar}}",
+  "exerciseSolution": "Çözüm",
+  "lessonGuideTalk": "Tahtaya bak, sonra devam et.",
+  "lessonGuideStars": "Sıra sende: bütün yıldızları topla.",
+  "lessonGuideMove": "{side, select, white{Sıra sende, beyazlarla.} other{Sıra sende, siyahlarla.}}",
+  "lessonGuidePlay": "{goal, select, mate{Mat edene kadar oyna.} other{Piyon terfi edene kadar oyna.}}",
+  "lessonGuideDone": "Tamam. Sonraki adıma geç.",
+  "exerciseYourMove": "Sıra sende"
 }

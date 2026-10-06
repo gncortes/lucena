@@ -450,5 +450,13 @@
   "exerciseBack": "Назад до уроку",
   "exerciseHint": "Підказка (коштує одну зірку)",
   "exerciseMissing": "Такої вправи немає.",
-  "lessonToExercises": "До вправ"
+  "lessonToExercises": "До вправ",
+  "exerciseGoal": "{side, select, white{Хід білих} other{Хід чорних}}: {goal, select, win{виграти} other{втримати}}",
+  "exerciseSolution": "Розв’язок",
+  "lessonGuideTalk": "Подивіться на дошку й продовжуйте.",
+  "lessonGuideStars": "Ваш хід: зберіть усі зірки.",
+  "lessonGuideMove": "{side, select, white{Ваш хід, ви граєте білими.} other{Ваш хід, ви граєте чорними.}}",
+  "lessonGuidePlay": "{goal, select, mate{Грайте до мату.} other{Грайте до перетворення пішака.}}",
+  "lessonGuideDone": "Готово. Переходьте до наступного кроку.",
+  "exerciseYourMove": "Ваш хід"
 }

@@ -450,5 +450,13 @@
   "exerciseBack": "पाठ पर वापस",
   "exerciseHint": "संकेत (एक तारा लगेगा)",
   "exerciseMissing": "यह अभ्यास मौजूद नहीं है।",
-  "lessonToExercises": "अभ्यास पर जाएँ"
+  "lessonToExercises": "अभ्यास पर जाएँ",
+  "exerciseGoal": "{side, select, white{सफ़ेद की चाल} other{काले की चाल}}: {goal, select, win{जीतें} other{टिके रहें}}",
+  "exerciseSolution": "हल",
+  "lessonGuideTalk": "बोर्ड देखें, फिर आगे बढ़ें।",
+  "lessonGuideStars": "आपकी चाल: सभी तारे इकट्ठा करें।",
+  "lessonGuideMove": "{side, select, white{आपकी चाल, सफ़ेद से।} other{आपकी चाल, काले से।}}",
+  "lessonGuidePlay": "{goal, select, mate{शह-मात तक खेलें।} other{प्यादे के प्रमोशन तक खेलें।}}",
+  "lessonGuideDone": "हो गया। अगले चरण पर जाएँ।",
+  "exerciseYourMove": "आपकी चाल"
 }

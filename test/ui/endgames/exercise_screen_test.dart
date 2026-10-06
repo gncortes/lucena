@@ -78,10 +78,25 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
+    // Antes de resolver, o objetivo sob o tabuleiro.
+    expect(
+      tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
+      'White to play and win',
+    );
+
     await move(tester, 'c1', 'c4');
     expect(find.byKey(ExerciseKeys.solved), findsOneWidget);
     expect(find.text('Solved!'), findsOneWidget);
     expect(find.text('2 of 3 stars'), findsOneWidget);
+    expect(find.byKey(ExerciseKeys.goal), findsNothing);
+    // A linha da solução, com figurino (a torre).
+    expect(
+      tester
+          .widget<Text>(find.byKey(ExerciseKeys.solution))
+          .textSpan!
+          .toPlainText(),
+      'Solution: 1.♖c4',
+    );
     expect(speech(tester), 'Same bridge.');
     // Os outros dois ainda estão por resolver.
     expect(find.byKey(ExerciseKeys.nextButton), findsOneWidget);
