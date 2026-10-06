@@ -196,7 +196,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      speech: texts.say('$lessonId.ex.$exerciseId'),
+      // O enunciado fica para a ajuda: aqui só o convite.
+      speech: texts.say('coach.exerciseStart', 0),
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
@@ -293,7 +294,11 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         hint: Move.parse(accepted),
         clearWrongMove: true,
         hints: state.hint == null ? state.hints + 1 : state.hints,
-        speech: _hintText() ?? _pick('coach.hint'),
+        // A ajuda traz o enunciado e a pista (e a seta).
+        speech: [
+          ?_statement(),
+          ?(_hintText() ?? _pick('coach.hint')),
+        ].join(' '),
         emotion: Emotion.focused,
       ),
     );
@@ -372,6 +377,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final fen = state.fen;
     return fen == null ? null : GameRules.fromFen(fen);
   }
+
+  String? _statement() =>
+      state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}');
 
   String? _hintText() =>
       state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint');

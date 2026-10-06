@@ -352,6 +352,11 @@
     "This is the move I would play.",
     "Look at the arrow and try to understand the idea."
   ],
+  "coach.exerciseStart": [
+    "Your move. Find the best plan.",
+    "Think it through before you touch a piece.",
+    "Your turn. What does this position ask for?"
+  ],
   "coach.keepGoing": [
     "Keep it up.",
     "No hurry.",
