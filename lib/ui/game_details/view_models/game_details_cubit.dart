@@ -300,15 +300,26 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     for (var k = 0; k < total; k++) {
       await _linesAt(k, reviewDepth);
       if (isClosed) return;
-      final live = k == 0
-          ? state.live
-          : {...state.live, k - 1: _moveReview(k - 1)};
-      emit(state.copyWith(reviewProgress: (k + 1) / total, live: live));
+      // O lance que acabou de ficar com as duas posições avaliadas; uma
+      // anotação mais funda (o jogador ficou nele) não é trocada.
+      final index = k - 1;
+      final deeper = (state.liveDepths[index] ?? 0) > reviewDepth;
+      emit(
+        state.copyWith(
+          reviewProgress: (k + 1) / total,
+          live: k == 0 || deeper
+              ? state.live
+              : {...state.live, index: _moveReview(index, reviewDepth)},
+          liveDepths: k == 0 || deeper
+              ? state.liveDepths
+              : {...state.liveDepths, index: reviewDepth},
+        ),
+      );
     }
     final review = ReviewRules.review(
       start: start,
       moves: [for (final move in state.moves) move.move],
-      analyses: [for (var k = 0; k < total; k++) _positionLines[k]],
+      analyses: [for (var k = 0; k < total; k++) _lines[(k, reviewDepth)]],
       depth: reviewDepth,
     );
     await _reviews?.save(_gameId, review);
@@ -319,23 +330,20 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// As linhas da engine em cada posição da partida (0: a de início; k: a
   /// depois do lance k − 1), já pedidas. Nulo: a partida acabou ali ou a
   /// engine não respondeu.
-  final _positionLines = <int, List<EngineLine>?>{};
-  final _positionDepth = <int, int>{};
-  final _pending = <int, Future<void>>{};
+  /// As linhas da engine por posição e profundidade. Um lance só é julgado
+  /// com as duas posições (antes e depois dele) na mesma profundidade: uma
+  /// rasa e outra funda dariam avaliações que não se comparam (a funda vê o
+  /// mate que a rasa ainda não vê).
+  final _lines = <(int, int), List<EngineLine>?>{};
+  final _pending = <(int, int), Future<void>>{};
 
   Position _positionAt(int k) =>
       k == 0 ? state.start! : state.moves[k - 1].position;
 
-  /// Avalia a posição [k] com profundidade [depth], se ainda não foi avaliada
-  /// com essa profundidade ou mais.
-  Future<void> _linesAt(int k, int depth, {bool urgent = false}) async {
-    while (true) {
-      if ((_positionDepth[k] ?? 0) >= depth) return;
-      final running = _pending[k];
-      if (running == null) break;
-      await running;
-    }
-    final job = () async {
+  Future<void> _linesAt(int k, int depth, {bool urgent = false}) {
+    final key = (k, depth);
+    if (_lines.containsKey(key)) return Future.value();
+    return _pending[key] ??= () async {
       final position = _positionAt(k);
       final lines = position.isGameOver
           ? null
@@ -345,23 +353,18 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
               lines: 2,
               urgent: urgent,
             );
-      _positionLines[k] = lines == null || lines.isEmpty ? null : lines;
-      _positionDepth[k] = position.isGameOver ? 1 << 20 : depth;
+      _lines[key] = lines == null || lines.isEmpty ? null : lines;
+      _pending.remove(key);
     }();
-    _pending[k] = job;
-    try {
-      await job;
-    } finally {
-      _pending.remove(k);
-    }
   }
 
   /// A anotação do lance [index], com as posições antes e depois dele já
   /// avaliadas.
-  ReviewedMove _moveReview(int index) => ReviewRules.review(
+  ReviewedMove _moveReview(int index, int depth) => ReviewRules.review(
     start: _positionAt(index),
     moves: [state.moves[index].move],
-    analyses: [_positionLines[index], _positionLines[index + 1]],
+    analyses: [_lines[(index, depth)], _lines[(index + 1, depth)]],
+    depth: depth,
   ).moves.single;
 
   /// Anota na hora o lance [index] que o jogador está vendo: primeiro raso
@@ -386,9 +389,11 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
           _linesAt(index + 1, depth, urgent: true),
         ]);
         if (isClosed) return;
+        // A revisão (ou outra passada) já anotou mais fundo no meio tempo.
+        if ((state.liveDepths[index] ?? 0) >= depth) continue;
         emit(
           state.copyWith(
-            live: {...state.live, index: _moveReview(index)},
+            live: {...state.live, index: _moveReview(index, depth)},
             liveDepths: {...state.liveDepths, index: depth},
             annotating: {...state.annotating}..remove(index),
           ),
