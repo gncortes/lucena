@@ -489,7 +489,6 @@
   "reviewRunning": "Аналіз ходу {done} з {total}",
   "reviewAccuracy": "Точність",
   "reviewYou": "Ви",
-  "reviewHint": "Кожен хід оцінено Stockfish. Точність рахується як на Lichess.",
   "qualityForced": "Вимушений хід",
   "qualityGreat": "Чудовий хід",
   "qualityBest": "Найкращий хід",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Відкрити на chess.com",
   "reviewCopyFen": "Копіювати позицію (FEN)",
   "reviewCopyPgn": "Копіювати партію (PGN)",
-  "reviewCopied": "Скопійовано"
+  "reviewCopied": "Скопійовано",
+  "reviewLegend": "Позначення",
+  "reviewEvalBar": "Шкала оцінки",
+  "qualityForcedHint": "Єдиний можливий хід",
+  "qualityGreatHint": "Найкращий хід і єдиний, що тримав позицію",
+  "qualityBestHint": "Хід, який зіграв би Stockfish",
+  "qualityExcellentHint": "Майже такий самий добрий, як найкращий",
+  "qualityGoodHint": "Непоганий хід, але було краще",
+  "qualityInaccuracyHint": "Трохи втрачено: був точніший хід",
+  "qualityMistakeHint": "Помітно погіршив позицію",
+  "qualityMissHint": "Була перемога, але її втрачено",
+  "qualityBlunderHint": "Змарнував результат: серйозна помилка"
 }

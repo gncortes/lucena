@@ -489,7 +489,6 @@
   "reviewRunning": "Analiza ruchu {done} z {total}",
   "reviewAccuracy": "Dokładność",
   "reviewYou": "Ty",
-  "reviewHint": "Każdy ruch oceniony przez Stockfisha. Dokładność liczona jak na Lichess.",
   "qualityForced": "Ruch wymuszony",
   "qualityGreat": "Świetny ruch",
   "qualityBest": "Najlepszy ruch",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Otwórz na chess.com",
   "reviewCopyFen": "Kopiuj pozycję (FEN)",
   "reviewCopyPgn": "Kopiuj partię (PGN)",
-  "reviewCopied": "Skopiowano"
+  "reviewCopied": "Skopiowano",
+  "reviewLegend": "Legenda",
+  "reviewEvalBar": "Pasek oceny",
+  "qualityForcedHint": "Jedyny możliwy ruch",
+  "qualityGreatHint": "Najlepszy ruch i jedyny, który utrzymywał pozycję",
+  "qualityBestHint": "Ruch, który zagrałby Stockfish",
+  "qualityExcellentHint": "Prawie tak dobry jak najlepszy",
+  "qualityGoodHint": "Poprawny ruch, ale było coś lepszego",
+  "qualityInaccuracyHint": "Stracił trochę: był dokładniejszy ruch",
+  "qualityMistakeHint": "Wyraźnie pogorszył pozycję",
+  "qualityMissHint": "Miał wygraną i ją wypuścił",
+  "qualityBlunderHint": "Zmarnował wynik: poważny błąd"
 }

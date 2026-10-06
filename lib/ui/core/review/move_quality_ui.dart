@@ -31,6 +31,19 @@ extension MoveQualityUi on MoveQuality {
     MoveQuality.blunder => const Color(0xFFD9372A),
   };
 
+  /// O que o símbolo quer dizer, numa linha.
+  String meaning(AppLocalizations l10n) => switch (this) {
+    MoveQuality.forced => l10n.qualityForcedHint,
+    MoveQuality.great => l10n.qualityGreatHint,
+    MoveQuality.best => l10n.qualityBestHint,
+    MoveQuality.excellent => l10n.qualityExcellentHint,
+    MoveQuality.good => l10n.qualityGoodHint,
+    MoveQuality.inaccuracy => l10n.qualityInaccuracyHint,
+    MoveQuality.mistake => l10n.qualityMistakeHint,
+    MoveQuality.miss => l10n.qualityMissHint,
+    MoveQuality.blunder => l10n.qualityBlunderHint,
+  };
+
   String label(AppLocalizations l10n) => switch (this) {
     MoveQuality.forced => l10n.qualityForced,
     MoveQuality.great => l10n.qualityGreat,
@@ -51,23 +64,45 @@ class MoveQualityBadge extends StatelessWidget {
   final MoveQuality quality;
   final double size;
 
+  /// Os símbolos que são desenhos viram ícones: centralizam no círculo, o
+  /// que a letra da fonte não garante.
+  static const _icons = {
+    MoveQuality.forced: Icons.crop_square_rounded,
+    MoveQuality.best: Icons.star_rounded,
+    MoveQuality.excellent: Icons.check_rounded,
+    MoveQuality.good: Icons.check_rounded,
+    MoveQuality.miss: Icons.close_rounded,
+  };
+
   @override
-  Widget build(BuildContext context) => Container(
-    width: size,
-    height: size,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(color: quality.color, shape: BoxShape.circle),
-    child: Text(
-      quality.symbol,
-      textDirection: TextDirection.ltr,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: size * (quality.symbol.length > 1 ? 0.5 : 0.62),
-        fontWeight: FontWeight.w900,
-        height: 1,
+  Widget build(BuildContext context) {
+    final icon = _icons[quality];
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: quality.color, shape: BoxShape.circle),
+      child: Center(
+        child: icon != null
+            ? Icon(icon, size: size * 0.72, color: Colors.white)
+            : Text(
+                quality.symbol,
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.ltr,
+                textHeightBehavior: const TextHeightBehavior(
+                  applyHeightToFirstAscent: false,
+                  applyHeightToLastDescent: false,
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: size * (quality.symbol.length > 1 ? 0.5 : 0.64),
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  letterSpacing: -0.5,
+                ),
+              ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// A avaliação como os sites mostram: `+1,2`, `−0,4`, `M3`, `−M2`, `#`.

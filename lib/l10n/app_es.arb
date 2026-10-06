@@ -489,7 +489,6 @@
   "reviewRunning": "Analizando la jugada {done} de {total}",
   "reviewAccuracy": "Precisión",
   "reviewYou": "Tú",
-  "reviewHint": "Cada jugada evaluada por Stockfish. Precisión calculada como en Lichess.",
   "qualityForced": "Jugada forzada",
   "qualityGreat": "Gran jugada",
   "qualityBest": "Mejor jugada",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Abrir en chess.com",
   "reviewCopyFen": "Copiar la posición (FEN)",
   "reviewCopyPgn": "Copiar la partida (PGN)",
-  "reviewCopied": "Copiado"
+  "reviewCopied": "Copiado",
+  "reviewLegend": "Leyenda",
+  "reviewEvalBar": "Barra de evaluación",
+  "qualityForcedHint": "La única jugada posible",
+  "qualityGreatHint": "La mejor jugada, y la única que sostenía la posición",
+  "qualityBestHint": "La jugada que haría Stockfish",
+  "qualityExcellentHint": "Casi tan buena como la mejor",
+  "qualityGoodHint": "Una jugada correcta, pero había algo mejor",
+  "qualityInaccuracyHint": "Perdió un poco: había una jugada más precisa",
+  "qualityMistakeHint": "Empeoró claramente la posición",
+  "qualityMissHint": "Tenía la victoria y la dejó escapar",
+  "qualityBlunderHint": "Tiró el resultado: un error serio"
 }

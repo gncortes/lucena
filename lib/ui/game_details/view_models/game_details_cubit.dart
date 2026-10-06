@@ -47,6 +47,7 @@ class GameDetailsState {
     this.reviewProgress = 0,
     this.engine = false,
     this.engineLines = const {},
+    this.barScores = const {},
   });
 
   final bool ready;
@@ -81,6 +82,25 @@ class GameDetailsState {
   /// [shownIndex]).
   final Map<int, List<EngineLine>> engineLines;
 
+  /// Avaliações rápidas para a barra, por posição, quando ainda não há
+  /// revisão nem a engine ligada.
+  final Map<int, EngineScore> barScores;
+
+  /// A avaliação da posição mostrada: a da engine ligada, a da revisão ou a
+  /// rápida da barra. Nula enquanto nenhuma existe.
+  EngineScore? get shownScore {
+    final lines = engineLines[shownIndex];
+    if (engine && lines != null && lines.isNotEmpty) return lines.first.score;
+    final review = this.review;
+    if (review != null && review.moves.isNotEmpty) {
+      return shownIndex < 0
+          ? review.moves.first.before
+          : review.moves[shownIndex].after;
+    }
+    if (lines != null && lines.isNotEmpty) return lines.first.score;
+    return barScores[shownIndex];
+  }
+
   int get shownIndex => selected ?? moves.length - 1;
 
   /// A posição que o tabuleiro mostra e o lance em destaque nela.
@@ -108,6 +128,7 @@ class GameDetailsState {
     double? reviewProgress,
     bool? engine,
     Map<int, List<EngineLine>>? engineLines,
+    Map<int, EngineScore>? barScores,
   }) => GameDetailsState(
     ready: ready,
     attempt: attempt,
@@ -122,6 +143,7 @@ class GameDetailsState {
     reviewProgress: reviewProgress ?? this.reviewProgress,
     engine: engine ?? this.engine,
     engineLines: engineLines ?? this.engineLines,
+    barScores: barScores ?? this.barScores,
   );
 }
 
@@ -142,6 +164,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// A profundidade da engine na revisão e com ela ligada.
   static const reviewDepth = 14;
   static const engineDepth = 18;
+  static const barDepth = 12;
 
   /// Quantas linhas a engine mostra ligada.
   static const engineLineCount = 3;
@@ -245,6 +268,24 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     await _reviews?.save(_gameId, review);
     if (isClosed) return;
     emit(state.copyWith(review: review, reviewing: false, reviewProgress: 1));
+  }
+
+  /// A avaliação rápida da posição mostrada, para a barra, se ainda não
+  /// existe nenhuma.
+  Future<void> scoreShown() async {
+    final analysis = _analysis;
+    final index = state.shownIndex;
+    final position = state.shownPosition;
+    if (analysis == null || position == null) return;
+    if (state.shownScore != null || state.barScores.containsKey(index)) return;
+    final score = position.isGameOver
+        ? ReviewRules.scoreOf(position, null)
+        : (await analysis.analyse(
+            position,
+            depth: barDepth,
+          )).firstOrNull?.score;
+    if (isClosed || score == null) return;
+    emit(state.copyWith(barScores: {...state.barScores, index: score}));
   }
 
   /// Liga ou desliga a engine na posição do tabuleiro.

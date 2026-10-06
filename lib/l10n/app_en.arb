@@ -2649,10 +2649,6 @@
   "@reviewYou": {
     "description": "Game details: the user's column in the review summary."
   },
-  "reviewHint": "Each move rated by Stockfish. Accuracy as on Lichess.",
-  "@reviewHint": {
-    "description": "Game details: note under the review summary explaining where the ratings come from."
-  },
   "qualityForced": "Forced",
   "@qualityForced": {
     "description": "Move rating: the only legal move."
@@ -2774,5 +2770,49 @@
   "reviewCopied": "Copied",
   "@reviewCopied": {
     "description": "Game details: snackbar after copying FEN or PGN."
+  },
+  "reviewLegend": "Legend",
+  "@reviewLegend": {
+    "description": "Game details: title of the card at the end that explains each move symbol."
+  },
+  "reviewEvalBar": "Evaluation bar",
+  "@reviewEvalBar": {
+    "description": "Game details menu: shows or hides the engine evaluation bar beside the board."
+  },
+  "qualityForcedHint": "The only legal move",
+  "@qualityForcedHint": {
+    "description": "Legend: meaning of the 'forced' move symbol."
+  },
+  "qualityGreatHint": "The best move, and the only one that held the position",
+  "@qualityGreatHint": {
+    "description": "Legend: meaning of the 'great move' symbol."
+  },
+  "qualityBestHint": "The move Stockfish would play",
+  "@qualityBestHint": {
+    "description": "Legend: meaning of the 'best move' symbol."
+  },
+  "qualityExcellentHint": "Almost as good as the best move",
+  "@qualityExcellentHint": {
+    "description": "Legend: meaning of the 'excellent' symbol."
+  },
+  "qualityGoodHint": "A sound move, but there was better",
+  "@qualityGoodHint": {
+    "description": "Legend: meaning of the 'good' symbol."
+  },
+  "qualityInaccuracyHint": "Lost a little: a more precise move existed",
+  "@qualityInaccuracyHint": {
+    "description": "Legend: meaning of the 'inaccuracy' (?!) symbol."
+  },
+  "qualityMistakeHint": "Made the position clearly worse",
+  "@qualityMistakeHint": {
+    "description": "Legend: meaning of the 'mistake' (?) symbol."
+  },
+  "qualityMissHint": "Had a winning position and let it slip",
+  "@qualityMissHint": {
+    "description": "Legend: meaning of the 'miss' symbol."
+  },
+  "qualityBlunderHint": "Threw away the result: a serious mistake",
+  "@qualityBlunderHint": {
+    "description": "Legend: meaning of the 'blunder' (??) symbol."
   }
 }

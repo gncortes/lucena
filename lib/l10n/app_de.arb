@@ -489,7 +489,6 @@
   "reviewRunning": "Analysiere Zug {done} von {total}",
   "reviewAccuracy": "Genauigkeit",
   "reviewYou": "Du",
-  "reviewHint": "Jeder Zug von Stockfish bewertet. Genauigkeit berechnet wie auf Lichess.",
   "qualityForced": "Erzwungen",
   "qualityGreat": "Großartiger Zug",
   "qualityBest": "Bester Zug",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Auf chess.com öffnen",
   "reviewCopyFen": "Stellung kopieren (FEN)",
   "reviewCopyPgn": "Partie kopieren (PGN)",
-  "reviewCopied": "Kopiert"
+  "reviewCopied": "Kopiert",
+  "reviewLegend": "Legende",
+  "reviewEvalBar": "Bewertungsleiste",
+  "qualityForcedHint": "Der einzig mögliche Zug",
+  "qualityGreatHint": "Der beste Zug, und der einzige, der die Stellung hielt",
+  "qualityBestHint": "Der Zug, den Stockfish spielen würde",
+  "qualityExcellentHint": "Fast so gut wie der beste",
+  "qualityGoodHint": "Ein solider Zug, aber es gab Besseres",
+  "qualityInaccuracyHint": "Etwas verloren: es gab einen genaueren Zug",
+  "qualityMistakeHint": "Hat die Stellung deutlich verschlechtert",
+  "qualityMissHint": "Hatte den Gewinn und ließ ihn entgleiten",
+  "qualityBlunderHint": "Hat das Ergebnis verspielt: ein schwerer Fehler"
 }

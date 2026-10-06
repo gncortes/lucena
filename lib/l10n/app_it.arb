@@ -489,7 +489,6 @@
   "reviewRunning": "Analisi della mossa {done} di {total}",
   "reviewAccuracy": "Precisione",
   "reviewYou": "Tu",
-  "reviewHint": "Ogni mossa valutata da Stockfish. Precisione calcolata come su Lichess.",
   "qualityForced": "Mossa forzata",
   "qualityGreat": "Ottima mossa",
   "qualityBest": "Mossa migliore",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Apri su chess.com",
   "reviewCopyFen": "Copia la posizione (FEN)",
   "reviewCopyPgn": "Copia la partita (PGN)",
-  "reviewCopied": "Copiato"
+  "reviewCopied": "Copiato",
+  "reviewLegend": "Legenda",
+  "reviewEvalBar": "Barra di valutazione",
+  "qualityForcedHint": "L'unica mossa possibile",
+  "qualityGreatHint": "La mossa migliore, e l'unica che teneva la posizione",
+  "qualityBestHint": "La mossa che giocherebbe Stockfish",
+  "qualityExcellentHint": "Quasi buona quanto la migliore",
+  "qualityGoodHint": "Una mossa corretta, ma c'era di meglio",
+  "qualityInaccuracyHint": "Ha perso un po': c'era una mossa più precisa",
+  "qualityMistakeHint": "Ha peggiorato chiaramente la posizione",
+  "qualityMissHint": "Aveva la vittoria e se l'è lasciata sfuggire",
+  "qualityBlunderHint": "Ha buttato via il risultato: un errore serio"
 }

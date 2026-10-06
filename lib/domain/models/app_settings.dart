@@ -32,5 +32,8 @@ abstract class AppSettings with _$AppSettings {
 
     /// Os sons do jogo: o das peças a cada lance e o aviso do relógio.
     @Default(true) bool sound,
+
+    /// A barra de avaliação da engine na revisão da partida.
+    @Default(true) bool evalBar,
   }) = _AppSettings;
 }

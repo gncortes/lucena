@@ -489,7 +489,6 @@
   "reviewRunning": "{total}手中{done}手目を解析中",
   "reviewAccuracy": "精度",
   "reviewYou": "あなた",
-  "reviewHint": "各手をStockfishが評価。精度はLichessと同じ方法で計算。",
   "qualityForced": "強制手",
   "qualityGreat": "好手",
   "qualityBest": "最善手",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "chess.comで開く",
   "reviewCopyFen": "局面をコピー (FEN)",
   "reviewCopyPgn": "棋譜をコピー (PGN)",
-  "reviewCopied": "コピーしました"
+  "reviewCopied": "コピーしました",
+  "reviewLegend": "凡例",
+  "reviewEvalBar": "評価バー",
+  "qualityForcedHint": "唯一の合法手",
+  "qualityGreatHint": "最善手で、局面を保つ唯一の手",
+  "qualityBestHint": "Stockfishが指す手",
+  "qualityExcellentHint": "最善手とほぼ同じくらい良い",
+  "qualityGoodHint": "堅実な手だが、より良い手があった",
+  "qualityInaccuracyHint": "少し損をした：より正確な手があった",
+  "qualityMistakeHint": "局面を明らかに悪くした",
+  "qualityMissHint": "勝ちがあったのに逃した",
+  "qualityBlunderHint": "結果を投げ捨てた：重大なミス"
 }

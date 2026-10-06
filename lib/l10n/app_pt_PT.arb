@@ -489,7 +489,6 @@
   "reviewRunning": "A analisar o lance {done} de {total}",
   "reviewAccuracy": "Precisão",
   "reviewYou": "Tu",
-  "reviewHint": "Cada lance avaliado pelo Stockfish. Precisão calculada como no Lichess.",
   "qualityForced": "Lance forçado",
   "qualityGreat": "Ótimo lance",
   "qualityBest": "Melhor lance",
@@ -515,5 +514,16 @@
   "reviewOpenChessCom": "Abrir no chess.com",
   "reviewCopyFen": "Copiar a posição (FEN)",
   "reviewCopyPgn": "Copiar a partida (PGN)",
-  "reviewCopied": "Copiado"
+  "reviewCopied": "Copiado",
+  "reviewLegend": "Legenda",
+  "reviewEvalBar": "Barra de avaliação",
+  "qualityForcedHint": "O único lance possível",
+  "qualityGreatHint": "O melhor lance, e o único que segurava a posição",
+  "qualityBestHint": "O lance que o Stockfish jogaria",
+  "qualityExcellentHint": "Quase tão bom quanto o melhor",
+  "qualityGoodHint": "Um lance correto, mas havia melhor",
+  "qualityInaccuracyHint": "Perdeu um pouco: havia um lance mais preciso",
+  "qualityMistakeHint": "Deixou a posição claramente pior",
+  "qualityMissHint": "Tinha a vitória e deixou-a escapar",
+  "qualityBlunderHint": "Deitou fora o resultado: um erro sério"
 }

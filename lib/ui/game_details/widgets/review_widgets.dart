@@ -119,13 +119,6 @@ class ReviewSummary extends StatelessWidget {
               label: Text(l10n.reviewStart),
             );
     } else {
-      final firstIsWhite = state.start?.turn != Side.black;
-      final white = review.counts(white: true, firstIsWhite: firstIsWhite);
-      final black = review.counts(white: false, firstIsWhite: firstIsWhite);
-      final qualities = [
-        for (final quality in _summaryOrder)
-          if (white[quality]! + black[quality]! > 0) quality,
-      ];
       child = Column(
         key: GameDetailsKeys.reviewSummary,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -161,56 +154,6 @@ class ReviewSummary extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          for (final quality in qualities)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 40,
-                    child: Text(
-                      '${white[quality]}',
-                      key: GameDetailsKeys.count(quality.name, white: true),
-                      style: _countStyle(theme, quality, white[quality]!),
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MoveQualityBadge(quality, size: 20),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            quality.label(l10n),
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: Text(
-                      '${black[quality]}',
-                      key: GameDetailsKeys.count(quality.name, white: false),
-                      textAlign: TextAlign.end,
-                      style: _countStyle(theme, quality, black[quality]!),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.reviewHint,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
         ],
       );
     }
@@ -229,13 +172,133 @@ class ReviewSummary extends StatelessWidget {
     style: Theme.of(context).textTheme.titleSmall
         ?.copyWith(fontWeight: FontWeight.w700),
   );
+}
 
-  TextStyle? _countStyle(ThemeData theme, MoveQuality quality, int count) =>
-      theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w800,
-        color: count == 0 ? theme.colorScheme.outline : quality.color,
-        fontFeatures: const [FontFeature.tabularFigures()],
-      );
+/// No fim da tela: o que cada símbolo quer dizer e, depois da revisão,
+/// quantos lances de cada um cada lado fez.
+class ReviewLegend extends StatelessWidget {
+  const ReviewLegend({
+    required this.state,
+    required this.whiteName,
+    required this.blackName,
+    super.key,
+  });
+
+  final GameDetailsState state;
+  final String whiteName;
+  final String blackName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final review = state.review;
+    final firstIsWhite = state.start?.turn != Side.black;
+    final white = review?.counts(white: true, firstIsWhite: firstIsWhite);
+    final black = review?.counts(white: false, firstIsWhite: firstIsWhite);
+    TextStyle? count(MoveQuality quality, int value) =>
+        theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: value == 0 ? colors.outline : quality.color,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        );
+    return Card(
+      key: GameDetailsKeys.legend,
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      color: colors.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.reviewLegend,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                if (review != null) ...[
+                  _legendHeader(context, whiteName),
+                  _legendHeader(context, blackName),
+                ],
+              ],
+            ),
+            const SizedBox(height: 6),
+            for (final quality in _summaryOrder)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Row(
+                  children: [
+                    MoveQualityBadge(quality, size: 24),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            quality.label(l10n),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: quality.color,
+                            ),
+                          ),
+                          Text(
+                            quality.meaning(l10n),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (white != null && black != null) ...[
+                      SizedBox(
+                        width: 56,
+                        child: Text(
+                          '${white[quality]}',
+                          key: GameDetailsKeys.count(quality.name, white: true),
+                          textAlign: TextAlign.center,
+                          style: count(quality, white[quality]!),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 56,
+                        child: Text(
+                          '${black[quality]}',
+                          key: GameDetailsKeys.count(
+                            quality.name,
+                            white: false,
+                          ),
+                          textAlign: TextAlign.center,
+                          style: count(quality, black[quality]!),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _legendHeader(BuildContext context, String name) => SizedBox(
+    width: 56,
+    child: Text(
+      name,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelMedium
+          ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+    ),
+  );
 }
 
 /// A precisão de um lado numa caixa clara (brancas) ou escura (pretas),
@@ -301,7 +364,7 @@ class _ReviewBoardState extends State<ReviewBoard> {
     game: _game(widget.state),
   );
 
-  static const _barWidth = 14.0;
+  static const _barWidth = 24.0;
 
   GameData _game(GameDetailsState state) {
     final position = state.shownPosition!;
@@ -335,8 +398,18 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final settings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    final score = _score(state);
-    final boardSize = widget.size - _barWidth - 6;
+    final showBar = context.select(
+      (SettingsCubit cubit) => cubit.state?.evalBar ?? true,
+    );
+    final score = state.shownScore;
+    if (showBar && score == null) {
+      // Sem revisão nem engine: uma avaliação rápida só para a barra.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.read<GameDetailsCubit>().scoreShown();
+      });
+    }
+    final boardSize = showBar ? widget.size - _barWidth - 6 : widget.size;
+    final locale = Localizations.localeOf(context).toString();
     final reviewed = state.shownReview;
     final move = state.shownMove;
     final annotations = <Square, Annotation>{
@@ -355,14 +428,17 @@ class _ReviewBoardState extends State<ReviewBoard> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _EvalBar(
-            key: GameDetailsKeys.evalBar,
-            whiteWin: score?.whiteWinPercent,
-            height: boardSize,
-            width: _barWidth,
-            whiteBottom: widget.orientation == Side.white,
-          ),
-          const SizedBox(width: 6),
+          if (showBar) ...[
+            _EvalBar(
+              key: GameDetailsKeys.evalBar,
+              whiteWin: score?.whiteWinPercent,
+              label: score == null ? null : formatScore(score, locale),
+              height: boardSize,
+              width: _barWidth,
+              whiteBottom: widget.orientation == Side.white,
+            ),
+            const SizedBox(width: 6),
+          ],
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Chessboard(
@@ -378,19 +454,6 @@ class _ReviewBoardState extends State<ReviewBoard> {
         ],
       ),
     );
-  }
-
-  /// A avaliação da posição mostrada: a da engine ligada, ou a da revisão.
-  static EngineScore? _score(GameDetailsState state) {
-    if (state.engine) {
-      final lines = state.shownLines;
-      if (lines != null && lines.isNotEmpty) return lines.first.score;
-    }
-    final review = state.review;
-    if (review == null || review.moves.isEmpty) return null;
-    final index = state.shownIndex;
-    if (index < 0) return review.moves.first.before;
-    return review.moves[index].after;
   }
 
   /// A seta: com a engine, o melhor lance na posição mostrada (azul); sem
@@ -422,6 +485,7 @@ class _ReviewBoardState extends State<ReviewBoard> {
 class _EvalBar extends StatelessWidget {
   const _EvalBar({
     required this.whiteWin,
+    required this.label,
     required this.height,
     required this.width,
     required this.whiteBottom,
@@ -429,6 +493,9 @@ class _EvalBar extends StatelessWidget {
   });
 
   final double? whiteWin;
+
+  /// A avaliação escrita (`+1,2`, `M3`), na ponta do lado que está melhor.
+  final String? label;
   final double height;
   final double width;
   final bool whiteBottom;
@@ -449,7 +516,7 @@ class _EvalBar extends StatelessWidget {
           curve: Curves.easeOutCubic,
           builder: (context, value, _) {
             final whitePart = (height * value).clamp(0.0, height);
-            return Column(
+            final bar = Column(
               children: whiteBottom
                   ? [
                       SizedBox(height: height - whitePart, child: black),
@@ -459,6 +526,38 @@ class _EvalBar extends StatelessWidget {
                       SizedBox(height: whitePart, child: white),
                       SizedBox(height: height - whitePart, child: black),
                     ],
+            );
+            final label = this.label;
+            if (label == null) return bar;
+            // O número fica na ponta de quem está melhor, na cor oposta.
+            final whiteAhead = value >= 0.5;
+            final atBottom = whiteAhead == whiteBottom;
+            return Stack(
+              children: [
+                bar,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: atBottom ? null : 4,
+                  bottom: atBottom ? 4 : null,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: whiteAhead
+                              ? const Color(0xFF3A3A3A)
+                              : const Color(0xFFF2F2F0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -659,6 +758,13 @@ class ReviewNavigation extends StatelessWidget {
               tooltip: l10n.reviewMore,
               onSelected: (choice) => _export(context, choice),
               itemBuilder: (context) => [
+                CheckedPopupMenuItem(
+                  key: GameDetailsKeys.evalBarToggle,
+                  value: _Export.evalBar,
+                  checked: context.read<SettingsCubit>().state?.evalBar ?? true,
+                  child: Text(l10n.reviewEvalBar),
+                ),
+                const PopupMenuDivider(),
                 PopupMenuItem(
                   key: GameDetailsKeys.openLichess,
                   value: _Export.lichess,
@@ -705,6 +811,9 @@ class ReviewNavigation extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final copied = context.l10n.reviewCopied;
     switch (choice) {
+      case _Export.evalBar:
+        final settings = context.read<SettingsCubit>();
+        await settings.setEvalBar(enabled: !(settings.state?.evalBar ?? true));
       case _Export.lichess:
         await launchUrl(
           GameExport.lichess(fen),
@@ -739,7 +848,7 @@ class ReviewNavigation extends StatelessWidget {
   }
 }
 
-enum _Export { lichess, chessCom, fen, pgn }
+enum _Export { evalBar, lichess, chessCom, fen, pgn }
 
 /// Com a engine ligada: as melhores linhas da posição mostrada, cada uma com
 /// a avaliação e os primeiros lances.
