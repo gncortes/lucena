@@ -145,6 +145,15 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// Espera as gravações em andamento (a partida e o histórico) terminarem.
   Future<void> saved() => _saving;
 
+  /// O id da última partida gravada (para abrir os detalhes dela), depois de
+  /// ela terminar de ser gravada.
+  Future<int?> savedGameId() async {
+    await _saving;
+    return _gameId;
+  }
+
+  int? _gameId;
+
   /// O app voltou do segundo plano (ou a tela foi desbloqueada): os relógios
   /// são refeitos e, se for a vez da máquina sem pedido em andamento, ela
   /// volta a pensar.
@@ -463,6 +472,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     );
     _saving = _saving.whenComplete(() async {
       final gameId = await _progress.addAttempt(attempt);
+      _gameId = gameId;
       await _report(attempt, gameId: gameId, userSide: user);
     });
   }

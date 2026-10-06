@@ -71,6 +71,8 @@ import '../ui/school/widgets/school_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
 import '../ui/tour/widgets/tour_screen.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
+import '../data/repositories/analysis/analysis_repository.dart';
+import '../data/repositories/review/game_review_repository.dart';
 import '../ui/journey/view_models/journey_cubit.dart';
 import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
@@ -602,6 +604,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 speedruns: context.read<SpeedrunRepository>(),
                 journey: context.read<JourneyRepository>(),
                 characters: context.read<CharacterRepository>(),
+                reviews: context.read<GameReviewRepository>(),
                 now: context.read<Now>(),
               )..load(),
               child: const RatingScreen(),
@@ -609,15 +612,23 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             routes: [
               _route(
                 path: 'game/:id',
-                builder: (context, state) => BlocProvider(
-                  create: (context) => GameDetailsCubit(
-                    int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
-                    progress: context.read<ProgressRepository>(),
-                    rating: context.read<RatingRepository>(),
-                    characters: context.read<CharacterRepository>(),
-                  )..load(),
-                  child: const GameDetailsScreen(),
-                ),
+                // O idioma é lido aqui: dentro do `create` o provider não
+                // pode depender do Localizations.
+                builder: (context, state) {
+                  final language = _language(context);
+                  return BlocProvider(
+                    create: (_) => GameDetailsCubit(
+                      int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+                      progress: context.read<ProgressRepository>(),
+                      rating: context.read<RatingRepository>(),
+                      characters: context.read<CharacterRepository>(),
+                      analysis: context.read<AnalysisRepository>(),
+                      reviews: context.read<GameReviewRepository>(),
+                      lessons: context.read<LessonRepository>(),
+                    )..load(language: language),
+                    child: const GameDetailsScreen(),
+                  );
+                },
               ),
             ],
           ),

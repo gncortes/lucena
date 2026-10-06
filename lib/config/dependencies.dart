@@ -25,6 +25,9 @@ import '../data/repositories/journey/journey_repository_asset.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
 import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
+import '../data/repositories/analysis/analysis_repository.dart';
+import '../data/repositories/analysis/analysis_repository_stockfish.dart';
+import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/sound/sound_repository.dart';
 import '../data/repositories/sound/sound_repository_device.dart';
 import '../data/services/sound_service.dart';
@@ -77,6 +80,8 @@ class Dependencies {
     required this.profileRepository,
     required this.hapticsRepository,
     required this.soundRepository,
+    required this.analysisRepository,
+    required this.gameReviewRepository,
     required this.ongoingGameRepository,
     required this.positionsRepository,
     required this.trainingRepository,
@@ -120,6 +125,8 @@ class Dependencies {
       profileRepository: profile,
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       soundRepository: DeviceSoundRepository(SoundService()),
+      analysisRepository: StockfishAnalysisRepository(stockfish),
+      gameReviewRepository: LocalGameReviewRepository(preferences),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
@@ -165,6 +172,8 @@ class Dependencies {
   final ProfileRepository profileRepository;
   final HapticsRepository hapticsRepository;
   final SoundRepository soundRepository;
+  final AnalysisRepository analysisRepository;
+  final GameReviewRepository gameReviewRepository;
   final OngoingGameRepository ongoingGameRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;

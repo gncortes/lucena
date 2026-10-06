@@ -17,6 +17,8 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/analysis/analysis_repository.dart';
+import 'data/repositories/review/game_review_repository.dart';
 import 'data/repositories/sound/sound_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
@@ -109,6 +111,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SoundRepository>.value(
           value: dependencies.soundRepository,
+        ),
+        RepositoryProvider<AnalysisRepository>.value(
+          value: dependencies.analysisRepository,
+        ),
+        RepositoryProvider<GameReviewRepository>.value(
+          value: dependencies.gameReviewRepository,
         ),
         // Os sons do jogo, já com a preferência de ligado ou desligado.
         RepositoryProvider<GameSounds>(

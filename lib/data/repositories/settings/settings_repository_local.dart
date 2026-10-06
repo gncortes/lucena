@@ -29,6 +29,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _journeyTimeKey = 'clock.journeyTime';
   static const _characterTalkKey = 'characters.talk';
   static const _soundKey = 'sound.enabled';
+  static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
 
@@ -60,6 +61,9 @@ class LocalSettingsRepository implements SettingsRepository {
           await _preferences.getBool(_characterTalkKey) ??
           const AppSettings().characterTalk,
       sound: await _preferences.getBool(_soundKey) ?? const AppSettings().sound,
+      evalBar:
+          await _preferences.getBool(_evalBarKey) ??
+          const AppSettings().evalBar,
     );
   }
 
@@ -132,6 +136,7 @@ class LocalSettingsRepository implements SettingsRepository {
       value: settings.characterTalk,
     );
     await _preferences.setBool(_soundKey, value: settings.sound);
+    await _preferences.setBool(_evalBarKey, value: settings.evalBar);
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

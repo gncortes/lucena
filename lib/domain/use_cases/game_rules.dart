@@ -33,6 +33,25 @@ abstract final class GameRules {
   }
 
   /// Os destinos legais de cada peça do lado que joga.
+  /// Os lances [ucis] a partir de [position], em notação algébrica, até o
+  /// primeiro ilegal (no máximo [max]).
+  static List<String> sanLine(
+    Position position,
+    List<String> ucis, {
+    int max = 1 << 30,
+  }) {
+    final out = <String>[];
+    var current = position;
+    for (final uci in ucis.take(max)) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : play(current, move);
+      if (played == null) break;
+      out.add(played.san);
+      current = played.position;
+    }
+    return out;
+  }
+
   static Map<Square, Set<Square>> legalMoves(Position position) =>
       makeLegalMoves(position);
 
