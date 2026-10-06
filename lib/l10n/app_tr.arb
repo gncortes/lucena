@@ -477,5 +477,6 @@
   "lessonToChallenge": "Yıldız görevi: {piece}",
   "starChallengePoints": "{count} puan",
   "starChallengePointsTotal": "Toplam {count} puan",
-  "starChallengeLegend": "Her yıldız bir süre sonra kaybolur: önce altın olan."
+  "starChallengeLegend": "Her yıldız bir süre sonra kaybolur: önce altın olan.",
+  "starChallengeObstacles": "Siyah piyonlar sadece yolu kapatır: alınamazlar. Topladığın şey yıldızlardır."
 }

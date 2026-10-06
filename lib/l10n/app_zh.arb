@@ -477,5 +477,6 @@
   "lessonToChallenge": "星星挑战：{piece}",
   "starChallengePoints": "{count} 分",
   "starChallengePointsTotal": "共 {count} 分",
-  "starChallengeLegend": "每颗星星过一会儿就会消失：金色的最先消失。"
+  "starChallengeLegend": "每颗星星过一会儿就会消失：金色的最先消失。",
+  "starChallengeObstacles": "黑兵只是挡路，不能吃掉。你要收集的是星星。"
 }

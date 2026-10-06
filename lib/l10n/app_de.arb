@@ -477,5 +477,6 @@
   "lessonToChallenge": "Sterne-Challenge: {piece}",
   "starChallengePoints": "{count, plural, =1{1 Punkt} other{{count} Punkte}}",
   "starChallengePointsTotal": "{count} Punkte insgesamt",
-  "starChallengeLegend": "Jeder Stern verschwindet nach einer Weile: der goldene zuerst."
+  "starChallengeLegend": "Jeder Stern verschwindet nach einer Weile: der goldene zuerst.",
+  "starChallengeObstacles": "Die schwarzen Bauern stehen nur im Weg: Du kannst sie nicht schlagen. Du sammelst die Sterne."
 }

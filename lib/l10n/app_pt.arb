@@ -476,5 +476,6 @@
   "lessonToChallenge": "Desafio das estrelas: {piece}",
   "starChallengePoints": "{count, plural, =1{1 ponto} other{{count} pontos}}",
   "starChallengePointsTotal": "{count} pontos no total",
-  "starChallengeLegend": "Cada estrela some depois de um tempo: a de ouro vai primeiro."
+  "starChallengeLegend": "Cada estrela some depois de um tempo: a de ouro vai primeiro.",
+  "starChallengeObstacles": "Os peões pretos só atrapalham: não dá para capturá-los. O que você pega são as estrelas."
 }

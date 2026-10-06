@@ -477,5 +477,6 @@
   "lessonToChallenge": "Wyzwanie gwiazdek: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punkt} few{{count} punkty} other{{count} punktów}}",
   "starChallengePointsTotal": "Łącznie punktów: {count}",
-  "starChallengeLegend": "Każda gwiazdka znika po chwili: złota pierwsza."
+  "starChallengeLegend": "Każda gwiazdka znika po chwili: złota pierwsza.",
+  "starChallengeObstacles": "Czarne piony tylko przeszkadzają: nie można ich bić. Zbierasz gwiazdki."
 }

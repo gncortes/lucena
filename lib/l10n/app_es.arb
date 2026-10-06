@@ -477,5 +477,6 @@
   "lessonToChallenge": "Desafío de estrellas: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punto} other{{count} puntos}}",
   "starChallengePointsTotal": "{count} puntos en total",
-  "starChallengeLegend": "Cada estrella desaparece tras un rato: la de oro va primero."
+  "starChallengeLegend": "Cada estrella desaparece tras un rato: la de oro va primero.",
+  "starChallengeObstacles": "Los peones negros solo estorban: no se pueden capturar. Lo que recoges son las estrellas."
 }
