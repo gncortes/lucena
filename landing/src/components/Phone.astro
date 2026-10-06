@@ -1,0 +1,44 @@
+---
+import { asset } from '../i18n';
+import { clipSize, clips, type Clip } from '../media';
+
+interface Props {
+  clip: Clip;
+  label: string;
+  playLabel: string;
+  pauseLabel: string;
+  class?: string;
+}
+
+const { clip, label, playLabel, pauseLabel, class: className } = Astro.props;
+const name = clips[clip];
+---
+
+<figure class:list={['phone', className]} data-phone>
+  <div class="phone__screen">
+    <video
+      muted
+      loop
+      playsinline
+      preload="none"
+      width={clipSize.width}
+      height={clipSize.height}
+      poster={asset(`${name}-poster.webp`)}
+      aria-label={label}
+    >
+      <source src={asset(`${name}.webm`)} type="video/webm" />
+      <source src={asset(`${name}.mp4`)} type="video/mp4" />
+    </video>
+  </div>
+  <button
+    class="phone__toggle"
+    type="button"
+    aria-label={playLabel}
+    data-play={playLabel}
+    data-pause={pauseLabel}
+  >
+    <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+    <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+  </button>
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>

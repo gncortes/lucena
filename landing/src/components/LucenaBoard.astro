@@ -1,0 +1,34 @@
+---
+import { asset } from '../i18n';
+
+// A posição de Lucena, a mesma da aula do app: 1K1k4/1P6/8/8/8/8/r7/2R5.
+const pieces: Record<string, string> = {
+  b8: 'wK',
+  d8: 'bK',
+  b7: 'wP',
+  a2: 'bR',
+  c1: 'wR',
+};
+const files = 'abcdefgh';
+const squares = Array.from({ length: 64 }, (_, i) => {
+  const file = i % 8;
+  const rank = 8 - Math.floor(i / 8);
+  const name = `${files[file]}${rank}`;
+  return { name, dark: (file + rank) % 2 === 1, piece: pieces[name] };
+});
+
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<div class="board" role="img" aria-label={label}>
+  {
+    squares.map((s) => (
+      <span class:list={['sq', { 'sq--dark': s.dark }]}>
+        {s.piece && <img src={asset(`pieces/${s.piece}.webp`)} alt="" width="96" height="96" loading="lazy" decoding="async" />}
+      </span>
+    ))
+  }
+</div>

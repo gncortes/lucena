@@ -1,0 +1,98 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/bricolage-grotesque';
+import '../styles/global.css';
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import bricolageUrl from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
+import { asset, defaultLocale, links, locales, pageUrl, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = locales[locale].dict;
+const site = Astro.site!;
+const absolute = (path: string) => new URL(path, site).href;
+const canonical = absolute(pageUrl(locale));
+const ogImage = absolute(asset(locale === defaultLocale ? 'og-image.png' : `og-image-${locale}.png`));
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Lucena',
+  description: t.meta.description,
+  url: canonical,
+  image: ogImage,
+  screenshot: absolute(asset('analise-partida-poster.webp')),
+  applicationCategory: 'EducationalApplication',
+  applicationSubCategory: 'Chess',
+  operatingSystem: 'Android',
+  inLanguage: Object.values(locales).map((l) => l.hreflang),
+  isAccessibleForFree: true,
+  license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+  codeRepository: links.repo,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: { '@type': 'Person', name: 'Gabriel Novais Cortes', url: 'https://github.com/gncortes' },
+};
+---
+
+<!doctype html>
+<html lang={locales[locale].hreflang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    {
+      Object.entries(locales).map(([key, l]) => (
+        <link rel="alternate" hreflang={l.hreflang} href={absolute(pageUrl(key as Locale))} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={absolute(pageUrl(defaultLocale))} />
+
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F5F7F4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14211B" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="32x32" href={asset('favicon-32.png')} />
+    <link rel="apple-touch-icon" href={asset('apple-touch-icon.png')} />
+    <link rel="preload" href={asset('destaque-poster.webp')} as="image" fetchpriority="high" />
+    <link rel="preload" href={bricolageUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lucena" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogAlt} />
+    <meta property="og:locale" content={locales[locale].og} />
+    {
+      Object.entries(locales)
+        .filter(([key]) => key !== locale)
+        .map(([, l]) => <meta property="og:locale:alternate" content={l.og} />)
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={t.meta.title} />
+    <meta name="twitter:description" content={t.meta.description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t.meta.ogAlt} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Aplica o tema salvo antes de pintar, para não piscar. -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.nav.skip}</a>
+    <slot />
+  </body>
+</html>
