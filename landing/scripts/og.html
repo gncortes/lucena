@@ -1,0 +1,59 @@
+<!doctype html>
+<!-- Imagem de prévia (1200x630) para Open Graph e Twitter. Gerada por og.sh. -->
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: 'Bricolage'; src: url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2'); font-weight: 200 800; }
+  @font-face { font-family: 'Inter'; src: url('../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'); font-weight: 100 900; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background:
+      radial-gradient(60% 80% at 85% 10%, rgb(79 207 145 / 0.28), transparent 60%),
+      radial-gradient(40% 60% at 70% 100%, rgb(240 124 26 / 0.18), transparent 60%),
+      #14211b;
+    color: #eef4f0;
+    font-family: 'Inter', sans-serif;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background: repeating-conic-gradient(rgb(255 255 255 / 0.05) 0 25%, transparent 0 50%) 0 0 / 90px 90px;
+    mask-image: radial-gradient(60% 80% at 80% 50%, #000, transparent 75%);
+  }
+  .text { position: absolute; left: 72px; top: 76px; width: 640px; }
+  .brand { display: flex; align-items: center; gap: 16px; font: 750 40px/1 'Bricolage'; letter-spacing: -0.02em; }
+  .brand img { width: 64px; height: 64px; border-radius: 16px; }
+  h1 { margin: 56px 0 24px; font: 760 74px/1.02 'Bricolage'; letter-spacing: -0.03em; }
+  h1 em { font-style: normal; color: #4fcf91; }
+  p { margin: 0; font-size: 28px; line-height: 1.4; color: #b8c7be; }
+  .phone {
+    position: absolute; right: 120px; top: 48px; width: 290px; padding: 9px; border-radius: 44px;
+    background: linear-gradient(160deg, #2a3a32, #0b120e 55%, #1f2c25);
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.1), 0 40px 80px -20px rgb(0 0 0 / 0.7);
+    transform: rotate(-3deg);
+  }
+  .phone img { display: block; width: 100%; aspect-ratio: 720 / 1560; object-fit: cover; object-position: top; border-radius: 35px; }
+  .mascot { position: absolute; right: 40px; bottom: 24px; width: 200px; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="text">
+    <div class="brand"><img src="../assets/logo.webp" alt="" />Lucena</div>
+    <h1 id="title"></h1>
+    <p id="lead"></p>
+  </div>
+  <div class="phone"><img src="../assets/destaque-poster.webp" alt="" /></div>
+  <img class="mascot" src="../assets/mascot-dark.webp" alt="" />
+  <script>
+    const en = location.hash === '#en';
+    document.getElementById('title').innerHTML = en
+      ? 'Train chess <em>endgames</em> against Maia and Stockfish'
+      : 'Treine <em>finais</em> de xadrez contra o Maia e o Stockfish';
+    document.getElementById('lead').textContent = en
+      ? 'Learn chess through the endgame, from your level to full strength.'
+      : 'Aprenda xadrez pelos finais, do seu nível até a força máxima.';
+  </script>
+</body>
+</html>

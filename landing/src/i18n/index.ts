@@ -1,0 +1,31 @@
+import type { Dictionary } from './types';
+import ptBr from './pt-br';
+import en from './en';
+
+// Ordem dos idiomas no seletor. `path` é o prefixo da página (o padrão fica
+// na raiz) e `hreflang` o código usado nas tags alternate e no Open Graph.
+export const locales = {
+  'pt-br': { path: '', hreflang: 'pt-BR', og: 'pt_BR', label: 'Português', dict: ptBr },
+  en: { path: 'en/', hreflang: 'en', og: 'en_US', label: 'English', dict: en },
+} as const satisfies Record<
+  string,
+  { path: string; hreflang: string; og: string; label: string; dict: Dictionary }
+>;
+
+export type Locale = keyof typeof locales;
+export const defaultLocale: Locale = 'pt-br';
+
+export const links = {
+  tester: 'https://appdistribution.firebase.dev/i/8f905d22a0d826e5',
+  // TODO: trocar pelo link de doação quando existir.
+  donate: 'TODO_LINK_DOACAO',
+  repo: 'https://github.com/gncortes/lucena',
+  license: 'https://github.com/gncortes/lucena/blob/main/LICENSE',
+  issues: 'https://github.com/gncortes/lucena/issues',
+};
+
+/** Caminho absoluto (com o `base` do site) para [path] dentro de landing/assets. */
+export const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+export const pageUrl = (locale: Locale) =>
+  `${import.meta.env.BASE_URL}${locales[locale].path}`;
