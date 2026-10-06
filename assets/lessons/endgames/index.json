@@ -27,7 +27,8 @@
       "id": "rook",
       "lessons": [
         "rook.lucena",
-        "rook.philidor"
+        "rook.philidor",
+        "rook.backRank"
       ]
     }
   ]
