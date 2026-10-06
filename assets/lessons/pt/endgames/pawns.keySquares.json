@@ -19,7 +19,7 @@
   "step.defendMove": "Pretas jogam e empatam. Segure o rei branco fora das casas-chave.",
   "step.defendMove.hint": "Fique na coluna do peão. Quando o rei branco chegar à sexta, fique de frente para ele; quando o peão der xeque, vá para a frente dele.",
   "step.defendMove.done": "Perfeito. Afogado, como na partida. Foi assim que Kramnik segurou o empate.",
-  "step.summary": "Três regras para levar. Primeira: conte as casas-chave do peão; ganhar é entrar numa delas. Segunda: o rei vai na frente e o peão espera. Terceira: a oposição é a ferramenta para entrar na casa-chave, não o objetivo. Para quem defende, o espelho: rei na frente do peão e oposição, sempre.",
+  "step.recap": "Três regras para levar. Primeira: conte as casas-chave do peão; ganhar é entrar numa delas. Segunda: o rei vai na frente e o peão espera. Terceira: a oposição é a ferramenta para entrar na casa-chave, não o objetivo. Para quem defende, o espelho: rei na frente do peão e oposição, sempre.",
   "step.finish": "Agora jogue até coroar. Rei na frente, casa-chave, e só então o peão.",
   "ex.e01": "Brancas jogam e ganham. O peão de e4 tem três casas-chave. Ocupe uma delas.",
   "ex.e01.hint": "As casas-chave ficam duas fileiras à frente do peão: d6, e6 e f6.",

@@ -16,6 +16,7 @@ import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
+import 'endgame_ui.dart';
 import 'stars_row.dart';
 
 /// Um exercício: o Viktor dá o enunciado, o aluno acha os lances no
@@ -200,24 +201,28 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               ),
               child: child,
             ),
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Chessboard(
-                key: ExerciseKeys.board,
-                size: max(size, 120),
-                controller: board,
-                settings: boardSettings.chessground,
-                orientation: state.side,
-                shapes: {
-                  if (hint is NormalMove)
-                    Arrow(
-                      color: const Color(0xcc15781b),
-                      orig: hint.from,
-                      dest: hint.to,
-                    ),
-                },
-                onMove: (move, {viaDragAndDrop}) =>
-                    context.read<ExerciseCubit>().play(move),
+            // A miniatura da lista voa até aqui e vira o tabuleiro.
+            child: Hero(
+              tag: exerciseHeroTag(state.lesson!.id, state.exercise!.id),
+              child: Directionality(
+                textDirection: TextDirection.ltr,
+                child: Chessboard(
+                  key: ExerciseKeys.board,
+                  size: max(size, 120),
+                  controller: board,
+                  settings: boardSettings.chessground,
+                  orientation: state.side,
+                  shapes: {
+                    if (hint is NormalMove)
+                      Arrow(
+                        color: const Color(0xcc15781b),
+                        orig: hint.from,
+                        dest: hint.to,
+                      ),
+                  },
+                  onMove: (move, {viaDragAndDrop}) =>
+                      context.read<ExerciseCubit>().play(move),
+                ),
               ),
             ),
           ),

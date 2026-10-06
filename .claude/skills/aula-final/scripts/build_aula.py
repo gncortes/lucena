@@ -313,9 +313,16 @@ def check_texts(source, problems):
                 problems.append(f'falas ({lang}): {key} diz "mate em N"')
 
 
+RESERVED_STEP_IDS = {'title', 'summary', 'history', 'practice'}
+
+
 def unique(where, ids, problems):
     if len(ids) != len(set(ids)):
         problems.append(f'{where}: ids repetidos')
+    # As falas dos passos ficam na mesma chave da aula (`<aula>.<passo>`):
+    # um passo chamado `summary` apagaria o resumo da aula na trilha.
+    for reserved in RESERVED_STEP_IDS & set(ids):
+        problems.append(f'{where}: id reservado "{reserved}" (use outro nome)')
 
 
 def build(source, oracle):

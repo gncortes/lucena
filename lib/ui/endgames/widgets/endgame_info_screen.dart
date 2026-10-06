@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../core/keys/endgames_keys.dart';
@@ -119,13 +120,29 @@ class _ReferenceTile extends StatelessWidget {
       'tablebase' => Icons.table_chart_outlined,
       _ => Icons.link,
     };
+    // Com link, a referência abre no navegador do aparelho.
+    final uri = url == null ? null : Uri.tryParse(url);
     return ListTile(
       key: EndgameInfoKeys.reference(reference.id),
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: colors.onSurfaceVariant),
       title: Text(text),
-      // O link fica para copiar: o app não abre o navegador.
-      subtitle: url == null ? null : SelectableText(url),
+      subtitle: url == null
+          ? null
+          : Text(
+              url,
+              style: TextStyle(
+                color: colors.primary,
+                decoration: TextDecoration.underline,
+                decorationColor: colors.primary,
+              ),
+            ),
+      trailing: uri == null
+          ? null
+          : Icon(Icons.open_in_new, size: 18, color: colors.primary),
+      onTap: uri == null
+          ? null
+          : () => launchUrl(uri, mode: LaunchMode.externalApplication),
     );
   }
 }

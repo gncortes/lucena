@@ -19,7 +19,7 @@
   "step.defendMove": "Black to play and draw. Keep the white king out of the key squares.",
   "step.defendMove.hint": "Stay on the pawn's file. When the white king reaches the sixth, face him; when the pawn checks, step in front of it.",
   "step.defendMove.done": "Perfect. Stalemate, as in the game. That is how Kramnik held the draw.",
-  "step.summary": "Three rules to take with you. First: count the pawn's key squares; winning means getting into one of them. Second: the king goes first and the pawn waits. Third: the opposition is the tool for reaching the key square, not the goal. For the defender, the mirror image: king in front of the pawn and the opposition, always.",
+  "step.recap": "Three rules to take with you. First: count the pawn's key squares; winning means getting into one of them. Second: the king goes first and the pawn waits. Third: the opposition is the tool for reaching the key square, not the goal. For the defender, the mirror image: king in front of the pawn and the opposition, always.",
   "step.finish": "Now play until you queen. King in front, key square, and only then the pawn.",
   "ex.e01": "White to play and win. The e4-pawn has three key squares. Occupy one of them.",
   "ex.e01.hint": "The key squares are two ranks ahead of the pawn: d6, e6 and f6.",
