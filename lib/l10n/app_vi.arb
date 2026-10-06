@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Lượt bạn, cầm Trắng.} other{Lượt bạn, cầm Đen.}}",
   "lessonGuidePlay": "{goal, select, mate{Chơi tiếp đến khi chiếu hết.} other{Chơi tiếp đến khi phong cấp tốt.}}",
   "lessonGuideDone": "Xong. Tiếp tục bước sau.",
-  "exerciseYourMove": "Lượt bạn"
+  "exerciseYourMove": "Lượt bạn",
+  "starChallengesTitle": "Thử thách ngôi sao",
+  "starChallengesBody": "Thu các ngôi sao bằng từng quân cờ trong thời gian giới hạn. Ba mức mỗi quân.",
+  "starChallengesIntro": "Chọn một quân và một mức. Một ngôi sao hiện ra; đưa quân đến đó và ngôi sao khác sáng lên. Bạn thu được bao nhiêu trước khi hết giờ?",
+  "challengeLevelEasy": "Dễ",
+  "challengeLevelMedium": "Vừa",
+  "challengeLevelHard": "Khó",
+  "starChallengeBest": "Kỷ lục: {count}",
+  "starChallengeNotPlayed": "Chưa chơi",
+  "starChallengeRule": "{seconds} giây. Đưa quân đến từng ngôi sao hiện ra.",
+  "starChallengeGo": "Bắt đầu!",
+  "starChallengeTimeUp": "Hết giờ!",
+  "starChallengeNewBest": "Kỷ lục mới!",
+  "starChallengePlayAgain": "Chơi lại",
+  "starChallengePaused": "Tạm dừng"
 }

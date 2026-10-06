@@ -2484,5 +2484,71 @@
   "exerciseYourMove": "Your move",
   "@exerciseYourMove": {
     "description": "Under the exercise board while the student has to move."
+  },
+  "starChallengesTitle": "Star challenges",
+  "@starChallengesTitle": {
+    "description": "Title of the star challenges list and of the school card."
+  },
+  "starChallengesBody": "Collect the stars with each piece against the clock. Three levels per piece.",
+  "@starChallengesBody": {
+    "description": "School card body for the star challenges."
+  },
+  "starChallengesIntro": "Pick a piece and a level. A star appears; take the piece there and another one lights up. How many can you collect before the time runs out?",
+  "@starChallengesIntro": {
+    "description": "Intro text at the top of the star challenges list."
+  },
+  "challengeLevelEasy": "Easy",
+  "@challengeLevelEasy": {
+    "description": "Challenge level."
+  },
+  "challengeLevelMedium": "Medium",
+  "@challengeLevelMedium": {
+    "description": "Challenge level."
+  },
+  "challengeLevelHard": "Hard",
+  "@challengeLevelHard": {
+    "description": "Challenge level."
+  },
+  "starChallengeBest": "Best: {count}",
+  "@starChallengeBest": {
+    "description": "Best score of a challenge (stars collected).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeNotPlayed": "Not played yet",
+  "@starChallengeNotPlayed": {
+    "description": "Challenge never played."
+  },
+  "starChallengeRule": "{seconds} seconds. Take the piece to each star as it appears.",
+  "@starChallengeRule": {
+    "description": "Before starting a challenge: the time and what to do.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeGo": "Go!",
+  "@starChallengeGo": {
+    "description": "Button that starts the challenge."
+  },
+  "starChallengeTimeUp": "Time's up!",
+  "@starChallengeTimeUp": {
+    "description": "Title when the challenge time ends."
+  },
+  "starChallengeNewBest": "New best!",
+  "@starChallengeNewBest": {
+    "description": "The score beat the best."
+  },
+  "starChallengePlayAgain": "Play again",
+  "@starChallengePlayAgain": {
+    "description": "Button to play the challenge again."
+  },
+  "starChallengePaused": "Paused",
+  "@starChallengePaused": {
+    "description": "Shown while the challenge clock is paused (app in background)."
   }
 }

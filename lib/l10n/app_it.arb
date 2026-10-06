@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Tocca a te, con il Bianco.} other{Tocca a te, con il Nero.}}",
   "lessonGuidePlay": "{goal, select, mate{Gioca fino allo scacco matto.} other{Gioca fino a promuovere il pedone.}}",
   "lessonGuideDone": "Fatto. Continua al passo successivo.",
-  "exerciseYourMove": "Tocca a te"
+  "exerciseYourMove": "Tocca a te",
+  "starChallengesTitle": "Sfide delle stelle",
+  "starChallengesBody": "Raccogli le stelle con ogni pezzo contro il tempo. Tre livelli per pezzo.",
+  "starChallengesIntro": "Scegli un pezzo e un livello. Appare una stella; porta il pezzo lì e se ne accende un’altra. Quante ne raccogli prima che scada il tempo?",
+  "challengeLevelEasy": "Facile",
+  "challengeLevelMedium": "Medio",
+  "challengeLevelHard": "Difficile",
+  "starChallengeBest": "Record: {count}",
+  "starChallengeNotPlayed": "Non ancora giocato",
+  "starChallengeRule": "{seconds} secondi. Porta il pezzo su ogni stella che appare.",
+  "starChallengeGo": "Via!",
+  "starChallengeTimeUp": "Tempo scaduto!",
+  "starChallengeNewBest": "Nuovo record!",
+  "starChallengePlayAgain": "Gioca ancora",
+  "starChallengePaused": "In pausa"
 }

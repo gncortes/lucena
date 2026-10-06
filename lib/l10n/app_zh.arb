@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{轮到你，执白。} other{轮到你，执黑。}}",
   "lessonGuidePlay": "{goal, select, mate{继续下到将杀。} other{继续下到兵升变。}}",
   "lessonGuideDone": "完成。继续下一步。",
-  "exerciseYourMove": "轮到你"
+  "exerciseYourMove": "轮到你",
+  "starChallengesTitle": "星星挑战",
+  "starChallengesBody": "用每个棋子限时收集星星。每个棋子三个难度。",
+  "starChallengesIntro": "选择棋子和难度。星星出现后，把棋子移到那里，下一颗就会亮起。时间结束前你能收集多少？",
+  "challengeLevelEasy": "简单",
+  "challengeLevelMedium": "中等",
+  "challengeLevelHard": "困难",
+  "starChallengeBest": "最佳：{count}",
+  "starChallengeNotPlayed": "尚未挑战",
+  "starChallengeRule": "{seconds} 秒。把棋子移到每一颗出现的星星上。",
+  "starChallengeGo": "开始！",
+  "starChallengeTimeUp": "时间到！",
+  "starChallengeNewBest": "新纪录！",
+  "starChallengePlayAgain": "再来一次",
+  "starChallengePaused": "已暂停"
 }

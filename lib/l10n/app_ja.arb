@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{あなたの手番（白）。} other{あなたの手番（黒）。}}",
   "lessonGuidePlay": "{goal, select, mate{チェックメイトまで指しましょう。} other{ポーンが昇格するまで指しましょう。}}",
   "lessonGuideDone": "完了。次のステップへ進みましょう。",
-  "exerciseYourMove": "あなたの手番"
+  "exerciseYourMove": "あなたの手番",
+  "starChallengesTitle": "星チャレンジ",
+  "starChallengesBody": "各駒で時間内に星を集めよう。駒ごとに3つのレベル。",
+  "starChallengesIntro": "駒とレベルを選ぼう。星が現れたら駒をそこへ動かすと、次の星が光る。時間切れまでにいくつ集められる？",
+  "challengeLevelEasy": "かんたん",
+  "challengeLevelMedium": "ふつう",
+  "challengeLevelHard": "むずかしい",
+  "starChallengeBest": "最高：{count}",
+  "starChallengeNotPlayed": "未プレイ",
+  "starChallengeRule": "{seconds}秒。現れた星まで駒を動かそう。",
+  "starChallengeGo": "スタート！",
+  "starChallengeTimeUp": "時間切れ！",
+  "starChallengeNewBest": "新記録！",
+  "starChallengePlayAgain": "もう一度",
+  "starChallengePaused": "一時停止中"
 }

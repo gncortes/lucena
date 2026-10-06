@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{내 차례, 백으로.} other{내 차례, 흑으로.}}",
   "lessonGuidePlay": "{goal, select, mate{체크메이트까지 두세요.} other{폰이 승급할 때까지 두세요.}}",
   "lessonGuideDone": "완료. 다음 단계로 계속하세요.",
-  "exerciseYourMove": "내 차례"
+  "exerciseYourMove": "내 차례",
+  "starChallengesTitle": "별 도전",
+  "starChallengesBody": "각 기물로 시간 안에 별을 모으세요. 기물마다 세 단계.",
+  "starChallengesIntro": "기물과 단계를 고르세요. 별이 나타나면 기물을 그곳으로 옮기고, 다음 별이 켜집니다. 시간이 끝나기 전에 몇 개를 모을 수 있을까요?",
+  "challengeLevelEasy": "쉬움",
+  "challengeLevelMedium": "보통",
+  "challengeLevelHard": "어려움",
+  "starChallengeBest": "최고: {count}",
+  "starChallengeNotPlayed": "아직 안 함",
+  "starChallengeRule": "{seconds}초. 나타나는 별마다 기물을 옮기세요.",
+  "starChallengeGo": "시작!",
+  "starChallengeTimeUp": "시간 종료!",
+  "starChallengeNewBest": "새 기록!",
+  "starChallengePlayAgain": "다시 하기",
+  "starChallengePaused": "일시정지"
 }

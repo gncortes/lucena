@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Giliranmu, dengan putih.} other{Giliranmu, dengan hitam.}}",
   "lessonGuidePlay": "{goal, select, mate{Main terus sampai sekakmat.} other{Main terus sampai pion promosi.}}",
   "lessonGuideDone": "Selesai. Lanjut ke langkah berikutnya.",
-  "exerciseYourMove": "Giliranmu"
+  "exerciseYourMove": "Giliranmu",
+  "starChallengesTitle": "Tantangan bintang",
+  "starChallengesBody": "Kumpulkan bintang dengan tiap bidak melawan waktu. Tiga tingkat per bidak.",
+  "starChallengesIntro": "Pilih bidak dan tingkat. Sebuah bintang muncul; bawa bidak ke sana dan bintang berikutnya menyala. Berapa banyak yang kamu kumpulkan sebelum waktu habis?",
+  "challengeLevelEasy": "Mudah",
+  "challengeLevelMedium": "Sedang",
+  "challengeLevelHard": "Sulit",
+  "starChallengeBest": "Terbaik: {count}",
+  "starChallengeNotPlayed": "Belum dimainkan",
+  "starChallengeRule": "{seconds} detik. Bawa bidak ke tiap bintang yang muncul.",
+  "starChallengeGo": "Mulai!",
+  "starChallengeTimeUp": "Waktu habis!",
+  "starChallengeNewBest": "Rekor baru!",
+  "starChallengePlayAgain": "Main lagi",
+  "starChallengePaused": "Dijeda"
 }

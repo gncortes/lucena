@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Twój ruch, białymi.} other{Twój ruch, czarnymi.}}",
   "lessonGuidePlay": "{goal, select, mate{Graj dalej aż do mata.} other{Graj dalej aż do promocji piona.}}",
   "lessonGuideDone": "Gotowe. Przejdź do następnego kroku.",
-  "exerciseYourMove": "Twój ruch"
+  "exerciseYourMove": "Twój ruch",
+  "starChallengesTitle": "Wyzwania gwiazdek",
+  "starChallengesBody": "Zbieraj gwiazdki każdą figurą na czas. Trzy poziomy na figurę.",
+  "starChallengesIntro": "Wybierz figurę i poziom. Pojawia się gwiazdka; doprowadź tam figurę, a zapali się kolejna. Ile zbierzesz, zanim skończy się czas?",
+  "challengeLevelEasy": "Łatwy",
+  "challengeLevelMedium": "Średni",
+  "challengeLevelHard": "Trudny",
+  "starChallengeBest": "Rekord: {count}",
+  "starChallengeNotPlayed": "Jeszcze nie grano",
+  "starChallengeRule": "{seconds} sekund. Prowadź figurę do każdej gwiazdki, która się pojawi.",
+  "starChallengeGo": "Start!",
+  "starChallengeTimeUp": "Koniec czasu!",
+  "starChallengeNewBest": "Nowy rekord!",
+  "starChallengePlayAgain": "Zagraj ponownie",
+  "starChallengePaused": "Pauza"
 }

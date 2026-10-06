@@ -75,6 +75,8 @@ class SchoolScreen extends StatelessWidget {
                   onPressed: () => context.push(Routes.endgames),
                 ),
               ],
+              const SizedBox(height: 12),
+              _ChallengesCard(),
               for (final (index, module) in state.course.modules.indexed)
                 _ModuleSection(index: index, module: module, state: state),
             ],
@@ -305,6 +307,66 @@ class _LessonNode extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A entrada dos desafios das estrelas: pegar as estrelas com cada peça
+/// contra o relógio.
+class _ChallengesCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Material(
+      color: colors.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        key: SchoolKeys.challengesButton,
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push(Routes.starChallenges),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 8, 14),
+          child: Row(
+            children: [
+              Icon(
+                Icons.star_rounded,
+                size: 40,
+                color: colors.onTertiaryContainer,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.starChallengesTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.starChallengesBody,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Directionality.of(context) == TextDirection.rtl
+                    ? Icons.chevron_left
+                    : Icons.chevron_right,
+                color: colors.onSurfaceVariant,
+              ),
+            ],
           ),
         ),
       ),

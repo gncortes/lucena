@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Tu turno, con blancas.} other{Tu turno, con negras.}}",
   "lessonGuidePlay": "{goal, select, mate{Sigue jugando hasta dar mate.} other{Sigue jugando hasta coronar el peón.}}",
   "lessonGuideDone": "Hecho. Continúa al siguiente paso.",
-  "exerciseYourMove": "Tu turno"
+  "exerciseYourMove": "Tu turno",
+  "starChallengesTitle": "Desafíos de estrellas",
+  "starChallengesBody": "Recoge las estrellas con cada pieza contra el reloj. Tres niveles por pieza.",
+  "starChallengesIntro": "Elige una pieza y un nivel. Aparece una estrella; lleva la pieza hasta ella y se enciende otra. ¿Cuántas recoges antes de que se acabe el tiempo?",
+  "challengeLevelEasy": "Fácil",
+  "challengeLevelMedium": "Medio",
+  "challengeLevelHard": "Difícil",
+  "starChallengeBest": "Mejor: {count}",
+  "starChallengeNotPlayed": "Aún no jugado",
+  "starChallengeRule": "{seconds} segundos. Lleva la pieza a cada estrella que aparezca.",
+  "starChallengeGo": "¡Vamos!",
+  "starChallengeTimeUp": "¡Se acabó el tiempo!",
+  "starChallengeNewBest": "¡Nuevo récord!",
+  "starChallengePlayAgain": "Jugar de nuevo",
+  "starChallengePaused": "En pausa"
 }
