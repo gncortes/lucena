@@ -529,5 +529,6 @@
   "reviewQuick": "Hızlı",
   "reviewMedium": "Orta",
   "reviewDeep": "Derin",
-  "reviewSpeedHint": "Ne kadar derin, o kadar doğru ve yavaş. Doğruluk tüm hamleler değerlendirildiğinde görünür."
+  "reviewSpeedHint": "Ne kadar derin, o kadar doğru ve yavaş. Doğruluk tüm hamleler değerlendirildiğinde görünür.",
+  "reviewDeeper": "Daha derin incele"
 }

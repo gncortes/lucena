@@ -529,5 +529,6 @@
   "reviewQuick": "Cepat",
   "reviewMedium": "Sedang",
   "reviewDeep": "Mendalam",
-  "reviewSpeedHint": "Makin dalam, makin akurat dan makin lama. Akurasi muncul setelah semua langkah dinilai."
+  "reviewSpeedHint": "Makin dalam, makin akurat dan makin lama. Akurasi muncul setelah semua langkah dinilai.",
+  "reviewDeeper": "Tinjau lebih dalam"
 }

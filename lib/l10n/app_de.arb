@@ -529,5 +529,6 @@
   "reviewQuick": "Schnell",
   "reviewMedium": "Mittel",
   "reviewDeep": "Gründlich",
-  "reviewSpeedHint": "Je gründlicher, desto genauer und langsamer. Die Genauigkeit erscheint, wenn alle Züge bewertet sind."
+  "reviewSpeedHint": "Je gründlicher, desto genauer und langsamer. Die Genauigkeit erscheint, wenn alle Züge bewertet sind.",
+  "reviewDeeper": "Gründlicher analysieren"
 }

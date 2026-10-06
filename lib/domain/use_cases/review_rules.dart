@@ -156,6 +156,7 @@ abstract final class ReviewRules {
           best: best,
           bestLine: best == null ? const [] : lines!.first.moves,
           accuracy: accuracy,
+          weight: depth,
           quality: classify(
             before: before,
             after: after,
@@ -177,6 +178,38 @@ abstract final class ReviewRules {
     return GameReview(
       moves: reviewed,
       depth: depth,
+      whiteAccuracy: sideAccuracy(
+        win,
+        accuracies,
+        whiteFirst: whiteFirst,
+        white: true,
+      ),
+      blackAccuracy: sideAccuracy(
+        win,
+        accuracies,
+        whiteFirst: whiteFirst,
+        white: false,
+      ),
+    );
+  }
+
+  /// A revisão feita de lances anotados um a um (cada um com o seu peso): a
+  /// precisão de cada lado sai das avaliações e precisões deles. O peso da
+  /// revisão é o menor dos lances.
+  static GameReview compose(
+    List<ReviewedMove> moves, {
+    required bool whiteFirst,
+  }) {
+    final win = [
+      if (moves.isNotEmpty) moves.first.before.whiteWinPercent,
+      for (final move in moves) move.after.whiteWinPercent,
+    ];
+    final accuracies = [for (final move in moves) move.accuracy];
+    return GameReview(
+      moves: moves,
+      depth: moves.isEmpty
+          ? 0
+          : moves.map((move) => move.weight).reduce(math.min),
       whiteAccuracy: sideAccuracy(
         win,
         accuracies,

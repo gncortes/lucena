@@ -7,33 +7,50 @@ import 'package:multistockfish/multistockfish.dart';
 ///
 /// O motor é ligado no primeiro pedido e fica ligado. Os pedidos entram em
 /// fila: um termina antes de o próximo começar; os urgentes (o que o jogador
-/// está olhando) passam na frente dos outros que ainda não começaram.
+/// está olhando) passam na frente dos outros que ainda não começaram, e os
+/// interrompíveis (os longos) ficam entre os urgentes e os comuns. Um pedido
+/// interrompível que está rodando para quando chega outro urgente ou
+/// interrompível: quem pediu recebe [AnalysisStopped] e pode pedir de novo.
 class StockfishService {
   StockfishService();
 
   Stockfish? _engine;
-  final _waiting = <({bool urgent, Future<void> Function() run})>[];
+  final _waiting = <({int priority, Future<void> Function() run})>[];
   bool _running = false;
 
+  /// O pedido rodando pode ser parado, e já foi.
+  bool _preemptible = false;
+  bool _stopped = false;
+
   /// Põe [job] na fila e devolve o resultado dele.
-  Future<T> _enqueue<T>(Future<T> Function() job, {bool urgent = false}) {
+  Future<T> _enqueue<T>(
+    Future<T> Function() job, {
+    bool urgent = false,
+    bool preemptible = false,
+  }) {
     final done = Completer<T>();
+    // 0: urgente; 1: interrompível; 2: comum.
+    final priority = urgent && !preemptible ? 0 : (preemptible ? 1 : 2);
     final entry = (
-      urgent: urgent,
+      priority: priority,
       run: () async {
+        _preemptible = preemptible;
+        _stopped = false;
         try {
           done.complete(await job());
         } on Object catch (error, stack) {
           done.completeError(error, stack);
+        } finally {
+          _preemptible = false;
         }
       },
     );
-    if (urgent) {
-      // Depois dos outros urgentes, antes dos comuns.
-      final index = _waiting.indexWhere((waiting) => !waiting.urgent);
-      _waiting.insert(index < 0 ? _waiting.length : index, entry);
-    } else {
-      _waiting.add(entry);
+    // Depois dos de prioridade igual ou maior, antes dos outros.
+    final index = _waiting.indexWhere((waiting) => waiting.priority > priority);
+    _waiting.insert(index < 0 ? _waiting.length : index, entry);
+    if (_running && _preemptible && priority <= 1 && !_stopped) {
+      _stopped = true;
+      _engine?.stdin = 'stop';
     }
     unawaited(_drain());
     return done.future;
@@ -110,7 +127,8 @@ class StockfishService {
   /// As [lines] melhores linhas em [fen], até a profundidade [depth] (ou até
   /// [time], o que vier antes): para cada uma, a avaliação do ponto de vista
   /// de quem joga, os lances (UCI) e a profundidade alcançada. Lista vazia se
-  /// a posição não tem lance.
+  /// a posição não tem lance. Se [preemptible], outro pedido pode parar este
+  /// no meio ([AnalysisStopped]).
   Future<List<({int? centipawns, int? mate, List<String> moves, int depth})>>
   analyse(
     String fen, {
@@ -118,8 +136,13 @@ class StockfishService {
     int lines = 1,
     bool urgent = false,
     Duration? time,
+    bool preemptible = false,
   }) {
-    return _enqueue(() => _analyse(fen, depth, lines, time), urgent: urgent);
+    return _enqueue(
+      () => _analyse(fen, depth, lines, time),
+      urgent: urgent,
+      preemptible: preemptible,
+    );
   }
 
   Future<List<({int? centipawns, int? mate, List<String> moves, int depth})>>
@@ -140,6 +163,8 @@ class StockfishService {
       engine.stdin = time == null
           ? 'go depth $depth'
           : 'go depth $depth movetime ${time.inMilliseconds}';
+      // Parado antes de começar a pensar.
+      if (_stopped) engine.stdin = 'stop';
       await done.future.timeout(
         (time ?? Duration.zero) + const Duration(seconds: 30),
       );
@@ -147,6 +172,7 @@ class StockfishService {
       await listening.cancel();
       engine.stdin = 'setoption name MultiPV value 1';
     }
+    if (_stopped) throw const AnalysisStopped();
     return [for (final index in found.keys.toList()..sort()) found[index]!];
   }
 
@@ -195,4 +221,10 @@ class StockfishService {
     await _engine?.dispose();
     _engine = null;
   }
+}
+
+/// Uma análise interrompível parou no meio porque chegou um pedido mais
+/// importante.
+class AnalysisStopped implements Exception {
+  const AnalysisStopped();
 }

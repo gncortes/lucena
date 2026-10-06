@@ -133,6 +133,7 @@ class ReviewedMove {
     required this.accuracy,
     this.best,
     this.bestLine = const [],
+    this.weight = 0,
   });
 
   /// A avaliação antes e depois do lance (brancas).
@@ -148,6 +149,11 @@ class ReviewedMove {
   final String? best;
   final List<String> bestLine;
 
+  /// O peso da anotação: quanto a engine trabalhou nas duas posições (o
+  /// índice do orçamento, ver `GameDetailsCubit.budgets`). Uma anotação de
+  /// peso maior troca a de peso menor.
+  final int weight;
+
   Map<String, Object?> toJson() => {
     'before': before.toJson(),
     'after': after.toJson(),
@@ -155,6 +161,7 @@ class ReviewedMove {
     'accuracy': accuracy,
     'best': ?best,
     'line': bestLine,
+    'w': weight,
   };
 
   static ReviewedMove fromJson(Map<String, Object?> json) => ReviewedMove(
@@ -164,6 +171,7 @@ class ReviewedMove {
     accuracy: (json['accuracy']! as num).toDouble(),
     best: json['best'] as String?,
     bestLine: (json['line'] as List? ?? const []).cast<String>(),
+    weight: json['w'] as int? ?? 0,
   );
 }
 
@@ -178,7 +186,7 @@ class GameReview {
   });
 
   /// Muda quando o cálculo muda: revisão de outra versão é refeita.
-  static const version = 2;
+  static const version = 3;
 
   final List<ReviewedMove> moves;
 
@@ -186,9 +194,8 @@ class GameReview {
   final double? whiteAccuracy;
   final double? blackAccuracy;
 
-  /// O peso da revisão: quanto a engine trabalhou em cada posição (o índice
-  /// do orçamento de tempo e profundidade, ver `GameDetailsCubit.budgets`).
-  /// Uma anotação de peso maior troca a de peso menor.
+  /// O peso da revisão: o menor peso entre os lances (ver
+  /// [ReviewedMove.weight]).
   final int depth;
 
   /// Quantos lances de cada qualidade o lado que começa ([firstIsWhite])

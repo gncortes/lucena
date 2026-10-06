@@ -8,12 +8,20 @@ abstract class AnalysisRepository {
   /// do ponto de vista das brancas. Lista vazia se a engine não respondeu ou
   /// a posição não tem lance. [time] limita o tempo (a engine para no que
   /// vier antes). [urgent]: o jogador está olhando a posição
-  /// agora; passa na frente dos pedidos comuns.
+  /// agora; passa na frente dos pedidos comuns. [preemptible]: um pedido
+  /// longo, que outro urgente ou interrompível para no meio
+  /// ([AnalysisInterrupted]).
   Future<List<EngineLine>> analyse(
     Position position, {
     required int depth,
     int lines = 1,
     bool urgent = false,
     Duration? time,
+    bool preemptible = false,
   });
+}
+
+/// A análise interrompível parou no meio: chegou um pedido mais importante.
+class AnalysisInterrupted implements Exception {
+  const AnalysisInterrupted();
 }
