@@ -2,7 +2,7 @@
 
 Pesquisa de 2026-10-06. Serve de base para os dossiês `queen.vsRook.philidor`, `queen.vsRook.approach` e `queen.vsRook.thirdRank`. Estado do trabalho e como continuar: `docs/tasks/T34.md`.
 
-Frentes: (1) estudos públicos do Lichess, **feita** (abaixo); (2) Wikipedia, artigos (Grimmell, ChessBase, Chessprogramming) e história (Philidor 1777, Browne contra Belle 1978), **não entregue** até esta gravação: se o relatório não estiver colado no fim deste arquivo, refazer essa frente antes de escrever `history` e as referências `web`/`book`.
+Frentes: (1) estudos públicos do Lichess (abaixo); (2) Wikipedia, artigos e história (seção "Web e história", no fim). As duas foram feitas em 2026-10-06.
 
 ## Estudos do Lichess (PGN pela API `https://lichess.org/api/study/<id>.pgn`, abertos em 2026-10-06)
 
@@ -104,3 +104,76 @@ Philidor (posição 1), pretas jogam, pelo caminho mais curto até ganhar a torr
 Philidor com as brancas (posição 2): Qd5 e Qe5+ são os melhores e empatam em distância; Qd8+ custa um lance; todo o resto custa cinco lances ou mais.
 
 Do centro (`8/8/8/3kr3/8/8/8/KQ6 w`): a torre cai em 28 lances e o mate sai em 33 com jogo perfeito dos dois lados; na linha do mate mais longo, a posição de Philidor aparece sozinha no lance 26.
+
+## Web e história (aberto em 2026-10-06)
+
+O que foi lido em texto bruto e inteiro: o wikitext de três artigos da Wikipedia e a cópia Usenet do artigo de 1979 sobre Browne contra Belle. As páginas do chess.com, chesspub e chessgames vieram por um resumidor automático, que errou ao menos uma vez: tratar como menos seguras e não citar lance delas sem conferir. **Nenhum texto do próprio Derek Grimmell foi aberto** (o material dele são vídeos e uma base ChessBase); "Harding" e "Euclid" como nomes de defesa não apareceram em fonte nenhuma. Nenhum livro foi aberto.
+
+### Wikipedia (en), "Queen versus rook endgame"
+`https://en.wikipedia.org/wiki/Queen_versus_rook_endgame` (wikitext lido inteiro). Resume Nunn, Müller/Lamprecht, Averbakh e Smerdon: tudo abaixo é "segundo a Wikipedia, que cita X".
+- Ganha-se a torre por garfo e depois vem o mate básico. Pior caso: 31 lances até ganhar a torre ou dar mate.
+- As quatro fases de Nunn: (1) ativar o rei e empurrar o rei defensor para a borda; (2) quebrar a quarta fileira; (3) quebrar a terceira; (4) quebrar a segunda, convertendo em Philidor. O defensor deve passar por todas; largar cedo a quarta ou a terceira é erro comum. Müller/Lamprecht começam pela terceira e acrescentam a fase do garfo depois de Philidor.
+- Quarta fileira (do centro à borda): é a mais fácil de desfazer; cai na terceira ou na segunda. Plano: levar o próprio rei a uma casa que obrigue a torre a sair da fileira, forçando antes o rei defensor para a coluna vizinha. "Motivo da diagonal" (recurso do defensor): a torre vai para a mesma diagonal do rei atacante, evita garfos e ameaça xeques por dois lados; só funciona bem com a torre a pelo menos três casas do rei atacante. Por isso Kd3 em vez de Kd4 quando ...Ra1 é possível.
+- Smerdon: os lances que mais progridem costumam não ser xeques; as defesas mais teimosas afastam a torre para uma casa a salvo de garfos.
+- Philidor: ganha com qualquer lado jogando. Brancas: 1.Qe5+ (ou 1.Qd5) Ka8 2.Qa1+ Kb8 3.Qa5. Não "apertar mais": 1.Qa6? Rc7+ e 2.Kb6?? Rc6+! empata (Averbakh); a tabela confirma (`1k6/2r5/QK6/8/8/8/8/8 b` é empate só com Rc6+).
+- Segunda fileira: o objetivo é pôr o rei na sexta fileira e chegar a Philidor. A dama tem dois papéis (Averbakh): limitar o rei e impedir a torre de dar xeque por trás. Se a torre se afasta, costuma ser melhor tirar-lhe os xeques do que continuar dando xeque. Nunn: um jogador forte calcula a segunda fileira no tabuleiro; a terceira tem de ser sabida de antemão.
+- Terceira fileira: segurar é fácil para o defensor. Bastam duas posições: torre em b6 (1.Qf4, a dama sai da sétima; se o rei sai, Qa4+ troca a dama de lado com tempo e força a segunda fileira) e torre em a6 (1.Kc5).
+- Empates: Ponziani 1782, Berger 1889, Nunn 2002 (posições abaixo).
+
+### Wikipedia (en), "Pawnless chess endgame" e "Philidor position"
+`https://en.wikipedia.org/wiki/Pawnless_chess_endgame`, `https://en.wikipedia.org/wiki/Philidor_position` (seções lidas inteiras). Definições: terceira fileira = torre na terceira fileira a contar da borda, rei defensor atrás dela, rei atacante do outro lado; segunda fileira = rei defensor na borda e torre na fileira vizinha. Philidor 1777. Partidas (abaixo).
+
+### Stenberg, Conway e Larkins, "Queen vs. Rook" (Minnesota Chess Journal, jan 1979; Chess Voice, abr-mai 1979)
+Cópia Usenet de 1982, lida inteira: `http://quux.org:70/Archives/usenet-a-news/NET.chess/82.01.07_sri-unix.458_net.chess.txt`. Fonte primária de Browne contra Belle.
+- Ken Thompson (Bell Labs) gerou a base completa; o maior número era 31 lances (até mate ou ganho da torre). O computador joga sempre o lance de maior número.
+- A "barreira": jogadores travavam a 14-16 lances do fim, quando o rei tenta cruzar a terceira ou a quarta fileira bloqueada. Os livros da época não ajudavam nesse ponto.
+- Dezembro de 1978: Belle ganha o campeonato de computadores dos EUA. Browne aposta 100 dólares, com 2h30 e 50 lances, a partir da pior posição; disse que meia hora bastaria. Empate combinado por volta do lance 45, a 17 lances do fim: perdeu. Antes da revanche, viu o computador jogar contra si mesmo. Revanche em 30 de dezembro de 1978, outra posição de 31 lances: ganhou a torre exatamente no 50º lance e recuperou o dinheiro. Os lances finais são o padrão em escada: xeque, xeque, rei avança.
+- Larkins: livro de 1895 inteiro sobre o final, *Analysis of the Chess Ending King and Queen against King and Rook*, por "Euclid" (pseudônimo), editado por E. Freeborough (Kegan Paul, Trench, Trübner & Co., Londres); ficha conferida no Google Books (`https://books.google.com.br/books?id=vigCAAAAYAAJ`), conteúdo não lido.
+
+### Outras (via resumidor, pouco conteúdo)
+- chess.com, FM Vandros57, "Endgame Queen vs Rook (Overview)", 2020: roteiro sem posições (centro, quarta, terceira, segunda, Philidor).
+- chess.com, bangalos, "Queen vs Rook Endgame", 2018: lista só os **nomes** de Grimmell (Harassment, Javelin, 3rd Rank, Cages, Diagonal, Wishbone, Rosettes), sem posições.
+- ChessPub Forum, "Can you win against a lone Rook with your Queen?": Grimmell diz que as "harassment defenses" são as mais interessantes e que a base dele é um arquivo ChessBase gratuito (não baixado).
+
+### Posições da Wikipedia (FEN montado dos diagramas e conferido na API do Lichess; distâncias em meios-lances)
+
+| id | FEN | Joga | Tabela | Crédito na fonte |
+|---|---|---|---|---|
+| P2 | `2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1` | brancas | ganha, mate 37, torre 31; Qf5+ | Euwe 1958 (via Müller/Lamprecht) |
+| P3 | `8/rk6/8/1KQ5/8/8/8/8 w - - 0 1` | brancas | ganha, mate 19; Qe5 ou Qd4. 1.Qc6+? Kb8 2.Kb6?? Ra6+! empata | Berger 1889 (via Nunn) |
+| P4 | `4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1` | brancas | ganha, mate 27; Qd8 | Nunn 2002 |
+| P5 | `3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1` | brancas | ganha, mate 37, torre 27; Qf4 | Nunn 2002 |
+| P6 | `3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1` | brancas | ganha, mate 29; Kc5 | Nunn (só texto) |
+| P7 | `8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1` | brancas | ganha, mate 47, torre 37; Qf7+ | Nunn 2002 |
+| P8 | `5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1` | pretas | **empate**, só Rg7+ (xeque perpétuo por f7, g7, h7; 2.Kf6 Rg6+! afoga) | Ponziani 1782 (via Averbakh) |
+| P9 | `6k1/6r1/5Q2/8/8/8/8/7K b - - 0 1` | pretas | **empate**, só Rh7+ | Berger 1889 (via Nunn) |
+| P10 | `7k/5Q2/8/6r1/8/1K6/8/8 b - - 0 1` | pretas | **empate**, só Rg3+ | Nunn 2002 |
+| P11 | `K3r3/8/5k2/Q7/8/8/8/8 w - - 0 1` | brancas | ganha, torre 61, mate 69; Ka7 ou Kb7 | Browne x Belle, 1ª partida |
+| P12 | `2KQ4/8/8/8/2r5/2k5/8/8 w - - 0 1` | brancas | ganha, torre 61, mate 69; Kb7 ou Kb8 | Browne x Belle, revanche |
+| P15 | `8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1` | brancas | ganha, mate 25; Qe5 | Morozevich-Jakovenko 2006, antes do lance 110 |
+| P16 | `8/8/8/Q4r2/4k2K/8/8/8 w - - 0 1` | brancas | ganha, mate 53; Qb4+ | Hannes Stefánsson-Karsten Müller 1992 |
+
+Linhas da Wikipedia:
+- **P2** (segunda fileira): 1.Qf5+ Kd8 2.Kc5 (2.Kc6 deixa Re6+ e uma terceira fileira). (A) 2...Kc7 3.Qd5 Rd7 4.Qe5+ Kb7 5.Kb5 Rc7 6.Qe8 Ka7 7.Qe4 Rb7+ 8.Kc6 Ka8 9.Qd5 Ka7 10.Qd8, Philidor. (B) 2...Re1 3.Qd3+ Ke7 4.Kd5 Kf7 5.Qf3+ Ke7 6.Qg4 Kf7 7.Qf4+ Ke8 8.Kd6 Rd1+ 9.Ke6 Re1+ 10.Kf6. (C) 2...Ke8 3.Qc8+ Kf7 4.Kd6 Ra7 5.Qc4+ Kf8 6.Ke6 Rf7 7.Qc5+ Kg8 8.Qd5 Rg7 9.Kf6 Kh7 10.Qh1+ Kg8 11.Qh5, Philidor.
+- **P4**: 1.Qd8 Kh7 2.Qd4! (cobre g7) Rg7+ 3.Kf6 Rg6+ 4.Kf7 e acabam os xeques.
+- **P5** (terceira fileira): 1.Qf4! Kd7 2.Qa4+ Kc7 3.Qa7+ Rb7 4.Qc5+ Kb8 5.Kd6 Rg7 6.Qe5 Rc7 7.Qf4 Kc8 8.Qf5+ Kb8 9.Qe5 Rb7 10.Kc6+ Ka8 11.Qd5 Kb8 12.Qa5, Philidor. Variantes: 1...Kc8 2.Kc5 Ra6 3.Qe4 Kc7 4.Qe7+ Kb8 5.Kb5 Ra7.
+- **P6**: 1.Kc5 Kc8 2.Qe7 Kb8 3.Kb5 Ra7 (segunda fileira).
+- **P7** (quarta fileira): 1.Qf7+ (1.Kd4 Ra1!). (A) 1...Kd8 2.Qe6 Kc7 3.Kd3 Rc5 4.Kd4 Rc1 5.Qe3 Rc6 6.Qe7+ Kb6 7.Kd5, terceira fileira. (B) 1...Kd6 2.Qe8 Kc7 3.Qe6 Rb5 4.Kd4 Rb2 5.Kc3 Rb7, segunda fileira.
+- **Morozevich-Jakovenko**, Pamplona 2006 (Morozevich tinha a dama): em P15, 110.Qg3+?! (110.Qe5! ganhava) Kh1 111.Kf3?? Rf2+!! 112.Ke3 Re2+ 113.Kd3 Rd2+ 114.Kxd2, afogado. Tabela: depois de 111.Kf3 (`8/8/8/8/8/5KQ1/7r/7k b`) é empate só com Rf2+.
+- **Stefánsson-Müller 1992** (a dama ganhou; mate no lance 100): passou pela terceira fileira, pela segunda e por Philidor. Regra tirada da partida: para o rei defensor é melhor a borda do que o canto.
+- **Gelfand-Svidler**, Mundial FIDE 2001/02, Moscou, rápida: Svidler tinha a dama e empatou pela regra dos 50 lances (Wikipedia "Pawnless chess endgame").
+- **Browne x Belle, revanche** (lances do chessgames que batem com o artigo de 1979), de P12: 1.Kb7 Rb4+ 2.Kc6 Rc4+ 3.Kb5 Rb4+ 4.Ka5 Re4 5.Qd6 Rd4 6.Qe5 Kd3 7.Kb5 Re4 8.Qf6 Ke3 9.Kc5 Rf4 10.Qg6 Ra4 11.Qg3+ Ke2 12.Qc3 Rf4 13.Kd5 Rh4 14.Qc2+ Ke3 15.Qd1 Kf2 16.Qd2+ Kf3 17.Qe1 Rg4 18.Qd1+ Kf4 19.Qe2 Rg5+ 20.Kd4 Rf5 21.Qe3+ Kg4 22.Ke4 Rf7 23.Qg1+ Kh5 24.Qg3 Rf8 25.Ke5 Rf7 26.Ke6 Rf8 27.Qa3 Rf4 28.Qh3+ Kg5 29.Qg3+ Rg4 30.Qe5+ Kh4 31.Qh2+ Kg5 32.Ke5 Kg6 33.Qh8 Rg5+ 34.Ke6 Rg4 35.Qg8+ Kh5 36.Qh7+ Kg5 37.Ke5 Rg3 38.Qg7+ Kh4 39.Qh6+ Kg4 40.Ke4 Rg2 41.Qg6+ Kh3 42.Qh5+ Kg3 43.Ke3 Rg1 44.Qg5+ Kh2 45.Qh4+ Kg2 46.Ke2 Ra1 47.Qe4+ Kh3 48.Qh7+ Kg3 49.Qg7+ Kh3 50.Qxa1.
+
+### Referências possíveis (`references` das aulas)
+- `wikipedia` (web): "Queen versus rook endgame (Wikipedia)", https://en.wikipedia.org/wiki/Queen_versus_rook_endgame. Como consultei: wikitext inteiro.
+- `pawnless` (web): "Pawnless chess endgame (Wikipedia)", https://en.wikipedia.org/wiki/Pawnless_chess_endgame. Seção lida.
+- `belle1979` (web): Stenberg, Conway e Larkins, "Queen vs. Rook" (cópia Usenet do artigo de 1979), URL acima. Lido inteiro.
+- Estudos do Lichess abertos: ids `enHKHI2k` (calmodee), `dPt5h0yM` (ColinParker), `LTWpoOgD` (Unto), `zfcueYR4` (Coach_Vince), `34ArhgQa` (methurst), `jW4DCegI` (cgbarros), `3umTRoX6` (NM BXMSChess), `b0XRDmZo` (TUTORIAL_AULADJAQUE).
+- Livros (ficha só pela bibliografia da Wikipedia, **não abertos**, sem `where`): John Nunn, *Secrets of Pawnless Endings*, 2ª ed., Gambit, 2002; Karsten Müller e Frank Lamprecht, *Fundamental Chess Endings*, Gambit, 2001.
+- `tablebase`: Lichess tablebase (Syzygy), https://tablebase.lichess.ovh.
+
+### Divergências
+- "31 lances" é até ganhar a torre; o mate, nas piores posições, leva 35 (tabela).
+- A data das partidas de Browne: a fonte primária dá dezembro de 1978; o chessgames dá janeiro de 1978. Vale a primária.
+- Legenda de P5 na Wikipedia: "ganha em até 19 lances" é o mate; a torre cai antes.
+- O livro de 1895 aparece com títulos e números de página diferentes (Wikipedia, Google Books, Larkins): citar só título, pseudônimo e ano.
