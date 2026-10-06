@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Etwas verloren: es gab einen genaueren Zug",
   "qualityMistakeHint": "Hat die Stellung deutlich verschlechtert",
   "qualityMissHint": "Hatte den Gewinn und ließ ihn entgleiten",
-  "qualityBlunderHint": "Hat das Ergebnis verspielt: ein schwerer Fehler"
+  "qualityBlunderHint": "Hat das Ergebnis verspielt: ein schwerer Fehler",
+  "reviewQuick": "Schnell",
+  "reviewMedium": "Mittel",
+  "reviewDeep": "Gründlich",
+  "reviewSpeedHint": "Je gründlicher, desto genauer und langsamer. Die Genauigkeit erscheint, wenn alle Züge bewertet sind."
 }

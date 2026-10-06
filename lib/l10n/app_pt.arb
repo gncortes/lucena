@@ -524,5 +524,9 @@
   "qualityInaccuracyHint": "Perdeu um pouco: havia um lance mais preciso",
   "qualityMistakeHint": "Deixou a posição claramente pior",
   "qualityMissHint": "Tinha a vitória e a deixou escapar",
-  "qualityBlunderHint": "Jogou fora o resultado: um erro sério"
+  "qualityBlunderHint": "Jogou fora o resultado: um erro sério",
+  "reviewQuick": "Rápida",
+  "reviewMedium": "Média",
+  "reviewDeep": "Profunda",
+  "reviewSpeedHint": "Quanto mais profunda, mais precisa e mais demorada. A precisão aparece quando todos os lances forem avaliados."
 }

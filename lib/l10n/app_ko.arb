@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "조금 손해: 더 정확한 수가 있었음",
   "qualityMistakeHint": "포지션을 분명히 나쁘게 만듦",
   "qualityMissHint": "이긴 판을 놓침",
-  "qualityBlunderHint": "결과를 날림: 심각한 실수"
+  "qualityBlunderHint": "결과를 날림: 심각한 실수",
+  "reviewQuick": "빠르게",
+  "reviewMedium": "보통",
+  "reviewDeep": "깊게",
+  "reviewSpeedHint": "깊을수록 정확하고 오래 걸립니다. 모든 수가 평가되면 정확도가 표시됩니다."
 }

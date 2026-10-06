@@ -211,4 +211,21 @@ void main() {
 
     expect(find.byKey(GameDetailsKeys.evalBar), findsNothing);
   });
+
+  testWidgets('antes de revisar: as três opções, e a precisão só depois', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    expect(find.byKey(GameDetailsKeys.reviewQuick), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.reviewButton), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.reviewDeep), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsNothing);
+
+    await tester.tap(find.byKey(GameDetailsKeys.reviewDeep));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.review!.depth, 18);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  });
 }

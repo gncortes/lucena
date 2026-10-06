@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Немного потеряно: был более точный ход",
   "qualityMistakeHint": "Заметно ухудшил позицию",
   "qualityMissHint": "Была победа, но её упустили",
-  "qualityBlunderHint": "Упустил результат: серьёзная ошибка"
+  "qualityBlunderHint": "Упустил результат: серьёзная ошибка",
+  "reviewQuick": "Быстрый",
+  "reviewMedium": "Средний",
+  "reviewDeep": "Глубокий",
+  "reviewSpeedHint": "Чем глубже, тем точнее и дольше. Точность появится, когда будут оценены все ходы."
 }

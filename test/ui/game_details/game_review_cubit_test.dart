@@ -196,4 +196,18 @@ void main() {
       expect(cubit.state.shownReview!.quality, MoveQuality.inaccuracy);
     },
   );
+
+  test(
+    'revisão rápida, média e profunda: a profundidade fica guardada',
+    () async {
+      final id = await save(['g1g2', 'h8h7', 'g2g7']);
+      for (final speed in ReviewSpeed.values) {
+        final cubit = build(id);
+        await cubit.load();
+        await cubit.review(speed: speed);
+        expect(cubit.state.review!.depth, GameDetailsCubit.reviewDepths[speed]);
+        expect(cubit.state.review!.whiteAccuracy, isNotNull);
+      }
+    },
+  );
 }

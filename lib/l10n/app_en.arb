@@ -2814,5 +2814,21 @@
   "qualityBlunderHint": "Threw away the result: a serious mistake",
   "@qualityBlunderHint": {
     "description": "Legend: meaning of the 'blunder' (??) symbol."
+  },
+  "reviewQuick": "Quick",
+  "@reviewQuick": {
+    "description": "Game details: button for a quick (shallow) engine review of the game."
+  },
+  "reviewMedium": "Medium",
+  "@reviewMedium": {
+    "description": "Game details: button for a medium-depth engine review of the game."
+  },
+  "reviewDeep": "Deep",
+  "@reviewDeep": {
+    "description": "Game details: button for a deep (slow, most accurate) engine review of the game."
+  },
+  "reviewSpeedHint": "The deeper, the more accurate and the slower. Accuracy appears when every move has been rated.",
+  "@reviewSpeedHint": {
+    "description": "Game details: note above the review speed buttons."
   }
 }

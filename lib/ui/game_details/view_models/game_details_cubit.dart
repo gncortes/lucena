@@ -182,6 +182,9 @@ class GameDetailsState {
   );
 }
 
+/// A revisão rápida, média ou profunda (a profundidade da engine).
+enum ReviewSpeed { quick, medium, deep }
+
 /// Os detalhes de uma partida terminada: os dados dela, os lances com o
 /// tempo de cada um e a revisão pela engine (qualidade de cada lance e
 /// precisão de cada lado), que fica guardada; e a engine, que se liga para
@@ -196,15 +199,20 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     this._reviews,
   }) : super(const GameDetailsState());
 
-  /// A profundidade da engine na revisão e com ela ligada.
-  static const reviewDepth = 14;
+  /// A profundidade da engine na revisão: rápida, média (a de fábrica) ou
+  /// profunda.
+  static const reviewDepths = {
+    ReviewSpeed.quick: 10,
+    ReviewSpeed.medium: 14,
+    ReviewSpeed.deep: 18,
+  };
   static const engineDepth = 18;
   static const barDepth = 12;
 
   /// A anotação na hora, ao passar os lances: sai rasa, na primeira
   /// profundidade, e vai aprofundando enquanto o jogador fica no lance (pode
   /// mudar de qualidade, como no Lichess). A revisão completa usa a
-  /// [reviewDepth].
+  /// [reviewDepths].
   static const liveDepths = [8, 12, 16, 20];
   static const liveDepth = 8;
 
@@ -291,7 +299,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// Revisa a partida inteira com a engine: cada posição (a de início e a
   /// depois de cada lance), com o progresso na tela e cada lance anotado assim
   /// que a posição depois dele é avaliada. A revisão fica gravada.
-  Future<void> review() async {
+  Future<void> review({ReviewSpeed speed = ReviewSpeed.medium}) async {
+    final reviewDepth = reviewDepths[speed]!;
     final start = state.start;
     if (_analysis == null || start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;

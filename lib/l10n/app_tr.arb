@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "Biraz kaybettirdi: daha kesin bir hamle vardı",
   "qualityMistakeHint": "Pozisyonu açıkça kötüleştirdi",
   "qualityMissHint": "Kazanç vardı ama kaçırıldı",
-  "qualityBlunderHint": "Sonucu çöpe attı: ciddi bir hata"
+  "qualityBlunderHint": "Sonucu çöpe attı: ciddi bir hata",
+  "reviewQuick": "Hızlı",
+  "reviewMedium": "Orta",
+  "reviewDeep": "Derin",
+  "reviewSpeedHint": "Ne kadar derin, o kadar doğru ve yavaş. Doğruluk tüm hamleler değerlendirildiğinde görünür."
 }

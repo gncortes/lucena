@@ -525,5 +525,9 @@
   "qualityInaccuracyHint": "A perdu un peu : un coup plus précis existait",
   "qualityMistakeHint": "A nettement empiré la position",
   "qualityMissHint": "Avait la victoire et l'a laissée filer",
-  "qualityBlunderHint": "A gâché le résultat : une faute grave"
+  "qualityBlunderHint": "A gâché le résultat : une faute grave",
+  "reviewQuick": "Rapide",
+  "reviewMedium": "Moyenne",
+  "reviewDeep": "Approfondie",
+  "reviewSpeedHint": "Plus elle est approfondie, plus elle est précise et lente. La précision apparaît quand tous les coups sont évalués."
 }

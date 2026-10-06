@@ -107,16 +107,82 @@ class ReviewSummary extends StatelessWidget {
                 ),
               ],
             )
-          : FilledButton.icon(
-              key: GameDetailsKeys.reviewButton,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              onPressed: state.moves.isEmpty
-                  ? null
-                  : () => context.read<GameDetailsCubit>().review(),
-              icon: const Icon(Icons.insights),
-              label: Text(l10n.reviewStart),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.insights, color: colors.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.reviewStart,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.reviewSpeedHint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    for (final (speed, key, label) in [
+                      (
+                        ReviewSpeed.quick,
+                        GameDetailsKeys.reviewQuick,
+                        l10n.reviewQuick,
+                      ),
+                      (
+                        ReviewSpeed.medium,
+                        GameDetailsKeys.reviewButton,
+                        l10n.reviewMedium,
+                      ),
+                      (
+                        ReviewSpeed.deep,
+                        GameDetailsKeys.reviewDeep,
+                        l10n.reviewDeep,
+                      ),
+                    ]) ...[
+                      if (speed != ReviewSpeed.quick) const SizedBox(width: 8),
+                      Expanded(
+                        child: speed == ReviewSpeed.medium
+                            ? FilledButton(
+                                key: key,
+                                style: FilledButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(46),
+                                ),
+                                onPressed: state.moves.isEmpty
+                                    ? null
+                                    : () => context
+                                          .read<GameDetailsCubit>()
+                                          .review(speed: speed),
+                                child: Text(label),
+                              )
+                            : FilledButton.tonal(
+                                key: key,
+                                style: FilledButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(46),
+                                ),
+                                onPressed: state.moves.isEmpty
+                                    ? null
+                                    : () => context
+                                          .read<GameDetailsCubit>()
+                                          .review(speed: speed),
+                                child: Text(label),
+                              ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
             );
     } else {
       child = Column(
