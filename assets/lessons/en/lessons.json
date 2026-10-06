@@ -382,5 +382,22 @@
   "coach.graduation": [
     "You graduated. Remember the first lesson, when the rook still crawled across the board? Look how far you have come. Now climb the Journey rung by rung. At the top, I will be waiting for you, no longer as your teacher, but as your opponent."
   ],
-  "journey.reunion": "You came back. I remember your first day at school, when the rook still moved slowly. Today I am the last rung between you and the top. Come, my student: show me everything you learned. Being surpassed by a student is a teacher's greatest honour."
+  "journey.reunion": "You came back. I remember your first day at school, when the rook still moved slowly. Today I am the last rung between you and the top. Come, my student: show me everything you learned. Being surpassed by a student is a teacher's greatest honour.",
+  "endgames.welcome": "These are the endgame lessons. Each one goes deep into an endgame every player must master: the lesson, the exercises with stars and, at the end, the real endgame. Choose where to begin.",
+  "endgames.welcomeBack": [
+    "Good to see you again. Endgames are in no hurry, but they have a method.",
+    "You are back. Every star you earn is a position you will never lose again.",
+    "The board is set. Let us continue where we stopped."
+  ],
+  "endgames.allPassed": "You have passed every endgame lesson. The knowledge is yours now: take it to your games.",
+  "endgames.module.mates": "Difficult mates",
+  "endgames.module.pawns": "Pawn endgames",
+  "endgames.module.queen": "Queen endgames",
+  "endgames.module.rookPawns": "Rook against pawns",
+  "endgames.module.rook": "Rook endgames",
+  "endgames.module.minor": "Minor pieces",
+  "endgames.module.rookMinor": "Rook and minor piece",
+  "endgames.lesson.intro": "First the lesson, then the exercises. Once your score passes the minimum, I unlock the real endgame.",
+  "endgames.lesson.passed": "Passed. Now all that is left is to prove it against a flesh-and-blood opponent: or a silicon one.",
+  "endgames.lesson.failed": "Not this time. Reread the lesson if you like and redo the exercises: the second time is usually much better."
 }

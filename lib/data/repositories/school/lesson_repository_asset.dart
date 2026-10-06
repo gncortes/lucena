@@ -51,20 +51,35 @@ class AssetLessonRepository implements LessonRepository {
             lessons: [
               for (final lesson
                   in (module['lessons'] as List).cast<Map<String, dynamic>>())
-                Lesson(
-                  id: lesson['id'] as String,
-                  steps: [
-                    for (final step
-                        in (lesson['steps'] as List)
-                            .cast<Map<String, dynamic>>())
-                      ?_step(step),
-                  ],
-                ),
+                parseLesson(lesson),
             ],
           ),
       ],
     );
   }
+
+  /// Uma aula (`id` e `steps`); passo de tipo desconhecido é ignorado.
+  static Lesson parseLesson(Map<String, dynamic> lesson) => Lesson(
+    id: lesson['id'] as String,
+    steps: [
+      for (final step in (lesson['steps'] as List).cast<Map<String, dynamic>>())
+        ?_step(step),
+    ],
+  );
+
+  /// As vezes do aluno de um passo de lance: os aceitos e a resposta. O
+  /// lance ensinado (`teach`), quando vem, fica em primeiro entre os aceitos:
+  /// é ele que a dica mostra e a quem a resposta combinada serve.
+  static List<MoveTurn> parseLine(List<dynamic> line) => [
+    for (final turn in line.cast<Map<String, dynamic>>())
+      MoveTurn(
+        accept: {
+          if (turn['teach'] case final String teach) teach,
+          for (final move in turn['accept'] as List) move as String,
+        },
+        reply: turn['reply'] as String?,
+      ),
+  ];
 
   static LessonStep? _step(Map<String, dynamic> json) {
     final id = json['id'] as String;
@@ -91,16 +106,7 @@ class AssetLessonRepository implements LessonRepository {
       'move' when fen != null => MoveStep(
         id: id,
         fen: fen,
-        line: [
-          for (final turn
-              in (json['line'] as List).cast<Map<String, dynamic>>())
-            MoveTurn(
-              accept: {
-                for (final move in turn['accept'] as List) move as String,
-              },
-              reply: turn['reply'] as String?,
-            ),
-        ],
+        line: parseLine(json['line'] as List),
       ),
       'play' when fen != null => PlayStep(
         id: id,

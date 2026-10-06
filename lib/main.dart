@@ -10,6 +10,8 @@ import 'data/repositories/evaluation/evaluation_repository.dart';
 import 'data/repositories/characters/talk_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
+import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
 import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
@@ -62,15 +64,22 @@ class _LucenaAppState extends State<LucenaApp> {
   Future<void> _openRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
     final school = await widget.dependencies.schoolProgressRepository.load();
+    final endgames = await widget.dependencies.endgameProgressRepository.load();
     if (!mounted) return;
     final resume = game != null && game.reopensOnLaunch;
     final lesson = school.ongoing;
+    final endgameLesson = endgames.ongoing;
+    final exercise = endgames.openExercise;
     setState(() {
       _router = buildRouter(
         initialLocation: resume
             ? Routes.freeBoard
             : lesson != null && lesson.open
             ? Routes.lesson(lesson.lessonId)
+            : endgameLesson != null && endgameLesson.open
+            ? Routes.endgameLessonSteps(endgameLesson.lessonId)
+            : exercise != null
+            ? Routes.endgameExercise(exercise.$1, exercise.$2.exerciseId)
             : Routes.home,
       );
     });
@@ -148,6 +157,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SchoolProgressRepository>.value(
           value: dependencies.schoolProgressRepository,
+        ),
+        RepositoryProvider<EndgameLessonRepository>.value(
+          value: dependencies.endgameLessonRepository,
+        ),
+        RepositoryProvider<EndgameProgressRepository>.value(
+          value: dependencies.endgameProgressRepository,
         ),
         RepositoryProvider<DrawOfferRepository>.value(
           value: dependencies.drawOfferRepository,
