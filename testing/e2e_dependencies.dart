@@ -41,6 +41,7 @@ import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
+import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -183,6 +184,7 @@ Future<Dependencies> e2eDependencies() async {
     schoolProgressRepository: LocalSchoolProgressRepository(
       PreferencesService(),
     ),
+    starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
     endgameLessonRepository: AssetEndgameLessonRepository(
       const AssetService(),
       school: lessons,

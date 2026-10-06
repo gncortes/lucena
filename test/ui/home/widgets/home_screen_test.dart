@@ -149,7 +149,8 @@ void main() {
       tester.getTopLeft(find.byKey(key)).dy;
 
   testWidgets('cada caminho diz o que se faz nele, na ordem de quem está '
-      'aprendendo: aulas, Jornada, speedrun e finais avulsos', (tester) async {
+      'aprendendo: aulas, Jornada, aulas de finais, speedrun e finais '
+      'avulsos', (tester) async {
     await pumpTall(tester);
 
     expect(find.text('O que você quer fazer?'), findsOneWidget);
@@ -193,6 +194,7 @@ void main() {
       HomeKeys.whereCard,
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
+      HomeKeys.endgamesButton,
       HomeKeys.speedrunButton,
       HomeKeys.catalogButton,
       HomeKeys.freeBoardButton,

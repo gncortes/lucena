@@ -38,6 +38,7 @@ class ExerciseState {
     this.mistakes = 0,
     this.hints = 0,
     this.hint,
+    this.wrongMove,
     this.phase = ExercisePhase.active,
     this.speech,
     this.emotion = Emotion.calm,
@@ -69,6 +70,9 @@ class ExerciseState {
 
   /// A seta da dica.
   final Move? hint;
+
+  /// O último lance errado, para o tabuleiro mostrar o que o aluno fez.
+  final Move? wrongMove;
   final ExercisePhase phase;
   final String? speech;
   final Emotion emotion;
@@ -103,6 +107,8 @@ class ExerciseState {
     int? mistakes,
     int? hints,
     Move? hint,
+    Move? wrongMove,
+    bool clearWrongMove = false,
     bool clearHint = false,
     ExercisePhase? phase,
     String? speech,
@@ -121,6 +127,7 @@ class ExerciseState {
     mistakes: mistakes ?? this.mistakes,
     hints: hints ?? this.hints,
     hint: clearHint ? null : hint ?? this.hint,
+    wrongMove: clearWrongMove ? null : wrongMove ?? this.wrongMove,
     phase: phase ?? this.phase,
     speech: speech ?? this.speech,
     emotion: emotion ?? this.emotion,
@@ -189,7 +196,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      speech: texts.say('$lessonId.ex.$exerciseId'),
+      // O enunciado fica para a ajuda: aqui só o convite.
+      speech: texts.say('coach.exerciseStart', 0),
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
@@ -220,7 +228,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       emit(
         state.copyWith(
           mistakes: mistakes,
-          speech: _hintText() ?? _pick('coach.wrong'),
+          wrongMove: move,
+          // A pista fica para a dica: aqui só o "não é esse".
+          speech: _pick('coach.wrong'),
           emotion: Emotion.focused,
         ),
       );
@@ -240,6 +250,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         fen: played.position.fen,
         lastMove: move,
         clearHint: true,
+        clearWrongMove: true,
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
@@ -281,8 +292,13 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     emit(
       state.copyWith(
         hint: Move.parse(accepted),
+        clearWrongMove: true,
         hints: state.hint == null ? state.hints + 1 : state.hints,
-        speech: _hintText() ?? _pick('coach.hint'),
+        // A ajuda traz o enunciado e a pista (e a seta).
+        speech: [
+          ?_statement(),
+          ?(_hintText() ?? _pick('coach.hint')),
+        ].join(' '),
         emotion: Emotion.focused,
       ),
     );
@@ -321,6 +337,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         lastMove: move,
         turn: state.turn + 1,
         clearHint: true,
+        clearWrongMove: true,
         phase: ExercisePhase.done,
         earned: earned,
         speech:
@@ -360,6 +377,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final fen = state.fen;
     return fen == null ? null : GameRules.fromFen(fen);
   }
+
+  String? _statement() =>
+      state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}');
 
   String? _hintText() =>
       state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint');

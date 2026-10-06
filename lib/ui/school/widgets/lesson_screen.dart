@@ -19,6 +19,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
 import 'lesson_finished.dart';
+import 'star_shape.dart';
 
 /// Uma aula com o Viktor: ele em cima, falando; o tabuleiro no meio; a barra
 /// dos passos e o botão do passo embaixo.
@@ -117,25 +118,11 @@ class _LessonScreenState extends State<LessonScreen>
           return Scaffold(
             key: LessonKeys.screen,
             appBar: AppBar(
+              // Só o número: o título da aula fica sob o tabuleiro.
               title: lesson == null
                   ? null
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Título longo (aulas de finais) diminui, sem cortar.
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: AlignmentDirectional.centerStart,
-                          child: Text(state.texts.lessonTitle(lesson.id)),
-                        ),
-                        Text(
-                          l10n.lessonNumber(
-                            state.lessonNumber,
-                            state.lessonCount,
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
+                  : Text(
+                      l10n.lessonNumber(state.lessonNumber, state.lessonCount),
                     ),
             ),
             body: SafeArea(child: _body(context, state, boardSettings)),
@@ -158,66 +145,113 @@ class _LessonScreenState extends State<LessonScreen>
     final viktor = state.viktor;
     final step = state.current!;
     final theme = Theme.of(context);
+    final board = _board;
+    final hasBoard = state.fen != null && board != null;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
-          : Column(
-              children: [
-                SizedBox.shrink(
-                  key: LessonKeys.step(state.lesson!.id, step.id),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Semantics(
-                          label: l10n.lessonStep(
-                            state.step + 1,
-                            state.stepCount,
-                          ),
-                          child: ExcludeSemantics(
-                            child: StepProgress(
-                              key: LessonKeys.progress,
-                              total: state.stepCount,
-                              value: state.progress * state.stepCount,
+          : LayoutBuilder(
+              builder: (context, constraints) => Column(
+                children: [
+                  SizedBox.shrink(
+                    key: LessonKeys.step(state.lesson!.id, step.id),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Semantics(
+                            label: l10n.lessonStep(
+                              state.step + 1,
+                              state.stepCount,
+                            ),
+                            child: ExcludeSemantics(
+                              child: StepProgress(
+                                key: LessonKeys.progress,
+                                total: state.stepCount,
+                                value: state.progress * state.stepCount,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        l10n.lessonStepShort(state.step + 1, state.stepCount),
-                        key: LessonKeys.stepCounter,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n.lessonStepShort(state.step + 1, state.stepCount),
+                          key: LessonKeys.stepCounter,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (hasBoard) ...[
+                    // Com tabuleiro: ele no alto (até metade da tela), o
+                    // título e o que fazer, e a fala do Viktor embaixo, com
+                    // o espaço que sobra (rola se for longa).
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: _boardArea(
+                        context,
+                        state,
+                        boardSettings,
+                        board,
+                        size: max(
+                          min(
+                            constraints.maxWidth - 16,
+                            constraints.maxHeight * 0.5,
+                          ),
+                          120.0,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                if (viktor != null)
-                  Container(
-                    // Com tabuleiro, a fala tem altura fixa (até 5 linhas):
-                    // o tabuleiro não sobe nem desce quando ela muda.
-                    constraints: BoxConstraints(
-                      minHeight: state.fen == null ? 0 : 172,
                     ),
-                    alignment: AlignmentDirectional.topStart,
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                    child: TeacherSpeech(
-                      teacher: viktor,
-                      text: state.speech,
-                      emotion: state.emotion,
-                      avatarSize: state.fen == null ? 72 : 56,
-                      maxLines: state.fen == null ? null : 5,
-                      bubbleKey: LessonKeys.speech,
+                    _guide(context, state, step),
+                    if (viktor != null)
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                          child: TeacherSpeech(
+                            teacher: viktor,
+                            text: state.speech,
+                            emotion: state.emotion,
+                            avatarSize: 56,
+                            bubbleKey: LessonKeys.speech,
+                          ),
+                        ),
+                      )
+                    else
+                      const Spacer(),
+                  ] else ...[
+                    if (viktor != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                        child: TeacherSpeech(
+                          teacher: viktor,
+                          text: state.speech,
+                          emotion: state.emotion,
+                          avatarSize: 72,
+                          bubbleKey: LessonKeys.speech,
+                        ),
+                      ),
+                    // Passo só de conversa: o espaço fica com o símbolo da
+                    // aula, para a fala ter destaque.
+                    Expanded(
+                      child: Center(
+                        child: Icon(
+                          Icons.school_outlined,
+                          size: 96,
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.18,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                Expanded(child: _boardArea(context, state, boardSettings)),
-                _actions(context, state),
-              ],
+                  ],
+                  _actions(context, state),
+                ],
+              ),
             ),
     );
   }
@@ -226,80 +260,100 @@ class _LessonScreenState extends State<LessonScreen>
     BuildContext context,
     LessonState state,
     BoardSettings boardSettings,
-  ) {
-    final board = _board;
+    ChessboardController board, {
+    required double size,
+  }) {
     final step = state.current!;
-    if (state.fen == null || board == null) {
-      // Passo só de conversa: o espaço do tabuleiro fica com o símbolo da
-      // aula, para a fala ter destaque.
-      return Center(
-        child: Icon(
-          Icons.school_outlined,
-          size: 96,
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
-        ),
-      );
-    }
     final colors = Theme.of(context).colorScheme;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = min(constraints.maxWidth - 16, constraints.maxHeight - 8);
-        final hint = state.hint;
-        final shapes = <Shape>{
-          if (step is TalkStep) ...[
-            for (final (from, to) in step.arrows)
-              Arrow(
-                color: colors.primary.withValues(alpha: 0.75),
-                orig: Square.fromName(from),
-                dest: Square.fromName(to),
-              ),
-            for (final mark in step.marks)
-              Circle(
-                color: const Color(0xcc15781b),
-                orig: Square.fromName(mark),
-              ),
-          ],
-          for (final star in state.stars)
-            CustomShape(
-              orig: Square.fromName(star),
-              scale: 0.7,
-              child: _Star(key: LessonKeys.star(star)),
-            ),
-          if (hint is NormalMove)
-            Arrow(
-              color: const Color(0xcc15781b),
-              orig: hint.from,
-              dest: hint.to,
-            ),
-        };
-        return Align(
-          alignment: Alignment.topCenter,
-          child: AnimatedBuilder(
-            animation: _shake,
-            builder: (context, child) => Transform.translate(
-              offset: Offset(
-                sin(_shake.value * pi * 4) * 8 * (1 - _shake.value),
-                0,
-              ),
-              child: child,
-            ),
-            // O tabuleiro não espelha em idiomas da direita para a esquerda.
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Chessboard(
-                key: LessonKeys.board,
-                size: max(size, 120),
-                controller: board,
-                settings: boardSettings.chessground,
-                orientation: step.side,
-                shapes: shapes,
-                onMove: (move, {viaDragAndDrop}) =>
-                    context.read<LessonCubit>().play(move),
-              ),
+    final hint = state.hint;
+    final shapes = <Shape>{
+      if (step is TalkStep) ...[
+        for (final (from, to) in step.arrows)
+          Arrow(
+            color: colors.primary.withValues(alpha: 0.75),
+            orig: Square.fromName(from),
+            dest: Square.fromName(to),
+          ),
+        for (final mark in step.marks)
+          Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
+      ],
+      for (final star in state.stars)
+        CustomShape(
+          orig: Square.fromName(star),
+          scale: 0.7,
+          child: StarShape(key: LessonKeys.star(star)),
+        ),
+      if (hint is NormalMove)
+        Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
+    };
+    return AnimatedBuilder(
+      animation: _shake,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(sin(_shake.value * pi * 4) * 8 * (1 - _shake.value), 0),
+        child: child,
+      ),
+      // O tabuleiro não espelha em idiomas da direita para a esquerda.
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Chessboard(
+          key: LessonKeys.board,
+          size: size,
+          controller: board,
+          settings: boardSettings.chessground,
+          orientation: step.side,
+          shapes: shapes,
+          onMove: (move, {viaDragAndDrop}) =>
+              context.read<LessonCubit>().play(move),
+        ),
+      ),
+    );
+  }
+
+  /// Entre o tabuleiro e a fala: o título da aula e o que fazer no passo.
+  Widget _guide(BuildContext context, LessonState state, LessonStep step) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final text = switch (state.phase) {
+      StepPhase.waiting => l10n.lessonThinking,
+      StepPhase.done => l10n.lessonGuideDone,
+      StepPhase.failed => l10n.lessonRetry,
+      StepPhase.active => switch (step) {
+        TalkStep() => l10n.lessonGuideTalk,
+        StarsStep() => l10n.lessonGuideStars,
+        MoveStep() => l10n.lessonGuideMove(
+          step.side == Side.white ? 'white' : 'black',
+        ),
+        PlayStep() => l10n.lessonGuidePlay(
+          step.goal == PlayGoal.mate ? 'mate' : 'promote',
+        ),
+      },
+    };
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Column(
+        children: [
+          Text(
+            state.texts.lessonTitle(state.lesson!.id),
+            key: LessonKeys.title,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
           ),
-        );
-      },
+          const SizedBox(height: 2),
+          Text(
+            text,
+            key: LessonKeys.guide,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -361,26 +415,6 @@ class _LessonScreenState extends State<LessonScreen>
 
 /// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
 /// animação sem fim não deixaria a tela "assentar" nos testes).
-class _Star extends StatelessWidget {
-  const _Star({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.3, end: 1),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 600),
-      curve: Curves.elasticOut,
-      builder: (context, value, child) =>
-          Transform.scale(scale: value, child: child),
-      child: const FittedBox(
-        child: Icon(Icons.star_rounded, color: Color(0xfff2b705)),
-      ),
-    );
-  }
-}
-
 /// Abre a próxima aula da trilha no lugar desta.
 void openLesson(BuildContext context, String lessonId) =>
     context.pushReplacement(Routes.lesson(lessonId));

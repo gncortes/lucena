@@ -74,6 +74,7 @@ class FakeLessonRepository implements LessonRepository {
     'coach.good': ['Good.'],
     'coach.star': ['A star!'],
     'coach.hint': ['Look at this move.'],
+    'coach.exerciseStart': ['Your move.'],
     'coach.stalemate': ['Stalemate!'],
     'coach.draw': ['A draw.'],
     'coach.lost': ['You were mated.'],

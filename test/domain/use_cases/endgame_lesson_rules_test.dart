@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/use_cases/endgame_lesson_rules.dart';
 
 import '../../../testing/fakes/fake_endgame_repositories.dart';
@@ -79,5 +80,24 @@ void main() {
       const EndgameLessonProgress(lessonDone: true, stars: {'e01': 1}),
     );
     expect(EndgameLessonRules.next(trail, all), isNull);
+  });
+
+  test('a solução em notação: o lance ensinado e a resposta de cada vez', () {
+    final lesson = FakeEndgameLessonRepository.sample.lesson('rook.lucena')!;
+    final e02 = lesson.exercises.firstWhere((e) => e.id == 'e02');
+    expect(EndgameLessonRules.solution(e02), ['Rc4', 'Ra1', 'Rc5']);
+    expect(
+      EndgameLessonRules.solution(
+        const Exercise(
+          id: 'x',
+          stars: 1,
+          fen: 'not a fen',
+          goal: PositionGoal.win,
+          origin: 'own',
+          line: [],
+        ),
+      ),
+      isEmpty,
+    );
   });
 }
