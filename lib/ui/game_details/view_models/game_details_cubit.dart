@@ -51,6 +51,7 @@ class GameDetailsState {
     this.live = const {},
     this.annotating = const {},
     this.engineDepths = const {},
+    this.liveDepths = const {},
   });
 
   final bool ready;
@@ -93,6 +94,9 @@ class GameDetailsState {
   /// passando (a engine avalia na hora) e os que a revisão já cobriu.
   final Map<int, ReviewedMove> live;
 
+  /// A profundidade de cada anotação na hora, por lance.
+  final Map<int, int> liveDepths;
+
   /// A profundidade das linhas já mostradas, por posição.
   final Map<int, int> engineDepths;
 
@@ -102,10 +106,13 @@ class GameDetailsState {
   /// A anotação do lance [index]: a da revisão ou a feita na hora.
   ReviewedMove? reviewOf(int index) {
     final review = this.review;
+    final live = this.live[index];
     if (review != null && index >= 0 && index < review.moves.length) {
+      // Ficando no lance, a engine passa da profundidade da revisão.
+      if (live != null && (liveDepths[index] ?? 0) > review.depth) return live;
       return review.moves[index];
     }
-    return live[index];
+    return live;
   }
 
   /// A avaliação da posição mostrada: a da engine ligada, a da revisão ou a
@@ -152,6 +159,7 @@ class GameDetailsState {
     Map<int, ReviewedMove>? live,
     Set<int>? annotating,
     Map<int, int>? engineDepths,
+    Map<int, int>? liveDepths,
   }) => GameDetailsState(
     ready: ready,
     attempt: attempt,
@@ -170,6 +178,7 @@ class GameDetailsState {
     live: live ?? this.live,
     annotating: annotating ?? this.annotating,
     engineDepths: engineDepths ?? this.engineDepths,
+    liveDepths: liveDepths ?? this.liveDepths,
   );
 }
 
@@ -192,9 +201,15 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   static const engineDepth = 18;
   static const barDepth = 12;
 
-  /// A profundidade da anotação na hora, ao passar os lances: rápida; a
-  /// revisão completa refaz essas posições na [reviewDepth].
-  static const liveDepth = 10;
+  /// A anotação na hora, ao passar os lances: sai rasa, na primeira
+  /// profundidade, e vai aprofundando enquanto o jogador fica no lance (pode
+  /// mudar de qualidade, como no Lichess). A revisão completa usa a
+  /// [reviewDepth].
+  static const liveDepths = [8, 12, 16, 20];
+  static const liveDepth = 8;
+
+  /// As linhas da engine ligada: na hora e depois cada vez mais fundas.
+  static const engineDepths = [8, 14, 18];
 
   /// Quantas linhas a engine mostra ligada.
   static const engineLineCount = 3;
@@ -349,26 +364,42 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     analyses: [_positionLines[index], _positionLines[index + 1]],
   ).moves.single;
 
-  /// Anota na hora o lance [index] que o jogador está vendo (sem revisão
-  /// completa): a engine avalia a posição antes e a depois dele.
+  /// Anota na hora o lance [index] que o jogador está vendo: primeiro raso
+  /// (instantâneo) e, enquanto ele fica no lance, cada vez mais fundo. Com a
+  /// revisão feita, só aprofunda além da profundidade dela.
   Future<void> _annotate(int index) async {
-    if (_analysis == null || state.review != null) return;
-    if (index < 0 || state.live.containsKey(index)) return;
-    if (state.annotating.contains(index)) return;
-    emit(state.copyWith(annotating: {...state.annotating, index}));
-    await Future.wait([
-      _linesAt(index, liveDepth, urgent: true),
-      _linesAt(index + 1, liveDepth, urgent: true),
-    ]);
-    if (isClosed) return;
-    if (state.review != null) return;
-    emit(
-      state.copyWith(
-        live: {...state.live, index: _moveReview(index)},
-        annotating: {...state.annotating}..remove(index),
-      ),
-    );
+    if (_analysis == null || index < 0 || index >= state.moves.length) return;
+    if (!_annotating.add(index)) return;
+    try {
+      for (final depth in liveDepths) {
+        final known = state.review?.depth ?? 0;
+        if (depth <= known || depth <= (state.liveDepths[index] ?? 0)) {
+          continue;
+        }
+        // O jogador saiu do lance: o resto fica para quando ele voltar.
+        if (state.shownIndex != index && state.live.containsKey(index)) return;
+        if (!state.live.containsKey(index)) {
+          emit(state.copyWith(annotating: {...state.annotating, index}));
+        }
+        await Future.wait([
+          _linesAt(index, depth, urgent: true),
+          _linesAt(index + 1, depth, urgent: true),
+        ]);
+        if (isClosed) return;
+        emit(
+          state.copyWith(
+            live: {...state.live, index: _moveReview(index)},
+            liveDepths: {...state.liveDepths, index: depth},
+            annotating: {...state.annotating}..remove(index),
+          ),
+        );
+      }
+    } finally {
+      _annotating.remove(index);
+    }
   }
+
+  final _annotating = <int>{};
 
   /// A avaliação rápida da posição mostrada, para a barra, se ainda não
   /// existe nenhuma.
@@ -414,7 +445,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         );
         return;
       }
-      for (final depth in const [liveDepth, engineDepth]) {
+      for (final depth in engineDepths) {
         if ((state.engineDepths[index] ?? 0) >= depth) continue;
         final lines = await analysis.analyse(
           position,

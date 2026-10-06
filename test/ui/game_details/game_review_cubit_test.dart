@@ -92,7 +92,8 @@ void main() {
     final again = build(id);
     await again.load();
     expect(again.state.review!.moves.single.quality, MoveQuality.best);
-    expect(analysis.requests, isEmpty);
+    // Não refaz a partida: no máximo aprofunda o lance que está na tela.
+    expect(analysis.requests.length, lessThanOrEqualTo(1));
   });
 
   test('navegar: início, voltar, avançar e fim', () async {
@@ -167,18 +168,32 @@ void main() {
 
       expect(seen, containsAllInOrder([1, 2, 3]));
       expect(cubit.state.review!.moves, hasLength(3));
-      // A revisão refaz, mais funda, as posições da avaliação rápida; a
-      // final (mate) não vai para a engine.
-      expect(analysis.requests.length - before, 3);
+      // A revisão refaz, mais funda, só as posições que a avaliação na hora
+      // ainda não tinha passado da profundidade dela; a final (mate) não vai
+      // para a engine.
+      expect(analysis.requests.length - before, inInclusiveRange(1, 3));
 
-      // Com a revisão feita, passar pelos lances não chama mais a engine.
-      final after = analysis.requests.length;
-      cubit
-        ..first()
-        ..next()
-        ..last();
+      // Com a revisão feita, a anotação do lance aparece na hora.
+      cubit.first();
+      cubit.next();
+      expect(cubit.state.shownReview, isNotNull);
+    },
+  );
+
+  test(
+    'ficando no lance, a anotação vai até a profundidade mais funda',
+    () async {
+      // Qg2 deixa o mate em um e leva a um mate em três: imprecisão.
+      final after = '7k/8/5K2/8/8/8/6Q1/8 b - - 1 1';
+      analysis.answer[start] = [line('g1g7', mate: 1)];
+      analysis.answer[after] = [line('h8h7', mate: 3)];
+      final id = await save(['g1g2', 'h8h7']);
+      final cubit = build(id);
+      await cubit.load();
+      cubit.select(0);
       await Future<void>.delayed(Duration.zero);
-      expect(analysis.requests.length, after);
+      expect(cubit.state.liveDepths[0], GameDetailsCubit.liveDepths.last);
+      expect(cubit.state.shownReview!.quality, MoveQuality.inaccuracy);
     },
   );
 }
