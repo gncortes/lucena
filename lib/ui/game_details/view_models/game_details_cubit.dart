@@ -332,11 +332,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (state.moves.isEmpty) return;
     _following = true;
     emit(
-      state.copyWith(
-        reviewing: true,
-        reviewProgress: 0,
-        reviewWeight: weight,
-      ),
+      state.copyWith(reviewing: true, reviewProgress: 0, reviewWeight: weight),
     );
     final total = state.moves.length;
     // A posição de início primeiro: a barra já abre com a avaliação dela.
