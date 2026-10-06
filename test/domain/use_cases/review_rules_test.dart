@@ -169,4 +169,41 @@ void main() {
       expect(black[MoveQuality.blunder], 1);
     });
   });
+
+  group('distância do mate (finais ganhos)', () {
+    test('quem dá o mate: cada lance a mais custa, até o erro', () {
+      expect(ReviewRules.mateLoss(before: 5, after: 4), 0);
+      expect(ReviewRules.mateLoss(before: 5, after: 6), 4);
+      expect(ReviewRules.mateLoss(before: 5, after: 9), 10);
+      expect(ReviewRules.mateLoss(before: 5, after: 30), lessThan(15));
+      // Mate dado: nenhuma perda.
+      expect(ReviewRules.mateLoss(before: 1, after: 0), 0);
+      // Perdeu o mate forçado.
+      expect(ReviewRules.mateLoss(before: 5), ReviewRules.mateLostLoss);
+    });
+
+    test('quem leva o mate: apressar custa, segurar não', () {
+      expect(ReviewRules.mateLoss(before: -6, after: -6), 0);
+      expect(ReviewRules.mateLoss(before: -6, after: -3), 6);
+    });
+
+    test('numa partida de dama contra rei, o lance que atrasa o mate é '
+        'imprecisão e baixa a precisão', () {
+      final start = GameRules.fromFen('7k/8/5K2/8/8/8/8/6Q1 w - - 0 1')!;
+      final review = ReviewRules.review(
+        start: start,
+        moves: [Move.parse('g1g2')!],
+        analyses: [
+          [
+            const EngineLine(score: EngineScore(mate: 1), moves: ['g1g7']),
+          ],
+          [
+            const EngineLine(score: EngineScore(mate: 4), moves: ['h8h7']),
+          ],
+        ],
+      );
+      expect(review.moves.single.quality, MoveQuality.inaccuracy);
+      expect(review.whiteAccuracy, lessThan(90));
+    });
+  });
 }
