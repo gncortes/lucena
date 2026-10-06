@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 punto} other{{count} punti}}",
   "starChallengePointsTotal": "{count} punti in totale",
   "starChallengeLegend": "Ogni stella sparisce dopo un po’: quella d’oro per prima.",
-  "starChallengeObstacles": "I pedoni neri intralciano soltanto: non si possono catturare. Quello che raccogli sono le stelle."
+  "starChallengeObstacles": "I pedoni neri intralciano soltanto: non si possono catturare. Quello che raccogli sono le stelle.",
+  "settingsSound": "Suoni",
+  "settingsSoundHint": "Le mosse dei pezzi e un avviso quando il tempo sta per finire",
+  "tourSoundTitle": "Con o senza audio?",
+  "tourSoundBody": "Ascolta i pezzi a ogni mossa e un avviso quando l'orologio sta per scadere.",
+  "tourSoundOn": "Con audio",
+  "tourSoundOff": "Senza audio"
 }

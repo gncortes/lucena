@@ -31,6 +31,10 @@ abstract final class TourKeys {
       Key('tour.theme.accent.${accent.code}');
   static const accentValue = Key('tour.theme.accent.value');
 
+  /// No passo do som: com som ou sem som.
+  static Key sound({required bool enabled}) =>
+      Key('tour.sound.${enabled ? 'on' : 'off'}');
+
   /// No passo do tabuleiro: a amostra, as cores e as peças.
   static const boardPreview = Key('tour.board.preview');
   static Key boardColors(BoardColors colors) =>

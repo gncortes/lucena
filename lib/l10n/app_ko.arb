@@ -478,5 +478,11 @@
   "starChallengePoints": "{count}점",
   "starChallengePointsTotal": "총 {count}점",
   "starChallengeLegend": "별은 잠시 후 사라집니다. 금색이 먼저 사라집니다.",
-  "starChallengeObstacles": "검은 폰은 길을 막을 뿐 잡을 수 없습니다. 모으는 것은 별입니다."
+  "starChallengeObstacles": "검은 폰은 길을 막을 뿐 잡을 수 없습니다. 모으는 것은 별입니다.",
+  "settingsSound": "소리",
+  "settingsSoundHint": "기물의 움직임과 시간이 얼마 남지 않았을 때의 알림",
+  "tourSoundTitle": "소리를 켤까요?",
+  "tourSoundBody": "수를 둘 때마다 기물 소리가 나고, 시계가 거의 다 되면 알림이 울립니다.",
+  "tourSoundOn": "소리 켜기",
+  "tourSoundOff": "소리 끄기"
 }

@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 Punkt} other{{count} Punkte}}",
   "starChallengePointsTotal": "{count} Punkte insgesamt",
   "starChallengeLegend": "Jeder Stern verschwindet nach einer Weile: der goldene zuerst.",
-  "starChallengeObstacles": "Die schwarzen Bauern stehen nur im Weg: Du kannst sie nicht schlagen. Du sammelst die Sterne."
+  "starChallengeObstacles": "Die schwarzen Bauern stehen nur im Weg: Du kannst sie nicht schlagen. Du sammelst die Sterne.",
+  "settingsSound": "Töne",
+  "settingsSoundHint": "Figurenzüge und ein Signal, wenn deine Zeit knapp wird",
+  "tourSoundTitle": "Mit oder ohne Ton?",
+  "tourSoundBody": "Höre die Figuren bei jedem Zug und ein Signal, wenn die Uhr abläuft.",
+  "tourSoundOn": "Mit Ton",
+  "tourSoundOff": "Ohne Ton"
 }

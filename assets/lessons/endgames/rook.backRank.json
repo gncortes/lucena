@@ -1,0 +1,558 @@
+{
+  "id": "rook.backRank",
+  "module": "rook",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "b1h1"
+      ],
+      "marks": [
+        "g1",
+        "h1"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "wait",
+      "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "b1c1",
+          "accept": [
+            "b1b3",
+            "b1b4",
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8",
+            "b1c1",
+            "b1d1",
+            "b1e1",
+            "b1f1",
+            "g1f1",
+            "g1h1"
+          ],
+          "reply": "g4h3"
+        },
+        {
+          "teach": "c1b1",
+          "accept": [
+            "c1b1",
+            "c1d1",
+            "c1e1",
+            "c1f1",
+            "g1h1"
+          ],
+          "reply": "a2g2"
+        },
+        {
+          "teach": "g1h1",
+          "accept": [
+            "g1h1"
+          ],
+          "reply": "g2h2"
+        },
+        {
+          "teach": "h1g1",
+          "accept": [
+            "h1g1"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "corner",
+      "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+      "arrows": [
+        "g1h1"
+      ],
+      "marks": [
+        "f1",
+        "h1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "lucena",
+      "fen": "8/8/8/8/8/6p1/6rk/1R3K2 w - - 0 1",
+      "arrows": [
+        "h2g1"
+      ],
+      "marks": [
+        "g1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "room",
+      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+      "side": "white",
+      "marks": [
+        "h1",
+        "h2",
+        "h3"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "bishop",
+      "fen": "8/8/8/8/8/5pk1/7r/R4K2 w - - 0 1",
+      "arrows": [
+        "h2h1",
+        "f3f2"
+      ],
+      "marks": [
+        "g1",
+        "h1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "free",
+      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+      "arrows": [
+        "g4g3",
+        "b1b8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "active",
+      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "b1b8",
+          "accept": [
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8"
+          ],
+          "reply": "g4g3"
+        },
+        {
+          "teach": "b8g8",
+          "accept": [
+            "b8g8"
+          ],
+          "reply": "g3f4"
+        },
+        {
+          "teach": "g8f8",
+          "accept": [
+            "f1e1",
+            "f1g1",
+            "g8b8",
+            "g8c8",
+            "g8d8",
+            "g8e8",
+            "g8f8",
+            "g8g6",
+            "g8g7",
+            "g8h8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "behind",
+      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+      "arrows": [
+        "h8a8",
+        "a8a1"
+      ],
+      "marks": [
+        "g8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "home",
+      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+      "goal": "draw",
+      "line": [
+        {
+          "teach": "h8a8",
+          "accept": [
+            "h8a8",
+            "h8b8",
+            "h8c8",
+            "h8d8",
+            "h8e8"
+          ],
+          "reply": "f3b3"
+        },
+        {
+          "teach": "a8a1",
+          "accept": [
+            "a8a1"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "rookPawn",
+      "fen": "8/8/8/8/8/6kp/r7/1R5K b - - 0 1",
+      "side": "white",
+      "marks": [
+        "h1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "b1h1"
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "g1h1",
+          "accept": [
+            "g1h1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+      "goal": "draw",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "b1b8",
+          "accept": [
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "R7/8/8/8/6p1/1r4k1/8/6K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "profangel",
+      "line": [
+        {
+          "teach": "a8a1",
+          "accept": [
+            "a8a1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "profangel",
+      "line": [
+        {
+          "teach": "h8a8",
+          "accept": [
+            "h8a8",
+            "h8b8",
+            "h8c8",
+            "h8d8",
+            "h8e8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "b1c1",
+          "accept": [
+            "b1b3",
+            "b1b4",
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8",
+            "b1c1",
+            "b1d1",
+            "b1e1",
+            "b1f1",
+            "g1f1",
+            "g1h1"
+          ],
+          "reply": "g4h3"
+        },
+        {
+          "teach": "c1b1",
+          "accept": [
+            "c1b1",
+            "c1d1",
+            "c1e1",
+            "c1f1",
+            "g1h1"
+          ],
+          "reply": "a2g2"
+        },
+        {
+          "teach": "g1h1",
+          "accept": [
+            "g1h1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+      "goal": "draw",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "b1b8",
+          "accept": [
+            "b1b5",
+            "b1b6",
+            "b1b7",
+            "b1b8"
+          ],
+          "reply": "g4g3"
+        },
+        {
+          "teach": "b8g8",
+          "accept": [
+            "b8g8"
+          ],
+          "reply": "g3f4"
+        },
+        {
+          "teach": "g8f8",
+          "accept": [
+            "f1e1",
+            "f1g1",
+            "g8b8",
+            "g8c8",
+            "g8d8",
+            "g8e8",
+            "g8f8",
+            "g8g6",
+            "g8g7",
+            "g8h8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/8/8/8/8/kp6/1r6/1K4R1 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "b1a1",
+          "accept": [
+            "b1a1"
+          ],
+          "reply": "b2a2"
+        },
+        {
+          "teach": "a1b1",
+          "accept": [
+            "a1b1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "profangel",
+      "line": [
+        {
+          "teach": "h8a8",
+          "accept": [
+            "h8a8",
+            "h8b8",
+            "h8c8",
+            "h8d8",
+            "h8e8"
+          ],
+          "reply": "f3b3"
+        },
+        {
+          "teach": "a8a1",
+          "accept": [
+            "a8a1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/8/8/8/8/8/r2kpK2/1R6 w - - 0 1",
+      "goal": "draw",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "b1e1",
+          "accept": [
+            "b1e1"
+          ],
+          "reply": "d2d3"
+        },
+        {
+          "teach": "e1b1",
+          "accept": [
+            "e1b1"
+          ],
+          "reply": "d3d2"
+        },
+        {
+          "teach": "b1e1",
+          "accept": [
+            "b1e1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/8/8/5pk1/8/r7/2R3K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "chessmood",
+      "line": [
+        {
+          "teach": "c1c3",
+          "accept": [
+            "c1c3",
+            "c1c5",
+            "c1c6",
+            "c1c7",
+            "c1c8"
+          ],
+          "reply": "f4f3"
+        },
+        {
+          "teach": "c3c8",
+          "accept": [
+            "c3c5",
+            "c3c6",
+            "c3c7",
+            "c3c8"
+          ],
+          "reply": "g4g3"
+        },
+        {
+          "teach": "c8g8",
+          "accept": [
+            "c8g8"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 11,
+  "keyPositions": [
+    {
+      "id": "knight",
+      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+      "ref": "rookPawn"
+    },
+    {
+      "id": "trick",
+      "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+      "ref": "rookPawn"
+    },
+    {
+      "id": "bishop",
+      "fen": "8/8/8/8/8/5pk1/1r6/R5K1 b - - 0 1",
+      "ref": "rookPawn"
+    },
+    {
+      "id": "seventh",
+      "fen": "8/8/8/8/8/8/r2kpK2/1R6 w - - 0 1",
+      "ref": "rookPawn"
+    }
+  ],
+  "practice": {
+    "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+    "goal": "draw",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "rookPawn",
+      "kind": "web",
+      "title": "Rook and pawn versus rook endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Rook_and_pawn_versus_rook_endgame"
+    },
+    {
+      "id": "chessmood",
+      "kind": "web",
+      "title": "Hovhannes Gabuzyan: Theoretical Rook Endgames (ChessMood)",
+      "url": "https://chessmood.com/blog/rook-endgames"
+    },
+    {
+      "id": "profangel",
+      "kind": "study",
+      "author": "ProfAngel",
+      "title": "Rook Endings. The Philidor Position.",
+      "url": "https://lichess.org/study/a1ss97T0"
+    },
+    {
+      "id": "practice2",
+      "kind": "study",
+      "author": "Lichess",
+      "title": "Lichess Practice: Intermediate Rook Endings",
+      "url": "https://lichess.org/study/heQDnvq7"
+    },
+    {
+      "id": "nunn",
+      "kind": "book",
+      "author": "John Nunn",
+      "title": "Secrets of Rook Endings",
+      "publisher": "Gambit Publications",
+      "year": 1999
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 18
+}

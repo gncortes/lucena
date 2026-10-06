@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 punt} other{{count} punten}}",
   "starChallengePointsTotal": "{count} punten in totaal",
   "starChallengeLegend": "Elke ster verdwijnt na een tijdje: de gouden het eerst.",
-  "starChallengeObstacles": "De zwarte pionnen staan alleen in de weg: je kunt ze niet slaan. Je verzamelt de sterren."
+  "starChallengeObstacles": "De zwarte pionnen staan alleen in de weg: je kunt ze niet slaan. Je verzamelt de sterren.",
+  "settingsSound": "Geluiden",
+  "settingsSoundHint": "Zetten van de stukken en een waarschuwing als je tijd bijna op is",
+  "tourSoundTitle": "Met of zonder geluid?",
+  "tourSoundBody": "Hoor de stukken bij elke zet en een waarschuwing als de klok bijna afloopt.",
+  "tourSoundOn": "Met geluid",
+  "tourSoundOff": "Zonder geluid"
 }

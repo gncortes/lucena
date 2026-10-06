@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очка} other{{count} очков}}",
   "starChallengePointsTotal": "Всего очков: {count}",
   "starChallengeLegend": "Каждая звезда гаснет через время: золотая первой.",
-  "starChallengeObstacles": "Чёрные пешки только мешают: их нельзя взять. Вы собираете звёзды."
+  "starChallengeObstacles": "Чёрные пешки только мешают: их нельзя взять. Вы собираете звёзды.",
+  "settingsSound": "Звуки",
+  "settingsSoundHint": "Ходы фигур и сигнал, когда время на исходе",
+  "tourSoundTitle": "Со звуком или без?",
+  "tourSoundBody": "Слушайте фигуры при каждом ходе и сигнал, когда время на часах заканчивается.",
+  "tourSoundOn": "Со звуком",
+  "tourSoundOff": "Без звука"
 }

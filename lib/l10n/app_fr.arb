@@ -478,5 +478,11 @@
   "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points au total",
   "starChallengeLegend": "Chaque étoile disparaît au bout d’un moment : celle en or la première.",
-  "starChallengeObstacles": "Les pions noirs ne font que gêner : impossible de les capturer. Ce que vous ramassez, ce sont les étoiles."
+  "starChallengeObstacles": "Les pions noirs ne font que gêner : impossible de les capturer. Ce que vous ramassez, ce sont les étoiles.",
+  "settingsSound": "Sons",
+  "settingsSoundHint": "Les coups des pièces et un signal quand votre temps s'épuise",
+  "tourSoundTitle": "Avec ou sans le son ?",
+  "tourSoundBody": "Entendez les pièces à chaque coup et un signal quand la pendule arrive au bout.",
+  "tourSoundOn": "Avec le son",
+  "tourSoundOff": "Sans le son"
 }

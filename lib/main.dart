@@ -17,6 +17,7 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/sound/sound_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
 import 'data/repositories/maia/maia_repository.dart';
@@ -31,6 +32,7 @@ import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'routing/routes.dart';
+import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
@@ -105,6 +107,16 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
         ),
+        RepositoryProvider<SoundRepository>.value(
+          value: dependencies.soundRepository,
+        ),
+        // Os sons do jogo, já com a preferência de ligado ou desligado.
+        RepositoryProvider<GameSounds>(
+          create: (context) => GameSounds(
+            dependencies.settingsRepository,
+            dependencies.soundRepository,
+          ),
+        ),
         RepositoryProvider<OngoingGameRepository>.value(
           value: dependencies.ongoingGameRepository,
         ),
@@ -178,6 +190,7 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => SettingsCubit(
               dependencies.settingsRepository,
               languages: dependencies.languages,
+              sound: dependencies.soundRepository,
             )..load(),
           ),
           BlocProvider(

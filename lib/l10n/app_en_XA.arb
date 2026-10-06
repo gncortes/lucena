@@ -477,5 +477,11 @@
   "starChallengePoints": "{count, plural, =1{[1 pöîñt one]} other{[{count} pöîñtš one two]}}",
   "starChallengePointsTotal": "[{count} pöîñtš îñ åll one two three]",
   "starChallengeLegend": "[Éåçh štåŕ fådéš åftéŕ å whîlé: thé ĝöld öñé ĝöéš fîŕšt. one two three four five]",
-  "starChallengeObstacles": "[Thé blåçk påwñš öñlý ĝét îñ thé wåý: ýöû çåññöt çåptûŕé thém. Ýöû çölléçt thé štåŕš. one two three four five six seven]"
+  "starChallengeObstacles": "[Thé blåçk påwñš öñlý ĝét îñ thé wåý: ýöû çåññöt çåptûŕé thém. Ýöû çölléçt thé štåŕš. one two three four five six seven]",
+  "settingsSound": "[Šöûñdš one]",
+  "settingsSoundHint": "[Pîéçé mövéš åñd å wåŕñîñĝ whéñ ýöûŕ tîmé îš ŕûññîñĝ öût one two three four five]",
+  "tourSoundTitle": "[Šöûñd öñ öŕ öff? one two]",
+  "tourSoundBody": "[Héåŕ thé pîéçéš åš théý mövé åñd å wåŕñîñĝ whéñ thé çlöçk îš ŕûññîñĝ öût. one two three four five six seven]",
+  "tourSoundOn": "[Wîth šöûñd one]",
+  "tourSoundOff": "[Ñö šöûñd one]"
 }

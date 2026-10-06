@@ -390,75 +390,89 @@ class _LessonScreenState extends State<LessonScreen>
         state.phase == StepPhase.done ||
         (step is TalkStep && state.phase == StepPhase.active);
     final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
-        children: [
-          if (canHint)
-            FloatingActionButton.extended(
-              key: LessonKeys.hintButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              elevation: 2,
-              backgroundColor: colors.surface,
-              foregroundColor: colors.primary,
-              onPressed: cubit.askHint,
-              icon: const Icon(Icons.lightbulb_outline),
-              label: Text(l10n.lessonHint),
-            ),
-          if (state.phase == StepPhase.waiting)
-            Material(
-              elevation: 2,
-              color: colors.surface,
-              shape: const StadiumBorder(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(l10n.lessonThinking),
-                  ],
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    // Por baixo dos botões, a tela esmaece até a cor do fundo: a fala que
+    // passa por ali some aos poucos em vez de ficar atrás de um botão, e dá
+    // para ver que ela continua (rolando, o fim dela sobe acima dos botões).
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [background.withValues(alpha: 0), background],
+          stops: const [0, 0.5],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+        child: Row(
+          children: [
+            if (canHint)
+              FloatingActionButton.extended(
+                key: LessonKeys.hintButton,
+                heroTag: null,
+                shape: const StadiumBorder(),
+                elevation: 2,
+                backgroundColor: colors.surface,
+                foregroundColor: colors.primary,
+                onPressed: cubit.askHint,
+                icon: const Icon(Icons.lightbulb_outline),
+                label: Text(l10n.lessonHint),
+              ),
+            if (state.phase == StepPhase.waiting)
+              Material(
+                elevation: 2,
+                color: colors.surface,
+                shape: const StadiumBorder(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(l10n.lessonThinking),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          const Spacer(),
-          if (state.phase == StepPhase.failed)
-            FloatingActionButton.extended(
-              key: LessonKeys.retryButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              onPressed: cubit.retry,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.lessonRetry),
-            ),
-          if (canGo)
-            FloatingActionButton.extended(
-              key: LessonKeys.nextButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              onPressed: cubit.next,
-              label: Text(isLast ? l10n.lessonFinish : l10n.lessonContinue),
-            ),
-        ],
+            const Spacer(),
+            if (state.phase == StepPhase.failed)
+              FloatingActionButton.extended(
+                key: LessonKeys.retryButton,
+                heroTag: null,
+                shape: const StadiumBorder(),
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                onPressed: cubit.retry,
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.lessonRetry),
+              ),
+            if (canGo)
+              FloatingActionButton.extended(
+                key: LessonKeys.nextButton,
+                heroTag: null,
+                shape: const StadiumBorder(),
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                onPressed: cubit.next,
+                label: Text(isLast ? l10n.lessonFinish : l10n.lessonContinue),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
-  static const _actionsHeight = 88.0;
+  static const _actionsHeight = 96.0;
 }
 
 /// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma

@@ -8,6 +8,8 @@ import '../../../data/repositories/school/star_challenge_repository.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
+import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/game_sound.dart';
 
 enum ChallengePhase {
   /// O tabuleiro montado, esperando o "vai".
@@ -124,6 +126,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   StarChallengeCubit({
     required this._progress,
     required this._now,
+    this._sounds,
     Random? random,
     this.tickEvery = const Duration(milliseconds: 100),
   }) : _random = random ?? Random(),
@@ -132,6 +135,15 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   final StarChallengeRepository _progress;
   final Now _now;
   final Random _random;
+
+  /// Com este tempo ou menos, o relógio avisa que está acabando.
+  static const lowTime = Duration(seconds: 10);
+
+  // Os sons do jogo; nulo: o desafio fica mudo.
+  final GameSounds? _sounds;
+
+  // O aviso de pouco tempo toca uma vez por desafio.
+  var _lowTimeWarned = false;
   final Duration tickEvery;
 
   Board _board = Board.empty;
@@ -163,6 +175,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     final square = StarChallengeRules.pieceSquare(_board);
     if (square == null) return;
     _startedAt = _now();
+    _lowTimeWarned = false;
     _pausedTotal = Duration.zero;
     emit(
       _spawn(
@@ -205,6 +218,10 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
       unawaited(_finish());
       return;
     }
+    if (left <= lowTime && !_lowTimeWarned) {
+      _lowTimeWarned = true;
+      unawaited(_sounds?.play(GameSound.lowTime));
+    }
     final expiresAt = _starExpiresAt;
     final starLeft = expiresAt == null
         ? Duration.zero
@@ -223,6 +240,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     final moved = StarChallengeRules.move(_board, move.from, move.to);
     if (moved == null) return;
     final caught = move.to == state.star;
+    unawaited(_sounds?.play(caught ? GameSound.capture : GameSound.move));
     _board = StarChallengeRules.respawnIfStuck(moved, _random);
     final square = StarChallengeRules.pieceSquare(_board)!;
     final after = state.copyWith(

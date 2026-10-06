@@ -45,5 +45,6 @@ abstract final class SettingsKeys {
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 
   static const characterTalkSwitch = Key('settings.characterTalk');
+  static const soundSwitch = Key('settings.sound');
   static const tourTile = Key('settings.tour');
 }

@@ -224,4 +224,20 @@ void main() {
       expect(tester.takeException(), isNull);
     }
   });
+
+  testWidgets('no passo do som, o som vem ligado e escolher "sem som" grava '
+      'a escolha', (tester) async {
+    await pumpTour(tester, step: TourStep.sound);
+    expect(find.byKey(TourKeys.step(TourStep.sound)), findsOneWidget);
+    expect(find.text('Sound on or off?'), findsOneWidget);
+    ListTile option({required bool enabled}) =>
+        tester.widget<ListTile>(find.byKey(TourKeys.sound(enabled: enabled)));
+    expect(option(enabled: true).selected, isTrue);
+
+    await tester.tap(find.byKey(TourKeys.sound(enabled: false)));
+    await tester.pumpAndSettle();
+
+    expect(option(enabled: false).selected, isTrue);
+    expect(settings.saved.last.sound, isFalse);
+  });
 }

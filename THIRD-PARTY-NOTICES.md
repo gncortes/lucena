@@ -17,6 +17,8 @@ package bundled in the app is also available inside the app (licenses page).
 | shared_preferences | BSD-3-Clause | https://pub.dev/packages/shared_preferences |
 | freezed_annotation | MIT | https://pub.dev/packages/freezed_annotation |
 | chessground, dartchess (Lichess) | GPL-3.0 | https://github.com/lichess-org |
+| sound_effect (Lichess) | GPL-3.0 | https://github.com/lichess-org/flutter-sound-effect |
+| Game sounds (move, capture, check, low time): the "sfx" sound set by Enigmahack, from Lichess | AGPL-3.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Chess pieces "cburnett" by Colin M.L. Burnett (shipped with chessground, selectable in the app) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Chess pieces "merida" by Armando Hernandez Marroquin (shipped with chessground, selectable in the app) | GPL-2.0-or-later | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 | Chess pieces "chessnut" by Alexis Luengas (shipped with chessground, selectable in the app) | Apache-2.0 | https://github.com/lichess-org/lila/blob/master/COPYING.md |
