@@ -202,7 +202,9 @@ class _SchoolCard extends StatelessWidget {
             const SizedBox(width: 12),
             FilledButton(
               key: HomeKeys.schoolContinue,
-              onPressed: () => context.go(Routes.school),
+              onPressed: () => school.ongoingLessonId == null
+                  ? context.go(Routes.school)
+                  : context.push(Routes.lesson(school.ongoingLessonId!)),
               child: Text(l10n.homeContinue),
             ),
           ],
