@@ -48,6 +48,7 @@
       "type": "talk",
       "id": "fork3",
       "fen": "3k4/4r3/8/2K2Q2/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "d8c7",
         "d8e8",

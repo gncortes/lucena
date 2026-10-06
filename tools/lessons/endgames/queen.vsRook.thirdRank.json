@@ -39,6 +39,7 @@
       "type": "talk",
       "id": "quietMove",
       "fen": "3k4/8/1r6/3K4/5Q2/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "f4b8",
         "f4f8",
@@ -251,6 +252,7 @@
       "type": "talk",
       "id": "ponziani",
       "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
+      "side": "white",
       "arrows": [
         "f7g7",
         "g7h7"
@@ -264,6 +266,7 @@
       "type": "talk",
       "id": "desperado",
       "fen": "8/8/8/8/8/5KQ1/7r/7k b - - 0 1",
+      "side": "white",
       "arrows": [
         "h2f2"
       ],

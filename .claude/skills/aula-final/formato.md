@@ -31,7 +31,7 @@
 }
 ```
 
-- `steps`: os tipos `talk`, `move` e `play` de `lib/domain/models/lesson.dart`. O aluno é o lado que joga no FEN.
+- `steps`: os tipos `talk`, `move` e `play` de `lib/domain/models/lesson.dart`. O aluno é o lado que joga no FEN. Num passo `talk`, `"side": "white"` (ou `"black"`) fixa de que lado o tabuleiro é visto: use quando a posição ilustrada tem o outro lado jogando (o zugzwang das pretas numa aula em que o aluno joga de brancas), para o tabuleiro não virar entre um passo e outro.
 - `goal`: `win` ou `draw` (defender também se ensina: Philidor, Vancura, o canto certo).
 - `turns`: cada vez do aluno. `teach` é o lance que a aula ensina (UCI); `reply` é a resposta do outro lado (UCI, ou `auto` para a melhor defesa da tabela). Toda vez que não é a última precisa de `reply`.
 - `accept`, a regra dos lances aceitos:
