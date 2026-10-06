@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{À vous de jouer, avec les Blancs.} other{À vous de jouer, avec les Noirs.}}",
   "lessonGuidePlay": "{goal, select, mate{Jouez jusqu’au mat.} other{Jouez jusqu’à la promotion du pion.}}",
   "lessonGuideDone": "Terminé. Passez à l’étape suivante.",
-  "exerciseYourMove": "À vous de jouer"
+  "exerciseYourMove": "À vous de jouer",
+  "starChallengesTitle": "Défis des étoiles",
+  "starChallengesBody": "Ramassez les étoiles avec chaque pièce contre la montre. Trois niveaux par pièce.",
+  "starChallengesIntro": "Choisissez une pièce et un niveau. Une étoile apparaît ; amenez la pièce dessus et une autre s’allume. Combien en ramasserez-vous avant la fin du temps ?",
+  "challengeLevelEasy": "Facile",
+  "challengeLevelMedium": "Moyen",
+  "challengeLevelHard": "Difficile",
+  "starChallengeBest": "Record : {count}",
+  "starChallengeNotPlayed": "Pas encore joué",
+  "starChallengeRule": "{seconds} secondes. Amenez la pièce sur chaque étoile qui apparaît.",
+  "starChallengeGo": "C’est parti !",
+  "starChallengeTimeUp": "Temps écoulé !",
+  "starChallengeNewBest": "Nouveau record !",
+  "starChallengePlayAgain": "Rejouer",
+  "starChallengePaused": "En pause"
 }

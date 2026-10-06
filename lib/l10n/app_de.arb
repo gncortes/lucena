@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Du bist dran, mit Weiß.} other{Du bist dran, mit Schwarz.}}",
   "lessonGuidePlay": "{goal, select, mate{Spiele weiter bis zum Matt.} other{Spiele weiter, bis der Bauer umwandelt.}}",
   "lessonGuideDone": "Geschafft. Weiter zum nächsten Schritt.",
-  "exerciseYourMove": "Du bist dran"
+  "exerciseYourMove": "Du bist dran",
+  "starChallengesTitle": "Sterne-Challenges",
+  "starChallengesBody": "Sammle mit jeder Figur Sterne gegen die Uhr. Drei Stufen pro Figur.",
+  "starChallengesIntro": "Wähle eine Figur und eine Stufe. Ein Stern erscheint; bring die Figur dorthin, und der nächste leuchtet auf. Wie viele schaffst du, bevor die Zeit abläuft?",
+  "challengeLevelEasy": "Leicht",
+  "challengeLevelMedium": "Mittel",
+  "challengeLevelHard": "Schwer",
+  "starChallengeBest": "Rekord: {count}",
+  "starChallengeNotPlayed": "Noch nicht gespielt",
+  "starChallengeRule": "{seconds} Sekunden. Bring die Figur zu jedem Stern, der erscheint.",
+  "starChallengeGo": "Los!",
+  "starChallengeTimeUp": "Zeit um!",
+  "starChallengeNewBest": "Neuer Rekord!",
+  "starChallengePlayAgain": "Noch einmal",
+  "starChallengePaused": "Pausiert"
 }

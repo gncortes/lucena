@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{A sua vez, com as brancas.} other{A sua vez, com as pretas.}}",
   "lessonGuidePlay": "{goal, select, mate{Jogue até dar mate.} other{Jogue até promover o peão.}}",
   "lessonGuideDone": "Feito. Continue para o passo seguinte.",
-  "exerciseYourMove": "A sua vez"
+  "exerciseYourMove": "A sua vez",
+  "starChallengesTitle": "Desafios das estrelas",
+  "starChallengesBody": "Apanhe as estrelas com cada peça contra o relógio. Três níveis por peça.",
+  "starChallengesIntro": "Escolha uma peça e um nível. Aparece uma estrela; leve a peça até ela e acende outra. Quantas consegue apanhar antes de o tempo acabar?",
+  "challengeLevelEasy": "Fácil",
+  "challengeLevelMedium": "Médio",
+  "challengeLevelHard": "Difícil",
+  "starChallengeBest": "Melhor: {count}",
+  "starChallengeNotPlayed": "Ainda não jogou",
+  "starChallengeRule": "{seconds} segundos. Leve a peça até cada estrela que aparecer.",
+  "starChallengeGo": "Vai!",
+  "starChallengeTimeUp": "Acabou o tempo!",
+  "starChallengeNewBest": "Novo recorde!",
+  "starChallengePlayAgain": "Jogar outra vez",
+  "starChallengePaused": "Em pausa"
 }

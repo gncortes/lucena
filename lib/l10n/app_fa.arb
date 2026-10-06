@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{نوبت تو، با سفید.} other{نوبت تو، با سیاه.}}",
   "lessonGuidePlay": "{goal, select, mate{تا مات ادامه بده.} other{تا ارتقای پیاده ادامه بده.}}",
   "lessonGuideDone": "انجام شد. به گام بعد برو.",
-  "exerciseYourMove": "نوبت تو"
+  "exerciseYourMove": "نوبت تو",
+  "starChallengesTitle": "چالش‌های ستاره",
+  "starChallengesBody": "با هر مهره در برابر زمان ستاره جمع کن. سه سطح برای هر مهره.",
+  "starChallengesIntro": "یک مهره و یک سطح انتخاب کن. ستاره‌ای ظاهر می‌شود؛ مهره را به آن برسان تا ستارهٔ بعدی روشن شود. تا پایان زمان چند تا جمع می‌کنی؟",
+  "challengeLevelEasy": "آسان",
+  "challengeLevelMedium": "متوسط",
+  "challengeLevelHard": "سخت",
+  "starChallengeBest": "بهترین: {count}",
+  "starChallengeNotPlayed": "هنوز بازی نشده",
+  "starChallengeRule": "{seconds} ثانیه. مهره را به هر ستاره‌ای که ظاهر می‌شود برسان.",
+  "starChallengeGo": "برو!",
+  "starChallengeTimeUp": "وقت تمام شد!",
+  "starChallengeNewBest": "رکورد جدید!",
+  "starChallengePlayAgain": "دوباره بازی کن",
+  "starChallengePaused": "متوقف"
 }

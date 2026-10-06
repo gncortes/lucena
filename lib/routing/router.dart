@@ -59,6 +59,11 @@ import '../ui/endgames/widgets/endgame_lesson_screen.dart';
 import '../ui/endgames/widgets/endgames_screen.dart';
 import '../ui/endgames/widgets/exercise_screen.dart';
 import '../data/repositories/school/school_progress_repository.dart';
+import '../data/repositories/school/star_challenge_repository.dart';
+import '../domain/models/star_challenge.dart';
+import '../ui/school/view_models/star_challenge_cubit.dart';
+import '../ui/school/widgets/star_challenge_screen.dart';
+import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
 import '../ui/school/widgets/lesson_screen.dart';
@@ -241,6 +246,47 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ),
             routes: [
+              // Antes de ':lesson', para 'challenges' não virar id de aula.
+              _route(
+                path: 'challenges',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => StarChallengesCubit(
+                    progress: context.read<StarChallengeRepository>(),
+                  )..load(),
+                  child: Builder(
+                    builder: (context) => ReloadOnReturn(
+                      onReturn: () =>
+                          context.read<StarChallengesCubit>().load(),
+                      child: const StarChallengesScreen(),
+                    ),
+                  ),
+                ),
+                routes: [
+                  _route(
+                    path: ':piece/:level',
+                    builder: (context, state) {
+                      final piece = state.pathParameters['piece']!;
+                      final level = state.pathParameters['level']!;
+                      return BlocProvider(
+                        key: ValueKey('starChallenge.$piece.$level'),
+                        create: (_) {
+                          final cubit = StarChallengeCubit(
+                            progress: context.read<StarChallengeRepository>(),
+                            now: context.read<Now>(),
+                          );
+                          final which = ChallengePiece.byName(piece);
+                          final how = ChallengeLevel.byName(level);
+                          if (which != null && how != null) {
+                            cubit.load(which, how);
+                          }
+                          return cubit;
+                        },
+                        child: const StarChallengeScreen(),
+                      );
+                    },
+                  ),
+                ],
+              ),
               _route(
                 path: ':lesson',
                 builder: (context, state) {
@@ -277,6 +323,47 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               ),
             ),
             routes: [
+              // Antes de ':lesson', para 'challenges' não virar id de aula.
+              _route(
+                path: 'challenges',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => StarChallengesCubit(
+                    progress: context.read<StarChallengeRepository>(),
+                  )..load(),
+                  child: Builder(
+                    builder: (context) => ReloadOnReturn(
+                      onReturn: () =>
+                          context.read<StarChallengesCubit>().load(),
+                      child: const StarChallengesScreen(),
+                    ),
+                  ),
+                ),
+                routes: [
+                  _route(
+                    path: ':piece/:level',
+                    builder: (context, state) {
+                      final piece = state.pathParameters['piece']!;
+                      final level = state.pathParameters['level']!;
+                      return BlocProvider(
+                        key: ValueKey('starChallenge.$piece.$level'),
+                        create: (_) {
+                          final cubit = StarChallengeCubit(
+                            progress: context.read<StarChallengeRepository>(),
+                            now: context.read<Now>(),
+                          );
+                          final which = ChallengePiece.byName(piece);
+                          final how = ChallengeLevel.byName(level);
+                          if (which != null && how != null) {
+                            cubit.load(which, how);
+                          }
+                          return cubit;
+                        },
+                        child: const StarChallengeScreen(),
+                      );
+                    },
+                  ),
+                ],
+              ),
               _route(
                 path: ':lesson',
                 builder: (context, state) {

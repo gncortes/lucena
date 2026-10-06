@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Ваш хід, ви граєте білими.} other{Ваш хід, ви граєте чорними.}}",
   "lessonGuidePlay": "{goal, select, mate{Грайте до мату.} other{Грайте до перетворення пішака.}}",
   "lessonGuideDone": "Готово. Переходьте до наступного кроку.",
-  "exerciseYourMove": "Ваш хід"
+  "exerciseYourMove": "Ваш хід",
+  "starChallengesTitle": "Зоряні випробування",
+  "starChallengesBody": "Збирайте зірки кожною фігурою на час. Три рівні на фігуру.",
+  "starChallengesIntro": "Оберіть фігуру й рівень. З’являється зірка; доведіть до неї фігуру, і засвітиться наступна. Скільки встигнете зібрати до кінця часу?",
+  "challengeLevelEasy": "Легко",
+  "challengeLevelMedium": "Середньо",
+  "challengeLevelHard": "Складно",
+  "starChallengeBest": "Рекорд: {count}",
+  "starChallengeNotPlayed": "Ще не грали",
+  "starChallengeRule": "{seconds} секунд. Ведіть фігуру до кожної зірки, що з’являється.",
+  "starChallengeGo": "Уперед!",
+  "starChallengeTimeUp": "Час вийшов!",
+  "starChallengeNewBest": "Новий рекорд!",
+  "starChallengePlayAgain": "Ще раз",
+  "starChallengePaused": "Пауза"
 }

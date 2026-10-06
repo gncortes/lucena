@@ -19,6 +19,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
 import 'lesson_finished.dart';
+import 'star_shape.dart';
 
 /// Uma aula com o Viktor: ele em cima, falando; o tabuleiro no meio; a barra
 /// dos passos e o botão do passo embaixo.
@@ -280,7 +281,7 @@ class _LessonScreenState extends State<LessonScreen>
         CustomShape(
           orig: Square.fromName(star),
           scale: 0.7,
-          child: _Star(key: LessonKeys.star(star)),
+          child: StarShape(key: LessonKeys.star(star)),
         ),
       if (hint is NormalMove)
         Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
@@ -414,26 +415,6 @@ class _LessonScreenState extends State<LessonScreen>
 
 /// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
 /// animação sem fim não deixaria a tela "assentar" nos testes).
-class _Star extends StatelessWidget {
-  const _Star({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.3, end: 1),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 600),
-      curve: Curves.elasticOut,
-      builder: (context, value, child) =>
-          Transform.scale(scale: value, child: child),
-      child: const FittedBox(
-        child: Icon(Icons.star_rounded, color: Color(0xfff2b705)),
-      ),
-    );
-  }
-}
-
 /// Abre a próxima aula da trilha no lugar desta.
 void openLesson(BuildContext context, String lessonId) =>
     context.pushReplacement(Routes.lesson(lessonId));

@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Jouw beurt, met wit.} other{Jouw beurt, met zwart.}}",
   "lessonGuidePlay": "{goal, select, mate{Speel door tot schaakmat.} other{Speel door tot de pion promoveert.}}",
   "lessonGuideDone": "Klaar. Ga verder naar de volgende stap.",
-  "exerciseYourMove": "Jouw beurt"
+  "exerciseYourMove": "Jouw beurt",
+  "starChallengesTitle": "Sterrenuitdagingen",
+  "starChallengesBody": "Verzamel sterren met elk stuk tegen de klok. Drie niveaus per stuk.",
+  "starChallengesIntro": "Kies een stuk en een niveau. Er verschijnt een ster; breng het stuk erheen en de volgende licht op. Hoeveel haal je voordat de tijd om is?",
+  "challengeLevelEasy": "Makkelijk",
+  "challengeLevelMedium": "Gemiddeld",
+  "challengeLevelHard": "Moeilijk",
+  "starChallengeBest": "Record: {count}",
+  "starChallengeNotPlayed": "Nog niet gespeeld",
+  "starChallengeRule": "{seconds} seconden. Breng het stuk naar elke ster die verschijnt.",
+  "starChallengeGo": "Start!",
+  "starChallengeTimeUp": "Tijd is om!",
+  "starChallengeNewBest": "Nieuw record!",
+  "starChallengePlayAgain": "Opnieuw",
+  "starChallengePaused": "Gepauzeerd"
 }

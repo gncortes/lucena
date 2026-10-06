@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Ваш ход, вы играете белыми.} other{Ваш ход, вы играете чёрными.}}",
   "lessonGuidePlay": "{goal, select, mate{Играйте до мата.} other{Играйте до превращения пешки.}}",
   "lessonGuideDone": "Готово. Переходите к следующему шагу.",
-  "exerciseYourMove": "Ваш ход"
+  "exerciseYourMove": "Ваш ход",
+  "starChallengesTitle": "Звёздные испытания",
+  "starChallengesBody": "Собирайте звёзды каждой фигурой на время. Три уровня на фигуру.",
+  "starChallengesIntro": "Выберите фигуру и уровень. Появляется звезда; доведите до неё фигуру, и загорится следующая. Сколько успеете собрать до конца времени?",
+  "challengeLevelEasy": "Легко",
+  "challengeLevelMedium": "Средне",
+  "challengeLevelHard": "Сложно",
+  "starChallengeBest": "Рекорд: {count}",
+  "starChallengeNotPlayed": "Ещё не играли",
+  "starChallengeRule": "{seconds} секунд. Ведите фигуру к каждой появляющейся звезде.",
+  "starChallengeGo": "Вперёд!",
+  "starChallengeTimeUp": "Время вышло!",
+  "starChallengeNewBest": "Новый рекорд!",
+  "starChallengePlayAgain": "Ещё раз",
+  "starChallengePaused": "Пауза"
 }

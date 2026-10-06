@@ -106,6 +106,9 @@ abstract final class Routes {
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
   static String lesson(String id) => '/school/$id';
+  static const starChallenges = '/school/challenges';
+  static String starChallenge(String piece, String level) =>
+      '/school/challenges/$piece/$level';
 
   /// As aulas de finais: a trilha, uma aula, a lição dela, as informações e
   /// um exercício.

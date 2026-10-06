@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{Sıra sende, beyazlarla.} other{Sıra sende, siyahlarla.}}",
   "lessonGuidePlay": "{goal, select, mate{Mat edene kadar oyna.} other{Piyon terfi edene kadar oyna.}}",
   "lessonGuideDone": "Tamam. Sonraki adıma geç.",
-  "exerciseYourMove": "Sıra sende"
+  "exerciseYourMove": "Sıra sende",
+  "starChallengesTitle": "Yıldız görevleri",
+  "starChallengesBody": "Her taşla zamana karşı yıldız topla. Taş başına üç seviye.",
+  "starChallengesIntro": "Bir taş ve seviye seç. Bir yıldız belirir; taşı oraya götür, bir sonraki yanar. Süre bitmeden kaç tane toplarsın?",
+  "challengeLevelEasy": "Kolay",
+  "challengeLevelMedium": "Orta",
+  "challengeLevelHard": "Zor",
+  "starChallengeBest": "Rekor: {count}",
+  "starChallengeNotPlayed": "Henüz oynanmadı",
+  "starChallengeRule": "{seconds} saniye. Taşı beliren her yıldıza götür.",
+  "starChallengeGo": "Başla!",
+  "starChallengeTimeUp": "Süre doldu!",
+  "starChallengeNewBest": "Yeni rekor!",
+  "starChallengePlayAgain": "Tekrar oyna",
+  "starChallengePaused": "Duraklatıldı"
 }

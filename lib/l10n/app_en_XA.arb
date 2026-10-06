@@ -457,5 +457,19 @@
   "lessonGuideMove": "{side, select, white{[Ýöûŕ mövé, wîth Whîté. one two three]} other{[Ýöûŕ mövé, wîth Blåçk. one two three]}}",
   "lessonGuidePlay": "{goal, select, mate{[Plåý öñ åñd çhéçkmåté. one two three]} other{[Plåý öñ åñd pŕömöté thé påwñ. one two three]}}",
   "lessonGuideDone": "[Döñé. Çöñtîñûé tö thé ñéxt štép. one two three]",
-  "exerciseYourMove": "[Ýöûŕ mövé one]"
+  "exerciseYourMove": "[Ýöûŕ mövé one]",
+  "starChallengesTitle": "[Štåŕ çhålléñĝéš one two]",
+  "starChallengesBody": "[Çölléçt thé štåŕš wîth éåçh pîéçé åĝåîñšt thé çlöçk. Thŕéé lévélš péŕ pîéçé. one two three four five six seven]",
+  "starChallengesIntro": "[Pîçk å pîéçé åñd å lévél. Å štåŕ åppéåŕš; tåké thé pîéçé théŕé åñd åñöthéŕ öñé lîĝhtš ûp. Höw måñý çåñ ýöû çölléçt béföŕé thé tîmé ŕûñš öût? one two three four five six seven eight nine ten one two]",
+  "challengeLevelEasy": "[Éåšý one]",
+  "challengeLevelMedium": "[Médîûm one]",
+  "challengeLevelHard": "[Håŕd one]",
+  "starChallengeBest": "[Béšt: {count} one two]",
+  "starChallengeNotPlayed": "[Ñöt plåýéd ýét one two]",
+  "starChallengeRule": "[{seconds} šéçöñdš. Tåké thé pîéçé tö éåçh štåŕ åš ît åppéåŕš. one two three four five six]",
+  "starChallengeGo": "[Ĝö! one]",
+  "starChallengeTimeUp": "[Tîmé'š ûp! one]",
+  "starChallengeNewBest": "[Ñéw béšt! one]",
+  "starChallengePlayAgain": "[Plåý åĝåîñ one]",
+  "starChallengePaused": "[Påûšéd one]"
 }

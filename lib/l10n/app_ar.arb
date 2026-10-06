@@ -458,5 +458,19 @@
   "lessonGuideMove": "{side, select, white{دورك، بالقطع البيضاء.} other{دورك، بالقطع السوداء.}}",
   "lessonGuidePlay": "{goal, select, mate{واصل اللعب حتى كش مات.} other{واصل اللعب حتى ترقية البيدق.}}",
   "lessonGuideDone": "تم. تابع إلى الخطوة التالية.",
-  "exerciseYourMove": "دورك"
+  "exerciseYourMove": "دورك",
+  "starChallengesTitle": "تحديات النجوم",
+  "starChallengesBody": "اجمع النجوم بكل قطعة ضد الساعة. ثلاثة مستويات لكل قطعة.",
+  "starChallengesIntro": "اختر قطعة ومستوى. تظهر نجمة؛ خذ القطعة إليها فتضيء أخرى. كم نجمة تجمع قبل انتهاء الوقت؟",
+  "challengeLevelEasy": "سهل",
+  "challengeLevelMedium": "متوسط",
+  "challengeLevelHard": "صعب",
+  "starChallengeBest": "الأفضل: {count}",
+  "starChallengeNotPlayed": "لم تُلعب بعد",
+  "starChallengeRule": "{seconds} ثانية. خذ القطعة إلى كل نجمة تظهر.",
+  "starChallengeGo": "هيا!",
+  "starChallengeTimeUp": "انتهى الوقت!",
+  "starChallengeNewBest": "رقم قياسي جديد!",
+  "starChallengePlayAgain": "العب مجددًا",
+  "starChallengePaused": "متوقف مؤقتًا"
 }
