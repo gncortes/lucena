@@ -102,10 +102,10 @@ void main() {
     await tour.next();
     await tour.next();
     await tour.next();
-    await tour.expectStep(TourStep.rating);
+    await tour.expectStep(TourStep.sound);
 
     await app.restart();
-    await tour.expectStep(TourStep.rating);
+    await tour.expectStep(TourStep.sound);
   });
 
   patrolTest('primeira abertura: tema escuro, cor rosa e tabuleiro verde no '

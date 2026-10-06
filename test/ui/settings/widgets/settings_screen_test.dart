@@ -110,4 +110,17 @@ void main() {
 
     expect(find.byKey(SettingsKeys.version), findsNothing);
   });
+
+  testWidgets('o interruptor dos sons vem ligado e desligar muda a '
+      'preferência', (tester) async {
+    await pumpScreen(tester, const AppSettings());
+    final tile = find.byKey(SettingsKeys.soundSwitch);
+    await tester.scrollUntilVisible(tile, 200);
+    expect(tester.widget<SwitchListTile>(tile).value, isTrue);
+
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<SwitchListTile>(tile).value, isFalse);
+  });
 }
