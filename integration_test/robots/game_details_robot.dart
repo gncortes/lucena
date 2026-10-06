@@ -30,8 +30,9 @@ class GameDetailsRobot {
 
   Future<void> review() async {
     await $(GameDetailsKeys.reviewButton).scrollTo().tap();
+    // Com a engine de verdade a revisão leva um tempo.
     await $(GameDetailsKeys.reviewSummary)
-        .waitUntilVisible(timeout: const Duration(minutes: 3));
+        .waitUntilExists(timeout: const Duration(minutes: 3));
     await $.pumpAndSettle();
   }
 
@@ -53,8 +54,13 @@ class GameDetailsRobot {
 
   Future<void> toggleEngine() async {
     await _tap(GameDetailsKeys.engineButton);
-    await $(GameDetailsKeys.engineLine(0))
-        .waitUntilExists(timeout: const Duration(minutes: 1));
+    await $(GameDetailsKeys.engineLines).waitUntilExists();
+    // Na posição final (mate ou empate) não há linhas: o painel diz isso.
+    final position = state.shownPosition;
+    if (position != null && !position.isGameOver) {
+      await $(GameDetailsKeys.engineLine(0))
+          .waitUntilExists(timeout: const Duration(minutes: 1));
+    }
   }
 
   void expectShown(int index) => expect(state.shownIndex, index);
