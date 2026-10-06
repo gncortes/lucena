@@ -216,8 +216,10 @@ class _LessonScreenState extends State<LessonScreen>
                             teacher: viktor,
                             text: state.speech,
                             emotion: state.emotion,
-                            avatarSize: 56,
+                            avatarSize: 44,
                             bubbleKey: LessonKeys.speech,
+                            stacked: true,
+                            typed: true,
                           ),
                         ),
                       )
