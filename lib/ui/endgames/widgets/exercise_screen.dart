@@ -233,8 +233,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final lesson = state.lesson!;
     if (state.phase == ExercisePhase.done) {
       final next = state.nextExercise;
-      return Padding(
+      // Com fundo: o Patrol confere o painel pelo toque no centro dele.
+      return Container(
         key: ExerciseKeys.solved,
+        color: Colors.transparent,
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Row(
           children: [

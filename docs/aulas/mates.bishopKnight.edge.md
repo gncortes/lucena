@@ -76,9 +76,7 @@ Exercícios (ver a tabela no JSON): dos reconhecimentos de uma estrela (fechar a
 - A posição do treino final começa com o rei preto na borda (ver acima).
 - Não li nenhum dos livros; a página da New in Chess (de la Villa) pede verificação humana e não abriu.
 
-## Estado (pausado em 2026-10-06)
+## Estado
 
-- Feito: dossiê (este arquivo), fonte `tools/lessons/endgames/mates.bishopKnight.edge.json` (12 passos, 10 exercícios: e01–e03 com 1 estrela, e04–e07 com 2, e08–e10 com 3; total 20, `passScore` 12) e falas completas em `assets/lessons/pt/endgames/` e `en/endgames/` (58 chaves iguais nos dois idiomas). O gerado `assets/lessons/endgames/` ainda não existe.
-- `build_aula.py` rodou uma vez e parou com 3 problemas (o (1) foi corrigido em 2026-10-06; (2) e (3) precisam da tabela do Lichess): (1) `history` em pt e en contém "o mate em 1749" / "the mate in 1749", que o script lê como "mate em N": trocar por "descreveu este mate no tratado de 1749"; (2) `ex.e09`, lance 3: a tabela do Lichess responde 1...Rd2 (empate de distância com 1...Rc4, que eu previa) e a linha diverge: fixar as respostas em UCI (`reply: "c3c4"` e depois `"c4b5"`, ambas de distância igual à melhor) ou trocar o exercício; (3) `ex.e10`: a resposta automática também divergiu (1...Rb5 em vez de 1...Rd6), os lances ensinados ainda passam, mas a solução escrita descreve a outra linha: fixar `reply: "c5d6"` e `"c5..."` conforme a linha do dossiê e conferir.
-- Candidatos conferidos localmente com as tabelas Gaviota do Lichess (DTM em meios-lances; bateu com a API nas posições testadas): e04 Bd4 (único, folga 13), e05 Re3 (único, 17), e06 Cf4 (único, 21), e07 Rd3 (único, 23), e08 Bc4/Rc3, e09 Cd3+/Bd4/Rd5, e10 Rc3/Cg6/Bc4.
-- Próximo passo: corrigir os pontos (2) e (3) acima, rodar `tools/.cache/venv/bin/python .claude/skills/aula-final/scripts/build_aula.py mates.bishopKnight.edge` até passar (cache em `tools/.cache/tablebase`; no 429 esperar 60 s) e reler o relatório como aluno (as explicações de e09 e e10 têm que bater com as respostas da tabela).
+- Concluída em 2026-10-06: `build_aula.py mates.bishopKnight.edge` passou sem problemas (10 exercícios, 20 estrelas, `passScore` 12), gerado `assets/lessons/endgames/mates.bishopKnight.edge.json` e aula no `index.json`.
+- Ajustes feitos para a tabela: `history` sem "mate em 1749"; e09 com respostas fixas 1...Rc4 e 2...Rb5 (`c3c4`, `c4b5`) e e10 com 1...Rd6 e 2...Rc5 (`c5d6`, `d6c5`), ambas de distância igual à melhor defesa, para a solução escrita bater com a linha jogada.

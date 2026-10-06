@@ -4,6 +4,7 @@
       "id": "mates",
       "lessons": [
         "mates.bishopKnight.w",
+        "mates.bishopKnight.edge",
         "mates.bishopKnight.full"
       ]
     },
