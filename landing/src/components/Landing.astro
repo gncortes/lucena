@@ -1,0 +1,471 @@
+---
+import Phone from './Phone.astro';
+import { asset, links, locales, pageUrl, type Locale } from '../i18n';
+import type { Clip, Still } from '../media';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = locales[locale].dict;
+const f = t.features.items;
+const shot = (still: Still) => ({
+  still,
+  locale,
+  label: t.media[still],
+  playLabel: t.media.play,
+  pauseLabel: t.media.pause,
+});
+const phone = (clip: Clip) => ({
+  clip,
+  locale,
+  label: t.media[clip],
+  playLabel: t.media.play,
+  pauseLabel: t.media.pause,
+});
+const mail = (subject: string) => `mailto:${links.email}?subject=${encodeURIComponent(subject)}`;
+const refUrls = [links.stockfish, links.maia, links.lichess, links.firebase, links.philidor];
+const opponents = [
+  ['beachgoer', 'Coco', 1000],
+  ['grandpa', 'Tito', 1200],
+  ['snob', 'Percival', 1400],
+  ['magician', 'Valdini', 1600],
+  ['prodigy', 'Zuri', 1800],
+  ['bodybuilder', 'Tank', 2000],
+  ['foodie', 'Gino', 2200],
+  ['youngster', 'Kai', 2400],
+  ['master', 'Viktor', 2600],
+] as const;
+---
+
+<header class="top">
+  <div class="wrap top__bar">
+    <a class="brand" href={pageUrl(locale)} aria-label="Lucena">
+      <img src={asset('logo.webp')} alt="" width="36" height="36" />
+      <span>Lucena</span>
+    </a>
+    <nav class="top__nav" aria-label={t.nav.menu}>
+      <a href="#recursos">{t.nav.features}</a>
+      <a href="#roadmap">{t.nav.roadmap}</a>
+      <a href="#apoie">{t.nav.support}</a>
+    </nav>
+    <div class="top__tools">
+      <nav class="langs" aria-label={t.nav.language}>
+        {
+          Object.entries(locales).map(([key, l]) => (
+            <a
+              href={pageUrl(key as Locale)}
+              hreflang={l.hreflang}
+              lang={l.hreflang}
+              aria-current={key === locale ? 'page' : undefined}
+              title={l.label}
+            >
+              {key === 'pt-br' ? 'PT' : key.toUpperCase()}
+            </a>
+          ))
+        }
+      </nav>
+      <button class="theme-toggle" type="button" aria-label={t.nav.theme} data-theme-toggle>
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 1.8v2.6M12 19.6v2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M1.8 12h2.6M19.6 12h2.6M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8"></path>
+        </svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"></path>
+        </svg>
+      </button>
+      <a class="btn btn--small" href="#testador">{t.nav.tester}</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="wrap hero__grid">
+      <div class="hero__text" data-hero>
+        <p class="eyebrow">{t.hero.eyebrow}</p>
+        <h1 id="hero-title">
+          {t.hero.title} <em>{t.hero.titleAccent}</em>.
+        </h1>
+        <p class="lead">{t.hero.lead}</p>
+        <div class="actions">
+          <a class="btn" href={links.tester} rel="noopener">{t.hero.cta}</a>
+          <a class="btn btn--ghost" href="#recursos">{t.hero.secondary}</a>
+        </div>
+        <p class="hero__note">{t.hero.note}</p>
+      </div>
+      <div class="hero__media" data-hero>
+        <Phone {...shot('shortSide')} class="phone--back" />
+        <Phone {...phone('hero')} class="phone--hero" />
+        <ul class="chips" aria-hidden="true">
+          {t.hero.chips.map((chip) => <li>{chip}</li>)}
+        </ul>
+        <img class="hero__mascot only-light" src={asset('mascot-light.webp')} alt="" width="480" height="480" loading="lazy" />
+        <img class="hero__mascot only-dark" src={asset('mascot-dark.webp')} alt="" width="480" height="480" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <ul class="wrap stats__grid">
+      {
+        t.stats.map((stat) => (
+          <li data-reveal>
+            <strong data-count={stat.value}>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {[0, 1].map(() => (
+        <ul>
+          {t.marquee.map((name) => <li>{name}</li>)}
+        </ul>
+      ))}
+    </div>
+  </div>
+
+  <section class="message" aria-labelledby="message-title">
+    <div class="wrap message__grid">
+      <div>
+        <p class="kicker">{t.message.kicker}</p>
+        <h2 id="message-title">{t.message.title}</h2>
+        <blockquote class="quote">
+          <p>{t.message.quote}</p>
+          <footer>{t.message.quoteAuthor}</footer>
+        </blockquote>
+        {t.message.body.map((p) => <p class="body">{p}</p>)}
+      </div>
+      <div class="message__board" data-reveal>
+        <Phone {...phone('school')} class="message__phone" />
+        <p>{t.message.boardCaption}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" aria-labelledby="story-title">
+    <div class="wrap">
+      <article class="letter" data-reveal>
+        <p class="kicker">{t.story.kicker}</p>
+        <h2 id="story-title">{t.story.title}</h2>
+        {t.story.paragraphs.map((p) => <p>{p}</p>)}
+        <figure class="philidor">
+          <img src={asset('philidor.webp')} alt={t.story.philidor.alt} width="480" height="480" loading="lazy" />
+          <figcaption>{t.story.philidor.caption}</figcaption>
+        </figure>
+        <p>{t.story.philidor.text}</p>
+        <p class="letter__sign">
+          <img src={asset('logo.webp')} alt="" width="40" height="40" loading="lazy" />
+          <span>{t.story.signature}</span>
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="features" id="recursos" aria-labelledby="features-title">
+    <div class="wrap">
+      <header class="section-head" data-reveal>
+        <p class="kicker">{t.features.kicker}</p>
+        <h2 id="features-title">{t.features.title}</h2>
+        <p class="body">{t.features.lead}</p>
+      </header>
+
+      <article class="feature" data-reveal>
+        <div class="feature__text">
+          <h3>{f.progression.title}</h3>
+          <p>{f.progression.body}</p>
+          <ol class="opponents" aria-label={f.progression.bullets[0]} data-reveal>
+            {
+              opponents.map(([id, name, level]) => (
+                <li>
+                  <img src={asset(`opponents/${id}.webp`)} alt="" width="80" height="80" loading="lazy" />
+                  <strong>{name}</strong>
+                  <span>Maia {level}</span>
+                </li>
+              ))
+            }
+            <li class="opponents__top">
+              <img src={asset('opponents/stockfish.webp')} alt="" width="80" height="80" loading="lazy" />
+              <strong>Stockfish</strong>
+              <span>{f.progression.bullets[2]}</span>
+            </li>
+          </ol>
+          <ul class="pills">{f.progression.bullets.slice(1, 2).map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="feature__media">
+          <Phone {...shot('journeyChallenge')} />
+        </div>
+      </article>
+
+      <article class="feature feature--flip" data-reveal>
+        <div class="feature__text">
+          <h3>{f.lessons.title}</h3>
+          <p>{f.lessons.body}</p>
+          <ul class="ticks">{f.lessons.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="feature__media feature__media--pair">
+          <Phone {...phone('queenRook')} />
+          <Phone {...shot('exercise')} />
+        </div>
+      </article>
+
+      <article class="feature" data-reveal>
+        <div class="feature__text">
+          <h3>{f.levels.title}</h3>
+          <p>{f.levels.body}</p>
+          <ul class="ticks">{f.levels.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="feature__media feature__media--pair">
+          <Phone {...phone('journey')} />
+          <Phone {...shot('stars')} />
+        </div>
+      </article>
+
+      <div class="feature-duo">
+        <article class="feature feature--card" data-reveal>
+          <Phone {...phone('speedrun')} />
+          <div class="feature__text">
+            <h3>{f.speedrun.title}</h3>
+            <p>{f.speedrun.body}</p>
+            <ul class="ticks">{f.speedrun.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+        <article class="feature feature--card feature--card-text" data-reveal>
+          <div class="feature__text">
+            <h3>{f.analysis.title}</h3>
+            <p>{f.analysis.body}</p>
+            <ul class="ticks">{f.analysis.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+      </div>
+
+      <article class="feature feature--flip" data-reveal>
+        <div class="feature__text">
+          <h3>{f.custom.title}</h3>
+          <p>{f.custom.body}</p>
+        </div>
+        <div class="feature__media">
+          <Phone {...shot('theme')} />
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="levels" aria-labelledby="levels-title">
+    <div class="wrap">
+      <header class="section-head" data-reveal>
+        <p class="kicker">{t.levels.kicker}</p>
+        <h2 id="levels-title">{t.levels.title}</h2>
+      </header>
+      <div class="levels__grid">
+        <article class="level-card" data-reveal>
+          <img src={asset('pieces/wP.webp')} alt="" width="96" height="96" loading="lazy" />
+          <h3>{t.levels.beginner.title}</h3>
+          <p>{t.levels.beginner.body}</p>
+        </article>
+        <article class="level-card level-card--strong" data-reveal>
+          <img src={asset('pieces/wQ.webp')} alt="" width="96" height="96" loading="lazy" />
+          <h3>{t.levels.advanced.title}</h3>
+          <p>{t.levels.advanced.body}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="roadmap" id="roadmap" aria-labelledby="roadmap-title">
+    <div class="wrap">
+      <header class="section-head" data-reveal>
+        <p class="kicker">{t.roadmap.kicker}</p>
+        <h2 id="roadmap-title">{t.roadmap.title}</h2>
+      </header>
+      <ol class="timeline">
+        {
+          t.roadmap.items.map((item, i) => (
+            <li class:list={['timeline__item', { 'timeline__item--now': i === 0 }]} data-reveal style={`--delay:${i * 120}ms`}>
+              <span class="timeline__status">{item.status}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="support" id="apoie" aria-labelledby="support-title">
+    <div class="wrap support__grid">
+      <div>
+        <p class="kicker">{t.support.kicker}</p>
+        <h2 id="support-title">{t.support.title}</h2>
+        {t.support.body.map((p) => <p class="body">{p}</p>)}
+      </div>
+      <div class="supporters" data-reveal>
+        <div class="supporters__avatars" aria-hidden="true">
+          <img src={asset('opponents/beachgoer.webp')} alt="" width="80" height="80" loading="lazy" />
+          <img src={asset('opponents/grandpa.webp')} alt="" width="80" height="80" loading="lazy" />
+          <img src={asset('opponents/prodigy.webp')} alt="" width="80" height="80" loading="lazy" />
+          <span>+</span>
+        </div>
+        <h3>{t.support.cardTitle}</h3>
+        <p>{t.support.cardBody}</p>
+        <a class="btn btn--accent" href={mail(t.support.subject)}>{t.support.cta}</a>
+        <p class="supporters__mail">{links.email}</p>
+      </div>
+      <p class="support__note">{t.support.note}</p>
+    </div>
+  </section>
+
+  <section class="tester" id="testador" aria-labelledby="tester-title">
+    <div class="wrap">
+      <div class="tester__panel" data-reveal>
+        <img class="tester__mascot" src={asset('mascot-dark.webp')} alt="" width="480" height="480" loading="lazy" />
+        <p class="kicker">{t.tester.kicker}</p>
+        <h2 id="tester-title">{t.tester.title}</h2>
+        <p class="body">{t.tester.body}</p>
+        <a class="btn btn--light" href={links.tester} rel="noopener">{t.tester.cta}</a>
+        <p class="tester__safety">
+          {t.tester.safety}{' '}
+          <a href={links.firebase} rel="noopener">{t.tester.safetyLink}</a>.
+        </p>
+        <p class="tester__wait">{t.tester.wait}</p>
+        <p class="tester__teachers">{t.tester.teachers}</p>
+        <p class="tester__thanks">{t.tester.thanks}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vision" aria-labelledby="vision-title">
+    <div class="wrap vision__inner" data-reveal>
+      <p class="kicker">{t.vision.kicker}</p>
+      <h2 id="vision-title">{t.vision.title}</h2>
+      <p class="body">{t.vision.body}</p>
+      <a class="btn btn--ghost" href="#testador">{t.vision.cta}</a>
+    </div>
+  </section>
+
+  <section class="refs" aria-labelledby="refs-title">
+    <div class="wrap">
+      <p class="kicker">{t.refs.kicker}</p>
+      <h2 id="refs-title">{t.refs.title}</h2>
+      <ul class="refs__list">
+        {
+          t.refs.items.map((item, i) => (
+            <li>
+              <a href={refUrls[i]} rel="noopener">{item.name}</a>
+              <span>{item.body}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <a class="brand" href={pageUrl(locale)}>
+        <img src={asset('logo.webp')} alt="" width="32" height="32" loading="lazy" />
+        <span>Lucena</span>
+      </a>
+      <p>{t.footer.tagline}</p>
+    </div>
+    <p class="foot__dev">
+      {t.footer.dev} <a href={mail('Lucena')}>{links.email}</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Tema: alterna entre claro e escuro e guarda a escolha neste navegador.
+  const root = document.documentElement;
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const current =
+      root.dataset.theme ??
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+  });
+
+  // Entrada das seções ao rolar e contagem dos números. Sem JS, tudo aparece.
+  const reveal = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        el.classList.add('is-in');
+        reveal.unobserve(el);
+        const counter = el.querySelector<HTMLElement>('[data-count]');
+        if (counter && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const target = Number(counter.dataset.count);
+          const start = performance.now();
+          const tick = (now: number) => {
+            const k = Math.min(1, (now - start) / 1200);
+            counter.textContent = String(Math.round(target * (1 - (1 - k) ** 3)));
+            if (k < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      }
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+  );
+  for (const el of document.querySelectorAll('[data-reveal]')) reveal.observe(el);
+
+  // Vídeos: só baixam e tocam quando aparecem na tela, e param ao sair.
+  // Com movimento reduzido, nada toca sozinho: o botão dá o play.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const phones = [...document.querySelectorAll<HTMLElement>('[data-phone]')];
+
+  const setPlaying = (phone: HTMLElement, playing: boolean) => {
+    const button = phone.querySelector<HTMLButtonElement>('.phone__toggle')!;
+    phone.classList.toggle('is-playing', playing);
+    button.setAttribute('aria-label', playing ? button.dataset.pause! : button.dataset.play!);
+  };
+
+  const play = (phone: HTMLElement) => {
+    const video = phone.querySelector('video')!;
+    video.play().then(
+      () => setPlaying(phone, true),
+      () => setPlaying(phone, false),
+    );
+  };
+  const pause = (phone: HTMLElement) => {
+    phone.querySelector('video')!.pause();
+    setPlaying(phone, false);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const phone = entry.target as HTMLElement;
+        if (phone.dataset.paused === 'user') continue;
+        if (entry.isIntersecting) play(phone);
+        else pause(phone);
+      }
+    },
+    { threshold: 0.45 },
+  );
+
+  for (const phone of phones) {
+    phone.querySelector('.phone__toggle')!.addEventListener('click', () => {
+      if (phone.classList.contains('is-playing')) {
+        phone.dataset.paused = 'user';
+        pause(phone);
+      } else {
+        delete phone.dataset.paused;
+        play(phone);
+      }
+    });
+    if (!reduced) observer.observe(phone);
+  }
+</script>
