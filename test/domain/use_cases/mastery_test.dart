@@ -144,4 +144,31 @@ void main() {
       expect(Mastery.nextChallenge(ladder, all, last), isNull);
     });
   });
+
+  group('desafio especial às cegas', () {
+    final first = ladder[0];
+    final special = first.challenges[0].copyWith(
+      id: '1000/blind.${first.challenges[0].position.id}',
+      mode: ChallengeMode.blind,
+    );
+    final withSpecial = [
+      first.copyWith(specials: [special]),
+      ...ladder.skip(1),
+    ];
+
+    test('não conta para concluir o degrau e libera depois do mesmo final', () {
+      var progress = Mastery.of(withSpecial, {});
+      expect(progress.rungs[0].specialOpen(special), isFalse);
+
+      progress = Mastery.of(withSpecial, {queen});
+      expect(progress.rungs[0].specialOpen(special), isTrue);
+      expect(progress.rungs[0].specialsDone, isEmpty);
+
+      progress = Mastery.of(withSpecial, {queen, special.id});
+      expect(progress.rungs[0].specialsDone, {special.id});
+      // O especial não completa o degrau sozinho.
+      expect(progress.rungs[0].status, RungStatus.open);
+      expect(progress.rungs[0].remaining, 1);
+    });
+  });
 }

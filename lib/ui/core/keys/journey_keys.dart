@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class JourneyKeys {
+  /// Um desafio especial (às cegas) na tela do degrau.
+  static Key special(String id) => Key('journey.special.$id');
+
   /// O cartão do Viktor reencontrando o ex-aluno, no degrau 2600.
   static const reunion = Key('journey.reunion');
 

@@ -159,7 +159,7 @@ class _LevelField extends StatelessWidget {
                       style: theme.textTheme.titleMedium,
                     ),
                     Text(
-                      level.range(l10n),
+                      level.describe(l10n),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),

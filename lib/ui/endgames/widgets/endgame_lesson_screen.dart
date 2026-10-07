@@ -100,6 +100,7 @@ class _Body extends StatelessWidget {
             emotion: state.passed ? Emotion.happy : Emotion.calm,
             avatarSize: 64,
             bubbleKey: EndgameLessonKeys.speech,
+            speaks: true,
           ),
         const SizedBox(height: 8),
         Text(

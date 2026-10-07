@@ -4,10 +4,12 @@ import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
+import 'home_robot.dart';
 
 /// Telas do speedrun: lista, speedrun, as etapas no tabuleiro e o resumo da
 /// tentativa.
@@ -16,16 +18,59 @@ class SpeedrunRobot {
 
   final PatrolIntegrationTester $;
 
-  /// A partir da tela inicial.
-  Future<void> open() async {
-    await $(HomeKeys.speedrunButton).scrollTo().tap();
+  /// A partir da tela inicial. Os cenários jogam no 5+3 ([pace]); nulo
+  /// deixa a lista no ritmo em que ela abre (o escolhido ou o do nível).
+  Future<void> open({String? pace = '300+3'}) async {
+    await tapHomePath($, HomeKeys.speedrunButton);
     await $(SpeedrunKeys.listScreen).waitUntilVisible();
+    if (pace != null) await choosePace(pace);
+  }
+
+  /// Marca o modo no alto da lista: a Maratona ou o clássico.
+  Future<void> chooseMode({required bool marathon}) async {
+    await $(SpeedrunKeys.modeOption(marathon ? 'marathon' : 'classic')).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// Na Maratona: a etapa nova abriu sozinha, sem nenhum botão no meio. O
+  /// lance que venceu a etapa espera a tela assentar, e com isso o versus da
+  /// etapa seguinte já passou: basta a etapa nova estar jogável, sem o
+  /// cartão de resultado.
+  Future<void> expectNextMarathonStage() async {
+    await waitVersusGone();
+    expect(find.byKey(FreeBoardKeys.resultCard), findsNothing);
+  }
+
+  /// A entrada de versus da etapa saiu: dá para jogar.
+  Future<void> waitVersusGone() async {
+    for (
+      var i = 0;
+      i < 100 && find.byKey(FreeBoardKeys.marathonBanner).evaluate().isNotEmpty;
+      i++
+    ) {
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    await $(FreeBoardKeys.board).waitUntilVisible();
+  }
+
+  /// A Maratona terminou: o resumo abriu sozinho.
+  Future<void> expectMarathonSummary() async {
+    await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
+    await $(SpeedrunKeys.total).waitUntilVisible();
   }
 
   /// Troca o ritmo no alto da lista (`180+2` é o 3+2): a categoria e o
   /// ritmo dela.
   Future<void> choosePace(String code) async {
     final time = TimeControl.tryParse(code)!;
+    // Quem está começando vê o ritmo numa linha só, que abre o seletor.
+    if (find.byKey(SpeedrunKeys.compactPace).evaluate().isNotEmpty) {
+      await $(SpeedrunKeys.compactPace).tap();
+      await $(PaceKeys.option(code)).scrollTo().tap();
+      await $(PaceKeys.confirm).tap();
+      await $.pumpAndSettle();
+      return;
+    }
     await $(SpeedrunKeys.paceCategory(PaceCategory.of(time).name))
         .scrollTo()
         .tap();

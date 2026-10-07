@@ -2,8 +2,8 @@ import 'clock.dart';
 import 'pace.dart';
 import 'speedrun.dart';
 
-/// Os ritmos do speedrun, como no chess.com, agrupados em bullet, blitz e
-/// rápido. Cada ritmo é um speedrun próprio, com recordes separados: o id do
+/// Os ritmos do speedrun, como no chess.com, agrupados em ultra bullet,
+/// bullet, blitz e rápido. Cada ritmo é um speedrun próprio, com recordes separados: o id do
 /// speedrun leva o ritmo (`rung.1000@180+2`). O ritmo padrão (5+3) fica com o
 /// id de antes, e os recordes antigos continuam valendo.
 abstract final class SpeedrunPaces {
@@ -13,6 +13,9 @@ abstract final class SpeedrunPaces {
   );
 
   static const all = [
+    TimeControl(initial: Duration(seconds: 10)),
+    TimeControl(initial: Duration(seconds: 15)),
+    TimeControl(initial: Duration(seconds: 30)),
     TimeControl(initial: Duration(minutes: 1)),
     TimeControl(initial: Duration(minutes: 2), increment: Duration(seconds: 1)),
     TimeControl(initial: Duration(minutes: 3)),
@@ -28,6 +31,7 @@ abstract final class SpeedrunPaces {
   /// Os ritmos de cada grupo, na ordem da tela.
   static Map<PaceCategory, List<TimeControl>> get groups => {
     for (final category in [
+      PaceCategory.ultraBullet,
       PaceCategory.bullet,
       PaceCategory.blitz,
       PaceCategory.rapid,

@@ -23,6 +23,14 @@ extension RatingLevelUi on RatingLevel {
     return l10n.profileLevelRange(min, max);
   }
 
+  /// O que mostrar embaixo do nome: nas faixas de quem está começando, uma
+  /// frase (quem nunca jogou não sabe o que é rating); nas outras, a faixa.
+  String describe(AppLocalizations l10n) => switch (this) {
+    RatingLevel.beginner => l10n.profileLevelBeginnerHint,
+    RatingLevel.casual => l10n.profileLevelCasualHint,
+    _ => range(l10n),
+  };
+
   /// Uma peça por faixa, do peão ao rei.
   PieceKind get piece => switch (this) {
     RatingLevel.beginner => PieceKind.whitePawn,

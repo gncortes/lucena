@@ -15,10 +15,25 @@ abstract final class SchoolKeys {
 }
 
 abstract final class LessonKeys {
+  /// O convite para jogar no Lichess e o botão que abre o site.
+  static const lichessInvite = Key('lesson.lichessInvite');
+  static const lichessButton = Key('lesson.lichessButton');
+
+  /// O confete do fim da aula.
+  static const celebration = Key('lesson.celebration');
+
+  /// Na formatura: o primeiro jogo com relógio e o que é o "+10".
+  static const clockGameButton = Key('lesson.clockGame');
+  static const clockHelp = Key('lesson.clockHelp');
+
   static const screen = Key('lesson.screen');
   static const missing = Key('lesson.missing');
   static const board = Key('lesson.board');
   static const speech = Key('lesson.speech');
+  static const scroll = Key('lesson.scroll');
+
+  /// Volta ao passo anterior, para rever.
+  static const backButton = Key('lesson.back');
   static const progress = Key('lesson.progress');
   static const stepCounter = Key('lesson.stepCounter');
 
@@ -46,6 +61,9 @@ abstract final class LessonKeys {
 
 /// Os desafios das estrelas: a lista e um desafio.
 abstract final class StarChallengeKeys {
+  /// Às cegas: o nome da casa da estrela.
+  static const starName = Key('starChallenge.starName');
+
   static const listScreen = Key('starChallenges.screen');
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');

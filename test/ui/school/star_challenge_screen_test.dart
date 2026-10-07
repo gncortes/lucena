@@ -39,7 +39,10 @@ void main() {
     return cubit;
   }
 
-  Future<StarChallengeCubit> pump(WidgetTester tester) async {
+  Future<StarChallengeCubit> pump(
+    WidgetTester tester, {
+    ChallengeLevel level = ChallengeLevel.easy,
+  }) async {
     // Tela de celular: o tabuleiro ocupa a largura.
     tester.view.physicalSize = const Size(1236, 2745);
     tester.view.devicePixelRatio = 3;
@@ -51,7 +54,7 @@ void main() {
       tickEvery: const Duration(hours: 1),
     );
     addTearDown(cubit.close);
-    await cubit.load(ChallengePiece.rook, ChallengeLevel.easy);
+    await cubit.load(ChallengePiece.rook, level);
     await tester.pumpWidget(
       TestApp(
         settingsCubit: await settings(),
@@ -64,6 +67,24 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  testWidgets('às cegas: a estrela vem pelo nome da casa, sem desenho', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, level: ChallengeLevel.named);
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+
+    final star = cubit.state.star!;
+    expect(find.byKey(StarChallengeKeys.star(star.name)), findsNothing);
+    expect(
+      tester.widget<Text>(find.byKey(StarChallengeKeys.starName)).data,
+      star.name,
+    );
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('"vai", a estrela aparece, pegar conta e o fim mostra a nota', (
     tester,

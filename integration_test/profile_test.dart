@@ -42,7 +42,7 @@ void main() {
 
     await profile.openLevels();
     profile.expectInLevels('Iniciante');
-    profile.expectInLevels('Abaixo de 1000');
+    profile.expectInLevels('Estou aprendendo as regras');
     profile.expectInLevels('Intermediário');
     profile.expectInLevels('1300 a 1599');
     profile.expectInLevels('Mestre');

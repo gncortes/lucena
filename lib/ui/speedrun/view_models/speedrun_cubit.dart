@@ -5,11 +5,14 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
+import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/speedrun_pace.dart';
+import '../../../domain/use_cases/default_pace.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 
@@ -35,8 +38,12 @@ abstract class SpeedrunSummary with _$SpeedrunSummary {
 @freezed
 abstract class SpeedrunState with _$SpeedrunState {
   const factory SpeedrunState({
-    /// Todos os speedruns. Nulo enquanto são lidos.
+    /// Os speedruns no ritmo da lista, sem as Maratonas. Nulo enquanto são
+    /// lidos.
     List<SpeedrunSummary>? all,
+
+    /// As Maratonas, no ritmo delas.
+    @Default(<SpeedrunSummary>[]) List<SpeedrunSummary> marathons,
 
     /// O speedrun aberto (tela dele ou de uma tentativa).
     SpeedrunSummary? selected,
@@ -49,6 +56,20 @@ abstract class SpeedrunState with _$SpeedrunState {
 
     /// O ritmo da lista: cada ritmo tem os seus speedruns e recordes.
     @Default(SpeedrunPaces.standard) TimeControl pace,
+
+    /// O ritmo das Maratonas, escolhido à parte.
+    @Default(SpeedrunPaces.standard) TimeControl marathonPace,
+
+    /// O modo marcado no alto da lista: a Maratona ou o clássico. Fica
+    /// gravado.
+    @Default(false) bool marathonMode,
+
+    /// Quem está começando vê o ritmo numa linha só, que abre o seletor.
+    @Default(false) bool compactPace,
+
+    /// A dificuldade dos finais mostrada: abre na do nível do jogador. Nula
+    /// (sem perfil): todas.
+    SpeedrunCategory? category,
 
     /// Os personagens, um por nível do Maia.
     @Default(<Character>[]) List<Character> characters,
@@ -66,13 +87,17 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     required this._now,
     this._settings,
     this._characters,
+    this._profile,
   }) : super(const SpeedrunState());
+
+  // O nível do jogador: sem ritmo escolhido, o speedrun abre no dele.
+  final ProfileRepository? _profile;
 
   final CharacterRepository? _characters;
 
   final JourneyRepository _journey;
 
-  // O último ritmo escolhido. Nulo: o ritmo padrão.
+  // O último ritmo escolhido. Sem ele, o do nível do jogador.
   final SettingsRepository? _settings;
   final SpeedrunRepository _speedruns;
   final OngoingGameRepository _games;
@@ -87,17 +112,36 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     // etapa dela no tabuleiro foi largada, e fica no histórico como
     // abandonada.
     await _abandonStale(bases, playing: snapshot?.mode.speedrunAttemptId);
-    final pace =
-        (await _settings?.load())?.clock.speedrunTime ?? SpeedrunPaces.standard;
+    final clock = (await _settings?.load())?.clock;
+    // Sem ritmo escolhido, o do nível do jogador (sem perfil, o padrão).
+    final level = (await _profile?.load())?.level;
+    // A aba escolhida vale enquanto a tela está aberta; ao abrir, a do nível.
+    final category =
+        state.category ??
+        (level == null ? null : SpeedrunCategory.forLevel(level));
+    TimeControl initial(TimeControl? saved) => level == null
+        ? saved ?? SpeedrunPaces.standard
+        : DefaultPace.of(saved: saved, level: level);
+    final pace = initial(clock?.speedrunTime);
+    final marathonPace = initial(clock?.marathonTime);
     final all = [
       for (final base in bases)
-        await _summary(SpeedrunPaces.withTime(base, pace)),
+        if (base.kind != SpeedrunKind.marathon && !base.journeyOnly)
+          await _summary(SpeedrunPaces.withTime(base, pace)),
+    ];
+    final marathons = [
+      for (final base in bases)
+        if (base.kind == SpeedrunKind.marathon && !base.journeyOnly)
+          await _summary(SpeedrunPaces.withTime(base, marathonPace)),
     ];
     // O speedrun aberto pode ser de outro ritmo que o da lista.
     final opened = SpeedrunPaces.resolve(bases, speedrunId);
     final selected = opened == null
         ? null
-        : all.where((s) => s.speedrun.id == opened.id).firstOrNull ??
+        : [
+                ...all,
+                ...marathons,
+              ].where((s) => s.speedrun.id == opened.id).firstOrNull ??
               await _summary(opened);
     SpeedrunRun? run;
     if (selected != null && attemptId != null) {
@@ -109,6 +153,12 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     emit(
       SpeedrunState(
         all: all,
+        marathons: marathons,
+        marathonPace: marathonPace,
+        marathonMode: clock?.speedrunMarathon ?? false,
+        category: category,
+        compactPace:
+            level == RatingLevel.beginner || level == RatingLevel.casual,
         selected: selected,
         run: run,
         previousBest: selected == null || run == null
@@ -155,14 +205,46 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
 
   /// Troca o ritmo da lista (e grava a escolha).
   Future<void> choosePace(TimeControl pace) async {
+    await _savePace(pace, marathon: false);
+    await load(speedrunId: state.selected?.speedrun.id);
+  }
+
+  /// Troca o ritmo das Maratonas (gravado à parte do da lista).
+  Future<void> chooseMarathonPace(TimeControl pace) async {
+    await _savePace(pace, marathon: true);
+    await load(speedrunId: state.selected?.speedrun.id);
+  }
+
+  /// Mostra os finais da dificuldade [category].
+  void chooseCategory(SpeedrunCategory category) =>
+      emit(state.copyWith(category: category));
+
+  /// Troca o modo da lista: a Maratona ou o clássico (e grava a escolha).
+  Future<void> chooseMode({required bool marathon}) async {
     final settings = _settings;
     if (settings != null) {
       final current = await settings.load();
       await settings.save(
-        current.copyWith(clock: current.clock.copyWith(speedrunTime: pace)),
+        current.copyWith(
+          clock: current.clock.copyWith(speedrunMarathon: marathon),
+        ),
       );
     }
-    await load(speedrunId: state.selected?.speedrun.id);
+    // Já na tela, sem esperar a releitura.
+    emit(state.copyWith(marathonMode: marathon));
+  }
+
+  Future<void> _savePace(TimeControl pace, {required bool marathon}) async {
+    final settings = _settings;
+    if (settings == null) return;
+    final current = await settings.load();
+    await settings.save(
+      current.copyWith(
+        clock: marathon
+            ? current.clock.copyWith(marathonTime: pace)
+            : current.clock.copyWith(speedrunTime: pace),
+      ),
+    );
   }
 
   /// Começa uma tentativa do speedrun aberto no ritmo [pace] (gravado como
@@ -178,13 +260,7 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       SpeedrunPaces.idFor(baseId, pace),
     );
     if (speedrun == null || speedrun.stages.isEmpty) return null;
-    final settings = _settings;
-    if (settings != null) {
-      final current = await settings.load();
-      await settings.save(
-        current.copyWith(clock: current.clock.copyWith(speedrunTime: pace)),
-      );
-    }
+    await _savePace(pace, marathon: speedrun.kind == SpeedrunKind.marathon);
     final attempt = await _speedruns.start(speedrun.id, _now());
     return (speedrun, attempt.id);
   }

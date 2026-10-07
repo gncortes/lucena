@@ -35,6 +35,7 @@ void main() {
     final tour = TourRobot($);
     final settings = SettingsRobot($);
     await app.open(systemLocale: _english, tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.next();
     await tour.next();

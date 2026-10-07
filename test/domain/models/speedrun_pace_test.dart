@@ -12,12 +12,19 @@ void main() {
     increment: Duration(seconds: 2),
   );
 
-  test('os ritmos em grupos: bullet, blitz e rápido', () {
+  test('os ritmos em grupos: ultra bullet, bullet, blitz e rápido', () {
     final groups = SpeedrunPaces.groups;
     expect(groups.keys, [
+      PaceCategory.ultraBullet,
       PaceCategory.bullet,
       PaceCategory.blitz,
       PaceCategory.rapid,
+    ]);
+    // Ultra bullet: só o tempo, sem acréscimo.
+    expect(groups[PaceCategory.ultraBullet]!.map((t) => t.code), [
+      '10+0',
+      '15+0',
+      '30+0',
     ]);
     expect(groups[PaceCategory.bullet]!.map((t) => t.code), ['60+0', '120+1']);
     expect(groups[PaceCategory.blitz]!.map((t) => t.code), [

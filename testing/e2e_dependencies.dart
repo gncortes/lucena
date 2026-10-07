@@ -17,6 +17,8 @@ import 'package:lucena/data/repositories/opponent/opponent_repository_stockfish.
 import 'package:lucena/data/repositories/positions/positions_repository_asset.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/services/stockfish_service.dart';
+import 'package:lucena/data/repositories/home/home_layout_repository.dart';
+import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/repositories/training/training_repository_local.dart';
@@ -30,6 +32,7 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/domain/use_cases/marathon.dart';
 
 import 'package:lucena/data/repositories/achievements/achievements_repository_local.dart';
 import 'package:lucena/data/repositories/characters/character_repository_asset.dart';
@@ -52,6 +55,13 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_review.dart';
 
 import 'fakes/fake_draw_offer_repository.dart';
+import 'fakes/fake_tts_service.dart';
+import 'fakes/fake_speech_input_repository.dart';
+
+import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
+
+import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
@@ -229,6 +239,8 @@ Future<Dependencies> e2eDependencies() async {
     evaluationRepository: e2eEvaluation,
     talkRepository: LocalTalkRepository(PreferencesService()),
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
+    homeLayoutRepository: LocalHomeLayoutRepository(PreferencesService()),
+    unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: lessons,
@@ -244,9 +256,23 @@ Future<Dependencies> e2eDependencies() async {
       PreferencesService(),
     ),
     drawOfferRepository: e2eDraws,
+    // As preferências de verdade; o sintetizador, sem som.
+    voiceRepository: LocalVoiceRepository(
+      PreferencesService(),
+      const AssetService(),
+      e2eTts,
+    ),
+    speechInputRepository: e2eSpeechInput,
+    blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     languages: AppLanguage.values,
   );
 }
+
+/// O microfone dos cenários: o cenário diz o que foi "ouvido".
+final e2eSpeechInput = FakeSpeechInputRepository();
+
+/// A voz dos cenários: vozes prontas e as falas guardadas.
+final e2eTts = FakeTtsService();
 
 /// A resposta da máquina às propostas de empate, combinada pelo cenário.
 final e2eDraws = FakeDrawOfferRepository();
@@ -292,6 +318,7 @@ Future<void> resetE2EData() async {
   e2eOpponent.reset();
   e2eMaia.reset();
   e2eSound.played.clear();
+  e2eTts.reset();
   e2eAnalysis
     ..useStockfish = false
     ..requests.clear()
@@ -307,6 +334,8 @@ Future<void> resetE2EData() async {
   // O tour da primeira abertura só aparece nos cenários dele.
   await LocalOnboardingRepository(PreferencesService())
       .save(const Onboarding(done: true));
+  // O aviso de "dá para escolher os caminhos" só nos cenários dele.
+  await LocalHomeLayoutRepository(PreferencesService()).markNoticeSeen();
   await _database?.close();
   _database = null;
   final database = AppDatabase();
@@ -351,6 +380,21 @@ class E2EJourneyRepository implements JourneyRepository {
     final maia1000 = ladder.first.opponent;
     // Três adversários da escada: o primeiro, o segundo e o Stockfish.
     final opponents = [ladder[0], ladder[1], ladder.last];
+    final ending = Speedrun(
+      id: 'e2e.ending',
+      kind: SpeedrunKind.ending,
+      positionId: mateInOne.id,
+      time: time,
+      stages: [
+        for (final rung in opponents)
+          Challenge(
+            id: 'e2e.ending/${rung.id}',
+            position: mateInOne,
+            opponent: rung.opponent,
+            time: time,
+          ),
+      ],
+    );
     return [
       Speedrun(
         id: 'e2e.rung',
@@ -367,21 +411,9 @@ class E2EJourneyRepository implements JourneyRepository {
             ),
         ],
       ),
-      Speedrun(
-        id: 'e2e.ending',
-        kind: SpeedrunKind.ending,
-        positionId: mateInOne.id,
-        time: time,
-        stages: [
-          for (final rung in opponents)
-            Challenge(
-              id: 'e2e.ending/${rung.id}',
-              position: mateInOne,
-              opponent: rung.opponent,
-              time: time,
-            ),
-        ],
-      ),
+      ending,
+      // A Maratona do mesmo final: três etapas, uma emendando na outra.
+      Marathon.of(ending),
       // A campanha inteira e os exercícios, em três e duas etapas.
       Speedrun(
         id: 'e2e.full',

@@ -53,6 +53,7 @@ abstract final class ExerciseKeys {
   static const missing = Key('exercise.missing');
   static const board = Key('exercise.board');
   static const speech = Key('exercise.speech');
+  static const scroll = Key('exercise.scroll');
   static const hintButton = Key('exercise.hint');
   static const stars = Key('exercise.stars');
   static const earned = Key('exercise.earned');

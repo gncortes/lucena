@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../../../domain/models/speedrun.dart';
+import '../../../domain/use_cases/endgame_difficulty.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,6 +15,7 @@ import '../../core/widgets/goal_style.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/animated_progress.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {
@@ -126,11 +131,28 @@ class _CategoryCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          l10n.catalogPositionCount(category.count(filter)),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                l10n.catalogPositionCount(
+                                  category.count(filter),
+                                ),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            // Por onde começar: o selo da dificuldade.
+                            if (EndgameDifficulty.ofCategory(category)
+                                case final difficulty?) ...[
+                              const SizedBox(width: 8),
+                              _DifficultyBadge(
+                                key: CatalogKeys.difficulty(category.key),
+                                difficulty: difficulty,
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),
@@ -167,7 +189,7 @@ class _CategoryCard extends StatelessWidget {
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
+                child: AnimatedProgress(
                   value: total == 0 ? 0 : done / total,
                   minHeight: 6,
                   color: ChangeColors.of(context, up: true),
@@ -184,6 +206,51 @@ class _CategoryCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O selo de dificuldade de um grupo de finais.
+class _DifficultyBadge extends StatelessWidget {
+  const _DifficultyBadge({required this.difficulty, super.key});
+
+  final SpeedrunCategory difficulty;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final (label, background, foreground) = switch (difficulty) {
+      SpeedrunCategory.beginner => (
+        l10n.profileLevelBeginner,
+        colors.tertiaryContainer,
+        colors.onTertiaryContainer,
+      ),
+      SpeedrunCategory.intermediate => (
+        l10n.profileLevelIntermediate,
+        colors.secondaryContainer,
+        colors.onSecondaryContainer,
+      ),
+      SpeedrunCategory.advanced => (
+        l10n.profileLevelAdvanced,
+        colors.errorContainer,
+        colors.onErrorContainer,
+      ),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: foreground,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

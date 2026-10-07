@@ -1,4 +1,7 @@
+import 'package:lucena/domain/models/journey.dart';
+
 import 'dart:convert';
+
 import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
@@ -74,6 +77,49 @@ void main() {
 
   setUp(() => repository = build());
 
+  test('os desafios especiais às cegas do 1000 ao 1400, do mesmo final de '
+      'um desafio do degrau', () async {
+    final ladder = await repository.ladder();
+    for (final rung in ladder.take(3)) {
+      final blind = [
+        for (final special in rung.specials)
+          if (special.mode == ChallengeMode.blind) special,
+      ];
+      expect(blind, isNotEmpty, reason: rung.id);
+      for (final special in blind) {
+        expect(special.mode, ChallengeMode.blind);
+        expect(special.id, startsWith('${rung.id}/blind.'));
+        expect(
+          rung.challenges.map((challenge) => challenge.position.id),
+          contains(special.position.id),
+        );
+      }
+    }
+    // O do 1200 é sem tabuleiro.
+    expect(
+      ladder[1].specials
+          .where((special) => special.mode == ChallengeMode.blind)
+          .single
+          .hideBoard,
+      isTrue,
+    );
+    // O speedrun curto no 1000 e a Maratona curta no 1200, com o ritmo no id.
+    final speedrun = ladder[0].specials.singleWhere(
+      (special) => special.mode == ChallengeMode.speedrun,
+    );
+    expect(speedrun.speedrunId, 'journey.mates@900+10');
+    final marathon = ladder[1].specials.singleWhere(
+      (special) => special.mode == ChallengeMode.marathon,
+    );
+    expect(marathon.speedrunId, 'marathon.journey.rook@600+0');
+    final speedruns = await repository.speedruns();
+    final short = speedruns.singleWhere((s) => s.id == 'marathon.journey.rook');
+    expect(short.kind, SpeedrunKind.marathon);
+    expect(short.journeyOnly, isTrue);
+    expect(short.stages, hasLength(3));
+    expect(ladder.skip(3).every((rung) => rung.specials.isEmpty), isTrue);
+  });
+
   test('a escada vai do Maia 1000 ao 2600 e termina no Stockfish', () async {
     final ladder = await repository.ladder();
 
@@ -117,10 +163,32 @@ void main() {
   });
 
   test('o app leva só speedruns de final: nove, do mate de torre ao de bispo '
-      'e cavalo', () async {
-    final speedruns = await repository.speedruns();
+      'e cavalo, cada um com a sua Maratona', () async {
+    // Os da Jornada (speedrun e Maratona curtos) ficam de fora da lista.
+    final all = [
+      for (final speedrun in await repository.speedruns())
+        if (!speedrun.journeyOnly) speedrun,
+    ];
+    final speedruns = all.where((s) => s.kind == SpeedrunKind.ending).toList();
+    final marathons = all.where((s) => s.kind == SpeedrunKind.marathon);
 
-    expect(speedruns.map((s) => s.kind).toSet(), {SpeedrunKind.ending});
+    expect(all.map((s) => s.kind).toSet(), {
+      SpeedrunKind.ending,
+      SpeedrunKind.marathon,
+    });
+    // A Maratona tem as mesmas etapas do final: as mesmas posições e os
+    // mesmos adversários.
+    expect(marathons.map((s) => s.id), [
+      for (final ending in speedruns)
+        ending.id.replaceFirst('ending.', 'marathon.'),
+    ]);
+    for (final (index, marathon) in marathons.indexed) {
+      final ending = speedruns[index];
+      expect(
+        marathon.stages.map((s) => (s.position.fen, s.opponent)),
+        ending.stages.map((s) => (s.position.fen, s.opponent)),
+      );
+    }
     expect(speedruns.map((s) => s.stages.first.position.subcategory), [
       'rook',
       'queen',

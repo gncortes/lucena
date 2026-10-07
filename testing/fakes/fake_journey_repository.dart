@@ -3,6 +3,7 @@ import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/domain/use_cases/marathon.dart';
 
 import 'fake_positions_repository.dart';
 
@@ -92,6 +93,7 @@ final sampleSpeedruns = [
     id: 'ending.queen',
     kind: SpeedrunKind.ending,
     positionId: samplePositions[0].id,
+    category: SpeedrunCategory.beginner,
     time: sampleSpeedrunTime,
     stages: [
       for (final rung in sampleLadder)
@@ -104,3 +106,6 @@ final sampleSpeedruns = [
     ],
   ),
 ];
+
+/// A Maratona do mate de dama: as etapas do speedrun de final.
+final sampleMarathon = Marathon.of(sampleSpeedruns[1]);

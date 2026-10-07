@@ -22,7 +22,7 @@ void main() {
       '1400', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.goal);
+    await tour.passVoice();
 
     await tour.nextUntilLevel();
     await tour.chooseLevel(RatingLevel.intermediate);
@@ -47,7 +47,7 @@ void main() {
     final tour = TourRobot($);
     final home = HomeRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.goal);
+    await tour.passVoice();
     await tour.enterName('Gabriel');
 
     // Fechar à força no meio do tour não perde o nome.
@@ -70,7 +70,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.goal);
+    await tour.passVoice();
     await tour.skip();
     await HomeRobot($).expectVisible();
 
@@ -86,7 +86,7 @@ void main() {
     tour.expectNotOpen();
     await HomeRobot($).openSettings();
     await tour.openFromSettings();
-    await tour.expectStep(TourStep.goal);
+    await tour.passVoice();
     await tour.next();
     await tour.expectStep(TourStep.theme);
     await tour.skip();
@@ -99,6 +99,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.next();
     await tour.next();
@@ -115,6 +116,7 @@ void main() {
     final home = HomeRobot($);
     final settings = SettingsRobot($);
     await app.open(systemLocale: _english, tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.expectStep(TourStep.theme);
 
@@ -154,6 +156,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.chooseThemeMode(AppThemeMode.light);
     await tour.chooseAccent(AppAccent.purple);
@@ -170,6 +173,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.expectStep(TourStep.theme);
 

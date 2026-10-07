@@ -17,6 +17,8 @@ import '../../core/theme/app_theme_mode_ui.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/settings_cubit.dart';
+import '../../core/keys/voice_keys.dart';
+import '../../voice/view_models/speech_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, this.version = appVersion});
@@ -46,6 +48,9 @@ class SettingsScreen extends StatelessWidget {
     );
     final sound = context.select(
       (SettingsCubit cubit) => cubit.state?.sound ?? true,
+    );
+    final voiceEnabled = context.select(
+      (SpeechCubit cubit) => cubit.state.settings.enabled,
     );
     return Scaffold(
       key: SettingsKeys.screen,
@@ -128,6 +133,25 @@ class SettingsScreen extends StatelessWidget {
             value: sound,
             onChanged: (value) =>
                 context.read<SettingsCubit>().setSound(enabled: value),
+          ),
+          ListTile(
+            key: VoiceKeys.settingsTile,
+            leading: const Icon(Icons.record_voice_over_outlined),
+            title: Text(context.l10n.voiceSection),
+            subtitle: Text(
+              voiceEnabled
+                  ? context.l10n.voiceSpeakAloud
+                  : context.l10n.voiceNone,
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsVoice),
+          ),
+          ListTile(
+            key: SettingsKeys.homeLayoutTile,
+            leading: const Icon(Icons.dashboard_customize_outlined),
+            title: Text(context.l10n.homeLayoutTitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.homeLayout),
           ),
           SwitchListTile(
             key: SettingsKeys.characterTalkSwitch,

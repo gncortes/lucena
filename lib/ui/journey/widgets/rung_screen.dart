@@ -17,6 +17,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
+import '../../core/widgets/animated_progress.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o
 /// progresso, o próximo desafio em destaque e todos os desafios em grade, com
@@ -130,9 +131,97 @@ class RungScreen extends StatelessWidget {
                       },
                     ),
                   ),
+                  // O mesmo final de outro jeito: às cegas. Vale como extra.
+                  if (rung.rung.specials.isNotEmpty) ...[
+                    _SectionTitle(l10n.journeySpecialSection),
+                    for (final special in rung.rung.specials)
+                      _SpecialChallenge(
+                        special: special,
+                        open: rung.specialOpen(special),
+                        done: rung.specialsDone.contains(special.id),
+                      ),
+                  ],
                 ],
               ),
             ),
+    );
+  }
+}
+
+/// Um desafio especial do degrau: o mesmo final às cegas (liberado depois de
+/// vencê-lo no modo normal), um speedrun curto ou uma Maratona curta.
+class _SpecialChallenge extends StatelessWidget {
+  const _SpecialChallenge({
+    required this.special,
+    required this.open,
+    required this.done,
+  });
+
+  final Challenge special;
+  final bool open;
+  final bool done;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card(
+      key: JourneyKeys.special(special.id),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      color: open ? colors.tertiaryContainer : colors.surfaceContainerLow,
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        enabled: open,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        leading: Icon(
+          !open
+              ? Icons.lock_outline
+              : switch (special.mode) {
+                  ChallengeMode.speedrun => Icons.timer_outlined,
+                  ChallengeMode.marathon => Icons.hourglass_bottom_rounded,
+                  _ => Icons.record_voice_over_outlined,
+                },
+          color: open ? colors.onTertiaryContainer : colors.outline,
+        ),
+        title: Text(
+          switch (special.mode) {
+            ChallengeMode.speedrun => l10n.journeySpecialSpeedrunTitle,
+            ChallengeMode.marathon => l10n.journeySpecialMarathonTitle,
+            _ =>
+              '${l10n.blindTitle} · ${endgameName(l10n, special.position.subcategory)}',
+          },
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        subtitle: Text(switch (special.mode) {
+          _ when !open && special.mode == ChallengeMode.blind =>
+            l10n.journeySpecialLocked,
+          _ when !open => l10n.journeySpecialLockedAny,
+          ChallengeMode.speedrun => l10n.journeySpecialSpeedrunBody,
+          ChallengeMode.marathon => l10n.journeySpecialMarathonBody,
+          _ when special.hideBoard => l10n.journeySpecialNoBoard,
+          _ => l10n.journeySpecialSquares,
+        }),
+        trailing: done
+            ? Icon(Icons.check_circle, color: colors.primary)
+            : const Icon(Icons.chevron_right),
+        onTap: !open
+            ? null
+            : () async {
+                final cubit = context.read<JourneyCubit>();
+                final speedrunId = special.speedrunId;
+                // O speedrun e a Maratona curtos abrem a tela do speedrun,
+                // já no ritmo deles; o às cegas, a partida.
+                await context.push(
+                  speedrunId != null
+                      ? Routes.speedrun(speedrunId)
+                      : Routes.blindChallenge(special),
+                );
+                if (context.mounted) await cubit.load();
+              },
+      ),
     );
   }
 }
@@ -221,7 +310,7 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
+            child: AnimatedProgress(
               value: total == 0 ? 0 : done / total,
               minHeight: 10,
               color: ChangeColors.of(context, up: true),

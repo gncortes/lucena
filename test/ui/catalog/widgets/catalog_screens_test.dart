@@ -105,6 +105,20 @@ void main() {
     expect(find.text('2 posiciones'), findsNWidgets(2));
   });
 
+  testWidgets('cada grupo mostra por onde começar: o selo da dificuldade', (
+    tester,
+  ) async {
+    await pump(tester, const CatalogScreen(), locale: const Locale('pt'));
+
+    expect(
+      find.descendant(
+        of: find.byKey(CatalogKeys.difficulty('basic')),
+        matching: find.text('Iniciante'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('filtrar "defender" esconde a categoria sem empates e grava', (
     tester,
   ) async {

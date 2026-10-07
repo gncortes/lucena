@@ -2489,7 +2489,7 @@
   "@starChallengesTitle": {
     "description": "Title of the star challenges list and of the school card."
   },
-  "starChallengesBody": "Collect the stars with each piece against the clock. Three levels per piece.",
+  "starChallengesBody": "Catch the stars with each piece against the clock. Three levels per piece, plus blindfold: the star comes by the square's name.",
   "@starChallengesBody": {
     "description": "School card body for the star challenges."
   },
@@ -2838,5 +2838,822 @@
   "resultReview": "Review game",
   "@resultReview": {
     "description": "End of game panel: button that opens the game details to review it with the engine."
+  },
+  "voiceListen": "Listen",
+  "@voiceListen": {
+    "description": "Voice (text-to-speech) feature: voiceListen"
+  },
+  "voiceStop": "Stop",
+  "@voiceStop": {
+    "description": "Voice (text-to-speech) feature: voiceStop"
+  },
+  "voiceSection": "Voice",
+  "@voiceSection": {
+    "description": "Voice (text-to-speech) feature: voiceSection"
+  },
+  "voiceSpeakAloud": "Speak aloud",
+  "@voiceSpeakAloud": {
+    "description": "Voice (text-to-speech) feature: voiceSpeakAloud"
+  },
+  "voiceSpeakAloudHint": "The teacher and the opponents read their lines out loud",
+  "@voiceSpeakAloudHint": {
+    "description": "Voice (text-to-speech) feature: voiceSpeakAloudHint"
+  },
+  "voiceSpeed": "Voice speed",
+  "@voiceSpeed": {
+    "description": "Voice (text-to-speech) feature: voiceSpeed"
+  },
+  "voiceSpeedSlow": "Slow",
+  "@voiceSpeedSlow": {
+    "description": "Voice (text-to-speech) feature: voiceSpeedSlow"
+  },
+  "voiceSpeedNormal": "Normal",
+  "@voiceSpeedNormal": {
+    "description": "Voice (text-to-speech) feature: voiceSpeedNormal"
+  },
+  "voiceSpeedFast": "Fast",
+  "@voiceSpeedFast": {
+    "description": "Voice (text-to-speech) feature: voiceSpeedFast"
+  },
+  "voiceSpeedFaster": "Very fast",
+  "@voiceSpeedFaster": {
+    "description": "Voice (text-to-speech) feature: voiceSpeedFaster"
+  },
+  "voiceTeacher": "Teacher's voice",
+  "@voiceTeacher": {
+    "description": "Voice (text-to-speech) feature: voiceTeacher"
+  },
+  "voiceCharacters": "Opponents' voices",
+  "@voiceCharacters": {
+    "description": "Voice (text-to-speech) feature: voiceCharacters"
+  },
+  "voiceNumber": "Voice {number}",
+  "@voiceNumber": {
+    "description": "Voice (text-to-speech) feature: voiceNumber",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "voiceNone": "No voice",
+  "@voiceNone": {
+    "description": "Voice (text-to-speech) feature: voiceNone"
+  },
+  "voiceAppChoice": "Chosen by the app",
+  "@voiceAppChoice": {
+    "description": "Voice (text-to-speech) feature: voiceAppChoice"
+  },
+  "voiceUnavailable": "This device has no offline voice for this language. Open the device's voice settings, tap the gear next to the engine (Samsung or Google) and download one in “Install voice data”.",
+  "@voiceUnavailable": {
+    "description": "Voice (text-to-speech) feature: voiceUnavailable"
+  },
+  "voiceBetterHint": "Robotic voice? On Android, open the device's voice settings, tap the gear next to the engine (Samsung or Google) and download better voices in “Install voice data”. Then come back and pick again.",
+  "@voiceBetterHint": {
+    "description": "Voice (text-to-speech) feature: voiceBetterHint"
+  },
+  "voiceGenderMale": "Male",
+  "@voiceGenderMale": {
+    "description": "Voice (text-to-speech) feature: voiceGenderMale"
+  },
+  "voiceGenderFemale": "Female",
+  "@voiceGenderFemale": {
+    "description": "Voice (text-to-speech) feature: voiceGenderFemale"
+  },
+  "voiceTeacherSample": "Hello! I'm Viktor, your teacher. Let's master the endgames together.",
+  "@voiceTeacherSample": {
+    "description": "Voice (text-to-speech) feature: voiceTeacherSample"
+  },
+  "voiceCharacterSample": "Hi! I'm {name}. Ready to play?",
+  "@voiceCharacterSample": {
+    "description": "Voice (text-to-speech) feature: voiceCharacterSample",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tourVoiceTitle": "Shall I speak out loud?",
+  "@tourVoiceTitle": {
+    "description": "Voice (text-to-speech) feature: tourVoiceTitle"
+  },
+  "tourVoiceBody": "Pick my voice. Tap one to hear it.",
+  "@tourVoiceBody": {
+    "description": "Voice (text-to-speech) feature: tourVoiceBody"
+  },
+  "tourCharacterVoicesTitle": "Your opponents' voices",
+  "@tourCharacterVoicesTitle": {
+    "description": "Voice (text-to-speech) feature: tourCharacterVoicesTitle"
+  },
+  "tourCharacterVoicesBody": "Each one already has a voice. Tap one to change it.",
+  "@tourCharacterVoicesBody": {
+    "description": "Voice (text-to-speech) feature: tourCharacterVoicesBody"
+  },
+  "tourKeepVoices": "Keep as is",
+  "@tourKeepVoices": {
+    "description": "Voice (text-to-speech) feature: tourKeepVoices"
+  },
+  "lessonPrevious": "Previous step",
+  "@lessonPrevious": {
+    "description": "Lesson: button (tooltip) that goes back to the previous step to review it"
+  },
+  "voiceSpeedValue": "{speed}×",
+  "@voiceSpeedValue": {
+    "description": "Voice speed on the speech bubble button, e.g. 1.2×",
+    "placeholders": {
+      "speed": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "voiceOpenSystem": "Open device voice settings",
+  "@voiceOpenSystem": {
+    "description": "Button that opens the device's text-to-speech settings"
+  },
+  "blindTitle": "Blindfold",
+  "@blindTitle": {
+    "description": "Blindfold mode (T40 spike): blindTitle"
+  },
+  "blindPlay": "Play blindfold (experimental)",
+  "@blindPlay": {
+    "description": "Blindfold mode (T40 spike): blindPlay"
+  },
+  "blindViewBoard": "Board",
+  "@blindViewBoard": {
+    "description": "Blindfold mode (T40 spike): blindViewBoard"
+  },
+  "blindViewEmpty": "Squares only",
+  "@blindViewEmpty": {
+    "description": "Blindfold mode (T40 spike): blindViewEmpty"
+  },
+  "blindViewHidden": "No board",
+  "@blindViewHidden": {
+    "description": "Blindfold mode (T40 spike): blindViewHidden"
+  },
+  "blindStatusYourTurn": "Your move",
+  "@blindStatusYourTurn": {
+    "description": "Blindfold mode (T40 spike): blindStatusYourTurn"
+  },
+  "blindStatusOpponent": "Opponent's move",
+  "@blindStatusOpponent": {
+    "description": "Blindfold mode (T40 spike): blindStatusOpponent"
+  },
+  "blindStatusListening": "Listening…",
+  "@blindStatusListening": {
+    "description": "Blindfold mode (T40 spike): blindStatusListening"
+  },
+  "blindStatusWhich": "Which piece?",
+  "@blindStatusWhich": {
+    "description": "Blindfold mode (T40 spike): blindStatusWhich"
+  },
+  "blindStatusFinished": "Game over",
+  "@blindStatusFinished": {
+    "description": "Blindfold mode (T40 spike): blindStatusFinished"
+  },
+  "blindHeard": "Heard: “{text}”",
+  "@blindHeard": {
+    "description": "Blindfold mode (T40 spike): blindHeard",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "blindLastMoves": "{you}: {mine} · {opponent}: {theirs}",
+  "@blindLastMoves": {
+    "description": "Blindfold mode (T40 spike): blindLastMoves",
+    "placeholders": {
+      "you": {
+        "type": "String"
+      },
+      "mine": {
+        "type": "String"
+      },
+      "opponent": {
+        "type": "String"
+      },
+      "theirs": {
+        "type": "String"
+      }
+    }
+  },
+  "blindYou": "You",
+  "@blindYou": {
+    "description": "Blindfold mode (T40 spike): blindYou"
+  },
+  "blindMicTooltip": "Say your move",
+  "@blindMicTooltip": {
+    "description": "Blindfold mode (T40 spike): blindMicTooltip"
+  },
+  "blindMicHint": "Tap or hold to talk",
+  "@blindMicHint": {
+    "description": "Blindfold mode (T40 spike): blindMicHint"
+  },
+  "blindMicTitle": "Use the microphone?",
+  "@blindMicTitle": {
+    "description": "Blindfold mode (T40 spike): blindMicTitle"
+  },
+  "blindMicBody": "To play blindfold, the app listens to the move you say. Your speech is recognized by the device and is not recorded.",
+  "@blindMicBody": {
+    "description": "Blindfold mode (T40 spike): blindMicBody"
+  },
+  "blindMicAllow": "Allow",
+  "@blindMicAllow": {
+    "description": "Blindfold mode (T40 spike): blindMicAllow"
+  },
+  "blindMicDeny": "Not now",
+  "@blindMicDeny": {
+    "description": "Blindfold mode (T40 spike): blindMicDeny"
+  },
+  "blindMicDenied": "No microphone: play by tapping the board.",
+  "@blindMicDenied": {
+    "description": "Blindfold mode (T40 spike): blindMicDenied"
+  },
+  "blindOfflineMissing": "This device can't recognize speech offline in this language, so the system recognizer is used (it may need internet). To download it, look for “offline speech recognition” in the device settings.",
+  "@blindOfflineMissing": {
+    "description": "Blindfold mode (T40 spike): blindOfflineMissing"
+  },
+  "blindCopyLog": "Copy measurements",
+  "@blindCopyLog": {
+    "description": "Blindfold mode (T40 spike): blindCopyLog"
+  },
+  "blindCopied": "Measurements copied",
+  "@blindCopied": {
+    "description": "Blindfold mode (T40 spike): blindCopied"
+  },
+  "blindShowMoves": "Show the last moves",
+  "@blindShowMoves": {
+    "description": "Blindfold mode (T40 spike): blindShowMoves"
+  },
+  "blindSayYourTurn": "Your move.",
+  "@blindSayYourTurn": {
+    "description": "Blindfold mode (T40 spike): blindSayYourTurn"
+  },
+  "blindSayNotUnderstood": "I didn't catch that. Please say it again.",
+  "@blindSayNotUnderstood": {
+    "description": "Blindfold mode (T40 spike): blindSayNotUnderstood"
+  },
+  "blindSayWhich": "Which one: {options}?",
+  "@blindSayWhich": {
+    "description": "Blindfold mode (T40 spike): blindSayWhich",
+    "placeholders": {
+      "options": {
+        "type": "String"
+      }
+    }
+  },
+  "blindOr": " or ",
+  "@blindOr": {
+    "description": "Blindfold mode (T40 spike): blindOr"
+  },
+  "blindSayPosition": "White: {white}. Black: {black}.",
+  "@blindSayPosition": {
+    "description": "Blindfold mode (T40 spike): blindSayPosition",
+    "placeholders": {
+      "white": {
+        "type": "String"
+      },
+      "black": {
+        "type": "String"
+      }
+    }
+  },
+  "blindPawn": "pawn",
+  "@blindPawn": {
+    "description": "Blindfold mode (T40 spike): blindPawn"
+  },
+  "blindSayWon": "Checkmate. You won!",
+  "@blindSayWon": {
+    "description": "Blindfold mode (T40 spike): blindSayWon"
+  },
+  "blindSayLost": "You lost.",
+  "@blindSayLost": {
+    "description": "Blindfold mode (T40 spike): blindSayLost"
+  },
+  "blindSayDraw": "Draw.",
+  "@blindSayDraw": {
+    "description": "Blindfold mode (T40 spike): blindSayDraw"
+  },
+  "blindSayResigned": "You resigned. Better luck next time.",
+  "@blindSayResigned": {
+    "description": "Blindfold mode (T40 spike): blindSayResigned"
+  },
+  "blindIntro": "Before you start, listen to where the pieces are or take a look at the board.",
+  "@blindIntro": {
+    "description": "Blindfold mode (T40 spike): blindIntro"
+  },
+  "blindListenPosition": "Hear the position",
+  "@blindListenPosition": {
+    "description": "Blindfold mode (T40 spike): blindListenPosition"
+  },
+  "blindShowBoard": "Show the board",
+  "@blindShowBoard": {
+    "description": "Blindfold mode (T40 spike): blindShowBoard"
+  },
+  "blindStart": "Start",
+  "@blindStart": {
+    "description": "Blindfold mode (T40 spike): blindStart"
+  },
+  "blindNarrateGame": "Narrate the game",
+  "@blindNarrateGame": {
+    "description": "Blindfold mode (T40 spike): blindNarrateGame"
+  },
+  "blindRepeat": "Repeat the opponent's move",
+  "@blindRepeat": {
+    "description": "Blindfold mode (T40 spike): blindRepeat"
+  },
+  "blindReleaseToSend": "Recording… release to send, slide away to cancel",
+  "@blindReleaseToSend": {
+    "description": "Blindfold mode (T40 spike): blindReleaseToSend"
+  },
+  "blindConfirmQuestion": "{move}: is that it?",
+  "@blindConfirmQuestion": {
+    "description": "Blindfold mode (T40 spike): blindConfirmQuestion",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "blindConfirmYes": "Yes, play it",
+  "@blindConfirmYes": {
+    "description": "Blindfold mode (T40 spike): blindConfirmYes"
+  },
+  "blindConfirmNo": "No",
+  "@blindConfirmNo": {
+    "description": "Blindfold mode (T40 spike): blindConfirmNo"
+  },
+  "blindNotUnderstoodHint": "Didn't catch “{text}”. Hold and say it again.",
+  "@blindNotUnderstoodHint": {
+    "description": "Blindfold mode (T40 spike): blindNotUnderstoodHint",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "blindNotHeard": "I didn't hear anything. Hold and say it again.",
+  "@blindNotHeard": {
+    "description": "Blindfold mode (T40 spike): blindNotHeard"
+  },
+  "blindSayConfirm": "{move}. Confirm?",
+  "@blindSayConfirm": {
+    "description": "Blindfold mode (T40 spike): blindSayConfirm",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "blindSayStart": "Starting position.",
+  "@blindSayStart": {
+    "description": "Blindfold mode (T40 spike): blindSayStart"
+  },
+  "blindSayMove": "Move {number}, {side}: {move}.",
+  "@blindSayMove": {
+    "description": "Blindfold mode (T40 spike): blindSayMove",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "side": {
+        "type": "String"
+      },
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "blindWhite": "White",
+  "@blindWhite": {
+    "description": "Blindfold mode (T40 spike): blindWhite"
+  },
+  "blindBlack": "Black",
+  "@blindBlack": {
+    "description": "Blindfold mode (T40 spike): blindBlack"
+  },
+  "blindSayNoMoves": "No moves yet.",
+  "@blindSayNoMoves": {
+    "description": "Blindfold mode (T40 spike): blindSayNoMoves"
+  },
+  "voiceTone": "Tone",
+  "@voiceTone": {
+    "description": "Voice tone option: voiceTone"
+  },
+  "voiceToneDeep": "Deep",
+  "@voiceToneDeep": {
+    "description": "Voice tone option: voiceToneDeep"
+  },
+  "voiceToneNatural": "Natural",
+  "@voiceToneNatural": {
+    "description": "Voice tone option: voiceToneNatural"
+  },
+  "voiceToneSoft": "Soft",
+  "@voiceToneSoft": {
+    "description": "Voice tone option: voiceToneSoft"
+  },
+  "voiceToneHigh": "High",
+  "@voiceToneHigh": {
+    "description": "Voice tone option: voiceToneHigh"
+  },
+  "blindTapTooShort": "Hold to record, release to send.",
+  "@blindTapTooShort": {
+    "description": "Blindfold mode: the mic was only tapped, not held"
+  },
+  "blindTitleShort": "Blindfold",
+  "blindBeta": "Beta",
+  "@blindTitleShort": {
+    "description": "Blindfold mode: short screen title"
+  },
+  "@blindBeta": {
+    "description": "Badge next to the blindfold title: experimental feature"
+  },
+  "blindHearAgain": "Hear again",
+  "blindSlideToCancel": "slide to cancel",
+  "@blindHearAgain": {
+    "description": "Blindfold: hear the opponent's last move again"
+  },
+  "@blindSlideToCancel": {
+    "description": "Blindfold: while recording, slide the finger away to cancel"
+  },
+  "blindProcessing": "Understanding…",
+  "@blindProcessing": {
+    "description": "Blindfold: after releasing the mic, waiting for the recognizer"
+  },
+  "blindSayIllegal": "{move} isn't possible in this position. Want to hear the position or the game again? Then hold and try another move.",
+  "blindIllegalHint": "Illegal move: {move}. Hear the position and try again.",
+  "@blindSayIllegal": {
+    "description": "Blindfold: spoken after confirming an impossible move",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "@blindIllegalHint": {
+    "description": "Blindfold: hint after confirming an impossible move",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "blindTypeHint": "Type the move",
+  "blindTypeToggle": "Type the move",
+  "blindTypeSend": "Play",
+  "@blindTypeHint": {
+    "description": "Blindfold: typing the move (blindTypeHint)"
+  },
+  "@blindTypeToggle": {
+    "description": "Blindfold: typing the move (blindTypeToggle)"
+  },
+  "@blindTypeSend": {
+    "description": "Blindfold: typing the move (blindTypeSend)"
+  },
+  "blindDiscard": "Discard",
+  "blindSend": "Send",
+  "blindIsThatIt": "Is that it?",
+  "@blindDiscard": {
+    "description": "Blindfold recording panel: blindDiscard"
+  },
+  "@blindSend": {
+    "description": "Blindfold recording panel: blindSend"
+  },
+  "@blindIsThatIt": {
+    "description": "Blindfold recording panel: blindIsThatIt"
+  },
+  "blindHelpTitle": "How to say the moves",
+  "@blindHelpTitle": {
+    "description": "Blindfold help sheet: blindHelpTitle"
+  },
+  "blindHelpIntro": "Speak or type the move in the notation of the app's language. Captures, checks and capitals don't matter.",
+  "@blindHelpIntro": {
+    "description": "Blindfold help sheet: blindHelpIntro"
+  },
+  "blindHelpPieces": "Pieces: K king, Q queen, R rook, B bishop, N knight. Pawns have no letter.",
+  "@blindHelpPieces": {
+    "description": "Blindfold help sheet: blindHelpPieces"
+  },
+  "blindHelpTyped": "Typing: Nf3, Qxe5, e4, O-O (or 0-0), e8=Q, Raf3 (the rook from a), or the squares from and to: e2e4.",
+  "@blindHelpTyped": {
+    "description": "Blindfold help sheet: blindHelpTyped"
+  },
+  "blindHelpVoice": "Speaking works in Portuguese for now. In other languages, type or tap the squares.",
+  "@blindHelpVoice": {
+    "description": "Blindfold help sheet: blindHelpVoice"
+  },
+  "blindHelpCommands": "Voice commands: “repetir” (the last move), “posição”, “desistir”; to confirm, “sim” or “não”.",
+  "@blindHelpCommands": {
+    "description": "Blindfold help sheet: blindHelpCommands"
+  },
+  "blindHelpTouch": "With “squares only”, tap the square the piece leaves and then the one it goes to.",
+  "@blindHelpTouch": {
+    "description": "Blindfold help sheet: blindHelpTouch"
+  },
+  "setupMode": "Mode",
+  "setupModeNormal": "Normal",
+  "setupModeBlind": "Blindfold",
+  "@setupMode": {
+    "description": "Game setup: play mode (setupMode)"
+  },
+  "@setupModeNormal": {
+    "description": "Game setup: play mode (setupModeNormal)"
+  },
+  "@setupModeBlind": {
+    "description": "Game setup: play mode (setupModeBlind)"
+  },
+  "characterSoundOff": "Mute the character",
+  "characterSoundOn": "Hear the character",
+  "@characterSoundOff": {
+    "description": "Tooltip of the speaker button in the game bar: stops the opponent character from speaking aloud (remembered)."
+  },
+  "@characterSoundOn": {
+    "description": "Tooltip of the muted speaker button in the game bar: the opponent character speaks aloud again."
+  },
+  "paceUltraBullet": "Ultra Bullet",
+  "@paceUltraBullet": {
+    "description": "Name of the fastest time-control group (30 s or less per side)."
+  },
+  "paceSeconds": "{seconds} s",
+  "@paceSeconds": {
+    "description": "Short time control under one minute, in seconds, e.g. 30 s.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "marathonSection": "Marathon",
+  "@marathonSection": {
+    "description": "Title of the Marathon section in the speedrun list."
+  },
+  "marathonIntro": "One clock for the whole run, from 1000 to Stockfish: each stage starts with the time left from the last one, and the next game starts right away. A loss, a draw or running out of time ends the run.",
+  "@marathonIntro": {
+    "description": "One-sentence explanation of the Marathon speedrun mode: a single time bank for the player across all stages, games chained without pause."
+  },
+  "speedrunMarathonTitle": "Marathon: {ending}",
+  "@speedrunMarathonTitle": {
+    "description": "Name of a Marathon speedrun, with the endgame it uses.",
+    "placeholders": {
+      "ending": {
+        "type": "String"
+      }
+    }
+  },
+  "marathonBest": "Most time left",
+  "@marathonBest": {
+    "description": "Label of the Marathon record: the most time left in the bank after beating Stockfish."
+  },
+  "marathonLeft": "Time left",
+  "@marathonLeft": {
+    "description": "Label of the time left in the bank at the end of a Marathon attempt."
+  },
+  "speedrunModeClassic": "Classic",
+  "@speedrunModeClassic": {
+    "description": "Speedrun mode selector: each game has its own clock (as opposed to the Marathon, one clock for the whole run)."
+  },
+  "homeJourneyBodyPlayer": "Practice the basic checkmates and take on every opponent, from Coco to Stockfish.",
+  "@homeJourneyBodyPlayer": {
+    "description": "Home path text for the Journey, for players who are not beginners."
+  },
+  "homeLearnBodyPlayer": "Review the fundamentals with Viktor.",
+  "@homeLearnBodyPlayer": {
+    "description": "Home path text for Viktor's lessons, for players who are not beginners."
+  },
+  "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time. Break your record.",
+  "@homeSpeedrunBodyChallenge": {
+    "description": "Home path text for the speedrun, for expert and master players: a challenge."
+  },
+  "tourGoalsTitle": "What do you want to do in Lucena?",
+  "@tourGoalsTitle": {
+    "description": "Tour step title: which paths the player wants on the home screen."
+  },
+  "tourGoalsBody": "Mark as many as you like. You can change this later in Settings.",
+  "@tourGoalsBody": {
+    "description": "Tour step hint: mark any number of paths; it can be changed later in Settings."
+  },
+  "homeOtherModes": "Other modes",
+  "@homeOtherModes": {
+    "description": "Collapsed home section with the paths the player did not highlight."
+  },
+  "homeCustomize": "Customize",
+  "@homeCustomize": {
+    "description": "Button that opens the home screen settings (which paths and in what order)."
+  },
+  "homeLayoutTitle": "Home screen",
+  "@homeLayoutTitle": {
+    "description": "Settings entry and screen title: the home screen paths."
+  },
+  "homeLayoutBody": "Marked paths stand out on the home screen; the rest go to Other modes. Drag to change the order.",
+  "@homeLayoutBody": {
+    "description": "Explanation on the home screen settings: marked paths stand out, the rest go to Other modes; drag to reorder."
+  },
+  "homeLayoutRestore": "Back to my level's suggestion",
+  "@homeLayoutRestore": {
+    "description": "Button that restores the home screen to the suggestion for the player's level."
+  },
+  "homeLayoutNotice": "Now you can choose what shows up here.",
+  "@homeLayoutNotice": {
+    "description": "One-time notice on the home screen for existing users: they can now choose what appears there."
+  },
+  "allModesTitle": "All modes",
+  "@allModesTitle": {
+    "description": "Screen with every mode of the app, and the home button that opens it."
+  },
+  "allModesLearnSection": "Learn",
+  "@allModesLearnSection": {
+    "description": "All modes section: learning."
+  },
+  "allModesPlaySection": "Play",
+  "@allModesPlaySection": {
+    "description": "All modes section: playing."
+  },
+  "allModesProgressSection": "Progress",
+  "@allModesProgressSection": {
+    "description": "All modes section: rating and achievements."
+  },
+  "allModesBlindBody": "Play without seeing the pieces: say, type or tap your moves. Pick an endgame and choose Blindfold.",
+  "@allModesBlindBody": {
+    "description": "All modes card: blindfold play; it is chosen in the game setup after picking an endgame."
+  },
+  "allModesSpeedrunBody": "Against the clock: Classic, each game with its own clock, or the Marathon, one clock for the whole run.",
+  "@allModesSpeedrunBody": {
+    "description": "All modes card: speedrun, Classic or Marathon."
+  },
+  "allModesFreeBoardBody": "Play both sides, with or without a clock.",
+  "@allModesFreeBoardBody": {
+    "description": "All modes card: free board."
+  },
+  "allModesCustomBody": "Set up any position and play it.",
+  "@allModesCustomBody": {
+    "description": "All modes card: custom position."
+  },
+  "allModesRatingBody": "Your rating over time and every game that counted.",
+  "@allModesRatingBody": {
+    "description": "All modes card: rating history."
+  },
+  "allModesAchievementsBody": "The medals you have earned and the ones still waiting.",
+  "@allModesAchievementsBody": {
+    "description": "All modes card: achievements."
+  },
+  "speechShowOnBoard": "Show {square} on the board",
+  "@speechShowOnBoard": {
+    "description": "Screen reader action on a square or move named in the teacher's speech bubble: highlights it on the board.",
+    "placeholders": {
+      "square": {
+        "type": "String"
+      }
+    }
+  },
+  "tourDemoMate": "Checkmate!",
+  "@tourDemoMate": {
+    "description": "Chip in the tour's speedrun demo when a stage ends in checkmate."
+  },
+  "profileLevelBeginnerHint": "I'm learning the rules",
+  "profileLevelCasualHint": "I play with friends now and then",
+  "@profileLevelBeginnerHint": {
+    "description": "Shown under 'Beginner' when choosing a level, instead of a rating range: what a beginner is."
+  },
+  "@profileLevelCasualHint": {
+    "description": "Shown under 'Casual' when choosing a level, instead of a rating range."
+  },
+  "speedrunPaceLine": "Pace: {time}",
+  "speedrunPaceHelp": "15+10 means 15 minutes for the whole game, plus 10 seconds added to your clock after each move you make.",
+  "@speedrunPaceLine": {
+    "description": "Collapsed pace selector for beginners in the speedrun list.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@speedrunPaceHelp": {
+    "description": "Speedrun help: what a time control like 15+10 means."
+  },
+  "lessonPlayWithClock": "Play with a clock (15+10)",
+  "@lessonPlayWithClock": {
+    "description": "Graduation screen button: first game with a clock (15 minutes plus 10 seconds per move)."
+  },
+  "lessonGuideTap": "Tap the square {square}",
+  "@lessonGuideTap": {
+    "description": "Lesson guide line in a 'tap the square' step (notation lessons).",
+    "placeholders": {
+      "square": {
+        "type": "String"
+      }
+    }
+  },
+  "journeySpecialSection": "Special challenge",
+  "@journeySpecialSection": {
+    "description": "Rung screen section: special (blindfold) challenges."
+  },
+  "journeySpecialSquares": "Blindfold, with the squares in view: say, type or tap your moves.",
+  "@journeySpecialSquares": {
+    "description": "Special challenge played blindfold with only the squares shown."
+  },
+  "journeySpecialNoBoard": "Blindfold, no board at all: just your memory.",
+  "@journeySpecialNoBoard": {
+    "description": "Special challenge played blindfold without any board."
+  },
+  "journeySpecialLocked": "Win this endgame in normal mode first.",
+  "@journeySpecialLocked": {
+    "description": "Special challenge still locked: win the same endgame normally first."
+  },
+  "homeUnlockedBlindTitle": "New mode unlocked: blindfold",
+  "@homeUnlockedBlindTitle": {
+    "description": "Home card shown once after the first blindfold special challenge is won."
+  },
+  "homeUnlockedBlindBody": "You won without seeing the pieces. Now you can play any endgame blindfold: pick the endgame and choose Blindfold.",
+  "@homeUnlockedBlindBody": {
+    "description": "Body of the new-mode card: how to play blindfold from now on."
+  },
+  "homeUnlockedBlindAction": "Pick an endgame",
+  "@homeUnlockedBlindAction": {
+    "description": "Button of the new-mode card: opens the endgame catalog."
+  },
+  "lichessInviteTitle": "Play against people",
+  "@lichessInviteTitle": {
+    "description": "Invite to play against people on Lichess (after the beginner tricks and at graduation)."
+  },
+  "lichessInviteBody": "Create a free account on Lichess (lichess.org), practice these tricks in real games, and come back here to train endgames.",
+  "@lichessInviteBody": {
+    "description": "Body of the Lichess invite: create an account, practice, come back to train endgames."
+  },
+  "lichessInviteButton": "Open Lichess",
+  "@lichessInviteButton": {
+    "description": "Button that opens lichess.org/signup in the browser."
+  },
+  "journeySpecialSpeedrunTitle": "Short speedrun",
+  "@journeySpecialSpeedrunTitle": {
+    "description": "Rung special challenge: a short speedrun."
+  },
+  "journeySpecialSpeedrunBody": "Two mates in a row against the clock (15+10). Only your clock counts.",
+  "@journeySpecialSpeedrunBody": {
+    "description": "Short speedrun description (two mates, 15+10)."
+  },
+  "journeySpecialMarathonTitle": "Short marathon",
+  "@journeySpecialMarathonTitle": {
+    "description": "Rung special challenge: a short marathon."
+  },
+  "journeySpecialMarathonBody": "Three rook mates in a row with a single clock (10 minutes).",
+  "@journeySpecialMarathonBody": {
+    "description": "Short marathon description (three rook mates, one clock, 10 minutes)."
+  },
+  "journeySpecialLockedAny": "Win a challenge against this opponent first.",
+  "@journeySpecialLockedAny": {
+    "description": "Short speedrun or marathon still locked: win any challenge of the rung first."
+  },
+  "voiceAutoOff": "Mute {name}",
+  "voiceAutoOn": "Let {name} speak",
+  "@voiceAutoOff": {
+    "description": "Teacher speech bubble button: stop the teacher from speaking aloud by himself (remembered).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceAutoOn": {
+    "description": "Teacher speech bubble button, muted: the teacher speaks aloud by himself again.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "marathonLostTitle": "End of the Marathon",
+  "@marathonLostTitle": {
+    "description": "Marathon ended: the player lost the current stage."
+  },
+  "marathonDrawTitle": "A draw: end of the Marathon",
+  "@marathonDrawTitle": {
+    "description": "Marathon ended: the current stage was a draw."
+  },
+  "marathonLostBody": "You reached stage {stage}. In the Marathon, a loss or a draw ends the attempt.",
+  "@marathonLostBody": {
+    "description": "Marathon ended: the stage reached; a loss or draw ends the attempt.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "marathonSummary": "See the summary",
+  "@marathonSummary": {
+    "description": "Button after the Marathon ends: open the attempt summary."
+  },
+  "versusLabel": "VS",
+  "marathonStage": "Stage {stage}",
+  "@versusLabel": {
+    "description": "Versus mark between the player and the opponent in the Marathon stage intro."
+  },
+  "@marathonStage": {
+    "description": "Marathon stage number in the versus intro.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -384,6 +384,153 @@
       ]
     },
     {
+      "id": "notation",
+      "lessons": [
+        {
+          "id": "notation.coordinates",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "intro",
+              "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+              "arrows": [
+                "a1h1",
+                "a1a8"
+              ]
+            },
+            {
+              "type": "tap",
+              "id": "find",
+              "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+              "targets": [
+                "e4",
+                "a1",
+                "h8",
+                "d5"
+              ]
+            },
+            {
+              "type": "tap",
+              "id": "blind",
+              "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+              "targets": [
+                "c6",
+                "f2",
+                "b7",
+                "g3"
+              ],
+              "coordinates": false
+            },
+            {
+              "type": "talk",
+              "id": "end",
+              "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+              "marks": [
+                "e4",
+                "d5"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "notation.moves",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "letters",
+              "fen": "4k3/8/8/8/8/8/8/3RK3 w - - 0 1",
+              "arrows": [
+                "d1d7"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "rook",
+              "fen": "4k3/8/8/8/8/8/8/3RK3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d1d7"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "capture",
+              "fen": "4k3/8/8/4p3/8/8/8/4RK2 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1e5"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "check",
+              "fen": "4k3/8/8/8/8/8/8/3QK3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d1h5"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "notation.read",
+          "steps": [
+            {
+              "type": "move",
+              "id": "knight",
+              "fen": "4k3/8/8/8/8/8/8/4K1N1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "g1f3"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "pawn",
+              "fen": "4k3/8/8/8/8/8/4P3/4K3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e2e4"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "castle",
+              "fen": "4k3/8/8/8/8/8/8/4K2R w K - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1g1",
+                    "e1h1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "end",
+              "fen": "4k3/8/8/8/8/8/8/5RK1 b - - 0 1"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "firstMates",
       "lessons": [
         {
@@ -535,6 +682,221 @@
               "fen": "8/8/8/3k4/8/8/8/2Q1K3 w - - 0 1",
               "goal": "mate",
               "opponent": "stockfish"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tricks",
+      "lessons": [
+        {
+          "id": "tricks.scholarsMate",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "weak",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "marks": [
+                "f7"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "attack",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e2e4"
+                  ],
+                  "reply": "e7e5"
+                },
+                {
+                  "accept": [
+                    "f1c4"
+                  ],
+                  "reply": "b8c6"
+                },
+                {
+                  "accept": [
+                    "d1h5"
+                  ],
+                  "reply": "g8f6"
+                },
+                {
+                  "accept": [
+                    "h5f7"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "why",
+              "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+              "marks": [
+                "f7"
+              ],
+              "arrows": [
+                "c4f7"
+              ],
+              "side": "white"
+            },
+            {
+              "type": "talk",
+              "id": "warning",
+              "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+              "side": "white"
+            }
+          ]
+        },
+        {
+          "id": "tricks.defendScholar",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "threat",
+              "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+              "arrows": [
+                "h5f7",
+                "c4f7"
+              ],
+              "marks": [
+                "f7"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "guard",
+              "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+              "line": [
+                {
+                  "accept": [
+                    "g7g6",
+                    "d8e7"
+                  ],
+                  "reply": "h5f3"
+                },
+                {
+                  "accept": [
+                    "g8f6"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "chase",
+              "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
+              "side": "black"
+            }
+          ]
+        },
+        {
+          "id": "tricks.foolsMate",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "intro",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1",
+              "arrows": [
+                "d8h4"
+              ],
+              "marks": [
+                "e1"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "punish",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e7e5",
+                    "e7e6"
+                  ],
+                  "reply": "g2g4"
+                },
+                {
+                  "accept": [
+                    "d8h4"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "lesson",
+              "fen": "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+              "side": "black",
+              "marks": [
+                "e1"
+              ],
+              "arrows": [
+                "h4e1"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tricks.principles",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "center",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "marks": [
+                "d4",
+                "e4",
+                "d5",
+                "e5"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "develop",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e2e4",
+                    "d2d4"
+                  ],
+                  "reply": "e7e5"
+                },
+                {
+                  "accept": [
+                    "g1f3"
+                  ],
+                  "reply": "b8c6"
+                },
+                {
+                  "accept": [
+                    "f1c4",
+                    "f1b5"
+                  ],
+                  "reply": "f8c5"
+                },
+                {
+                  "accept": [
+                    "e1g1",
+                    "e1h1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "rules",
+              "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+              "side": "white"
+            },
+            {
+              "type": "talk",
+              "id": "online",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
             }
           ]
         }

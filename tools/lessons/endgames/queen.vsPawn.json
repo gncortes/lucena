@@ -1,0 +1,421 @@
+{
+  "id": "queen.vsPawn",
+  "module": "queen",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "intro",
+      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+      "arrows": [
+        "e2e1"
+      ],
+      "marks": [
+        "e1",
+        "a8"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "idea",
+      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+      "arrows": [
+        "a8b7"
+      ],
+      "marks": [
+        "e1",
+        "e2"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "stairs",
+      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "g1d4",
+          "accept": "best",
+          "reply": "d2c1"
+        },
+        {
+          "teach": "d4e3",
+          "accept": "best",
+          "reply": "c1d1"
+        },
+        {
+          "teach": "e3d3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "tempo",
+      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "a8b7",
+          "accept": "best",
+          "reply": "e1f2"
+        },
+        {
+          "teach": "d3d2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "again",
+      "fen": "8/1K6/8/8/8/8/3Qp3/5k2 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "d2f4",
+          "accept": "best",
+          "reply": "f1g1"
+        },
+        {
+          "teach": "f4e3",
+          "accept": "best",
+          "reply": "g1f1"
+        },
+        {
+          "teach": "e3f3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "cycle",
+      "fen": "8/1K6/8/8/8/5Q2/4p3/4k3 w - - 0 1",
+      "arrows": [
+        "b7c6",
+        "c6d5",
+        "d5e4",
+        "e4d3"
+      ],
+      "marks": [
+        "e1"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "quiet",
+      "fen": "8/8/2K5/8/3Q4/8/2k1p3/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "d4e3",
+          "accept": "best",
+          "reply": "c2d1"
+        },
+        {
+          "teach": "e3d3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "move",
+      "id": "arrive",
+      "fen": "8/8/8/8/4K3/8/4pQ2/3k4 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "e4d3",
+          "accept": "best",
+          "reply": "d1c1"
+        },
+        {
+          "teach": "f2e2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "block",
+      "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
+      "arrows": [
+        "c8d8"
+      ],
+      "marks": [
+        "d5",
+        "d2",
+        "e1"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "others",
+      "fen": "8/8/8/8/8/1Q6/2p5/k6K w - - 0 1",
+      "arrows": [
+        "b3c2"
+      ],
+      "marks": [
+        "a1",
+        "c2"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+      "arrows": [
+        "a8b7"
+      ],
+      "marks": [
+        "e1"
+      ]
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "7K/8/8/8/8/4Q3/3p4/3k4 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h8g7",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/7K/8/8/8/4Q3/2kp4/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e3e2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "7K/8/8/8/8/3Q4/3p4/4k3 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d3e3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 2,
+      "fen": "8/8/5K2/8/4Q3/8/3p1k2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e4d3",
+          "accept": "best",
+          "reply": "f2e1"
+        },
+        {
+          "teach": "d3e3",
+          "accept": "best",
+          "reply": "e1d1"
+        },
+        {
+          "teach": "f6e5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "K7/8/8/8/8/8/5kp1/7Q w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h1h2",
+          "accept": "win",
+          "reply": "f2f1"
+        },
+        {
+          "teach": "h2f4",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/8/8/3K4/8/2Qp4/4k3 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d4e3",
+          "accept": "best",
+          "reply": "e1f1"
+        },
+        {
+          "teach": "c2d2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "2Q5/8/8/4K3/8/8/3kp3/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikipedia",
+      "turns": [
+        {
+          "teach": "c8d8",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 3,
+      "fen": "7K/7Q/8/8/8/8/3p4/2k5 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h7h6",
+          "accept": "win",
+          "reply": "c1c2"
+        },
+        {
+          "teach": "h6h2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "7K/8/8/8/8/8/2kp4/Q7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "a1a4",
+          "accept": "win",
+          "reply": "c2c1"
+        },
+        {
+          "teach": "a4c4",
+          "accept": "best",
+          "reply": "c1b1"
+        },
+        {
+          "teach": "c4d3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "7K/8/8/8/8/8/1pk5/5Q2 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "f1c4",
+          "accept": "best",
+          "reply": "c2d1"
+        },
+        {
+          "teach": "c4b3",
+          "accept": "best",
+          "reply": "d1c1"
+        },
+        {
+          "teach": "b3c3",
+          "accept": "best"
+        }
+      ]
+    }
+  ],
+  "passScore": 12,
+  "keyPositions": [
+    {
+      "id": "start",
+      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1"
+    },
+    {
+      "id": "front",
+      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1"
+    },
+    {
+      "id": "dang",
+      "fen": "K6Q/8/8/8/8/8/3kp3/8 w - - 0 1",
+      "ref": "dang"
+    },
+    {
+      "id": "block",
+      "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
+      "ref": "wikipedia"
+    }
+  ],
+  "practice": {
+    "fen": "3K2Q1/8/8/8/8/5k2/3p4/8 w - - 0 1",
+    "goal": "win",
+    "positionId": "queen.queenVsPawn.0005"
+  },
+  "references": [
+    {
+      "id": "delaVilla",
+      "kind": "book",
+      "author": "Jesús de la Villa",
+      "title": "100 Endgames You Must Know (4th, improved edition)",
+      "publisher": "New In Chess",
+      "year": 2015,
+      "where": "Ending 16, \"Queen vs. 7th-rank pawn\", p. 59"
+    },
+    {
+      "id": "wikipedia",
+      "kind": "web",
+      "title": "Queen versus pawn endgame (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Queen_versus_pawn_endgame"
+    },
+    {
+      "id": "dang",
+      "kind": "study",
+      "author": "Danghiangmanh",
+      "title": "Queen vs Pawn",
+      "url": "https://lichess.org/study/4JKLMbtH"
+    },
+    {
+      "id": "mario",
+      "kind": "study",
+      "author": "MarioPB4",
+      "title": "Queen vs. Promoting Pawn",
+      "url": "https://lichess.org/study/o2EZohXS"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

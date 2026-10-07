@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/game_setup.dart';
 
 abstract final class GameSetupKeys {
+  /// Normal ou às cegas.
+  static const mode = Key('setup.mode');
+
   static const screen = Key('setup.screen');
   static const preview = Key('setup.preview');
   static const goal = Key('setup.goal');

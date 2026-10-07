@@ -1,6 +1,15 @@
 {
   "modules": [
     {
+      "id": "basics",
+      "lessons": [
+        "basics.queenMate",
+        "basics.rookMate",
+        "basics.twoBishops",
+        "basics.kingPawn"
+      ]
+    },
+    {
       "id": "mates",
       "lessons": [
         "mates.bishopKnight.w",
@@ -18,9 +27,16 @@
     {
       "id": "queen",
       "lessons": [
+        "queen.vsPawn",
         "queen.vsRook.philidor",
         "queen.vsRook.approach",
         "queen.vsRook.thirdRank"
+      ]
+    },
+    {
+      "id": "rookPawns",
+      "lessons": [
+        "rookPawns.vsPawn"
       ]
     },
     {

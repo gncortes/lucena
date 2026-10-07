@@ -1,11 +1,14 @@
 import 'package:chessground/chessground.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/board/speech_flash.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
+import 'home_robot.dart';
 
 /// A Escola do Viktor: a trilha e as aulas.
 class SchoolRobot {
@@ -15,7 +18,7 @@ class SchoolRobot {
 
   /// Da tela inicial, pelo botão das aulas.
   Future<void> openFromHome() async {
-    await $(HomeKeys.schoolButton).scrollTo().tap();
+    await tapHomePath($, HomeKeys.schoolButton);
     await expectTrail();
   }
 
@@ -24,7 +27,13 @@ class SchoolRobot {
   }
 
   Future<void> openLesson(String id) async {
-    await $(SchoolKeys.lesson(id)).scrollTo().tap();
+    // A trilha é longa: a aula vai para o meio da tela, longe do botão fixo
+    // de baixo, antes do toque.
+    final lesson = find.byKey(SchoolKeys.lesson(id));
+    await $.scrollUntilExists(finder: lesson);
+    await Scrollable.ensureVisible($.tester.element(lesson), alignment: 0.5);
+    await $.pumpAndSettle();
+    await $(lesson).tap();
     await $(LessonKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
@@ -52,9 +61,36 @@ class SchoolRobot {
     await $.pumpAndSettle();
   }
 
+  /// No passo de tocar: toca na casa [square].
+  Future<void> tapSquare(String square) async {
+    await $.tester.tapAt(_square(square));
+    await $.pumpAndSettle();
+  }
+
+  /// Toca no trecho [text] (uma casa ou um lance) da fala do Viktor.
+  Future<void> tapInSpeech(String text) async {
+    final paragraph = $.tester.renderObject<RenderParagraph>(
+      find.descendant(
+        of: find.byKey(LessonKeys.speech).last,
+        matching: find.byType(RichText),
+      ),
+    );
+    final plain = paragraph.text.toPlainText();
+    final caret = paragraph.getOffsetForCaret(
+      TextPosition(offset: plain.indexOf(text) + 1),
+      Rect.zero,
+    );
+    await $.tester.tapAt(paragraph.localToGlobal(caret + const Offset(3, 10)));
+    await $.pumpAndSettle();
+  }
+
+  /// O destaque da fala no tabuleiro (o anel na casa).
+  void expectSpeechRing({required bool visible}) =>
+      expect(find.byType(SpeechRing), visible ? findsOneWidget : findsNothing);
+
   /// O que o Viktor está dizendo.
   String? get speech =>
-      $.tester.widget<Text>(find.byKey(LessonKeys.speech).last).data;
+      _plain($.tester.widget<Text>(find.byKey(LessonKeys.speech).last));
 
   void expectStar(String square, {bool visible = true}) => expect(
     find.byKey(LessonKeys.star(square)),
@@ -90,4 +126,7 @@ class SchoolRobot {
       orientation: board.orientation,
     );
   }
+
+  // A fala como texto, simples ou com as casas destacadas (texto rico).
+  static String? _plain(Text text) => text.data ?? text.textSpan?.toPlainText();
 }

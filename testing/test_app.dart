@@ -7,8 +7,10 @@ import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import 'fakes/fake_profile_repository.dart';
+import 'fakes/fake_voice_repository.dart';
 
 /// Envolve um widget com tema e idiomas do app, para testes de widget.
 class TestApp extends StatelessWidget {
@@ -18,6 +20,7 @@ class TestApp extends StatelessWidget {
     this.themeMode = ThemeMode.light,
     this.settingsCubit,
     this.profileCubit,
+    this.speechCubit,
     super.key,
   });
 
@@ -30,6 +33,10 @@ class TestApp extends StatelessWidget {
 
   /// View model do perfil, quando a tela testada precisa dele.
   final ProfileCubit? profileCubit;
+
+  /// A voz, quando o teste confere o que é falado. Sem ela, uma voz falsa
+  /// desligada.
+  final SpeechCubit? speechCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +67,12 @@ class TestApp extends StatelessWidget {
       else
         BlocProvider<ProfileCubit>(
           create: (_) => ProfileCubit(FakeProfileRepository())..load(),
+        ),
+      if (speechCubit case final speech?)
+        BlocProvider<SpeechCubit>.value(value: speech)
+      else
+        BlocProvider<SpeechCubit>(
+          create: (_) => SpeechCubit(FakeVoiceRepository())..load(),
         ),
     ];
     return MultiBlocProvider(providers: providers, child: app);

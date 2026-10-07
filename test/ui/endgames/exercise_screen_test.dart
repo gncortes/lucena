@@ -50,7 +50,11 @@ void main() {
   }
 
   String speech(WidgetTester tester) =>
-      tester.widget<Text>(find.byKey(ExerciseKeys.speech).last).data!;
+      (tester.widget<Text>(find.byKey(ExerciseKeys.speech).last).data ??
+      tester
+          .widget<Text>(find.byKey(ExerciseKeys.speech).last)
+          .textSpan!
+          .toPlainText());
 
   testWidgets('o enunciado, as estrelas e a dica com a seta', (tester) async {
     await pump(tester, 'e03');

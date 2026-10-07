@@ -8,6 +8,8 @@ import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
 import 'data/repositories/evaluation/evaluation_repository.dart';
 import 'data/repositories/characters/talk_repository.dart';
+import 'data/repositories/home/home_layout_repository.dart';
+import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
@@ -30,6 +32,9 @@ import 'data/repositories/positions/positions_repository.dart';
 import 'data/repositories/progress/progress_repository.dart';
 import 'data/repositories/settings/settings_repository.dart';
 import 'data/repositories/training/training_repository.dart';
+import 'data/repositories/voice/voice_repository.dart';
+import 'data/repositories/blind/blind_log_repository.dart';
+import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
@@ -40,6 +45,7 @@ import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
+import 'ui/voice/view_models/speech_cubit.dart';
 
 void main() {
   runApp(LucenaApp(dependencies: Dependencies.normal()));
@@ -170,6 +176,12 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<OnboardingRepository>.value(
           value: dependencies.onboardingRepository,
         ),
+        RepositoryProvider<HomeLayoutRepository>.value(
+          value: dependencies.homeLayoutRepository,
+        ),
+        RepositoryProvider<UnlockRepository>.value(
+          value: dependencies.unlockRepository,
+        ),
         RepositoryProvider<PaceRepository>.value(
           value: dependencies.paceRepository,
         ),
@@ -191,6 +203,15 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<DrawOfferRepository>.value(
           value: dependencies.drawOfferRepository,
         ),
+        RepositoryProvider<VoiceRepository>.value(
+          value: dependencies.voiceRepository,
+        ),
+        RepositoryProvider<SpeechInputRepository>.value(
+          value: dependencies.speechInputRepository,
+        ),
+        RepositoryProvider<BlindLogRepository>.value(
+          value: dependencies.blindLogRepository,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -205,6 +226,12 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) =>
                 ProfileCubit(dependencies.profileRepository)..load(),
           ),
+          BlocProvider(
+            create: (context) => SpeechCubit(
+              dependencies.voiceRepository,
+              characters: dependencies.characterRepository,
+            )..load(),
+          ),
         ],
         child: BlocBuilder<SettingsCubit, AppSettings?>(
           builder: (context, settings) {
@@ -213,22 +240,61 @@ class _LucenaAppState extends State<LucenaApp> {
             if (settings == null || router == null) {
               return const _LaunchBackground();
             }
-            return MaterialApp.router(
-              onGenerateTitle: (context) => context.l10n.appTitle,
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.of(Brightness.light, accent: settings.accent),
-              darkTheme: AppTheme.of(Brightness.dark, accent: settings.accent),
-              themeMode: settings.themeMode.material,
-              locale: localeFromCode(settings.languageCode),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: appSupportedLocales,
-              routerConfig: router,
+            return _QuietInBackground(
+              child: MaterialApp.router(
+                onGenerateTitle: (context) => context.l10n.appTitle,
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.of(Brightness.light, accent: settings.accent),
+                darkTheme: AppTheme.of(
+                  Brightness.dark,
+                  accent: settings.accent,
+                ),
+                themeMode: settings.themeMode.material,
+                locale: localeFromCode(settings.languageCode),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: appSupportedLocales,
+                routerConfig: router,
+              ),
             );
           },
         ),
       ),
     );
   }
+}
+
+/// O app foi para segundo plano (ou foi fechado): a voz para.
+class _QuietInBackground extends StatefulWidget {
+  const _QuietInBackground({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_QuietInBackground> createState() => _QuietInBackgroundState();
+}
+
+class _QuietInBackgroundState extends State<_QuietInBackground> {
+  late final AppLifecycleListener _listener = AppLifecycleListener(
+    onHide: () => context.read<SpeechCubit>().stop(),
+    // De volta (talvez das configurações de voz do aparelho): uma voz nova
+    // pode ter sido baixada.
+    onResume: () => context.read<SpeechCubit>().reloadVoices(),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _listener;
+  }
+
+  @override
+  void dispose() {
+    _listener.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// O mesmo fundo da abertura nativa e da tela inicial.

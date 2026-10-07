@@ -1,0 +1,407 @@
+{
+  "id": "basics.queenMate",
+  "module": "basics",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "goal",
+      "fen": "4k3/4Q3/4K3/8/8/8/8/8 b - - 0 1",
+      "side": "white",
+      "marks": [
+        "e7",
+        "e8"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "edge",
+      "fen": "4k2Q/8/4K3/8/8/8/8/8 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "h8e8"
+      ],
+      "marks": [
+        "d7",
+        "e7",
+        "f7"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "jump",
+      "fen": "8/8/8/4k3/8/5Q2/8/K7 b - - 0 1",
+      "side": "white",
+      "arrows": [
+        "f3f8",
+        "f3a3"
+      ],
+      "marks": [
+        "e5",
+        "f3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "follow",
+      "fen": "8/8/8/4k3/8/8/8/K2Q4 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "d1f3",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f3e4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e4e6",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e6d6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "stop",
+      "fen": "1k6/8/2Q5/8/8/8/8/K7 w - - 0 1",
+      "marks": [
+        "a7",
+        "b8"
+      ],
+      "arrows": [
+        "a1b2"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "stalemate",
+      "fen": "k7/8/1Q6/8/8/8/8/K7 b - - 0 1",
+      "side": "white",
+      "marks": [
+        "a7",
+        "b7",
+        "b8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "bring",
+      "fen": "7k/4Q3/8/8/8/6K1/8/8 w - - 0 1",
+      "goal": "win",
+      "turns": [
+        {
+          "teach": "g3g4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g4g5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g5g6",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e7g7",
+          "accept": [
+            "e7e8",
+            "e7d8",
+            "e7g7"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1"
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "8/8/8/3k4/8/8/8/Q3K3 w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "4k3/8/4K3/8/8/8/8/6Q1 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "g1g8",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "4k3/8/5K2/8/1Q6/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b4e7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "k7/8/2K5/8/8/1Q6/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b3b7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "8/8/8/8/2k5/8/8/1K2Q3 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e1e5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "4k3/8/6K1/8/8/8/2Q5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c2c7",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "c7f7",
+          "accept": [
+            "c7f7",
+            "c7d8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/5K2/8/7k/8/3Q4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d3g3",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g3g6",
+          "accept": [
+            "g3g6",
+            "g3h4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "7k/8/8/6Q1/8/5K2/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "f3f4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f4f5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f5f6",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g5g7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/8/8/8/8/K3k3/8/1Q6 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b1f5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f5f3",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/8/8/8/8/4k3/8/4K2Q w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h1d5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e1f2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d5e5",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/8/8/8/6k1/4Q3/6K1 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e2e4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "g1f2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "e4g2",
+          "accept": [
+            "e4g2",
+            "e4h4",
+            "e4h7"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 11,
+  "keyPositions": [
+    {
+      "id": "supportMate",
+      "fen": "4k3/4Q3/4K3/8/8/8/8/8 b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "edgeMate",
+      "fen": "4k2Q/8/4K3/8/8/8/8/8 b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "knightJump",
+      "fen": "8/8/8/4k3/8/5Q2/8/K7 b - - 0 1"
+    },
+    {
+      "id": "cornerStalemate",
+      "fen": "k7/2Q5/8/8/8/8/8/7K b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "seirawan",
+      "fen": "8/8/8/8/4k3/8/8/QK6 w - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "lichessPractice",
+      "fen": "8/8/3k4/8/8/4K3/8/4Q3 w - - 0 1",
+      "ref": "practice"
+    }
+  ],
+  "practice": {
+    "fen": "8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1",
+    "goal": "win",
+    "positionId": "basic.queen.0001"
+  },
+  "references": [
+    {
+      "id": "silman",
+      "kind": "book",
+      "author": "Jeremy Silman",
+      "title": "Silman's Complete Endgame Course: From Beginner to Master",
+      "publisher": "Siles Press",
+      "year": 2007
+    },
+    {
+      "id": "practice",
+      "kind": "study",
+      "author": "arex",
+      "title": "Lichess Practice: Piece Checkmates I (Queen mate)",
+      "url": "https://lichess.org/study/BJy6fEDf"
+    },
+    {
+      "id": "chamy",
+      "kind": "study",
+      "author": "chamyVignesh",
+      "title": "Checkmating with a Queen",
+      "url": "https://lichess.org/study/hPw6Ij5O"
+    },
+    {
+      "id": "wikiCheckmate",
+      "kind": "web",
+      "title": "Wikipedia: Checkmate (King and queen)",
+      "url": "https://en.wikipedia.org/wiki/Checkmate#King_and_queen"
+    },
+    {
+      "id": "wikiQueen",
+      "kind": "web",
+      "title": "Wikipedia: Queen (chess)",
+      "url": "https://en.wikipedia.org/wiki/Queen_(chess)"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

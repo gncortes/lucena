@@ -86,6 +86,16 @@ abstract class GameSetupState with _$GameSetupState {
   /// treino, o objetivo.
   String get gameRoute {
     final clocks = clockCodes;
+    if (setup.blind && setup.opponent != OpponentKind.twoPlayers) {
+      return Routes.blindAt(
+        position.fen,
+        user: userSide.name,
+        opponent: setup.opponent.code,
+        level: setup.opponent == OpponentKind.maia ? '$maiaLevel' : null,
+        white: clocks.white,
+        black: clocks.black,
+      );
+    }
     return Routes.freeBoardAt(
       position.fen,
       view: userSide.name,
@@ -170,6 +180,10 @@ class GameSetupCubit extends Cubit<GameSetupState> {
 
   Future<void> setClock({required bool enabled}) =>
       _update(state.setup.copyWith(clock: enabled));
+
+  /// Às cegas ou com o tabuleiro.
+  Future<void> setBlind({required bool blind}) =>
+      _update(state.setup.copyWith(blind: blind));
 
   Future<void> setOpponent(OpponentKind opponent) =>
       _update(state.setup.copyWith(opponent: opponent));

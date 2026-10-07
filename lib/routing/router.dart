@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/repositories/blind/blind_log_repository.dart';
+import '../data/repositories/blind/speech_input_repository.dart';
+import '../ui/blind/view_models/blind_game_cubit.dart';
+import '../ui/blind/widgets/blind_game_screen.dart';
+import '../ui/core/l10n/l10n.dart';
+import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
@@ -13,6 +19,9 @@ import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
+import '../ui/voice/widgets/voice_settings_screen.dart';
+import '../data/repositories/home/home_layout_repository.dart';
+import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/maia/maia_repository.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
@@ -43,7 +52,10 @@ import '../data/repositories/pace/pace_repository.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
 import '../ui/game_details/view_models/game_details_cubit.dart';
 import '../ui/game_details/widgets/game_details_screen.dart';
+import '../ui/all_modes/widgets/all_modes_screen.dart';
 import '../ui/home/view_models/home_cubit.dart';
+import '../ui/home_layout/view_models/home_layout_cubit.dart';
+import '../ui/home_layout/widgets/home_layout_screen.dart';
 import '../ui/home/widgets/home_screen.dart';
 import '../ui/achievements/view_models/achievements_cubit.dart';
 import '../ui/achievements/widgets/achievements_screen.dart';
@@ -107,6 +119,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             profile: context.read<ProfileRepository>(),
             characters: context.read<CharacterRepository>(),
             lessons: context.read<LessonRepository>(),
+            voice: context.read<VoiceRepository>(),
+            home: context.read<HomeLayoutRepository>(),
           )..load(_language(context)),
           child: const TourScreen(),
         ),
@@ -125,6 +139,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             profile: context.read<ProfileRepository>(),
             endgameLessons: context.read<EndgameLessonRepository>(),
             endgameProgress: context.read<EndgameProgressRepository>(),
+            homeLayout: context.read<HomeLayoutRepository>(),
+            unlocks: context.read<UnlockRepository>(),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -135,6 +151,40 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
         ),
         routes: [
+          _route(
+            path: 'blind',
+            builder: (context, state) {
+              final query = state.uri.queryParameters;
+              return BlocProvider(
+                create: (_) =>
+                    BlindGameCubit(
+                      opponent: context.read<OpponentRepository>(),
+                      voice: context.read<VoiceRepository>(),
+                      input: context.read<SpeechInputRepository>(),
+                      log: context.read<BlindLogRepository>(),
+                      now: context.read<Now>(),
+                      draws: context.read<DrawOfferRepository>(),
+                      progress: context.read<ProgressRepository>(),
+                    )..load(
+                      view: BlindView.values.asNameMap()[query['view']],
+                      challengeId: query['challenge'],
+                      positionId: query['position'],
+                      goal:
+                          PositionGoal.fromCode(query['goal']) ??
+                          PositionGoal.win,
+                      fen: query['fen'] ?? GameRules.initial.fen,
+                      userSide:
+                          Side.values.asNameMap()[query['user']] ?? Side.white,
+                      kind: OpponentKind.fromCode(query['opponent']),
+                      level: int.tryParse(query['level'] ?? ''),
+                      language: Localizations.localeOf(context).toLanguageTag(),
+                      phrases: blindPhrases(context.l10n),
+                      clock: _blindClock(query),
+                    ),
+                child: const BlindGameScreen(),
+              );
+            },
+          ),
           _route(
             path: 'board',
             builder: (context, state) {
@@ -198,6 +248,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         characters: context.read<CharacterRepository>(),
                       ),
                       mode: mode,
+                      // A etapa da Maratona espera o aviso dela sair.
+                      hold: mode.isMarathon,
                       start: isNewGame ? start ?? GameRules.initial : null,
                       playerSide: Side.values.asNameMap()[side],
                       orientation: Side.values.asNameMap()[view],
@@ -221,6 +273,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 child: const FreeBoardScreen(),
               );
             },
+          ),
+          _route(
+            path: 'modes',
+            builder: (context, state) => const AllModesScreen(),
           ),
           _route(
             path: 'achievements',
@@ -665,6 +721,20 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 builder: (context, state) => const ClockSettingsScreen(),
               ),
               _route(
+                path: 'voice',
+                builder: (context, state) => const VoiceSettingsScreen(),
+              ),
+              _route(
+                path: 'home',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => HomeLayoutCubit(
+                    layouts: context.read<HomeLayoutRepository>(),
+                    profile: context.read<ProfileRepository>(),
+                  )..load(),
+                  child: const HomeLayoutScreen(),
+                ),
+              ),
+              _route(
                 path: 'maia',
                 // Só existe em build de desenvolvimento e de teste.
                 redirect: (context, state) =>
@@ -700,11 +770,20 @@ JourneyCubit _journeyCubit(BuildContext context, {Object? initial}) =>
       characters: context.read<CharacterRepository>(),
       school: context.read<SchoolProgressRepository>(),
       lessons: context.read<LessonRepository>(),
+      speedruns: context.read<SpeedrunRepository>(),
       language: _language(context),
     );
 
 /// O idioma do app, lido no `builder` da rota (no `create` de um provider não
 /// se pode ouvir o `Localizations`).
+/// O relógio da partida às cegas (`?white=` e `?black=`). Nulo sem eles.
+ClockConfig? _blindClock(Map<String, String> query) {
+  final white = TimeControl.tryParse(query['white']);
+  final black = TimeControl.tryParse(query['black']);
+  if (white == null || black == null) return null;
+  return ClockConfig(white: white, black: black);
+}
+
 String _language(BuildContext context) =>
     Localizations.localeOf(context).languageCode;
 
@@ -715,6 +794,7 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   now: context.read<Now>(),
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
+  profile: context.read<ProfileRepository>(),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18

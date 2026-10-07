@@ -73,7 +73,7 @@ void main() {
     addTearDown(app.disableSystemDarkMode);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
 
-    await TourRobot($).expectStep(TourStep.goal);
+    await TourRobot($).passVoice();
     app.expectBrightness(Brightness.dark);
     await walkThrough($, app);
     app.expectBrightness(Brightness.dark);
@@ -83,7 +83,7 @@ void main() {
     final app = AppRobot($);
     await app.open(systemLocale: const Locale('ar'), tour: true);
 
-    await TourRobot($).expectStep(TourStep.goal);
+    await TourRobot($).passVoice();
     app.expectDirection(TextDirection.rtl);
     await walkThrough($, app);
   });
@@ -97,6 +97,7 @@ void main() {
     await settings.chooseLanguage(AppLanguage.pseudo);
     await settings.back();
     await TourRobot($).openFromSettings();
+    await TourRobot($).passVoice();
 
     await walkThrough($, app);
   });
@@ -106,6 +107,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
+    await TourRobot($).passVoice();
     await tour.next();
     await tour.chooseAccent(AppAccent.orange);
     await app.sendToBackgroundAndReturn();

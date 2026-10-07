@@ -4,6 +4,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
 
+import '../use_cases/marathon.dart';
+
 part 'game_mode.freezed.dart';
 
 /// De que partida se trata: contra quem, de que lado o jogador está e, num
@@ -40,6 +42,9 @@ abstract class GameMode with _$GameMode {
 
   /// O lado da máquina. Nulo quando o jogador move os dois lados.
   bool get isSpeedrun => speedrunAttemptId != null;
+
+  /// Uma etapa da Maratona: emenda na próxima sozinha, sem resultado no meio.
+  bool get isMarathon => isSpeedrun && Marathon.isMarathon(speedrunId);
 
   Side? get machineSide =>
       opponent.isMachine ? (userSide ?? Side.white).opposite : null;

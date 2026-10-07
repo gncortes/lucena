@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/endgame_position.dart';
 
 abstract final class CatalogKeys {
+  /// O selo de dificuldade de um grupo.
+  static Key difficulty(String category) => Key('catalog.difficulty.$category');
+
   static const screen = Key('catalog.screen');
   static const categoryScreen = Key('catalog.category.screen');
 

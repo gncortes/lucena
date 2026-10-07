@@ -13,6 +13,19 @@
         "pawn.pawnVsKing.0001",
         "pawn.pawnVsKing.0002",
         "pawn.pawnVsKing.0039"
+      ],
+      "specials": [
+        {
+          "position": "basic.twoRooks.0001",
+          "mode": "blind",
+          "view": "squares"
+        },
+        {
+          "mode": "speedrun",
+          "speedrun": "journey.mates",
+          "time": "900+10",
+          "position": "basic.queen.0001"
+        }
       ]
     },
     {
@@ -28,6 +41,19 @@
         "pawn.pawnVsKing.0003",
         "pawn.pawnVsKing.0004",
         "pawn.pawnVsKing.0040"
+      ],
+      "specials": [
+        {
+          "position": "basic.twoRooks.0003",
+          "mode": "blind",
+          "view": "none"
+        },
+        {
+          "mode": "marathon",
+          "speedrun": "marathon.journey.rook",
+          "time": "600+0",
+          "position": "basic.rook.0001"
+        }
       ]
     },
     {
@@ -39,6 +65,13 @@
         "pawn.pawnVsKing.0041",
         "rookPawn.rookVsPawn.0001",
         "rookPawn.rookVsPawn.0002"
+      ],
+      "specials": [
+        {
+          "position": "pawn.pawnVsKing.0005",
+          "mode": "blind",
+          "view": "squares"
+        }
       ]
     },
     {

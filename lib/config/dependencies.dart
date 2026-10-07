@@ -10,6 +10,8 @@ import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
+import '../data/repositories/home/home_layout_repository.dart';
+import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
@@ -31,6 +33,12 @@ import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/sound/sound_repository.dart';
 import '../data/repositories/sound/sound_repository_device.dart';
 import '../data/services/sound_service.dart';
+import '../data/services/tts_service.dart';
+import '../data/services/speech_input_service.dart';
+import '../data/repositories/blind/blind_log_repository.dart';
+import '../data/repositories/blind/speech_input_repository.dart';
+import '../data/repositories/voice/voice_repository.dart';
+import '../data/repositories/voice/voice_repository_local.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import '../data/repositories/maia/maia_repository.dart';
@@ -96,6 +104,8 @@ class Dependencies {
     required this.evaluationRepository,
     required this.talkRepository,
     required this.onboardingRepository,
+    required this.homeLayoutRepository,
+    required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
     required this.schoolProgressRepository,
@@ -103,6 +113,9 @@ class Dependencies {
     required this.endgameLessonRepository,
     required this.endgameProgressRepository,
     required this.drawOfferRepository,
+    required this.voiceRepository,
+    required this.speechInputRepository,
+    required this.blindLogRepository,
     required this.languages,
   });
 
@@ -150,6 +163,8 @@ class Dependencies {
       evaluationRepository: evaluation,
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: LocalOnboardingRepository(preferences),
+      homeLayoutRepository: LocalHomeLayoutRepository(preferences),
+      unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: lessons,
       schoolProgressRepository: LocalSchoolProgressRepository(preferences),
@@ -163,6 +178,9 @@ class Dependencies {
         maia: maiaRepository,
         evaluation: evaluation,
       ),
+      voiceRepository: LocalVoiceRepository(preferences, assets, TtsService()),
+      speechInputRepository: DeviceSpeechInputRepository(SpeechInputService()),
+      blindLogRepository: LocalBlindLogRepository(preferences),
       languages: AppLanguage.selectable,
     );
   }
@@ -188,6 +206,8 @@ class Dependencies {
   final EvaluationRepository evaluationRepository;
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
+  final HomeLayoutRepository homeLayoutRepository;
+  final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final SchoolProgressRepository schoolProgressRepository;
@@ -195,6 +215,9 @@ class Dependencies {
   final EndgameLessonRepository endgameLessonRepository;
   final EndgameProgressRepository endgameProgressRepository;
   final DrawOfferRepository drawOfferRepository;
+  final VoiceRepository voiceRepository;
+  final SpeechInputRepository speechInputRepository;
+  final BlindLogRepository blindLogRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;
