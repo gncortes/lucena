@@ -75,17 +75,16 @@ export type Dictionary = {
   };
   media: Record<
     | 'hero'
-    | 'home'
-    | 'beginner'
-    | 'intermediate'
+    | 'school'
+    | 'journey'
     | 'queenRook'
-    | 'lucena'
-    | 'bishopKnight'
-    | 'maia'
-    | 'stockfish'
     | 'speedrun'
-    | 'analysis'
-    | 'custom'
+    | 'theme'
+    | 'journeyChallenge'
+    | 'exercise'
+    | 'queenRookLesson'
+    | 'shortSide'
+    | 'stars'
     | 'play'
     | 'pause',
     string

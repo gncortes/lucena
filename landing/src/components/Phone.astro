@@ -1,9 +1,11 @@
 ---
 import { asset } from '../i18n';
-import { clipSize, clips, mediaDir, type Clip } from '../media';
+import { clipSize, clips, mediaDir, stills, type Clip, type Still } from '../media';
 
+// Um celular com um vídeo do app ([clip]) ou um quadro parado ([still]).
 interface Props {
-  clip: Clip;
+  clip?: Clip;
+  still?: Still;
   locale: string;
   label: string;
   playLabel: string;
@@ -11,35 +13,52 @@ interface Props {
   class?: string;
 }
 
-const { clip, locale, label, playLabel, pauseLabel, class: className } = Astro.props;
-const name = `${mediaDir(locale)}/${clips[clip]}`;
+const { clip, still, locale, label, playLabel, pauseLabel, class: className } = Astro.props;
+const dir = mediaDir(locale);
 ---
 
-<figure class:list={['phone', className]} data-phone>
-  <div class="phone__screen">
-    <video
-      muted
-      loop
-      playsinline
-      preload="none"
-      width={clipSize.width}
-      height={clipSize.height}
-      poster={asset(`${name}-poster.webp`)}
-      aria-label={label}
-    >
-      <source src={asset(`${name}.webm`)} type="video/webm" />
-      <source src={asset(`${name}.mp4`)} type="video/mp4" />
-    </video>
-  </div>
-  <button
-    class="phone__toggle"
-    type="button"
-    aria-label={playLabel}
-    data-play={playLabel}
-    data-pause={pauseLabel}
-  >
-    <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
-    <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
-  </button>
-  <figcaption class="sr-only">{label}</figcaption>
-</figure>
+{
+  still ? (
+    <figure class:list={['phone', className]}>
+      <div class="phone__screen">
+        <img
+          src={asset(`${dir}/${stills[still]}.webp`)}
+          alt={label}
+          width={clipSize.width}
+          height={clipSize.height}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </figure>
+  ) : (
+    <figure class:list={['phone', className]} data-phone>
+      <div class="phone__screen">
+        <video
+          muted
+          loop
+          playsinline
+          preload="none"
+          width={clipSize.width}
+          height={clipSize.height}
+          poster={asset(`${dir}/${clips[clip!]}-poster.webp`)}
+          aria-label={label}
+        >
+          <source src={asset(`${dir}/${clips[clip!]}.webm`)} type="video/webm" />
+          <source src={asset(`${dir}/${clips[clip!]}.mp4`)} type="video/mp4" />
+        </video>
+      </div>
+      <button
+        class="phone__toggle"
+        type="button"
+        aria-label={playLabel}
+        data-play={playLabel}
+        data-pause={pauseLabel}
+      >
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </button>
+      <figcaption class="sr-only">{label}</figcaption>
+    </figure>
+  )
+}
