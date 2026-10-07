@@ -22,11 +22,13 @@ export const fallbackLocale: Locale = 'en';
 
 export const links = {
   tester: 'https://appdistribution.firebase.dev/i/8f905d22a0d826e5',
-  // TODO: trocar pelo link de doação quando existir.
-  donate: 'TODO_LINK_DOACAO',
-  repo: 'https://github.com/gncortes/lucena',
-  license: 'https://github.com/gncortes/lucena/blob/main/LICENSE',
-  issues: 'https://github.com/gncortes/lucena/issues',
+  email: 'novaiscortesgabriel729@gmail.com',
+  firebase: 'https://firebase.google.com/docs/app-distribution',
+  stockfish: 'https://stockfishchess.org',
+  maia: 'https://www.maiachess.com',
+  lichess: 'https://lichess.org',
+  philidor:
+    'https://commons.wikimedia.org/wiki/File:Francois-Andre_Danican_Philidor.jpg',
 };
 
 /** Caminho absoluto (com o `base` do site) para [path] dentro de landing/assets. */

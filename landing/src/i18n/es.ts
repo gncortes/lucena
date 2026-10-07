@@ -4,7 +4,7 @@ const es: Dictionary = {
   meta: {
     title: 'Lucena: entrena finales de ajedrez contra Maia y Stockfish',
     description:
-      'Aprende ajedrez por los finales. Entrena finales de ajedrez contra una IA que juega como una persona, desde tu nivel hasta Stockfish a máxima fuerza, con clases interactivas de dama contra torre, mate de alfil y caballo y mucho más.',
+      'Aprende ajedrez por los finales. Entrena finales de ajedrez contra Maia, que juega como una persona de tu nivel, hasta Stockfish a máxima fuerza, con clases interactivas de dama contra torre, mate de alfil y caballo y mucho más.',
     ogAlt: 'La app Lucena abierta en un móvil, con un final de ajedrez en el tablero.',
   },
   nav: {
@@ -18,10 +18,10 @@ const es: Dictionary = {
     menu: 'Menú',
   },
   hero: {
-    eyebrow: 'App de ajedrez gratuita y de código abierto',
+    eyebrow: 'App gratuita para entrenar finales de ajedrez',
     title: 'Entrena finales de ajedrez hasta que se vuelvan',
     titleAccent: 'técnica',
-    lead: 'Lucena te pone a jugar finales contra una IA que juega como una persona, desde tu nivel hasta Stockfish a máxima fuerza.',
+    lead: 'Lucena te pone a jugar finales contra Maia, que juega como una persona de tu nivel, y luego contra Stockfish a máxima fuerza.',
     cta: 'Quiero ser tester',
     secondary: 'Ver cómo funciona',
     note: 'Android, versión de pruebas. Pronto en Google Play.',
@@ -61,19 +61,25 @@ const es: Dictionary = {
     title: 'Hecho por alguien que ama el ajedrez',
     paragraphs: [
       'Soy programador y me encanta programar. Mi otra pasión es el ajedrez. Lucena nació de una necesidad mía: los finales siempre fueron mi punto débil, y quería una forma de entrenarlos de verdad.',
-      'Lo que funcionó fue entrenar de forma progresiva: primero contra Maia, una IA que acierta y se equivoca como una persona de mi nivel, y luego subiendo hasta Stockfish. Repetir la misma posición contra rivales cada vez más fuertes fijó las técnicas.',
+      'Lo que funcionó fue entrenar de forma progresiva: primero contra Maia, que acierta y se equivoca como una persona de mi nivel, y luego subiendo hasta Stockfish. Repetir la misma posición contra rivales cada vez más fuertes fijó las técnicas.',
       'Pero me gusta tanto el ajedrez que quise ir más allá: crear algo para que cualquier persona pueda aprender y practicar con facilidad y entrar en el mundo de este juego milenario. Quiero difundir Lucena para que mucha gente aprenda a jugar con ella y domine los finales que más cuesta aprender.',
-      'Y quiero mostrar lo interesantes que son los finales. No son la parte del ajedrez que más se ve, pero son una de las más bonitas. Philidor ya estudiaba estas posiciones en el siglo XVIII, y muchos, como el gran maestro Rafael Leitão, lo consideran el mayor genio de la historia del ajedrez.',
     ],
+    philidor: {
+      text:
+        'Y quiero mostrar lo fascinantes que son los finales. Rara vez son la parte del ajedrez que más llama la atención, pero guardan algunas de las ideas más bonitas del juego. Hace más de 250 años, François-André Danican Philidor ya estudiaba estas posiciones, y la defensa que lleva su nombre se enseña todavía hoy, también aquí en Lucena. No es casualidad que muchos, como el Gran Maestro Rafael Leitão, lo consideren el mayor genio de la historia del ajedrez.',
+      caption: 'François-André Danican Philidor (1726–1795), grabado de Augustin de Saint-Aubin, 1772.',
+      alt: 'Retrato de perfil de Philidor, grabado del siglo XVIII',
+    },
     signature: 'Gabriel, creador de Lucena',
   },
   features: {
     kicker: 'Funciones',
     title: 'Todo para dominar los finales',
+    lead: 'Esto es lo que ya puedo ofrecer hoy, y ya sirve para entrenar y mejorar de verdad. Pero es solo el comienzo: tengo mucho más planeado para Lucena.',
     items: {
       progression: {
         title: 'De Maia a Stockfish',
-        body: 'Juega contra Maia, una IA entrenada con partidas de personas reales, con estilo humano a tu nivel: de 1000 a 2600. Elige el ritmo, sube escalón a escalón y, cuando estés listo, enfréntate a Stockfish a máxima fuerza.',
+        body: 'Juega contra Maia, un motor de ajedrez con red neuronal creado por investigadores de la Universidad de Toronto y entrenado con millones de partidas de personas en Lichess. Acierta y se equivoca como una persona de verdad, de 1000 a 2600, y cada nivel es un rival con personalidad. Elige el ritmo, sube escalón a escalón y, cuando estés listo, enfréntate a Stockfish a máxima fuerza.',
         bullets: [
           'Niveles humanos de 1000 a 2600',
           'Reloj con tiempo e incremento',
@@ -130,31 +136,33 @@ const es: Dictionary = {
       {
         status: 'Ahora',
         title: 'Versión de pruebas en Android',
-        body: 'Quien entra en el grupo de pruebas recibe siempre la versión más reciente.',
+        body: 'Distribuida por Firebase App Distribution, de Google. Quien entra en el grupo recibe siempre la versión más reciente.',
       },
       {
         status: 'En preparación',
         title: 'Google Play',
-        body: 'La publicación en la tienda ya se está preparando.',
+        body: 'La cuenta de Google Play ya se está creando. La publicación llega muy pronto.',
       },
       {
         status: 'Después',
-        title: 'App Store',
-        body: 'Llevar Lucena al iPhone es el siguiente paso, y ahí tu apoyo marca la diferencia.',
+        title: 'iPhone',
+        body: 'En cuanto haya recursos para publicar en la App Store.',
       },
     ],
   },
   support: {
     kicker: 'Apoya el proyecto',
-    title: 'Adónde va el dinero',
+    title: 'Ayuda a Lucena a crecer',
     body: [
-      'Lucena es gratuita y de código abierto. Para publicar en la App Store, Apple exige el Apple Developer Program, que cuesta US$ 99 al año.',
-      'Las donaciones pagan esa cuenta: llevan la app al iPhone y ayudan a validar la idea allí. Cualquier cantidad ayuda.',
+      'Lucena es gratuita y la hace una sola persona en su tiempo libre. Si te ayudó y quieres contribuir, cualquier apoyo marca la diferencia para que la app crezca más rápido.',
+      'Todavía vamos a crear una forma sencilla de apoyar desde la app, con un mural de apoyadores: quien ayude gana visibilidad dentro de ella. Por ahora, si quieres donar, solo envíame un correo.',
     ],
-    price: 'US$ 99',
-    priceNote: 'al año, para publicar en la App Store',
-    cta: 'Hacer una donación',
-    placeholder: 'Enlace de donación muy pronto',
+    cardTitle: 'Mural de apoyadores',
+    cardBody: 'Muy pronto en la app: quien apoye el proyecto aparecerá dentro de ella, para que toda la comunidad lo vea.',
+    cta: 'Quiero apoyar',
+    subject: 'Quiero apoyar Lucena',
+    note:
+      '¿Y el iPhone? Lucena llegará a la App Store en cuanto tenga los recursos para publicarla allí. Primero quiero validar la idea en Android, pero si usas iOS, tranquilo: haré todo lo posible para llegar cuanto antes.',
   },
   tester: {
     kicker: 'Sé tester',
@@ -162,6 +170,10 @@ const es: Dictionary = {
     body: 'Entra en el grupo de pruebas y recibe siempre la versión más reciente de Lucena en tu Android.',
     teachers:
       '¿Eres profesor de ajedrez? Pasa la app a tus alumnos. Los finales son la mejor puerta de entrada, y la opinión de quien enseña vale oro.',
+    safety:
+      'Las pruebas se distribuyen por Firebase App Distribution, la plataforma de Google para enviar versiones de prueba de apps. Recibes la invitación, instalas la app de pruebas de Firebase y descargas Lucena desde ella, con seguridad.',
+    safetyLink: 'Cómo funciona Firebase App Distribution',
+    wait: '¿Prefieres esperar? Sin problema: Lucena llega pronto a Google Play.',
     cta: 'Entrar en el grupo de pruebas',
     thanks:
       'Gracias de verdad. Que alguien dedique tiempo a probar, validar la idea y enviar comentarios es muy importante para mí. Cada mensaje ayuda a decidir el próximo paso de la app.',
@@ -170,15 +182,23 @@ const es: Dictionary = {
     kicker: 'Visión',
     title: 'Un proyecto vivo',
     body: 'El objetivo es ofrecer la mejor experiencia para aprender ajedrez, mejorar en los finales y desafiarte en ellos. Lucena crecerá con nuevas funciones, guiadas por lo que pida la comunidad.',
-    cta: 'Sugerir una función',
+    cta: 'Enviar una idea',
+  },
+  refs: {
+    kicker: 'Créditos y referencias',
+    title: 'A hombros de gigantes',
+    items: [
+      { name: 'Stockfish', body: 'Motor de ajedrez de código abierto (GPL-3.0), el rival más fuerte de la app.' },
+      { name: 'Maia', body: 'Motor de código abierto con red neuronal, de investigadores de la Universidad de Toronto, entrenado con partidas de personas en Lichess.' },
+      { name: 'Lichess', body: 'Las bibliotecas de tablero y reglas (chessground y dartchess) y las piezas cburnett, de Colin M.L. Burnett.' },
+      { name: 'Firebase App Distribution', body: 'La plataforma de Google que entrega las versiones de prueba.' },
+      { name: 'Retrato de Philidor', body: 'Grabado de Augustin de Saint-Aubin, 1772, de dominio público (Wikimedia Commons).' },
+    ],
   },
   footer: {
     tagline: 'Entrena finales de ajedrez contra Maia y Stockfish.',
-    source: 'Código en GitHub',
-    license: 'Licencia AGPL-3.0',
-    contact: 'Contacto y sugerencias',
-    credits:
-      'Maia: CSSLab, Universidad de Toronto. Stockfish: proyecto Stockfish (GPL-3.0). Piezas: cburnett, de Colin M.L. Burnett.',
+    dev: 'Soy programador. Si necesitas una landing page, una app o quieres conocer mis servicios, escríbeme:',
+    contact: 'Contacto',
   },
   media: {
     hero: 'Elección del nivel de Maia y del ritmo, y la partida contra ella en Lucena',
