@@ -54,12 +54,8 @@ const pt: Dictionary = {
       'Com poucas peças no tabuleiro, cada uma mostra o que sabe fazer. Fica mais fácil entender como o rei ataca, como a torre corta, como o bispo e o cavalo trabalham juntos.',
       'É aí que se aprende a jogar com precisão: cada lance conta, e você vê na hora o que funcionou. Essa clareza vale para a partida inteira.',
     ],
-    boardLabel:
-      'Posição de Lucena: rei branco em b8, peão em b7 e torre em c1; rei preto em d8 e torre em a2.',
     boardCaption:
-      'A posição de Lucena, o final de torre que dá nome ao app. Ganhar daqui é uma técnica, e o app ensina passo a passo.',
-    boardMoves: ['1. Td1+', '1... Re7', '2. Td4!', '2... Ta1', '3. Rc7', '3... Tc1+', '4. Rb6', '4... Tb1+', '5. Rc6', '5... Tc1+', '6. Rb5', '6... Tb1+', '7. Tb4'],
-    boardWin: 'A ponte: o peão vai coroar.',
+      'A posição de Lucena, o final de torre que dá nome ao app, numa aula do Viktor. Ganhar daqui é uma técnica, e o app ensina passo a passo.',
   },
   story: {
     kicker: 'Por que o Lucena existe',
@@ -197,6 +193,7 @@ const pt: Dictionary = {
     home: 'Tela inicial do Lucena com os caminhos de treino',
     beginner: 'Aula guiada para iniciantes no Lucena',
     intermediate: 'Jornada de desafios por nível de rating no Lucena',
+    lucena: 'Aula interativa da posição de Lucena no app Lucena',
     queenRook: 'Aula interativa de dama contra torre no Lucena',
     bishopKnight: 'Aula interativa do mate de bispo e cavalo no Lucena',
     maia: 'Escolha do nível do Maia e do ritmo da partida no Lucena',

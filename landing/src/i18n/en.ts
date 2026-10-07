@@ -53,12 +53,8 @@ const en: Dictionary = {
       'With few pieces on the board, each one shows what it can do. It becomes easier to see how the king attacks, how the rook cuts off, how bishop and knight work together.',
       'That is where you learn to play with precision: every move counts, and you see right away what worked. That clarity carries over to the whole game.',
     ],
-    boardLabel:
-      'The Lucena position: white king on b8, pawn on b7 and rook on c1; black king on d8 and rook on a2.',
     boardCaption:
-      'The Lucena position, the rook endgame the app is named after. Winning from here is a technique, and the app teaches it step by step.',
-    boardMoves: ['1. Rd1+', '1... Ke7', '2. Rd4!', '2... Ra1', '3. Kc7', '3... Rc1+', '4. Kb6', '4... Rb1+', '5. Kc6', '5... Rc1+', '6. Kb5', '6... Rb1+', '7. Rb4'],
-    boardWin: 'The bridge: the pawn will queen.',
+      "The Lucena position, the rook endgame the app is named after, in one of Viktor's lessons. Winning from here is a technique, and the app teaches it step by step.",
   },
   story: {
     kicker: 'Why Lucena exists',
@@ -192,6 +188,7 @@ const en: Dictionary = {
     home: 'Lucena home screen with the training paths',
     beginner: 'A guided beginner lesson in Lucena',
     intermediate: 'The Journey of challenges by rating level in Lucena',
+    lucena: 'Interactive lesson on the Lucena position in the Lucena app',
     queenRook: 'Interactive queen vs rook lesson in Lucena',
     bishopKnight: 'Interactive bishop and knight mate lesson in Lucena',
     maia: 'Choosing the Maia level and the time control in Lucena',

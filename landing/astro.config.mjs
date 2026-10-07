@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// pt-BR na raiz e os outros idiomas com prefixo (/en/). Para um idioma novo:
+// pt-BR na raiz e os outros idiomas com prefixo (/en/, /es/). Para um idioma novo:
 // adicionar aqui, em src/i18n/ e criar src/pages/<idioma>/index.astro.
 export default defineConfig({
   site: 'https://gncortes.github.io',
@@ -13,14 +13,14 @@ export default defineConfig({
   build: { inlineStylesheets: 'always' },
   i18n: {
     defaultLocale: 'pt-br',
-    locales: ['pt-br', 'en'],
+    locales: ['pt-br', 'en', 'es'],
     routing: { prefixDefaultLocale: false },
   },
   integrations: [
     sitemap({
       i18n: {
         defaultLocale: 'pt-br',
-        locales: { 'pt-br': 'pt-BR', en: 'en' },
+        locales: { 'pt-br': 'pt-BR', en: 'en', es: 'es' },
       },
     }),
   ],

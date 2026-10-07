@@ -31,10 +31,7 @@ export type Dictionary = {
     quote: string;
     quoteAuthor: string;
     body: string[];
-    boardLabel: string;
     boardCaption: string;
-    boardMoves: string[];
-    boardWin: string;
   };
   story: { kicker: string; title: string; paragraphs: string[]; signature: string };
   features: {
@@ -82,6 +79,7 @@ export type Dictionary = {
     | 'beginner'
     | 'intermediate'
     | 'queenRook'
+    | 'lucena'
     | 'bishopKnight'
     | 'maia'
     | 'stockfish'
