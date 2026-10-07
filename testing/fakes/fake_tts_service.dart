@@ -13,6 +13,10 @@ class FakeTtsService extends TtsService {
   final spoken = <(String, ResolvedVoice)>[];
   var stops = 0;
 
+  /// Cada fala também chega ao fim (o modo às cegas espera o fim do anúncio
+  /// do lance para devolver a vez).
+  var finishes = false;
+
   static const sampleVoices = [
     TtsVoice(id: 'en-us-x-a', locale: 'en-US'),
     TtsVoice(id: 'en-us-x-b', locale: 'en-US'),
@@ -30,6 +34,7 @@ class FakeTtsService extends TtsService {
     installed = sampleVoices;
     spoken.clear();
     stops = 0;
+    finishes = false;
   }
 
   @override
@@ -42,6 +47,7 @@ class FakeTtsService extends TtsService {
     spoken.add((text, voice));
     addEvent(const TtsStarted());
     addEvent(TtsProgress(0, text.length));
+    if (finishes) addEvent(const TtsFinished());
   }
 
   @override

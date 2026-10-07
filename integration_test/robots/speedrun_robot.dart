@@ -32,12 +32,13 @@ class SpeedrunRobot {
     await $.pumpAndSettle();
   }
 
-  /// Na Maratona: a etapa nova abriu sozinha, com o versus, sem nenhum
-  /// botão no meio; espera a contagem acabar (o relógio corre a partir daí).
+  /// Na Maratona: a etapa nova abriu sozinha, sem nenhum botão no meio. O
+  /// lance que venceu a etapa espera a tela assentar, e com isso o versus da
+  /// etapa seguinte já passou: basta a etapa nova estar jogável, sem o
+  /// cartão de resultado.
   Future<void> expectNextMarathonStage() async {
-    await $(FreeBoardKeys.marathonBanner).waitUntilExists();
-    expect(find.byKey(FreeBoardKeys.resultCard), findsNothing);
     await waitVersusGone();
+    expect(find.byKey(FreeBoardKeys.resultCard), findsNothing);
   }
 
   /// A entrada de versus da etapa saiu: dá para jogar.
