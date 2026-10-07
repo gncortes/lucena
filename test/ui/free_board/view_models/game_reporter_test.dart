@@ -1,7 +1,9 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/game_feedback.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 
@@ -250,6 +252,128 @@ void main() {
       final report = await play(fulfilled: true);
 
       expect(report.speedrun, isNull);
+    });
+  });
+
+  group('o passo seguinte da Maratona', () {
+    late FakeSpeedrunRepository speedruns;
+    const pace = sampleSpeedrunTime; // 3+2
+    // O id sem ritmo é o do ritmo padrão: o 3+2 vai no id.
+    final marathonId = SpeedrunPaces.idFor(sampleMarathon.id, pace);
+
+    setUp(() {
+      speedruns = FakeSpeedrunRepository(progress);
+      reporter = GameReporter(
+        rating: rating,
+        achievements: achievements,
+        journey: FakeJourneyRepository(
+          speedruns: [...sampleSpeedruns, sampleMarathon],
+        ),
+        progress: progress,
+        speedruns: speedruns,
+        positions: FakePositionsRepository(),
+        now: now,
+      );
+    });
+
+    // Uma etapa em que o relógio do jogador correu [spent], sem lances (sem
+    // acréscimo).
+    Future<SpeedrunStep> stage(
+      int attempt,
+      int index, {
+      required Duration spent,
+      bool won = true,
+    }) async {
+      final game = Attempt(
+        positionId: samplePositions[0].id,
+        playedAt: now(),
+        outcome: won ? AttemptOutcome.win : AttemptOutcome.loss,
+        fulfilled: won,
+        opponent: OpponentKind.maia,
+        opponentLevel: 1000,
+        startFen: samplePositions[0].fen,
+        userSide: Side.white,
+        userTime: pace,
+        userClock: spent,
+        speedrunAttemptId: attempt,
+        speedrunStage: index,
+      );
+      final id = await progress.addAttempt(game);
+      return (await reporter.report(
+        game,
+        gameId: id,
+        userSide: Side.white,
+        drawGoal: false,
+      )).speedrun!;
+    }
+
+    test('venceu: a próxima etapa, com o que sobrou no banco', () async {
+      final attempt = await speedruns.start(marathonId, now());
+
+      final step = await stage(
+        attempt.id,
+        0,
+        spent: const Duration(seconds: 50),
+      );
+
+      expect(step.stage, 1);
+      expect(step.attemptId, attempt.id);
+      expect(
+        step.userTime,
+        const TimeControl(
+          initial: Duration(minutes: 2, seconds: 10),
+          increment: Duration(seconds: 2),
+        ),
+      );
+    });
+
+    test('perdeu ou empatou: a Maratona termina ali; tentar de novo é da '
+        'primeira etapa', () async {
+      final attempt = await speedruns.start(marathonId, now());
+      await stage(attempt.id, 0, spent: const Duration(seconds: 30));
+
+      final step = await stage(
+        attempt.id,
+        1,
+        spent: const Duration(seconds: 40),
+        won: false,
+      );
+
+      expect(step.lost, isTrue);
+      expect(step.stage, 0);
+      expect(step.challenge, isNotNull);
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, now());
+    });
+
+    test('o banco acabou: a tentativa termina até onde chegou', () async {
+      final attempt = await speedruns.start(marathonId, now());
+      await stage(attempt.id, 0, spent: const Duration(minutes: 1));
+
+      final step = await stage(
+        attempt.id,
+        1,
+        spent: const Duration(minutes: 2),
+        won: false,
+      );
+
+      expect(step.lost, isTrue);
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, now());
+    });
+
+    test('venceu o Stockfish: o fim, sem abandono', () async {
+      final attempt = await speedruns.start(marathonId, now());
+      for (var index = 0; index < sampleMarathon.stages.length - 1; index++) {
+        await stage(attempt.id, index, spent: const Duration(seconds: 10));
+      }
+
+      final step = await stage(
+        attempt.id,
+        sampleMarathon.stages.length - 1,
+        spent: const Duration(seconds: 10),
+      );
+
+      expect(step.finished, isTrue);
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
     });
   });
 }

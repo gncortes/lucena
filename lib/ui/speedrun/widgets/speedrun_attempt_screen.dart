@@ -50,7 +50,11 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         padding: scrollPadding(context),
         children: [
           if (run.completed)
-            _Finish(run: run, previousBest: state.previousBest)
+            _Finish(
+              run: run,
+              speedrun: speedrun,
+              previousBest: state.previousBest,
+            )
           else
             _Stopped(run: run, total: total),
           // O total grande, com o ritmo, as derrotas e quando foi.
@@ -60,7 +64,9 @@ class SpeedrunAttemptScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  l10n.speedrunTotal,
+                  speedrun.kind == SpeedrunKind.marathon
+                      ? l10n.marathonLeft
+                      : l10n.speedrunTotal,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -69,7 +75,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: RunClock(
-                    run.total,
+                    recordTime(speedrun, run.total),
                     large: true,
                     textKey: SpeedrunKeys.total,
                   ),
@@ -178,9 +184,14 @@ class _Stopped extends StatelessWidget {
 
 /// O fim da tentativa: novo recorde ou a diferença para o recorde.
 class _Finish extends StatelessWidget {
-  const _Finish({required this.run, required this.previousBest});
+  const _Finish({
+    required this.run,
+    required this.speedrun,
+    required this.previousBest,
+  });
 
   final SpeedrunRun run;
+  final Speedrun speedrun;
   final Duration? previousBest;
 
   @override
@@ -232,8 +243,13 @@ class _Finish extends StatelessWidget {
                   if (previous != null)
                     Text(
                       l10n.speedrunVersusRecord(
-                        runTimeDifference(context, run.total - previous),
-                        runTime(context, previous),
+                        // Na Maratona, mais tempo sobrando é melhor.
+                        runTimeDifference(
+                          context,
+                          recordTime(speedrun, run.total) -
+                              recordTime(speedrun, previous),
+                        ),
+                        runTime(context, recordTime(speedrun, previous)),
                       ),
                       key: SpeedrunKeys.recordDifference,
                       style: theme.textTheme.bodyMedium?.copyWith(color: color),

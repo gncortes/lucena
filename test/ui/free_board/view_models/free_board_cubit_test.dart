@@ -49,8 +49,10 @@ void main() {
     Side? playerSide,
     ClockConfig? clock,
     GameMode mode = const GameMode(),
+    bool hold = false,
   }) {
     return FreeBoardCubit(
+      hold: hold,
       now: now,
       haptics: haptics,
       settings: settings,
@@ -1364,6 +1366,64 @@ void main() {
         attempt.id,
         again,
       ]);
+    });
+  });
+
+  group('etapa da Maratona', () {
+    const mode = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1000,
+      userSide: Side.black,
+      speedrunId: 'marathon.queen',
+      speedrunAttemptId: 1,
+      speedrunStage: 2,
+    );
+
+    test('o relógio e a máquina esperam o aviso da etapa sair', () async {
+      final cubit = build(
+        clock: ClockConfig.same(threeTwo),
+        mode: mode,
+        hold: true,
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+      expect(cubit.state.held, isTrue);
+      expect(cubit.state.clock!.running, isNull);
+
+      now.advance(const Duration(seconds: 5));
+      cubit.tick();
+      await settle();
+      // Parado: nada correu, e a máquina (brancas) ainda não pensou.
+      expect(cubit.state.whiteTime, const Duration(minutes: 3));
+      expect(opponent.requests, isEmpty);
+
+      // A máquina fica pensando: dá para ver o relógio dela correndo.
+      opponent.hold();
+      addTearDown(opponent.release);
+      cubit.release();
+      await settle();
+      expect(cubit.state.held, isFalse);
+      expect(cubit.state.clock!.running, Side.white);
+      expect(opponent.requests, hasLength(1));
+    });
+
+    test('um lance durante o aviso já põe o relógio para correr', () async {
+      final cubit = build(
+        clock: ClockConfig.same(threeTwo),
+        mode: mode.copyWith(userSide: Side.white),
+        hold: true,
+      );
+      addTearDown(cubit.close);
+      await cubit.open();
+      opponent.hold();
+      addTearDown(opponent.release);
+
+      cubit.play(NormalMove.fromUci('e2e4'));
+      await settle();
+
+      expect(cubit.state.held, isFalse);
+      expect(cubit.state.moves, ['e4']);
+      expect(cubit.state.clock!.running, Side.black);
     });
   });
 }

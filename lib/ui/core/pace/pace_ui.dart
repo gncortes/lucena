@@ -9,6 +9,7 @@ import '../l10n/l10n.dart';
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {
   String label(AppLocalizations l10n) => switch (this) {
+    PaceCategory.ultraBullet => l10n.paceUltraBullet,
     PaceCategory.bullet => l10n.paceBullet,
     PaceCategory.blitz => l10n.paceBlitz,
     PaceCategory.rapid => l10n.paceRapid,
@@ -16,9 +17,12 @@ extension PaceCategoryUi on PaceCategory {
   };
 }
 
-/// O ritmo curto, em minutos e incremento (`3+2`).
+/// O ritmo curto, em minutos e incremento (`3+2`); abaixo de um minuto, em
+/// segundos (`30 s`).
 String paceShort(AppLocalizations l10n, TimeControl time) =>
-    l10n.paceShort(time.initial.inMinutes, time.increment.inSeconds);
+    time.initial < const Duration(minutes: 1)
+    ? l10n.paceSeconds(time.initial.inSeconds)
+    : l10n.paceShort(time.initial.inMinutes, time.increment.inSeconds);
 
 /// O ritmo com a categoria (`3+2 · Blitz`).
 String paceLabel(AppLocalizations l10n, TimeControl time) =>
@@ -32,8 +36,8 @@ class PaceChoice {
   final TimeControl? time;
 }
 
-/// Abre o painel com os ritmos em grade, agrupados como no chess.com (bullet,
-/// blitz, rápido) e, com [allowNoClock], a opção sem relógio. Tocar só marca;
+/// Abre o painel com os ritmos em grade, agrupados como no chess.com (ultra
+/// bullet, bullet, blitz, rápido) e, com [allowNoClock], a opção sem relógio. Tocar só marca;
 /// a escolha vale ao confirmar. Nulo se o painel for fechado sem confirmar.
 Future<PaceChoice?> showPaceSheet(
   BuildContext context, {
@@ -140,6 +144,7 @@ class _PaceSheetState extends State<_PaceSheet> {
 
 /// O ícone de cada categoria de ritmo.
 IconData paceIcon(PaceCategory category) => switch (category) {
+  PaceCategory.ultraBullet => Icons.rocket_launch_outlined,
   PaceCategory.bullet => Icons.bolt,
   PaceCategory.blitz => Icons.local_fire_department_outlined,
   _ => Icons.timer_outlined,

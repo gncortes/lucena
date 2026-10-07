@@ -26,6 +26,10 @@ abstract final class Mastery {
         RungProgress(
           rung: rung,
           completed: completed,
+          specialsDone: {
+            for (final special in rung.specials)
+              if (fulfilled.contains(special.id)) special.id,
+          },
           status: !previousDone
               ? RungStatus.locked
               : done

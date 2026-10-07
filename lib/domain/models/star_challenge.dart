@@ -60,7 +60,21 @@ enum ChallengeLevel {
     maxMoves: 3,
     starMillis: 3500,
     thresholds: [9, 18, 27],
+  ),
+
+  /// Às cegas: a estrela não aparece; o app diz o nome da casa. Mais tempo
+  /// por estrela, para ler o nome e achar a casa.
+  named(
+    seconds: 60,
+    obstacles: 0,
+    minMoves: 1,
+    maxMoves: 2,
+    starMillis: 9000,
+    thresholds: [8, 16],
   );
+
+  /// A estrela vem pelo nome da casa, sem desenho.
+  bool get announcesSquare => this == named;
 
   const ChallengeLevel({
     required this.seconds,

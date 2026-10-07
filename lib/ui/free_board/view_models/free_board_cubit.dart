@@ -43,6 +43,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// [mode] diz contra quem e, num treino, com que objetivo; contra a máquina
   /// o jogador só move as peças do lado dele.
   ///
+  /// Com [hold], o relógio só corre depois de [release] (o aviso da etapa
+  /// nova da Maratona).
+  ///
   /// Sem [start], a tela espera [open] trazer a partida em andamento.
   FreeBoardCubit({
     required Now now,
@@ -60,6 +63,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     Side? orientation,
     ClockConfig? clock,
     GameMode mode = const GameMode(),
+    bool hold = false,
   }) : _now = now,
        super(
          start == null
@@ -78,6 +82,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
                  clock: clock,
                  mode: mode,
                  now: now(),
+                 hold: hold,
                ),
        );
 
@@ -162,6 +167,27 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     _askMachine();
   }
 
+  /// O aviso da etapa nova saiu: o relógio volta a correr e, na vez dela, a
+  /// máquina pensa.
+  void release() {
+    if (!state.held || !_active) return;
+    final now = _now();
+    final clock = state.clock;
+    emit(
+      _timed(
+        state.copyWith(
+          held: false,
+          turnStartedAt: state.end == null ? now : null,
+          clock: clock == null || state.end != null
+              ? clock
+              : ClockEngine.resume(clock, turn: state.position.turn, now: now),
+        ),
+        now,
+      ),
+    );
+    _changed();
+  }
+
   /// O jogador desiste: a partida termina na hora, mesmo na vez da máquina.
   void resign() {
     final user = state.mode.userSide;
@@ -235,6 +261,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// Joga um lance de quem está na vez, seja do jogador ou do adversário.
   /// Lance ilegal ou com a partida terminada é ignorado.
   void play(Move move) {
+    // Um lance durante o aviso da etapa nova já põe o relógio para correr.
+    release();
     // A bandeira vale antes do lance: tempo esgotado não joga.
     tick();
     if (!_active || state.end != null) return;
@@ -516,7 +544,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   // ela pensa, pelos instantes, como o do jogador.
   void _askMachine() {
     final side = state.mode.machineSide;
-    if (side == null || !_active || isClosed) return;
+    if (side == null || !_active || isClosed || state.held) return;
     if (state.end != null || state.position.turn != side) return;
     if (state.machineThinking) return;
     final failedAt = _machineFailedAt;
@@ -662,7 +690,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     required ClockConfig? clock,
     required GameMode mode,
     required DateTime now,
+    bool hold = false,
   }) {
+    final ended = GameRules.endOf(start) != null;
+    final held = hold && !ended;
+    final running = clock == null || ended
+        ? null
+        : ClockEngine.start(clock, turn: start.turn, now: now);
     return _timed(
       FreeBoardState(
         start: start,
@@ -671,11 +705,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         orientation: orientation,
         mode: mode,
         startedAt: now,
-        turnStartedAt: GameRules.endOf(start) == null ? now : null,
-        // Posição que já abre terminada (mate, afogado) não liga o relógio.
-        clock: clock == null || GameRules.endOf(start) != null
-            ? null
-            : ClockEngine.start(clock, turn: start.turn, now: now),
+        turnStartedAt: ended || held ? null : now,
+        // Posição que já abre terminada (mate, afogado) não liga o relógio;
+        // segurado, ele espera parado.
+        clock: running == null || !held
+            ? running
+            : ClockEngine.stop(running, now),
+        held: held,
       ),
       now,
     );

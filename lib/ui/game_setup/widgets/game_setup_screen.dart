@@ -16,6 +16,8 @@ import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_setup_cubit.dart';
+import '../../core/keys/blind_keys.dart';
+import '../../voice/view_models/speech_cubit.dart';
 import 'custom_pace_sheet.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
@@ -34,6 +36,12 @@ class GameSetupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<GameSetupCubit>().state;
+    final language = Localizations.localeOf(context).toLanguageTag();
+    final blind =
+        state.setup.opponent != OpponentKind.twoPlayers &&
+        context.select(
+          (SpeechCubit cubit) => cubit.state.availableFor(language),
+        );
     return Scaffold(
       key: GameSetupKeys.screen,
       appBar: AppBar(title: Text(l10n.setupTitle)),
@@ -51,6 +59,8 @@ class GameSetupScreen extends StatelessWidget {
                   _SidePicker(state: state),
                   const _SectionTitle.opponent(),
                   _OpponentPicker(state: state),
+                  // Às cegas: só contra a máquina e com voz no idioma.
+                  if (blind) _ModePicker(state: state),
                   const Divider(height: 24),
                   _ClockSection(state: state),
                   if (state.attempts.isNotEmpty) _History(state: state),
@@ -62,15 +72,75 @@ class GameSetupScreen extends StatelessWidget {
             top: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: FilledButton(
-                key: GameSetupKeys.startButton,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-                onPressed: state.canStart ? () => _start(context, state) : null,
-                child: Text(l10n.clockStartGame),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FilledButton(
+                    key: GameSetupKeys.startButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                    ),
+                    onPressed: state.canStart
+                        ? () => _start(context, state)
+                        : null,
+                    child: Text(l10n.clockStartGame),
+                  ),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Normal ou às cegas (os lances falados, digitados ou tocados, sem ver as
+/// peças).
+class _ModePicker extends StatelessWidget {
+  const _ModePicker({required this.state});
+
+  final GameSetupState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final cubit = context.read<GameSetupCubit>();
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.setupMode,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SegmentedButton<bool>(
+            key: GameSetupKeys.mode,
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(
+                value: false,
+                icon: const Icon(Icons.grid_on),
+                label: Text(l10n.setupModeNormal),
+              ),
+              ButtonSegment(
+                value: true,
+                icon: Icon(
+                  Icons.record_voice_over_outlined,
+                  key: BlindKeys.playButton,
+                ),
+                label: Text(l10n.setupModeBlind),
+              ),
+            ],
+            selected: {state.setup.blind},
+            onSelectionChanged: (selected) =>
+                cubit.setBlind(blind: selected.single),
           ),
         ],
       ),

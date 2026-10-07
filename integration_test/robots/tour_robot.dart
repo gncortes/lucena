@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
@@ -19,8 +20,11 @@ class TourRobot {
 
   final PatrolIntegrationTester $;
 
+  /// O passo aberto. A tela do tour rola inteira e um passo alto pode ter o
+  /// meio fora da tela: basta ele existir.
   Future<void> expectStep(TourStep step) async {
-    await $(TourKeys.step(step)).waitUntilVisible();
+    await $(TourKeys.step(step)).waitUntilExists();
+    await $.pumpAndSettle();
   }
 
   void expectNotOpen() => expect(find.byKey(TourKeys.screen), findsNothing);
@@ -51,6 +55,21 @@ class TourRobot {
   Future<void> back() async {
     await $(TourKeys.backButton).tap();
     await $.pumpAndSettle();
+  }
+
+  /// O tour abre na voz do Viktor: segue sem escolher voz (ela fica
+  /// desligada e as vozes dos adversários são puladas) até as boas-vindas.
+  Future<void> passVoice() async {
+    await expectStep(TourStep.voice);
+    await next();
+    await expectStep(TourStep.goal);
+  }
+
+  /// Avança até o passo [step].
+  Future<void> nextUntil(TourStep step) async {
+    while (find.byKey(TourKeys.step(step)).evaluate().isEmpty) {
+      await next();
+    }
   }
 
   /// Avança até o passo do nível.
@@ -114,8 +133,20 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
+  /// Termina o tour. No passo do nível, passa antes pelo dos caminhos (com
+  /// a sugestão do nível marcada).
   Future<void> start() async {
+    if (find.byKey(TourKeys.startButton).evaluate().isEmpty) {
+      await next();
+      await expectStep(TourStep.goals);
+    }
     await $(TourKeys.startButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  /// No passo dos caminhos, marca ou desmarca [path].
+  Future<void> toggleGoal(HomePath path) async {
+    await $(TourKeys.goal(path)).scrollTo().tap();
     await $.pumpAndSettle();
   }
 

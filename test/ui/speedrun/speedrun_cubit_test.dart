@@ -5,12 +5,17 @@ import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_mode.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
+import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_ongoing_game_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
@@ -30,14 +35,18 @@ void main() {
 
   late FakeSettingsRepository settings;
 
-  SpeedrunCubit build() {
-    settings = FakeSettingsRepository(const AppSettings());
+  SpeedrunCubit build({
+    UserProfile? profile,
+    AppSettings saved = const AppSettings(),
+  }) {
+    settings = FakeSettingsRepository(saved);
     final cubit = SpeedrunCubit(
       journey: FakeJourneyRepository(),
       speedruns: speedruns,
       games: games,
       now: now,
       settings: settings,
+      profile: profile == null ? null : FakeProfileRepository(profile),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -195,5 +204,61 @@ void main() {
       expect(attempts.single.id, attempt);
       expect(attempts.single.abandonedAt, isNotNull);
     });
+  });
+
+  group('ritmo inicial pelo nível', () {
+    test(
+      'sem ritmo escolhido, a lista e a Maratona abrem no do nível',
+      () async {
+        final expected = {
+          RatingLevel.beginner: '900+10',
+          RatingLevel.intermediate: '300+3',
+          RatingLevel.master: '60+0',
+        };
+        for (final MapEntry(key: level, value: code) in expected.entries) {
+          final cubit = build(profile: UserProfile(rating: level.rating));
+          await cubit.load();
+          expect(cubit.state.pace.code, code, reason: level.name);
+          expect(cubit.state.marathonPace.code, code, reason: level.name);
+        }
+      },
+    );
+
+    test(
+      'o ritmo escolhido vence o nível, e trocar o nível não muda nada',
+      () async {
+        const threeZero = TimeControl(initial: Duration(minutes: 3));
+        final cubit = build(
+          profile: UserProfile(rating: RatingLevel.beginner.rating),
+          saved: const AppSettings(
+            clock: ClockSettings(speedrunTime: threeZero),
+          ),
+        );
+        await cubit.load();
+        expect(cubit.state.pace, threeZero);
+        // A Maratona tem o seu: sem escolha, ainda o do nível.
+        expect(cubit.state.marathonPace.code, '900+10');
+      },
+    );
+  });
+
+  test('a dificuldade abre na do nível; sem perfil, todas', () async {
+    final none = build();
+    await none.load();
+    expect(none.state.category, isNull);
+
+    final master = build(
+      profile: UserProfile(rating: RatingLevel.master.rating),
+    );
+    await master.load();
+    expect(master.state.category, SpeedrunCategory.advanced);
+    master.chooseCategory(SpeedrunCategory.beginner);
+    // Reler a lista (voltando de um speedrun) não desfaz a escolha.
+    await master.load();
+    expect(master.state.category, SpeedrunCategory.beginner);
+
+    final casual = build(profile: const UserProfile());
+    await casual.load();
+    expect(casual.state.category, SpeedrunCategory.beginner);
   });
 }

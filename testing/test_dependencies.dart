@@ -1,5 +1,7 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/data/repositories/home/home_layout_repository.dart';
+import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository.dart';
@@ -43,6 +45,8 @@ import 'fakes/fake_haptics_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
+import 'fakes/fake_home_layout_repository.dart';
+import 'fakes/fake_unlock_repository.dart';
 import 'fakes/fake_journey_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
 import 'fakes/fake_maia_repository.dart';
@@ -53,6 +57,12 @@ import 'fakes/fake_positions_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_progress_repository.dart';
 import 'fakes/fake_settings_repository.dart';
+import 'fakes/fake_voice_repository.dart';
+import 'fakes/fake_speech_input_repository.dart';
+import 'fakes/fake_blind_log_repository.dart';
+
+import 'package:lucena/data/repositories/voice/voice_repository.dart';
+
 import 'fakes/fake_training_repository.dart';
 
 /// Composição dos testes de unidade e de widget: tudo falso, nada toca o aparelho.
@@ -75,6 +85,8 @@ Dependencies testDependencies({
   EvaluationRepository? evaluationRepository,
   TalkRepository? talkRepository,
   OnboardingRepository? onboardingRepository,
+  HomeLayoutRepository? homeLayoutRepository,
+  UnlockRepository? unlockRepository,
   PaceRepository? paceRepository,
   LessonRepository? lessonRepository,
   SchoolProgressRepository? schoolProgressRepository,
@@ -82,6 +94,7 @@ Dependencies testDependencies({
   EndgameLessonRepository? endgameLessonRepository,
   EndgameProgressRepository? endgameProgressRepository,
   DrawOfferRepository? drawOfferRepository,
+  VoiceRepository? voiceRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -114,6 +127,8 @@ Dependencies testDependencies({
     evaluationRepository: evaluationRepository ?? FakeEvaluationRepository(),
     talkRepository: talkRepository ?? FakeTalkRepository(),
     onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
+    homeLayoutRepository: homeLayoutRepository ?? FakeHomeLayoutRepository(),
+    unlockRepository: unlockRepository ?? FakeUnlockRepository(),
     paceRepository: paceRepository ?? FakePaceRepository(),
     lessonRepository: lessonRepository ?? FakeLessonRepository(),
     schoolProgressRepository:
@@ -125,6 +140,9 @@ Dependencies testDependencies({
     endgameProgressRepository:
         endgameProgressRepository ?? FakeEndgameProgressRepository(),
     drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),
+    voiceRepository: voiceRepository ?? FakeVoiceRepository(),
+    speechInputRepository: FakeSpeechInputRepository(),
+    blindLogRepository: FakeBlindLogRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

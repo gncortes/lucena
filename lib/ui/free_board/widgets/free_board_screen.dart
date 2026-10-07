@@ -9,7 +9,9 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/game_end.dart';
+import '../../../domain/models/pace.dart';
 import '../../../domain/models/game_mode.dart';
+import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/now.dart';
@@ -17,15 +19,19 @@ import '../../core/board/board_settings_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/celebration.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
 import '../view_models/talk_cubit.dart';
 import 'clock_row.dart';
 import 'character_bar.dart';
 import 'clock_sheet.dart';
+import 'versus_intro.dart';
 import 'move_list.dart';
 import 'report_panel.dart';
 import '../../achievements/widgets/achievement_toast.dart';
@@ -57,6 +63,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
+
+  // Maratona: a etapa foi perdida (ou empatada); o painel pergunta se tenta
+  // de novo ou sai.
+  bool _marathonLost = false;
 
   @override
   void initState() {
@@ -234,9 +244,23 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         child: BlocListener<FreeBoardCubit, FreeBoardState>(
           // A partida terminou agora: o cartão do resultado abre, como no
           // chess.com. Partida nova: ele fecha.
+          // Na Maratona não há resultado no meio: a etapa seguinte (ou a
+          // mesma, depois de uma derrota) abre sozinha.
           listenWhen: (previous, current) => previous.end != current.end,
-          listener: (context, state) =>
-              setState(() => _resultOpen = state.end != null),
+          listener: (context, state) {
+            if (state.end != null && state.mode.isMarathon) {
+              // Venceu: a etapa seguinte (ou o resumo, no fim) abre
+              // sozinha. Perdeu, empatou ou o tempo acabou: fim da
+              // Maratona, e o painel pergunta se tenta de novo.
+              if (state.fulfilled ?? false) {
+                unawaited(_newGame(context, cubit, state.mode));
+              } else {
+                setState(() => _marathonLost = true);
+              }
+              return;
+            }
+            setState(() => _resultOpen = state.end != null);
+          },
           child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
             // O tabuleiro só é refeito quando a partida muda, não a cada tique do
             // relógio.
@@ -319,6 +343,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         // recomeçar ficam no tabuleiro livre.
         actions: training
             ? [
+                // O som do personagem: liga e desliga a voz dele, e fica
+                // gravado.
+                if (talk.character != null && !talk.isEngine)
+                  const CharacterSoundButton(),
                 if (state.end == null && state.mode.opponent.isMachine) ...[
                   IconButton(
                     key: FreeBoardKeys.drawButton,
@@ -365,6 +393,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 ? ClockPosition.sides
                 : clockPosition;
             final character = talk.character;
+            final nickname = context.select(
+              (ProfileCubit cubit) => cubit.state?.nickname ?? '',
+            );
             final clockRows = switch (clocks) {
               ClockPosition.sides => 2,
               ClockPosition.top || ClockPosition.bottom => 1,
@@ -432,17 +463,50 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                             setState(() => _touchingBoard = false),
                         onPointerCancel: (_) =>
                             setState(() => _touchingBoard = false),
-                        child: Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Chessboard(
-                            key: FreeBoardKeys.board,
-                            size: boardSize,
-                            controller: _board,
-                            settings: boardSettings.chessground,
-                            orientation: state.orientation,
-                            onMove: (move, {viaDragAndDrop}) =>
-                                cubit.play(move),
-                          ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Chessboard(
+                                key: FreeBoardKeys.board,
+                                size: boardSize,
+                                controller: _board,
+                                // No ultra bullet o pré-lance fica sempre ligado:
+                                // sem ele, não dá tempo de jogar no celular.
+                                settings: _ultraBullet(state)
+                                    ? boardSettings
+                                          .copyWith(premoves: true)
+                                          .chessground
+                                    : boardSettings.chessground,
+                                orientation: state.orientation,
+                                onMove: (move, {viaDragAndDrop}) =>
+                                    cubit.play(move),
+                              ),
+                            ),
+                            // A etapa nova da Maratona: você contra ele, a contagem e só
+                            // então o relógio corre.
+                            if (state.held && character != null)
+                              Positioned.fill(
+                                child: VersusIntro(
+                                  playerName: nickname.isEmpty
+                                      ? context.l10n.profileNicknameDefault
+                                      : nickname,
+                                  opponentName: character.name,
+                                  opponentRating: talk.isEngine
+                                      ? null
+                                      : state.mode.level,
+                                  opponentAvatar: CharacterAvatar(
+                                    character: character,
+                                    size: 64,
+                                  ),
+                                  stage: (state.mode.speedrunStage ?? 0) + 1,
+                                  playerSide:
+                                      state.playerSide ?? state.orientation,
+                                  onDone: cubit.release,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                       if (clocks == ClockPosition.sides)
@@ -468,6 +532,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     ],
                   ),
                 ),
+                if (end != null && _marathonLost)
+                  Positioned.fill(
+                    child: _ResultOverlay(
+                      // Só os botões decidem: tocar fora não fecha.
+                      onClose: () {},
+                      child: _MarathonLost(
+                        draw: end.winner == null,
+                        stage: (state.mode.speedrunStage ?? 0) + 1,
+                        onRetry: () {
+                          setState(() => _marathonLost = false);
+                          unawaited(_newGame(context, cubit, state.mode));
+                        },
+                        onSummary: () => _marathonSummary(cubit, state.mode),
+                      ),
+                    ),
+                  ),
                 if (end != null && _resultOpen)
                   Positioned.fill(
                     child: _ResultOverlay(
@@ -518,6 +598,27 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
+  static bool _ultraBullet(FreeBoardState state) {
+    final time = state.clock?.config.of(state.mode.userSide ?? Side.white);
+    return time != null && PaceCategory.of(time) == PaceCategory.ultraBullet;
+  }
+
+  // Depois de perder na Maratona: o resumo da tentativa (que já terminou),
+  // até onde ela chegou.
+  Future<void> _marathonSummary(FreeBoardCubit cubit, GameMode mode) async {
+    await cubit.saved();
+    if (!mounted) return;
+    setState(() => _quitting = true);
+    final step = cubit.state.report?.speedrun;
+    context.go(
+      Routes.speedrunAttempt(
+        step?.speedrunId ?? mode.speedrunId!,
+        step?.attemptId ?? mode.speedrunAttemptId!,
+        game: context.read<Now>()().millisecondsSinceEpoch,
+      ),
+    );
+  }
+
   // Os detalhes da partida que acabou, para revisá-la com a engine.
   Future<void> _review(BuildContext context, FreeBoardCubit cubit) async {
     final id = await cubit.savedGameId();
@@ -565,6 +666,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         speedrunId: step.speedrunId,
         attemptId: attemptId,
         stage: step.stage,
+        userTime: step.userTime,
       ),
     );
   }
@@ -581,6 +683,92 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final time = cubit.state.clock?.config.white;
     context.pushReplacement(
       Routes.challengeGame(next.challenge.copyWith(time: time)),
+    );
+  }
+}
+
+/// Maratona: perder ou empatar uma etapa encerra a tentativa. Tentar de novo
+/// começa uma nova, da primeira etapa; ou ver o resumo da que acabou.
+class _MarathonLost extends StatelessWidget {
+  const _MarathonLost({
+    required this.draw,
+    required this.stage,
+    required this.onRetry,
+    required this.onSummary,
+  });
+
+  final bool draw;
+
+  /// A etapa em que a Maratona terminou (a partir de 1).
+  final int stage;
+  final VoidCallback onRetry;
+  final VoidCallback onSummary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 560),
+      child: Material(
+        key: FreeBoardKeys.marathonLost,
+        color: colors.surfaceContainerLow,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        elevation: 12,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  draw ? Icons.handshake_outlined : Icons.flag_outlined,
+                  size: 44,
+                  color: colors.error,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  draw ? l10n.marathonDrawTitle : l10n.marathonLostTitle,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.marathonLostBody(stage),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  key: FreeBoardKeys.marathonRetry,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  icon: const Icon(Icons.replay),
+                  label: Text(l10n.speedrunRetry),
+                  onPressed: onRetry,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  key: FreeBoardKeys.marathonSummary,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  onPressed: onSummary,
+                  child: Text(l10n.marathonSummary),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -864,7 +1052,17 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
     final entrance = _interval(0, 0.35, Curves.easeOutCubic);
     final pop = _interval(0.15, 0.7, Curves.elasticOut);
     final ratingWidget = rating(CrossAxisAlignment.center, large: true);
-    return SlideTransition(
+    // Os grandes momentos ganham confete: degrau ou Jornada concluídos e
+    // recorde de speedrun.
+    final party =
+        widget.report?.feedback.any(
+          (item) =>
+              item.kind == FeedbackKind.rungCompleted ||
+              item.kind == FeedbackKind.journeyCompleted ||
+              item.kind == FeedbackKind.newSpeedrunRecord,
+        ) ??
+        false;
+    final panel = SlideTransition(
       position: Tween(
         begin: const Offset(0, 1),
         end: Offset.zero,
@@ -974,6 +1172,16 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
           ),
         ),
       ),
+    );
+    if (!party) return panel;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        panel,
+        const Positioned.fill(
+          child: Celebration(key: FreeBoardKeys.celebration),
+        ),
+      ],
     );
   }
 

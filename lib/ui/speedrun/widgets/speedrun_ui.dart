@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/subcategory_material.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
@@ -34,7 +35,17 @@ String speedrunName(
     speedrun.stages.first.position.category,
   ),
   SpeedrunKind.full => l10n.speedrunFullTitle,
+  SpeedrunKind.marathon => l10n.speedrunMarathonTitle(
+    endgameName(l10n, speedrun.stages.first.position.subcategory),
+  ),
 };
+
+/// O tempo que um recorde de [speedrun] mostra: o total, ou, na Maratona, o
+/// que sobrou no banco.
+Duration recordTime(Speedrun speedrun, Duration total) =>
+    speedrun.kind == SpeedrunKind.marathon
+    ? Marathon.left(speedrun.time, total)
+    : total;
 
 /// O nome de um speedrun como texto.
 class SpeedrunTitle extends StatelessWidget {
@@ -85,7 +96,9 @@ class SpeedrunPicture extends StatelessWidget {
         color: colors.secondaryContainer,
         borderRadius: BorderRadius.circular(size * 0.14),
       ),
-      child: speedrun.kind == SpeedrunKind.ending
+      child:
+          speedrun.kind == SpeedrunKind.ending ||
+              speedrun.kind == SpeedrunKind.marathon
           ? _Material(
               subcategory: speedrun.stages.first.position.subcategory,
               size: size,
@@ -290,7 +303,8 @@ class SpeedrunStageRow extends StatelessWidget {
                           ),
                           // Quando o final muda de etapa para etapa, o nome
                           // dele vem junto.
-                          if (speedrun.kind != SpeedrunKind.ending)
+                          if (speedrun.kind != SpeedrunKind.ending &&
+                              speedrun.kind != SpeedrunKind.marathon)
                             endgameName(l10n, stage.position.subcategory),
                         ].join(' · '),
                         style: theme.textTheme.bodySmall?.copyWith(

@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
+import 'home_robot.dart';
 
 /// Telas do catálogo: as categorias e, na tela da categoria, os finais em
 /// seções já abertas com as posições em grade.
@@ -18,7 +19,7 @@ class CatalogRobot {
 
   /// A partir da tela inicial.
   Future<void> open() async {
-    await $(HomeKeys.catalogButton).scrollTo().tap();
+    await tapHomePath($, HomeKeys.catalogButton);
     await $(CatalogKeys.screen).waitUntilVisible();
     await $(CatalogKeys.category('basic')).waitUntilVisible();
   }

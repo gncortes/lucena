@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/home_layout.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
@@ -10,6 +11,7 @@ import '../../core/widgets/position_board.dart';
 import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
+import '../../core/widgets/animated_progress.dart';
 
 /// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
 /// próximo desafio, com o tabuleiro em miniatura.
@@ -20,10 +22,20 @@ class WhereCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.endgame case final endgame?) {
-      return _EndgameCard(endgame: endgame);
+    // Só aponta para um caminho em destaque na tela inicial.
+    switch (state.continuePath) {
+      case null:
+        return const SizedBox.shrink();
+      case HomePath.endgames when state.endgame != null:
+        return _EndgameCard(endgame: state.endgame!);
+      case HomePath.learn when state.school != null:
+        return _SchoolCard(school: state.school!);
+      default:
+        return _journey(context);
     }
-    if (state.school case final school?) return _SchoolCard(school: school);
+  }
+
+  Widget _journey(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
@@ -87,7 +99,7 @@ class WhereCard extends StatelessWidget {
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
+                child: AnimatedProgress(
                   value: total == 0 ? 0 : done / total,
                   minHeight: 8,
                   backgroundColor: colors.surface.withValues(alpha: 0.6),

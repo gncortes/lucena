@@ -1,4 +1,5 @@
 import '../models/speedrun.dart';
+import 'marathon.dart';
 
 /// As contas do speedrun, todas tiradas das partidas gravadas (regras da T20):
 /// o tempo é o que o relógio do jogador gastou, inclusive nas partidas
@@ -9,18 +10,30 @@ abstract final class SpeedrunScore {
   static SpeedrunRun run(Speedrun speedrun, SpeedrunAttempt attempt) {
     final stages = [
       for (var index = 0; index < speedrun.stages.length; index++)
-        _stage(attempt, index),
+        _stage(
+          attempt,
+          index,
+          marathon: speedrun.kind == SpeedrunKind.marathon,
+        ),
     ];
     return SpeedrunRun(attempt: attempt, stages: stages);
   }
 
-  static StageResult _stage(SpeedrunAttempt attempt, int index) {
+  // Na Maratona, o tempo da etapa é o que ela tirou do banco (os acréscimos
+  // voltam para ele): o menor total é o maior banco no fim.
+  static StageResult _stage(
+    SpeedrunAttempt attempt,
+    int index, {
+    required bool marathon,
+  }) {
     var time = Duration.zero;
     var wins = 0;
     var losses = 0;
     for (final game in attempt.games) {
       if (game.speedrunStage != index) continue;
-      time += game.userClock ?? Duration.zero;
+      time += marathon
+          ? Marathon.consumed(game)
+          : game.userClock ?? Duration.zero;
       if (game.fulfilled) {
         wins++;
       } else {

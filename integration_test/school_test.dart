@@ -19,7 +19,7 @@ void main() {
   ) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.goal);
+    await tour.passVoice();
     expect(find.byKey(TourKeys.speech), findsOneWidget);
     await tour.next();
     await tour.expectStep(TourStep.theme);

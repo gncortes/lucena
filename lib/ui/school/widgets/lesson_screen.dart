@@ -4,6 +4,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -12,6 +13,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
@@ -31,10 +33,20 @@ class LessonScreen extends StatefulWidget {
 }
 
 class _LessonScreenState extends State<LessonScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
+  // O tabuleiro "pousa" a cada passo novo: um fade curto e uma leve escala.
+  late final _landing = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 380),
+    value: 1,
+  );
+
   ChessboardController? _board;
 
   // Sacode o tabuleiro no lance errado.
+  // A casa ou o lance tocado na fala, por um instante no tabuleiro.
+  final _flash = SpeechFlash();
+
   late final _shake = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 380),
@@ -44,6 +56,8 @@ class _LessonScreenState extends State<LessonScreen>
   void dispose() {
     _board?.dispose();
     _shake.dispose();
+    _landing.dispose();
+    _flash.dispose();
     super.dispose();
   }
 
@@ -83,6 +97,11 @@ class _LessonScreenState extends State<LessonScreen>
     final previous = _previous;
     _previous = state;
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
+    if (previous.current != null &&
+        state.current?.id != previous.current?.id &&
+        !MediaQuery.disableAnimationsOf(context)) {
+      _landing.forward(from: 0);
+    }
     if (state.fen == null || state.current == null) return;
     final board = _board;
     if (board == null) {
@@ -192,50 +211,68 @@ class _LessonScreenState extends State<LessonScreen>
                           ],
                         ),
                       ),
-                      if (hasBoard) ...[
+                      if (hasBoard)
                         // Com tabuleiro: ele no alto (até metade da tela), o
-                        // título e o que fazer, e a fala do Viktor embaixo, com
-                        // o espaço que sobra (rola se for longa).
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: _boardArea(
-                            context,
-                            state,
-                            boardSettings,
-                            board,
-                            size: max(
-                              min(
-                                constraints.maxWidth - 16,
-                                constraints.maxHeight * 0.5,
-                              ),
-                              120.0,
+                        // título e o que fazer, e a fala do Viktor embaixo. A
+                        // tela toda rola, e o fim da fala passa por baixo dos
+                        // botões.
+                        Expanded(
+                          child: SingleChildScrollView(
+                            key: LessonKeys.scroll,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: _actionsHeight,
+                            ),
+                            child: Column(
+                              children: [
+                                _boardArea(
+                                  context,
+                                  state,
+                                  boardSettings,
+                                  board,
+                                  size: max(
+                                    min(
+                                      constraints.maxWidth - 16,
+                                      constraints.maxHeight * 0.5,
+                                    ),
+                                    120.0,
+                                  ),
+                                ),
+                                _guide(context, state, step),
+                                if (viktor != null)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      8,
+                                      16,
+                                      0,
+                                    ),
+                                    child: TeacherSpeech(
+                                      teacher: viktor,
+                                      text: state.speech,
+                                      emotion: state.emotion,
+                                      avatarSize: 44,
+                                      bubbleKey: LessonKeys.speech,
+                                      onLink: (link) => _flash.toggle(
+                                        link,
+                                        fen: state.fen ?? state.current?.fen,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                      onSpoken: (link) => _flash.show(
+                                        link,
+                                        fen: state.fen ?? state.current?.fen,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                      speaks: true,
+                                      stacked: true,
+                                      typed: true,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
-                        _guide(context, state, step),
-                        if (viktor != null)
-                          Expanded(
-                            child: SingleChildScrollView(
-                              padding: const EdgeInsets.fromLTRB(
-                                16,
-                                8,
-                                16,
-                                _actionsHeight,
-                              ),
-                              child: TeacherSpeech(
-                                teacher: viktor,
-                                text: state.speech,
-                                emotion: state.emotion,
-                                avatarSize: 44,
-                                bubbleKey: LessonKeys.speech,
-                                stacked: true,
-                                typed: true,
-                              ),
-                            ),
-                          )
-                        else
-                          const Spacer(),
-                      ] else ...[
+                        )
+                      else ...[
                         if (viktor != null)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -245,6 +282,7 @@ class _LessonScreenState extends State<LessonScreen>
                               emotion: state.emotion,
                               avatarSize: 72,
                               bubbleKey: LessonKeys.speech,
+                              speaks: true,
                             ),
                           ),
                         // Passo só de conversa: o espaço fica com o símbolo da
@@ -307,6 +345,30 @@ class _LessonScreenState extends State<LessonScreen>
       if (hint is NormalMove)
         Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
     };
+    // Cada passo novo: o tabuleiro "pousa" (o controle volta do zero ao
+    // trocar de passo, sem refazer o tabuleiro).
+    return AnimatedBuilder(
+      animation: _landing,
+      builder: (context, child) {
+        final value = Curves.easeOutCubic.transform(_landing.value);
+        return Opacity(
+          opacity: 0.3 + 0.7 * value,
+          child: Transform.scale(scale: 0.95 + 0.05 * value, child: child),
+        );
+      },
+      child: _shakingBoard(context, state, boardSettings, board, size, shapes),
+    );
+  }
+
+  Widget _shakingBoard(
+    BuildContext context,
+    LessonState state,
+    BoardSettings boardSettings,
+    ChessboardController board,
+    double size,
+    Set<Shape> shapes,
+  ) {
+    final step = state.current!;
     return AnimatedBuilder(
       animation: _shake,
       builder: (context, child) => Transform.translate(
@@ -316,15 +378,27 @@ class _LessonScreenState extends State<LessonScreen>
       // O tabuleiro não espelha em idiomas da direita para a esquerda.
       child: Directionality(
         textDirection: TextDirection.ltr,
-        child: Chessboard(
-          key: LessonKeys.board,
-          size: size,
-          controller: board,
-          settings: boardSettings.chessground,
-          orientation: step.side,
-          shapes: shapes,
-          onMove: (move, {viaDragAndDrop}) =>
-              context.read<LessonCubit>().play(move),
+        // O destaque da fala muda sozinho: só o tabuleiro é refeito.
+        child: ListenableBuilder(
+          listenable: _flash,
+          builder: (context, _) => Chessboard(
+            key: LessonKeys.board,
+            size: size,
+            controller: board,
+            // Ler o tabuleiro sem as letras e os números da borda.
+            settings: step is TapStep && !step.coordinates
+                ? boardSettings.copyWith(coordinates: false).chessground
+                : boardSettings.chessground,
+            orientation: step.side,
+            // O destaque da fala, só na posição em que foi tocado.
+            shapes: {...shapes, ..._flash.shapesFor(state.fen ?? step.fen)},
+            onMove: (move, {viaDragAndDrop}) =>
+                context.read<LessonCubit>().play(move),
+            // No passo de tocar, o toque na casa é a resposta.
+            onTouchedSquare: step is TapStep
+                ? (square) => context.read<LessonCubit>().tap(square.name)
+                : null,
+          ),
         ),
       ),
     );
@@ -342,6 +416,7 @@ class _LessonScreenState extends State<LessonScreen>
       StepPhase.active => switch (step) {
         TalkStep() => l10n.lessonGuideTalk,
         StarsStep() => l10n.lessonGuideStars,
+        TapStep() => l10n.lessonGuideTap(state.tapTarget ?? ''),
         MoveStep() => l10n.lessonGuideMove(
           step.side == Side.white ? 'white' : 'black',
         ),
@@ -369,9 +444,15 @@ class _LessonScreenState extends State<LessonScreen>
             text,
             key: LessonKeys.guide,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
+            // No passo de tocar, a casa pedida é o que importa: grande.
+            style: state.tapTarget != null
+                ? theme.textTheme.titleLarge?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w800,
+                  )
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
           ),
         ],
       ),
@@ -386,27 +467,45 @@ class _LessonScreenState extends State<LessonScreen>
     final canHint =
         state.phase == StepPhase.active &&
         (step is MoveStep || step is PlayStep);
-    final canGo =
-        state.phase == StepPhase.done ||
-        (step is TalkStep && state.phase == StepPhase.active);
+    final canGo = state.canContinue;
     final colors = Theme.of(context).colorScheme;
     final background = Theme.of(context).scaffoldBackgroundColor;
-    // Por baixo dos botões, a tela esmaece até a cor do fundo: a fala que
-    // passa por ali some aos poucos em vez de ficar atrás de um botão, e dá
-    // para ver que ela continua (rolando, o fim dela sobe acima dos botões).
+    // A fala usa a tela até perto da borda de baixo, passando ao lado (e por
+    // trás) dos botões; só uma faixa fina no fim esmaece até a cor do fundo,
+    // para ela não terminar cortada seco e dar para ver que continua
+    // (rolando, o fim dela sobe acima dos botões).
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [background.withValues(alpha: 0), background],
-          stops: const [0, 0.5],
+          colors: [
+            background.withValues(alpha: 0),
+            background.withValues(alpha: 0),
+            background,
+          ],
+          stops: const [0, 0.7, 1],
         ),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
         child: Row(
           children: [
+            if (state.canGoBack) ...[
+              FloatingActionButton(
+                key: LessonKeys.backButton,
+                heroTag: null,
+                // Redondo e da altura dos outros botões da fileira.
+                shape: const CircleBorder(),
+                elevation: 2,
+                backgroundColor: colors.surface,
+                foregroundColor: colors.primary,
+                tooltip: l10n.lessonPrevious,
+                onPressed: cubit.back,
+                child: const Icon(Icons.arrow_back),
+              ),
+              const SizedBox(width: 8),
+            ],
             if (canHint)
               FloatingActionButton.extended(
                 key: LessonKeys.hintButton,

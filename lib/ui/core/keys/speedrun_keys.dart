@@ -19,6 +19,19 @@ abstract final class SpeedrunKeys {
   static Key paceCategory(String category) =>
       Key('speedrun.pace.category.$category');
   static Key paceOption(String code) => Key('speedrun.pace.option.$code');
+
+  /// O ritmo numa linha (quem está começando) e a explicação do "15+10".
+  static const compactPace = Key('speedrun.pace.compact');
+  static const paceHelp = Key('speedrun.help.pace');
+
+  /// A dificuldade dos finais: iniciante, intermediário ou avançado.
+  static const category = Key('speedrun.category');
+  static Key categoryOption(String category) =>
+      Key('speedrun.category.$category');
+
+  /// O modo da lista no alto: clássico ou Maratona.
+  static const mode = Key('speedrun.mode');
+  static Key modeOption(String mode) => Key('speedrun.mode.$mode');
   static const help = Key('speedrun.help');
   static const helpText = Key('speedrun.help.text');
   static const intro = Key('speedrun.intro');

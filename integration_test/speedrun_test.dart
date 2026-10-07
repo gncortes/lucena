@@ -2,13 +2,19 @@ import 'package:flutter/widgets.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
+
+import 'package:lucena/domain/models/rating_level.dart';
+
 import 'robots/app_robot.dart';
 import 'robots/free_board_robot.dart';
+import 'robots/home_robot.dart';
+import 'robots/profile_robot.dart';
 import 'robots/speedrun_robot.dart';
 
 // Speedruns curtos da composição dos cenários: todas as etapas são mate em um.
 const _rungRun = 'e2e.rung';
 const _endingRun = 'e2e.ending';
+const _marathonRun = 'marathon.e2e.ending';
 
 const _english = Locale('en', 'US');
 
@@ -195,19 +201,51 @@ void main() {
     await speedrun.expectHistory(0, 'Gave up at stage 2 of 3');
   });
 
-  patrolTest('o ritmo da lista: cada ritmo tem os seus speedruns e a escolha '
-      'fica ao reabrir', ($) async {
+  patrolTest('o ritmo abre pelo nível do jogador; o escolhido vence e fica '
+      'ao reabrir', ($) async {
     final app = AppRobot($);
+    final home = HomeRobot($);
+    final profile = ProfileRobot($);
     final speedrun = SpeedrunRobot($);
     await app.open(systemLocale: _english);
+    await home.openSettings();
+    await profile.open();
+    await profile.chooseLevel(RatingLevel.beginner);
+    await profile.save();
+    await app.restart();
 
-    await speedrun.open();
-    await speedrun.expectItem(_rungRun);
-    await speedrun.choosePace('180+2');
-    await speedrun.expectItem('$_rungRun@180+2');
+    // Iniciante: o maior ritmo, 15+10.
+    await speedrun.open(pace: null);
+    await speedrun.expectItem('$_rungRun@900+10');
+    await speedrun.choosePace('180+0');
+    await speedrun.expectItem('$_rungRun@180+0');
 
     await app.restart();
-    await speedrun.open();
-    await speedrun.expectItem('$_rungRun@180+2');
+    await speedrun.open(pace: null);
+    await speedrun.expectItem('$_rungRun@180+0');
+  });
+
+  patrolTest('Maratona: as etapas emendam sozinhas, sem tocar em botão, até o '
+      'resumo', ($) async {
+    final app = AppRobot($);
+    final speedrun = SpeedrunRobot($);
+    final board = FreeBoardRobot($);
+    await app.open(systemLocale: _english);
+    await speedrun.open(pace: null);
+    await speedrun.chooseMode(marathon: true);
+    await speedrun.choosePace('30+0');
+    await speedrun.openSpeedrun('$_marathonRun@30+0');
+    await speedrun.start();
+
+    final (from, to) = E2EJourneyRepository.mate;
+    for (var stage = 0; stage < 3; stage++) {
+      if (stage > 0) {
+        await speedrun.expectNextMarathonStage();
+      } else {
+        await speedrun.waitVersusGone();
+      }
+      await board.move(from, to);
+    }
+    await speedrun.expectMarathonSummary();
   });
 }

@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
+import 'home_robot.dart';
 
 /// Telas da Jornada: degraus, desafios e o histórico de cada desafio.
 class JourneyRobot {
@@ -16,7 +17,7 @@ class JourneyRobot {
 
   /// A partir da tela inicial.
   Future<void> open() async {
-    await $(HomeKeys.journeyButton).scrollTo().tap();
+    await tapHomePath($, HomeKeys.journeyButton);
     await $(JourneyKeys.screen).waitUntilVisible();
     await $(JourneyKeys.current).waitUntilVisible();
   }

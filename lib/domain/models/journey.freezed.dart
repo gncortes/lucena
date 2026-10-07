@@ -284,7 +284,10 @@ mixin _$Challenge {
 
 /// Estável entre versões: o histórico e o domínio são gravados por ele.
  String get id; EndgamePosition get position; OpponentRef get opponent;/// O tempo de cada lado. Nulo: sem relógio.
- TimeControl? get time;
+ TimeControl? get time;/// Como se joga: normal ou às cegas (os desafios especiais do degrau).
+ ChallengeMode get mode;/// Às cegas, o que o tabuleiro mostra no começo: só as casas ou nada.
+ bool get hideBoard;/// No speedrun ou na Maratona curtos: o speedrun (com o ritmo no id).
+ String? get speedrunId;
 /// Create a copy of Challenge
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -296,20 +299,20 @@ $ChallengeCopyWith<Challenge> get copyWith => _$ChallengeCopyWithImpl<Challenge>
 @override
 bool operator ==(Object other) {
   final _this = this as Challenge;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Challenge&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.time, _this.time) || other.time == _this.time));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Challenge&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.time, _this.time) || other.time == _this.time)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.hideBoard, _this.hideBoard) || other.hideBoard == _this.hideBoard)&&(identical(other.speedrunId, _this.speedrunId) || other.speedrunId == _this.speedrunId));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Challenge;
-  return Object.hash(runtimeType,_this.id,_this.position,_this.opponent,_this.time);
+  return Object.hash(runtimeType,_this.id,_this.position,_this.opponent,_this.time,_this.mode,_this.hideBoard,_this.speedrunId);
 }
 
 @override
 String toString() {
   final _this = this as Challenge;
-  return 'Challenge(id: ${_this.id}, position: ${_this.position}, opponent: ${_this.opponent}, time: ${_this.time})';
+  return 'Challenge(id: ${_this.id}, position: ${_this.position}, opponent: ${_this.opponent}, time: ${_this.time}, mode: ${_this.mode}, hideBoard: ${_this.hideBoard}, speedrunId: ${_this.speedrunId})';
 }
 
 
@@ -320,7 +323,7 @@ abstract mixin class $ChallengeCopyWith<$Res>  {
   factory $ChallengeCopyWith(Challenge value, $Res Function(Challenge) _then) = _$ChallengeCopyWithImpl;
 @useResult
 $Res call({
- String id, EndgamePosition position, OpponentRef opponent, TimeControl? time
+ String id, EndgamePosition position, OpponentRef opponent, TimeControl? time, ChallengeMode mode, bool hideBoard, String? speedrunId
 });
 
 
@@ -337,13 +340,16 @@ class _$ChallengeCopyWithImpl<$Res>
 
 /// Create a copy of Challenge
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? position = null,Object? opponent = null,Object? time = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? position = null,Object? opponent = null,Object? time = freezed,Object? mode = null,Object? hideBoard = null,Object? speedrunId = freezed,}) {
   return _then(Challenge(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as EndgamePosition,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentRef,time: freezed == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as TimeControl?,
+as TimeControl?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as ChallengeMode,hideBoard: null == hideBoard ? _self.hideBoard : hideBoard // ignore: cast_nullable_to_non_nullable
+as bool,speedrunId: freezed == speedrunId ? _self.speedrunId : speedrunId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of Challenge
@@ -458,10 +464,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time,  ChallengeMode mode,  bool hideBoard,  String? speedrunId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Challenge() when $default != null:
-return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
+return $default(_that.id,_that.position,_that.opponent,_that.time,_that.mode,_that.hideBoard,_that.speedrunId);case _:
   return orElse();
 
 }
@@ -479,10 +485,10 @@ return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time,  ChallengeMode mode,  bool hideBoard,  String? speedrunId)  $default,) {final _that = this;
 switch (_that) {
 case _Challenge():
-return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
+return $default(_that.id,_that.position,_that.opponent,_that.time,_that.mode,_that.hideBoard,_that.speedrunId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -499,10 +505,10 @@ return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  EndgamePosition position,  OpponentRef opponent,  TimeControl? time,  ChallengeMode mode,  bool hideBoard,  String? speedrunId)?  $default,) {final _that = this;
 switch (_that) {
 case _Challenge() when $default != null:
-return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
+return $default(_that.id,_that.position,_that.opponent,_that.time,_that.mode,_that.hideBoard,_that.speedrunId);case _:
   return null;
 
 }
@@ -514,7 +520,7 @@ return $default(_that.id,_that.position,_that.opponent,_that.time);case _:
 
 
 class _Challenge extends Challenge {
-  const _Challenge({required this.id, required this.position, required this.opponent, this.time}): super._();
+  const _Challenge({required this.id, required this.position, required this.opponent, this.time, this.mode = ChallengeMode.normal, this.hideBoard = false, this.speedrunId}): super._();
   
 
 /// Estável entre versões: o histórico e o domínio são gravados por ele.
@@ -523,6 +529,12 @@ class _Challenge extends Challenge {
 @override final  OpponentRef opponent;
 /// O tempo de cada lado. Nulo: sem relógio.
 @override final  TimeControl? time;
+/// Como se joga: normal ou às cegas (os desafios especiais do degrau).
+@override@JsonKey() final  ChallengeMode mode;
+/// Às cegas, o que o tabuleiro mostra no começo: só as casas ou nada.
+@override@JsonKey() final  bool hideBoard;
+/// No speedrun ou na Maratona curtos: o speedrun (com o ritmo no id).
+@override final  String? speedrunId;
 
 /// Create a copy of Challenge
 /// with the given fields replaced by the non-null parameter values.
@@ -534,18 +546,18 @@ _$ChallengeCopyWith<_Challenge> get copyWith => __$ChallengeCopyWithImpl<_Challe
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Challenge&&(identical(other.id, id) || other.id == id)&&(identical(other.position, position) || other.position == position)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.time, time) || other.time == time));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Challenge&&(identical(other.id, id) || other.id == id)&&(identical(other.position, position) || other.position == position)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.time, time) || other.time == time)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.hideBoard, hideBoard) || other.hideBoard == hideBoard)&&(identical(other.speedrunId, speedrunId) || other.speedrunId == speedrunId));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,position,opponent,time);
+    return Object.hash(runtimeType,id,position,opponent,time,mode,hideBoard,speedrunId);
 }
 
 @override
 String toString() {
-    return 'Challenge(id: $id, position: $position, opponent: $opponent, time: $time)';
+    return 'Challenge(id: $id, position: $position, opponent: $opponent, time: $time, mode: $mode, hideBoard: $hideBoard, speedrunId: $speedrunId)';
 }
 
 
@@ -556,7 +568,7 @@ abstract mixin class _$ChallengeCopyWith<$Res> implements $ChallengeCopyWith<$Re
   factory _$ChallengeCopyWith(_Challenge value, $Res Function(_Challenge) _then) = __$ChallengeCopyWithImpl;
 @override @useResult
 $Res call({
- String id, EndgamePosition position, OpponentRef opponent, TimeControl? time
+ String id, EndgamePosition position, OpponentRef opponent, TimeControl? time, ChallengeMode mode, bool hideBoard, String? speedrunId
 });
 
 
@@ -573,13 +585,16 @@ class __$ChallengeCopyWithImpl<$Res>
 
 /// Create a copy of Challenge
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? position = null,Object? opponent = null,Object? time = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? position = null,Object? opponent = null,Object? time = freezed,Object? mode = null,Object? hideBoard = null,Object? speedrunId = freezed,}) {
   return _then(_Challenge(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as EndgamePosition,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentRef,time: freezed == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
-as TimeControl?,
+as TimeControl?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as ChallengeMode,hideBoard: null == hideBoard ? _self.hideBoard : hideBoard // ignore: cast_nullable_to_non_nullable
+as bool,speedrunId: freezed == speedrunId ? _self.speedrunId : speedrunId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -620,7 +635,9 @@ $TimeControlCopyWith<$Res>? get time {
 mixin _$Rung {
 
 /// `1000`, `1200`... e `stockfish`.
- String get id; OpponentRef get opponent; List<Challenge> get challenges;
+ String get id; OpponentRef get opponent; List<Challenge> get challenges;/// Os desafios especiais (às cegas): valem como extra e não contam para
+/// concluir o degrau.
+ List<Challenge> get specials;
 /// Create a copy of Rung
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -632,20 +649,20 @@ $RungCopyWith<Rung> get copyWith => _$RungCopyWithImpl<Rung>(this as Rung, _$ide
 @override
 bool operator ==(Object other) {
   final _this = this as Rung;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Rung&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&const DeepCollectionEquality().equals(other.challenges, _this.challenges));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Rung&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&const DeepCollectionEquality().equals(other.challenges, _this.challenges)&&const DeepCollectionEquality().equals(other.specials, _this.specials));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Rung;
-  return Object.hash(runtimeType,_this.id,_this.opponent,const DeepCollectionEquality().hash(_this.challenges));
+  return Object.hash(runtimeType,_this.id,_this.opponent,const DeepCollectionEquality().hash(_this.challenges),const DeepCollectionEquality().hash(_this.specials));
 }
 
 @override
 String toString() {
   final _this = this as Rung;
-  return 'Rung(id: ${_this.id}, opponent: ${_this.opponent}, challenges: ${_this.challenges})';
+  return 'Rung(id: ${_this.id}, opponent: ${_this.opponent}, challenges: ${_this.challenges}, specials: ${_this.specials})';
 }
 
 
@@ -656,7 +673,7 @@ abstract mixin class $RungCopyWith<$Res>  {
   factory $RungCopyWith(Rung value, $Res Function(Rung) _then) = _$RungCopyWithImpl;
 @useResult
 $Res call({
- String id, OpponentRef opponent, List<Challenge> challenges
+ String id, OpponentRef opponent, List<Challenge> challenges, List<Challenge> specials
 });
 
 
@@ -673,11 +690,12 @@ class _$RungCopyWithImpl<$Res>
 
 /// Create a copy of Rung
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? opponent = null,Object? challenges = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? opponent = null,Object? challenges = null,Object? specials = null,}) {
   return _then(Rung(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentRef,challenges: null == challenges ? _self.challenges : challenges // ignore: cast_nullable_to_non_nullable
+as List<Challenge>,specials: null == specials ? _self.specials : specials // ignore: cast_nullable_to_non_nullable
 as List<Challenge>,
   ));
 }
@@ -772,10 +790,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  OpponentRef opponent,  List<Challenge> challenges)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  OpponentRef opponent,  List<Challenge> challenges,  List<Challenge> specials)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Rung() when $default != null:
-return $default(_that.id,_that.opponent,_that.challenges);case _:
+return $default(_that.id,_that.opponent,_that.challenges,_that.specials);case _:
   return orElse();
 
 }
@@ -793,10 +811,10 @@ return $default(_that.id,_that.opponent,_that.challenges);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  OpponentRef opponent,  List<Challenge> challenges)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  OpponentRef opponent,  List<Challenge> challenges,  List<Challenge> specials)  $default,) {final _that = this;
 switch (_that) {
 case _Rung():
-return $default(_that.id,_that.opponent,_that.challenges);case _:
+return $default(_that.id,_that.opponent,_that.challenges,_that.specials);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -813,10 +831,10 @@ return $default(_that.id,_that.opponent,_that.challenges);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  OpponentRef opponent,  List<Challenge> challenges)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  OpponentRef opponent,  List<Challenge> challenges,  List<Challenge> specials)?  $default,) {final _that = this;
 switch (_that) {
 case _Rung() when $default != null:
-return $default(_that.id,_that.opponent,_that.challenges);case _:
+return $default(_that.id,_that.opponent,_that.challenges,_that.specials);case _:
   return null;
 
 }
@@ -828,7 +846,7 @@ return $default(_that.id,_that.opponent,_that.challenges);case _:
 
 
 class _Rung implements Rung {
-  const _Rung({required this.id, required this.opponent, required  List<Challenge> challenges}): _challenges = challenges;
+  const _Rung({required this.id, required this.opponent, required  List<Challenge> challenges,  List<Challenge> specials = const <Challenge>[]}): _challenges = challenges,_specials = specials;
   
 
 /// `1000`, `1200`... e `stockfish`.
@@ -839,6 +857,17 @@ class _Rung implements Rung {
   if (_challenges is EqualUnmodifiableListView) return _challenges;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_challenges);
+}
+
+/// Os desafios especiais (às cegas): valem como extra e não contam para
+/// concluir o degrau.
+ final  List<Challenge> _specials;
+/// Os desafios especiais (às cegas): valem como extra e não contam para
+/// concluir o degrau.
+@override@JsonKey() List<Challenge> get specials {
+  if (_specials is EqualUnmodifiableListView) return _specials;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_specials);
 }
 
 
@@ -852,18 +881,18 @@ _$RungCopyWith<_Rung> get copyWith => __$RungCopyWithImpl<_Rung>(this, _$identit
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Rung&&(identical(other.id, id) || other.id == id)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&const DeepCollectionEquality().equals(other.challenges, _challenges));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Rung&&(identical(other.id, id) || other.id == id)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&const DeepCollectionEquality().equals(other.challenges, _challenges)&&const DeepCollectionEquality().equals(other.specials, _specials));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,opponent,const DeepCollectionEquality().hash(_challenges));
+    return Object.hash(runtimeType,id,opponent,const DeepCollectionEquality().hash(_challenges),const DeepCollectionEquality().hash(_specials));
 }
 
 @override
 String toString() {
-    return 'Rung(id: $id, opponent: $opponent, challenges: $challenges)';
+    return 'Rung(id: $id, opponent: $opponent, challenges: $challenges, specials: $specials)';
 }
 
 
@@ -874,7 +903,7 @@ abstract mixin class _$RungCopyWith<$Res> implements $RungCopyWith<$Res> {
   factory _$RungCopyWith(_Rung value, $Res Function(_Rung) _then) = __$RungCopyWithImpl;
 @override @useResult
 $Res call({
- String id, OpponentRef opponent, List<Challenge> challenges
+ String id, OpponentRef opponent, List<Challenge> challenges, List<Challenge> specials
 });
 
 
@@ -891,11 +920,12 @@ class __$RungCopyWithImpl<$Res>
 
 /// Create a copy of Rung
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? opponent = null,Object? challenges = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? opponent = null,Object? challenges = null,Object? specials = null,}) {
   return _then(_Rung(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentRef,challenges: null == challenges ? _self._challenges : challenges // ignore: cast_nullable_to_non_nullable
+as List<Challenge>,specials: null == specials ? _self._specials : specials // ignore: cast_nullable_to_non_nullable
 as List<Challenge>,
   ));
 }
@@ -916,7 +946,8 @@ $OpponentRefCopyWith<$Res> get opponent {
 mixin _$RungProgress {
 
  Rung get rung; RungStatus get status;/// Os desafios concluídos deste degrau.
- Set<String> get completed;
+ Set<String> get completed;/// Os desafios especiais (às cegas) já vencidos.
+ Set<String> get specialsDone;
 /// Create a copy of RungProgress
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -928,20 +959,20 @@ $RungProgressCopyWith<RungProgress> get copyWith => _$RungProgressCopyWithImpl<R
 @override
 bool operator ==(Object other) {
   final _this = this as RungProgress;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RungProgress&&(identical(other.rung, _this.rung) || other.rung == _this.rung)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.completed, _this.completed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RungProgress&&(identical(other.rung, _this.rung) || other.rung == _this.rung)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.completed, _this.completed)&&const DeepCollectionEquality().equals(other.specialsDone, _this.specialsDone));
 }
 
 
 @override
 int get hashCode {
   final _this = this as RungProgress;
-  return Object.hash(runtimeType,_this.rung,_this.status,const DeepCollectionEquality().hash(_this.completed));
+  return Object.hash(runtimeType,_this.rung,_this.status,const DeepCollectionEquality().hash(_this.completed),const DeepCollectionEquality().hash(_this.specialsDone));
 }
 
 @override
 String toString() {
   final _this = this as RungProgress;
-  return 'RungProgress(rung: ${_this.rung}, status: ${_this.status}, completed: ${_this.completed})';
+  return 'RungProgress(rung: ${_this.rung}, status: ${_this.status}, completed: ${_this.completed}, specialsDone: ${_this.specialsDone})';
 }
 
 
@@ -952,7 +983,7 @@ abstract mixin class $RungProgressCopyWith<$Res>  {
   factory $RungProgressCopyWith(RungProgress value, $Res Function(RungProgress) _then) = _$RungProgressCopyWithImpl;
 @useResult
 $Res call({
- Rung rung, RungStatus status, Set<String> completed
+ Rung rung, RungStatus status, Set<String> completed, Set<String> specialsDone
 });
 
 
@@ -969,11 +1000,12 @@ class _$RungProgressCopyWithImpl<$Res>
 
 /// Create a copy of RungProgress
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? rung = null,Object? status = null,Object? completed = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? rung = null,Object? status = null,Object? completed = null,Object? specialsDone = null,}) {
   return _then(RungProgress(
 rung: null == rung ? _self.rung : rung // ignore: cast_nullable_to_non_nullable
 as Rung,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RungStatus,completed: null == completed ? _self.completed : completed // ignore: cast_nullable_to_non_nullable
+as Set<String>,specialsDone: null == specialsDone ? _self.specialsDone : specialsDone // ignore: cast_nullable_to_non_nullable
 as Set<String>,
   ));
 }
@@ -1068,10 +1100,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Rung rung,  RungStatus status,  Set<String> completed)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Rung rung,  RungStatus status,  Set<String> completed,  Set<String> specialsDone)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RungProgress() when $default != null:
-return $default(_that.rung,_that.status,_that.completed);case _:
+return $default(_that.rung,_that.status,_that.completed,_that.specialsDone);case _:
   return orElse();
 
 }
@@ -1089,10 +1121,10 @@ return $default(_that.rung,_that.status,_that.completed);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Rung rung,  RungStatus status,  Set<String> completed)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Rung rung,  RungStatus status,  Set<String> completed,  Set<String> specialsDone)  $default,) {final _that = this;
 switch (_that) {
 case _RungProgress():
-return $default(_that.rung,_that.status,_that.completed);case _:
+return $default(_that.rung,_that.status,_that.completed,_that.specialsDone);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1109,10 +1141,10 @@ return $default(_that.rung,_that.status,_that.completed);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Rung rung,  RungStatus status,  Set<String> completed)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Rung rung,  RungStatus status,  Set<String> completed,  Set<String> specialsDone)?  $default,) {final _that = this;
 switch (_that) {
 case _RungProgress() when $default != null:
-return $default(_that.rung,_that.status,_that.completed);case _:
+return $default(_that.rung,_that.status,_that.completed,_that.specialsDone);case _:
   return null;
 
 }
@@ -1124,7 +1156,7 @@ return $default(_that.rung,_that.status,_that.completed);case _:
 
 
 class _RungProgress extends RungProgress {
-  const _RungProgress({required this.rung, required this.status, required  Set<String> completed}): _completed = completed,super._();
+  const _RungProgress({required this.rung, required this.status, required  Set<String> completed,  Set<String> specialsDone = const <String>{}}): _completed = completed,_specialsDone = specialsDone,super._();
   
 
 @override final  Rung rung;
@@ -1138,6 +1170,15 @@ class _RungProgress extends RungProgress {
   return EqualUnmodifiableSetView(_completed);
 }
 
+/// Os desafios especiais (às cegas) já vencidos.
+ final  Set<String> _specialsDone;
+/// Os desafios especiais (às cegas) já vencidos.
+@override@JsonKey() Set<String> get specialsDone {
+  if (_specialsDone is EqualUnmodifiableSetView) return _specialsDone;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_specialsDone);
+}
+
 
 /// Create a copy of RungProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -1149,18 +1190,18 @@ _$RungProgressCopyWith<_RungProgress> get copyWith => __$RungProgressCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RungProgress&&(identical(other.rung, rung) || other.rung == rung)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.completed, _completed));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RungProgress&&(identical(other.rung, rung) || other.rung == rung)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.completed, _completed)&&const DeepCollectionEquality().equals(other.specialsDone, _specialsDone));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,rung,status,const DeepCollectionEquality().hash(_completed));
+    return Object.hash(runtimeType,rung,status,const DeepCollectionEquality().hash(_completed),const DeepCollectionEquality().hash(_specialsDone));
 }
 
 @override
 String toString() {
-    return 'RungProgress(rung: $rung, status: $status, completed: $completed)';
+    return 'RungProgress(rung: $rung, status: $status, completed: $completed, specialsDone: $specialsDone)';
 }
 
 
@@ -1171,7 +1212,7 @@ abstract mixin class _$RungProgressCopyWith<$Res> implements $RungProgressCopyWi
   factory _$RungProgressCopyWith(_RungProgress value, $Res Function(_RungProgress) _then) = __$RungProgressCopyWithImpl;
 @override @useResult
 $Res call({
- Rung rung, RungStatus status, Set<String> completed
+ Rung rung, RungStatus status, Set<String> completed, Set<String> specialsDone
 });
 
 
@@ -1188,11 +1229,12 @@ class __$RungProgressCopyWithImpl<$Res>
 
 /// Create a copy of RungProgress
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? rung = null,Object? status = null,Object? completed = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? rung = null,Object? status = null,Object? completed = null,Object? specialsDone = null,}) {
   return _then(_RungProgress(
 rung: null == rung ? _self.rung : rung // ignore: cast_nullable_to_non_nullable
 as Rung,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RungStatus,completed: null == completed ? _self._completed : completed // ignore: cast_nullable_to_non_nullable
+as Set<String>,specialsDone: null == specialsDone ? _self._specialsDone : specialsDone // ignore: cast_nullable_to_non_nullable
 as Set<String>,
   ));
 }

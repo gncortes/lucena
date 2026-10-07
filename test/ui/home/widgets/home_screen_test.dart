@@ -5,12 +5,15 @@ import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_home_layout_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -27,11 +30,15 @@ class _Home extends StatelessWidget {
     this.child, {
     this.profile = const UserProfile(),
     this.endgames = const EndgameProgress(),
+    this.layouts,
+    this.onboarding,
   });
 
   final Widget child;
   final UserProfile profile;
   final EndgameProgress endgames;
+  final FakeHomeLayoutRepository? layouts;
+  final FakeOnboardingRepository? onboarding;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
@@ -47,7 +54,7 @@ class _Home extends StatelessWidget {
         create: (_) => HomeCubit(
           journey: FakeJourneyRepository(),
           progress: FakeProgressRepository(),
-          onboarding: FakeOnboardingRepository(),
+          onboarding: onboarding ?? FakeOnboardingRepository(),
           characters: FakeCharacterRepository(),
           rating: FakeRatingRepository(),
           lessons: FakeLessonRepository(),
@@ -55,6 +62,7 @@ class _Home extends StatelessWidget {
           profile: FakeProfileRepository(profile),
           endgameLessons: FakeEndgameLessonRepository(),
           endgameProgress: FakeEndgameProgressRepository(endgames),
+          homeLayout: layouts,
         )..load(),
       ),
     ],
@@ -132,6 +140,8 @@ void main() {
   Future<void> pumpTall(
     WidgetTester tester, {
     UserProfile profile = const UserProfile(),
+    FakeHomeLayoutRepository? layouts,
+    FakeOnboardingRepository? onboarding,
   }) async {
     tester.view.physicalSize = const Size(1080, 4800);
     tester.view.devicePixelRatio = 2.625;
@@ -139,7 +149,12 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         locale: const Locale('pt'),
-        child: _Home(const HomeScreen(), profile: profile),
+        child: _Home(
+          const HomeScreen(),
+          profile: profile,
+          layouts: layouts,
+          onboarding: onboarding,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -148,10 +163,12 @@ void main() {
   double top(WidgetTester tester, Key key) =>
       tester.getTopLeft(find.byKey(key)).dy;
 
-  testWidgets('cada caminho diz o que se faz nele, na ordem de quem está '
-      'aprendendo: aulas, Jornada, aulas de finais, speedrun e finais '
-      'avulsos', (tester) async {
-    await pumpTall(tester);
+  const beginner = UserProfile(rating: 800);
+  const master = UserProfile(rating: 2400);
+
+  testWidgets('iniciante: Aprender e Jornada em destaque, cada um dizendo o '
+      'que se faz nele; os outros recolhidos em Outros modos', (tester) async {
+    await pumpTall(tester, profile: beginner);
 
     expect(find.text('O que você quer fazer?'), findsOneWidget);
     for (final (key, title, body) in [
@@ -167,18 +184,6 @@ void main() {
         'O passo seguinte às aulas: pratique vencendo os finais de cada '
             'adversário, do mais fraco até o Stockfish.',
       ),
-      (
-        HomeKeys.speedrunButton,
-        'Speedrun',
-        'Escolha um final e vença todos os adversários em sequência, até o '
-            'Stockfish, contra o relógio.',
-      ),
-      (
-        HomeKeys.catalogButton,
-        'Treinar finais',
-        'Escolha qualquer final e o adversário, e jogue quantas vezes '
-            'quiser.',
-      ),
     ]) {
       final card = find.byKey(key);
       expect(
@@ -190,39 +195,103 @@ void main() {
         findsOneWidget,
       );
     }
+    expect(
+      top(tester, HomeKeys.schoolButton),
+      lessThan(top(tester, HomeKeys.journeyButton)),
+    );
+    // Recolhidos, mas à mão.
+    expect(find.byKey(HomeKeys.speedrunButton), findsNothing);
+    await tester.tap(find.byKey(HomeKeys.otherModes));
+    await tester.pumpAndSettle();
     final order = [
-      HomeKeys.whereCard,
-      HomeKeys.schoolButton,
-      HomeKeys.journeyButton,
       HomeKeys.endgamesButton,
-      HomeKeys.speedrunButton,
       HomeKeys.catalogButton,
+      HomeKeys.speedrunButton,
       HomeKeys.freeBoardButton,
     ].map((key) => top(tester, key)).toList();
     expect(order, [...order]..sort());
-    // Os quatro caminhos têm a mesma cor: nenhum em destaque.
-    final colors = {
-      for (final key in [
-        HomeKeys.schoolButton,
-        HomeKeys.journeyButton,
-        HomeKeys.speedrunButton,
-        HomeKeys.catalogButton,
-      ])
-        tester
-            .widget<Material>(
-              find
-                  .descendant(
-                    of: find.byKey(key),
-                    matching: find.byType(Material),
-                  )
-                  .first,
-            )
-            .color,
-    };
-    expect(colors, hasLength(1));
     // Os números do jogador saíram daqui: ficam nos detalhes do rating.
     expect(find.text('Partidas'), findsNothing);
     expect(find.text('Dias seguidos'), findsNothing);
+  });
+
+  testWidgets('mestre: o Speedrun primeiro, com o texto de desafio; a Jornada '
+      'fala com quem já joga', (tester) async {
+    await pumpTall(tester, profile: master);
+
+    final speedrun = top(tester, HomeKeys.speedrunButton);
+    expect(speedrun, lessThan(top(tester, HomeKeys.endgamesButton)));
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.speedrunButton),
+        matching: find.text(
+          'Vença todo mundo até o Stockfish no menor tempo. Bata o seu '
+          'recorde.',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
+    await tester.tap(find.byKey(HomeKeys.otherModes));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byKey(HomeKeys.journeyButton),
+        matching: find.text(
+          'Pratique os mates básicos e desafie cada adversário, do Coco ao '
+          'Stockfish.',
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('o layout escolhido vale, e o Continuar não aponta para caminho '
+      'escondido', (tester) async {
+    await pumpTall(
+      tester,
+      layouts: FakeHomeLayoutRepository(
+        layout: const HomeLayout(
+          order: [
+            HomePath.train,
+            HomePath.speedrun,
+            HomePath.journey,
+            HomePath.endgames,
+            HomePath.learn,
+          ],
+          visible: {HomePath.train, HomePath.speedrun},
+          custom: true,
+        ),
+      ),
+    );
+    expect(
+      top(tester, HomeKeys.catalogButton),
+      lessThan(top(tester, HomeKeys.speedrunButton)),
+    );
+    expect(find.byKey(HomeKeys.journeyButton), findsNothing);
+    // A Jornada está escondida e nenhum caminho visível tem progresso: sem
+    // o cartão.
+    expect(find.byKey(HomeKeys.whereCard), findsNothing);
+  });
+
+  testWidgets('quem já usava o app vê o aviso uma vez; fechar não volta', (
+    tester,
+  ) async {
+    final layouts = FakeHomeLayoutRepository();
+    await pumpTall(
+      tester,
+      layouts: layouts,
+      onboarding: FakeOnboardingRepository(const Onboarding(done: true)),
+    );
+    expect(find.byKey(HomeKeys.layoutNotice), findsOneWidget);
+    expect(
+      find.text('Agora dá para escolher o que aparece aqui.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(HomeKeys.layoutNoticeClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.layoutNotice), findsNothing);
+    expect(layouts.seen, isTrue);
   });
 
   testWidgets('o nome do app e os botões ficam fixos ao rolar a tela', (

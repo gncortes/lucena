@@ -110,6 +110,14 @@ class AssetLessonRepository implements LessonRepository {
         fen: fen,
         stars: [for (final star in json['stars'] as List) star as String],
       ),
+      'tap' when fen != null => TapStep(
+        id: id,
+        fen: fen,
+        targets: [
+          for (final target in json['targets'] as List) target as String,
+        ],
+        coordinates: json['coordinates'] != false,
+      ),
       'move' when fen != null => MoveStep(
         id: id,
         fen: fen,

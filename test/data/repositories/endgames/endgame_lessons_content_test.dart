@@ -130,8 +130,10 @@ void main() {
             final position = GameRules.fromFen(fen);
             expect(position, isNotNull, reason: where);
             expect(GameRules.endOf(position!), isNull, reason: where);
-          case StarsStep():
-            fail('$where: aula de final não tem passo de estrelas');
+          case StarsStep() || TapStep():
+            fail(
+              '$where: aula de final não tem passo de estrelas nem de tocar',
+            );
         }
       }
       for (final exercise in lesson.exercises) {

@@ -6,16 +6,28 @@ import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
 
+/// Toca no caminho [key] da tela inicial. Fora do destaque (o nível ou a
+/// escolha do jogador o escondeu), ele está em "Outros modos": abre a seção
+/// antes.
+Future<void> tapHomePath(PatrolIntegrationTester $, Key key) async {
+  await $(HomeKeys.pathsTitle).waitUntilExists();
+  if (find.byKey(key).evaluate().isEmpty) {
+    await $(HomeKeys.otherModes).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+  await $(key).scrollTo().tap();
+}
+
 class HomeRobot {
   const HomeRobot(this.$);
 
   final PatrolIntegrationTester $;
 
-  /// Espera a tela pronta: o nome do app e o botão da Jornada.
+  /// Espera a tela pronta: o nome do app e os caminhos.
   Future<void> expectVisible() async {
     await $(HomeKeys.screen).waitUntilVisible();
     await $(HomeKeys.title).waitUntilVisible();
-    await $(HomeKeys.journeyButton).waitUntilExists();
+    await $(HomeKeys.pathsTitle).waitUntilExists();
   }
 
   /// O cumprimento do painel do jogador, com o apelido.

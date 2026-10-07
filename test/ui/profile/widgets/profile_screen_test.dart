@@ -97,7 +97,7 @@ void main() {
     final sheet = find.byKey(ProfileKeys.levelSheet);
     for (final text in [
       'Iniciante',
-      'Abaixo de 1000',
+      'Estou aprendendo as regras',
       'Intermediário',
       '1300 a 1599',
       'Mestre',

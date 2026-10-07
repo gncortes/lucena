@@ -91,5 +91,20 @@ abstract final class FreeBoardKeys {
 
   /// Propor empate e o aviso de que a máquina recusou.
   static const drawButton = Key('freeBoard.draw');
+
+  /// O confete dos grandes momentos no fim da partida.
+  static const celebration = Key('freeBoard.celebration');
+
+  /// Maratona: o painel do fim (etapa perdida), tentar de novo e o resumo.
+  static const marathonLost = Key('freeBoard.marathonLost');
+  static const marathonRetry = Key('freeBoard.marathonRetry');
+  static const marathonSummary = Key('freeBoard.marathonSummary');
+
+  /// A entrada de "versus" da etapa nova da Maratona e a contagem dela.
+  static const marathonBanner = Key('freeBoard.marathonBanner');
+  static const versusCount = Key('freeBoard.versusCount');
+
+  /// O botão de som do personagem, na barra da partida.
+  static const soundButton = Key('freeBoard.sound');
   static const drawDeclined = Key('freeBoard.draw.declined');
 }

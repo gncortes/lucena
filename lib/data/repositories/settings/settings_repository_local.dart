@@ -26,6 +26,8 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _clockPositionKey = 'clock.position';
   static const _clockVibrationKey = 'clock.lowTimeVibration';
   static const _speedrunTimeKey = 'clock.speedrunTime';
+  static const _marathonTimeKey = 'clock.marathonTime';
+  static const _speedrunMarathonKey = 'speedrun.marathon';
   static const _journeyTimeKey = 'clock.journeyTime';
   static const _characterTalkKey = 'characters.talk';
   static const _soundKey = 'sound.enabled';
@@ -47,11 +49,14 @@ class LocalSettingsRepository implements SettingsRepository {
         lowTimeVibration:
             await _preferences.getBool(_clockVibrationKey) ??
             const ClockSettings().lowTimeVibration,
-        speedrunTime:
-            TimeControl.tryParse(
-              await _preferences.getString(_speedrunTimeKey),
-            ) ??
-            const ClockSettings().speedrunTime,
+        speedrunTime: TimeControl.tryParse(
+          await _preferences.getString(_speedrunTimeKey),
+        ),
+        marathonTime: TimeControl.tryParse(
+          await _preferences.getString(_marathonTimeKey),
+        ),
+        speedrunMarathon:
+            await _preferences.getBool(_speedrunMarathonKey) ?? false,
         // Sem nada gravado (ou "sem relógio"), o desafio fica sem relógio.
         journeyTime: TimeControl.tryParse(
           await _preferences.getString(_journeyTimeKey),
@@ -123,10 +128,20 @@ class LocalSettingsRepository implements SettingsRepository {
       _clockVibrationKey,
       value: settings.clock.lowTimeVibration,
     );
-    await _preferences.setString(
-      _speedrunTimeKey,
-      settings.clock.speedrunTime.code,
+    await _preferences.setBool(
+      _speedrunMarathonKey,
+      value: settings.clock.speedrunMarathon,
     );
+    for (final (key, time) in [
+      (_speedrunTimeKey, settings.clock.speedrunTime),
+      (_marathonTimeKey, settings.clock.marathonTime),
+    ]) {
+      if (time == null) {
+        await _preferences.remove(key);
+      } else {
+        await _preferences.setString(key, time.code);
+      }
+    }
     await _preferences.setString(
       _journeyTimeKey,
       settings.clock.journeyTime?.code ?? 'none',

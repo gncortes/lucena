@@ -15,12 +15,14 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/journey.dart';
+import '../../../domain/models/clock.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 
 /// O que uma partida terminada mudou: o rating, as mensagens de evolução e as
@@ -65,6 +67,7 @@ class SpeedrunStep {
     this.stage,
     this.challenge,
     this.lost = false,
+    this.userTime,
   });
 
   final String speedrunId;
@@ -78,6 +81,10 @@ class SpeedrunStep {
   /// A etapa foi perdida: a tentativa terminou ali, e tentar de novo é uma
   /// tentativa nova, desde a primeira etapa ([challenge]).
   final bool lost;
+
+  /// Na Maratona, o relógio do jogador na etapa seguinte: o que sobrou no
+  /// banco, com o acréscimo do ritmo.
+  final TimeControl? userTime;
 
   bool get finished => challenge == null;
 }
@@ -211,6 +218,9 @@ class GameReporter {
     final attempt = await _speedruns.attempt(attemptId);
     final speedrun = speedruns[attempt?.speedrunId];
     if (attempt == null || speedrun == null) return null;
+    if (speedrun.kind == SpeedrunKind.marathon) {
+      return _marathonStep(game, speedrun, attempt);
+    }
     // O speedrun é uma fileira só: perder uma etapa encerra a tentativa,
     // que fica no histórico até onde chegou.
     if (!game.fulfilled) {
@@ -230,6 +240,36 @@ class GameReporter {
       attemptId: attemptId,
       stage: run.completed ? null : stage,
       challenge: run.completed ? null : speedrun.stages[stage],
+    );
+  }
+
+  // Na Maratona não há pausa: vencer leva à etapa seguinte, com o que sobrou
+  // no banco. Perder, empatar ou o banco acabar encerra a tentativa, até
+  // onde ela chegou; tentar de novo é uma tentativa nova, da primeira etapa.
+  Future<SpeedrunStep> _marathonStep(
+    Attempt game,
+    Speedrun speedrun,
+    SpeedrunAttempt attempt,
+  ) async {
+    final run = SpeedrunScore.run(speedrun, attempt);
+    final bank = Marathon.bank(run, speedrun.time);
+    if (!game.fulfilled || (!run.completed && bank <= Duration.zero)) {
+      await _speedruns.abandon(attempt.id, _now());
+      return SpeedrunStep(
+        speedrunId: speedrun.id,
+        attemptId: attempt.id,
+        stage: 0,
+        challenge: speedrun.stages.first,
+        lost: true,
+      );
+    }
+    final stage = run.currentStage;
+    return SpeedrunStep(
+      speedrunId: speedrun.id,
+      attemptId: attempt.id,
+      stage: run.completed ? null : stage,
+      challenge: run.completed ? null : speedrun.stages[stage],
+      userTime: run.completed ? null : Marathon.stageTime(speedrun.time, bank),
     );
   }
 

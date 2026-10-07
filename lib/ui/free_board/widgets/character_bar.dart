@@ -1,10 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/teacher_speech.dart';
+import '../../voice/view_models/speech_cubit.dart';
+import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
@@ -100,22 +104,75 @@ class CharacterBar extends StatelessWidget {
                 ),
                 child: line == null
                     ? const SizedBox(key: ValueKey('none'))
-                    : _Bubble(
-                        key: ValueKey(line.id),
-                        lineId: line.id,
-                        text: line.text,
-                        semantics: context.l10n.characterSays(
-                          character.name,
-                          line.text,
+                    : _spoken(
+                        context,
+                        line.id,
+                        line.text,
+                        _Bubble(
+                          lineId: line.id,
+                          text: line.text,
+                          semantics: context.l10n.characterSays(
+                            character.name,
+                            line.text,
+                          ),
+                          monospace: talk.isEngine,
+                          small: small,
                         ),
-                        monospace: talk.isEngine,
-                        small: small,
                       ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
+  /// fala.
+  Widget _spoken(BuildContext context, String id, String text, Widget bubble) {
+    final speech = TeacherSpeech.speechOf(context);
+    if (speech == null || talk.isEngine) {
+      return KeyedSubtree(key: ValueKey(id), child: bubble);
+    }
+    return AutoSpeak(
+      key: ValueKey(id),
+      speech: speech,
+      text: text,
+      // Calado pelo botão de som da partida, o balão só aparece.
+      auto: !speech.state.settings.charactersMuted,
+      speakerId: talk.character!.id,
+      child: bubble,
+    );
+  }
+}
+
+/// O botão de som do personagem, na barra da partida: cala a voz dele (e a
+/// fala que estiver no meio) ou volta a ouvi-la. A escolha fica gravada. Sem
+/// voz no idioma do app, não aparece.
+class CharacterSoundButton extends StatelessWidget {
+  const CharacterSoundButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = TeacherSpeech.speechOf(context);
+    if (speech == null) return const SizedBox.shrink();
+    return BlocBuilder<SpeechCubit, SpeechState>(
+      bloc: speech,
+      builder: (context, state) {
+        final language = Localizations.localeOf(context).toLanguageTag();
+        if (!state.availableFor(language)) return const SizedBox.shrink();
+        final heard = state.charactersHeard;
+        return IconButton(
+          key: FreeBoardKeys.soundButton,
+          isSelected: heard,
+          icon: const Icon(Icons.volume_off_outlined),
+          selectedIcon: const Icon(Icons.volume_up_outlined),
+          tooltip: heard
+              ? context.l10n.characterSoundOff
+              : context.l10n.characterSoundOn,
+          onPressed: () => speech.setCharactersHeard(heard: !heard),
+        );
+      },
     );
   }
 }
@@ -165,7 +222,6 @@ class _Bubble extends StatelessWidget {
     required this.semantics,
     required this.monospace,
     required this.small,
-    super.key,
   });
 
   final String lineId;

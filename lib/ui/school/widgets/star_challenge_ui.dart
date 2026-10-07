@@ -21,6 +21,7 @@ String levelName(AppLocalizations l10n, ChallengeLevel level) =>
       ChallengeLevel.easy => l10n.challengeLevelEasy,
       ChallengeLevel.medium => l10n.challengeLevelMedium,
       ChallengeLevel.hard => l10n.challengeLevelHard,
+      ChallengeLevel.named => l10n.blindTitle,
     };
 
 /// A nota (0 a 3) de uma marca.

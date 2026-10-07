@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'attempt.dart';
 import 'clock.dart';
 import 'journey.dart';
+import 'rating_level.dart';
 
 part 'speedrun.freezed.dart';
 
@@ -19,9 +20,36 @@ enum SpeedrunKind {
 
   /// A Jornada inteira, do 1000 ao Stockfish. Pode levar dias: a pausa entre
   /// etapas é livre.
-  full;
+  full,
+
+  /// Um final contra cada degrau, como o de final, com um relógio só para o
+  /// jogador: cada etapa começa com o que sobrou da anterior, e uma emenda na
+  /// outra, sem pausa.
+  marathon;
 
   static SpeedrunKind? fromCode(String? code) => values.asNameMap()[code];
+}
+
+/// A dificuldade de um speedrun de final: a lista abre na do nível do
+/// jogador, e as outras ficam a um toque.
+enum SpeedrunCategory {
+  /// Mate de dama e mate de torre.
+  beginner,
+
+  /// Dois bispos, peões, dama contra peão, torre contra peão.
+  intermediate,
+
+  /// Bispo e cavalo, dama contra torre, torre e peão contra torre.
+  advanced;
+
+  static SpeedrunCategory? fromCode(String? code) => values.asNameMap()[code];
+
+  /// A categoria em que a lista abre para quem está no nível [level].
+  static SpeedrunCategory forLevel(RatingLevel level) => switch (level) {
+    RatingLevel.beginner || RatingLevel.casual => beginner,
+    RatingLevel.intermediate || RatingLevel.advanced => intermediate,
+    RatingLevel.expert || RatingLevel.master => advanced,
+  };
 }
 
 /// Um speedrun: as etapas em ordem, todas com o mesmo ritmo.
@@ -36,6 +64,13 @@ abstract class Speedrun with _$Speedrun {
 
     /// A posição do catálogo, no speedrun de final.
     String? positionId,
+
+    /// A dificuldade, nos speedruns de final (e nas Maratonas deles).
+    SpeedrunCategory? category,
+
+    /// Só da Jornada (desafio especial de um degrau): fora da lista do
+    /// speedrun.
+    @Default(false) bool journeyOnly,
 
     /// O tempo de cada lado em todas as etapas.
     required TimeControl time,

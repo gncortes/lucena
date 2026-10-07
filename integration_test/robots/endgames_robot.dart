@@ -16,6 +16,7 @@ import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
 import 'variant.dart';
+import 'home_robot.dart';
 
 /// As aulas de finais do Viktor: a trilha, a aula, a lição e os exercícios.
 ///
@@ -39,7 +40,7 @@ class EndgamesRobot {
 
   /// Da tela inicial, pelo cartão das aulas de finais.
   Future<void> openFromHome() async {
-    await $(HomeKeys.endgamesButton).scrollTo().tap();
+    await tapHomePath($, HomeKeys.endgamesButton);
     await $(EndgamesKeys.screen).waitUntilVisible();
   }
 
@@ -92,7 +93,7 @@ class EndgamesRobot {
             await _move(LessonKeys.board, move);
             await _waitReply();
           }
-        case TalkStep() || StarsStep():
+        case TalkStep() || StarsStep() || TapStep():
           break;
       }
       await $(LessonKeys.nextButton).tap();
@@ -155,7 +156,7 @@ class EndgamesRobot {
 
   /// O que o Viktor está dizendo no exercício.
   String? get exerciseSpeech =>
-      $.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last).data;
+      _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
 
   /// As estrelas ganhas no exercício resolvido ("1 of 2 stars").
   String? get earned =>
@@ -297,4 +298,7 @@ class EndgamesRobot {
     square,
     orientation: _board(boardKey).orientation,
   );
+
+  // A fala como texto, simples ou com as casas destacadas (texto rico).
+  static String? _plain(Text text) => text.data ?? text.textSpan?.toPlainText();
 }

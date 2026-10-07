@@ -1,6 +1,15 @@
 {
   "modules": [
     {
+      "id": "basics",
+      "lessons": [
+        "basics.queenMate",
+        "basics.rookMate",
+        "basics.twoBishops",
+        "basics.kingPawn"
+      ]
+    },
+    {
       "id": "mates",
       "lessons": [
         "mates.bishopKnight.w",

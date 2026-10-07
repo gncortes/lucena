@@ -17,7 +17,10 @@ mixin _$Speedrun {
 
  String get id; SpeedrunKind get kind;/// O degrau (`1000`), no speedrun de degrau.
  String? get rungId;/// A posição do catálogo, no speedrun de final.
- String? get positionId;/// O tempo de cada lado em todas as etapas.
+ String? get positionId;/// A dificuldade, nos speedruns de final (e nas Maratonas deles).
+ SpeedrunCategory? get category;/// Só da Jornada (desafio especial de um degrau): fora da lista do
+/// speedrun.
+ bool get journeyOnly;/// O tempo de cada lado em todas as etapas.
  TimeControl get time;/// As etapas: posição, adversário e objetivo, como um desafio.
  List<Challenge> get stages;
 /// Create a copy of Speedrun
@@ -31,20 +34,20 @@ $SpeedrunCopyWith<Speedrun> get copyWith => _$SpeedrunCopyWithImpl<Speedrun>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as Speedrun;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Speedrun&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.rungId, _this.rungId) || other.rungId == _this.rungId)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.time, _this.time) || other.time == _this.time)&&const DeepCollectionEquality().equals(other.stages, _this.stages));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Speedrun&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.rungId, _this.rungId) || other.rungId == _this.rungId)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.journeyOnly, _this.journeyOnly) || other.journeyOnly == _this.journeyOnly)&&(identical(other.time, _this.time) || other.time == _this.time)&&const DeepCollectionEquality().equals(other.stages, _this.stages));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Speedrun;
-  return Object.hash(runtimeType,_this.id,_this.kind,_this.rungId,_this.positionId,_this.time,const DeepCollectionEquality().hash(_this.stages));
+  return Object.hash(runtimeType,_this.id,_this.kind,_this.rungId,_this.positionId,_this.category,_this.journeyOnly,_this.time,const DeepCollectionEquality().hash(_this.stages));
 }
 
 @override
 String toString() {
   final _this = this as Speedrun;
-  return 'Speedrun(id: ${_this.id}, kind: ${_this.kind}, rungId: ${_this.rungId}, positionId: ${_this.positionId}, time: ${_this.time}, stages: ${_this.stages})';
+  return 'Speedrun(id: ${_this.id}, kind: ${_this.kind}, rungId: ${_this.rungId}, positionId: ${_this.positionId}, category: ${_this.category}, journeyOnly: ${_this.journeyOnly}, time: ${_this.time}, stages: ${_this.stages})';
 }
 
 
@@ -55,7 +58,7 @@ abstract mixin class $SpeedrunCopyWith<$Res>  {
   factory $SpeedrunCopyWith(Speedrun value, $Res Function(Speedrun) _then) = _$SpeedrunCopyWithImpl;
 @useResult
 $Res call({
- String id, SpeedrunKind kind, String? rungId, String? positionId, TimeControl time, List<Challenge> stages
+ String id, SpeedrunKind kind, String? rungId, String? positionId, SpeedrunCategory? category, bool journeyOnly, TimeControl time, List<Challenge> stages
 });
 
 
@@ -72,13 +75,15 @@ class _$SpeedrunCopyWithImpl<$Res>
 
 /// Create a copy of Speedrun
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? rungId = freezed,Object? positionId = freezed,Object? time = null,Object? stages = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? rungId = freezed,Object? positionId = freezed,Object? category = freezed,Object? journeyOnly = null,Object? time = null,Object? stages = null,}) {
   return _then(Speedrun(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as SpeedrunKind,rungId: freezed == rungId ? _self.rungId : rungId // ignore: cast_nullable_to_non_nullable
 as String?,positionId: freezed == positionId ? _self.positionId : positionId // ignore: cast_nullable_to_non_nullable
-as String?,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as SpeedrunCategory?,journeyOnly: null == journeyOnly ? _self.journeyOnly : journeyOnly // ignore: cast_nullable_to_non_nullable
+as bool,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as TimeControl,stages: null == stages ? _self.stages : stages // ignore: cast_nullable_to_non_nullable
 as List<Challenge>,
   ));
@@ -174,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  TimeControl time,  List<Challenge> stages)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  SpeedrunCategory? category,  bool journeyOnly,  TimeControl time,  List<Challenge> stages)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Speedrun() when $default != null:
-return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_that.stages);case _:
+return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.category,_that.journeyOnly,_that.time,_that.stages);case _:
   return orElse();
 
 }
@@ -195,10 +200,10 @@ return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  TimeControl time,  List<Challenge> stages)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  SpeedrunCategory? category,  bool journeyOnly,  TimeControl time,  List<Challenge> stages)  $default,) {final _that = this;
 switch (_that) {
 case _Speedrun():
-return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_that.stages);case _:
+return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.category,_that.journeyOnly,_that.time,_that.stages);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +220,10 @@ return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  TimeControl time,  List<Challenge> stages)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  SpeedrunKind kind,  String? rungId,  String? positionId,  SpeedrunCategory? category,  bool journeyOnly,  TimeControl time,  List<Challenge> stages)?  $default,) {final _that = this;
 switch (_that) {
 case _Speedrun() when $default != null:
-return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_that.stages);case _:
+return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.category,_that.journeyOnly,_that.time,_that.stages);case _:
   return null;
 
 }
@@ -230,7 +235,7 @@ return $default(_that.id,_that.kind,_that.rungId,_that.positionId,_that.time,_th
 
 
 class _Speedrun implements Speedrun {
-  const _Speedrun({required this.id, required this.kind, this.rungId, this.positionId, required this.time, required  List<Challenge> stages}): _stages = stages;
+  const _Speedrun({required this.id, required this.kind, this.rungId, this.positionId, this.category, this.journeyOnly = false, required this.time, required  List<Challenge> stages}): _stages = stages;
   
 
 @override final  String id;
@@ -239,6 +244,11 @@ class _Speedrun implements Speedrun {
 @override final  String? rungId;
 /// A posição do catálogo, no speedrun de final.
 @override final  String? positionId;
+/// A dificuldade, nos speedruns de final (e nas Maratonas deles).
+@override final  SpeedrunCategory? category;
+/// Só da Jornada (desafio especial de um degrau): fora da lista do
+/// speedrun.
+@override@JsonKey() final  bool journeyOnly;
 /// O tempo de cada lado em todas as etapas.
 @override final  TimeControl time;
 /// As etapas: posição, adversário e objetivo, como um desafio.
@@ -261,18 +271,18 @@ _$SpeedrunCopyWith<_Speedrun> get copyWith => __$SpeedrunCopyWithImpl<_Speedrun>
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Speedrun&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.rungId, rungId) || other.rungId == rungId)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.stages, _stages));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Speedrun&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.rungId, rungId) || other.rungId == rungId)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.category, category) || other.category == category)&&(identical(other.journeyOnly, journeyOnly) || other.journeyOnly == journeyOnly)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.stages, _stages));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,kind,rungId,positionId,time,const DeepCollectionEquality().hash(_stages));
+    return Object.hash(runtimeType,id,kind,rungId,positionId,category,journeyOnly,time,const DeepCollectionEquality().hash(_stages));
 }
 
 @override
 String toString() {
-    return 'Speedrun(id: $id, kind: $kind, rungId: $rungId, positionId: $positionId, time: $time, stages: $stages)';
+    return 'Speedrun(id: $id, kind: $kind, rungId: $rungId, positionId: $positionId, category: $category, journeyOnly: $journeyOnly, time: $time, stages: $stages)';
 }
 
 
@@ -283,7 +293,7 @@ abstract mixin class _$SpeedrunCopyWith<$Res> implements $SpeedrunCopyWith<$Res>
   factory _$SpeedrunCopyWith(_Speedrun value, $Res Function(_Speedrun) _then) = __$SpeedrunCopyWithImpl;
 @override @useResult
 $Res call({
- String id, SpeedrunKind kind, String? rungId, String? positionId, TimeControl time, List<Challenge> stages
+ String id, SpeedrunKind kind, String? rungId, String? positionId, SpeedrunCategory? category, bool journeyOnly, TimeControl time, List<Challenge> stages
 });
 
 
@@ -300,13 +310,15 @@ class __$SpeedrunCopyWithImpl<$Res>
 
 /// Create a copy of Speedrun
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? rungId = freezed,Object? positionId = freezed,Object? time = null,Object? stages = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? rungId = freezed,Object? positionId = freezed,Object? category = freezed,Object? journeyOnly = null,Object? time = null,Object? stages = null,}) {
   return _then(_Speedrun(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as SpeedrunKind,rungId: freezed == rungId ? _self.rungId : rungId // ignore: cast_nullable_to_non_nullable
 as String?,positionId: freezed == positionId ? _self.positionId : positionId // ignore: cast_nullable_to_non_nullable
-as String?,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as SpeedrunCategory?,journeyOnly: null == journeyOnly ? _self.journeyOnly : journeyOnly // ignore: cast_nullable_to_non_nullable
+as bool,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as TimeControl,stages: null == stages ? _self._stages : stages // ignore: cast_nullable_to_non_nullable
 as List<Challenge>,
   ));
