@@ -33,10 +33,17 @@ export type Dictionary = {
     body: string[];
     boardCaption: string;
   };
-  story: { kicker: string; title: string; paragraphs: string[]; signature: string };
+  story: {
+    kicker: string;
+    title: string;
+    paragraphs: string[];
+    philidor: { text: string; caption: string; alt: string };
+    signature: string;
+  };
   features: {
     kicker: string;
     title: string;
+    lead: string;
     items: Record<
       'progression' | 'lessons' | 'levels' | 'speedrun' | 'analysis' | 'custom',
       Feature
@@ -52,27 +59,26 @@ export type Dictionary = {
     kicker: string;
     title: string;
     body: string[];
-    price: string;
-    priceNote: string;
+    cardTitle: string;
+    cardBody: string;
     cta: string;
-    placeholder: string;
+    subject: string;
+    note: string;
   };
   tester: {
     kicker: string;
     title: string;
     body: string;
     teachers: string;
+    safety: string;
+    safetyLink: string;
+    wait: string;
     cta: string;
     thanks: string;
   };
   vision: { kicker: string; title: string; body: string; cta: string };
-  footer: {
-    tagline: string;
-    source: string;
-    license: string;
-    contact: string;
-    credits: string;
-  };
+  refs: { kicker: string; title: string; items: { name: string; body: string }[] };
+  footer: { tagline: string; dev: string; contact: string };
   media: Record<
     | 'hero'
     | 'school'

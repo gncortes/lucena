@@ -4,7 +4,7 @@ const pt: Dictionary = {
   meta: {
     title: 'Lucena: treine finais de xadrez contra o Maia e o Stockfish',
     description:
-      'Aprenda xadrez pelos finais. Treine finais de xadrez contra uma IA que joga como gente, do seu nível até o Stockfish na força máxima, com aulas interativas de dama contra torre, bispo e cavalo e muito mais.',
+      'Aprenda xadrez pelos finais. Treine finais de xadrez contra o Maia, que joga como gente do seu nível, até o Stockfish na força máxima, com aulas interativas de dama contra torre, mate de bispo e cavalo e muito mais.',
     ogAlt:
       'O app Lucena aberto num celular, com um final de xadrez no tabuleiro.',
   },
@@ -19,10 +19,10 @@ const pt: Dictionary = {
     menu: 'Menu',
   },
   hero: {
-    eyebrow: 'App de xadrez gratuito e de código aberto',
+    eyebrow: 'App gratuito para treinar finais de xadrez',
     title: 'Treine finais de xadrez até virar',
     titleAccent: 'técnica',
-    lead: 'O Lucena coloca você para jogar finais contra uma IA que joga como gente, do seu nível até o Stockfish na força máxima.',
+    lead: 'O Lucena coloca você para jogar finais contra o Maia, que joga como gente do seu nível, e depois contra o Stockfish na força máxima.',
     cta: 'Quero ser testador',
     secondary: 'Ver como funciona',
     note: 'Android, versão de testes. Em breve no Google Play.',
@@ -62,19 +62,25 @@ const pt: Dictionary = {
     title: 'Feito por quem ama xadrez',
     paragraphs: [
       'Sou programador e amo programar. Minha outra paixão é o xadrez. O Lucena nasceu de uma necessidade minha: os finais sempre foram o meu ponto fraco, e eu queria um jeito de treiná-los de verdade.',
-      'O que funcionou foi treinar de forma progressiva: primeiro contra o Maia, uma IA que erra e acerta como gente do meu nível, depois subindo até o Stockfish. Repetir a mesma posição contra adversários cada vez mais fortes fixou as técnicas.',
+      'O que funcionou foi treinar de forma progressiva: primeiro contra o Maia, que erra e acerta como gente do meu nível, depois subindo até o Stockfish. Repetir a mesma posição contra adversários cada vez mais fortes fixou as técnicas.',
       'Mas eu gosto tanto de xadrez que quis ir além: criar algo para que qualquer pessoa consiga aprender e praticar com facilidade e entrar no mundo desse jogo milenar. Quero espalhar o Lucena para que muita gente aprenda a jogar por ele e domine os finais que mais custam a entrar na cabeça.',
-      'E quero mostrar como os finais são interessantes. Não é a parte do xadrez que mais aparece, mas é uma das mais bonitas. Philidor já estudava essas posições no século XVIII, e muitos, como o grande mestre Rafael Leitão, o consideram o maior gênio da história do xadrez.',
     ],
+    philidor: {
+      text:
+        'E quero mostrar como os finais são fascinantes. Eles não costumam ser a parte do xadrez que mais chama atenção, mas guardam algumas das ideias mais bonitas do jogo. Há mais de 250 anos, François-André Danican Philidor já estudava essas posições, e a defesa que leva o nome dele é ensinada até hoje, inclusive aqui no Lucena. Não à toa, muitos, como o Grande Mestre Rafael Leitão, o consideram o maior gênio da história do xadrez.',
+      caption: 'François-André Danican Philidor (1726–1795), gravura de Augustin de Saint-Aubin, 1772.',
+      alt: 'Retrato de perfil de Philidor, gravura do século XVIII',
+    },
     signature: 'Gabriel, criador do Lucena',
   },
   features: {
     kicker: 'Recursos',
     title: 'Tudo para dominar os finais',
+    lead: 'Isto é o que eu já consigo entregar hoje, e já dá para treinar e evoluir de verdade. Mas é só o começo: tenho muito mais planejado para o Lucena.',
     items: {
       progression: {
         title: 'Do Maia ao Stockfish',
-        body: 'Jogue contra o Maia, uma IA treinada em partidas de pessoas reais, com estilo humano no seu nível: de 1000 a 2600. Escolha o ritmo, suba degrau por degrau e, quando estiver pronto, enfrente o Stockfish na força máxima.',
+        body: 'Jogue contra o Maia, um motor de xadrez com rede neural criado por pesquisadores da Universidade de Toronto e treinado em milhões de partidas de pessoas no Lichess. Ele erra e acerta como gente de verdade, do 1000 ao 2600, e cada nível é um adversário com personalidade. Escolha o ritmo, suba degrau por degrau e, quando estiver pronto, enfrente o Stockfish na força máxima.',
         bullets: [
           'Níveis humanos de 1000 a 2600',
           'Relógio com tempo e incremento',
@@ -139,31 +145,33 @@ const pt: Dictionary = {
       {
         status: 'Agora',
         title: 'Versão de testes no Android',
-        body: 'Quem entra no grupo de testes recebe sempre a versão mais recente.',
+        body: 'Distribuída pelo Firebase App Distribution, do Google. Quem entra no grupo recebe sempre a versão mais recente.',
       },
       {
         status: 'Em preparação',
         title: 'Google Play',
-        body: 'A publicação na loja já está sendo preparada.',
+        body: 'A conta na Google Play já está sendo criada. A publicação vem logo, logo.',
       },
       {
-        status: 'Em seguida',
-        title: 'App Store',
-        body: 'Levar o Lucena ao iPhone é o próximo passo, e é aí que o seu apoio faz diferença.',
+        status: 'Depois',
+        title: 'iPhone',
+        body: 'Assim que houver recursos para publicar na App Store.',
       },
     ],
   },
   support: {
     kicker: 'Apoie o projeto',
-    title: 'Para onde vai o dinheiro',
+    title: 'Ajude o Lucena a crescer',
     body: [
-      'O Lucena é gratuito e de código aberto. Para publicar na App Store, a Apple exige o Apple Developer Program, que custa US$ 99 por ano.',
-      'As doações pagam essa conta: elas levam o app ao iPhone e ajudam a validar a ideia por lá. Qualquer valor ajuda.',
+      'O Lucena é gratuito e feito por uma pessoa só, nas horas vagas. Se ele te ajudou e você quiser contribuir, qualquer apoio faz diferença para o app crescer mais rápido.',
+      'Ainda vamos criar um jeito simples de apoiar direto pelo app, com um mural de apoiadores: quem ajudar ganha visibilidade lá dentro. Por enquanto, se quiser doar, é só me mandar um e-mail.',
     ],
-    price: 'US$ 99',
-    priceNote: 'por ano, para publicar na App Store',
-    cta: 'Fazer uma doação',
-    placeholder: 'Link de doação em breve',
+    cardTitle: 'Mural de apoiadores',
+    cardBody: 'Em breve no app: quem apoiar o projeto aparece lá dentro, para toda a comunidade ver.',
+    cta: 'Quero apoiar',
+    subject: 'Quero apoiar o Lucena',
+    note:
+      'E o iPhone? O Lucena vai para a App Store assim que eu tiver os recursos para publicar lá. Primeiro quero validar a ideia no Android, mas, se você usa iOS, pode ficar tranquilo: vou fazer o possível para chegar lá o quanto antes.',
   },
   tester: {
     kicker: 'Seja testador',
@@ -171,6 +179,10 @@ const pt: Dictionary = {
     body: 'Entre no grupo de testes e receba sempre a versão mais recente do Lucena no seu Android.',
     teachers:
       'É professor de xadrez? Passe o app para os seus alunos. Os finais são a melhor porta de entrada, e o feedback de quem ensina vale ouro.',
+    safety:
+      'Os testes são distribuídos pelo Firebase App Distribution, a plataforma do Google para enviar versões de teste de apps. Você recebe o convite, instala o app de testes do Firebase e baixa o Lucena por ele, com segurança.',
+    safetyLink: 'Como funciona o Firebase App Distribution',
+    wait: 'Prefere esperar? Sem problema: o Lucena chega à Google Play em breve.',
     cta: 'Entrar no grupo de testes',
     thanks:
       'Obrigado de verdade. Alguém dedicar tempo para testar, validar a ideia e mandar feedback é muito importante para mim. Cada mensagem ajuda a decidir o próximo passo do app.',
@@ -179,15 +191,23 @@ const pt: Dictionary = {
     kicker: 'Visão',
     title: 'Um projeto vivo',
     body: 'O objetivo é oferecer a melhor experiência para aprender xadrez, melhorar nos finais e se desafiar neles. O Lucena vai crescer com novos recursos, guiados pelo que a comunidade pedir.',
-    cta: 'Sugerir um recurso',
+    cta: 'Mandar uma ideia',
+  },
+  refs: {
+    kicker: 'Créditos e referências',
+    title: 'Feito sobre os ombros de gigantes',
+    items: [
+      { name: 'Stockfish', body: 'Motor de xadrez de código aberto (GPL-3.0), o adversário mais forte do app.' },
+      { name: 'Maia', body: 'Motor de código aberto com rede neural, de pesquisadores da Universidade de Toronto, treinado em partidas de pessoas no Lichess.' },
+      { name: 'Lichess', body: 'As bibliotecas de tabuleiro e de regras (chessground e dartchess) e as peças cburnett, de Colin M.L. Burnett.' },
+      { name: 'Firebase App Distribution', body: 'A plataforma do Google que entrega as versões de teste.' },
+      { name: 'Retrato de Philidor', body: 'Gravura de Augustin de Saint-Aubin, 1772, em domínio público (Wikimedia Commons).' },
+    ],
   },
   footer: {
     tagline: 'Treine finais de xadrez contra o Maia e o Stockfish.',
-    source: 'Código no GitHub',
-    license: 'Licença AGPL-3.0',
-    contact: 'Contato e sugestões',
-    credits:
-      'Maia: CSSLab, Universidade de Toronto. Stockfish: projeto Stockfish (GPL-3.0). Peças: cburnett, de Colin M.L. Burnett.',
+    dev: 'Sou programador. Se você precisa de uma landing page, de um aplicativo ou quer conhecer meus serviços, fale comigo:',
+    contact: 'Contato',
   },
   media: {
     hero: 'Escolha do nível do Maia e do ritmo, e a partida contra ele no Lucena',

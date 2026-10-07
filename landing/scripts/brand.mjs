@@ -49,4 +49,18 @@ await sharp(new URL('mascot_light.png', brand).pathname)
 for (const piece of ['wP', 'wQ']) {
   await copyFile(`${pieces}/${piece}.webp`, new URL(`pieces/${piece}.webp`, out).pathname);
 }
+// Os adversários do Maia (assets/characters) e o Stockfish, para a escada de níveis.
+await mkdir(new URL('opponents/', out), { recursive: true });
+const characters = new URL('../../assets/characters/', import.meta.url);
+for (const id of ['beachgoer', 'grandpa', 'snob', 'magician', 'prodigy', 'bodybuilder', 'foodie', 'youngster', 'master']) {
+  await sharp(new URL(`${id}/avatar.png`, characters).pathname)
+    .resize(160)
+    .webp({ quality: 86 })
+    .toFile(new URL(`opponents/${id}.webp`, out).pathname);
+}
+await sharp(new URL('stockfish.png', brand).pathname)
+  .resize(160)
+  .webp({ quality: 90 })
+  .toFile(new URL('opponents/stockfish.webp', out).pathname);
+
 console.log('brand assets ok');

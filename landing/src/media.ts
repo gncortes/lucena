@@ -29,5 +29,5 @@ const fallback = 'pt';
 /** Pasta das capturas do idioma [locale], relativa a landing/assets. */
 export const mediaDir = (locale: string) => `media/${captured[locale] ?? fallback}`;
 
-/** O tamanho na web: 75% da tela do Pixel 9 Pro XL (1344x2992). */
-export const clipSize = { width: 1008, height: 2244 };
+/** O tamanho da tela do Pixel 9 Pro XL, em que foram gravados. */
+export const clipSize = { width: 1344, height: 2992 };

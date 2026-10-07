@@ -24,8 +24,19 @@ const phone = (clip: Clip) => ({
   playLabel: t.media.play,
   pauseLabel: t.media.pause,
 });
-const donateReady = !links.donate.startsWith('TODO');
-const ladder = ['1000', '1400', '1800', '2200', '2600'];
+const mail = (subject: string) => `mailto:${links.email}?subject=${encodeURIComponent(subject)}`;
+const refUrls = [links.stockfish, links.maia, links.lichess, links.firebase, links.philidor];
+const opponents = [
+  ['beachgoer', 'Coco', 1000],
+  ['grandpa', 'Tito', 1200],
+  ['snob', 'Percival', 1400],
+  ['magician', 'Valdini', 1600],
+  ['prodigy', 'Zuri', 1800],
+  ['bodybuilder', 'Tank', 2000],
+  ['foodie', 'Gino', 2200],
+  ['youngster', 'Kai', 2400],
+  ['master', 'Viktor', 2600],
+] as const;
 ---
 
 <header class="top">
@@ -144,6 +155,11 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         <p class="kicker">{t.story.kicker}</p>
         <h2 id="story-title">{t.story.title}</h2>
         {t.story.paragraphs.map((p) => <p>{p}</p>)}
+        <figure class="philidor">
+          <img src={asset('philidor.webp')} alt={t.story.philidor.alt} width="480" height="480" loading="lazy" />
+          <figcaption>{t.story.philidor.caption}</figcaption>
+        </figure>
+        <p>{t.story.philidor.text}</p>
         <p class="letter__sign">
           <img src={asset('logo.webp')} alt="" width="40" height="40" loading="lazy" />
           <span>{t.story.signature}</span>
@@ -157,17 +173,30 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       <header class="section-head" data-reveal>
         <p class="kicker">{t.features.kicker}</p>
         <h2 id="features-title">{t.features.title}</h2>
+        <p class="body">{t.features.lead}</p>
       </header>
 
       <article class="feature" data-reveal>
         <div class="feature__text">
           <h3>{f.progression.title}</h3>
           <p>{f.progression.body}</p>
-          <ol class="ladder" aria-label={f.progression.bullets[0]} data-reveal>
-            {ladder.map((level) => <li><small>Maia</small>{level}</li>)}
-            <li class="ladder__top">Stockfish</li>
+          <ol class="opponents" aria-label={f.progression.bullets[0]} data-reveal>
+            {
+              opponents.map(([id, name, level]) => (
+                <li>
+                  <img src={asset(`opponents/${id}.webp`)} alt="" width="80" height="80" loading="lazy" />
+                  <strong>{name}</strong>
+                  <span>Maia {level}</span>
+                </li>
+              ))
+            }
+            <li class="opponents__top">
+              <img src={asset('opponents/stockfish.webp')} alt="" width="80" height="80" loading="lazy" />
+              <strong>Stockfish</strong>
+              <span>{f.progression.bullets[2]}</span>
+            </li>
           </ol>
-          <ul class="ticks">{f.progression.bullets.map((b) => <li>{b}</li>)}</ul>
+          <ul class="pills">{f.progression.bullets.slice(1, 2).map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media">
           <Phone {...shot('journeyChallenge')} />
@@ -276,21 +305,19 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         <h2 id="support-title">{t.support.title}</h2>
         {t.support.body.map((p) => <p class="body">{p}</p>)}
       </div>
-      <div class="price-card" data-reveal>
-        <p class="price-card__value">{t.support.price}</p>
-        <p class="price-card__note">{t.support.priceNote}</p>
-        {
-          donateReady ? (
-            <a class="btn btn--accent" href={links.donate} rel="noopener">
-              {t.support.cta}
-            </a>
-          ) : (
-            <p class="todo" data-todo="TODO_LINK_DOACAO">
-              {t.support.placeholder}
-            </p>
-          )
-        }
+      <div class="supporters" data-reveal>
+        <div class="supporters__avatars" aria-hidden="true">
+          <img src={asset('opponents/beachgoer.webp')} alt="" width="80" height="80" loading="lazy" />
+          <img src={asset('opponents/grandpa.webp')} alt="" width="80" height="80" loading="lazy" />
+          <img src={asset('opponents/prodigy.webp')} alt="" width="80" height="80" loading="lazy" />
+          <span>+</span>
+        </div>
+        <h3>{t.support.cardTitle}</h3>
+        <p>{t.support.cardBody}</p>
+        <a class="btn btn--accent" href={mail(t.support.subject)}>{t.support.cta}</a>
+        <p class="supporters__mail">{links.email}</p>
       </div>
+      <p class="support__note">{t.support.note}</p>
     </div>
   </section>
 
@@ -302,6 +329,11 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         <h2 id="tester-title">{t.tester.title}</h2>
         <p class="body">{t.tester.body}</p>
         <a class="btn btn--light" href={links.tester} rel="noopener">{t.tester.cta}</a>
+        <p class="tester__safety">
+          {t.tester.safety}{' '}
+          <a href={links.firebase} rel="noopener">{t.tester.safetyLink}</a>.
+        </p>
+        <p class="tester__wait">{t.tester.wait}</p>
         <p class="tester__teachers">{t.tester.teachers}</p>
         <p class="tester__thanks">{t.tester.thanks}</p>
       </div>
@@ -313,7 +345,24 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       <p class="kicker">{t.vision.kicker}</p>
       <h2 id="vision-title">{t.vision.title}</h2>
       <p class="body">{t.vision.body}</p>
-      <a class="btn btn--ghost" href={links.issues} rel="noopener">{t.vision.cta}</a>
+      <a class="btn btn--ghost" href="#testador">{t.vision.cta}</a>
+    </div>
+  </section>
+
+  <section class="refs" aria-labelledby="refs-title">
+    <div class="wrap">
+      <p class="kicker">{t.refs.kicker}</p>
+      <h2 id="refs-title">{t.refs.title}</h2>
+      <ul class="refs__list">
+        {
+          t.refs.items.map((item, i) => (
+            <li>
+              <a href={refUrls[i]} rel="noopener">{item.name}</a>
+              <span>{item.body}</span>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 </main>
@@ -327,12 +376,9 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
       </a>
       <p>{t.footer.tagline}</p>
     </div>
-    <ul class="foot__links">
-      <li><a href={links.repo} rel="noopener">{t.footer.source}</a></li>
-      <li><a href={links.license} rel="noopener license">{t.footer.license}</a></li>
-      <li><a href={links.issues} rel="noopener">{t.footer.contact}</a></li>
-    </ul>
-    <p class="foot__credits">{t.footer.credits}</p>
+    <p class="foot__dev">
+      {t.footer.dev} <a href={mail('Lucena')}>{links.email}</a>
+    </p>
   </div>
 </footer>
 
