@@ -1,17 +1,18 @@
 ---
 import { asset } from '../i18n';
-import { clipSize, clips, type Clip } from '../media';
+import { clipSize, clips, mediaDir, type Clip } from '../media';
 
 interface Props {
   clip: Clip;
+  locale: string;
   label: string;
   playLabel: string;
   pauseLabel: string;
   class?: string;
 }
 
-const { clip, label, playLabel, pauseLabel, class: className } = Astro.props;
-const name = clips[clip];
+const { clip, locale, label, playLabel, pauseLabel, class: className } = Astro.props;
+const name = `${mediaDir(locale)}/${clips[clip]}`;
 ---
 
 <figure class:list={['phone', className]} data-phone>

@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8" />
 <style>
-  @font-face { font-family: 'Bricolage'; src: url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2'); font-weight: 200 800; }
+  @font-face { font-family: 'Jakarta'; src: url('../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2'); font-weight: 200 800; }
   @font-face { font-family: 'Inter'; src: url('../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'); font-weight: 100 900; }
   html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
   body {
@@ -22,9 +22,9 @@
     mask-image: radial-gradient(60% 80% at 80% 50%, #000, transparent 75%);
   }
   .text { position: absolute; left: 72px; top: 76px; width: 640px; }
-  .brand { display: flex; align-items: center; gap: 16px; font: 750 40px/1 'Bricolage'; letter-spacing: -0.02em; }
+  .brand { display: flex; align-items: center; gap: 16px; font: 750 40px/1 'Jakarta'; letter-spacing: -0.02em; }
   .brand img { width: 64px; height: 64px; border-radius: 16px; }
-  h1 { margin: 56px 0 24px; font: 760 74px/1.02 'Bricolage'; letter-spacing: -0.03em; }
+  h1 { margin: 56px 0 24px; font: 760 74px/1.02 'Jakarta'; letter-spacing: -0.03em; }
   h1 em { font-style: normal; color: #4fcf91; }
   p { margin: 0; font-size: 28px; line-height: 1.4; color: #b8c7be; }
   .phone {
@@ -33,7 +33,7 @@
     box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.1), 0 40px 80px -20px rgb(0 0 0 / 0.7);
     transform: rotate(-3deg);
   }
-  .phone img { display: block; width: 100%; aspect-ratio: 720 / 1560; object-fit: cover; object-position: top; border-radius: 35px; }
+  .phone img { display: block; width: 100%; aspect-ratio: 1344 / 2992; object-fit: cover; object-position: top; border-radius: 35px; }
   .mascot { position: absolute; right: 40px; bottom: 24px; width: 200px; }
 </style>
 </head>
@@ -44,16 +44,18 @@
     <h1 id="title"></h1>
     <p id="lead"></p>
   </div>
-  <div class="phone"><img src="../assets/destaque-poster.webp" alt="" /></div>
+  <div class="phone"><img id="shot" alt="" /></div>
   <img class="mascot" src="../assets/mascot-dark.webp" alt="" />
   <script>
-    const en = location.hash === '#en';
-    document.getElementById('title').innerHTML = en
-      ? 'Train chess <em>endgames</em> against Maia and Stockfish'
-      : 'Treine <em>finais</em> de xadrez contra o Maia e o Stockfish';
-    document.getElementById('lead').textContent = en
-      ? 'Learn chess through the endgame, from your level to full strength.'
-      : 'Aprenda xadrez pelos finais, do seu nível até a força máxima.';
+    const lang = location.hash.slice(1) || 'pt';
+    const texts = {
+      pt: ['Treine <em>finais</em> de xadrez contra o Maia e o Stockfish', 'Aprenda xadrez pelos finais, do seu nível até a força máxima.'],
+      en: ['Train chess <em>endgames</em> against Maia and Stockfish', 'Learn chess through the endgame, from your level to full strength.'],
+      es: ['Entrena <em>finales</em> de ajedrez contra Maia y Stockfish', 'Aprende ajedrez por los finales, desde tu nivel hasta la máxima fuerza.'],
+    };
+    document.getElementById('title').innerHTML = texts[lang][0];
+    document.getElementById('lead').textContent = texts[lang][1];
+    document.getElementById('shot').src = `../assets/media/${lang}/destaque-poster.webp`;
   </script>
 </body>
 </html>

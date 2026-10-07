@@ -1,6 +1,5 @@
 ---
 import Phone from './Phone.astro';
-import LucenaBoard from './LucenaBoard.astro';
 import { asset, links, locales, pageUrl, type Locale } from '../i18n';
 import type { Clip } from '../media';
 
@@ -13,6 +12,7 @@ const t = locales[locale].dict;
 const f = t.features.items;
 const phone = (clip: Clip) => ({
   clip,
+  locale,
   label: t.media[clip],
   playLabel: t.media.play,
   pauseLabel: t.media.pause,
@@ -124,10 +124,10 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </blockquote>
         {t.message.body.map((p) => <p class="body">{p}</p>)}
       </div>
-      <figure class="message__board" data-reveal>
-        <LucenaBoard label={t.message.boardLabel} moves={t.message.boardMoves} win={t.message.boardWin} />
-        <figcaption>{t.message.boardCaption}</figcaption>
-      </figure>
+      <div class="message__board" data-reveal>
+        <Phone {...phone('lucena')} class="message__phone" />
+        <p>{t.message.boardCaption}</p>
+      </div>
     </div>
   </section>
 

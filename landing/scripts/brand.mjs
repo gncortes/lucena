@@ -46,7 +46,7 @@ await sharp(new URL('mascot_light.png', brand).pathname)
     .toFile(new URL('mascot-dark.webp', out).pathname);
 }
 
-for (const piece of ['wK', 'wP', 'wR', 'bK', 'bR', 'wQ', 'wB', 'wN']) {
+for (const piece of ['wP', 'wQ']) {
   await copyFile(`${pieces}/${piece}.webp`, new URL(`pieces/${piece}.webp`, out).pathname);
 }
 console.log('brand assets ok');
