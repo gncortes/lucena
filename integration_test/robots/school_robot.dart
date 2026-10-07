@@ -27,7 +27,13 @@ class SchoolRobot {
   }
 
   Future<void> openLesson(String id) async {
-    await $(SchoolKeys.lesson(id)).scrollTo().tap();
+    // A trilha é longa: a aula vai para o meio da tela, longe do botão fixo
+    // de baixo, antes do toque.
+    final lesson = find.byKey(SchoolKeys.lesson(id));
+    await $.scrollUntilExists(finder: lesson);
+    await Scrollable.ensureVisible($.tester.element(lesson), alignment: 0.5);
+    await $.pumpAndSettle();
+    await $(lesson).tap();
     await $(LessonKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
