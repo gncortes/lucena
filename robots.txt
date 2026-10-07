@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gncortes.github.io/lucena/sitemap-index.xml
