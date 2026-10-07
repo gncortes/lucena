@@ -94,6 +94,7 @@ void main() {
     await endgames.openSteps();
     await endgames.nextStep();
     expect(voice.spokenCount, greaterThan(before));
+    await endgames.back();
 
     // Desligada nas configurações, nada sai sozinho.
     await app.restart();
@@ -105,7 +106,7 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson('rook.philidor');
     await endgames.openSteps();
-    await endgames.nextStep();
+    await $.pump(const Duration(seconds: 1));
     expect(voice.spokenCount, before);
   });
 }
