@@ -21,6 +21,8 @@ void main() {
     final app = AppRobot($);
     final journey = JourneyRobot($);
     await app.open(systemLocale: _english);
+    // O anúncio do lance da máquina chega ao fim, e a vez volta na hora.
+    e2eTts.finishes = true;
     // O mesmo final já vencido no modo normal: o especial libera.
     await seedAttempt(
       Attempt(
@@ -44,6 +46,17 @@ void main() {
     // Os lances calculados contra a máquina dos cenários, até o mate.
     for (final move in ['Re2', 'Ra4', 'Rd4', 'Re3']) {
       await $(BlindKeys.typeField).waitUntilVisible();
+      // O campo fica desligado enquanto a máquina responde e anuncia o lance.
+      for (
+        var i = 0;
+        i < 100 &&
+            !$.tester
+                .widget<TextField>(find.byKey(BlindKeys.typeField))
+                .enabled!;
+        i++
+      ) {
+        await $.pump(const Duration(milliseconds: 100));
+      }
       await $(BlindKeys.typeField).enterText(move);
       await $(BlindKeys.typeSend).tap();
       await $.pumpAndSettle();

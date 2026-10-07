@@ -38,7 +38,7 @@ void main() {
 
     await profile.openLevels();
     profile.expectInLevels('مبتدئ');
-    profile.expectInLevels('أقل من 1000');
+    profile.expectInLevels('أتعلم القواعد');
     app.expectNoClippedText();
   });
 
