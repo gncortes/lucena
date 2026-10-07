@@ -104,7 +104,7 @@ class _VersusIntroState extends State<VersusIntro>
             Opacity(
               opacity: cardsOpacity,
               child: Transform.translate(
-                offset: Offset(0, -shift),
+                offset: Offset(0, shift),
                 child: Align(
                   alignment: const Alignment(0, -0.3),
                   child: _Card(
@@ -123,7 +123,7 @@ class _VersusIntroState extends State<VersusIntro>
             Opacity(
               opacity: cardsOpacity,
               child: Transform.translate(
-                offset: Offset(0, shift),
+                offset: Offset(0, -shift),
                 child: Align(
                   alignment: const Alignment(0, 0.3),
                   child: _Card(
