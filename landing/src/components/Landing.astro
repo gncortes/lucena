@@ -1,7 +1,7 @@
 ---
 import Phone from './Phone.astro';
 import { asset, links, locales, pageUrl, type Locale } from '../i18n';
-import type { Clip } from '../media';
+import type { Clip, Still } from '../media';
 
 interface Props {
   locale: Locale;
@@ -10,6 +10,13 @@ interface Props {
 const { locale } = Astro.props;
 const t = locales[locale].dict;
 const f = t.features.items;
+const shot = (still: Still) => ({
+  still,
+  locale,
+  label: t.media[still],
+  playLabel: t.media.play,
+  pauseLabel: t.media.pause,
+});
 const phone = (clip: Clip) => ({
   clip,
   locale,
@@ -79,7 +86,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         <p class="hero__note">{t.hero.note}</p>
       </div>
       <div class="hero__media" data-hero>
-        <Phone {...phone('analysis')} class="phone--back" />
+        <Phone {...shot('shortSide')} class="phone--back" />
         <Phone {...phone('hero')} class="phone--hero" />
         <ul class="chips" aria-hidden="true">
           {t.hero.chips.map((chip) => <li>{chip}</li>)}
@@ -125,7 +132,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         {t.message.body.map((p) => <p class="body">{p}</p>)}
       </div>
       <div class="message__board" data-reveal>
-        <Phone {...phone('lucena')} class="message__phone" />
+        <Phone {...phone('school')} class="message__phone" />
         <p>{t.message.boardCaption}</p>
       </div>
     </div>
@@ -162,9 +169,8 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
           </ol>
           <ul class="ticks">{f.progression.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
-        <div class="feature__media feature__media--pair">
-          <Phone {...phone('maia')} />
-          <Phone {...phone('stockfish')} />
+        <div class="feature__media">
+          <Phone {...shot('journeyChallenge')} />
         </div>
       </article>
 
@@ -176,7 +182,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </div>
         <div class="feature__media feature__media--pair">
           <Phone {...phone('queenRook')} />
-          <Phone {...phone('bishopKnight')} />
+          <Phone {...shot('exercise')} />
         </div>
       </article>
 
@@ -187,8 +193,8 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
           <ul class="ticks">{f.levels.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media feature__media--pair">
-          <Phone {...phone('beginner')} />
-          <Phone {...phone('intermediate')} />
+          <Phone {...phone('journey')} />
+          <Phone {...shot('stars')} />
         </div>
       </article>
 
@@ -201,8 +207,7 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
             <ul class="ticks">{f.speedrun.bullets.map((b) => <li>{b}</li>)}</ul>
           </div>
         </article>
-        <article class="feature feature--card" data-reveal>
-          <Phone {...phone('analysis')} />
+        <article class="feature feature--card feature--card-text" data-reveal>
           <div class="feature__text">
             <h3>{f.analysis.title}</h3>
             <p>{f.analysis.body}</p>
@@ -211,13 +216,13 @@ const ladder = ['1000', '1400', '1800', '2200', '2600'];
         </article>
       </div>
 
-      <article class="feature feature--flip feature--slim" data-reveal>
+      <article class="feature feature--flip" data-reveal>
         <div class="feature__text">
           <h3>{f.custom.title}</h3>
           <p>{f.custom.body}</p>
         </div>
         <div class="feature__media">
-          <Phone {...phone('custom')} />
+          <Phone {...shot('theme')} />
         </div>
       </article>
     </div>

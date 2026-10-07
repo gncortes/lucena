@@ -477,7 +477,7 @@ section {
 .phone__screen {
   overflow: hidden;
   border-radius: 35px;
-  aspect-ratio: 1344 / 2992;
+  aspect-ratio: 1008 / 2244;
   background: var(--bg-alt);
 }
 
@@ -1077,8 +1077,22 @@ section {
   }
 }
 
-.feature--slim .phone {
-  max-width: 240px;
+.feature--slim {
+  grid-template-columns: 1fr;
+  text-align: center;
+}
+
+.feature--slim .feature__text {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.feature--card-text {
+  grid-template-columns: 1fr !important;
+}
+
+.feature__media .phone {
+  max-width: 290px;
 }
 
 /* ---------- Níveis ---------- */
