@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../tour/view_models/tour_cubit.dart';
 
@@ -17,6 +18,9 @@ abstract final class TourKeys {
   static const stepCounter = Key('tour.stepCounter');
   static const viktor = Key('tour.viktor');
   static const speech = Key('tour.speech');
+
+  /// A tela do tour, que rola inteira.
+  static const scroll = Key('tour.scroll');
 
   /// No primeiro passo: o nome do jogador.
   static const nameField = Key('tour.name');
@@ -44,4 +48,10 @@ abstract final class TourKeys {
 
   /// Uma faixa no passo do nível.
   static Key level(RatingLevel level) => Key('tour.level.${level.name}');
+
+  /// A demonstração animada de um passo (toque: de novo).
+  static const demo = Key('tour.demo');
+
+  /// Um caminho no passo do que o jogador quer fazer.
+  static Key goal(HomePath path) => Key('tour.goal.${path.name}');
 }

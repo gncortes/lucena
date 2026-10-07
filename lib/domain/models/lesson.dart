@@ -107,6 +107,25 @@ class StarsStep extends LessonStep {
   String get fen => super.fen!;
 }
 
+/// Ler o tabuleiro: o Viktor diz uma casa e o aluno toca nela, uma de cada
+/// vez, na ordem de [targets]. Sem [coordinates], as letras e os números da
+/// borda somem (o aluno já sabe achar a casa sem eles).
+class TapStep extends LessonStep {
+  const TapStep({
+    required super.id,
+    required String super.fen,
+    required this.targets,
+    this.coordinates = true,
+  });
+
+  /// As casas a tocar, em ordem (`e4`).
+  final List<String> targets;
+  final bool coordinates;
+
+  @override
+  String get fen => super.fen!;
+}
+
 /// Achar o lance certo. Cada vez do aluno aceita um ou mais lances (UCI) e
 /// pode ter a resposta já combinada do outro lado.
 class MoveStep extends LessonStep {

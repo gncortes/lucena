@@ -4,6 +4,9 @@ import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 
 abstract final class SettingsKeys {
+  /// "Tela inicial": os caminhos da tela inicial.
+  static const homeLayoutTile = Key('settings.homeLayout');
+
   static const screen = Key('settings.screen');
   static const version = Key('settings.version');
   static const title = Key('settings.title');

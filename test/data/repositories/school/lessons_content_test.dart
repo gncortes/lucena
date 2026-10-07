@@ -19,10 +19,14 @@ void main() {
     io.File(AssetLessonRepository.textsPath(language)).readAsStringSync(),
   ) as Map<String, dynamic>;
 
-  test('o curso tem os seis módulos, da torre aos dois bispos', () {
+  test('o curso tem os oito módulos, da torre aos dois bispos, com a notação '
+      'logo depois das peças e os primeiros truques depois dos primeiros '
+      'mates', () {
     expect(course.modules.map((module) => module.id), [
       'pieces',
+      'notation',
       'firstMates',
+      'tricks',
       'technique',
       'pawns',
       'minorPieces',
@@ -49,6 +53,18 @@ void main() {
               final path = _route(board, side, Square.fromName(star));
               expect(path, isNotNull, reason: '$where: $star inalcançável');
               board = path!;
+            }
+          case TapStep(:final fen, :final targets):
+            // Casas de verdade, e cada uma pedida uma vez só.
+            Board.parseFen(fen.split(' ').first);
+            expect(targets, isNotEmpty, reason: where);
+            expect(targets.toSet().length, targets.length, reason: where);
+            for (final target in targets) {
+              expect(
+                () => Square.fromName(target),
+                returnsNormally,
+                reason: '$where: $target',
+              );
             }
           case MoveStep(:final fen, :final line):
             var position = GameRules.fromFen(fen);

@@ -9,6 +9,7 @@ import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
@@ -18,6 +19,9 @@ import '../../core/l10n/l10n.dart';
 import '../../../domain/models/character.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_accent_ui.dart';
+import '../../core/widgets/staggered_entrance.dart';
+import '../../home/widgets/home_path_ui.dart';
+import 'tour_demos.dart';
 import '../../core/widgets/accent_picker.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -25,6 +29,7 @@ import '../../core/widgets/theme_mode_picker.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
+import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
 
 /// O tour da primeira abertura: o que é o app, a aparência (tema, cor do app
@@ -93,90 +98,99 @@ class TourScreen extends StatelessWidget {
             ],
           ),
           body: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
-                if (state.viktor case final viktor?)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-                    child: TeacherSpeech(
-                      key: TourKeys.viktor,
-                      teacher: viktor,
-                      text: state.speech,
-                      emotion: step.isLast && state.toSchool
-                          ? Emotion.happy
-                          : Emotion.calm,
-                      avatarSize: 64,
-                      bubbleKey: TourKeys.speech,
-                    ),
-                  ),
-                Expanded(
-                  child: ClipRect(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 380),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) {
-                        final entering = child.key == currentKey;
-                        final offset = Tween(
-                          begin: Offset((entering ? 1 : -1) * sign * 0.35, 0),
-                          end: Offset.zero,
-                        ).animate(animation);
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: offset,
-                            child: child,
+                // A tela toda rola: a fala do Viktor e o passo, juntos.
+                Positioned.fill(
+                  child: SingleChildScrollView(
+                    key: TourKeys.scroll,
+                    // O fim do passo sobe acima dos botões, que flutuam.
+                    padding: const EdgeInsets.only(bottom: _actionsHeight),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (state.viktor case final viktor?)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                            child: TeacherSpeech(
+                              key: TourKeys.viktor,
+                              teacher: viktor,
+                              text: state.speech,
+                              emotion: step.isLast && state.toSchool
+                                  ? Emotion.happy
+                                  : Emotion.calm,
+                              avatarSize: 64,
+                              bubbleKey: TourKeys.speech,
+                              speaks: true,
+                            ),
                           ),
-                        );
-                      },
-                      child: switch (step) {
-                        TourStep.theme => _ThemeStep(key: currentKey),
-                        TourStep.board => _BoardStep(key: currentKey),
-                        TourStep.sound => _SoundStep(key: currentKey),
-                        TourStep.level => _LevelStep(
-                          key: currentKey,
-                          state: state,
+                        ClipRect(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 380),
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeInCubic,
+                            layoutBuilder: (current, previous) => Stack(
+                              alignment: Alignment.topCenter,
+                              children: [...previous, ?current],
+                            ),
+                            transitionBuilder: (child, animation) {
+                              final entering = child.key == currentKey;
+                              final offset = Tween(
+                                begin: Offset(
+                                  (entering ? 1 : -1) * sign * 0.35,
+                                  0,
+                                ),
+                                end: Offset.zero,
+                              ).animate(animation);
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: offset,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: switch (step) {
+                              TourStep.theme => _ThemeStep(key: currentKey),
+                              TourStep.board => _BoardStep(key: currentKey),
+                              TourStep.sound => _SoundStep(key: currentKey),
+                              TourStep.voice => _VoiceStep(key: currentKey),
+                              TourStep.characterVoices => _CharacterVoicesStep(
+                                key: currentKey,
+                              ),
+                              TourStep.level => _LevelStep(
+                                key: currentKey,
+                                state: state,
+                              ),
+                              TourStep.goals => _GoalsStep(
+                                key: currentKey,
+                                state: state,
+                              ),
+                              // Nas boas-vindas, o Viktor pergunta o nome.
+                              TourStep.goal => _InfoStep(
+                                key: currentKey,
+                                step: step,
+                                footer: _NameField(initial: state.nickname),
+                              ),
+                              _ => _InfoStep(
+                                key: currentKey,
+                                step: step,
+                                characters: state.characters,
+                              ),
+                            },
+                          ),
                         ),
-                        // Nas boas-vindas, o Viktor pergunta o nome.
-                        TourStep.goal => _InfoStep(
-                          key: currentKey,
-                          step: step,
-                          footer: _NameField(initial: state.nickname),
-                        ),
-                        _ => _InfoStep(key: currentKey, step: step),
-                      },
+                      ],
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                  child: Row(
-                    children: [
-                      if (step.index > 0)
-                        TextButton(
-                          key: TourKeys.backButton,
-                          onPressed: cubit.back,
-                          child: Text(l10n.tourBack),
-                        ),
-                      const Spacer(),
-                      FilledButton(
-                        key: step.isLast
-                            ? TourKeys.startButton
-                            : TourKeys.nextButton,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(140, 48),
-                        ),
-                        onPressed: step.isLast ? cubit.finish : cubit.next,
-                        child: Text(
-                          !step.isLast
-                              ? l10n.tourNext
-                              : state.toSchool
-                              ? l10n.tourStartLessons
-                              : l10n.tourStart,
-                        ),
-                      ),
-                    ],
-                  ),
+                // Os botões flutuam sobre a tela, como na lição: o passo usa a
+                // altura toda e passa por baixo deles.
+                PositionedDirectional(
+                  start: 0,
+                  end: 0,
+                  bottom: 0,
+                  child: _TourActions(state: state),
                 ),
               ],
             ),
@@ -187,10 +201,91 @@ class TourScreen extends StatelessWidget {
   }
 }
 
+/// A altura dos botões que flutuam embaixo, com a margem.
+const _actionsHeight = 96.0;
+
+/// "Voltar" e "Próximo" (ou "Começar") flutuando embaixo, sobre uma faixa que
+/// esmaece até a cor do fundo: o conteúdo passa por trás sem ficar cortado
+/// seco.
+class _TourActions extends StatelessWidget {
+  const _TourActions({required this.state});
+
+  final TourState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<TourCubit>();
+    final colors = Theme.of(context).colorScheme;
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    final step = state.step;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            background.withValues(alpha: 0),
+            background.withValues(alpha: 0),
+            background,
+          ],
+          stops: const [0, 0.55, 1],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+        child: Row(
+          children: [
+            if (state.hasPrevious)
+              FloatingActionButton(
+                key: TourKeys.backButton,
+                heroTag: null,
+                shape: const CircleBorder(),
+                elevation: 2,
+                backgroundColor: colors.surface,
+                foregroundColor: colors.primary,
+                tooltip: l10n.tourBack,
+                onPressed: cubit.back,
+                child: const Icon(Icons.arrow_back),
+              ),
+            const Spacer(),
+            FloatingActionButton.extended(
+              key: step.isLast ? TourKeys.startButton : TourKeys.nextButton,
+              heroTag: null,
+              shape: const StadiumBorder(),
+              elevation: 2,
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
+              onPressed: step.isLast ? cubit.finish : cubit.next,
+              label: Text(
+                step == TourStep.characterVoices
+                    ? l10n.tourKeepVoices
+                    : !step.isLast
+                    ? l10n.tourNext
+                    : state.toSchool
+                    ? l10n.tourStartLessons
+                    : l10n.tourStart,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _InfoStep extends StatelessWidget {
-  const _InfoStep({required this.step, this.footer, super.key});
+  const _InfoStep({
+    required this.step,
+    this.footer,
+    this.characters = const [],
+    super.key,
+  });
 
   final TourStep step;
+
+  /// Os personagens, para a demonstração do passo.
+  final List<Character> characters;
 
   /// O que o passo pede ao jogador, embaixo do texto.
   final Widget? footer;
@@ -238,13 +333,19 @@ class _InfoStep extends StatelessWidget {
       TourStep.theme ||
       TourStep.board ||
       TourStep.sound ||
-      TourStep.level => (Icons.person_outline, '', ''),
+      TourStep.voice ||
+      TourStep.characterVoices ||
+      TourStep.level ||
+      TourStep.goals => (Icons.person_outline, '', ''),
     };
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        child: Column(
-          children: [
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      child: Column(
+        children: [
+          // Uma demonstração do que o passo apresenta; nos outros, o ícone.
+          if (TourDemo.covers(step))
+            TourDemo(step: step, characters: characters)
+          else
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.6, end: 1),
               duration: const Duration(milliseconds: 500),
@@ -261,28 +362,27 @@ class _InfoStep extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          const SizedBox(height: 24),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 12),
-            Text(
-              body,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            body,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            if (footer case final footer?) ...[
-              const SizedBox(height: 28),
-              footer,
-            ],
+          ),
+          if (footer case final footer?) ...[
+            const SizedBox(height: 28),
+            footer,
           ],
-        ),
+        ],
       ),
     );
   }
@@ -389,8 +489,8 @@ class _ThemeStep extends StatelessWidget {
         AppAccent.standard(
           dark: Theme.of(context).brightness == Brightness.dark,
         );
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ChoiceHeader(title: l10n.tourThemeTitle, body: l10n.tourThemeBody),
         AppearanceSectionTitle(l10n.settingsTheme),
@@ -434,8 +534,8 @@ class _SoundStep extends StatelessWidget {
     final sound = context.select(
       (SettingsCubit cubit) => cubit.state?.sound ?? true,
     );
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ChoiceHeader(title: l10n.tourSoundTitle, body: l10n.tourSoundBody),
         const SizedBox(height: 8),
@@ -459,12 +559,52 @@ class _SoundStep extends StatelessWidget {
   }
 }
 
+/// A voz do Viktor: as vozes do idioma, cada uma com o "ouvir", e "sem
+/// voz".
+class _VoiceStep extends StatelessWidget {
+  const _VoiceStep({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ChoiceHeader(title: l10n.tourVoiceTitle, body: l10n.tourVoiceBody),
+        const SizedBox(height: 8),
+        const TeacherVoiceList(withNone: true),
+        const SystemVoicesHelp(),
+      ],
+    );
+  }
+}
+
+/// As vozes dos adversários, já escolhidas pelo app; tocar num troca.
+class _CharacterVoicesStep extends StatelessWidget {
+  const _CharacterVoicesStep({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ChoiceHeader(
+          title: l10n.tourCharacterVoicesTitle,
+          body: l10n.tourCharacterVoicesBody,
+        ),
+        const SizedBox(height: 8),
+        const CharacterVoiceList(),
+      ],
+    );
+  }
+}
+
 /// Cores e peças do tabuleiro, com uma amostra que muda na hora.
 class _BoardStep extends StatelessWidget {
   const _BoardStep({super.key});
 
-  // Altura do título, das duas fileiras com os nomes e dos espaços.
-  static const _optionsHeight = 344.0;
+  static const _previewShare = 0.3;
   static const _minPreview = 120.0;
 
   @override
@@ -476,17 +616,17 @@ class _BoardStep extends StatelessWidget {
     );
     return LayoutBuilder(
       builder: (context, constraints) {
-        // A amostra fica com o espaço que sobra do título e das duas
-        // fileiras de opções, para o passo caber na tela sem rolar.
+        // A amostra fica com uma parte da altura da tela (a tela rola) e
+        // nunca mais larga que ela.
         final previewSize = math.max(
           _minPreview,
           math.min(
-            constraints.maxHeight - _optionsHeight,
+            MediaQuery.sizeOf(context).height * _previewShare,
             constraints.maxWidth - 96,
           ),
         );
-        return ListView(
-          padding: const EdgeInsets.only(bottom: 8),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _ChoiceHeader(title: l10n.tourBoardTitle),
             Padding(
@@ -535,8 +675,8 @@ class _LevelStep extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<TourCubit>();
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
@@ -588,6 +728,143 @@ class _LevelStep extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// O que o jogador quer fazer no Lucena: os cinco caminhos na ordem do nível
+/// dele, com os sugeridos já marcados. Os marcados ficam em destaque na tela
+/// inicial; os outros, em "Outros modos".
+class _GoalsStep extends StatelessWidget {
+  const _GoalsStep({required this.state, super.key});
+
+  final TourState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final cubit = context.read<TourCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.tourGoalsTitle, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: 4),
+              Text(
+                l10n.tourGoalsBody,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        for (final (index, path) in state.paths.indexed)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: StaggeredEntrance(
+              index: index,
+              child: _GoalCard(
+                key: TourKeys.goal(path),
+                path: path,
+                level: state.level,
+                selected: state.goals.contains(path),
+                // O último marcado não sai.
+                enabled:
+                    !(state.goals.length == 1 && state.goals.contains(path)),
+                onTap: () => cubit.toggleGoal(path),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GoalCard extends StatelessWidget {
+  const _GoalCard({
+    required this.path,
+    required this.level,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+    super.key,
+  });
+
+  final HomePath path;
+  final RatingLevel level;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    // Marcar acende o cartão com uma transição curta de cor e borda.
+    return Semantics(
+      checked: selected,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          color: selected
+              ? colors.secondaryContainer
+              : colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? colors.primary : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: enabled ? onTap : null,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 8, 12),
+              child: Row(
+                children: [
+                  Icon(path.icon, color: colors.primary),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          path.title(l10n),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          path.body(l10n, level),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Checkbox(
+                    value: selected,
+                    onChanged: enabled ? (_) => onTap() : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

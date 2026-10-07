@@ -1,0 +1,509 @@
+{
+  "id": "basics.rookMate",
+  "module": "basics",
+  "steps": [
+    {
+      "type": "talk",
+      "id": "box",
+      "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
+      "arrows": [
+        "h3a3"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "shrinkMove",
+      "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "h3c3",
+          "accept": [
+            "h3c3"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "rules",
+      "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
+      "arrows": [
+        "d3c3"
+      ],
+      "marks": [
+        "a5",
+        "b5",
+        "a6",
+        "b6",
+        "a7",
+        "b7",
+        "a8",
+        "b8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "kingMove",
+      "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "d3c3",
+          "accept": [
+            "c4c5",
+            "d3c2",
+            "d3c3",
+            "d3d2",
+            "d3d4"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "opposition",
+      "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
+      "marks": [
+        "e5",
+        "e7"
+      ],
+      "arrows": [
+        "a6a7"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "checkMove",
+      "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "a6a7",
+          "accept": [
+            "a6a7"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "waiting",
+      "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
+      "arrows": [
+        "a7h7"
+      ],
+      "marks": [
+        "c8",
+        "e8"
+      ]
+    },
+    {
+      "type": "move",
+      "id": "waitMove",
+      "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "line": [
+        {
+          "teach": "a7h7",
+          "accept": [
+            "a7d7",
+            "a7e7",
+            "a7f7",
+            "a7g7",
+            "a7h7",
+            "e6d5",
+            "e6d6",
+            "e6e5"
+          ],
+          "reply": "d8c8"
+        },
+        {
+          "teach": "e6d6",
+          "accept": [
+            "e6d6"
+          ],
+          "reply": "c8b8"
+        },
+        {
+          "teach": "d6c6",
+          "accept": [
+            "d6c6",
+            "h7c7"
+          ],
+          "reply": "b8a8"
+        },
+        {
+          "teach": "c6b6",
+          "accept": [
+            "c6b6",
+            "c6c7",
+            "h7c7",
+            "h7h1",
+            "h7h2",
+            "h7h3",
+            "h7h4",
+            "h7h5",
+            "h7h8"
+          ],
+          "reply": "a8b8"
+        },
+        {
+          "teach": "h7h8",
+          "accept": [
+            "h7h8"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "stalemate",
+      "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
+      "side": "white",
+      "marks": [
+        "a8"
+      ]
+    },
+    {
+      "type": "talk",
+      "id": "recap",
+      "fen": "8/8/8/8/3k4/5K2/8/5R2 w - - 0 1"
+    },
+    {
+      "type": "play",
+      "id": "finish",
+      "fen": "8/8/8/3k4/8/8/8/4K2R w - - 0 1",
+      "goal": "win"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "8/8/8/5K1k/8/8/8/R7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a1h1",
+          "accept": [
+            "a1h1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "k7/2K5/8/8/8/8/8/7R w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "h1a1",
+          "accept": [
+            "h1a1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "8/8/8/1k6/8/2RK4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c3c4",
+          "accept": [
+            "c3c1",
+            "c3c2",
+            "c3c4",
+            "c3c7",
+            "c3c8",
+            "d3c2",
+            "d3d2",
+            "d3d4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "8/3k4/7R/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "h6h7",
+          "accept": [
+            "h6h7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "2k5/R7/3K4/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a7h7",
+          "accept": [
+            "a7c7",
+            "a7d7",
+            "a7e7",
+            "a7f7",
+            "a7g7",
+            "a7h7"
+          ],
+          "reply": "c8b8"
+        },
+        {
+          "teach": "d6c6",
+          "accept": [
+            "d6c6",
+            "h7c7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "capablanca",
+      "line": [
+        {
+          "teach": "d5d6",
+          "accept": [
+            "a7e7",
+            "a7f7",
+            "a7g7",
+            "a7h7",
+            "d5d6",
+            "d5e6"
+          ],
+          "reply": "c8b8"
+        },
+        {
+          "teach": "a7c7",
+          "accept": [
+            "a7c7",
+            "a7d7",
+            "a7e7",
+            "a7f7",
+            "a7g7",
+            "a7h7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "k7/7R/2K5/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c6b6",
+          "accept": [
+            "c6b6",
+            "c6c7",
+            "h7c7",
+            "h7h1",
+            "h7h2",
+            "h7h3",
+            "h7h4",
+            "h7h5",
+            "h7h8"
+          ],
+          "reply": "a8b8"
+        },
+        {
+          "teach": "h7h8",
+          "accept": [
+            "h7h8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/8/8/4k3/3R4/8/2K5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c2d3",
+          "accept": [
+            "c2c3",
+            "c2d3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "4k3/R7/8/4K3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e5d6",
+          "accept": [
+            "a7h7",
+            "e5d6",
+            "e5e6"
+          ],
+          "reply": "e8f8"
+        },
+        {
+          "teach": "d6e6",
+          "accept": [
+            "d6e6"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "e6f6",
+          "accept": [
+            "a7f7",
+            "e6f6"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "f6g6",
+          "accept": [
+            "a7a1",
+            "a7a2",
+            "a7a3",
+            "a7a4",
+            "a7a5",
+            "a7a8",
+            "a7f7",
+            "f6f7",
+            "f6g6"
+          ],
+          "reply": "h8g8"
+        },
+        {
+          "teach": "a7a8",
+          "accept": [
+            "a7a8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/8/2k5/3R4/3K4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "d3c3",
+          "accept": [
+            "d3c3"
+          ],
+          "reply": "c5b5"
+        },
+        {
+          "teach": "d4c4",
+          "accept": [
+            "d4c4",
+            "d4d5"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 11,
+  "keyPositions": [
+    {
+      "id": "box",
+      "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1"
+    },
+    {
+      "id": "edgeMate",
+      "fen": "R2k4/8/3K4/8/8/8/8/8 b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "cornerMate",
+      "fen": "k7/2K5/8/8/8/8/8/R7 b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "stalemate",
+      "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
+      "ref": "wikiCheckmate"
+    },
+    {
+      "id": "capablanca",
+      "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
+      "ref": "capablanca"
+    }
+  ],
+  "practice": {
+    "fen": "8/8/8/8/3k4/5K2/8/5R2 w - - 0 1",
+    "goal": "win",
+    "positionId": "basic.rook.0001"
+  },
+  "references": [
+    {
+      "id": "capablanca",
+      "kind": "book",
+      "author": "José Raúl Capablanca",
+      "title": "Chess Fundamentals",
+      "publisher": "Harcourt, Brace (edição do Project Gutenberg, eBook #33870)",
+      "year": 1921,
+      "where": "Parte I, capítulo I, \"Some simple mates\", exemplos 1 e 2"
+    },
+    {
+      "id": "practice",
+      "kind": "study",
+      "author": "arex",
+      "title": "Lichess Practice: Piece Checkmates I (capítulo \"Rook mate\")",
+      "url": "https://lichess.org/study/BJy6fEDf"
+    },
+    {
+      "id": "boxStudy",
+      "kind": "study",
+      "author": "randomchampgamer",
+      "title": "How to Checkmate with King + Rook using the Box method",
+      "url": "https://lichess.org/study/xJyH8XFS"
+    },
+    {
+      "id": "flagggStudy",
+      "kind": "study",
+      "author": "Flaggg",
+      "title": "Rook box checkmate",
+      "url": "https://lichess.org/study/UCj1X1Pv"
+    },
+    {
+      "id": "wikiCheckmate",
+      "kind": "web",
+      "title": "Wikipedia: Checkmate (seção \"King and rook\")",
+      "url": "https://en.wikipedia.org/wiki/Checkmate"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 18
+}

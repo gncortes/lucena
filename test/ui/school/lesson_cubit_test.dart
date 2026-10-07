@@ -340,4 +340,124 @@ void main() {
       expect(sound.played, [GameSound.move]);
     },
   );
+
+  group('voltar um passo', () {
+    const course = Course(
+      modules: [
+        CourseModule(
+          id: 'pieces',
+          lessons: [
+            Lesson(
+              id: 'pieces.rook',
+              steps: [
+                TalkStep(id: 'intro', fen: '8/8/8/8/3R4/8/8/8 w - - 0 1'),
+                StarsStep(
+                  id: 'stars',
+                  fen: '8/8/8/8/8/8/8/R7 w - - 0 1',
+                  stars: ['a5', 'e5'],
+                ),
+                TalkStep(id: 'outro', fen: '8/8/8/8/3R4/8/8/8 w - - 0 1'),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
+    test('no primeiro passo não há voltar', () async {
+      final lesson = cubit(course: course);
+      await lesson.load('pieces.rook', 'en');
+      expect(lesson.state.canGoBack, isFalse);
+      await lesson.back();
+      expect(lesson.state.step, 0);
+    });
+
+    test('volta ao passo anterior, do começo; um passo já cumprido pode ser '
+        'pulado com "continuar"', () async {
+      final lesson = cubit(course: course);
+      await lesson.load('pieces.rook', 'en');
+      await lesson.next();
+      await lesson.play(move('a1a5'));
+      await lesson.play(move('a5e5'));
+      expect(lesson.state.phase, StepPhase.done);
+      await lesson.next();
+      expect(lesson.state.step, 2);
+
+      await lesson.back();
+      expect(lesson.state.step, 1);
+      // O passo abre do começo: as estrelas voltam e dá para jogar de novo.
+      expect(lesson.state.collected, isEmpty);
+      expect(lesson.state.interactive, isTrue);
+      expect(lesson.state.reviewing, isTrue);
+      expect(lesson.state.canContinue, isTrue);
+
+      await lesson.back();
+      expect(lesson.state.step, 0);
+      await lesson.next();
+      await lesson.next();
+      expect(lesson.state.step, 2);
+    });
+
+    test('um passo ainda não cumprido continua pedindo o lance', () async {
+      final lesson = cubit(course: course);
+      await lesson.load('pieces.rook', 'en');
+      await lesson.next();
+      await lesson.back();
+      await lesson.next();
+      expect(lesson.state.step, 1);
+      expect(lesson.state.canContinue, isFalse);
+    });
+  });
+
+  group('o passo de tocar na casa', () {
+    const course = Course(
+      modules: [
+        CourseModule(
+          id: 'notation',
+          lessons: [
+            Lesson(
+              id: 'notation.coordinates',
+              steps: [
+                TapStep(
+                  id: 'find',
+                  fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+                  targets: ['e4', 'a1'],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
+    test('a casa pedida, uma de cada vez; a errada não conta', () async {
+      final lesson = cubit(course: course);
+      await lesson.load('notation.coordinates', 'en');
+      expect(lesson.state.tapTarget, 'e4');
+      // Tocar não move peça nenhuma.
+      expect(lesson.state.interactive, isFalse);
+
+      await lesson.tap('d4');
+      expect(lesson.state.tapTarget, 'e4');
+      expect(lesson.state.phase, StepPhase.active);
+
+      await lesson.tap('e4');
+      expect(lesson.state.tapTarget, 'a1');
+      expect(lesson.state.progress, 0.5);
+
+      await lesson.tap('a1');
+      expect(lesson.state.phase, StepPhase.done);
+      expect(lesson.state.tapTarget, isNull);
+    });
+
+    test('fechar no meio volta na casa em que parou', () async {
+      final first = cubit(course: course);
+      await first.load('notation.coordinates', 'en');
+      await first.tap('e4');
+
+      final again = cubit(course: course);
+      await again.load('notation.coordinates', 'en');
+      expect(again.state.tapTarget, 'a1');
+    });
+  });
 }

@@ -177,13 +177,18 @@ class SpeedrunScreen extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              l10n.speedrunBest,
+                              speedrun.kind == SpeedrunKind.marathon
+                                  ? l10n.marathonBest
+                                  : l10n.speedrunBest,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: colors.onPrimaryContainer,
                               ),
                             ),
                           ),
-                          RunClock(best, textKey: SpeedrunKeys.best),
+                          RunClock(
+                            recordTime(speedrun, best),
+                            textKey: SpeedrunKeys.best,
+                          ),
                         ],
                       ),
                     ),
@@ -331,7 +336,7 @@ class SpeedrunScreen extends StatelessWidget {
             ),
             title: Text(
               run.completed
-                  ? runTime(context, run.total)
+                  ? runTime(context, recordTime(speedrun, run.total))
                   : l10n.speedrunStoppedAt(
                       math.min(run.currentStage + 1, total),
                       total,

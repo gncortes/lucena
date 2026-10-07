@@ -1,8 +1,9 @@
 import 'clock.dart';
 
 /// O ritmo de uma partida, pela regra do Lichess: o tempo estimado é o
-/// inicial mais 40 incrementos.
+/// inicial mais 40 incrementos. Até 30 s, ultra bullet.
 enum PaceCategory {
+  ultraBullet,
   bullet,
   blitz,
   rapid,
@@ -22,6 +23,7 @@ enum PaceCategory {
   /// O ritmo de um tempo de jogo.
   static PaceCategory of(TimeControl time) {
     final estimated = time.initial.inSeconds + 40 * time.increment.inSeconds;
+    if (estimated <= 30) return ultraBullet;
     if (estimated < 180) return bullet;
     if (estimated < 480) return blitz;
     if (estimated < 1500) return rapid;

@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clock.dart';
-import 'speedrun_pace.dart';
 
 part 'clock_settings.freezed.dart';
 
@@ -34,8 +33,17 @@ abstract class ClockSettings with _$ClockSettings {
     /// Vibra uma vez quando o tempo de quem joga fica abaixo de 10 s.
     @Default(true) bool lowTimeVibration,
 
-    /// O último ritmo escolhido para um speedrun.
-    @Default(SpeedrunPaces.standard) TimeControl speedrunTime,
+    /// O último ritmo escolhido para um speedrun. Nulo: nenhum ainda (abre no
+    /// ritmo do nível do jogador).
+    TimeControl? speedrunTime,
+
+    /// O modo marcado no alto do speedrun: a Maratona (um relógio só) ou o
+    /// clássico (cada partida com o seu).
+    @Default(false) bool speedrunMarathon,
+
+    /// O último ritmo escolhido para a Maratona, à parte do speedrun. Nulo:
+    /// nenhum ainda.
+    TimeControl? marathonTime,
 
     /// O último ritmo escolhido para um desafio da Jornada. Nulo: sem relógio.
     TimeControl? journeyTime,

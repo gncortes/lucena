@@ -6,6 +6,7 @@ import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../domain/use_cases/marathon.dart';
 import '../../services/asset_service.dart';
 import '../positions/positions_repository.dart';
 import 'journey_repository.dart';
@@ -53,6 +54,26 @@ class AssetJourneyRepository implements JourneyRepository {
                 id: '$id/$positionId',
                 position: await _position(positionId),
                 opponent: opponent,
+              ),
+          ],
+          // Os especiais: o mesmo final de outro jeito (às cegas).
+          specials: [
+            for (final special
+                in (item['specials'] as List? ?? const [])
+                    .cast<Map<String, dynamic>>())
+              Challenge(
+                // O às cegas leva a posição no id; o speedrun e a Maratona
+                // curtos, o speedrun.
+                id:
+                    '$id/${special['mode']}.'
+                    '${special['speedrun'] ?? special['position']}',
+                position: await _position(special['position'] as String),
+                opponent: opponent,
+                mode: ChallengeMode.fromCode(special['mode'] as String?),
+                hideBoard: special['view'] == 'none',
+                speedrunId: special['speedrun'] == null
+                    ? null
+                    : '${special['speedrun']}@${special['time']}',
               ),
           ],
         ),
@@ -117,19 +138,40 @@ class AssetJourneyRepository implements JourneyRepository {
             for (final challenge in rung.challenges)
               challenge.copyWith(id: '$id/${challenge.id}', time: time),
         ],
+        // A Maratona vem do speedrun de final, logo abaixo; a curta, da
+        // Jornada, traz as etapas no arquivo.
+        SpeedrunKind.marathon => [
+          for (final stage
+              in (item['stages'] as List? ?? const [])
+                  .cast<Map<String, dynamic>>())
+            Challenge(
+              id: '$id/${stage['position']}',
+              position: await _position(stage['position'] as String),
+              opponent: OpponentRef.tryParse(stage['opponent'] as String)!,
+              time: time,
+            ),
+        ],
       };
+      if (kind == SpeedrunKind.marathon && stages.isEmpty) continue;
       speedruns.add(
         Speedrun(
           id: id,
           kind: kind,
           rungId: rungId,
           positionId: positionId,
+          category: SpeedrunCategory.fromCode(item['category'] as String?),
+          journeyOnly: item['journey'] == true,
           time: time,
           stages: stages,
         ),
       );
     }
-    return speedruns;
+    // Cada final também tem a sua Maratona, com as mesmas etapas.
+    return [
+      ...speedruns,
+      for (final speedrun in speedruns)
+        if (speedrun.kind == SpeedrunKind.ending) Marathon.of(speedrun),
+    ];
   }
 
   /// As posições das etapas, por id de speedrun. Vazio se o arquivo não

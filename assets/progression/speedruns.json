@@ -4,55 +4,100 @@
       "id": "ending.rook",
       "kind": "ending",
       "position": "basic.rook.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "beginner"
     },
     {
       "id": "ending.queen",
       "kind": "ending",
       "position": "basic.queen.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "beginner"
     },
     {
       "id": "ending.twoBishops",
       "kind": "ending",
       "position": "bishop.twoBishopsVsKing.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "intermediate"
     },
     {
       "id": "ending.queenVsRook",
       "kind": "ending",
       "position": "queen.queenVsRook.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "advanced"
     },
     {
       "id": "ending.rookPawnVsRook",
       "kind": "ending",
       "position": "rookPawn.rookPawnVsRook.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "advanced"
     },
     {
       "id": "ending.pawn",
       "kind": "ending",
       "position": "pawn.pawnVsKing.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "intermediate"
     },
     {
       "id": "ending.rookVsPawn",
       "kind": "ending",
       "position": "rookPawn.rookVsPawn.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "intermediate"
     },
     {
       "id": "ending.queenVsPawn",
       "kind": "ending",
       "position": "queen.queenVsPawn.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "intermediate"
     },
     {
       "id": "ending.knightBishop",
       "kind": "ending",
       "position": "knightBishop.knightBishopVsKing.0001",
-      "time": "180+2"
+      "time": "180+2",
+      "category": "advanced"
+    },
+    {
+      "id": "journey.mates",
+      "kind": "exercises",
+      "time": "900+10",
+      "journey": true,
+      "stages": [
+        {
+          "position": "basic.queen.0001",
+          "opponent": "maia:1000"
+        },
+        {
+          "position": "basic.twoRooks.0001",
+          "opponent": "maia:1000"
+        }
+      ]
+    },
+    {
+      "id": "marathon.journey.rook",
+      "kind": "marathon",
+      "time": "600+0",
+      "journey": true,
+      "stages": [
+        {
+          "position": "basic.rook.0001",
+          "opponent": "maia:1000"
+        },
+        {
+          "position": "basic.rook.0002",
+          "opponent": "maia:1200"
+        },
+        {
+          "position": "basic.rook.0003",
+          "opponent": "maia:1400"
+        }
+      ]
     }
   ]
 }

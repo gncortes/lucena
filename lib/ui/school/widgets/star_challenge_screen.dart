@@ -184,6 +184,22 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               ],
             ),
           ),
+          // Às cegas: a casa da estrela pelo nome, grande, no lugar do desenho.
+          if (state.level?.announcesSquare ?? false)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Text(
+                  star?.name ?? ' ',
+                  key: StarChallengeKeys.starName,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: starColor(state.starKind),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
           // O tabuleiro na largura da tela, até uns 60% da altura.
           Directionality(
             textDirection: TextDirection.ltr,
@@ -197,7 +213,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               settings: boardSettings.chessground,
               orientation: Side.white,
               shapes: {
-                if (star != null)
+                if (star != null && !(state.level?.announcesSquare ?? false))
                   CustomShape(
                     orig: star,
                     scale: 0.75,

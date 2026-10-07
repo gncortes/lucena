@@ -16,8 +16,13 @@ T _$identity<T>(T value) => value;
 mixin _$ClockSettings {
 
  ClockPosition get position;/// Vibra uma vez quando o tempo de quem joga fica abaixo de 10 s.
- bool get lowTimeVibration;/// O último ritmo escolhido para um speedrun.
- TimeControl get speedrunTime;/// O último ritmo escolhido para um desafio da Jornada. Nulo: sem relógio.
+ bool get lowTimeVibration;/// O último ritmo escolhido para um speedrun. Nulo: nenhum ainda (abre no
+/// ritmo do nível do jogador).
+ TimeControl? get speedrunTime;/// O modo marcado no alto do speedrun: a Maratona (um relógio só) ou o
+/// clássico (cada partida com o seu).
+ bool get speedrunMarathon;/// O último ritmo escolhido para a Maratona, à parte do speedrun. Nulo:
+/// nenhum ainda.
+ TimeControl? get marathonTime;/// O último ritmo escolhido para um desafio da Jornada. Nulo: sem relógio.
  TimeControl? get journeyTime;
 /// Create a copy of ClockSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -30,20 +35,20 @@ $ClockSettingsCopyWith<ClockSettings> get copyWith => _$ClockSettingsCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as ClockSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClockSettings&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.lowTimeVibration, _this.lowTimeVibration) || other.lowTimeVibration == _this.lowTimeVibration)&&(identical(other.speedrunTime, _this.speedrunTime) || other.speedrunTime == _this.speedrunTime)&&(identical(other.journeyTime, _this.journeyTime) || other.journeyTime == _this.journeyTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClockSettings&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.lowTimeVibration, _this.lowTimeVibration) || other.lowTimeVibration == _this.lowTimeVibration)&&(identical(other.speedrunTime, _this.speedrunTime) || other.speedrunTime == _this.speedrunTime)&&(identical(other.speedrunMarathon, _this.speedrunMarathon) || other.speedrunMarathon == _this.speedrunMarathon)&&(identical(other.marathonTime, _this.marathonTime) || other.marathonTime == _this.marathonTime)&&(identical(other.journeyTime, _this.journeyTime) || other.journeyTime == _this.journeyTime));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ClockSettings;
-  return Object.hash(runtimeType,_this.position,_this.lowTimeVibration,_this.speedrunTime,_this.journeyTime);
+  return Object.hash(runtimeType,_this.position,_this.lowTimeVibration,_this.speedrunTime,_this.speedrunMarathon,_this.marathonTime,_this.journeyTime);
 }
 
 @override
 String toString() {
   final _this = this as ClockSettings;
-  return 'ClockSettings(position: ${_this.position}, lowTimeVibration: ${_this.lowTimeVibration}, speedrunTime: ${_this.speedrunTime}, journeyTime: ${_this.journeyTime})';
+  return 'ClockSettings(position: ${_this.position}, lowTimeVibration: ${_this.lowTimeVibration}, speedrunTime: ${_this.speedrunTime}, speedrunMarathon: ${_this.speedrunMarathon}, marathonTime: ${_this.marathonTime}, journeyTime: ${_this.journeyTime})';
 }
 
 
@@ -54,11 +59,11 @@ abstract mixin class $ClockSettingsCopyWith<$Res>  {
   factory $ClockSettingsCopyWith(ClockSettings value, $Res Function(ClockSettings) _then) = _$ClockSettingsCopyWithImpl;
 @useResult
 $Res call({
- ClockPosition position, bool lowTimeVibration, TimeControl speedrunTime, TimeControl? journeyTime
+ ClockPosition position, bool lowTimeVibration, TimeControl? speedrunTime, bool speedrunMarathon, TimeControl? marathonTime, TimeControl? journeyTime
 });
 
 
-$TimeControlCopyWith<$Res> get speedrunTime;$TimeControlCopyWith<$Res>? get journeyTime;
+$TimeControlCopyWith<$Res>? get speedrunTime;$TimeControlCopyWith<$Res>? get marathonTime;$TimeControlCopyWith<$Res>? get journeyTime;
 
 }
 /// @nodoc
@@ -71,12 +76,14 @@ class _$ClockSettingsCopyWithImpl<$Res>
 
 /// Create a copy of ClockSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? position = null,Object? lowTimeVibration = null,Object? speedrunTime = null,Object? journeyTime = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? position = null,Object? lowTimeVibration = null,Object? speedrunTime = freezed,Object? speedrunMarathon = null,Object? marathonTime = freezed,Object? journeyTime = freezed,}) {
   return _then(ClockSettings(
 position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as ClockPosition,lowTimeVibration: null == lowTimeVibration ? _self.lowTimeVibration : lowTimeVibration // ignore: cast_nullable_to_non_nullable
-as bool,speedrunTime: null == speedrunTime ? _self.speedrunTime : speedrunTime // ignore: cast_nullable_to_non_nullable
-as TimeControl,journeyTime: freezed == journeyTime ? _self.journeyTime : journeyTime // ignore: cast_nullable_to_non_nullable
+as bool,speedrunTime: freezed == speedrunTime ? _self.speedrunTime : speedrunTime // ignore: cast_nullable_to_non_nullable
+as TimeControl?,speedrunMarathon: null == speedrunMarathon ? _self.speedrunMarathon : speedrunMarathon // ignore: cast_nullable_to_non_nullable
+as bool,marathonTime: freezed == marathonTime ? _self.marathonTime : marathonTime // ignore: cast_nullable_to_non_nullable
+as TimeControl?,journeyTime: freezed == journeyTime ? _self.journeyTime : journeyTime // ignore: cast_nullable_to_non_nullable
 as TimeControl?,
   ));
 }
@@ -84,10 +91,25 @@ as TimeControl?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TimeControlCopyWith<$Res> get speedrunTime {
-  
-  return $TimeControlCopyWith<$Res>(_self.speedrunTime, (value) {
+$TimeControlCopyWith<$Res>? get speedrunTime {
+    if (_self.speedrunTime == null) {
+    return null;
+  }
+
+  return $TimeControlCopyWith<$Res>(_self.speedrunTime!, (value) {
     return _then(_self.copyWith(speedrunTime: value));
+  });
+}/// Create a copy of ClockSettings
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TimeControlCopyWith<$Res>? get marathonTime {
+    if (_self.marathonTime == null) {
+    return null;
+  }
+
+  return $TimeControlCopyWith<$Res>(_self.marathonTime!, (value) {
+    return _then(_self.copyWith(marathonTime: value));
   });
 }/// Create a copy of ClockSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -183,10 +205,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ClockPosition position,  bool lowTimeVibration,  TimeControl speedrunTime,  TimeControl? journeyTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ClockPosition position,  bool lowTimeVibration,  TimeControl? speedrunTime,  bool speedrunMarathon,  TimeControl? marathonTime,  TimeControl? journeyTime)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClockSettings() when $default != null:
-return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.journeyTime);case _:
+return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.speedrunMarathon,_that.marathonTime,_that.journeyTime);case _:
   return orElse();
 
 }
@@ -204,10 +226,10 @@ return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.j
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ClockPosition position,  bool lowTimeVibration,  TimeControl speedrunTime,  TimeControl? journeyTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ClockPosition position,  bool lowTimeVibration,  TimeControl? speedrunTime,  bool speedrunMarathon,  TimeControl? marathonTime,  TimeControl? journeyTime)  $default,) {final _that = this;
 switch (_that) {
 case _ClockSettings():
-return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.journeyTime);case _:
+return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.speedrunMarathon,_that.marathonTime,_that.journeyTime);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +246,10 @@ return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.j
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ClockPosition position,  bool lowTimeVibration,  TimeControl speedrunTime,  TimeControl? journeyTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ClockPosition position,  bool lowTimeVibration,  TimeControl? speedrunTime,  bool speedrunMarathon,  TimeControl? marathonTime,  TimeControl? journeyTime)?  $default,) {final _that = this;
 switch (_that) {
 case _ClockSettings() when $default != null:
-return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.journeyTime);case _:
+return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.speedrunMarathon,_that.marathonTime,_that.journeyTime);case _:
   return null;
 
 }
@@ -239,14 +261,21 @@ return $default(_that.position,_that.lowTimeVibration,_that.speedrunTime,_that.j
 
 
 class _ClockSettings implements ClockSettings {
-  const _ClockSettings({this.position = ClockPosition.fallback, this.lowTimeVibration = true, this.speedrunTime = SpeedrunPaces.standard, this.journeyTime});
+  const _ClockSettings({this.position = ClockPosition.fallback, this.lowTimeVibration = true, this.speedrunTime, this.speedrunMarathon = false, this.marathonTime, this.journeyTime});
   
 
 @override@JsonKey() final  ClockPosition position;
 /// Vibra uma vez quando o tempo de quem joga fica abaixo de 10 s.
 @override@JsonKey() final  bool lowTimeVibration;
-/// O último ritmo escolhido para um speedrun.
-@override@JsonKey() final  TimeControl speedrunTime;
+/// O último ritmo escolhido para um speedrun. Nulo: nenhum ainda (abre no
+/// ritmo do nível do jogador).
+@override final  TimeControl? speedrunTime;
+/// O modo marcado no alto do speedrun: a Maratona (um relógio só) ou o
+/// clássico (cada partida com o seu).
+@override@JsonKey() final  bool speedrunMarathon;
+/// O último ritmo escolhido para a Maratona, à parte do speedrun. Nulo:
+/// nenhum ainda.
+@override final  TimeControl? marathonTime;
 /// O último ritmo escolhido para um desafio da Jornada. Nulo: sem relógio.
 @override final  TimeControl? journeyTime;
 
@@ -260,18 +289,18 @@ _$ClockSettingsCopyWith<_ClockSettings> get copyWith => __$ClockSettingsCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClockSettings&&(identical(other.position, position) || other.position == position)&&(identical(other.lowTimeVibration, lowTimeVibration) || other.lowTimeVibration == lowTimeVibration)&&(identical(other.speedrunTime, speedrunTime) || other.speedrunTime == speedrunTime)&&(identical(other.journeyTime, journeyTime) || other.journeyTime == journeyTime));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClockSettings&&(identical(other.position, position) || other.position == position)&&(identical(other.lowTimeVibration, lowTimeVibration) || other.lowTimeVibration == lowTimeVibration)&&(identical(other.speedrunTime, speedrunTime) || other.speedrunTime == speedrunTime)&&(identical(other.speedrunMarathon, speedrunMarathon) || other.speedrunMarathon == speedrunMarathon)&&(identical(other.marathonTime, marathonTime) || other.marathonTime == marathonTime)&&(identical(other.journeyTime, journeyTime) || other.journeyTime == journeyTime));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,position,lowTimeVibration,speedrunTime,journeyTime);
+    return Object.hash(runtimeType,position,lowTimeVibration,speedrunTime,speedrunMarathon,marathonTime,journeyTime);
 }
 
 @override
 String toString() {
-    return 'ClockSettings(position: $position, lowTimeVibration: $lowTimeVibration, speedrunTime: $speedrunTime, journeyTime: $journeyTime)';
+    return 'ClockSettings(position: $position, lowTimeVibration: $lowTimeVibration, speedrunTime: $speedrunTime, speedrunMarathon: $speedrunMarathon, marathonTime: $marathonTime, journeyTime: $journeyTime)';
 }
 
 
@@ -282,11 +311,11 @@ abstract mixin class _$ClockSettingsCopyWith<$Res> implements $ClockSettingsCopy
   factory _$ClockSettingsCopyWith(_ClockSettings value, $Res Function(_ClockSettings) _then) = __$ClockSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- ClockPosition position, bool lowTimeVibration, TimeControl speedrunTime, TimeControl? journeyTime
+ ClockPosition position, bool lowTimeVibration, TimeControl? speedrunTime, bool speedrunMarathon, TimeControl? marathonTime, TimeControl? journeyTime
 });
 
 
-@override $TimeControlCopyWith<$Res> get speedrunTime;@override $TimeControlCopyWith<$Res>? get journeyTime;
+@override $TimeControlCopyWith<$Res>? get speedrunTime;@override $TimeControlCopyWith<$Res>? get marathonTime;@override $TimeControlCopyWith<$Res>? get journeyTime;
 
 }
 /// @nodoc
@@ -299,12 +328,14 @@ class __$ClockSettingsCopyWithImpl<$Res>
 
 /// Create a copy of ClockSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? position = null,Object? lowTimeVibration = null,Object? speedrunTime = null,Object? journeyTime = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? position = null,Object? lowTimeVibration = null,Object? speedrunTime = freezed,Object? speedrunMarathon = null,Object? marathonTime = freezed,Object? journeyTime = freezed,}) {
   return _then(_ClockSettings(
 position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as ClockPosition,lowTimeVibration: null == lowTimeVibration ? _self.lowTimeVibration : lowTimeVibration // ignore: cast_nullable_to_non_nullable
-as bool,speedrunTime: null == speedrunTime ? _self.speedrunTime : speedrunTime // ignore: cast_nullable_to_non_nullable
-as TimeControl,journeyTime: freezed == journeyTime ? _self.journeyTime : journeyTime // ignore: cast_nullable_to_non_nullable
+as bool,speedrunTime: freezed == speedrunTime ? _self.speedrunTime : speedrunTime // ignore: cast_nullable_to_non_nullable
+as TimeControl?,speedrunMarathon: null == speedrunMarathon ? _self.speedrunMarathon : speedrunMarathon // ignore: cast_nullable_to_non_nullable
+as bool,marathonTime: freezed == marathonTime ? _self.marathonTime : marathonTime // ignore: cast_nullable_to_non_nullable
+as TimeControl?,journeyTime: freezed == journeyTime ? _self.journeyTime : journeyTime // ignore: cast_nullable_to_non_nullable
 as TimeControl?,
   ));
 }
@@ -313,10 +344,25 @@ as TimeControl?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TimeControlCopyWith<$Res> get speedrunTime {
-  
-  return $TimeControlCopyWith<$Res>(_self.speedrunTime, (value) {
+$TimeControlCopyWith<$Res>? get speedrunTime {
+    if (_self.speedrunTime == null) {
+    return null;
+  }
+
+  return $TimeControlCopyWith<$Res>(_self.speedrunTime!, (value) {
     return _then(_self.copyWith(speedrunTime: value));
+  });
+}/// Create a copy of ClockSettings
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TimeControlCopyWith<$Res>? get marathonTime {
+    if (_self.marathonTime == null) {
+    return null;
+  }
+
+  return $TimeControlCopyWith<$Res>(_self.marathonTime!, (value) {
+    return _then(_self.copyWith(marathonTime: value));
   });
 }/// Create a copy of ClockSettings
 /// with the given fields replaced by the non-null parameter values.

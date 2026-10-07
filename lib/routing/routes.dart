@@ -1,8 +1,58 @@
+import '../domain/models/clock.dart';
 import '../domain/models/journey.dart';
 
 abstract final class Routes {
   static const home = '/';
   static const freeBoard = '/board';
+
+  /// A partida às cegas, falando os lances (experimental).
+  static const blind = '/blind';
+
+  /// A partida às cegas em [fen], com o jogador de [user] contra [opponent]
+  /// (e o [level] do Maia); com [white] e [black] (`segundos+incremento`), o
+  /// relógio.
+  static String blindAt(
+    String fen, {
+    required String user,
+    required String opponent,
+    String? level,
+    String? white,
+    String? black,
+    String? view,
+    String? challenge,
+    String? position,
+    String? goal,
+  }) => Uri(
+    path: blind,
+    queryParameters: {
+      'fen': fen,
+      'user': user,
+      'opponent': opponent,
+      'level': ?level,
+      'white': ?white,
+      'black': ?black,
+      'view': ?view,
+      'challenge': ?challenge,
+      'position': ?position,
+      'goal': ?goal,
+    },
+  ).toString();
+
+  /// O desafio especial às cegas da Jornada.
+  static String blindChallenge(Challenge challenge) {
+    final fen = challenge.position.fen;
+    final opponent = challenge.opponent;
+    return blindAt(
+      fen,
+      user: fen.split(' ')[1] == 'b' ? 'black' : 'white',
+      opponent: opponent.kind.code,
+      level: opponent.level?.toString(),
+      view: challenge.hideBoard ? 'hidden' : 'empty',
+      challenge: challenge.id,
+      position: challenge.position.id,
+      goal: challenge.goal.code,
+    );
+  }
 
   /// Tabuleiro livre aberto numa posição preparada (FEN). Com [side], o
   /// jogador só move as peças desse lado; [view] é o lado que fica embaixo.
@@ -49,22 +99,25 @@ abstract final class Routes {
 
   /// A partida de um desafio da Jornada (ou de uma etapa de speedrun, com
   /// [speedrunId], [attemptId] e [stage]): o jogador joga o lado que move na
-  /// posição, contra o adversário do desafio, com o relógio dele.
+  /// posição, contra o adversário do desafio, com o relógio dele. Com
+  /// [userTime], o relógio do jogador é outro (o banco da Maratona).
   static String challengeGame(
     Challenge challenge, {
     String? speedrunId,
     int? attemptId,
     int? stage,
+    TimeControl? userTime,
   }) {
     final fen = challenge.position.fen;
     final user = fen.split(' ')[1] == 'b' ? 'black' : 'white';
     final time = challenge.time?.code;
+    final mine = userTime?.code ?? time;
     final opponent = challenge.opponent;
     return freeBoardAt(
       fen,
       view: user,
-      white: time,
-      black: time,
+      white: user == 'white' ? mine : time,
+      black: user == 'black' ? mine : time,
       opponent: opponent.kind.code,
       level: opponent.level?.toString(),
       user: user,
@@ -96,6 +149,9 @@ abstract final class Routes {
   ).toString();
 
   static const achievements = '/achievements';
+
+  /// Todos os modos do app num lugar só.
+  static const allModes = '/modes';
 
   /// Os detalhes do rating: o gráfico e o histórico das partidas.
   static const rating = '/rating';
@@ -142,6 +198,10 @@ abstract final class Routes {
   static const settingsBoardAppearance = '/settings/board-appearance';
   static const settingsBoardBehavior = '/settings/board-behavior';
   static const settingsClock = '/settings/clock';
+  static const settingsVoice = '/settings/voice';
+
+  /// A configuração da tela inicial: os caminhos e a ordem.
+  static const homeLayout = '/settings/home';
 
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';

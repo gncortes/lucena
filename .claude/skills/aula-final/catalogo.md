@@ -6,6 +6,17 @@ Feita: a aula tem `docs/aulas/<id>.md` e `assets/lessons/endgames/<id>.json`.
 
 "Motor" marca os temas com mais de 7 peças, em que a tabela de finais não alcança e o Stockfish julga.
 
+## 0 · Finais básicos (`basics`)
+
+A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresentam (T48 e T49).
+
+| # | id | Aula |
+|---|---|---|
+| B1 | `basics.queenMate` | Mate de dama em poucos lances |
+| B2 | `basics.rookMate` | Mate de torre: a caixa |
+| B3 | `basics.twoBishops` | Dois bispos: a parede e o canto |
+| B4 | `basics.kingPawn` | Rei e peão contra rei: oposição, regra do quadrado e peão de torre |
+
 ## 1 · Mates difíceis (`mates`)
 
 | # | id | Aula |

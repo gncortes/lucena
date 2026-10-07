@@ -54,6 +54,9 @@ abstract class GameSetup with _$GameSetup {
 
     /// O nível do Maia. Nulo: o sugerido pelo rating do perfil.
     int? maiaLevel,
+
+    /// Às cegas: os lances falados, digitados ou tocados, sem ver as peças.
+    @Default(false) bool blind,
   }) = _GameSetup;
 
   static const defaultTime = TimeControl(initial: Duration(minutes: 5));

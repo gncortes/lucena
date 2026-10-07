@@ -39,6 +39,7 @@ class LessonState {
     this.texts = LessonTexts.empty,
     this.viktor,
     this.step = 0,
+    this.reached = 0,
     this.fen,
     this.lastMove,
     this.collected = const [],
@@ -70,6 +71,24 @@ class LessonState {
 
   /// O índice do passo aberto.
   final int step;
+
+  /// O passo mais adiante a que o aluno já chegou. Voltando para rever, os
+  /// passos até ele podem ser pulados com "continuar", sem refazer o lance.
+  final int reached;
+
+  /// Está revendo um passo já passado.
+  bool get reviewing => step < reached;
+
+  /// "Continuar" vale: a fala, o passo cumprido ou um passo revisto.
+  bool get canContinue =>
+      current != null &&
+      phase != StepPhase.waiting &&
+      (phase == StepPhase.done ||
+          reviewing ||
+          (current is TalkStep && phase == StepPhase.active));
+
+  /// Há passo antes deste para rever.
+  bool get canGoBack => step > 0 && phase != StepPhase.waiting && !finished;
 
   /// O tabuleiro agora. Nulo num passo sem tabuleiro.
   final String? fen;
@@ -131,15 +150,27 @@ class LessonState {
     // Dentro do passo, cada estrela pega e cada lance certo já enchem a barra.
     final within = switch (current) {
       StarsStep(:final stars) => collected.length / stars.length,
+      TapStep(:final targets) => collected.length / targets.length,
       MoveStep(:final line) => turn / line.length,
       _ => 0.0,
     };
     return (step + within) / stepCount;
   }
 
-  /// O aluno pode mexer no tabuleiro.
+  /// O aluno pode mexer no tabuleiro (no passo de tocar, só tocar).
   bool get interactive =>
-      phase == StepPhase.active && current is! TalkStep && current != null;
+      phase == StepPhase.active &&
+      current is! TalkStep &&
+      current is! TapStep &&
+      current != null;
+
+  /// No passo de tocar, a casa que o Viktor pediu agora. Nula fora dele.
+  String? get tapTarget => switch (current) {
+    TapStep(:final targets)
+        when phase == StepPhase.active && collected.length < targets.length =>
+      targets[collected.length],
+    _ => null,
+  };
 
   /// As estrelas que faltam.
   List<String> get stars => switch (current) {
@@ -157,6 +188,7 @@ class LessonState {
     LessonTexts? texts,
     Character? viktor,
     int? step,
+    int? reached,
     String? fen,
     bool clearFen = false,
     Move? lastMove,
@@ -185,6 +217,7 @@ class LessonState {
     texts: texts ?? this.texts,
     viktor: viktor ?? this.viktor,
     step: step ?? this.step,
+    reached: reached ?? this.reached,
     fen: clearFen ? null : fen ?? this.fen,
     lastMove: clearLastMove ? null : lastMove ?? this.lastMove,
     collected: collected ?? this.collected,
@@ -279,12 +312,7 @@ class LessonCubit extends Cubit<LessonState> {
   /// "Continuar": passa da fala, ou do passo cumprido, para o próximo; no
   /// último, conclui a aula.
   Future<void> next() async {
-    final current = state.current;
-    if (current == null) return;
-    final canGo =
-        state.phase == StepPhase.done ||
-        (current is TalkStep && state.phase == StepPhase.active);
-    if (!canGo) return;
+    if (!state.canContinue) return;
     final nextStep = state.step + 1;
     if (nextStep < state.stepCount) {
       emit(_open(state, nextStep));
@@ -292,6 +320,14 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     await _finish();
+  }
+
+  /// Volta um passo, para rever: ele abre do começo (dá para jogar de
+  /// novo ou seguir com "continuar").
+  Future<void> back() async {
+    if (!state.canGoBack) return;
+    emit(_open(state, state.step - 1));
+    await _save();
   }
 
   /// Tenta de novo o passo de jogar, do começo.
@@ -323,9 +359,40 @@ class LessonCubit extends Cubit<LessonState> {
         await _playLine(step, move);
       case PlayStep step:
         await _playOut(step, move);
-      case TalkStep() || null:
+      case TalkStep() || TapStep() || null:
         return;
     }
+  }
+
+  /// O aluno tocou numa casa (no passo de tocar): certa, vai para a
+  /// próxima; errada, o Viktor dá a dica.
+  Future<void> tap(String square) async {
+    final step = state.current;
+    final target = state.tapTarget;
+    if (step is! TapStep || target == null) return;
+    if (square != target) {
+      emit(
+        state.copyWith(
+          speech: state.texts.hint(_lessonId, step.id) ?? _pick('coach.hint'),
+          emotion: Emotion.focused,
+        ),
+      );
+      return;
+    }
+    unawaited(_sounds?.play(GameSound.move));
+    final collected = [...state.collected, square];
+    final allDone = collected.length >= step.targets.length;
+    emit(
+      state.copyWith(
+        collected: collected,
+        phase: allDone ? StepPhase.done : StepPhase.active,
+        speech: allDone
+            ? state.texts.done(_lessonId, step.id) ?? _pick('coach.praise')
+            : _pick('coach.star'),
+        emotion: allDone ? Emotion.happy : Emotion.calm,
+      ),
+    );
+    await _save();
   }
 
   /// Pede ao mestre o melhor lance (vira uma seta no tabuleiro).
@@ -355,7 +422,7 @@ class LessonCubit extends Cubit<LessonState> {
             emotion: Emotion.focused,
           ),
         );
-      case StarsStep() || TalkStep() || null:
+      case StarsStep() || TalkStep() || TapStep() || null:
         return;
     }
   }
@@ -605,6 +672,7 @@ class LessonCubit extends Cubit<LessonState> {
       lessonCount: base.lessonCount,
       endgame: base.endgame,
       step: index,
+      reached: index > base.reached ? index : base.reached,
       fen: step.fen,
       speech: base.texts.step(lessonId, step.id),
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
@@ -665,6 +733,12 @@ class LessonCubit extends Cubit<LessonState> {
         restored = restored.copyWith(
           fen: saved.fen,
           phase: saved.turn >= line.length ? StepPhase.done : StepPhase.active,
+        );
+      case TapStep(:final targets):
+        restored = restored.copyWith(
+          phase: saved.collected.length >= targets.length
+              ? StepPhase.done
+              : StepPhase.active,
         );
       case TalkStep():
         break;

@@ -8,6 +8,7 @@
     {"id": "10+0", "time": "600+0"}
   ],
   "profiles": {
+    "ultraBullet": {"temperature": 0.2, "thinkScale": 0.2},
     "bullet": {"temperature": 0.3, "thinkScale": 0.45},
     "blitz": {"temperature": 0.4, "thinkScale": 0.75},
     "rapid": {"temperature": 0.5, "thinkScale": 1.0},

@@ -119,7 +119,7 @@ class RatingLevelOption extends StatelessWidget {
         selectedColor: colors.onSecondaryContainer,
         leading: LevelBadge(level: level, highlighted: selected),
         title: Text(level.name(l10n)),
-        subtitle: Text(level.range(l10n)),
+        subtitle: Text(level.describe(l10n)),
         trailing: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           transitionBuilder: (child, animation) =>

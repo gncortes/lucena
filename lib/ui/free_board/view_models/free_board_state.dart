@@ -78,6 +78,10 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// A máquina está escolhendo o lance.
     @Default(false) bool machineThinking,
 
+    /// O relógio e a máquina esperam o aviso da etapa nova da Maratona sair
+    /// da tela.
+    @Default(false) bool held,
+
     /// Quando a partida começou (ou recomeçou).
     DateTime? startedAt,
 

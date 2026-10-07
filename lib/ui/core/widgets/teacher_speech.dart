@@ -1,8 +1,14 @@
 import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/use_cases/speech_links.dart';
+import '../../voice/view_models/speech_cubit.dart';
+import '../../voice/widgets/auto_speak.dart';
+import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
 import 'character_avatar.dart';
 
@@ -18,23 +24,30 @@ class TeacherSpeech extends StatelessWidget {
     required this.text,
     this.emotion = Emotion.calm,
     this.avatarSize = 64,
-    this.maxLines,
     this.bubbleKey,
     this.stacked = false,
     this.typed = false,
+    this.speaks = false,
+    this.onLink,
+    this.onSpoken,
     super.key,
   });
 
   final Character teacher;
+
+  /// Com tabuleiro na tela: as casas e os lances da fala ficam tocáveis e
+  /// chamam [onLink] (a tela mostra ou tira do tabuleiro). Nulo: texto
+  /// simples.
+  final ValueChanged<SpeechLink>? onLink;
+
+  /// Com a voz falando, cada casa ou lance quando a voz chega nele.
+  final ValueChanged<SpeechLink>? onSpoken;
 
   /// A fala. Nula: só o retrato e o nome.
   final String? text;
   final Emotion emotion;
   final double avatarSize;
 
-  /// A altura do balão em linhas, no máximo; nulo deixa crescer. A fala
-  /// mais longa não é cortada: rola dentro do balão.
-  final int? maxLines;
   final Key? bubbleKey;
 
   /// O balão embaixo do retrato e do nome, em vez de ao lado.
@@ -42,6 +55,10 @@ class TeacherSpeech extends StatelessWidget {
 
   /// A fala aparece aos poucos, como quem fala. Um toque mostra tudo.
   final bool typed;
+
+  /// Com a voz ligada, a fala nova sai em voz alta sozinha. O botão de
+  /// áudio aparece sempre que há voz no idioma.
+  final bool speaks;
 
   static const _tail = Size(18, 9);
 
@@ -52,6 +69,117 @@ class TeacherSpeech extends StatelessWidget {
       emotion: emotion,
       size: avatarSize,
     );
+    final speech = speechOf(context);
+    final content = _RevealOnChange(
+      text: text,
+      child: _layout(context, avatar),
+    );
+    if (speech == null) return content;
+    return AutoSpeak(
+      speech: speech,
+      text: text,
+      auto: speaks,
+      speakerId: teacher.id,
+      child: content,
+    );
+  }
+
+  /// A voz do app, se houver (fora do app, nos testes de um widget só, não
+  /// há).
+  static SpeechCubit? speechOf(BuildContext context) {
+    try {
+      return context.read<SpeechCubit>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  /// O nome e, havendo voz no idioma, o botão de áudio.
+  Widget _header(BuildContext context) {
+    final speech = speechOf(context);
+    final text = this.text;
+    if (speech == null || text == null) return _name(context);
+    final language = Localizations.localeOf(context).toLanguageTag();
+    return Row(
+      children: [
+        Expanded(child: _name(context)),
+        BlocBuilder<SpeechCubit, SpeechState>(
+          bloc: speech,
+          buildWhen: (a, b) =>
+              a.isSpeaking(text) != b.isSpeaking(text) ||
+              a.settings.speed != b.settings.speed ||
+              a.settings.enabled != b.settings.enabled ||
+              a.availableFor(language) != b.availableFor(language),
+          builder: (context, state) {
+            if (!state.availableFor(language)) return const SizedBox.shrink();
+            final speaking = state.isSpeaking(text);
+            final l10n = context.l10n;
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // A velocidade da voz: cada toque passa para a próxima.
+                TextButton(
+                  key: VoiceKeys.speedButton,
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    minimumSize: const Size(48, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  onPressed: speech.nextSpeed,
+                  child: Tooltip(
+                    message: l10n.voiceSpeed,
+                    child: Text(l10n.voiceSpeedValue(state.settings.speed)),
+                  ),
+                ),
+                // Onde ele fala sozinho, um botão só: ligado, um toque cala
+                // a voz dele (a escolha fica gravada); desligado, liga e já
+                // fala. Nos outros balões, ouvir e parar.
+                if (speaks)
+                  IconButton(
+                    key: VoiceKeys.speakButton,
+                    visualDensity: VisualDensity.compact,
+                    tooltip: state.settings.enabled
+                        ? l10n.voiceAutoOff(teacher.name)
+                        : l10n.voiceAutoOn(teacher.name),
+                    isSelected: !state.settings.enabled,
+                    icon: const Icon(Icons.volume_up_outlined),
+                    selectedIcon: const Icon(Icons.volume_off_outlined),
+                    onPressed: () async {
+                      if (state.settings.enabled) {
+                        await speech.setEnabled(enabled: false);
+                        return;
+                      }
+                      await speech.setEnabled(enabled: true);
+                      await speech.say(
+                        text,
+                        speakerId: teacher.id,
+                        language: language,
+                      );
+                    },
+                  )
+                else
+                  IconButton(
+                    key: VoiceKeys.speakButton,
+                    visualDensity: VisualDensity.compact,
+                    tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
+                    isSelected: speaking,
+                    icon: const Icon(Icons.volume_up_outlined),
+                    selectedIcon: const Icon(Icons.stop_circle_outlined),
+                    onPressed: () => speech.toggle(
+                      text,
+                      speakerId: teacher.id,
+                      language: language,
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _layout(BuildContext context, Widget avatar) {
     if (stacked) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +188,7 @@ class TeacherSpeech extends StatelessWidget {
             children: [
               avatar,
               const SizedBox(width: 10),
-              Expanded(child: _name(context)),
+              Expanded(child: _header(context)),
             ],
           ),
           const SizedBox(height: 2),
@@ -77,7 +205,7 @@ class TeacherSpeech extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _name(context),
+              _header(context),
               const SizedBox(height: 4),
               _speech(context),
             ],
@@ -130,10 +258,91 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// O texto que aparece aos poucos; com a voz, acompanha até onde ela
+  /// chegou.
+  Widget _typed(
+    BuildContext context,
+    String text,
+    Text words,
+    bool Function(int)? onTapAt,
+  ) {
+    final speech = speechOf(context);
+    if (speech == null) return _TypedText(text: words, onTapAt: onTapAt);
+    final language = Localizations.localeOf(context).toLanguageTag();
+    final state = speech.state;
+    // Vai falar sozinho: o texto anda no passo da voz, não no da leitura.
+    final paced =
+        speaks &&
+        state.settings.enabled &&
+        state.availableFor(language) &&
+        !MediaQuery.accessibleNavigationOf(context);
+    return BlocBuilder<SpeechCubit, SpeechState>(
+      bloc: speech,
+      buildWhen: (a, b) =>
+          a.isSpeaking(text) != b.isSpeaking(text) ||
+          (b.isSpeaking(text) && a.revealed != b.revealed),
+      builder: (context, state) => _TypedText(
+        text: words,
+        onTapAt: onTapAt,
+        paced: paced,
+        speaking: state.isSpeaking(text),
+        revealed: state.isSpeaking(text) ? state.revealed : null,
+      ),
+    );
+  }
+
   Widget _bubble(BuildContext context, String text) {
     final theme = Theme.of(context);
     final color = theme.colorScheme.surfaceContainerHighest;
-    final words = Text(text, key: bubbleKey, style: theme.textTheme.bodyLarge);
+    final onLink = this.onLink;
+    final links = onLink == null
+        ? const <SpeechLink>[]
+        : SpeechLinks.find(
+            text,
+            SpeechLinks.lettersFor(
+              Localizations.localeOf(context).languageCode,
+            ),
+          );
+    final style = theme.textTheme.bodyLarge;
+    // As casas e os lances em seminegrito, na cor primária: tocáveis sem
+    // parecer link de site.
+    final linkStyle = TextStyle(
+      color: theme.colorScheme.primary,
+      fontWeight: FontWeight.w700,
+    );
+    final words = links.isEmpty
+        ? Text(text, key: bubbleKey, style: style)
+        : Text.rich(
+            TextSpan(
+              children: [
+                for (final (index, link) in links.indexed) ...[
+                  TextSpan(
+                    text: text.substring(
+                      index == 0 ? 0 : links[index - 1].end,
+                      link.start,
+                    ),
+                  ),
+                  TextSpan(text: link.text, style: linkStyle),
+                ],
+                TextSpan(text: text.substring(links.last.end)),
+              ],
+            ),
+            key: bubbleKey,
+            style: style,
+          );
+    // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
+    // se havia trecho ali.
+    bool tapAt(int offset) {
+      for (final link in links) {
+        if (offset >= link.start && offset <= link.end) {
+          onLink!(link);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    final tappable = links.isEmpty ? null : tapAt;
     final bubble = Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
@@ -152,7 +361,24 @@ class TeacherSpeech extends StatelessWidget {
         liveRegion: true,
         label: context.l10n.characterSays(teacher.name, text),
         excludeSemantics: true,
-        child: _limited(context, typed ? _TypedText(text: words) : words),
+        // Com leitor de tela: uma ação por casa ou lance.
+        customSemanticsActions: {
+          for (final link in links)
+            CustomSemanticsAction(
+              label: context.l10n.speechShowOnBoard(link.text),
+            ): () =>
+                onLink!(link),
+        },
+        child: _VoiceLinks(
+          text: text,
+          links: links,
+          onLink: onSpoken,
+          child: typed
+              ? _typed(context, text, words, tappable)
+              : tappable == null
+              ? words
+              : _LinkTapper(text: words, onTapAt: tappable),
+        ),
       ),
     );
     if (!stacked) return bubble;
@@ -170,52 +396,51 @@ class TeacherSpeech extends StatelessWidget {
       ],
     );
   }
+}
 
-  /// Com [maxLines], o texto fica numa caixa dessa altura e rola nela.
-  Widget _limited(BuildContext context, Widget text) {
-    final lines = maxLines;
-    if (lines == null) return text;
-    final style = DefaultTextStyle.of(context).style
-        .merge(Theme.of(context).textTheme.bodyLarge);
-    final lineHeight = MediaQuery.textScalerOf(context)
-        .scale((style.fontSize ?? 14) * (style.height ?? 1.2));
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: lineHeight * lines),
-      child: _ScrollingText(text: text),
+/// Uma fala nova: se o começo dela está fora da área que rola (o aluno desceu
+/// para ler a anterior, longa), a tela rola suavemente até o retrato.
+class _RevealOnChange extends StatefulWidget {
+  const _RevealOnChange({required this.text, required this.child});
+
+  final String? text;
+  final Widget child;
+
+  @override
+  State<_RevealOnChange> createState() => _RevealOnChangeState();
+}
+
+class _RevealOnChangeState extends State<_RevealOnChange> {
+  @override
+  void didUpdateWidget(_RevealOnChange old) {
+    super.didUpdateWidget(old);
+    if (old.text != widget.text && widget.text != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _reveal());
+    }
+  }
+
+  void _reveal() {
+    if (!mounted) return;
+    final scrollable = Scrollable.maybeOf(context);
+    final box = context.findRenderObject();
+    final viewport = scrollable?.context.findRenderObject();
+    if (scrollable == null || box is! RenderBox || viewport is! RenderBox) {
+      return;
+    }
+    if (!box.attached || !viewport.attached) return;
+    final top = box.localToGlobal(Offset.zero, ancestor: viewport).dy;
+    // O começo à vista, com uma folga para a primeira linha: nada a fazer.
+    if (top >= 0 && top <= viewport.size.height - 48) return;
+    final disable = MediaQuery.disableAnimationsOf(context);
+    Scrollable.ensureVisible(
+      context,
+      duration: disable ? Duration.zero : const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
     );
   }
-}
-
-/// A fala que não cabe no balão: rola, com a barra à vista.
-class _ScrollingText extends StatefulWidget {
-  const _ScrollingText({required this.text});
-
-  final Widget text;
 
   @override
-  State<_ScrollingText> createState() => _ScrollingTextState();
-}
-
-class _ScrollingTextState extends State<_ScrollingText> {
-  final _controller = ScrollController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scrollbar(
-    controller: _controller,
-    thumbVisibility: true,
-    child: SingleChildScrollView(
-      controller: _controller,
-      // Espaço para a barra não cobrir o texto.
-      padding: const EdgeInsetsDirectional.only(end: 8),
-      child: widget.text,
-    ),
-  );
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// A ponta do balão: um triângulo virado para cima.
@@ -243,9 +468,28 @@ class _TailPainter extends CustomPainter {
 /// toque mostra tudo. Com as animações desligadas no aparelho, aparece de uma
 /// vez.
 class _TypedText extends StatefulWidget {
-  const _TypedText({required this.text});
+  const _TypedText({
+    required this.text,
+    this.onTapAt,
+    this.paced = false,
+    this.speaking = false,
+    this.revealed,
+  });
 
   final Text text;
+
+  /// Um toque numa letra já à vista: a posição dela. Devolve se havia uma
+  /// casa ou um lance ali.
+  final bool Function(int)? onTapAt;
+
+  /// A voz vai falar: o texto anda no passo de quem fala.
+  final bool paced;
+
+  /// A voz está falando este texto.
+  final bool speaking;
+
+  /// Até onde a voz chegou (posição no texto). Nulo: sem andamento.
+  final int? revealed;
 
   @override
   State<_TypedText> createState() => _TypedTextState();
@@ -257,15 +501,42 @@ class _TypedTextState extends State<_TypedText>
   TextPainter? _painter;
   double? _width;
 
-  int get _length => widget.text.data?.length ?? 0;
+  int get _length => _span.toPlainText().length;
+
+  // O texto como trecho (simples ou com as casas destacadas).
+  InlineSpan get _span =>
+      widget.text.textSpan ?? TextSpan(text: widget.text.data);
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: (_length * 14).clamp(300, 2800)),
+      duration: widget.paced
+          // Uns 15 caracteres por segundo, como quem fala.
+          ? Duration(milliseconds: (_length * 65).clamp(600, 60000))
+          : Duration(milliseconds: (_length * 14).clamp(300, 2800)),
     )..forward();
+  }
+
+  @override
+  void didUpdateWidget(_TypedText old) {
+    super.didUpdateWidget(old);
+    final revealed = widget.revealed;
+    if (revealed != null && revealed != old.revealed && _length > 0) {
+      // A voz conta onde está: o texto vai até a palavra falada.
+      final target = (revealed / _length).clamp(0.0, 1.0);
+      if (target > _controller.value) {
+        _controller.animateTo(
+          target,
+          duration: const Duration(milliseconds: 150),
+        );
+      } else {
+        _controller.stop();
+      }
+    }
+    // A voz terminou (ou parou): a fala inteira à vista.
+    if (old.speaking && !widget.speaking) _controller.value = 1;
   }
 
   @override
@@ -294,7 +565,7 @@ class _TypedTextState extends State<_TypedText>
     }
     _width = width;
     return _painter = TextPainter(
-      text: TextSpan(text: widget.text.data, style: style),
+      text: TextSpan(style: style, children: [_span]),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       locale: Localizations.maybeLocaleOf(context),
@@ -303,28 +574,165 @@ class _TypedTextState extends State<_TypedText>
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) return widget.text;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _controller.value = 1,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final painter = _measure(context, constraints.maxWidth);
-          return AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) => _controller.isCompleted
-                ? child!
-                : ClipPath(
-                    clipper: _RevealClipper(
-                      painter,
-                      (_controller.value * _length).ceil(),
-                    ),
-                    child: child,
-                  ),
-            child: widget.text,
-          );
+    final onTapAt = widget.onTapAt;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return onTapAt == null
+          ? widget.text
+          : _LinkTapper(text: widget.text, onTapAt: onTapAt);
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final painter = _measure(context, constraints.maxWidth);
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          // Numa casa ou lance já à vista, o toque vale nele (mesmo com a
+          // fala ainda aparecendo); fora deles, mostra a fala inteira.
+          onTapUp: (details) {
+            final shown = (_controller.value * _length).ceil();
+            if (onTapAt != null &&
+                _tapNear(
+                  painter,
+                  details.localPosition,
+                  (offset) => offset < shown && onTapAt(offset),
+                )) {
+              return;
+            }
+            _controller.value = 1;
+          },
+          child: Builder(
+            builder: (context) {
+              return AnimatedBuilder(
+                animation: _controller,
+                // Pelo valor, não pelo estado: depois de ir até a palavra falada
+                // (animateTo), o controle fica "completo" no meio do texto, e a
+                // fala inteira piscaria a cada palavra.
+                builder: (context, child) => _controller.value >= 1
+                    ? child!
+                    : ClipPath(
+                        clipper: _RevealClipper(
+                          painter,
+                          (_controller.value * _length).ceil(),
+                        ),
+                        child: child,
+                      ),
+                child: widget.text,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Um texto com casas tocáveis, sem a revelação letra a letra: mede o texto
+/// como ele é desenhado e acha a letra tocada.
+/// O toque do dedo erra por pouco uma casa curta como "a7": vale a casa ou o
+/// lance no ponto tocado ou, se não houver, o mais perto dele (até uns 20 px
+/// para os lados ou meia linha para cima e para baixo).
+bool _tapNear(TextPainter painter, Offset at, bool Function(int) onTapAt) {
+  const near = [
+    Offset.zero,
+    Offset(-10, 0),
+    Offset(10, 0),
+    Offset(-20, 0),
+    Offset(20, 0),
+    Offset(0, -10),
+    Offset(0, 10),
+  ];
+  for (final delta in near) {
+    if (onTapAt(painter.getPositionForOffset(at + delta).offset)) return true;
+  }
+  return false;
+}
+
+class _LinkTapper extends StatelessWidget {
+  const _LinkTapper({required this.text, required this.onTapAt});
+
+  final Text text;
+  final bool Function(int) onTapAt;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapUp: (details) {
+          var style = DefaultTextStyle.of(context).style.merge(text.style);
+          if (MediaQuery.boldTextOf(context)) {
+            style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
+          }
+          final painter = TextPainter(
+            text: TextSpan(
+              style: style,
+              children: [text.textSpan ?? TextSpan(text: text.data)],
+            ),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+            locale: Localizations.maybeLocaleOf(context),
+          )..layout(maxWidth: constraints.maxWidth);
+          _tapNear(painter, details.localPosition, onTapAt);
+          painter.dispose();
         },
+        child: text,
       ),
+    );
+  }
+}
+
+/// Com a voz falando a fala, cada casa ou lance aparece no tabuleiro quando
+/// a voz chega nele.
+class _VoiceLinks extends StatefulWidget {
+  const _VoiceLinks({
+    required this.text,
+    required this.links,
+    required this.onLink,
+    required this.child,
+  });
+
+  final String text;
+  final List<SpeechLink> links;
+  final ValueChanged<SpeechLink>? onLink;
+  final Widget child;
+
+  @override
+  State<_VoiceLinks> createState() => _VoiceLinksState();
+}
+
+class _VoiceLinksState extends State<_VoiceLinks> {
+  // Os trechos já mostrados nesta fala.
+  int _shown = 0;
+
+  @override
+  void didUpdateWidget(_VoiceLinks old) {
+    super.didUpdateWidget(old);
+    if (old.text != widget.text) _shown = 0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = TeacherSpeech.speechOf(context);
+    final onLink = widget.onLink;
+    if (speech == null || onLink == null || widget.links.isEmpty) {
+      return widget.child;
+    }
+    return BlocListener<SpeechCubit, SpeechState>(
+      bloc: speech,
+      listenWhen: (a, b) =>
+          b.isSpeaking(widget.text) && a.revealed != b.revealed,
+      listener: (context, state) {
+        final revealed = state.revealed ?? 0;
+        // O último trecho que a voz já passou e ainda não foi mostrado.
+        var next = _shown;
+        while (next < widget.links.length &&
+            widget.links[next].start < revealed) {
+          next++;
+        }
+        if (next == _shown) return;
+        _shown = next;
+        onLink(widget.links[next - 1]);
+      },
+      child: widget.child,
     );
   }
 }

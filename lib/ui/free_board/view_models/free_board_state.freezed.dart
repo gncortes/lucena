@@ -34,7 +34,9 @@ mixin _$FreeBoardState {
  Duration get whiteTime; Duration get blackTime;/// O fim que não vem do tabuleiro: bandeira ou desistência.
  GameEnd? get forcedEnd;/// Contra quem, de que lado e, num treino, com que objetivo.
  GameMode get mode;/// A máquina está escolhendo o lance.
- bool get machineThinking;/// Quando a partida começou (ou recomeçou).
+ bool get machineThinking;/// O relógio e a máquina esperam o aviso da etapa nova da Maratona sair
+/// da tela.
+ bool get held;/// Quando a partida começou (ou recomeçou).
  DateTime? get startedAt;/// A última proposta de empate e em que lance (quantos lances já tinham
 /// sido jogados) ela foi recusada.
  DrawOffer get drawOffer; int? get drawDeclinedAt;/// O que a partida terminada mudou (rating, recordes, conquistas). Nulo
@@ -55,20 +57,20 @@ $FreeBoardStateCopyWith<FreeBoardState> get copyWith => _$FreeBoardStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as FreeBoardState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FreeBoardState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&const DeepCollectionEquality().equals(other.ucis, _this.ucis)&&const DeepCollectionEquality().equals(other.moveTimes, _this.moveTimes)&&(identical(other.turnElapsed, _this.turnElapsed) || other.turnElapsed == _this.turnElapsed)&&(identical(other.turnStartedAt, _this.turnStartedAt) || other.turnStartedAt == _this.turnStartedAt)&&(identical(other.repetitions, _this.repetitions) || other.repetitions == _this.repetitions)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.whiteTime, _this.whiteTime) || other.whiteTime == _this.whiteTime)&&(identical(other.blackTime, _this.blackTime) || other.blackTime == _this.blackTime)&&(identical(other.forcedEnd, _this.forcedEnd) || other.forcedEnd == _this.forcedEnd)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.drawOffer, _this.drawOffer) || other.drawOffer == _this.drawOffer)&&(identical(other.drawDeclinedAt, _this.drawDeclinedAt) || other.drawDeclinedAt == _this.drawDeclinedAt)&&(identical(other.report, _this.report) || other.report == _this.report)&&(identical(other.viewedPly, _this.viewedPly) || other.viewedPly == _this.viewedPly)&&(identical(other.viewedPosition, _this.viewedPosition) || other.viewedPosition == _this.viewedPosition)&&(identical(other.viewedMove, _this.viewedMove) || other.viewedMove == _this.viewedMove));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FreeBoardState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&const DeepCollectionEquality().equals(other.ucis, _this.ucis)&&const DeepCollectionEquality().equals(other.moveTimes, _this.moveTimes)&&(identical(other.turnElapsed, _this.turnElapsed) || other.turnElapsed == _this.turnElapsed)&&(identical(other.turnStartedAt, _this.turnStartedAt) || other.turnStartedAt == _this.turnStartedAt)&&(identical(other.repetitions, _this.repetitions) || other.repetitions == _this.repetitions)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.playerSide, _this.playerSide) || other.playerSide == _this.playerSide)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.whiteTime, _this.whiteTime) || other.whiteTime == _this.whiteTime)&&(identical(other.blackTime, _this.blackTime) || other.blackTime == _this.blackTime)&&(identical(other.forcedEnd, _this.forcedEnd) || other.forcedEnd == _this.forcedEnd)&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&(identical(other.held, _this.held) || other.held == _this.held)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.drawOffer, _this.drawOffer) || other.drawOffer == _this.drawOffer)&&(identical(other.drawDeclinedAt, _this.drawDeclinedAt) || other.drawDeclinedAt == _this.drawDeclinedAt)&&(identical(other.report, _this.report) || other.report == _this.report)&&(identical(other.viewedPly, _this.viewedPly) || other.viewedPly == _this.viewedPly)&&(identical(other.viewedPosition, _this.viewedPosition) || other.viewedPosition == _this.viewedPosition)&&(identical(other.viewedMove, _this.viewedMove) || other.viewedMove == _this.viewedMove));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FreeBoardState;
-  return Object.hashAll([runtimeType,_this.start,_this.position,_this.ready,const DeepCollectionEquality().hash(_this.moves),const DeepCollectionEquality().hash(_this.ucis),const DeepCollectionEquality().hash(_this.moveTimes),_this.turnElapsed,_this.turnStartedAt,_this.repetitions,_this.lastMove,_this.orientation,_this.playerSide,_this.clock,_this.whiteTime,_this.blackTime,_this.forcedEnd,_this.mode,_this.machineThinking,_this.startedAt,_this.drawOffer,_this.drawDeclinedAt,_this.report,_this.viewedPly,_this.viewedPosition,_this.viewedMove]);
+  return Object.hashAll([runtimeType,_this.start,_this.position,_this.ready,const DeepCollectionEquality().hash(_this.moves),const DeepCollectionEquality().hash(_this.ucis),const DeepCollectionEquality().hash(_this.moveTimes),_this.turnElapsed,_this.turnStartedAt,_this.repetitions,_this.lastMove,_this.orientation,_this.playerSide,_this.clock,_this.whiteTime,_this.blackTime,_this.forcedEnd,_this.mode,_this.machineThinking,_this.held,_this.startedAt,_this.drawOffer,_this.drawDeclinedAt,_this.report,_this.viewedPly,_this.viewedPosition,_this.viewedMove]);
 }
 
 @override
 String toString() {
   final _this = this as FreeBoardState;
-  return 'FreeBoardState(start: ${_this.start}, position: ${_this.position}, ready: ${_this.ready}, moves: ${_this.moves}, ucis: ${_this.ucis}, moveTimes: ${_this.moveTimes}, turnElapsed: ${_this.turnElapsed}, turnStartedAt: ${_this.turnStartedAt}, repetitions: ${_this.repetitions}, lastMove: ${_this.lastMove}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, whiteTime: ${_this.whiteTime}, blackTime: ${_this.blackTime}, forcedEnd: ${_this.forcedEnd}, mode: ${_this.mode}, machineThinking: ${_this.machineThinking}, startedAt: ${_this.startedAt}, drawOffer: ${_this.drawOffer}, drawDeclinedAt: ${_this.drawDeclinedAt}, report: ${_this.report}, viewedPly: ${_this.viewedPly}, viewedPosition: ${_this.viewedPosition}, viewedMove: ${_this.viewedMove})';
+  return 'FreeBoardState(start: ${_this.start}, position: ${_this.position}, ready: ${_this.ready}, moves: ${_this.moves}, ucis: ${_this.ucis}, moveTimes: ${_this.moveTimes}, turnElapsed: ${_this.turnElapsed}, turnStartedAt: ${_this.turnStartedAt}, repetitions: ${_this.repetitions}, lastMove: ${_this.lastMove}, orientation: ${_this.orientation}, playerSide: ${_this.playerSide}, clock: ${_this.clock}, whiteTime: ${_this.whiteTime}, blackTime: ${_this.blackTime}, forcedEnd: ${_this.forcedEnd}, mode: ${_this.mode}, machineThinking: ${_this.machineThinking}, held: ${_this.held}, startedAt: ${_this.startedAt}, drawOffer: ${_this.drawOffer}, drawDeclinedAt: ${_this.drawDeclinedAt}, report: ${_this.report}, viewedPly: ${_this.viewedPly}, viewedPosition: ${_this.viewedPosition}, viewedMove: ${_this.viewedMove})';
 }
 
 
@@ -79,7 +81,7 @@ abstract mixin class $FreeBoardStateCopyWith<$Res>  {
   factory $FreeBoardStateCopyWith(FreeBoardState value, $Res Function(FreeBoardState) _then) = _$FreeBoardStateCopyWithImpl;
 @useResult
 $Res call({
- Position start, Position position, bool ready, List<String> moves, List<String> ucis, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report, int? viewedPly, Position? viewedPosition, Move? viewedMove
+ Position start, Position position, bool ready, List<String> moves, List<String> ucis, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, bool held, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report, int? viewedPly, Position? viewedPosition, Move? viewedMove
 });
 
 
@@ -96,7 +98,7 @@ class _$FreeBoardStateCopyWithImpl<$Res>
 
 /// Create a copy of FreeBoardState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,Object? viewedPly = freezed,Object? viewedPosition = freezed,Object? viewedMove = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? held = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,Object? viewedPly = freezed,Object? viewedPosition = freezed,Object? viewedMove = freezed,}) {
   return _then(FreeBoardState(
 start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as Position,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
@@ -116,6 +118,7 @@ as Duration,blackTime: null == blackTime ? _self.blackTime : blackTime // ignore
 as Duration,forcedEnd: freezed == forcedEnd ? _self.forcedEnd : forcedEnd // ignore: cast_nullable_to_non_nullable
 as GameEnd?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,machineThinking: null == machineThinking ? _self.machineThinking : machineThinking // ignore: cast_nullable_to_non_nullable
+as bool,held: null == held ? _self.held : held // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,drawOffer: null == drawOffer ? _self.drawOffer : drawOffer // ignore: cast_nullable_to_non_nullable
 as DrawOffer,drawDeclinedAt: freezed == drawDeclinedAt ? _self.drawDeclinedAt : drawDeclinedAt // ignore: cast_nullable_to_non_nullable
@@ -241,10 +244,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  bool held,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FreeBoardState() when $default != null:
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.held,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
   return orElse();
 
 }
@@ -262,10 +265,10 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  bool held,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)  $default,) {final _that = this;
 switch (_that) {
 case _FreeBoardState():
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.held,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -282,10 +285,10 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position start,  Position position,  bool ready,  List<String> moves,  List<String> ucis,  List<Duration> moveTimes,  Duration turnElapsed,  DateTime? turnStartedAt,  int repetitions,  Move? lastMove,  Side orientation,  Side? playerSide,  ClockState? clock,  Duration whiteTime,  Duration blackTime,  GameEnd? forcedEnd,  GameMode mode,  bool machineThinking,  bool held,  DateTime? startedAt,  DrawOffer drawOffer,  int? drawDeclinedAt,  GameReport? report,  int? viewedPly,  Position? viewedPosition,  Move? viewedMove)?  $default,) {final _that = this;
 switch (_that) {
 case _FreeBoardState() when $default != null:
-return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
+return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_that.moveTimes,_that.turnElapsed,_that.turnStartedAt,_that.repetitions,_that.lastMove,_that.orientation,_that.playerSide,_that.clock,_that.whiteTime,_that.blackTime,_that.forcedEnd,_that.mode,_that.machineThinking,_that.held,_that.startedAt,_that.drawOffer,_that.drawDeclinedAt,_that.report,_that.viewedPly,_that.viewedPosition,_that.viewedMove);case _:
   return null;
 
 }
@@ -297,7 +300,7 @@ return $default(_that.start,_that.position,_that.ready,_that.moves,_that.ucis,_t
 
 
 class _FreeBoardState extends FreeBoardState {
-  const _FreeBoardState({required this.start, required this.position, this.ready = true,  List<String> moves = const <String>[],  List<String> ucis = const <String>[],  List<Duration> moveTimes = const <Duration>[], this.turnElapsed = Duration.zero, this.turnStartedAt, this.repetitions = 1, this.lastMove, this.orientation = Side.white, this.playerSide, this.clock, this.whiteTime = Duration.zero, this.blackTime = Duration.zero, this.forcedEnd, this.mode = const GameMode(), this.machineThinking = false, this.startedAt, this.drawOffer = DrawOffer.none, this.drawDeclinedAt, this.report, this.viewedPly, this.viewedPosition, this.viewedMove}): _moves = moves,_ucis = ucis,_moveTimes = moveTimes,super._();
+  const _FreeBoardState({required this.start, required this.position, this.ready = true,  List<String> moves = const <String>[],  List<String> ucis = const <String>[],  List<Duration> moveTimes = const <Duration>[], this.turnElapsed = Duration.zero, this.turnStartedAt, this.repetitions = 1, this.lastMove, this.orientation = Side.white, this.playerSide, this.clock, this.whiteTime = Duration.zero, this.blackTime = Duration.zero, this.forcedEnd, this.mode = const GameMode(), this.machineThinking = false, this.held = false, this.startedAt, this.drawOffer = DrawOffer.none, this.drawDeclinedAt, this.report, this.viewedPly, this.viewedPosition, this.viewedMove}): _moves = moves,_ucis = ucis,_moveTimes = moveTimes,super._();
   
 
 /// A posição em que o tabuleiro abriu; "nova partida" volta para ela.
@@ -358,6 +361,9 @@ class _FreeBoardState extends FreeBoardState {
 @override@JsonKey() final  GameMode mode;
 /// A máquina está escolhendo o lance.
 @override@JsonKey() final  bool machineThinking;
+/// O relógio e a máquina esperam o aviso da etapa nova da Maratona sair
+/// da tela.
+@override@JsonKey() final  bool held;
 /// Quando a partida começou (ou recomeçou).
 @override final  DateTime? startedAt;
 /// A última proposta de empate e em que lance (quantos lances já tinham
@@ -385,18 +391,18 @@ _$FreeBoardStateCopyWith<_FreeBoardState> get copyWith => __$FreeBoardStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FreeBoardState&&(identical(other.start, start) || other.start == start)&&(identical(other.position, position) || other.position == position)&&(identical(other.ready, ready) || other.ready == ready)&&const DeepCollectionEquality().equals(other.moves, _moves)&&const DeepCollectionEquality().equals(other.ucis, _ucis)&&const DeepCollectionEquality().equals(other.moveTimes, _moveTimes)&&(identical(other.turnElapsed, turnElapsed) || other.turnElapsed == turnElapsed)&&(identical(other.turnStartedAt, turnStartedAt) || other.turnStartedAt == turnStartedAt)&&(identical(other.repetitions, repetitions) || other.repetitions == repetitions)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.whiteTime, whiteTime) || other.whiteTime == whiteTime)&&(identical(other.blackTime, blackTime) || other.blackTime == blackTime)&&(identical(other.forcedEnd, forcedEnd) || other.forcedEnd == forcedEnd)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.drawOffer, drawOffer) || other.drawOffer == drawOffer)&&(identical(other.drawDeclinedAt, drawDeclinedAt) || other.drawDeclinedAt == drawDeclinedAt)&&(identical(other.report, report) || other.report == report)&&(identical(other.viewedPly, viewedPly) || other.viewedPly == viewedPly)&&(identical(other.viewedPosition, viewedPosition) || other.viewedPosition == viewedPosition)&&(identical(other.viewedMove, viewedMove) || other.viewedMove == viewedMove));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FreeBoardState&&(identical(other.start, start) || other.start == start)&&(identical(other.position, position) || other.position == position)&&(identical(other.ready, ready) || other.ready == ready)&&const DeepCollectionEquality().equals(other.moves, _moves)&&const DeepCollectionEquality().equals(other.ucis, _ucis)&&const DeepCollectionEquality().equals(other.moveTimes, _moveTimes)&&(identical(other.turnElapsed, turnElapsed) || other.turnElapsed == turnElapsed)&&(identical(other.turnStartedAt, turnStartedAt) || other.turnStartedAt == turnStartedAt)&&(identical(other.repetitions, repetitions) || other.repetitions == repetitions)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.playerSide, playerSide) || other.playerSide == playerSide)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.whiteTime, whiteTime) || other.whiteTime == whiteTime)&&(identical(other.blackTime, blackTime) || other.blackTime == blackTime)&&(identical(other.forcedEnd, forcedEnd) || other.forcedEnd == forcedEnd)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&(identical(other.held, held) || other.held == held)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.drawOffer, drawOffer) || other.drawOffer == drawOffer)&&(identical(other.drawDeclinedAt, drawDeclinedAt) || other.drawDeclinedAt == drawDeclinedAt)&&(identical(other.report, report) || other.report == report)&&(identical(other.viewedPly, viewedPly) || other.viewedPly == viewedPly)&&(identical(other.viewedPosition, viewedPosition) || other.viewedPosition == viewedPosition)&&(identical(other.viewedMove, viewedMove) || other.viewedMove == viewedMove));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,start,position,ready,const DeepCollectionEquality().hash(_moves),const DeepCollectionEquality().hash(_ucis),const DeepCollectionEquality().hash(_moveTimes),turnElapsed,turnStartedAt,repetitions,lastMove,orientation,playerSide,clock,whiteTime,blackTime,forcedEnd,mode,machineThinking,startedAt,drawOffer,drawDeclinedAt,report,viewedPly,viewedPosition,viewedMove]);
+    return Object.hashAll([runtimeType,start,position,ready,const DeepCollectionEquality().hash(_moves),const DeepCollectionEquality().hash(_ucis),const DeepCollectionEquality().hash(_moveTimes),turnElapsed,turnStartedAt,repetitions,lastMove,orientation,playerSide,clock,whiteTime,blackTime,forcedEnd,mode,machineThinking,held,startedAt,drawOffer,drawDeclinedAt,report,viewedPly,viewedPosition,viewedMove]);
 }
 
 @override
 String toString() {
-    return 'FreeBoardState(start: $start, position: $position, ready: $ready, moves: $moves, ucis: $ucis, moveTimes: $moveTimes, turnElapsed: $turnElapsed, turnStartedAt: $turnStartedAt, repetitions: $repetitions, lastMove: $lastMove, orientation: $orientation, playerSide: $playerSide, clock: $clock, whiteTime: $whiteTime, blackTime: $blackTime, forcedEnd: $forcedEnd, mode: $mode, machineThinking: $machineThinking, startedAt: $startedAt, drawOffer: $drawOffer, drawDeclinedAt: $drawDeclinedAt, report: $report, viewedPly: $viewedPly, viewedPosition: $viewedPosition, viewedMove: $viewedMove)';
+    return 'FreeBoardState(start: $start, position: $position, ready: $ready, moves: $moves, ucis: $ucis, moveTimes: $moveTimes, turnElapsed: $turnElapsed, turnStartedAt: $turnStartedAt, repetitions: $repetitions, lastMove: $lastMove, orientation: $orientation, playerSide: $playerSide, clock: $clock, whiteTime: $whiteTime, blackTime: $blackTime, forcedEnd: $forcedEnd, mode: $mode, machineThinking: $machineThinking, held: $held, startedAt: $startedAt, drawOffer: $drawOffer, drawDeclinedAt: $drawDeclinedAt, report: $report, viewedPly: $viewedPly, viewedPosition: $viewedPosition, viewedMove: $viewedMove)';
 }
 
 
@@ -407,7 +413,7 @@ abstract mixin class _$FreeBoardStateCopyWith<$Res> implements $FreeBoardStateCo
   factory _$FreeBoardStateCopyWith(_FreeBoardState value, $Res Function(_FreeBoardState) _then) = __$FreeBoardStateCopyWithImpl;
 @override @useResult
 $Res call({
- Position start, Position position, bool ready, List<String> moves, List<String> ucis, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report, int? viewedPly, Position? viewedPosition, Move? viewedMove
+ Position start, Position position, bool ready, List<String> moves, List<String> ucis, List<Duration> moveTimes, Duration turnElapsed, DateTime? turnStartedAt, int repetitions, Move? lastMove, Side orientation, Side? playerSide, ClockState? clock, Duration whiteTime, Duration blackTime, GameEnd? forcedEnd, GameMode mode, bool machineThinking, bool held, DateTime? startedAt, DrawOffer drawOffer, int? drawDeclinedAt, GameReport? report, int? viewedPly, Position? viewedPosition, Move? viewedMove
 });
 
 
@@ -424,7 +430,7 @@ class __$FreeBoardStateCopyWithImpl<$Res>
 
 /// Create a copy of FreeBoardState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,Object? viewedPly = freezed,Object? viewedPosition = freezed,Object? viewedMove = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? position = null,Object? ready = null,Object? moves = null,Object? ucis = null,Object? moveTimes = null,Object? turnElapsed = null,Object? turnStartedAt = freezed,Object? repetitions = null,Object? lastMove = freezed,Object? orientation = null,Object? playerSide = freezed,Object? clock = freezed,Object? whiteTime = null,Object? blackTime = null,Object? forcedEnd = freezed,Object? mode = null,Object? machineThinking = null,Object? held = null,Object? startedAt = freezed,Object? drawOffer = null,Object? drawDeclinedAt = freezed,Object? report = freezed,Object? viewedPly = freezed,Object? viewedPosition = freezed,Object? viewedMove = freezed,}) {
   return _then(_FreeBoardState(
 start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as Position,position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
@@ -444,6 +450,7 @@ as Duration,blackTime: null == blackTime ? _self.blackTime : blackTime // ignore
 as Duration,forcedEnd: freezed == forcedEnd ? _self.forcedEnd : forcedEnd // ignore: cast_nullable_to_non_nullable
 as GameEnd?,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as GameMode,machineThinking: null == machineThinking ? _self.machineThinking : machineThinking // ignore: cast_nullable_to_non_nullable
+as bool,held: null == held ? _self.held : held // ignore: cast_nullable_to_non_nullable
 as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,drawOffer: null == drawOffer ? _self.drawOffer : drawOffer // ignore: cast_nullable_to_non_nullable
 as DrawOffer,drawDeclinedAt: freezed == drawDeclinedAt ? _self.drawDeclinedAt : drawDeclinedAt // ignore: cast_nullable_to_non_nullable

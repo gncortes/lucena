@@ -23,6 +23,25 @@ abstract final class HomeKeys {
   /// O título dos caminhos ("O que você quer fazer?").
   static const pathsTitle = Key('home.paths.title');
 
+  /// "Personalizar", ao lado do título dos caminhos.
+  static const customizeButton = Key('home.paths.customize');
+
+  /// "Outros modos": os caminhos fora do destaque, recolhidos.
+  static const otherModes = Key('home.paths.other');
+
+  /// O cartão "Novo modo desbloqueado" (às cegas).
+  static const unlockedCard = Key('home.unlocked');
+  static const unlockedClose = Key('home.unlocked.close');
+  static const unlockedAction = Key('home.unlocked.action');
+
+  /// O aviso único de que dá para escolher os caminhos.
+  static const layoutNotice = Key('home.layoutNotice');
+  static const layoutNoticeCustomize = Key('home.layoutNotice.customize');
+  static const layoutNoticeClose = Key('home.layoutNotice.close');
+
+  /// "Todos os modos", no alto.
+  static const allModesButton = Key('home.allModes');
+
   static const achievementsButton = Key('home.achievements');
 
   /// O cartão "onde estou": o degrau, o próximo desafio e o botão.

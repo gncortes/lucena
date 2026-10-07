@@ -21,6 +21,8 @@ import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
 
+import 'package:lucena/ui/core/keys/blind_keys.dart';
+
 void main() {
   late GameSetupCubit cubit;
 
@@ -263,5 +265,18 @@ void main() {
 
     expect(find.byKey(GameSetupKeys.levels), findsNothing);
     expect(cubit.state.setup.opponent, OpponentKind.stockfish);
+  });
+
+  testWidgets('o modo às cegas fica na configuração, é gravado e leva a '
+      'partida às cegas com o adversário e o relógio escolhidos', (
+    tester,
+  ) async {
+    await pump(tester);
+    await tap(tester, BlindKeys.playButton);
+    expect(cubit.state.setup.blind, isTrue);
+    final route = Uri.parse(cubit.state.gameRoute);
+    expect(route.path, '/blind');
+    expect(route.queryParameters['opponent'], 'maia');
+    expect(route.queryParameters['white'], isNotNull);
   });
 }

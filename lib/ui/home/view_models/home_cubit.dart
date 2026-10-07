@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
+import '../../../data/repositories/home/home_layout_repository.dart';
+import '../../../data/repositories/home/unlock_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
@@ -13,9 +15,11 @@ import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
+import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
 
 /// O que a tela inicial mostra: onde o jogador está, contra quem joga e o
@@ -33,6 +37,9 @@ class HomeState {
     this.nickname = '',
     this.level,
     this.ratingChange,
+    this.layout,
+    this.layoutNotice = false,
+    this.unlockedBlind = false,
   });
 
   final bool ready;
@@ -62,6 +69,56 @@ class HomeState {
 
   /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
   final int? ratingChange;
+
+  /// Os caminhos em destaque e os de "Outros modos". Nulo enquanto lê.
+  final HomeLayout? layout;
+
+  /// O aviso único, para quem fez o tour antes de dar para escolher os
+  /// caminhos: "Agora dá para escolher o que aparece aqui".
+  final bool layoutNotice;
+
+  /// O cartão "Novo modo desbloqueado: às cegas", depois do primeiro desafio
+  /// às cegas vencido na Jornada. Aparece uma vez.
+  final bool unlockedBlind;
+
+  /// O caminho do cartão "Continuar": o da vez (a aula de final aberta, as
+  /// aulas do iniciante ou a Jornada) se estiver em destaque; senão, o
+  /// primeiro em destaque com progresso. Nulo: o cartão some.
+  HomePath? get continuePath {
+    final layout = this.layout;
+    final current = endgame != null
+        ? HomePath.endgames
+        : school != null
+        ? HomePath.learn
+        : HomePath.journey;
+    if (layout == null) return current;
+    return HomeSuggestion.continuePath(
+      layout,
+      current: current,
+      withProgress: {
+        if (endgame != null) HomePath.endgames,
+        if (school != null) HomePath.learn,
+        HomePath.journey,
+      },
+    );
+  }
+
+  HomeState copyWith({bool? layoutNotice, bool? unlockedBlind}) => HomeState(
+    ready: ready,
+    tourPending: tourPending,
+    current: current,
+    next: next,
+    character: character,
+    rating: rating,
+    school: school,
+    endgame: endgame,
+    nickname: nickname,
+    level: level,
+    ratingChange: ratingChange,
+    layout: layout,
+    layoutNotice: layoutNotice ?? this.layoutNotice,
+    unlockedBlind: unlockedBlind ?? this.unlockedBlind,
+  );
 }
 
 /// As aulas do Viktor na tela inicial: quantas foram feitas e o professor.
@@ -127,7 +184,17 @@ class HomeCubit extends Cubit<HomeState> {
     required this._profile,
     required this._endgameLessons,
     required this._endgameProgress,
+    this._homeLayout,
+    this._unlocks,
   }) : super(const HomeState());
+
+  final UnlockRepository? _unlocks;
+
+  /// O modo às cegas, para o cartão de modo novo.
+  static const blindMode = 'blind';
+
+  // Os caminhos escolhidos. Nulo: sempre a sugestão do nível.
+  final HomeLayoutRepository? _homeLayout;
 
   final JourneyRepository _journey;
   final ProgressRepository _progress;
@@ -143,11 +210,23 @@ class HomeCubit extends Cubit<HomeState> {
   /// [language] escolhe as falas das aulas de finais (o título da aula).
   Future<void> load([String language = 'en']) async {
     final onboarding = await _onboarding.load();
+    final fulfilled = await _progress.fulfilledChallenges();
     final progress = Mastery.of(
       await _journey.ladder(),
-      await _progress.fulfilledChallenges(),
+      fulfilled,
       startRung: onboarding.startRung,
     );
+    // O primeiro especial às cegas vencido destrava o modo (o anúncio sai
+    // uma vez só).
+    final blindWon = progress.rungs.any(
+      (rung) => rung.rung.specials.any(
+        (special) =>
+            special.mode == ChallengeMode.blind &&
+            rung.specialsDone.contains(special.id),
+      ),
+    );
+    final unlockedBlind =
+        blindWon && _unlocks != null && !await _unlocks.seen(blindMode);
     final current = progress.current;
     Challenge? next;
     for (final challenge in current?.rung.challenges ?? const <Challenge>[]) {
@@ -162,6 +241,13 @@ class HomeCubit extends Cubit<HomeState> {
     final school = await _schoolSummary(characters);
     final profile = await _profile.load();
     final endgame = await _endgameSummary(language, characters);
+    final saved = await _homeLayout?.load();
+    // Quem fez o tour antes de dar para escolher ganha o aviso, uma vez.
+    final notice =
+        _homeLayout != null &&
+        onboarding.done &&
+        saved == null &&
+        !await _homeLayout.noticeSeen();
     if (isClosed) return;
     emit(
       HomeState(
@@ -182,8 +268,24 @@ class HomeCubit extends Cubit<HomeState> {
             ? null
             : history.last.rating.rounded -
                   history[history.length - 2].rating.rounded,
+        layout: HomeSuggestion.resolve(saved, profile.level),
+        layoutNotice: notice,
+        unlockedBlind: unlockedBlind,
       ),
     );
+  }
+
+  /// O cartão do modo novo saiu (fechado ou tocado): não volta.
+  Future<void> dismissUnlocked() async {
+    emit(state.copyWith(unlockedBlind: false));
+    await _unlocks?.markSeen(blindMode);
+  }
+
+  /// O aviso de que dá para escolher os caminhos saiu (fechado ou tocado):
+  /// não volta.
+  Future<void> dismissLayoutNotice() async {
+    emit(state.copyWith(layoutNotice: false));
+    await _homeLayout?.markNoticeSeen();
   }
 
   /// Para quem marcou "iniciante" e ainda não se formou, ou para quem tem

@@ -7,7 +7,6 @@ import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
-import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -123,9 +122,12 @@ void main() {
     expect(await reopen().load(), settings);
   });
 
-  test('o último ritmo do speedrun e o da Jornada voltam ao reabrir', () async {
+  test('o último ritmo do speedrun, o da Maratona e o da Jornada voltam ao '
+      'reabrir', () async {
     final start = (await reopen().load()).clock;
-    expect(start.speedrunTime, SpeedrunPaces.standard);
+    // Nada escolhido ainda: o speedrun abre no ritmo do nível do jogador.
+    expect(start.speedrunTime, isNull);
+    expect(start.marathonTime, isNull);
     expect(start.journeyTime, isNull);
 
     const settings = AppSettings(
@@ -134,6 +136,7 @@ void main() {
           initial: Duration(minutes: 3),
           increment: Duration(seconds: 2),
         ),
+        marathonTime: TimeControl(initial: Duration(seconds: 30)),
         journeyTime: TimeControl(initial: Duration(minutes: 10)),
       ),
     );
