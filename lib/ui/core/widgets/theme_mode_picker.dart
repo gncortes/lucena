@@ -5,6 +5,8 @@ import '../../../domain/models/app_theme_mode.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_theme_mode_ui.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_shape.dart';
 
 /// Os três temas lado a lado, cada um com uma miniatura do app nas cores
 /// dele ([accent] é a cor do app escolhida).
@@ -67,7 +69,7 @@ class _ModeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final radius = BorderRadius.circular(16);
+    final radius = BorderRadius.circular(AppShape.large);
     return Semantics(
       button: true,
       selected: selected,
@@ -80,7 +82,7 @@ class _ModeCard extends StatelessWidget {
           borderRadius: radius,
           onTap: onTap,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.state,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: radius,
@@ -94,7 +96,7 @@ class _ModeCard extends StatelessWidget {
                 SizedBox(
                   height: 64,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppShape.medium),
                     // A miniatura não espelha: claro à esquerda, escuro à
                     // direita em qualquer idioma.
                     child: Directionality(
@@ -175,7 +177,7 @@ class _MiniScreen extends StatelessWidget {
         height: 6,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(3),
+          borderRadius: BorderRadius.circular(AppShape.small),
         ),
       ),
     );
@@ -193,7 +195,7 @@ class _MiniScreen extends StatelessWidget {
               height: 14,
               decoration: BoxDecoration(
                 color: scheme.primary,
-                borderRadius: BorderRadius.circular(7),
+                borderRadius: BorderRadius.circular(AppShape.small),
               ),
             ),
           ],

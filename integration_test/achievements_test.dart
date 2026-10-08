@@ -1,12 +1,15 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
 import 'robots/app_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
+import 'robots/game_details_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/progress_robot.dart';
 import 'robots/speedrun_robot.dart';
@@ -32,7 +35,7 @@ void main() {
     await board.move('h1', 'h8');
     await ProgressRobot($).expectRatingChanged();
     final feedback = await ProgressRobot($).feedback();
-    await board.leave();
+    await ConclusionRobot($).close();
     await HomeRobot($).expectVisible();
     return feedback;
   }
@@ -72,7 +75,7 @@ void main() {
     await progress.expectLocked('beat-stockfish');
   });
 
-  patrolTest('conquista nova: o aviso desce por cima da partida com o nome '
+  patrolTest('conquista nova: o aviso desce por cima da conclusão com o nome '
       'dela e some sozinho', ($) async {
     final board = FreeBoardRobot($);
     await AppRobot($).open(systemLocale: _english);
@@ -90,6 +93,42 @@ void main() {
     await board.move('h1', 'h8', settle: false);
 
     await ProgressRobot($).expectAchievementToast('First endgame');
+  });
+
+  patrolTest('conquista nova: tocar no aviso abre o detalhe com a data, e '
+      '"Ver a partida" abre a revisão desta partida', ($) async {
+    final board = FreeBoardRobot($);
+    final progress = ProgressRobot($);
+    await AppRobot($).open(systemLocale: _english);
+    await board.openAt(
+      _mateInOne,
+      opponent: 'maia',
+      level: 1000,
+      user: Side.white,
+      goal: 'win',
+      position: 'basic.queen.0001',
+    );
+    await board.move('h1', 'h8', settle: false);
+
+    await progress.tapAchievementToast();
+    await progress.expectDetailUnlocked('First endgame');
+    await progress.openDetailGame();
+    // A revisão é a desta partida: o mate em um, do lance da dama.
+    final details = GameDetailsRobot($).state;
+    expect(details.attempt?.positionId, 'basic.queen.0001');
+    expect(details.attempt?.moves, ['h1h8']);
+  });
+
+  patrolTest('conquista que falta: o detalhe mostra o atalho, que leva ao '
+      'degrau do adversário', ($) async {
+    final progress = ProgressRobot($);
+    await AppRobot($).open(systemLocale: _english);
+    await progress.openAchievements();
+
+    await progress.openAchievement('beat-1000');
+    await progress.expectDetailLocked('Play against Coco');
+    await progress.tapDetailShortcut();
+    await $(JourneyKeys.rungScreen).waitUntilVisible();
   });
 
   patrolTest('conquista já obtida não aparece de novo como nova', ($) async {
@@ -123,10 +162,9 @@ void main() {
     await playStage($, 6);
     await speedrun.finishAttempt();
 
-    speedrun
-      ..expectStageTime(0, '0:09.0')
-      ..expectStageTime(1, '0:04.0')
-      ..expectTotal('0:19.0');
+    await speedrun.expectStageTime(0, '9.0 s');
+    await speedrun.expectStageTime(1, '4.0 s');
+    await speedrun.expectTotal('19.0 s');
     await speedrun.expectNewRecord(record: true);
   });
 
@@ -142,7 +180,7 @@ void main() {
     await playStage($, 5);
     await speedrun.finishAttempt();
 
-    speedrun.expectTotal('0:08.0');
+    await speedrun.expectTotal('8.0 s');
     await speedrun.expectNewRecord(record: true);
     await speedrun.back();
     await speedrun.expectBest('0:08.0');

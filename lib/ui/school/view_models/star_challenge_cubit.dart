@@ -10,6 +10,8 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/game_sound.dart';
+import '../../../domain/models/haptic_event.dart';
+import '../../core/sound/game_haptics.dart';
 
 enum ChallengePhase {
   /// O tabuleiro montado, esperando o "vai".
@@ -127,6 +129,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     required this._progress,
     required this._now,
     this._sounds,
+    this._haptics,
     Random? random,
     this.tickEvery = const Duration(milliseconds: 100),
   }) : _random = random ?? Random(),
@@ -141,6 +144,9 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   // Os sons do jogo; nulo: o desafio fica mudo.
   final GameSounds? _sounds;
+
+  // A vibração; nula: sem retorno tátil.
+  final GameHaptics? _haptics;
 
   // O aviso de pouco tempo toca uma vez por desafio.
   var _lowTimeWarned = false;
@@ -241,6 +247,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     if (moved == null) return;
     final caught = move.to == state.star;
     unawaited(_sounds?.play(caught ? GameSound.capture : GameSound.move));
+    unawaited(_haptics?.play(caught ? HapticEvent.capture : HapticEvent.move));
     _board = StarChallengeRules.respawnIfStuck(moved, _random);
     final square = StarChallengeRules.pieceSquare(_board)!;
     final after = state.copyWith(

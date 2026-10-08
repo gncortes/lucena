@@ -5,7 +5,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from make_source import after, exercise, move, play, talk, write  # noqa: E402
+from make_source import (after, exercise, move, play, talk, think,  # noqa: E402
+                         write)
 
 T = '3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1'    # terceira fileira, torre em b6
 TA = '3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1'    # terceira fileira, torre em a6
@@ -51,31 +52,48 @@ REFERENCES = [
 write({
     'id': 'queen.vsRook.thirdRank',
     'module': 'queen',
-    'steps': [
-        talk('intro', T, arrows=['b6h6'],
-             marks=['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6']),
-        talk('seven', T, arrows=['f7f6', 'f7g6', 'd5c6', 'd5d6', 'd5e6'],
-             marks=['b6']),
-        talk('quietMove', TB, arrows=['f4b8', 'f4f8', 'f4h6'],
-             marks=['a6', 'c6', 'g6', 'h6']),
-        move('rg6', after(TB, 'Rg6'), 'Qf8+ Kd7 Qf7+'),
-        move('ra6', after(TB, 'Ra6'), 'Qb8+ Ke7 Qb7+'),
-        move('rb7', after(TB, 'Rb7'), 'Kc6'),
-        move('switch', T, 'Qf4 Kd7 Qa4+ Kc7 Qa7+ Rb7 Qc5+ Kb8 Kd6'),
-        move('home', after(T, 'Qf4 Kd7 Qa4+ Kc7 Qa7+ Rb7 Qc5+ Kb8 Kd6 Rg7'),
-             'Qe5 Rc7 Qf4 Kc8 Qf5+ Kb8 Qe5'),
-        talk('a6', TA, arrows=['d5c5', 'c5b5'], marks=['a6']),
-        move('around', TA, 'Kc5 Kc8 Qe7 Kb8 Kb5'),
-        talk('fourth', F, arrows=['a5h5', 'e4d3', 'd3c3', 'c3b4'],
-             marks=['a1', 'd4']),
-        move('fourthA', F, 'Qf7+ Kd8 Qe6 Kc7 Kd3 Rc5 Kd4 Rc1 Qe3 Rc6 Qe7+ Kb6 Kd5'),
-        talk('ponziani', PONZIANI, arrows=['f7g7', 'g7h7'], marks=['g6', 'h7']),
-        talk('desperado', after(MORO, 'Qg3+ Kh1 Kf3'), arrows=['h2f2'],
-             marks=['g1', 'g2', 'h2']),
-        move('moro', MORO, 'Qe5 Kg1 Kg3 Rg2+ Kh3', accept={1: 'only'}),
-        talk('map', BROWNE),
-        talk('recap', T, arrows=['f7f4']),
-        play('finish', T),
+    'parts': [
+        {'id': 'third', 'steps': [
+            think('t_third', T, 5, 1),
+            talk('intro', T, arrows=['b6h6'],
+                 marks=['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6']),
+            talk('seven', T, arrows=['f7f6', 'f7g6', 'd5c6', 'd5d6', 'd5e6'],
+                 marks=['b6']),
+            talk('quietMove', TB, arrows=['f4b8', 'f4f8', 'f4h6'],
+                 marks=['a6', 'c6', 'g6', 'h6']),
+            move('rg6', after(TB, 'Rg6'), 'Qf8+ Kd7 Qf7+'),
+        ]},
+        {'id': 'best', 'steps': [
+            move('ra6', after(TB, 'Ra6'), 'Qb8+ Ke7 Qb7+'),
+            move('rb7', after(TB, 'Rb7'), 'Kc6'),
+            move('switch', T, 'Qf4 Kd7 Qa4+ Kc7 Qa7+ Rb7 Qc5+ Kb8 Kd6'),
+            move('home',
+                 after(T, 'Qf4 Kd7 Qa4+ Kc7 Qa7+ Rb7 Qc5+ Kb8 Kd6 Rg7'),
+                 'Qe5 Rc7 Qf4 Kc8 Qf5+ Kb8 Qe5'),
+        ]},
+        {'id': 'thirdA', 'steps': [
+            think('t_thirdA', TA, 5, 1),
+            talk('a6', TA, arrows=['d5c5', 'c5b5'], marks=['a6']),
+            move('around', TA, 'Kc5 Kc8 Qe7 Kb8 Kb5'),
+            talk('fourth', F, arrows=['a5h5', 'e4d3', 'd3c3', 'c3b4'],
+                 marks=['a1', 'd4']),
+            move('fourthA', F,
+                 'Qf7+ Kd8 Qe6 Kc7 Kd3 Rc5 Kd4 Rc1 Qe3 Rc6 Qe7+ Kb6 Kd5'),
+        ]},
+        {'id': 'ponziani', 'steps': [
+            think('t_ponziani', PONZIANI, 5, 1),
+            talk('ponziani', PONZIANI, arrows=['f7g7', 'g7h7'],
+                 marks=['g6', 'h7']),
+            talk('desperado', after(MORO, 'Qg3+ Kh1 Kf3'), arrows=['h2f2'],
+                 marks=['g1', 'g2', 'h2']),
+            move('moro', MORO, 'Qe5 Kg1 Kg3 Rg2+ Kh3', accept={1: 'only'}),
+        ]},
+        {'id': 'map', 'steps': [
+            think('t_browne', BROWNE, 5, 1),
+            talk('map', BROWNE),
+            talk('recap', T, arrows=['f7f4']),
+            play('finish', T),
+        ]},
     ],
     'exercises': [
         exercise('e01', 1, T, 'Qf4', origin='wikipedia'),

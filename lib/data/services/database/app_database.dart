@@ -87,6 +87,11 @@ class UnlockedAchievements extends Table {
   TextColumn get achievementId => text()();
   DateTimeColumn get at => dateTime()();
 
+  /// A partida que a desbloqueou e, numa etapa de speedrun, a tentativa
+  /// (versão 7). As de antes ficam sem.
+  IntColumn get gameId => integer().nullable()();
+  IntColumn get speedrunAttemptId => integer().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {achievementId};
 }
@@ -107,7 +112,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -122,6 +127,18 @@ class AppDatabase extends _$AppDatabase {
       if (from >= 4 && from < 6) {
         await migrator.addColumn(games, games.moveTimesMs);
         await migrator.addColumn(games, games.userSide);
+      }
+      // 5 e 6 -> 7: a origem da conquista. Quem cria a tabela agora (vindo de
+      // antes da 5) já cria com as colunas.
+      if (from >= 5 && from < 7) {
+        await migrator.addColumn(
+          unlockedAchievements,
+          unlockedAchievements.gameId,
+        );
+        await migrator.addColumn(
+          unlockedAchievements,
+          unlockedAchievements.speedrunAttemptId,
+        );
       }
     },
   );

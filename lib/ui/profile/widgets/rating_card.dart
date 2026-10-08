@@ -6,6 +6,9 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_sparkline.dart';
 import '../../core/widgets/rating_value.dart';
 import '../view_models/rating_cubit.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/filled_segments.dart';
+import 'rating_parts.dart';
 
 /// O rating de finais: o número, se ainda é provisório, a curva das partidas e
 /// o que ele mede.
@@ -25,20 +28,37 @@ class RatingCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: colors.surfaceContainerLow,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.profileEndgameRating,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.primary,
-              ),
+            // O título e o ⓘ com a explicação (antes um parágrafo fixo no fim
+            // do cartão), como na tela de rating.
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.profileEndgameRating,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  key: ProfileKeys.ratingHelp,
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: l10n.ratingHelp,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => showRatingHelp(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 12,
+              spacing: AppSpacing.md,
               children: [
                 // O número grande e, ao lado, a variação da última partida.
                 RatingValue(
@@ -66,20 +86,13 @@ class RatingCard extends StatelessWidget {
               ),
             ),
             if (state.history.length > 1) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               _Chart(
                 ratings: [
                   for (final entry in state.history) entry.rating.rating,
                 ],
               ),
             ],
-            const SizedBox(height: 12),
-            Text(
-              l10n.profileRatingHint,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
           ],
         ),
       ),
@@ -115,22 +128,16 @@ class _ChartState extends State<_Chart> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         RatingSparkline(key: ProfileKeys.ratingChart, ratings: ratings),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: [
-            for (final period in _periods)
-              ChoiceChip(
-                key: ProfileKeys.ratingPeriod(period),
-                label: Text(
-                  period == null
-                      ? l10n.profileRatingPeriodAll
-                      : l10n.profileRatingPeriodGames(period),
-                ),
-                selected: _games == period,
-                onSelected: (_) => setState(() => _games = period),
-              ),
-          ],
+        const SizedBox(height: AppSpacing.md),
+        // O mesmo seletor da tela de rating: o escolhido preenchido.
+        FilledSegments<int?>(
+          values: _periods,
+          selected: _games,
+          label: (period) => period == null
+              ? l10n.profileRatingPeriodAll
+              : l10n.profileRatingPeriodGames(period),
+          labelKey: ProfileKeys.ratingPeriod,
+          onChanged: (period) => setState(() => _games = period),
         ),
       ],
     );

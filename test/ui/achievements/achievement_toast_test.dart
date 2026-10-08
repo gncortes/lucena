@@ -98,9 +98,8 @@ void main() {
     );
   });
 
-  testWidgets('não recebe toques: o que está embaixo continua usável', (
-    tester,
-  ) async {
+  testWidgets('sem onTap, não recebe toques: o que está embaixo continua '
+      'usável', (tester) async {
     var taps = 0;
     await tester.pumpWidget(
       TestApp(
@@ -123,6 +122,68 @@ void main() {
     await tester.tap(find.byKey(AchievementsKeys.toast), warnIfMissed: false);
     expect(taps, 1);
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('com onTap, tocar no aviso devolve a conquista (abre o '
+      'detalhe); fora dele, o de baixo continua usável', (tester) async {
+    var below = 0;
+    Achievement? tapped;
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => below++,
+              ),
+              AchievementToasts(
+                achievements: const [first],
+                onTap: (achievement) => tapped = achievement,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 1000));
+
+    await tester.tap(find.byKey(AchievementsKeys.toast));
+    expect(tapped, first);
+    expect(below, 0);
+    await tester.tapAt(const Offset(200, 500));
+    expect(below, 1);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('datas em português: relativa na linha e completa no detalhe', (
+    tester,
+  ) async {
+    late AppLocalizations l10n;
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: Builder(
+          builder: (context) {
+            l10n = context.l10n;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    final now = DateTime(2026, 10, 8, 9);
+
+    expect(relativeDay(l10n, 'pt', DateTime(2026, 10, 8, 1), now), 'hoje');
+    expect(relativeDay(l10n, 'pt', DateTime(2026, 10, 7, 23), now), 'ontem');
+    expect(
+      relativeDay(l10n, 'pt', DateTime(2026, 10, 5, 23), now),
+      'há 3 dias',
+    );
+    expect(
+      fullDateTime(l10n, 'pt', DateTime(2026, 10, 7, 22, 41)),
+      '7 de out. de 2026, 22:41',
+    );
   });
 
   testWidgets('sem animações, o aviso aparece no lugar, sem deslizar', (

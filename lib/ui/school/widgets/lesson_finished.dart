@@ -9,7 +9,9 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/lesson_cubit.dart';
+import 'graduation_view.dart';
 import 'lesson_screen.dart';
+import '../../core/theme/app_motion.dart';
 
 /// A aula depois da qual o Viktor convida para jogar no Lichess.
 const lichessInviteLesson = 'tricks.principles';
@@ -72,9 +74,6 @@ class LichessInvite extends StatelessWidget {
   }
 }
 
-// Os dois bispos, do catálogo: o mate da formatura, agora com relógio.
-const _graduationFen = '8/8/8/4k3/8/7B/2K5/4B3 w - - 0 1';
-
 /// O fim da aula: a medalha entrando, o Viktor comentando e o caminho
 /// seguinte. Na última aula, a formatura.
 class LessonFinished extends StatelessWidget {
@@ -91,6 +90,8 @@ class LessonFinished extends StatelessWidget {
     final lesson = state.lesson!;
     final next = state.nextLesson;
     final graduation = state.courseFinished;
+    // A formatura tem a sua tela.
+    if (graduation) return GraduationView(state: state);
     return Stack(
       children: [
         Center(
@@ -100,8 +101,8 @@ class LessonFinished extends StatelessWidget {
               children: [
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
-                  duration: const Duration(milliseconds: 700),
-                  curve: Curves.elasticOut,
+                  duration: AppMotion.celebrate,
+                  curve: AppMotion.bounce,
                   builder: (context, value, child) =>
                       Transform.scale(scale: value, child: child),
                   child: CircleAvatar(
@@ -110,7 +111,7 @@ class LessonFinished extends StatelessWidget {
                     child: Icon(
                       graduation
                           ? Icons.workspace_premium
-                          : Icons.check_rounded,
+                          : Icons.check_circle_rounded,
                       size: 60,
                       color: colors.onPrimaryContainer,
                     ),
@@ -132,21 +133,23 @@ class LessonFinished extends StatelessWidget {
                 const SizedBox(height: 24),
                 if (viktor != null)
                   TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
                     teacher: viktor,
                     text: state.speech,
                     emotion: Emotion.happy,
-                    avatarSize: 72,
+                    avatarSize: 56,
                     bubbleKey: LessonKeys.speech,
                   ),
                 // Depois dos truques (e na formatura): jogar contra pessoas
                 // no Lichess, e voltar para os finais.
-                if (lesson.id == lichessInviteLesson || graduation) ...[
+                if (lesson.id == lichessInviteLesson) ...[
                   const SizedBox(height: 20),
                   const LichessInvite(),
                 ],
                 const SizedBox(height: 32),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 320),
+                // Os botões na mesma largura do balão e do resto da tela.
+                SizedBox(
+                  width: double.infinity,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: 12,
@@ -160,50 +163,8 @@ class LessonFinished extends StatelessWidget {
                           icon: const Icon(Icons.star_rounded),
                           label: Text(l10n.lessonToExercises),
                           onPressed: () => context.pop(),
-                        )
-                      else if (graduation)
-                        FilledButton.icon(
-                          key: LessonKeys.journeyButton,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size(220, 52),
-                          ),
-                          icon: const Icon(Icons.flag_rounded),
-                          label: Text(l10n.lessonToJourney),
-                          onPressed: () => context.go(Routes.journey),
                         ),
-                      // Formado: o primeiro jogo com relógio, os dois bispos
-                      // contra o Coco em 15+10, e o que quer dizer o "+10".
-                      if (graduation && !state.endgame) ...[
-                        OutlinedButton.icon(
-                          key: LessonKeys.clockGameButton,
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(220, 52),
-                          ),
-                          icon: const Icon(Icons.timer_outlined),
-                          label: Text(l10n.lessonPlayWithClock),
-                          onPressed: () => context.go(
-                            Routes.freeBoardAt(
-                              _graduationFen,
-                              view: 'white',
-                              white: '900+10',
-                              black: '900+10',
-                              opponent: 'maia',
-                              level: '1000',
-                              user: 'white',
-                              goal: 'win',
-                              position: 'bishop.twoBishopsVsKing.0001',
-                            ),
-                          ),
-                        ),
-                        Text(
-                          l10n.speedrunPaceHelp,
-                          key: LessonKeys.clockHelp,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ] else if (next != null)
+                      if (next != null)
                         FilledButton.icon(
                           key: LessonKeys.nextLessonButton,
                           style: FilledButton.styleFrom(

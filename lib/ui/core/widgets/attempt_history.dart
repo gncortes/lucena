@@ -64,7 +64,7 @@ class AttemptHistory extends StatelessWidget {
         ),
         AttemptOutcome.loss => (
           ChangeColors.of(context, up: false),
-          Icons.flag_rounded,
+          Icons.sentiment_dissatisfied_rounded,
           l10n.attemptLoss,
         ),
       };

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// O progresso por passos: um segmento por passo, os feitos cheios e o atual
 /// enchendo com animação. Espelha sozinho nos idiomas da direita para a
 /// esquerda.
@@ -23,8 +25,8 @@ class StepProgress extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return TweenAnimationBuilder<double>(
       tween: Tween(end: value.clamp(0, total.toDouble())),
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeOutCubic,
+      duration: AppMotion.component,
+      curve: AppMotion.enter,
       builder: (context, value, _) => Row(
         children: [
           for (var index = 0; index < total; index++) ...[

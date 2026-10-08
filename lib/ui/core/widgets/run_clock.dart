@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/use_cases/clock_format.dart';
+import '../theme/app_shape.dart';
 
 /// Um tempo de speedrun como nos cronômetros de speedrun: minutos e segundos
 /// (`3:25`) e os décimos menores (`.0`), sempre com ponto, como nos relógios
@@ -75,7 +76,7 @@ class RunClock extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: _light,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppShape.medium),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: row,

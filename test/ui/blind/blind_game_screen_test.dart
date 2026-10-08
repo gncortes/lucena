@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -55,10 +57,35 @@ void main() {
       phrases: blindPhrases(l10n),
     );
     await cubit.start();
+    await cubit.release();
+    // No fim, a conclusão abre no lugar da partida.
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              BlocProvider.value(value: cubit, child: const BlindGameScreen()),
+        ),
+        GoRoute(
+          path: '/result',
+          builder: (context, state) {
+            final args = state.extra! as ConclusionArgs;
+            return Scaffold(
+              body: Text(
+                'conclusion ${args.conclusion.result.name} '
+                '${args.conclusion.blindMoves}',
+              ),
+            );
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
-        child: BlocProvider.value(value: cubit, child: const BlindGameScreen()),
+        router: router,
+        child: const SizedBox.shrink(),
       ),
     );
     await tester.pumpAndSettle();
@@ -233,6 +260,9 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resignConfirm));
     await tester.pumpAndSettle();
     expect(cubit.state.phase, BlindPhase.finished);
+    // Dito o resultado, a conclusão às cegas, sem nenhum lance jogado.
+    expect(find.text('conclusion lost 0'), findsOneWidget);
+    expect(find.byType(BlindGameScreen), findsNothing);
   });
 
   testWidgets('com o teclado aberto e pouca altura, nada estoura', (

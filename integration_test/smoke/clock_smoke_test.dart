@@ -29,8 +29,7 @@ void main() {
     app.expectBrightness(Brightness.dark);
     await clock.toggleVibration();
     clock.expectVibration(enabled: false);
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
 
     await board.openAt(_initialFen, white: '300+0', black: '300+0');
     app.expectBrightness(Brightness.dark);
@@ -50,8 +49,7 @@ void main() {
     await clock.open();
     app.expectDirection(TextDirection.rtl);
     app.expectNoClippedText();
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
 
     await board.openAt(_initialFen, white: '180+2', black: '180+2');
     await board.move('e2', 'e4');

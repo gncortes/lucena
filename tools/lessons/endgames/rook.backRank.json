@@ -1,170 +1,211 @@
 {
   "id": "rook.backRank",
   "module": "rook",
-  "steps": [
+  "skills": [
+    "rook.backRank"
+  ],
+  "parts": [
     {
-      "type": "talk",
-      "id": "intro",
-      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "b1h1"
-      ],
-      "marks": [
-        "g1",
-        "h1"
-      ]
-    },
-    {
-      "type": "move",
       "id": "wait",
-      "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "steps": [
         {
-          "teach": "b1c1",
-          "accept": "hold",
-          "reply": "g4h3"
+          "type": "think",
+          "id": "t_knight",
+          "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan",
+          "side": "white"
         },
         {
-          "teach": "c1b1",
-          "accept": "hold",
-          "reply": "a2g2"
+          "type": "talk",
+          "id": "intro",
+          "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "b1h1"
+          ],
+          "marks": [
+            "g1",
+            "h1"
+          ]
         },
         {
-          "teach": "g1h1",
-          "accept": "only",
-          "reply": "g2h2"
+          "type": "talk",
+          "id": "room",
+          "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+          "side": "white",
+          "marks": [
+            "h1",
+            "h2",
+            "h3"
+          ]
         },
         {
-          "teach": "h1g1",
-          "accept": "only"
+          "type": "move",
+          "id": "wait",
+          "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b1c1",
+              "accept": "hold",
+              "reply": "g4h3"
+            },
+            {
+              "teach": "c1b1",
+              "accept": "hold",
+              "reply": "a2g2"
+            },
+            {
+              "teach": "g1h1",
+              "accept": "only",
+              "reply": "g2h2"
+            },
+            {
+              "teach": "h1g1",
+              "accept": "only"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
       "id": "corner",
-      "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
-      "arrows": [
-        "g1h1"
-      ],
-      "marks": [
-        "f1",
-        "h1"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "lucena",
-      "fen": "8/8/8/8/8/6p1/6rk/1R3K2 w - - 0 1",
-      "arrows": [
-        "h2g1"
-      ],
-      "marks": [
-        "g1"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "room",
-      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
-      "side": "white",
-      "marks": [
-        "h1",
-        "h2",
-        "h3"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "bishop",
-      "fen": "8/8/8/8/8/5pk1/7r/R4K2 w - - 0 1",
-      "arrows": [
-        "h2h1",
-        "f3f2"
-      ],
-      "marks": [
-        "g1",
-        "h1"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "free",
-      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
-      "arrows": [
-        "g4g3",
-        "b1b8"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "active",
-      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "steps": [
         {
-          "teach": "b1b8",
-          "accept": "hold",
-          "reply": "g4g3"
+          "type": "think",
+          "id": "t_trick",
+          "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "line"
         },
         {
-          "teach": "b8g8",
-          "accept": "only",
-          "reply": "g3f4"
+          "type": "talk",
+          "id": "corner",
+          "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+          "arrows": [
+            "g1h1"
+          ],
+          "marks": [
+            "f1",
+            "h1"
+          ]
         },
         {
-          "teach": "g8f8",
-          "accept": "hold"
+          "type": "talk",
+          "id": "lucena",
+          "fen": "8/8/8/8/8/6p1/6rk/1R3K2 w - - 0 1",
+          "arrows": [
+            "h2g1"
+          ],
+          "marks": [
+            "g1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "bishop",
+          "fen": "8/8/8/8/8/5pk1/7r/R4K2 w - - 0 1",
+          "arrows": [
+            "h2h1",
+            "f3f2"
+          ],
+          "marks": [
+            "g1",
+            "h1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "free",
+          "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+          "arrows": [
+            "g4g3",
+            "b1b8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "active",
+          "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b1b8",
+              "accept": "hold",
+              "reply": "g4g3"
+            },
+            {
+              "teach": "b8g8",
+              "accept": "only",
+              "reply": "g3f4"
+            },
+            {
+              "teach": "g8f8",
+              "accept": "hold"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
-      "id": "behind",
-      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
-      "arrows": [
-        "h8a8",
-        "a8a1"
-      ],
-      "marks": [
-        "g8"
-      ]
-    },
-    {
-      "type": "move",
       "id": "home",
-      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "steps": [
         {
-          "teach": "h8a8",
-          "accept": "hold",
-          "reply": "f3b3"
+          "type": "talk",
+          "id": "behind",
+          "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+          "arrows": [
+            "h8a8",
+            "a8a1"
+          ],
+          "marks": [
+            "g8"
+          ]
         },
         {
-          "teach": "a8a1",
-          "accept": "only"
+          "type": "move",
+          "id": "home",
+          "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "h8a8",
+              "accept": "hold",
+              "reply": "f3b3"
+            },
+            {
+              "teach": "a8a1",
+              "accept": "only"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "rookPawn",
+          "fen": "8/8/8/8/8/6kp/r7/1R5K b - - 0 1",
+          "side": "white",
+          "marks": [
+            "h1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "b1h1"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+          "goal": "draw"
         }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "rookPawn",
-      "fen": "8/8/8/8/8/6kp/r7/1R5K b - - 0 1",
-      "side": "white",
-      "marks": [
-        "h1"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "recap",
-      "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "b1h1"
       ]
     }
   ],

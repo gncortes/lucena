@@ -4,12 +4,13 @@ import 'dart:io' as io;
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 
-/// O curso de verdade (`assets/lessons`): o que o `tools/build_lessons.py`
-/// conferiu com o Stockfish, aqui conferido de novo com as regras do app,
+/// O curso de verdade (`assets/lessons`): o que o `tools/lessons/check_school.py`
+/// conferiu com o python-chess, aqui conferido de novo com as regras do app,
 /// sem motor, para o CI.
 void main() {
   final course = AssetLessonRepository.parseCourse(
@@ -38,6 +39,126 @@ void main() {
     expect(ids.toSet().length, ids.length);
   });
 
+  test('as 39 aulas na ordem da trilha: as regras novas (T52) entre as '
+      'peças, o en passant abrindo os peões, o valor das peças e os padrões '
+      'de mate nos truques, e a formatura por último', () {
+    expect(course.lessons.map((lesson) => lesson.id), [
+      'pieces.rook',
+      'pieces.bishop',
+      'pieces.queen',
+      'pieces.king',
+      'pieces.knight',
+      'pieces.pawn',
+      'rules.captureProtect',
+      'pieces.check',
+      'rules.outOfCheck',
+      'rules.castling',
+      'pieces.stalemate',
+      'rules.draws',
+      'notation.coordinates',
+      'notation.moves',
+      'notation.read',
+      'mates.twoRooks',
+      'mates.queen',
+      'rules.pieceValue',
+      'tricks.scholarsMate',
+      'tricks.defendScholar',
+      'tricks.foolsMate',
+      'tactics.matePatterns',
+      'tricks.principles',
+      'technique.opposition',
+      'technique.zugzwang',
+      'technique.rookCut',
+      'technique.rookMate',
+      'rules.enPassant',
+      'pawns.kingPawn',
+      'pawns.square',
+      'pawns.rookPawn',
+      'pawns.rookTwoPawns',
+      'minor.rookBishop',
+      'minor.rookKnight',
+      'minor.rookTwoBishops',
+      'minor.rookTwoKnights',
+      'minor.rookBishopKnight',
+      'minor.twoRooksVsKnight',
+      'graduation.twoBishops',
+    ]);
+    expect(course.moduleOf('rules.enPassant')?.id, 'pawns');
+    expect(course.moduleOf('tactics.matePatterns')?.id, 'tricks');
+  });
+
+  group('as aulas novas da T52, com as regras do app', () {
+    MoveStep step(String lessonId, String stepId) =>
+        course.lesson(lessonId)!.steps.firstWhere((s) => s.id == stepId)
+            as MoveStep;
+    Position after(MoveStep step, String uci) => GameRules.play(
+      GameRules.fromFen(step.fen)!,
+      Move.parse(uci)!,
+    )!.position;
+
+    test('o roque: proibido do lado em que o rei passa por casa atacada', () {
+      final cannot = step('rules.castling', 'cannot');
+      final position = GameRules.fromFen(cannot.fen)!;
+      expect(GameRules.play(position, Move.parse('e1g1')!), isNull);
+      expect(GameRules.play(position, Move.parse('e1c1')!), isNotNull);
+      expect(cannot.line.single.accept, containsAll(['e1c1', 'e1a1']));
+    });
+
+    test('en passant: o peão capturado sai do tabuleiro', () {
+      final white = step('rules.enPassant', 'capture');
+      expect(after(white, 'e5d6').board.pieceAt(Square.d5), isNull);
+      final black = step('rules.enPassant', 'black');
+      expect(black.side, Side.black);
+      expect(after(black, 'd4c3').board.pieceAt(Square.c4), isNull);
+    });
+
+    test('os empates: material insuficiente e o xeque perpétuo, que repete '
+        'a posição', () {
+      final take = step('rules.draws', 'takeLast');
+      expect(
+        GameRules.endOf(after(take, take.line.single.accept.first))?.reason,
+        GameEndReason.insufficientMaterial,
+      );
+      final perpetual = step('rules.draws', 'perpetual');
+      final moves = [
+        for (final turn in perpetual.line) ...[turn.accept.first, ?turn.reply],
+      ];
+      expect(moves, ['e1e8', 'g8h7', 'e8h5', 'h7g8', 'h5e8']);
+      expect(
+        GameRules.repetitionsOf(GameRules.fromFen(perpetual.fen)!, moves),
+        2,
+      );
+    });
+
+    test('a subpromoção: a dama afoga, a torre não', () {
+      final rook = step('pieces.pawn', 'rook');
+      expect(rook.line.single.accept, {'c7c8r'});
+      expect(
+        GameRules.endOf(after(rook, 'c7c8q'))?.reason,
+        GameEndReason.stalemate,
+      );
+      expect(GameRules.endOf(after(rook, 'c7c8r')), isNull);
+    });
+
+    test('os padrões de mate: todo lance pedido dá mate', () {
+      for (final id in ['backRank', 'smothered', 'arabian', 'supported']) {
+        final mate = step('tactics.matePatterns', id);
+        for (final uci in mate.line.single.accept) {
+          expect(
+            GameRules.endOf(after(mate, uci))?.reason,
+            GameEndReason.checkmate,
+            reason: '$id $uci',
+          );
+        }
+      }
+    });
+
+    test('a oposição e o afogamento também com as pretas', () {
+      expect(step('technique.opposition', 'defend').side, Side.black);
+      expect(step('pieces.stalemate', 'save').side, Side.black);
+    });
+  });
+
   test('toda posição abre, e os lances das aulas são legais', () {
     for (final lesson in course.lessons) {
       for (final step in lesson.steps) {
@@ -45,6 +166,8 @@ void main() {
         switch (step) {
           case TalkStep(:final fen):
             if (fen != null) Board.parseFen(fen.split(' ').first);
+          case ThinkStep() || DemoStep():
+            fail('$where: a escola não tem passo de pensar nem demonstração');
           case StarsStep(:final fen, :final stars):
             // Toda estrela alcançável, uma depois da outra, na ordem dada.
             var board = LessonRules.starsBoard(fen);

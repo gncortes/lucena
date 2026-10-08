@@ -3,21 +3,21 @@
   "level": 1200,
   "name": "Tito",
   "tagline": {
-    "pt": "Décadas de xadrez de praça e um causo pra cada lance.",
+    "pt": "Décadas de praça, mais catimba que cálculo.",
     "en": "Decades of park chess and a story for every move."
   },
   "personality": {
-    "pt": "Seu Tito é um vovô bonachão de paletó xadrez, óculos redondos e bengala de cabeça de leão, que joga na praça há décadas. Joga devagar e sem pressa, confiando na experiência mais do que no cálculo. Ganhando, provoca com carinho e promete contar a partida pros amigos; perdendo, culpa os óculos, os joelhos ou o cochilo, e pede revanche. Vive dizendo \"no meu tempo...\", chama o jogador de \"meu jovem\" e solta um \"ora bolas!\" quando erra.",
+    "pt": "Seu Tito é um senhor de paletó xadrez, óculos redondos e bengala de cabeça de leão, que joga na praça há décadas e ganha mais na malandragem que no cálculo. Simpático, chama todo mundo de \"meu filho\", conta vantagem de partidas que ninguém viu e vive pedindo café fiado. Ganhando, provoca com cara de santo; perdendo, não gosta nada: se faz de coitado, finge que não enxerga, culpa a catarata ou a pressão e tenta convencer o jogador a não dar o mate.",
     "en": "Tito is a jolly grandpa in a checked tweed jacket, round glasses and a lion-headed cane, who has played park chess for decades. He plays slowly and calmly, trusting experience more than calculation. When winning, he teases kindly and vows to tell his friends about the game; when losing, he blames his glasses, his knees or a nap, and demands a rematch. He's always saying \"back in my day...\", calls the player \"youngster\" and lets out an \"oh, fiddlesticks!\" when he slips."
   },
   "traits": [
     "elderly",
-    "jolly",
-    "nostalgic",
-    "storyteller",
+    "cunning",
+    "charming",
+    "boastful",
     "teasing",
-    "patient",
-    "warm"
+    "storyteller",
+    "sly"
   ],
   "avatar": "assets/characters/grandpa/avatar.png"
 }

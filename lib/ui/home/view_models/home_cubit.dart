@@ -153,9 +153,17 @@ class EndgameSummary {
     this.lessonOpen = false,
     this.step,
     this.stepCount,
+    this.partId,
+    this.partNumber,
+    this.partCount,
   });
 
   final String lessonId;
+
+  /// Numa aula em partes: a parte em que o aluno parou (T51).
+  final String? partId;
+  final int? partNumber;
+  final int? partCount;
   final String title;
   final int score;
   final int maxScore;
@@ -329,7 +337,8 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       for (final each in trail.lessons) {
         final done = progress.of(each.id);
-        final started = done.lessonDone || done.stars.isNotEmpty;
+        final started =
+            done.lessonDone || done.parts.isNotEmpty || done.stars.isNotEmpty;
         if (started && !EndgameLessonRules.passed(each, done)) {
           lesson = each;
           break;
@@ -353,6 +362,13 @@ class HomeCubit extends Cubit<HomeState> {
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
     }
+    // Numa aula em partes, o passo conta dentro da parte.
+    final checkpoint = lessonOpen
+        ? EndgameLessonRules.migrate(lesson, ongoing)
+        : null;
+    final part = lesson.lesson.parts.isEmpty || checkpoint?.part == null
+        ? null
+        : lesson.lesson.part(checkpoint!.part!);
     return EndgameSummary(
       lessonId: lesson.id,
       title: texts.lessonTitle(lesson.id),
@@ -363,8 +379,17 @@ class HomeCubit extends Cubit<HomeState> {
       exerciseNumber: exerciseIndex < 0 ? null : exerciseIndex + 1,
       exerciseCount: exerciseIndex < 0 ? null : lesson.exercises.length,
       lessonOpen: lessonOpen,
-      step: lessonOpen ? ongoing.step + 1 : null,
-      stepCount: lessonOpen ? lesson.lesson.steps.length : null,
+      step: !lessonOpen
+          ? null
+          : part != null
+          ? checkpoint!.step + 1
+          : ongoing.step + 1,
+      stepCount: !lessonOpen
+          ? null
+          : part?.steps.length ?? lesson.lesson.steps.length,
+      partId: part?.id,
+      partNumber: part == null ? null : lesson.lesson.parts.indexOf(part) + 1,
+      partCount: part == null ? null : lesson.lesson.parts.length,
     );
   }
 }

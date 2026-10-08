@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 
 /// O retrato redondo de um adversário numa trilha (a da Jornada e a das
 /// etapas do speedrun).
@@ -137,7 +138,7 @@ class TrailBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Text(
         text,

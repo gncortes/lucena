@@ -1,9 +1,13 @@
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/domain/models/haptic_event.dart';
 
-/// Não vibra: só conta os avisos pedidos.
+/// Não vibra: só guarda as vibrações pedidas.
 class FakeHapticsRepository implements HapticsRepository {
-  int lowTimeCalls = 0;
+  final events = <HapticEvent>[];
+
+  /// Quantos avisos de pouco tempo.
+  int get lowTimeCalls => events.where((e) => e == HapticEvent.warning).length;
 
   @override
-  Future<void> lowTime() async => lowTimeCalls++;
+  Future<void> play(HapticEvent event) async => events.add(event);
 }

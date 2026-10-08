@@ -16,6 +16,7 @@ import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_shape.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {
@@ -98,7 +99,7 @@ class _CategoryCard extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppShape.large),
                     ),
                     padding: const EdgeInsets.all(10),
                     child: ExcludeSemantics(
@@ -175,7 +176,7 @@ class _CategoryCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: colors.secondaryContainer,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppShape.medium),
                         ),
                         child: Text(
                           endgameName(l10n, sub.key),
@@ -188,7 +189,7 @@ class _CategoryCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppShape.small),
                 child: AnimatedProgress(
                   value: total == 0 ? 0 : done / total,
                   minHeight: 6,
@@ -244,7 +245,7 @@ class _DifficultyBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Text(
         label,

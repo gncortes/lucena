@@ -1,253 +1,287 @@
 {
   "id": "basics.twoBishops",
   "module": "basics",
-  "steps": [
+  "skills": [
+    "mate.twoBishops"
+  ],
+  "parts": [
     {
-      "type": "talk",
-      "id": "wall",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "arrows": [
-        "d5a8",
-        "d5g8",
-        "e5b8",
-        "e5h8"
-      ],
-      "marks": [
-        "c8",
-        "d8",
-        "e8",
-        "f8",
-        "d7",
-        "e7"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "mateCorner",
-      "fen": "7k/8/4B1K1/4B3/8/8/8/8 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "e5h8",
-        "e6g8"
-      ],
-      "marks": [
-        "h8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "mateSide",
-      "fen": "1k6/1B6/1K1B4/8/8/8/8/8 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "d6b8",
-        "b7a8",
-        "b7c8"
-      ],
-      "marks": [
-        "b8"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "join",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "goal": "win",
-      "line": [
+      "id": "mates",
+      "steps": [
         {
-          "teach": "e4f5",
-          "accept": [
-            "d5b7",
-            "e4d4",
-            "e4f5",
+          "type": "think",
+          "id": "t_wall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "talk",
+          "id": "wall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "arrows": [
+            "d5a8",
+            "d5g8",
             "e5b8",
-            "e5c3",
-            "e5d4"
+            "e5h8"
           ],
-          "reply": "d7c8"
-        },
-        {
-          "teach": "f5e6",
-          "accept": [
-            "d5c6",
-            "e5d6",
-            "f5e6",
-            "f5f6"
+          "marks": [
+            "c8",
+            "d8",
+            "e8",
+            "f8",
+            "d7",
+            "e7"
           ]
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "edge",
-      "fen": "3k4/8/4K3/3BB3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "line": [
-        {
-          "teach": "d5b7",
-          "accept": [
-            "d5b7",
-            "d5c6",
-            "d5e4",
-            "d5f3",
-            "e5c3",
-            "e5d6",
-            "e5f4",
-            "e5g3",
-            "e5h2",
-            "e6d6"
-          ],
-          "reply": "d8e8"
         },
         {
-          "teach": "e5c7",
-          "accept": [
-            "e5c3",
-            "e5c7",
-            "e5d4",
-            "e5f6"
+          "type": "talk",
+          "id": "mateCorner",
+          "fen": "7k/8/4B1K1/4B3/8/8/8/8 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "e5h8",
+            "e6g8"
+          ],
+          "marks": [
+            "h8"
           ]
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "corner",
-      "fen": "5k2/1BB5/4K3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "line": [
-        {
-          "teach": "e6f6",
-          "accept": [
-            "e6f6"
-          ],
-          "reply": "f8e8"
         },
         {
-          "teach": "b7c6",
-          "accept": [
-            "b7c6",
+          "type": "talk",
+          "id": "mateSide",
+          "fen": "1k6/1B6/1K1B4/8/8/8/8/8 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "d6b8",
+            "b7a8",
             "b7c8"
           ],
-          "reply": "e8f8"
+          "marks": [
+            "b8"
+          ]
         },
         {
-          "teach": "c6d7",
-          "accept": [
-            "c6a4",
-            "c6b5",
-            "c6d7",
-            "c7a5",
-            "c7b6",
-            "c7b8",
-            "c7d6",
-            "c7d8",
-            "c7e5",
-            "c7f4",
-            "c7g3",
-            "c7h2"
+          "type": "move",
+          "id": "join",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e4f5",
+              "accept": [
+                "d5b7",
+                "e4d4",
+                "e4f5",
+                "e5b8",
+                "e5c3",
+                "e5d4"
+              ],
+              "reply": "d7c8"
+            },
+            {
+              "teach": "f5e6",
+              "accept": [
+                "d5c6",
+                "e5d6",
+                "f5e6",
+                "f5f6"
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "type": "move",
-      "id": "mate",
-      "fen": "6k1/2BB4/5K2/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "line": [
+      "id": "edge",
+      "steps": [
         {
-          "teach": "f6g6",
-          "accept": [
-            "c7f4",
-            "f6g6"
-          ],
-          "reply": "g8f8"
+          "type": "move",
+          "id": "edge",
+          "fen": "3k4/8/4K3/3BB3/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "d5b7",
+              "accept": [
+                "d5b7",
+                "d5c6",
+                "d5e4",
+                "d5f3",
+                "e5c3",
+                "e5d6",
+                "e5f4",
+                "e5g3",
+                "e5h2",
+                "e6d6"
+              ],
+              "reply": "d8e8"
+            },
+            {
+              "teach": "e5c7",
+              "accept": [
+                "e5c3",
+                "e5c7",
+                "e5d4",
+                "e5f6"
+              ]
+            }
+          ]
         },
         {
-          "teach": "c7d6",
-          "accept": [
-            "c7d6"
-          ],
-          "reply": "f8g8"
+          "type": "move",
+          "id": "corner",
+          "fen": "5k2/1BB5/4K3/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e6f6",
+              "accept": [
+                "e6f6"
+              ],
+              "reply": "f8e8"
+            },
+            {
+              "teach": "b7c6",
+              "accept": [
+                "b7c6",
+                "b7c8"
+              ],
+              "reply": "e8f8"
+            },
+            {
+              "teach": "c6d7",
+              "accept": [
+                "c6a4",
+                "c6b5",
+                "c6d7",
+                "c7a5",
+                "c7b6",
+                "c7b8",
+                "c7d6",
+                "c7d8",
+                "c7e5",
+                "c7f4",
+                "c7g3",
+                "c7h2"
+              ]
+            }
+          ]
         },
         {
-          "teach": "d7e6",
-          "accept": [
-            "d7e6"
-          ],
-          "reply": "g8h8"
+          "type": "move",
+          "id": "mate",
+          "fen": "6k1/2BB4/5K2/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "f6g6",
+              "accept": [
+                "c7f4",
+                "f6g6"
+              ],
+              "reply": "g8f8"
+            },
+            {
+              "teach": "c7d6",
+              "accept": [
+                "c7d6"
+              ],
+              "reply": "f8g8"
+            },
+            {
+              "teach": "d7e6",
+              "accept": [
+                "d7e6"
+              ],
+              "reply": "g8h8"
+            },
+            {
+              "teach": "d6e5",
+              "accept": [
+                "d6e5"
+              ]
+            }
+          ]
         },
         {
-          "teach": "d6e5",
-          "accept": [
-            "d6e5"
+          "type": "move",
+          "id": "waiting",
+          "fen": "7k/2BB4/6K1/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "c7d6",
+              "accept": [
+                "c7d6",
+                "c7f4",
+                "d7e8"
+              ],
+              "reply": "h8g8"
+            },
+            {
+              "teach": "d7e6",
+              "accept": [
+                "d7e6"
+              ],
+              "reply": "g8h8"
+            },
+            {
+              "teach": "d6e5",
+              "accept": [
+                "d6e5"
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "type": "move",
-      "id": "waiting",
-      "fen": "7k/2BB4/6K1/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "line": [
+      "id": "finish",
+      "steps": [
         {
-          "teach": "c7d6",
-          "accept": [
-            "c7d6",
-            "c7f4",
-            "d7e8"
-          ],
-          "reply": "h8g8"
+          "type": "think",
+          "id": "t_stalemate",
+          "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "d7e6",
-          "accept": [
-            "d7e6"
+          "type": "talk",
+          "id": "stalemate",
+          "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
+          "arrows": [
+            "c6b6"
           ],
-          "reply": "g8h8"
-        },
-        {
-          "teach": "d6e5",
-          "accept": [
-            "d6e5"
+          "marks": [
+            "b6",
+            "a8"
           ]
+        },
+        {
+          "type": "talk",
+          "id": "rules",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "marks": [
+            "d5",
+            "e5"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "playWall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "goal": "win"
+        },
+        {
+          "type": "play",
+          "id": "playCenter",
+          "fen": "8/8/8/8/3k4/8/8/2BK1B2 w - - 0 1",
+          "goal": "win"
         }
       ]
-    },
-    {
-      "type": "talk",
-      "id": "stalemate",
-      "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
-      "arrows": [
-        "c6b6"
-      ],
-      "marks": [
-        "b6",
-        "a8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "rules",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "marks": [
-        "d5",
-        "e5"
-      ]
-    },
-    {
-      "type": "play",
-      "id": "playWall",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "goal": "win"
-    },
-    {
-      "type": "play",
-      "id": "playCenter",
-      "fen": "8/8/8/8/3k4/8/8/2BK1B2 w - - 0 1",
-      "goal": "win"
     }
   ],
   "exercises": [

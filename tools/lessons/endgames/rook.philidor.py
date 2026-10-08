@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from make_source import after, exercise, move, talk, write  # noqa: E402
+from make_source import (after, exercise, move, play, talk, think,  # noqa: E402
+                         write)
 
 PH = '8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1'     # Philidor, pretas jogam
 PHW = '8/8/8/8/4pk2/R7/7r/4K3 w - - 0 1'    # a mesma, brancas jogam
@@ -59,20 +60,31 @@ REFERENCES = [
 write({
     'id': 'rook.philidor',
     'module': 'rook',
-    'steps': [
-        talk('intro', PH, arrows=['a3h3'], marks=['e1', 'f3', 'g3', 'e3']),
-        move('take', REACH, 'Rb3 Rh2 Ra3', accept='hold', goal='draw'),
-        talk('pawn', E3, arrows=['f4f3', 'h2h1', 'a3a8'], marks=['e3']),
-        move('behind', E3, 'Ra8 Kf3 Rf8+ Ke4 Re8+ Kd3 Rd8+',
-             accept={1: 'hold', 2: 'only', 3: 'hold', 4: 'only'}, goal='draw'),
-        talk('early', EARLY, arrows=['a2a1'], marks=['e3']),
-        talk('passive', PASSIVE, arrows=['h2h1'], marks=['f3']),
-        talk('trade', TRADE, arrows=['g8d8', 'a5d5']),
-        move('endgame', TRADE, 'Rd8+ Rd5 Rxd5+ Kxd5 Ke2 Kd4 Ke1',
-             accept={1: 'hold', 2: 'hold', 3: 'hold', 4: 'only'}, goal='draw'),
-        talk('bishop', BISHOP, arrows=['g8g3'], marks=['c1']),
-        talk('limits', ADVANCED, arrows=['f4f8'], marks=['f3']),
-        talk('recap', PH, arrows=['a3h3', 'a3a8']),
+    'parts': [
+        {'id': 'third', 'steps': [
+            think('t_classic', PH, 5, 1, side='white'),
+            talk('intro', PH, arrows=['a3h3'], marks=['e1', 'f3', 'g3', 'e3']),
+            move('take', REACH, 'Rb3 Rh2 Ra3', accept='hold', goal='draw'),
+            talk('pawn', E3, arrows=['f4f3', 'h2h1', 'a3a8'], marks=['e3']),
+            move('behind', E3, 'Ra8 Kf3 Rf8+ Ke4 Re8+ Kd3 Rd8+',
+                 accept={1: 'hold', 2: 'only', 3: 'hold', 4: 'only'},
+                 goal='draw'),
+        ]},
+        {'id': 'errors', 'steps': [
+            talk('early', EARLY, arrows=['a2a1'], marks=['e3']),
+            talk('passive', PASSIVE, arrows=['h2h1'], marks=['f3']),
+            talk('trade', TRADE, arrows=['g8d8', 'a5d5']),
+            move('endgame', TRADE, 'Rd8+ Rd5 Rxd5+ Kxd5 Ke2 Kd4 Ke1',
+                 accept={1: 'hold', 2: 'hold', 3: 'hold', 4: 'only'},
+                 goal='draw'),
+        ]},
+        {'id': 'beyond', 'steps': [
+            think('t_bishop', BISHOP, 5, 1, ask='line'),
+            talk('bishop', BISHOP, arrows=['g8g3'], marks=['c1']),
+            talk('limits', ADVANCED, arrows=['f4f8'], marks=['f3']),
+            talk('recap', PH, arrows=['a3h3', 'a3a8']),
+            play('finish', REACH, goal='draw'),
+        ]},
     ],
     'exercises': [
         exercise('e01', 1, REACH, 'Rb3', accept='hold', goal='draw',

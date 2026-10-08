@@ -19,6 +19,9 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/share/share_repository.dart';
+import 'data/repositories/placement/placement_repository.dart';
+import 'data/repositories/conclusion/conclusion_repository.dart';
 import 'data/repositories/analysis/analysis_repository.dart';
 import 'data/repositories/review/game_review_repository.dart';
 import 'data/repositories/sound/sound_repository.dart';
@@ -39,6 +42,7 @@ import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'routing/routes.dart';
+import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme.dart';
@@ -74,6 +78,7 @@ class _LucenaAppState extends State<LucenaApp> {
   // reabre nela.
   Future<void> _openRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
+    final conclusion = await widget.dependencies.conclusionRepository.pending();
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     if (!mounted) return;
@@ -83,7 +88,9 @@ class _LucenaAppState extends State<LucenaApp> {
     final exercise = endgames.openExercise;
     setState(() {
       _router = buildRouter(
-        initialLocation: resume
+        initialLocation: conclusion != null
+            ? Routes.conclusion(conclusion)
+            : resume
             ? Routes.freeBoard
             : lesson != null && lesson.open
             ? Routes.lesson(lesson.lessonId)
@@ -112,6 +119,12 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
         ),
+        RepositoryProvider<PlacementRepository>.value(
+          value: dependencies.placementRepository,
+        ),
+        RepositoryProvider<ShareRepository>.value(
+          value: dependencies.shareRepository,
+        ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
         ),
@@ -124,12 +137,22 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,
         ),
+        // A vibração, já com a preferência de ligada ou desligada.
+        RepositoryProvider<GameHaptics>(
+          create: (context) => GameHaptics(
+            dependencies.settingsRepository,
+            dependencies.hapticsRepository,
+          ),
+        ),
         // Os sons do jogo, já com a preferência de ligado ou desligado.
         RepositoryProvider<GameSounds>(
           create: (context) => GameSounds(
             dependencies.settingsRepository,
             dependencies.soundRepository,
           ),
+        ),
+        RepositoryProvider<ConclusionRepository>.value(
+          value: dependencies.conclusionRepository,
         ),
         RepositoryProvider<OngoingGameRepository>.value(
           value: dependencies.ongoingGameRepository,

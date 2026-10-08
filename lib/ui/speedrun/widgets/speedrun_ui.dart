@@ -106,7 +106,7 @@ class SpeedrunPicture extends StatelessWidget {
             )
           : Icon(
               speedrun.kind == SpeedrunKind.full
-                  ? Icons.emoji_events_outlined
+                  ? Icons.timer_outlined
                   : Icons.fitness_center,
               size: size * 0.5,
               color: colors.onSecondaryContainer,

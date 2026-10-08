@@ -7,15 +7,20 @@ import 'package:lucena/domain/use_cases/rating_rules.dart';
 
 /// Rating na memória: toda partida conta com chance [expected] para o jogador.
 class FakeRatingRepository implements RatingRepository {
-  FakeRatingRepository({this.start = 1150, this.expected = 0.5});
+  FakeRatingRepository({int start = 1150, this.expected = 0.5})
+    : initial = start;
 
-  final int start;
+  /// O rating da faixa do perfil, antes da primeira partida.
+  final int initial;
   double expected;
   final entries = <RatingEntry>[];
 
   @override
   Future<PlayerRating> current() async =>
-      entries.isEmpty ? PlayerRating.start(start) : entries.last.rating;
+      entries.isEmpty ? PlayerRating.start(initial) : entries.last.rating;
+
+  @override
+  Future<PlayerRating> start() async => PlayerRating.start(initial);
 
   @override
   Future<List<RatingEntry>> history() async => [...entries];

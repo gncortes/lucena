@@ -1,144 +1,187 @@
 {
   "id": "basics.rookMate",
   "module": "basics",
-  "steps": [
+  "skills": [
+    "mate.rook"
+  ],
+  "parts": [
     {
-      "type": "talk",
       "id": "box",
-      "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
-      "arrows": [
-        "h3a3"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "shrinkMove",
-      "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
+      "steps": [
         {
-          "teach": "h3c3",
-          "accept": "best"
+          "type": "think",
+          "id": "t_box",
+          "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "talk",
+          "id": "box",
+          "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
+          "arrows": [
+            "h3a3"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "shrinkMove",
+          "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "h3c3",
+              "accept": "best"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "rules",
+          "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
+          "arrows": [
+            "d3c3"
+          ],
+          "marks": [
+            "a5",
+            "b5",
+            "a6",
+            "b6",
+            "a7",
+            "b7",
+            "a8",
+            "b8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "kingMove",
+          "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "d3c3",
+              "accept": "best"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
-      "id": "rules",
-      "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
-      "arrows": [
-        "d3c3"
-      ],
-      "marks": [
-        "a5",
-        "b5",
-        "a6",
-        "b6",
-        "a7",
-        "b7",
-        "a8",
-        "b8"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "kingMove",
-      "fen": "8/8/8/k7/2R5/3K4/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
+      "id": "edge",
+      "steps": [
         {
-          "teach": "d3c3",
-          "accept": "best"
+          "type": "think",
+          "id": "t_capablanca",
+          "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "talk",
+          "id": "opposition",
+          "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
+          "marks": [
+            "e5",
+            "e7"
+          ],
+          "arrows": [
+            "a6a7"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "checkMove",
+          "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "a6a7",
+              "accept": "best"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "waiting",
+          "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "a7h7"
+          ],
+          "marks": [
+            "c8",
+            "e8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "waitMove",
+          "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "a7h7",
+              "accept": "best",
+              "reply": "d8c8"
+            },
+            {
+              "teach": "e6d6",
+              "accept": "best",
+              "reply": "c8b8"
+            },
+            {
+              "teach": "d6c6",
+              "accept": "best",
+              "reply": "b8a8"
+            },
+            {
+              "teach": "c6b6",
+              "accept": "best",
+              "reply": "a8b8"
+            },
+            {
+              "teach": "h7h8",
+              "accept": "only"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
-      "id": "opposition",
-      "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
-      "marks": [
-        "e5",
-        "e7"
-      ],
-      "arrows": [
-        "a6a7"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "checkMove",
-      "fen": "8/4k3/R7/4K3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
-        {
-          "teach": "a6a7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "waiting",
-      "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
-      "arrows": [
-        "a7h7"
-      ],
-      "marks": [
-        "c8",
-        "e8"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "waitMove",
-      "fen": "3k4/R7/4K3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
-        {
-          "teach": "a7h7",
-          "accept": "best",
-          "reply": "d8c8"
-        },
-        {
-          "teach": "e6d6",
-          "accept": "best",
-          "reply": "c8b8"
-        },
-        {
-          "teach": "d6c6",
-          "accept": "best",
-          "reply": "b8a8"
-        },
-        {
-          "teach": "c6b6",
-          "accept": "best",
-          "reply": "a8b8"
-        },
-        {
-          "teach": "h7h8",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "stalemate",
-      "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
-      "side": "white",
-      "marks": [
-        "a8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "recap",
-      "fen": "8/8/8/8/3k4/5K2/8/5R2 w - - 0 1"
-    },
-    {
-      "type": "play",
       "id": "finish",
-      "fen": "8/8/8/3k4/8/8/8/4K2R w - - 0 1",
-      "goal": "win"
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_stalemate",
+          "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan",
+          "side": "white"
+        },
+        {
+          "type": "talk",
+          "id": "stalemate",
+          "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
+          "side": "white",
+          "marks": [
+            "a8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "8/8/8/8/3k4/5K2/8/5R2 w - - 0 1"
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "8/8/8/3k4/8/8/8/4K2R w - - 0 1",
+          "goal": "win"
+        }
+      ]
     }
   ],
   "exercises": [

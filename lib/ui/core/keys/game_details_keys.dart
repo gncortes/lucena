@@ -7,6 +7,7 @@ abstract final class GameDetailsKeys {
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
   static const notFound = Key('gameDetails.notFound');
+  static const loading = Key('gameDetails.loading');
 
   /// O lance [index] na tabela e o tempo dele.
   static Key move(int index) => Key('gameDetails.move.$index');

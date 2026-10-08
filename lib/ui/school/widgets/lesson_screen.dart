@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:chessground/chessground.dart';
@@ -12,16 +13,22 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../../domain/models/app_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
+import 'lesson_part_widgets.dart';
 import 'lesson_finished.dart';
 import 'star_shape.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Uma aula com o Viktor: ele em cima, falando; o tabuleiro no meio; a barra
 /// dos passos e o botão do passo embaixo.
@@ -37,7 +44,7 @@ class _LessonScreenState extends State<LessonScreen>
   // O tabuleiro "pousa" a cada passo novo: um fade curto e uma leve escala.
   late final _landing = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 380),
+    duration: AppMotion.component,
     value: 1,
   );
 
@@ -49,11 +56,80 @@ class _LessonScreenState extends State<LessonScreen>
 
   late final _shake = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 380),
+    duration: AppMotion.component,
   );
+
+  // O relógio do passo de pensar e o ritmo da demonstração (T51).
+  Timer? _ticker;
+  final _demoClock = Stopwatch();
+  String? _demoAt;
+  bool _demoSpoke = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
+  }
+
+  /// O aluno ainda não escolheu o tempo de pensar e a aula tem passo de
+  /// pensar: a escolha vem antes (e o relógio espera).
+  bool _asksThinkTime(BuildContext context, LessonState state) {
+    final chosen = context.read<SettingsCubit>().state?.thinkChosen ?? true;
+    if (chosen || state.finished) return false;
+    return state.lesson?.steps.any((step) => step is ThinkStep) ?? false;
+  }
+
+  void _tick() {
+    if (!mounted) return;
+    final cubit = context.read<LessonCubit>();
+    final state = cubit.state;
+    if (state.finished || _asksThinkTime(context, state)) return;
+    switch (state.current) {
+      case ThinkStep() when state.thinking:
+        unawaited(cubit.tick());
+      case DemoStep(:final line)
+          when state.demoPlaying && state.demoMove < line.length:
+        _paceDemo(cubit, state);
+      default:
+        break;
+    }
+  }
+
+  /// A demonstração anda sozinha no ritmo da fala (docs/spikes/T51-ritmo.md):
+  /// com a voz, espera ela terminar e mais uma pausa; sem voz, um tempo de
+  /// leitura pelo tamanho da fala. A velocidade da voz vale para os dois.
+  void _paceDemo(LessonCubit cubit, LessonState state) {
+    final at = '${state.current!.id}:${state.demoMove}';
+    if (_demoAt != at) {
+      _demoAt = at;
+      _demoSpoke = false;
+      _demoClock
+        ..reset()
+        ..start();
+    }
+    final speech = TeacherSpeech.speechOf(context)?.state;
+    final speed = speech?.settings.speed ?? 1.0;
+    final text = state.speech ?? '';
+    if (speech != null && speech.isSpeaking(text)) {
+      // Ainda falando: o relógio conta a partir do fim da fala.
+      _demoSpoke = true;
+      _demoClock
+        ..reset()
+        ..start();
+      return;
+    }
+    final reading = max(DemoPace.minReadMs, text.length * DemoPace.msPerChar);
+    final waitMs =
+        ((_demoSpoke ? 0 : reading) + DemoPace.pauseMs) / max(speed, 0.5);
+    if (_demoClock.elapsedMilliseconds >= waitMs) {
+      _demoAt = null;
+      unawaited(cubit.demoForward());
+    }
+  }
 
   @override
   void dispose() {
+    _ticker?.cancel();
     _board?.dispose();
     _shake.dispose();
     _landing.dispose();
@@ -99,7 +175,7 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
     if (previous.current != null &&
         state.current?.id != previous.current?.id &&
-        !MediaQuery.disableAnimationsOf(context)) {
+        !AppMotion.of(context).disabled) {
       _landing.forward(from: 0);
     }
     if (state.fen == null || state.current == null) return;
@@ -123,6 +199,8 @@ class _LessonScreenState extends State<LessonScreen>
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
+    // Escolhido o tempo de pensar, a tela troca da escolha para a aula.
+    context.select((SettingsCubit cubit) => cubit.state?.thinkChosen);
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) cubit.leave();
@@ -137,14 +215,71 @@ class _LessonScreenState extends State<LessonScreen>
           return Scaffold(
             key: LessonKeys.screen,
             appBar: AppBar(
-              // Só o número: o título da aula fica sob o tabuleiro.
-              title: lesson == null
+              // Só o título (da parte, na aula em partes, ou da aula) e, no
+              // canto, onde ela está: "1/5".
+              // Na formatura, a barra fica limpa: não é mais uma aula.
+              title: lesson == null || state.courseFinished
                   ? null
                   : Text(
-                      l10n.lessonNumber(state.lessonNumber, state.lessonCount),
+                      state.part == null
+                          ? state.texts.lessonTitle(lesson.id)
+                          : state.texts.partTitle(lesson.id, state.part!.id) ??
+                                '',
+                      key: LessonKeys.appBarTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
+              actions: [
+                if (lesson != null && !state.courseFinished)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 16),
+                    child: Center(
+                      child: Semantics(
+                        label: state.part == null
+                            ? l10n.lessonNumber(
+                                state.lessonNumber,
+                                state.lessonCount,
+                              )
+                            : l10n.homeEndgamePart(
+                                state.partNumber,
+                                state.partCount,
+                              ),
+                        excludeSemantics: true,
+                        child: Text(
+                          state.part == null
+                              ? '${state.lessonNumber}/${state.lessonCount}'
+                              : '${state.partNumber}/${state.partCount}',
+                          key: LessonKeys.place,
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            body: SafeArea(child: _body(context, state, boardSettings)),
+            body: SafeArea(
+              child: _asksThinkTime(context, state)
+                  // Primeira aula com passo de pensar: antes, quanto tempo.
+                  ? _ThinkTimeChooser(
+                      onChosen: (minutes) {
+                        unawaited(
+                          context.read<SettingsCubit>().setThinkMinutes(
+                            minutes,
+                          ),
+                        );
+                        cubit.useThinkMinutes(minutes);
+                      },
+                    )
+                  : _body(context, state, boardSettings),
+            ),
           );
         },
       ),
@@ -167,8 +302,10 @@ class _LessonScreenState extends State<LessonScreen>
     final board = _board;
     final hasBoard = state.fen != null && board != null;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 350),
-      child: state.finished
+      duration: AppMotion.component,
+      child: state.finished && state.part != null
+          ? PartFinished(key: LessonKeys.finished, state: state)
+          : state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
           : LayoutBuilder(
               builder: (context, constraints) => Stack(
@@ -197,48 +334,45 @@ class _LessonScreenState extends State<LessonScreen>
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Text(
-                              l10n.lessonStepShort(
-                                state.step + 1,
-                                state.stepCount,
-                              ),
-                              key: LessonKeys.stepCounter,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
                           ],
                         ),
                       ),
-                      if (hasBoard)
-                        // Com tabuleiro: ele no alto (até metade da tela), o
-                        // título e o que fazer, e a fala do Viktor embaixo. A
-                        // tela toda rola, e o fim da fala passa por baixo dos
-                        // botões.
+                      // O tempo de pensar, no topo, como o relógio do desafio
+                      // das estrelas.
+                      if (step is ThinkStep && state.thinking)
+                        ThinkClock(state: state),
+                      if (hasBoard) ...[
+                        // Com tabuleiro: ele fica fixo no alto, sempre à
+                        // vista (T51); só a fala rola embaixo dele. Em tela
+                        // baixa o tabuleiro cede, não a fala (umas 4 linhas
+                        // dela ficam sempre à vista).
+                        const SizedBox(height: 8),
+                        _boardArea(
+                          context,
+                          state,
+                          boardSettings,
+                          board,
+                          size: max(
+                            min(
+                              constraints.maxWidth - 16,
+                              constraints.maxHeight - _speechRoom,
+                            ),
+                            120.0,
+                          ),
+                        ),
                         Expanded(
                           child: SingleChildScrollView(
                             key: LessonKeys.scroll,
                             padding: const EdgeInsets.only(
-                              top: 8,
                               bottom: _actionsHeight,
                             ),
                             child: Column(
                               children: [
-                                _boardArea(
-                                  context,
-                                  state,
-                                  boardSettings,
-                                  board,
-                                  size: max(
-                                    min(
-                                      constraints.maxWidth - 16,
-                                      constraints.maxHeight * 0.5,
-                                    ),
-                                    120.0,
-                                  ),
-                                ),
-                                _guide(context, state, step),
+                                // A faixa da tarefa só no passo de tocar: lá a
+                                // casa pedida é o exercício. No resto, o
+                                // Viktor já diz o que fazer.
+                                if (step is TapStep)
+                                  _guide(context, state, step),
                                 if (viktor != null)
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(
@@ -249,9 +383,9 @@ class _LessonScreenState extends State<LessonScreen>
                                     ),
                                     child: TeacherSpeech(
                                       teacher: viktor,
-                                      text: state.speech,
+                                      text: _speechText(context, state),
                                       emotion: state.emotion,
-                                      avatarSize: 44,
+                                      avatarSize: 56,
                                       bubbleKey: LessonKeys.speech,
                                       onLink: (link) => _flash.toggle(
                                         link,
@@ -264,23 +398,24 @@ class _LessonScreenState extends State<LessonScreen>
                                         color: theme.colorScheme.primary,
                                       ),
                                       speaks: true,
-                                      stacked: true,
+                                      speechContext: SpeechContext.teaching,
                                       typed: true,
                                     ),
                                   ),
                               ],
                             ),
                           ),
-                        )
-                      else ...[
+                        ),
+                      ] else ...[
                         if (viktor != null)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                             child: TeacherSpeech(
+                              speechContext: SpeechContext.teaching,
                               teacher: viktor,
                               text: state.speech,
                               emotion: state.emotion,
-                              avatarSize: 72,
+                              avatarSize: 56,
                               bubbleKey: LessonKeys.speech,
                               speaks: true,
                             ),
@@ -322,20 +457,17 @@ class _LessonScreenState extends State<LessonScreen>
     ChessboardController board, {
     required double size,
   }) {
-    final step = state.current!;
     final colors = Theme.of(context).colorScheme;
     final hint = state.hint;
     final shapes = <Shape>{
-      if (step is TalkStep) ...[
-        for (final (from, to) in step.arrows)
-          Arrow(
-            color: colors.primary.withValues(alpha: 0.75),
-            orig: Square.fromName(from),
-            dest: Square.fromName(to),
-          ),
-        for (final mark in step.marks)
-          Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
-      ],
+      for (final (from, to) in state.arrows)
+        Arrow(
+          color: colors.primary.withValues(alpha: 0.75),
+          orig: Square.fromName(from),
+          dest: Square.fromName(to),
+        ),
+      for (final mark in state.marks)
+        Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
       for (final star in state.stars)
         CustomShape(
           orig: Square.fromName(star),
@@ -350,7 +482,7 @@ class _LessonScreenState extends State<LessonScreen>
     return AnimatedBuilder(
       animation: _landing,
       builder: (context, child) {
-        final value = Curves.easeOutCubic.transform(_landing.value);
+        final value = AppMotion.enter.transform(_landing.value);
         return Opacity(
           opacity: 0.3 + 0.7 * value,
           child: Transform.scale(scale: 0.95 + 0.05 * value, child: child),
@@ -420,41 +552,67 @@ class _LessonScreenState extends State<LessonScreen>
         MoveStep() => l10n.lessonGuideMove(
           step.side == Side.white ? 'white' : 'black',
         ),
-        PlayStep() => l10n.lessonGuidePlay(
-          step.goal == PlayGoal.mate ? 'mate' : 'promote',
-        ),
+        PlayStep() => l10n.lessonGuidePlay(step.goal.name),
+        ThinkStep() =>
+          state.thinking ? l10n.lessonGuideThink : l10n.lessonGuideThinkDone,
+        DemoStep() => l10n.lessonGuideDemo,
       },
     };
+    // O ícone do que se faz no passo.
+    final icon = switch (state.phase) {
+      StepPhase.waiting => Icons.pending_rounded,
+      StepPhase.done => Icons.check_circle_rounded,
+      StepPhase.failed => Icons.replay_rounded,
+      StepPhase.active => switch (step) {
+        TalkStep() => Icons.visibility_outlined,
+        StarsStep() => Icons.star_rounded,
+        TapStep() => Icons.touch_app_outlined,
+        MoveStep() || PlayStep() => Icons.sports_esports_outlined,
+        ThinkStep() => Icons.psychology_outlined,
+        DemoStep() => Icons.play_circle_outline,
+      },
+    };
+    final done = state.phase == StepPhase.done;
+    // A tarefa do passo numa faixa logo abaixo do tabuleiro, alinhada à
+    // esquerda, como nos apps de ensino (o nome da aula já está na tela da
+    // aula e a parte, na barra de cima).
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Column(
-        children: [
-          Text(
-            state.texts.lessonTitle(state.lesson!.id),
-            key: LessonKeys.title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+      child: AnimatedContainer(
+        duration: AppMotion.of(context).state,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: done ? colors.primaryContainer : colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(AppShape.medium),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: done ? colors.onPrimaryContainer : colors.primary,
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            text,
-            key: LessonKeys.guide,
-            textAlign: TextAlign.center,
-            // No passo de tocar, a casa pedida é o que importa: grande.
-            style: state.tapTarget != null
-                ? theme.textTheme.titleLarge?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w800,
-                  )
-                : theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                text,
+                key: LessonKeys.guide,
+                // No passo de tocar, a casa pedida é o que importa: grande.
+                style: state.tapTarget != null
+                    ? theme.textTheme.titleLarge?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w800,
+                      )
+                    : theme.textTheme.bodyMedium?.copyWith(
+                        color: done
+                            ? colors.onPrimaryContainer
+                            : colors.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -469,6 +627,9 @@ class _LessonScreenState extends State<LessonScreen>
         (step is MoveStep || step is PlayStep);
     final canGo = state.canContinue;
     final colors = Theme.of(context).colorScheme;
+    if (step is DemoStep && state.phase != StepPhase.done) {
+      return DemoControls(state: state, height: _actionsHeight);
+    }
     final background = Theme.of(context).scaffoldBackgroundColor;
     // A fala usa a tela até perto da borda de baixo, passando ao lado (e por
     // trás) dos botões; só uma faixa fina no fim esmaece até a cor do fundo,
@@ -518,6 +679,31 @@ class _LessonScreenState extends State<LessonScreen>
                 icon: const Icon(Icons.lightbulb_outline),
                 label: Text(l10n.lessonHint),
               ),
+            // Pensando: os dois botões dividem a largura e o texto encolhe
+            // se não couber (letra grande, tela estreita).
+            if (step is ThinkStep && state.thinking)
+              Expanded(
+                child: _ThinkAction(
+                  key: LessonKeys.thinkReset,
+                  onPressed: cubit.resetThink,
+                  icon: Icons.replay,
+                  label: l10n.lessonThinkReset,
+                  background: colors.surface,
+                  foreground: colors.primary,
+                ),
+              ),
+            if (state.canHint)
+              FloatingActionButton.extended(
+                key: LessonKeys.moreHintButton,
+                heroTag: null,
+                shape: const StadiumBorder(),
+                elevation: 2,
+                backgroundColor: colors.surface,
+                foregroundColor: colors.primary,
+                onPressed: cubit.moreHint,
+                icon: const Icon(Icons.lightbulb_outline),
+                label: Text(l10n.lessonMoreHint),
+              ),
             if (state.phase == StepPhase.waiting)
               Material(
                 elevation: 2,
@@ -541,7 +727,24 @@ class _LessonScreenState extends State<LessonScreen>
                   ),
                 ),
               ),
-            const Spacer(),
+            if (step is ThinkStep && state.thinking)
+              const SizedBox(width: AppSpacing.sm)
+            else
+              const Spacer(),
+            // Não quer esperar o tempo todo: a explicação do Viktor já,
+            // no mesmo lugar onde ela aparece quando o tempo acaba.
+            if (step is ThinkStep && state.thinking)
+              Expanded(
+                child: _ThinkAction(
+                  key: LessonKeys.thinkSkip,
+                  onPressed: cubit.skipThink,
+                  // A explicação do Viktor (a lâmpada é da dica).
+                  icon: Icons.forum_outlined,
+                  label: l10n.lessonThinkSkip,
+                  background: colors.secondaryContainer,
+                  foreground: colors.onSecondaryContainer,
+                ),
+              ),
             if (state.phase == StepPhase.failed)
               FloatingActionButton.extended(
                 key: LessonKeys.retryButton,
@@ -550,7 +753,7 @@ class _LessonScreenState extends State<LessonScreen>
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
                 onPressed: cubit.retry,
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.replay),
                 label: Text(l10n.lessonRetry),
               ),
             if (canGo)
@@ -561,7 +764,15 @@ class _LessonScreenState extends State<LessonScreen>
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
                 onPressed: cubit.next,
-                label: Text(isLast ? l10n.lessonFinish : l10n.lessonContinue),
+                label: Text(
+                  step is ThinkStep
+                      ? l10n.lessonSeeExplanation
+                      : isLast && state.part != null
+                      ? l10n.lessonFinishPart
+                      : isLast
+                      ? l10n.lessonFinish
+                      : l10n.lessonContinue,
+                ),
               ),
           ],
         ),
@@ -572,6 +783,26 @@ class _LessonScreenState extends State<LessonScreen>
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
+
+  /// O que fica para a fala embaixo do tabuleiro fixo: o título, o retrato e
+  /// umas 4 linhas, mais os botões.
+  static const _speechRoom = 312.0;
+
+  /// A fala do balão. Enquanto o aluno pensa, o Viktor só diz quanto
+  /// tempo ele tem (o tempo das preferências; a frase vem das traduções).
+  String? _speechText(BuildContext context, LessonState state) {
+    final step = state.current;
+    if (step is ThinkStep && state.thinking) {
+      // Quem joga, o que procurar e o tempo.
+      final l10n = context.l10n;
+      return [
+        l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
+        l10n.lessonThinkAsk(step.ask.name),
+        l10n.lessonThinkAnnounce(state.thinkTime.inMinutes),
+      ].join(' ');
+    }
+    return state.speech;
+  }
 }
 
 /// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
@@ -579,3 +810,111 @@ class _LessonScreenState extends State<LessonScreen>
 /// Abre a próxima aula da trilha no lugar desta.
 void openLesson(BuildContext context, String lessonId) =>
     context.pushReplacement(Routes.lesson(lessonId));
+
+/// Um botão do rodapé enquanto o aluno pensa: da altura dos outros, com o
+/// texto numa linha só que encolhe se faltar largura.
+class _ThinkAction extends StatelessWidget {
+  const _ThinkAction({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    required this.background,
+    required this.foreground,
+    super.key,
+  });
+
+  final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+  final Color background;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+    style: FilledButton.styleFrom(
+      minimumSize: const Size(0, 56),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      backgroundColor: background,
+      foregroundColor: foreground,
+      elevation: 2,
+      // Sem contorno, como os outros botões da fileira.
+      side: BorderSide.none,
+      shape: const StadiumBorder(),
+      textStyle: Theme.of(context).textTheme.labelLarge,
+    ),
+    onPressed: onPressed,
+    icon: Icon(icon),
+    label: OneLine(label),
+  );
+}
+
+/// Antes da primeira aula com passo de pensar: quanto tempo o aluno quer
+/// pensar sozinho em cada posição. A escolha fica nas Configurações.
+class _ThinkTimeChooser extends StatelessWidget {
+  const _ThinkTimeChooser({required this.onChosen});
+
+  final ValueChanged<int> onChosen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SingleChildScrollView(
+      key: LessonKeys.thinkChooser,
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Icon(Icons.hourglass_bottom_rounded, size: 56, color: colors.primary),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            l10n.lessonThinkChooseTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.lessonThinkChooseBody,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          for (final minutes in AppSettings.thinkChoices) ...[
+            Card(
+              margin: EdgeInsets.zero,
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                key: LessonKeys.thinkChoice(minutes),
+                leading: Icon(
+                  minutes == 0
+                      ? Icons.auto_awesome_rounded
+                      : Icons.hourglass_bottom_outlined,
+                  color: colors.primary,
+                ),
+                title: Text(
+                  minutes == 0
+                      ? l10n.settingsThinkRecommended
+                      : l10n.endgamePartMinutes(minutes),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                subtitle: minutes == 0
+                    ? Text(l10n.lessonThinkRecommendedHint)
+                    : null,
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => onChosen(minutes),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ],
+      ),
+    );
+  }
+}

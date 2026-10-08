@@ -73,6 +73,7 @@ void main() {
       phrases: phrases,
     );
     await cubit.start();
+    await cubit.release();
     return cubit;
   }
 
@@ -132,6 +133,7 @@ void main() {
 
     // A máquina joga primeiro: só depois de começar.
     await cubit.start();
+    await cubit.release();
     expect(opponent.requests, hasLength(1));
   });
 
@@ -272,7 +274,8 @@ void main() {
           language: 'pt-BR',
           phrases: phrases,
         )
-        .then((_) => cubit.start());
+        .then((_) => cubit.start())
+        .then((_) => cubit.release());
     await pumpEventQueue();
     expect(cubit.state.phase, BlindPhase.opponentSpeaking);
     await cubit.listen();
@@ -472,6 +475,7 @@ void main() {
         phrases: phrases,
       );
       await cubit.start();
+      await cubit.release();
       return cubit;
     }
 
@@ -540,6 +544,7 @@ void main() {
       );
       expect(cubit.state.white, const Duration(seconds: 30));
       await cubit.start();
+      await cubit.release();
       expect(cubit.state.running, Side.white);
 
       now.advance(const Duration(seconds: 10));
@@ -594,6 +599,7 @@ void main() {
       );
       expect(cubit.state.view, BlindView.hidden);
       await cubit.start();
+      await cubit.release();
       await play(cubit, ['dama b8']);
 
       expect(

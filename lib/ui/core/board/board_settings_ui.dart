@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_motion.dart';
 
 /// Como as cores do tabuleiro aparecem na tela e no `chessground`.
 extension BoardColorsUi on BoardColors {
@@ -138,7 +139,7 @@ extension MoveNotationUi on MoveNotation {
 
 /// As preferências do app no formato do `chessground`.
 extension BoardSettingsUi on BoardSettings {
-  static const _animationDuration = Duration(milliseconds: 250);
+  static const _animationDuration = AppMotion.state;
 
   ChessboardSettings get chessground => ChessboardSettings(
     colorScheme: colors.scheme,

@@ -68,6 +68,19 @@ class SettingsCubit extends Cubit<AppSettings?> {
     if (enabled) await _sound?.play(GameSound.move);
   }
 
+  /// O tempo de pensar nas aulas (1, 3 ou 5 minutos, ou 0, o recomendado):
+  /// escolhido, a aula não pergunta mais.
+  Future<void> setThinkMinutes(int minutes) => _update(
+    (state ?? const AppSettings()).copyWith(
+      thinkMinutes: minutes,
+      thinkChosen: true,
+    ),
+  );
+
+  /// Liga ou desliga a vibração do app.
+  Future<void> setVibration({required bool enabled}) =>
+      _update((state ?? const AppSettings()).copyWith(vibration: enabled));
+
   /// Mostra ou esconde a barra de avaliação na revisão da partida.
   Future<void> setEvalBar({required bool enabled}) =>
       _update((state ?? const AppSettings()).copyWith(evalBar: enabled));

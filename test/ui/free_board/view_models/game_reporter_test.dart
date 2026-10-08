@@ -78,6 +78,17 @@ void main() {
     expect(achievements.unlockedAt.keys, {'first-fulfilled', 'beat-2600'});
   });
 
+  test('a conquista grava a partida que a desbloqueou e o instante', () async {
+    final report = await play(fulfilled: true);
+    final gameId = (await progress.allAttemptsById()).keys.single;
+
+    final saved = achievements.unlockedById['beat-2600']!;
+    expect(saved.gameId, gameId);
+    expect(saved.speedrunAttemptId, isNull);
+    expect(saved.at, now());
+    expect(report.unlocked['beat-2600'], saved);
+  });
+
   test('conquista já obtida não aparece de novo como nova', () async {
     await play(fulfilled: true);
     final second = await play(fulfilled: true);

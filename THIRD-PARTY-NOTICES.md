@@ -33,6 +33,7 @@ package bundled in the app is also available inside the app (licenses page).
 | Endgame positions (`assets/positions/positions.json`, a selection made by `tools/import_positions.py`) from supertorpe/chessendgametraining; its checkmate database comes from calebjcourtney/chess-endgame-training and the original endgame list from the "ECO Chess Opening Codes" blog | GPL-3.0 | https://github.com/supertorpe/chessendgametraining |
 | Stockfish 19 chess engine, through multistockfish (Lichess); only the "light" flavor with its small embedded NNUE is shipped | GPL-3.0 | https://github.com/lichess-org/dart-multistockfish |
 | Maia-3 (5M) by the University of Toronto CSSLab: the model weights (`assets/models/maia3-5m.bin`, converted to float16 by `tools/maia/export_weights.py`) and a Dart port of its inference code (`lib/data/services/maia/`) | AGPL-3.0 | https://github.com/CSSLab/maia3 |
+| Placement test puzzles (`assets/placement/items.json`, the items with `"source": "lichess"`, selected by `tools/placement/import_puzzles.py`) from the Lichess open puzzle database | CC0-1.0 | https://database.lichess.org/#puzzles |
 | drift, drift_flutter | MIT | https://pub.dev/packages/drift |
 | sqlite3 (Dart package) | MIT | https://pub.dev/packages/sqlite3 |
 | SQLite | Public domain | https://www.sqlite.org/copyright.html |

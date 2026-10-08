@@ -7,7 +7,7 @@
       "category": "gameStart",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Boa sorte. Você vai precisar, eu tenho medalha."
+      "text": "Boa sorte. Você vai precisar. Eu tenho medalha."
     },
     {
       "id": "snob.gameStart.2",
@@ -28,14 +28,14 @@
       "category": "gameStart",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Final? Eu nasci num final. Figurativamente."
+      "text": "Final? Eu estudo isso desde antes de você nascer."
     },
     {
       "id": "snob.gameStart.5",
       "category": "gameStart",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Ajeito os óculos e começamos. Tente não me entediar."
+      "text": "Pode começar. Tente não me entediar."
     },
     {
       "id": "snob.bigAdvantage.1",
@@ -56,7 +56,7 @@
       "category": "bigAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Calma, não precisa ficar nervoso. Ainda."
+      "text": "Pode abandonar. Ninguém vai te julgar. Eu vou, mas só eu."
     },
     {
       "id": "snob.bigAdvantage.4",
@@ -119,7 +119,7 @@
       "category": "equal",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Interessante. Você está me dando algum trabalho."
+      "text": "Interessante. Você está me dando algum trabalho. Pouco."
     },
     {
       "id": "snob.equal.3",
@@ -146,50 +146,50 @@
       "id": "snob.worse.1",
       "category": "worse",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Estou te dando corda. Faz parte do plano."
+      "emotion": "frustrated",
+      "text": "Estou te dando corda. Faz parte do plano. Que plano? Meu."
     },
     {
       "id": "snob.worse.2",
       "category": "worse",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Hm. Esses óculos estão embaçando."
+      "text": "Hm. A luz daqui está péssima, sabia?"
     },
     {
       "id": "snob.worse.3",
       "category": "worse",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Uma pequena concessão estratégica. Você não entenderia."
+      "text": "Concessão estratégica. Você não entenderia."
     },
     {
       "id": "snob.worse.4",
       "category": "worse",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Esse paletó de tweed esquenta demais, sabia?"
+      "text": "Esse tabuleiro está torto. Alguém mais percebeu?"
     },
     {
       "id": "snob.worse.5",
       "category": "worse",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Estou só... testando uma teoria nova."
+      "text": "Pior? Eu? O computador vai discordar de você depois."
     },
     {
       "id": "snob.bigDisadvantage.1",
       "category": "bigDisadvantage",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Isso nunca aconteceria no Aberto do Bairro."
+      "text": "Tô perdido, mas com certeza eu tava ganho."
     },
     {
       "id": "snob.bigDisadvantage.2",
       "category": "bigDisadvantage",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "A luz daqui está péssima. Ninguém consegue jogar assim."
+      "text": "Isso nunca aconteceria no Aberto do Bairro."
     },
     {
       "id": "snob.bigDisadvantage.3",
@@ -210,7 +210,28 @@
       "category": "bigDisadvantage",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Alguém viu minha medalha? Ela me dá sorte."
+      "text": "Isso é empate teórico. Todo mundo sabe. Todo mundo."
+    },
+    {
+      "id": "snob.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ofereço o empate. É uma honra: nem no Aberto do Bairro eu ofereço."
+    },
+    {
+      "id": "snob.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Empata e eu deixo você segurar a medalha. Cinco segundos. Sem foto."
+    },
+    {
+      "id": "snob.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Vamos ser civilizados: empate, e eu conto pra todo mundo que você jogou bem."
     },
     {
       "id": "snob.opponentBlunder.1",
@@ -231,7 +252,7 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Isso foi um presente? Vou pendurar do lado da medalha."
+      "text": "Isso no Aberto do Bairro dava desclassificação."
     },
     {
       "id": "snob.opponentBlunder.4",
@@ -251,22 +272,22 @@
       "id": "snob.ownBlunder.1",
       "category": "ownBlunder",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Foi de propósito. Para deixar mais emocionante."
+      "emotion": "frustrated",
+      "text": "Foi de propósito. Pra deixar mais emocionante."
     },
     {
       "id": "snob.ownBlunder.2",
       "category": "ownBlunder",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Escorregou a mão. O tweed é escorregadio."
+      "text": "Toquei na peça errada. Isso não deveria valer."
     },
     {
       "id": "snob.ownBlunder.3",
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Isso foi um sacrifício. Muito profundo pra você."
+      "text": "Sacrifício. Calculado. Muito profundo pra você."
     },
     {
       "id": "snob.ownBlunder.4",
@@ -287,14 +308,14 @@
       "category": "strongMove",
       "intensity": 1,
       "emotion": "surprised",
-      "text": "Hm. Até um relógio parado acerta duas vezes por dia."
+      "text": "Hm. Até relógio parado acerta duas vezes por dia."
     },
     {
       "id": "snob.strongMove.2",
       "category": "strongMove",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Lance razoável. Eu teria jogado igual, só que antes."
+      "emotion": "calm",
+      "text": "Lance de iniciante. Bom, mas de iniciante."
     },
     {
       "id": "snob.strongMove.3",
@@ -315,7 +336,7 @@
       "category": "strongMove",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Bom lance. Para o seu nível, ótimo lance."
+      "text": "Bom lance. Pro seu nível, ótimo lance."
     },
     {
       "id": "snob.comeback.1",
@@ -370,8 +391,8 @@
       "id": "snob.collapse.3",
       "category": "collapse",
       "intensity": 1,
-      "emotion": "sad",
-      "text": "Quis te dar uma chance. Me arrependo."
+      "emotion": "frustrated",
+      "text": "Eu tinha mate em três. Só não vi qual."
     },
     {
       "id": "snob.collapse.4",
@@ -385,7 +406,7 @@
       "category": "collapse",
       "intensity": 3,
       "emotion": "surprised",
-      "text": "Isso é um erro de digitação do tabuleiro."
+      "text": "Isso é um erro do tabuleiro. Vou registrar reclamação."
     },
     {
       "id": "snob.pieceCaptured.1",
@@ -413,7 +434,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Delícia. Quer tentar proteger as outras?"
+      "text": "Quer tentar proteger as outras? Pode tentar."
     },
     {
       "id": "snob.pieceCaptured.5",
@@ -426,7 +447,7 @@
       "id": "snob.pieceLost.1",
       "category": "pieceLost",
       "intensity": 1,
-      "emotion": "calm",
+      "emotion": "frustrated",
       "text": "Pode levar. Eu nem gostava dela."
     },
     {
@@ -454,7 +475,7 @@
       "id": "snob.pieceLost.5",
       "category": "pieceLost",
       "intensity": 1,
-      "emotion": "confident",
+      "emotion": "frustrated",
       "text": "Sacrifício posicional. Você vai entender em uns dez anos."
     },
     {
@@ -496,7 +517,7 @@
       "id": "snob.opponentPromotion.1",
       "category": "opponentPromotion",
       "intensity": 1,
-      "emotion": "calm",
+      "emotion": "frustrated",
       "text": "Uma dama. Que fofo. Ainda não é medalha."
     },
     {
@@ -518,14 +539,14 @@
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Quem deixou esse peão andar tanto?"
+      "text": "Quem deixou esse peão andar tanto? O árbitro?"
     },
     {
       "id": "snob.opponentPromotion.5",
       "category": "opponentPromotion",
       "intensity": 1,
-      "emotion": "confident",
-      "text": "Uma dama a mais não assusta um medalhista."
+      "emotion": "nervous",
+      "text": "Uma dama a mais não assusta um medalhista. Quase nada."
     },
     {
       "id": "snob.opponentLowTime.1",
@@ -566,8 +587,8 @@
       "id": "snob.ownLowTime.1",
       "category": "ownLowTime",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Eu jogo melhor sob pressão. Sempre."
+      "emotion": "nervous",
+      "text": "Eu jogo melhor sob pressão. Sempre. Quase sempre."
     },
     {
       "id": "snob.ownLowTime.2",
@@ -594,8 +615,8 @@
       "id": "snob.ownLowTime.5",
       "category": "ownLowTime",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Pouco tempo, muito talento. Equilibra."
+      "emotion": "frustrated",
+      "text": "Foi o relógio. Esse relógio é do século passado."
     },
     {
       "id": "snob.timeAdvantage.1",
@@ -679,14 +700,14 @@
       "category": "win",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Mais uma vitória para o currículo do medalhista."
+      "text": "Mais uma vitória pro currículo do medalhista."
     },
     {
       "id": "snob.win.3",
       "category": "win",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Boa partida. Para você foi uma aula."
+      "text": "Boa partida. Pra você foi uma aula."
     },
     {
       "id": "snob.win.4",
@@ -700,14 +721,14 @@
       "category": "win",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Nada mal. Quer dizer, para mim, nada mal."
+      "text": "Nada mal. Quer dizer, pra mim, nada mal."
     },
     {
       "id": "snob.loss.1",
       "category": "loss",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Eu estava sem a minha caneta da sorte. Não vale."
+      "text": "Olha no computador depois, fui melhor a partida inteira."
     },
     {
       "id": "snob.loss.2",
@@ -720,15 +741,15 @@
       "id": "snob.loss.3",
       "category": "loss",
       "intensity": 1,
-      "emotion": "sad",
-      "text": "Deixei você ganhar. Faz bem pra autoestima."
+      "emotion": "frustrated",
+      "text": "Deixei você ganhar. Faz bem pra autoestima. A sua."
     },
     {
       "id": "snob.loss.4",
       "category": "loss",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Não conta pro pessoal do clube, tá?"
+      "text": "Em partida séria eu não perco essa. Isso foi treino."
     },
     {
       "id": "snob.loss.5",
@@ -741,7 +762,7 @@
       "id": "snob.loss.6",
       "category": "loss",
       "intensity": 1,
-      "emotion": "calm",
+      "emotion": "frustrated",
       "text": "Parabéns. Mas medalha, só eu tenho."
     },
     {
@@ -784,14 +805,14 @@
       "category": "drawAccepted",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Aceito. Por cortesia, claro, não por necessidade."
+      "text": "Aceito por caridade. Anote aí: caridade."
     },
     {
       "id": "snob.drawAccepted.2",
       "category": "drawAccepted",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Empate. Considere uma honra dividir o ponto com um medalhista."
+      "text": "Considere uma honra dividir o ponto com um medalhista."
     },
     {
       "id": "snob.drawAccepted.3",
@@ -819,7 +840,7 @@
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Fechado. Era meu plano desde o início, você não entenderia."
+      "text": "Fechado. Era meu plano desde o início. Você não entenderia."
     },
     {
       "id": "snob.drawDeclined.1",
@@ -862,6 +883,76 @@
       "intensity": 3,
       "emotion": "confident",
       "text": "Recusado. Até de braços cruzados eu estou melhor."
+    },
+    {
+      "id": "snob.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Interessante. Você tinha mate e preferiu passear. Clássico de amador."
+    },
+    {
+      "id": "snob.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Fique à vontade. Eu tenho a tarde toda. Você, aparentemente, também."
+    },
+    {
+      "id": "snob.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Isso é empate. Qualquer medalhista vê. Eu, por exemplo."
+    },
+    {
+      "id": "snob.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Deixou escapar? Que pena. Proponho empate, por pura generosidade."
+    },
+    {
+      "id": "snob.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Você não vai dar esse mate. Eu já vi isso no Aberto do Bairro."
+    },
+    {
+      "id": "snob.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu sabia que era empate. Você não aceitou, me fez perder tempo, mas beleza."
+    },
+    {
+      "id": "snob.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Como eu previ. Empate. Anote aí, eu sempre sei."
+    },
+    {
+      "id": "snob.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate. Eu disse, e quem tem medalha não costuma errar."
+    },
+    {
+      "id": "snob.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Era empate desde que você se perdeu. Eu só fui educado de esperar."
+    },
+    {
+      "id": "snob.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Empate. Vou contar no clube que eu segurei. Com classe."
     }
   ]
 }

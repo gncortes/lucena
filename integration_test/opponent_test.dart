@@ -4,6 +4,7 @@ import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_setup_robot.dart';
 
@@ -37,6 +38,7 @@ void main() {
   patrolTest('mate em um para a máquina: o Stockfish dá o mate', ($) async {
     final app = AppRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
     app.useRealStockfish();
 
@@ -47,8 +49,8 @@ void main() {
       user: Side.white,
     );
 
-    await board.expectEnd(reason: 'Checkmate', result: 'Black wins');
-    await board.expectMoves(['Ra1#']);
+    // O mate da máquina leva à conclusão: o jogador perdeu por mate.
+    await conclusion.expectEnd(title: 'You lost', reason: 'Checkmate');
   });
 
   patrolTest('máquina com pouco tempo: responde rápido e não perde por tempo', (
@@ -74,6 +76,7 @@ void main() {
   patrolTest('desistir na vez da máquina: fim de partida na hora', ($) async {
     final app = AppRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
     await board.openAt(
       _queenMate,
@@ -86,10 +89,12 @@ void main() {
 
     await board.resign();
 
-    await board.expectEnd(reason: 'Resignation', result: 'Black wins');
-    await board.expectGoalResult('Goal not achieved');
-    // A resposta atrasada da máquina não entra.
+    await conclusion.expectEnd(title: 'You lost', reason: 'Resignation');
+    await conclusion.expectGoal('Goal not achieved');
+    // A resposta atrasada da máquina não entra: a conclusão continua a da
+    // desistência.
     await app.releaseMachine();
-    await board.expectMoves(['Qg5']);
+    await $.pumpAndSettle();
+    await conclusion.expectEnd(title: 'You lost', reason: 'Resignation');
   });
 }

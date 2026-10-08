@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
+import 'settings_robot.dart';
 import 'variant.dart';
 
 /// O tour da primeira abertura.
@@ -129,7 +130,18 @@ class TourRobot {
   }
 
   Future<void> chooseLevel(RatingLevel level) async {
+    // O teste vem primeiro; a lista das faixas fica atrás do botão.
+    if (find.byKey(TourKeys.level(level)).evaluate().isEmpty) {
+      await $(TourKeys.chooseByHand).scrollTo().tap();
+      await $.pumpAndSettle();
+    }
     await $(TourKeys.level(level)).scrollTo().tap();
+    await $.pumpAndSettle();
+  }
+
+  /// No passo do nível: abre o teste de nível.
+  Future<void> takeTest() async {
+    await $(TourKeys.takeTestCard).scrollTo().tap();
     await $.pumpAndSettle();
   }
 
@@ -157,6 +169,7 @@ class TourRobot {
 
   /// Em Configurações, "Rever o tour".
   Future<void> openFromSettings() async {
+    await SettingsRobot($).openAbout();
     await $(SettingsKeys.tourTile).scrollTo().tap();
     await $(TourKeys.screen).waitUntilVisible();
   }

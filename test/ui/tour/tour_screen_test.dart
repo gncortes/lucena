@@ -100,6 +100,17 @@ void main() {
       expect(find.byKey(TourKeys.step(TourStep.values[step])), findsOneWidget);
     }
     expect(find.text('Qual é o seu nível atual?'), findsOneWidget);
+    // O teste vem primeiro; a lista das faixas, atrás do botão discreto.
+    expect(find.byKey(TourKeys.takeTestCard), findsOneWidget);
+    expect(find.byKey(TourKeys.level(RatingLevel.advanced)), findsNothing);
+    await tester.tap(find.byKey(TourKeys.chooseByHand));
+    await tester.pumpAndSettle();
+    // Na mão, o aviso: sem o teste, o estudo não fica personalizado.
+    expect(find.byKey(TourKeys.byHandHint), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(TourKeys.level(RatingLevel.advanced)),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(TourKeys.level(RatingLevel.advanced)));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.byKey(TourKeys.startRung), 100);

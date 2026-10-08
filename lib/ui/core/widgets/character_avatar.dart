@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
+import '../theme/app_motion.dart';
 
 /// O retrato do personagem, no quadrado de cantos arredondados do chess.com.
 /// Com [emotion], a imagem é a da emoção, quando o personagem tem uma.
@@ -23,7 +24,7 @@ class CharacterAvatar extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(size * 0.14),
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
+          duration: AppMotion.state,
           child: Image.asset(
             character.imageFor(emotion),
             key: ValueKey(character.imageFor(emotion)),

@@ -1,0 +1,1223 @@
+{
+  "nodes": [
+    {
+      "id": "rules.rook",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "pieces.rook",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.bishop",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "pieces.bishop",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.queen",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.rook",
+        "rules.bishop"
+      ],
+      "lessons": [
+        {
+          "id": "pieces.queen",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.king",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "pieces.king",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.knight",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "pieces.knight",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.pawn",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "pieces.pawn",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.capture",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.rook",
+        "rules.bishop",
+        "rules.queen",
+        "rules.king",
+        "rules.knight",
+        "rules.pawn"
+      ],
+      "lessons": [
+        {
+          "id": "rules.captureProtect",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.check",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.rook",
+        "rules.bishop",
+        "rules.queen",
+        "rules.king",
+        "rules.knight",
+        "rules.pawn"
+      ],
+      "lessons": [
+        {
+          "id": "pieces.check",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.outOfCheck",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.check"
+      ],
+      "lessons": [
+        {
+          "id": "rules.outOfCheck",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.stalemate",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.check"
+      ],
+      "lessons": [
+        {
+          "id": "pieces.stalemate",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.castling",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.king",
+        "rules.rook"
+      ],
+      "lessons": [
+        {
+          "id": "rules.castling",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.enPassant",
+      "group": "rules",
+      "band": "casual",
+      "requires": [
+        "rules.pawn"
+      ],
+      "lessons": [
+        {
+          "id": "rules.enPassant",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.draws",
+      "group": "rules",
+      "band": "casual",
+      "requires": [
+        "rules.stalemate"
+      ],
+      "lessons": [
+        {
+          "id": "rules.draws",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rules.pieceValue",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [
+        "rules.capture"
+      ],
+      "lessons": [
+        {
+          "id": "rules.pieceValue",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "notation.squares",
+      "group": "rules",
+      "band": "beginner",
+      "requires": [],
+      "lessons": [
+        {
+          "id": "notation.coordinates",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "notation.moves",
+      "group": "rules",
+      "band": "casual",
+      "requires": [
+        "notation.squares"
+      ],
+      "lessons": [
+        {
+          "id": "notation.moves",
+          "kind": "school"
+        },
+        {
+          "id": "notation.read",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.inOne",
+      "group": "mates",
+      "band": "beginner",
+      "requires": [
+        "rules.check"
+      ],
+      "lessons": [
+        {
+          "id": "tricks.scholarsMate",
+          "kind": "school"
+        },
+        {
+          "id": "tricks.defendScholar",
+          "kind": "school"
+        },
+        {
+          "id": "tricks.foolsMate",
+          "kind": "school"
+        },
+        {
+          "id": "tactics.matePatterns",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.twoRooks",
+      "group": "mates",
+      "band": "beginner",
+      "requires": [
+        "rules.check"
+      ],
+      "lessons": [
+        {
+          "id": "mates.twoRooks",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.queen",
+      "group": "mates",
+      "band": "beginner",
+      "requires": [
+        "mate.twoRooks",
+        "rules.stalemate"
+      ],
+      "lessons": [
+        {
+          "id": "mates.queen",
+          "kind": "school"
+        },
+        {
+          "id": "basics.queenMate",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.rook",
+      "group": "mates",
+      "band": "casual",
+      "requires": [
+        "mate.queen",
+        "pawns.opposition"
+      ],
+      "lessons": [
+        {
+          "id": "technique.rookCut",
+          "kind": "school"
+        },
+        {
+          "id": "technique.rookMate",
+          "kind": "school"
+        },
+        {
+          "id": "basics.rookMate",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.patterns",
+      "group": "mates",
+      "band": "casual",
+      "requires": [
+        "mate.inOne"
+      ],
+      "lessons": [
+        {
+          "id": "tactics.matePatterns",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.twoBishops",
+      "group": "mates",
+      "band": "intermediate",
+      "requires": [
+        "mate.rook"
+      ],
+      "lessons": [
+        {
+          "id": "graduation.twoBishops",
+          "kind": "school"
+        },
+        {
+          "id": "basics.twoBishops",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.bishopKnight",
+      "group": "mates",
+      "band": "expert",
+      "requires": [
+        "mate.twoBishops"
+      ],
+      "lessons": [
+        {
+          "id": "mates.bishopKnight.w",
+          "kind": "endgame"
+        },
+        {
+          "id": "mates.bishopKnight.edge",
+          "kind": "endgame"
+        },
+        {
+          "id": "mates.bishopKnight.full",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "mate.twoKnightsPawn",
+      "group": "mates",
+      "band": "master",
+      "requires": [
+        "mate.bishopKnight"
+      ],
+      "lessons": [
+        {
+          "id": "mates.twoKnightsPawn",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.square",
+      "group": "pawns",
+      "band": "casual",
+      "requires": [
+        "rules.pawn"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.square",
+          "kind": "school"
+        },
+        {
+          "id": "basics.kingPawn",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.opposition",
+      "group": "pawns",
+      "band": "casual",
+      "requires": [
+        "rules.king"
+      ],
+      "lessons": [
+        {
+          "id": "technique.opposition",
+          "kind": "school"
+        },
+        {
+          "id": "technique.zugzwang",
+          "kind": "school"
+        },
+        {
+          "id": "basics.kingPawn",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.kingPawn",
+      "group": "pawns",
+      "band": "casual",
+      "requires": [
+        "pawns.opposition"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.kingPawn",
+          "kind": "school"
+        },
+        {
+          "id": "basics.kingPawn",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.rookPawnDraw",
+      "group": "pawns",
+      "band": "intermediate",
+      "requires": [
+        "pawns.kingPawn"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.rookPawn",
+          "kind": "school"
+        },
+        {
+          "id": "basics.kingPawn",
+          "kind": "endgame"
+        },
+        {
+          "id": "pawns.rookPawn",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.keySquares",
+      "group": "pawns",
+      "band": "intermediate",
+      "requires": [
+        "pawns.kingPawn"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.keySquares",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.distantOpposition",
+      "group": "pawns",
+      "band": "intermediate",
+      "requires": [
+        "pawns.opposition"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.distantOpposition",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.race",
+      "group": "pawns",
+      "band": "intermediate",
+      "requires": [
+        "pawns.square"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.race",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.triangulation",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.keySquares"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.triangulation",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.reti",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.square"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.reti",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.shoulder",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.opposition"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.shoulder",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.breakthrough",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.race"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.breakthrough",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.outsidePasser",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.keySquares"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.outsidePasser",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.protectedPasser",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.keySquares"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.protectedPasser",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.trebuchet",
+      "group": "pawns",
+      "band": "expert",
+      "requires": [
+        "pawns.triangulation"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.minedSquares",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.spareTempi",
+      "group": "pawns",
+      "band": "expert",
+      "requires": [
+        "pawns.trebuchet"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.spareTempi",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "pawns.correspondingSquares",
+      "group": "pawns",
+      "band": "master",
+      "requires": [
+        "pawns.trebuchet"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.correspondingSquares",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "queen.vsPawn",
+      "group": "queenRook",
+      "band": "intermediate",
+      "requires": [
+        "mate.queen"
+      ],
+      "lessons": [
+        {
+          "id": "queen.vsPawn",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "queen.vsPawnDraws",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "queen.vsPawn"
+      ],
+      "lessons": [
+        {
+          "id": "queen.vsPawn.draws",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "queen.vsRook",
+      "group": "queenRook",
+      "band": "expert",
+      "requires": [
+        "queen.vsPawn"
+      ],
+      "lessons": [
+        {
+          "id": "queen.vsRook.philidor",
+          "kind": "endgame"
+        },
+        {
+          "id": "queen.vsRook.approach",
+          "kind": "endgame"
+        },
+        {
+          "id": "queen.vsRook.thirdRank",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "queen.vsRookPawn",
+      "group": "queenRook",
+      "band": "master",
+      "requires": [
+        "queen.vsRook"
+      ],
+      "lessons": [
+        {
+          "id": "queen.vsRookPawn",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "queen.pawnVsQueen",
+      "group": "queenRook",
+      "band": "master",
+      "requires": [
+        "queen.vsPawn"
+      ],
+      "lessons": [
+        {
+          "id": "queen.pawnVsQueen",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.vsPawn",
+      "group": "queenRook",
+      "band": "intermediate",
+      "requires": [
+        "mate.rook"
+      ],
+      "lessons": [
+        {
+          "id": "rookPawns.vsPawn",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.saavedra",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.vsPawn",
+        "rules.stalemate"
+      ],
+      "lessons": [
+        {
+          "id": "tactics.saavedra",
+          "kind": "new"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.vsTwoPawns",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.vsPawn"
+      ],
+      "lessons": [
+        {
+          "id": "rookPawns.vsTwo",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.lucena",
+      "group": "queenRook",
+      "band": "intermediate",
+      "requires": [
+        "mate.rook"
+      ],
+      "lessons": [
+        {
+          "id": "rook.lucena",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.philidor",
+      "group": "queenRook",
+      "band": "intermediate",
+      "requires": [
+        "rook.lucena"
+      ],
+      "lessons": [
+        {
+          "id": "rook.philidor",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.backRank",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.philidor"
+      ],
+      "lessons": [
+        {
+          "id": "rook.backRank",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.shortSide",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.philidor"
+      ],
+      "lessons": [
+        {
+          "id": "rook.shortSide",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.cutOff",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.lucena"
+      ],
+      "lessons": [
+        {
+          "id": "rook.cutOff",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.frontal",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.cutOff"
+      ],
+      "lessons": [
+        {
+          "id": "rook.frontal",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.rookPawn",
+      "group": "queenRook",
+      "band": "expert",
+      "requires": [
+        "rook.philidor"
+      ],
+      "lessons": [
+        {
+          "id": "rook.rookPawn.kingFront",
+          "kind": "catalog"
+        },
+        {
+          "id": "rook.rookPawn.seventh",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.vancura",
+      "group": "queenRook",
+      "band": "expert",
+      "requires": [
+        "rook.rookPawn"
+      ],
+      "lessons": [
+        {
+          "id": "rook.vancura",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.behindPasser",
+      "group": "queenRook",
+      "band": "advanced",
+      "requires": [
+        "rook.lucena"
+      ],
+      "lessons": [
+        {
+          "id": "rook.behindPasser",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.twoPawns",
+      "group": "queenRook",
+      "band": "expert",
+      "requires": [
+        "rook.lucena"
+      ],
+      "lessons": [
+        {
+          "id": "rook.twoPawns",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rook.practical",
+      "group": "queenRook",
+      "band": "expert",
+      "requires": [
+        "rook.behindPasser"
+      ],
+      "lessons": [
+        {
+          "id": "rook.activity",
+          "kind": "catalog"
+        },
+        {
+          "id": "rook.fourVsThree",
+          "kind": "catalog"
+        },
+        {
+          "id": "rook.outsidePasser",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.wrongBishop",
+      "group": "minor",
+      "band": "intermediate",
+      "requires": [
+        "pawns.rookPawnDraw"
+      ],
+      "lessons": [
+        {
+          "id": "minor.wrongBishop",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.knightVsPawn",
+      "group": "minor",
+      "band": "intermediate",
+      "requires": [
+        "rules.knight"
+      ],
+      "lessons": [
+        {
+          "id": "minor.knightVsPawn",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.bishopVsPawns",
+      "group": "minor",
+      "band": "advanced",
+      "requires": [
+        "minor.wrongBishop"
+      ],
+      "lessons": [
+        {
+          "id": "minor.bishopVsPawns",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.oppositeBishops",
+      "group": "minor",
+      "band": "advanced",
+      "requires": [
+        "minor.bishopVsPawns"
+      ],
+      "lessons": [
+        {
+          "id": "minor.oppositeBishops.connected",
+          "kind": "catalog"
+        },
+        {
+          "id": "minor.oppositeBishops.separated",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.centurini",
+      "group": "minor",
+      "band": "expert",
+      "requires": [
+        "minor.oppositeBishops"
+      ],
+      "lessons": [
+        {
+          "id": "minor.centurini",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.knightEndings",
+      "group": "minor",
+      "band": "expert",
+      "requires": [
+        "minor.knightVsPawn"
+      ],
+      "lessons": [
+        {
+          "id": "minor.knightPawnVsKnight",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "minor.bishopVsKnight",
+      "group": "minor",
+      "band": "expert",
+      "requires": [
+        "minor.oppositeBishops"
+      ],
+      "lessons": [
+        {
+          "id": "minor.bishopVsKnight",
+          "kind": "catalog"
+        },
+        {
+          "id": "minor.goodBadBishop",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rookMinor.vsMinor",
+      "group": "minor",
+      "band": "expert",
+      "requires": [
+        "mate.rook"
+      ],
+      "lessons": [
+        {
+          "id": "rookMinor.vsBishop",
+          "kind": "catalog"
+        },
+        {
+          "id": "rookMinor.vsKnight",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rookMinor.exchange",
+      "group": "minor",
+      "band": "master",
+      "requires": [
+        "rookMinor.vsMinor"
+      ],
+      "lessons": [
+        {
+          "id": "rookMinor.exchange",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "rookMinor.vsRook",
+      "group": "minor",
+      "band": "master",
+      "requires": [
+        "rookMinor.vsMinor"
+      ],
+      "lessons": [
+        {
+          "id": "rookMinor.bishopVsRook.defences",
+          "kind": "catalog"
+        },
+        {
+          "id": "rookMinor.bishopVsRook.philidor",
+          "kind": "catalog"
+        },
+        {
+          "id": "rookMinor.knightVsRook",
+          "kind": "catalog"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "school.minorMates",
+      "group": "minor",
+      "band": "casual",
+      "requires": [
+        "mate.rook"
+      ],
+      "lessons": [
+        {
+          "id": "minor.rookBishop",
+          "kind": "school"
+        },
+        {
+          "id": "minor.rookKnight",
+          "kind": "school"
+        },
+        {
+          "id": "minor.rookTwoBishops",
+          "kind": "school"
+        },
+        {
+          "id": "minor.rookTwoKnights",
+          "kind": "school"
+        },
+        {
+          "id": "minor.rookBishopKnight",
+          "kind": "school"
+        },
+        {
+          "id": "minor.twoRooksVsKnight",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
+      "id": "tactics.basic",
+      "group": "tactics",
+      "band": "casual",
+      "requires": [
+        "rules.pieceValue"
+      ],
+      "lessons": [
+        {
+          "id": "tricks.scholarsMate",
+          "kind": "school"
+        },
+        {
+          "id": "tricks.defendScholar",
+          "kind": "school"
+        },
+        {
+          "id": "tricks.foolsMate",
+          "kind": "school"
+        },
+        {
+          "id": "tricks.principles",
+          "kind": "school"
+        }
+      ],
+      "midgameTactic": true
+    },
+    {
+      "id": "tactics.endgame",
+      "group": "tactics",
+      "band": "advanced",
+      "requires": [
+        "tactics.basic"
+      ],
+      "lessons": [
+        {
+          "id": "tactics.endgameTricks",
+          "kind": "new"
+        }
+      ],
+      "midgameTactic": false
+    }
+  ]
+}

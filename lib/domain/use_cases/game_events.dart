@@ -179,6 +179,15 @@ abstract final class GameEvents {
   static const thinking = Duration(seconds: 25);
   static const longThinking = Duration(seconds: 60);
 
+  /// A partir daqui (em módulo), a avaliação é de mate forçado (mate em até
+  /// 100 lances).
+  static const mateFloor = Evaluation.mateScore - 1000;
+
+  /// O jogador teve mate forçado em algum momento (nas avaliações
+  /// guardadas).
+  static bool playerHadMate(TalkMemory memory) =>
+      memory.scores.any((score) => score <= -mateFloor);
+
   /// Categorias ditas no máximo uma vez por partida.
   static const onceCategories = {
     LineCategory.opponentLowTime,
@@ -221,6 +230,16 @@ abstract final class GameEvents {
           previous > collapseFloor) {
         events.add(const GameEvent(LineCategory.collapse, 3));
         turned = true;
+      }
+    }
+
+    // O jogador tinha mate forçado: deixou escapar (forte) ou não chegou
+    // mais perto dele (o mate não encurtou).
+    if (hasDelta && !move.byCharacter && previous <= -mateFloor) {
+      if (score > -mateFloor) {
+        events.add(const GameEvent(LineCategory.mateDelayed, 3));
+      } else if (score >= previous) {
+        events.add(const GameEvent(LineCategory.mateDelayed, 2));
       }
     }
 

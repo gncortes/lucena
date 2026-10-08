@@ -7,6 +7,7 @@ import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_setup_robot.dart';
 import 'robots/home_robot.dart';
@@ -111,6 +112,7 @@ void main() {
   ) async {
     final app = AppRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
     app.useRealMaia();
 
@@ -126,8 +128,8 @@ void main() {
     await board.waitForMoves(1);
     await board.move('h7', 'h6');
 
-    await board.expectEnd(reason: 'Insufficient material', result: 'Draw');
-    await board.expectGoalResult('Goal achieved!');
+    await conclusion.expectEnd(title: 'Draw', reason: 'Insufficient material');
+    await conclusion.expectGoal('Goal achieved!');
     expect(app.fakeMachineRequests, isEmpty);
   });
 }

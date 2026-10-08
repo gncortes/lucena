@@ -17,6 +17,7 @@ import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Um speedrun antes de começar: quem ou o que é, o ritmo, o melhor tempo (ou
 /// o convite para o primeiro), a trilha das etapas com o melhor tempo de cada
@@ -115,7 +116,7 @@ class SpeedrunScreen extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: colors.secondaryContainer,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppShape.large),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -151,7 +152,7 @@ class SpeedrunScreen extends StatelessWidget {
             child: best == null
                 ? Row(
                     children: [
-                      Icon(Icons.flag_outlined, color: colors.outline),
+                      Icon(Icons.timer_outlined, color: colors.outline),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -171,7 +172,7 @@ class SpeedrunScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.emoji_events,
+                            Icons.leaderboard,
                             color: colors.onPrimaryContainer,
                           ),
                           const SizedBox(width: 12),
@@ -331,7 +332,7 @@ class SpeedrunScreen extends StatelessWidget {
               color: colors.onSurfaceVariant,
             ),
             leading: Icon(
-              run.completed ? Icons.flag_rounded : Icons.flag_outlined,
+              run.completed ? Icons.check_circle_rounded : Icons.timer_outlined,
               color: run.completed ? colors.primary : colors.outline,
             ),
             title: Text(

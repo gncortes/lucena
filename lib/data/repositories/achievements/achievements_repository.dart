@@ -5,9 +5,9 @@ abstract class AchievementsRepository {
   /// Todas as conquistas, na ordem da lista.
   Future<List<Achievement>> all();
 
-  /// As já mostradas, com o instante em que apareceram.
-  Future<Map<String, DateTime>> unlocked();
+  /// As já mostradas, pelo id, com o instante e a origem (quando gravada).
+  Future<Map<String, UnlockedAchievement>> unlocked();
 
-  /// Marca [ids] como mostradas no instante [at].
-  Future<void> unlock(Iterable<String> ids, DateTime at);
+  /// Marca [achievements] como mostradas. As já gravadas ficam como estavam.
+  Future<void> unlock(Iterable<UnlockedAchievement> achievements);
 }

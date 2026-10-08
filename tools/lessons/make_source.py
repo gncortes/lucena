@@ -50,6 +50,40 @@ def talk(id, fen, arrows=(), marks=(), side='white'):
     return step
 
 
+def think(id, fen, minutes, hints, arrows=(), marks=(), side='white',
+          ask='plan'):
+    """Passo em que o aluno estuda a posição sozinho por `minutes`; `hints`
+    é quantas dicas a fala tem. Setas e casas aparecem com a primeira dica.
+    `ask` diz o que o Viktor pede: `plan` (o melhor plano) ou `line` (a
+    sequência que ganha, quando há uma forçada)."""
+    step = {'type': 'think', 'id': id, 'fen': fen, 'minutes': minutes,
+            'hints': hints, 'ask': ask}
+    if fen.split()[1] != side[0]:
+        step['side'] = side
+    if arrows:
+        step['arrows'] = list(arrows)
+    if marks:
+        step['marks'] = list(marks)
+    return step
+
+
+def demo(id, fen, sans, goal='win', side='white', notes=None):
+    """Passo em que o app joga a linha `sans` (os dois lados) e o Viktor
+    explica cada lance. `notes` é {número do lance (1, 2…): {'arrows': [...],
+    'marks': [...]}}."""
+    board = chess.Board(fen)
+    line = []
+    for number, san in enumerate(sans.split(), start=1):
+        entry = {'uci': board.push_san(san).uci()}
+        entry.update((notes or {}).get(number, {}))
+        line.append(entry)
+    step = {'type': 'demo', 'id': id, 'fen': fen, 'goal': goal}
+    if fen.split()[1] != side[0]:
+        step['side'] = side
+    step['line'] = line
+    return step
+
+
 def move(id, fen, sans, accept='best', goal='win'):
     return {'type': 'move', 'id': id, 'fen': fen, 'goal': goal,
             'turns': turns(fen, sans, accept)}

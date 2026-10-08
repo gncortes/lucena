@@ -27,6 +27,7 @@ void main() {
     await settings.openLanguages();
     await settings.chooseLanguage(AppLanguage.spanish);
     await settings.back();
+    await settings.back();
     settings.expectTitle('Ajustes');
 
     await app.restart();
@@ -48,9 +49,10 @@ void main() {
     await settings.chooseLanguage(AppLanguage.arabic);
     await settings.back();
 
-    settings.expectTitle('الإعدادات');
     settings.expectLanguageValue('العربية');
     app.expectDirection(TextDirection.rtl);
+    await settings.backToMenu();
+    settings.expectTitle('الإعدادات');
 
     await settings.back();
     await home.expectVisible();
@@ -69,15 +71,16 @@ void main() {
     await home.openSettings();
     await settings.openLanguages();
     await settings.chooseLanguage(AppLanguage.spanish);
-    await settings.back();
+    await settings.backToMenu();
     settings.expectTitle('Ajustes');
 
     await settings.openLanguages();
     await settings.chooseSystemLanguage();
     await settings.back();
 
-    settings.expectTitle('Configurações');
     settings.expectLanguageValue('Padrão do sistema');
+    await settings.backToMenu();
+    settings.expectTitle('Configurações');
   });
 
   patrolTest('pseudo-idioma longo: nenhum texto cortado nas telas', ($) async {
@@ -93,12 +96,13 @@ void main() {
     app.expectNoClippedText();
 
     await settings.back();
-    settings.expectTitle('[Šéttîñĝš one]');
     app.expectNoClippedText();
 
     await settings.openThemes();
     app.expectNoClippedText();
-    await settings.back();
+    await settings.backToMenu();
+    settings.expectTitle('[Šéttîñĝš one]');
+    app.expectNoClippedText();
 
     await profile.open();
     app.expectNoClippedText();

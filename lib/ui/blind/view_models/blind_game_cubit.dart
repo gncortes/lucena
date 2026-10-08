@@ -129,6 +129,7 @@ class BlindPhrases {
 
 class BlindState {
   const BlindState({
+    this.held = false,
     this.phase = BlindPhase.loading,
     this.view = BlindView.empty,
     this.position,
@@ -160,7 +161,19 @@ class BlindState {
     this.white,
     this.black,
     this.running,
+    this.concluded = false,
+    this.gameId,
   });
+
+  /// O resultado já foi dito: a tela troca para a conclusão (T51, B).
+  final bool concluded;
+
+  /// A partida gravada (desafio da Jornada). Nula nas que não se gravam.
+  final int? gameId;
+
+  /// A entrada versus está na tela (T51, A2): o relógio espera parado e a
+  /// máquina não joga até ela sair ([BlindGameCubit.release]).
+  final bool held;
 
   final BlindPhase phase;
   final BlindView view;
@@ -291,7 +304,13 @@ class BlindState {
     Duration? white,
     Duration? black,
     Side? Function()? running,
+    bool? held,
+    bool? concluded,
+    int? gameId,
   }) => BlindState(
+    concluded: concluded ?? this.concluded,
+    gameId: gameId ?? this.gameId,
+    held: held ?? this.held,
     phase: phase ?? this.phase,
     view: view ?? this.view,
     position: position ?? this.position,
@@ -360,6 +379,14 @@ class BlindGameCubit extends Cubit<BlindState> {
   String? _positionId;
   PositionGoal _goal = PositionGoal.win;
   String? _startFen;
+
+  /// A posição de início, a da Jornada e o objetivo (para a conclusão).
+  String? get startFen => _startFen;
+  String? get positionId => _positionId;
+  PositionGoal get goal => _goal;
+
+  /// O instante de agora, pelo relógio injetado.
+  DateTime now() => _now();
 
   /// O máximo que se espera a voz terminar de falar.
   final Duration speechTimeout;
@@ -459,10 +486,18 @@ class BlindGameCubit extends Cubit<BlindState> {
     );
   }
 
-  /// "Começar": a partida sai da entrada.
+  /// "Começar": a entrada versus aparece; a partida começa quando ela sai
+  /// ([release]).
   Future<void> start() async {
-    if (state.phase != BlindPhase.intro) return;
+    if (state.phase != BlindPhase.intro || state.held) return;
     await _voice.stop();
+    emit(state.copyWith(held: true));
+  }
+
+  /// O versus saiu: o relógio corre e a partida começa.
+  Future<void> release() async {
+    if (state.phase != BlindPhase.intro || !state.held) return;
+    emit(state.copyWith(held: false));
     final config = _clockConfig;
     if (config != null) {
       _clock = ClockEngine.start(
@@ -1137,13 +1172,13 @@ class BlindGameCubit extends Cubit<BlindState> {
 
   // O desafio da Jornada fica no histórico: cumprido se o objetivo da
   // posição foi alcançado (vencer, ou segurar o empate).
-  Future<void> _recordChallenge(GameEnd end, bool? won) async {
+  Future<int?> _recordChallenge(GameEnd end, bool? won) async {
     final progress = _progress;
     final positionId = _positionId;
     if (progress == null || positionId == null || _challengeId == null) {
-      return;
+      return null;
     }
-    await progress.addAttempt(
+    return progress.addAttempt(
       Attempt(
         positionId: positionId,
         playedAt: _now(),
@@ -1185,7 +1220,7 @@ class BlindGameCubit extends Cubit<BlindState> {
       ),
     );
     final won = state.userWon;
-    await _recordChallenge(end, won);
+    final gameId = await _recordChallenge(end, won);
     await _say(
       end.reason == GameEndReason.resign
           ? _phrases.resigned
@@ -1196,7 +1231,8 @@ class BlindGameCubit extends Cubit<BlindState> {
           : won
           ? _phrases.won
           : _phrases.lost,
-    );
+    ); // Dito o resultado, a conclusão.
+    if (!isClosed) emit(state.copyWith(concluded: true, gameId: gameId));
   }
 
   /// Fala [text] e espera terminar (o microfone fica fechado enquanto isso).

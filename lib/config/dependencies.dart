@@ -5,6 +5,13 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
+import '../data/repositories/share/share_repository.dart';
+import '../data/repositories/placement/placement_repository.dart';
+import '../data/repositories/placement/placement_repository_local.dart';
+import '../data/repositories/conclusion/conclusion_repository.dart';
+import '../data/repositories/conclusion/conclusion_repository_local.dart';
+import '../data/repositories/share/share_repository_device.dart';
+import '../data/services/share_service.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
@@ -87,10 +94,13 @@ class Dependencies {
     required this.settingsRepository,
     required this.profileRepository,
     required this.hapticsRepository,
+    required this.shareRepository,
+    required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
     required this.gameReviewRepository,
     required this.ongoingGameRepository,
+    required this.conclusionRepository,
     required this.positionsRepository,
     required this.trainingRepository,
     required this.opponentRepository,
@@ -137,10 +147,13 @@ class Dependencies {
       settingsRepository: LocalSettingsRepository(preferences),
       profileRepository: profile,
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
+      shareRepository: const DeviceShareRepository(ShareService()),
+      placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
       gameReviewRepository: LocalGameReviewRepository(preferences),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
+      conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
       opponentRepository: DeviceOpponentRepository(
@@ -189,10 +202,13 @@ class Dependencies {
   final SettingsRepository settingsRepository;
   final ProfileRepository profileRepository;
   final HapticsRepository hapticsRepository;
+  final ShareRepository shareRepository;
+  final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
   final GameReviewRepository gameReviewRepository;
   final OngoingGameRepository ongoingGameRepository;
+  final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
   final OpponentRepository opponentRepository;

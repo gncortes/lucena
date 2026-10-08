@@ -112,12 +112,113 @@ class Achievement {
   }
 }
 
-/// Uma conquista já mostrada ao jogador e quando.
+/// Os grupos da lista de conquistas, na ordem em que aparecem.
+enum AchievementCategory {
+  /// A Jornada: o primeiro final, os degraus e os desafios rápidos.
+  journey,
+
+  /// Os adversários: cada personagem, o Stockfish e todos os níveis.
+  opponents,
+
+  /// Os speedruns.
+  speedrun,
+}
+
+/// O que dá para contar no caminho de uma conquista: [done] de [total]
+/// [unit].
+enum AchievementProgressUnit {
+  /// Níveis do Maia vencidos.
+  levels,
+
+  /// Desafios de um degrau concluídos.
+  challenges,
+}
+
+/// Quanto falta para uma conquista que dá para medir ("3 de 9 níveis").
+class AchievementProgress {
+  const AchievementProgress({
+    required this.done,
+    required this.total,
+    required this.unit,
+  });
+
+  final int done;
+  final int total;
+  final AchievementProgressUnit unit;
+
+  /// De 0 a 1, para a barra.
+  double get fraction => total <= 0 ? 0 : (done / total).clamp(0, 1);
+
+  @override
+  bool operator ==(Object other) =>
+      other is AchievementProgress &&
+      other.done == done &&
+      other.total == total &&
+      other.unit == unit;
+
+  @override
+  int get hashCode => Object.hash(done, total, unit);
+
+  @override
+  String toString() => 'AchievementProgress($done/$total ${unit.name})';
+}
+
+extension AchievementGroup on Achievement {
+  /// O grupo da conquista na lista.
+  AchievementCategory get category => switch (type) {
+    AchievementType.firstFulfilled ||
+    AchievementType.rungCompleted => AchievementCategory.journey,
+    AchievementType.allLevels ||
+    AchievementType.beatLevel ||
+    AchievementType.beatStockfish => AchievementCategory.opponents,
+    AchievementType.speedrunCompleted ||
+    AchievementType.flawlessSpeedrun ||
+    AchievementType.recordImproved => AchievementCategory.speedrun,
+    // Sem modalidade, o tempo é o de um desafio da Jornada.
+    AchievementType.underTime =>
+      speedrunKind == null
+          ? AchievementCategory.journey
+          : AchievementCategory.speedrun,
+  };
+
+  /// Sai de uma tentativa de speedrun inteira, não de uma partida só.
+  bool get fromSpeedrun => category == AchievementCategory.speedrun;
+}
+
+/// Uma conquista já mostrada ao jogador, quando e, a partir da T51, de onde
+/// veio: a partida ([gameId]) e, numa etapa de speedrun, a tentativa
+/// ([speedrunAttemptId]). As gravadas antes não têm a origem.
 class UnlockedAchievement {
-  const UnlockedAchievement({required this.id, required this.at});
+  const UnlockedAchievement({
+    required this.id,
+    required this.at,
+    this.gameId,
+    this.speedrunAttemptId,
+  });
 
   final String id;
   final DateTime at;
+  final int? gameId;
+  final int? speedrunAttemptId;
+
+  /// Sabe de onde veio (as antigas só têm a data).
+  bool get hasSource => gameId != null || speedrunAttemptId != null;
+
+  @override
+  bool operator ==(Object other) =>
+      other is UnlockedAchievement &&
+      other.id == id &&
+      other.at == at &&
+      other.gameId == gameId &&
+      other.speedrunAttemptId == speedrunAttemptId;
+
+  @override
+  int get hashCode => Object.hash(id, at, gameId, speedrunAttemptId);
+
+  @override
+  String toString() =>
+      'UnlockedAchievement($id, $at, game: $gameId, '
+      'speedrun: $speedrunAttemptId)';
 }
 
 /// Tudo o que as regras de conquista olham, tirado do histórico.

@@ -24,7 +24,33 @@ class EndgameLessonState {
     this.lessonNumber = 0,
     this.lessonCount = 0,
     this.nextLesson,
+    this.ongoingPart,
+    this.moduleNumber = 0,
+    this.moduleCount = 0,
   });
+
+  /// A posição da aula no módulo dela (1 é a primeira) e quantas ele tem.
+  final int moduleNumber;
+  final int moduleCount;
+
+  /// A parte aberta quando o aluno saiu da lição (para "Continuar").
+  final String? ongoingPart;
+
+  /// As partes já feitas.
+  Set<String> get partsDone {
+    final lesson = this.lesson;
+    return lesson == null ? const {} : progress.partsDone(lesson);
+  }
+
+  /// A parte recomendada; nula com todas feitas (o próximo é o teste).
+  LessonPart? get recommendedPart {
+    final lesson = this.lesson;
+    return lesson == null
+        ? null
+        : EndgameLessonRules.recommendedPart(lesson, progress);
+  }
+
+  bool get allPartsDone => lesson != null && recommendedPart == null;
 
   final bool ready;
 
@@ -95,6 +121,9 @@ class EndgameLessonState {
         lessonNumber: lessonNumber,
         lessonCount: lessonCount,
         nextLesson: nextLesson,
+        ongoingPart: ongoingPart,
+        moduleNumber: moduleNumber,
+        moduleCount: moduleCount,
       );
 }
 
@@ -130,6 +159,9 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
       if (character.id == LessonCubit.viktorId) viktor = character;
     }
     final lessons = trail.lessons;
+    final module = trail.modules.firstWhere(
+      (each) => each.lessons.contains(lesson),
+    );
     emit(
       EndgameLessonState(
         ready: true,
@@ -140,8 +172,13 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
         speedrun: EndgameLessonRules.speedrunOf(lesson, speedruns),
         viktor: viktor,
         lessonNumber: lessons.indexOf(lesson) + 1,
+        moduleNumber: module.lessons.indexOf(lesson) + 1,
+        moduleCount: module.lessons.length,
         lessonCount: lessons.length,
         nextLesson: trail.after(lessonId)?.id,
+        ongoingPart: progress.ongoing?.lessonId == lessonId
+            ? EndgameLessonRules.migrate(lesson, progress.ongoing)?.part
+            : null,
       ),
     );
   }

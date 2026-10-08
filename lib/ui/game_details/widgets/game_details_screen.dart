@@ -23,6 +23,11 @@ import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// Os detalhes de uma partida: o resultado e contra quem; a revisão pela
 /// engine (precisão e qualidade de cada lance); o tabuleiro com a anotação
@@ -41,12 +46,25 @@ class GameDetailsScreen extends StatelessWidget {
       key: GameDetailsKeys.screen,
       appBar: AppBar(title: Text(l10n.gameDetailsTitle)),
       body: !state.ready
-          ? const Center(child: CircularProgressIndicator())
+          // Carregando: o tabuleiro e os lances em esqueleto.
+          ? ListView(
+              key: GameDetailsKeys.loading,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(AppSpacing.screen),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: SkeletonBlock(height: double.infinity),
+                  ),
+                ),
+                SkeletonList(rows: 3),
+              ],
+            )
           : attempt == null
           ? Center(
-              child: Text(
-                l10n.gameDetailsNotFound,
-                key: GameDetailsKeys.notFound,
+              child: ErrorState(
+                message: l10n.gameDetailsNotFound,
+                messageKey: GameDetailsKeys.notFound,
               ),
             )
           : LayoutBuilder(
@@ -167,7 +185,7 @@ class _Header extends StatelessWidget {
     final icon = switch (attempt.outcome) {
       AttemptOutcome.win => Icons.emoji_events,
       AttemptOutcome.draw => Icons.handshake_outlined,
-      AttemptOutcome.loss => Icons.flag_outlined,
+      AttemptOutcome.loss => Icons.sentiment_dissatisfied_outlined,
     };
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -194,8 +212,11 @@ class _Header extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (after != null)
+                if (after != null) ...[
+                  // Um respiro entre o resultado e o rating.
+                  const SizedBox(width: 12),
                   RatingValue(rating: after, change: state.ratingChange),
+                ],
               ],
             ),
           ),
@@ -206,7 +227,11 @@ class _Header extends StatelessWidget {
                 if (character != null)
                   CharacterAvatar(character: character, size: 52)
                 else
-                  Icon(Icons.person_outline, size: 40, color: colors.outline),
+                  Icon(
+                    Icons.smart_toy_outlined,
+                    size: 40,
+                    color: colors.outline,
+                  ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -340,16 +365,16 @@ class _MoveTable extends StatelessWidget {
     final time = move.time;
     return InkWell(
       key: GameDetailsKeys.move(index),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppShape.small),
       onTap: () => context.read<GameDetailsCubit>().select(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
+        duration: AppMotion.state,
         height: 44,
         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: selected ? colors.secondaryContainer : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppShape.small),
         ),
         child: Row(
           children: [

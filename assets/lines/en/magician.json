@@ -220,6 +220,27 @@
       "text": "Even the best magician plays to an empty house sometimes."
     },
     {
+      "id": "magician.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "My final act: the draw that appears out of nowhere! Just say yes."
+    },
+    {
+      "id": "magician.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Pick a card... any card... it's a draw! What a coincidence!"
+    },
+    {
+      "id": "magician.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Draw and I'll teach you the rabbit trick. Magicians don't tell, but you..."
+    },
+    {
       "id": "magician.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 2,
@@ -869,6 +890,76 @@
       "intensity": 3,
       "emotion": "playful",
       "text": "Declined! Watch my hand closely... no, the other one!"
+    },
+    {
+      "id": "magician.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Oops! The mate vanished! And I did not even do magic this time!"
+    },
+    {
+      "id": "magician.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Looking for the mate? Check behind your ear. Not there? Pity."
+    },
+    {
+      "id": "magician.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "happy",
+      "text": "Ladies and gentlemen, the vanishing mate! And now: the draw!"
+    },
+    {
+      "id": "magician.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "This is a draw, my friend. Not even the best magician gets mate here."
+    },
+    {
+      "id": "magician.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I need to go, I have a show at eight. Draw and everybody claps?"
+    },
+    {
+      "id": "magician.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I knew it was a draw. You did not take it, delayed my show, but fine."
+    },
+    {
+      "id": "magician.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Ta-da! I told you: the act ended in a draw."
+    },
+    {
+      "id": "magician.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Predicted in the hat from the start: a draw! Applause!"
+    },
+    {
+      "id": "magician.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The oldest trick in the book: make you play on until the draw."
+    },
+    {
+      "id": "magician.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A draw, as I said. Magicians never tell, but I told you."
     }
   ]
 }

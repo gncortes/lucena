@@ -23,8 +23,16 @@ mixin _$AppSettings {
  BoardSettings get board;/// Onde o relógio aparece e como ele avisa.
  ClockSettings get clock;/// Os personagens comentam a partida num balão de fala.
  bool get characterTalk;/// Os sons do jogo: o das peças a cada lance e o aviso do relógio.
- bool get sound;/// A barra de avaliação da engine na revisão da partida.
- bool get evalBar;
+ bool get sound;/// O retorno tátil: lances, vitórias, conquistas e o aviso do relógio.
+ bool get vibration;/// Quanto tempo o aluno pensa sozinho numa posição da aula antes da
+/// explicação: 1, 3 ou 5 minutos, ou 0, o recomendado por cada posição
+/// (5 nas posições-chave, 1 ou 3 nas de passagem) (T51).
+ int get thinkMinutes;/// O aluno já escolheu o tempo de pensar (na primeira aula com passo de
+/// pensar ou nas Configurações). Sem isso, a aula pergunta antes.
+ bool get thinkChosen;/// A barra de avaliação da engine na revisão da partida.
+ bool get evalBar;/// Nas aulas de finais, com o teste de nível feito: a trilha inteira
+/// ("Todos") em vez do roteiro ("Para você") (T52).
+ bool get endgamesAll;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -36,20 +44,20 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 @override
 bool operator ==(Object other) {
   final _this = this as AppSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.accent, _this.accent) || other.accent == _this.accent)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.characterTalk, _this.characterTalk) || other.characterTalk == _this.characterTalk)&&(identical(other.sound, _this.sound) || other.sound == _this.sound)&&(identical(other.evalBar, _this.evalBar) || other.evalBar == _this.evalBar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.languageCode, _this.languageCode) || other.languageCode == _this.languageCode)&&(identical(other.themeMode, _this.themeMode) || other.themeMode == _this.themeMode)&&(identical(other.accent, _this.accent) || other.accent == _this.accent)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.characterTalk, _this.characterTalk) || other.characterTalk == _this.characterTalk)&&(identical(other.sound, _this.sound) || other.sound == _this.sound)&&(identical(other.vibration, _this.vibration) || other.vibration == _this.vibration)&&(identical(other.thinkMinutes, _this.thinkMinutes) || other.thinkMinutes == _this.thinkMinutes)&&(identical(other.thinkChosen, _this.thinkChosen) || other.thinkChosen == _this.thinkChosen)&&(identical(other.evalBar, _this.evalBar) || other.evalBar == _this.evalBar)&&(identical(other.endgamesAll, _this.endgamesAll) || other.endgamesAll == _this.endgamesAll));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AppSettings;
-  return Object.hash(runtimeType,_this.languageCode,_this.themeMode,_this.accent,_this.board,_this.clock,_this.characterTalk,_this.sound,_this.evalBar);
+  return Object.hash(runtimeType,_this.languageCode,_this.themeMode,_this.accent,_this.board,_this.clock,_this.characterTalk,_this.sound,_this.vibration,_this.thinkMinutes,_this.thinkChosen,_this.evalBar,_this.endgamesAll);
 }
 
 @override
 String toString() {
   final _this = this as AppSettings;
-  return 'AppSettings(languageCode: ${_this.languageCode}, themeMode: ${_this.themeMode}, accent: ${_this.accent}, board: ${_this.board}, clock: ${_this.clock}, characterTalk: ${_this.characterTalk}, sound: ${_this.sound}, evalBar: ${_this.evalBar})';
+  return 'AppSettings(languageCode: ${_this.languageCode}, themeMode: ${_this.themeMode}, accent: ${_this.accent}, board: ${_this.board}, clock: ${_this.clock}, characterTalk: ${_this.characterTalk}, sound: ${_this.sound}, vibration: ${_this.vibration}, thinkMinutes: ${_this.thinkMinutes}, thinkChosen: ${_this.thinkChosen}, evalBar: ${_this.evalBar}, endgamesAll: ${_this.endgamesAll})';
 }
 
 
@@ -60,7 +68,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk, bool sound, bool evalBar
+ String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk, bool sound, bool vibration, int thinkMinutes, bool thinkChosen, bool evalBar, bool endgamesAll
 });
 
 
@@ -77,7 +85,7 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,Object? sound = null,Object? evalBar = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,Object? sound = null,Object? vibration = null,Object? thinkMinutes = null,Object? thinkChosen = null,Object? evalBar = null,Object? endgamesAll = null,}) {
   return _then(AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
@@ -86,7 +94,11 @@ as AppAccent?,board: null == board ? _self.board : board // ignore: cast_nullabl
 as BoardSettings,clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockSettings,characterTalk: null == characterTalk ? _self.characterTalk : characterTalk // ignore: cast_nullable_to_non_nullable
 as bool,sound: null == sound ? _self.sound : sound // ignore: cast_nullable_to_non_nullable
+as bool,vibration: null == vibration ? _self.vibration : vibration // ignore: cast_nullable_to_non_nullable
+as bool,thinkMinutes: null == thinkMinutes ? _self.thinkMinutes : thinkMinutes // ignore: cast_nullable_to_non_nullable
+as int,thinkChosen: null == thinkChosen ? _self.thinkChosen : thinkChosen // ignore: cast_nullable_to_non_nullable
 as bool,evalBar: null == evalBar ? _self.evalBar : evalBar // ignore: cast_nullable_to_non_nullable
+as bool,endgamesAll: null == endgamesAll ? _self.endgamesAll : endgamesAll // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -190,10 +202,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool evalBar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool vibration,  int thinkMinutes,  bool thinkChosen,  bool evalBar,  bool endgamesAll)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.evalBar);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.vibration,_that.thinkMinutes,_that.thinkChosen,_that.evalBar,_that.endgamesAll);case _:
   return orElse();
 
 }
@@ -211,10 +223,10 @@ return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool evalBar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool vibration,  int thinkMinutes,  bool thinkChosen,  bool evalBar,  bool endgamesAll)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.evalBar);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.vibration,_that.thinkMinutes,_that.thinkChosen,_that.evalBar,_that.endgamesAll);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -231,10 +243,10 @@ return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool evalBar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? languageCode,  AppThemeMode themeMode,  AppAccent? accent,  BoardSettings board,  ClockSettings clock,  bool characterTalk,  bool sound,  bool vibration,  int thinkMinutes,  bool thinkChosen,  bool evalBar,  bool endgamesAll)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.evalBar);case _:
+return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_that.clock,_that.characterTalk,_that.sound,_that.vibration,_that.thinkMinutes,_that.thinkChosen,_that.evalBar,_that.endgamesAll);case _:
   return null;
 
 }
@@ -246,7 +258,7 @@ return $default(_that.languageCode,_that.themeMode,_that.accent,_that.board,_tha
 
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.languageCode, this.themeMode = AppThemeMode.system, this.accent, this.board = const BoardSettings(), this.clock = const ClockSettings(), this.characterTalk = true, this.sound = true, this.evalBar = true});
+  const _AppSettings({this.languageCode, this.themeMode = AppThemeMode.system, this.accent, this.board = const BoardSettings(), this.clock = const ClockSettings(), this.characterTalk = true, this.sound = true, this.vibration = true, this.thinkMinutes = 0, this.thinkChosen = false, this.evalBar = true, this.endgamesAll = false});
   
 
 /// Código do idioma escolhido (`es`, `pt_PT`...). Nulo segue o sistema.
@@ -264,8 +276,20 @@ class _AppSettings implements AppSettings {
 @override@JsonKey() final  bool characterTalk;
 /// Os sons do jogo: o das peças a cada lance e o aviso do relógio.
 @override@JsonKey() final  bool sound;
+/// O retorno tátil: lances, vitórias, conquistas e o aviso do relógio.
+@override@JsonKey() final  bool vibration;
+/// Quanto tempo o aluno pensa sozinho numa posição da aula antes da
+/// explicação: 1, 3 ou 5 minutos, ou 0, o recomendado por cada posição
+/// (5 nas posições-chave, 1 ou 3 nas de passagem) (T51).
+@override@JsonKey() final  int thinkMinutes;
+/// O aluno já escolheu o tempo de pensar (na primeira aula com passo de
+/// pensar ou nas Configurações). Sem isso, a aula pergunta antes.
+@override@JsonKey() final  bool thinkChosen;
 /// A barra de avaliação da engine na revisão da partida.
 @override@JsonKey() final  bool evalBar;
+/// Nas aulas de finais, com o teste de nível feito: a trilha inteira
+/// ("Todos") em vez do roteiro ("Para você") (T52).
+@override@JsonKey() final  bool endgamesAll;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -277,18 +301,18 @@ _$AppSettingsCopyWith<_AppSettings> get copyWith => __$AppSettingsCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.board, board) || other.board == board)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.characterTalk, characterTalk) || other.characterTalk == characterTalk)&&(identical(other.sound, sound) || other.sound == sound)&&(identical(other.evalBar, evalBar) || other.evalBar == evalBar));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.languageCode, languageCode) || other.languageCode == languageCode)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.accent, accent) || other.accent == accent)&&(identical(other.board, board) || other.board == board)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.characterTalk, characterTalk) || other.characterTalk == characterTalk)&&(identical(other.sound, sound) || other.sound == sound)&&(identical(other.vibration, vibration) || other.vibration == vibration)&&(identical(other.thinkMinutes, thinkMinutes) || other.thinkMinutes == thinkMinutes)&&(identical(other.thinkChosen, thinkChosen) || other.thinkChosen == thinkChosen)&&(identical(other.evalBar, evalBar) || other.evalBar == evalBar)&&(identical(other.endgamesAll, endgamesAll) || other.endgamesAll == endgamesAll));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,languageCode,themeMode,accent,board,clock,characterTalk,sound,evalBar);
+    return Object.hash(runtimeType,languageCode,themeMode,accent,board,clock,characterTalk,sound,vibration,thinkMinutes,thinkChosen,evalBar,endgamesAll);
 }
 
 @override
 String toString() {
-    return 'AppSettings(languageCode: $languageCode, themeMode: $themeMode, accent: $accent, board: $board, clock: $clock, characterTalk: $characterTalk, sound: $sound, evalBar: $evalBar)';
+    return 'AppSettings(languageCode: $languageCode, themeMode: $themeMode, accent: $accent, board: $board, clock: $clock, characterTalk: $characterTalk, sound: $sound, vibration: $vibration, thinkMinutes: $thinkMinutes, thinkChosen: $thinkChosen, evalBar: $evalBar, endgamesAll: $endgamesAll)';
 }
 
 
@@ -299,7 +323,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk, bool sound, bool evalBar
+ String? languageCode, AppThemeMode themeMode, AppAccent? accent, BoardSettings board, ClockSettings clock, bool characterTalk, bool sound, bool vibration, int thinkMinutes, bool thinkChosen, bool evalBar, bool endgamesAll
 });
 
 
@@ -316,7 +340,7 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,Object? sound = null,Object? evalBar = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? languageCode = freezed,Object? themeMode = null,Object? accent = freezed,Object? board = null,Object? clock = null,Object? characterTalk = null,Object? sound = null,Object? vibration = null,Object? thinkMinutes = null,Object? thinkChosen = null,Object? evalBar = null,Object? endgamesAll = null,}) {
   return _then(_AppSettings(
 languageCode: freezed == languageCode ? _self.languageCode : languageCode // ignore: cast_nullable_to_non_nullable
 as String?,themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
@@ -325,7 +349,11 @@ as AppAccent?,board: null == board ? _self.board : board // ignore: cast_nullabl
 as BoardSettings,clock: null == clock ? _self.clock : clock // ignore: cast_nullable_to_non_nullable
 as ClockSettings,characterTalk: null == characterTalk ? _self.characterTalk : characterTalk // ignore: cast_nullable_to_non_nullable
 as bool,sound: null == sound ? _self.sound : sound // ignore: cast_nullable_to_non_nullable
+as bool,vibration: null == vibration ? _self.vibration : vibration // ignore: cast_nullable_to_non_nullable
+as bool,thinkMinutes: null == thinkMinutes ? _self.thinkMinutes : thinkMinutes // ignore: cast_nullable_to_non_nullable
+as int,thinkChosen: null == thinkChosen ? _self.thinkChosen : thinkChosen // ignore: cast_nullable_to_non_nullable
 as bool,evalBar: null == evalBar ? _self.evalBar : evalBar // ignore: cast_nullable_to_non_nullable
+as bool,endgamesAll: null == endgamesAll ? _self.endgamesAll : endgamesAll // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/app_accent.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_accent_ui.dart';
+import '../theme/app_motion.dart';
 
 /// As cores do app em bolinhas, numa linha: a escolhida ganha o anel e a
 /// marca.
@@ -78,7 +79,7 @@ class _Dot extends StatelessWidget {
         onTap: onTap,
         radius: size / 2 + 4,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: AppMotion.state,
           width: size,
           height: size,
           padding: const EdgeInsets.all(4),
@@ -93,8 +94,8 @@ class _Dot extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: AnimatedScale(
               scale: selected ? 1 : 0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOutBack,
+              duration: AppMotion.state,
+              curve: AppMotion.enter,
               child: Icon(
                 Icons.check_rounded,
                 size: size * 0.45,

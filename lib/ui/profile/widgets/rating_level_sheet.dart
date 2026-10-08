@@ -5,6 +5,8 @@ import '../../../domain/models/rating_level.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import 'rating_level_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Abre o painel de escolha da faixa de rating. Devolve a faixa confirmada,
 /// ou nulo se o painel for fechado sem confirmar.
@@ -113,7 +115,9 @@ class RatingLevelOption extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
         selected: selected,
         selectedTileColor: colors.secondaryContainer,
         selectedColor: colors.onSecondaryContainer,
@@ -121,11 +125,11 @@ class RatingLevelOption extends StatelessWidget {
         title: Text(level.name(l10n)),
         subtitle: Text(level.describe(l10n)),
         trailing: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: AppMotion.state,
           transitionBuilder: (child, animation) =>
               ScaleTransition(scale: animation, child: child),
           child: selected
-              ? const Icon(Icons.check_circle, key: ValueKey('selected'))
+              ? const Icon(Icons.check, key: ValueKey('selected'))
               : const SizedBox.square(dimension: 24, key: ValueKey('empty')),
         ),
         onTap: onTap,
@@ -148,7 +152,7 @@ class LevelBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: AppMotion.state,
       width: _size,
       height: _size,
       alignment: Alignment.center,

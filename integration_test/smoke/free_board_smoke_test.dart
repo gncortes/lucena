@@ -78,8 +78,7 @@ void main() {
     await home.openSettings();
     await settings.openLanguages();
     await settings.chooseLanguage(AppLanguage.pseudo);
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await home.expectVisible();
     app.expectNoClippedText();
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/clock.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_motion.dart';
 
 /// O que foi confirmado no painel do relógio. [config] nulo: sem relógio.
 class ClockChoice {
@@ -107,8 +108,8 @@ class _ClockSheetState extends State<_ClockSheet> {
                   onChanged: (value) => setState(() => _enabled = value),
                 ),
                 AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
+                  duration: AppMotion.state,
+                  curve: AppMotion.enter,
                   alignment: Alignment.topCenter,
                   child: !_enabled
                       ? const SizedBox(width: double.infinity)

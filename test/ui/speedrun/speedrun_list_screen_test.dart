@@ -184,11 +184,12 @@ void main() {
     await pump(tester);
     // Mestre: os avançados; o mate de dama (iniciante) fica na outra aba.
     expect(find.byKey(SpeedrunKeys.item('ending.queen@60+0')), findsNothing);
-    // O speedrun sem dificuldade aparece sempre.
-    expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsOneWidget);
+    // O speedrun contra o Coco (1000) é de iniciante: some no avançado.
+    expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsNothing);
     await tester.tap(find.byKey(SpeedrunKeys.categoryOption('beginner')));
     await tester.pumpAndSettle();
     expect(find.byKey(SpeedrunKeys.item('ending.queen@60+0')), findsOneWidget);
+    expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsOneWidget);
   });
 
   testWidgets('quem está começando vê o ritmo numa linha, que abre o '

@@ -2079,8 +2079,33 @@ class $UnlockedAchievementsTable extends UnlockedAchievements
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
   @override
-  List<GeneratedColumn> get $columns => [achievementId, at];
+  late final GeneratedColumn<int> gameId = GeneratedColumn<int>(
+    'game_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _speedrunAttemptIdMeta = const VerificationMeta(
+    'speedrunAttemptId',
+  );
+  @override
+  late final GeneratedColumn<int> speedrunAttemptId = GeneratedColumn<int>(
+    'speedrun_attempt_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    achievementId,
+    at,
+    gameId,
+    speedrunAttemptId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2109,6 +2134,21 @@ class $UnlockedAchievementsTable extends UnlockedAchievements
     } else if (isInserting) {
       context.missing(_atMeta);
     }
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    }
+    if (data.containsKey('speedrun_attempt_id')) {
+      context.handle(
+        _speedrunAttemptIdMeta,
+        speedrunAttemptId.isAcceptableOrUnknown(
+          data['speedrun_attempt_id']!,
+          _speedrunAttemptIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2126,6 +2166,14 @@ class $UnlockedAchievementsTable extends UnlockedAchievements
         DriftSqlType.dateTime,
         data['${effectivePrefix}at'],
       )!,
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}game_id'],
+      ),
+      speedrunAttemptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}speedrun_attempt_id'],
+      ),
     );
   }
 
@@ -2139,12 +2187,28 @@ class UnlockedAchievementRow extends DataClass
     implements Insertable<UnlockedAchievementRow> {
   final String achievementId;
   final DateTime at;
-  const UnlockedAchievementRow({required this.achievementId, required this.at});
+
+  /// A partida que a desbloqueou e, numa etapa de speedrun, a tentativa
+  /// (versão 7). As de antes ficam sem.
+  final int? gameId;
+  final int? speedrunAttemptId;
+  const UnlockedAchievementRow({
+    required this.achievementId,
+    required this.at,
+    this.gameId,
+    this.speedrunAttemptId,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['achievement_id'] = Variable<String>(achievementId);
     map['at'] = Variable<DateTime>(at);
+    if (!nullToAbsent || gameId != null) {
+      map['game_id'] = Variable<int>(gameId);
+    }
+    if (!nullToAbsent || speedrunAttemptId != null) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId);
+    }
     return map;
   }
 
@@ -2152,6 +2216,12 @@ class UnlockedAchievementRow extends DataClass
     return UnlockedAchievementsCompanion(
       achievementId: Value(achievementId),
       at: Value(at),
+      gameId: gameId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gameId),
+      speedrunAttemptId: speedrunAttemptId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(speedrunAttemptId),
     );
   }
 
@@ -2163,6 +2233,8 @@ class UnlockedAchievementRow extends DataClass
     return UnlockedAchievementRow(
       achievementId: serializer.fromJson<String>(json['achievementId']),
       at: serializer.fromJson<DateTime>(json['at']),
+      gameId: serializer.fromJson<int?>(json['gameId']),
+      speedrunAttemptId: serializer.fromJson<int?>(json['speedrunAttemptId']),
     );
   }
   @override
@@ -2171,20 +2243,34 @@ class UnlockedAchievementRow extends DataClass
     return <String, dynamic>{
       'achievementId': serializer.toJson<String>(achievementId),
       'at': serializer.toJson<DateTime>(at),
+      'gameId': serializer.toJson<int?>(gameId),
+      'speedrunAttemptId': serializer.toJson<int?>(speedrunAttemptId),
     };
   }
 
-  UnlockedAchievementRow copyWith({String? achievementId, DateTime? at}) =>
-      UnlockedAchievementRow(
-        achievementId: achievementId ?? this.achievementId,
-        at: at ?? this.at,
-      );
+  UnlockedAchievementRow copyWith({
+    String? achievementId,
+    DateTime? at,
+    Value<int?> gameId = const Value.absent(),
+    Value<int?> speedrunAttemptId = const Value.absent(),
+  }) => UnlockedAchievementRow(
+    achievementId: achievementId ?? this.achievementId,
+    at: at ?? this.at,
+    gameId: gameId.present ? gameId.value : this.gameId,
+    speedrunAttemptId: speedrunAttemptId.present
+        ? speedrunAttemptId.value
+        : this.speedrunAttemptId,
+  );
   UnlockedAchievementRow copyWithCompanion(UnlockedAchievementsCompanion data) {
     return UnlockedAchievementRow(
       achievementId: data.achievementId.present
           ? data.achievementId.value
           : this.achievementId,
       at: data.at.present ? data.at.value : this.at,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      speedrunAttemptId: data.speedrunAttemptId.present
+          ? data.speedrunAttemptId.value
+          : this.speedrunAttemptId,
     );
   }
 
@@ -2192,45 +2278,59 @@ class UnlockedAchievementRow extends DataClass
   String toString() {
     return (StringBuffer('UnlockedAchievementRow(')
           ..write('achievementId: $achievementId, ')
-          ..write('at: $at')
+          ..write('at: $at, ')
+          ..write('gameId: $gameId, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(achievementId, at);
+  int get hashCode => Object.hash(achievementId, at, gameId, speedrunAttemptId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is UnlockedAchievementRow &&
           other.achievementId == this.achievementId &&
-          other.at == this.at);
+          other.at == this.at &&
+          other.gameId == this.gameId &&
+          other.speedrunAttemptId == this.speedrunAttemptId);
 }
 
 class UnlockedAchievementsCompanion
     extends UpdateCompanion<UnlockedAchievementRow> {
   final Value<String> achievementId;
   final Value<DateTime> at;
+  final Value<int?> gameId;
+  final Value<int?> speedrunAttemptId;
   final Value<int> rowid;
   const UnlockedAchievementsCompanion({
     this.achievementId = const Value.absent(),
     this.at = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.speedrunAttemptId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UnlockedAchievementsCompanion.insert({
     required String achievementId,
     required DateTime at,
+    this.gameId = const Value.absent(),
+    this.speedrunAttemptId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : achievementId = Value(achievementId),
        at = Value(at);
   static Insertable<UnlockedAchievementRow> custom({
     Expression<String>? achievementId,
     Expression<DateTime>? at,
+    Expression<int>? gameId,
+    Expression<int>? speedrunAttemptId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (achievementId != null) 'achievement_id': achievementId,
       if (at != null) 'at': at,
+      if (gameId != null) 'game_id': gameId,
+      if (speedrunAttemptId != null) 'speedrun_attempt_id': speedrunAttemptId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2238,11 +2338,15 @@ class UnlockedAchievementsCompanion
   UnlockedAchievementsCompanion copyWith({
     Value<String>? achievementId,
     Value<DateTime>? at,
+    Value<int?>? gameId,
+    Value<int?>? speedrunAttemptId,
     Value<int>? rowid,
   }) {
     return UnlockedAchievementsCompanion(
       achievementId: achievementId ?? this.achievementId,
       at: at ?? this.at,
+      gameId: gameId ?? this.gameId,
+      speedrunAttemptId: speedrunAttemptId ?? this.speedrunAttemptId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2256,6 +2360,12 @@ class UnlockedAchievementsCompanion
     if (at.present) {
       map['at'] = Variable<DateTime>(at.value);
     }
+    if (gameId.present) {
+      map['game_id'] = Variable<int>(gameId.value);
+    }
+    if (speedrunAttemptId.present) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2267,6 +2377,8 @@ class UnlockedAchievementsCompanion
     return (StringBuffer('UnlockedAchievementsCompanion(')
           ..write('achievementId: $achievementId, ')
           ..write('at: $at, ')
+          ..write('gameId: $gameId, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3353,12 +3465,16 @@ typedef $$UnlockedAchievementsTableCreateCompanionBuilder =
     UnlockedAchievementsCompanion Function({
       required String achievementId,
       required DateTime at,
+      Value<int?> gameId,
+      Value<int?> speedrunAttemptId,
       Value<int> rowid,
     });
 typedef $$UnlockedAchievementsTableUpdateCompanionBuilder =
     UnlockedAchievementsCompanion Function({
       Value<String> achievementId,
       Value<DateTime> at,
+      Value<int?> gameId,
+      Value<int?> speedrunAttemptId,
       Value<int> rowid,
     });
 
@@ -3378,6 +3494,16 @@ class $$UnlockedAchievementsTableFilterComposer
 
   ColumnFilters<DateTime> get at => $composableBuilder(
     column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3400,6 +3526,16 @@ class $$UnlockedAchievementsTableOrderingComposer
     column: $table.at,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UnlockedAchievementsTableAnnotationComposer
@@ -3418,6 +3554,14 @@ class $$UnlockedAchievementsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get at =>
       $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<int> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => column,
+  );
 }
 
 class $$UnlockedAchievementsTableTableManager
@@ -3465,20 +3609,28 @@ class $$UnlockedAchievementsTableTableManager
               ({
                 Value<String> achievementId = const Value.absent(),
                 Value<DateTime> at = const Value.absent(),
+                Value<int?> gameId = const Value.absent(),
+                Value<int?> speedrunAttemptId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UnlockedAchievementsCompanion(
                 achievementId: achievementId,
                 at: at,
+                gameId: gameId,
+                speedrunAttemptId: speedrunAttemptId,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String achievementId,
                 required DateTime at,
+                Value<int?> gameId = const Value.absent(),
+                Value<int?> speedrunAttemptId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UnlockedAchievementsCompanion.insert(
                 achievementId: achievementId,
                 at: at,
+                gameId: gameId,
+                speedrunAttemptId: speedrunAttemptId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

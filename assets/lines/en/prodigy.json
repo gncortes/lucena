@@ -234,6 +234,27 @@
       "text": "Even when I'm losing, I'm learning. That's worth gold."
     },
     {
+      "id": "prodigy.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Draw and I'll show you the village's secret trail. One-time offer."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "The elders say whoever wins in a hurry trips. Draw?"
+    },
+    {
+      "id": "prodigy.bigDisadvantage.9",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "How about we split it? You get the moral victory, I get the draw."
+    },
+    {
       "id": "prodigy.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 2,
@@ -904,6 +925,76 @@
       "intensity": 3,
       "emotion": "playful",
       "text": "A draw? I'm little, but I'm not silly!"
+    },
+    {
+      "id": "prodigy.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The mate was right there, in front of you. Need my magnifying glass?"
+    },
+    {
+      "id": "prodigy.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The elders say: whoever does not hunt in time comes back empty-handed."
+    },
+    {
+      "id": "prodigy.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "It got away. Now it is a draw, and you know it."
+    },
+    {
+      "id": "prodigy.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Shall we draw? You will not find that mate again, I think."
+    },
+    {
+      "id": "prodigy.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I need to get back to the village before dark. Draw?"
+    },
+    {
+      "id": "prodigy.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I knew it was a draw. You did not accept, wasted my time, but fine."
+    },
+    {
+      "id": "prodigy.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Told you! A draw. I observe, remember?"
+    },
+    {
+      "id": "prodigy.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A draw, just as I saw back then. My grandma would have seen it too."
+    },
+    {
+      "id": "prodigy.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "See? The trail ended here since back then."
+    },
+    {
+      "id": "prodigy.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A draw. Next time, listen to who knows the ground."
     }
   ]
 }

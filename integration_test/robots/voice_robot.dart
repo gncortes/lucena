@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
+import 'settings_robot.dart';
 
 /// A voz: o passo do tour, a escolha das vozes, o botão de áudio do balão e
 /// a tela da voz nas configurações. O sintetizador é o falso dos cenários.
@@ -46,7 +46,7 @@ class VoiceRobot {
 
   /// Em Configurações, abre a tela da voz.
   Future<void> openSettings() async {
-    await $(SettingsKeys.screen).waitUntilVisible();
+    await SettingsRobot($).openSound();
     await $(VoiceKeys.settingsTile).scrollTo().tap();
     await $(VoiceKeys.settingsSection).waitUntilVisible();
   }

@@ -115,7 +115,7 @@ class _ReferenceTile extends StatelessWidget {
     };
     final icon = switch (reference.kind) {
       'book' => Icons.menu_book_outlined,
-      'study' => Icons.school_outlined,
+      'study' => Icons.library_books_outlined,
       'game' => Icons.sports_esports_outlined,
       'tablebase' => Icons.table_chart_outlined,
       _ => Icons.link,
