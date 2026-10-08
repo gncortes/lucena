@@ -397,7 +397,7 @@
       "lessons": [
         {
           "id": "mates.twoKnightsPawn",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -480,8 +480,8 @@
           "kind": "endgame"
         },
         {
-          "id": "pawns.rookPawn",
-          "kind": "catalog"
+          "id": "pawns.rookPawnDraw",
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -526,7 +526,7 @@
       "lessons": [
         {
           "id": "pawns.race",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -541,7 +541,7 @@
       "lessons": [
         {
           "id": "pawns.triangulation",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -556,7 +556,7 @@
       "lessons": [
         {
           "id": "pawns.reti",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -571,7 +571,7 @@
       "lessons": [
         {
           "id": "pawns.shoulder",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -586,7 +586,7 @@
       "lessons": [
         {
           "id": "pawns.breakthrough",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -601,7 +601,7 @@
       "lessons": [
         {
           "id": "pawns.outsidePasser",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -616,7 +616,7 @@
       "lessons": [
         {
           "id": "pawns.protectedPasser",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -691,7 +691,7 @@
       "lessons": [
         {
           "id": "queen.vsPawn.draws",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -790,7 +790,7 @@
       "lessons": [
         {
           "id": "rookPawns.vsTwo",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -865,7 +865,7 @@
       "lessons": [
         {
           "id": "rook.cutOff",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -880,7 +880,7 @@
       "lessons": [
         {
           "id": "rook.frontal",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -929,7 +929,7 @@
       "lessons": [
         {
           "id": "rook.behindPasser",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -982,7 +982,7 @@
       "lessons": [
         {
           "id": "minor.wrongBishop",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -997,7 +997,7 @@
       "lessons": [
         {
           "id": "minor.knightVsPawn",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false

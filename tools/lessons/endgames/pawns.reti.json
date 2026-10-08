@@ -1,0 +1,734 @@
+{
+  "id": "pawns.reti",
+  "module": "pawns",
+  "skills": [
+    "pawns.reti"
+  ],
+  "parts": [
+    {
+      "id": "reti",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_reti",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 2,
+          "ask": "line",
+          "arrows": [
+            "h8e5"
+          ],
+          "marks": [
+            "d6",
+            "h4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "intro",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "h5h1",
+            "a6b7"
+          ],
+          "marks": [
+            "d5",
+            "h1",
+            "d1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "diagonal",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "h8h4",
+            "h8e5",
+            "e5h2",
+            "e5d6"
+          ],
+          "marks": [
+            "e5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_main",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "h8g7",
+              "arrows": [
+                "g7f6"
+              ]
+            },
+            {
+              "uci": "h5h4"
+            },
+            {
+              "uci": "g7f6"
+            },
+            {
+              "uci": "a6b6"
+            },
+            {
+              "uci": "f6e5",
+              "arrows": [
+                "e5d6",
+                "e5f4"
+              ]
+            },
+            {
+              "uci": "b6c6"
+            },
+            {
+              "uci": "e5f4",
+              "marks": [
+                "f4"
+              ]
+            },
+            {
+              "uci": "h4h3"
+            },
+            {
+              "uci": "f4g3"
+            },
+            {
+              "uci": "h3h2"
+            },
+            {
+              "uci": "g3h2"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "main",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "h8g7",
+              "accept": "only",
+              "reply": "a6b6"
+            },
+            {
+              "teach": "g7f6",
+              "accept": "only",
+              "reply": "h5h4"
+            },
+            {
+              "teach": "f6e5",
+              "accept": "only",
+              "reply": "b6c6"
+            },
+            {
+              "teach": "e5f4",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "push",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_push",
+          "fen": "8/8/k1P2K2/8/8/7p/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 1,
+          "ask": "plan",
+          "arrows": [
+            "c6c7"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "push",
+          "fen": "8/8/k1P2K2/8/8/7p/8/8 w - - 0 1",
+          "arrows": [
+            "f6e7",
+            "c6c8"
+          ],
+          "marks": [
+            "d7"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_push",
+          "fen": "8/8/k1P2K2/8/8/7p/8/8 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "f6e7",
+              "marks": [
+                "d7",
+                "d8"
+              ]
+            },
+            {
+              "uci": "h3h2"
+            },
+            {
+              "uci": "c6c7"
+            },
+            {
+              "uci": "a6b7"
+            },
+            {
+              "uci": "e7d7",
+              "marks": [
+                "c8"
+              ]
+            },
+            {
+              "uci": "h2h1q"
+            },
+            {
+              "uci": "c7c8q"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "late",
+          "fen": "8/8/1kP5/4K3/8/7p/8/8 w - - 0 1",
+          "arrows": [
+            "e5d6"
+          ],
+          "marks": [
+            "c7"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "lateMove",
+          "fen": "8/8/1kP5/4K3/8/7p/8/8 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "e5d6",
+              "accept": "hold",
+              "reply": "h3h2"
+            },
+            {
+              "teach": "c6c7",
+              "accept": "hold",
+              "reply": "b6b7"
+            },
+            {
+              "teach": "d6d7",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marshall",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_marshall",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "minutes": 5,
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "b1b2"
+          ],
+          "marks": [
+            "a4",
+            "f2"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "marshall",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "arrows": [
+            "b1b2",
+            "b2c3",
+            "c3d4"
+          ],
+          "marks": [
+            "a4",
+            "f2"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "wrong",
+          "fen": "8/8/8/8/pK6/8/2k2P2/8 w - - 0 1",
+          "side": "black",
+          "arrows": [
+            "f2f4"
+          ],
+          "marks": [
+            "c2"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "marshallMove",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b1b2",
+              "accept": "hold",
+              "reply": "b4a4"
+            },
+            {
+              "teach": "b2c3",
+              "accept": "hold",
+              "reply": "f2f4"
+            },
+            {
+              "teach": "c3d4",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limits",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_far",
+          "fen": "7K/8/k1P5/8/7p/8/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 1,
+          "ask": "plan",
+          "side": "black",
+          "marks": [
+            "h4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "far",
+          "fen": "7K/8/k1P5/8/7p/8/8/8 w - - 0 1",
+          "side": "black",
+          "arrows": [
+            "h4h1"
+          ],
+          "marks": [
+            "e5",
+            "f4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "close",
+          "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
+          "side": "black",
+          "arrows": [
+            "c6c7",
+            "a5b6"
+          ],
+          "marks": [
+            "c8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "farMove",
+          "fen": "8/6K1/k1P5/8/7p/8/8/8 b - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "h4h3",
+              "accept": "win",
+              "reply": "g7f6"
+            },
+            {
+              "teach": "h3h2",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recap",
+      "steps": [
+        {
+          "type": "talk",
+          "id": "rules",
+          "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "h8e5",
+            "e5d6",
+            "e5h2"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "mirror",
+          "fen": "K7/8/5P1k/p7/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "a8d5"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "mirrorMove",
+          "fen": "K7/8/5P1k/p7/8/8/8/8 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "a8b7",
+              "accept": "hold",
+              "reply": "a5a4"
+            },
+            {
+              "teach": "b7c6",
+              "accept": "hold",
+              "reply": "h6g6"
+            },
+            {
+              "teach": "c6d5",
+              "accept": "hold",
+              "reply": "g6f6"
+            },
+            {
+              "teach": "d5c4",
+              "accept": "hold"
+            }
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "6K1/8/k1P5/7p/8/8/8/8 w - - 0 1",
+          "goal": "draw"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "wikiReti",
+      "turns": [
+        {
+          "teach": "h8g7",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/7K/k1P5/7p/8/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h7g6",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c6c7",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 1,
+      "fen": "7K/8/k1P5/6p1/8/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h8g7",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/8/2K2P1k/8/8/p7/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c6d7",
+          "accept": "hold",
+          "reply": "a3a2"
+        },
+        {
+          "teach": "f6f7",
+          "accept": "hold",
+          "reply": "h6g7"
+        },
+        {
+          "teach": "d7e7",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/8/8/7P/K1p5/8/7k b - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h1g2",
+          "accept": "hold",
+          "reply": "h4h5"
+        },
+        {
+          "teach": "g2f3",
+          "accept": "hold",
+          "reply": "h5h6"
+        },
+        {
+          "teach": "f3e3",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/8/8/8/pK6/8/2k2P2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "yatesMarshall",
+      "turns": [
+        {
+          "teach": "f2f4",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/k5K1/2P5/7p/8/8/8/8 b - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h5h4",
+          "accept": "win",
+          "reply": "g7f6"
+        },
+        {
+          "teach": "a7b8",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 2,
+      "fen": "8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "wikiReti",
+      "turns": [
+        {
+          "teach": "h5g6",
+          "accept": "hold",
+          "reply": "a6b6"
+        },
+        {
+          "teach": "g6g7",
+          "accept": "hold",
+          "reply": "h6h5"
+        },
+        {
+          "teach": "g7f6",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/6K1/ppp5/7k/1P6/1P6/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "laskerTarrasch",
+      "turns": [
+        {
+          "teach": "g6f5",
+          "accept": "hold",
+          "reply": "h4g3"
+        },
+        {
+          "teach": "f5e4",
+          "accept": "hold",
+          "reply": "g3f2"
+        },
+        {
+          "teach": "e4d5",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 3,
+      "fen": "8/1pPK3b/8/8/8/5k2/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "drfiskeson",
+      "turns": [
+        {
+          "teach": "d7c8",
+          "accept": "hold",
+          "reply": "b7b5"
+        },
+        {
+          "teach": "c8d7",
+          "accept": "hold",
+          "reply": "b5b4"
+        },
+        {
+          "teach": "d7d6",
+          "accept": "hold",
+          "reply": "h7f5"
+        },
+        {
+          "teach": "d6e5",
+          "accept": "hold"
+        }
+      ]
+    }
+  ],
+  "passScore": 12,
+  "keyPositions": [
+    {
+      "id": "reti",
+      "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+      "ref": "wikiReti"
+    },
+    {
+      "id": "reti1928",
+      "fen": "8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1",
+      "ref": "wikiReti"
+    },
+    {
+      "id": "laskerTarrasch",
+      "fen": "8/8/6K1/ppp5/7k/1P6/1P6/8 w - - 0 1",
+      "ref": "laskerTarrasch"
+    },
+    {
+      "id": "yatesMarshall",
+      "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+      "ref": "yatesMarshall"
+    },
+    {
+      "id": "sarychev",
+      "fen": "8/1pPK3b/8/8/8/5k2/8/8 w - - 0 1",
+      "ref": "drfiskeson"
+    }
+  ],
+  "practice": {
+    "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+    "goal": "draw",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "wikiReti",
+      "kind": "web",
+      "title": "Wikipedia: Réti endgame study",
+      "url": "https://en.wikipedia.org/wiki/R%C3%A9ti_endgame_study"
+    },
+    {
+      "id": "wikiRichard",
+      "kind": "web",
+      "title": "Wikipedia: Richard Réti",
+      "url": "https://en.wikipedia.org/wiki/Richard_R%C3%A9ti"
+    },
+    {
+      "id": "dvoretsky",
+      "kind": "book",
+      "author": "Mark Dvoretsky",
+      "title": "Dvoretsky's Endgame Manual (6.ª edição, revista por Karsten Müller e Alex Fishbein)",
+      "publisher": "Russell Enterprises",
+      "year": 2025,
+      "where": "Índice da amostra da editora: \"Réti's Idea\", p. 31"
+    },
+    {
+      "id": "pn2206",
+      "kind": "study",
+      "author": "pn2206",
+      "title": "Richard Reti's 1921 Endgame Study",
+      "url": "https://lichess.org/study/zPksA8Uo"
+    },
+    {
+      "id": "flohahn22",
+      "kind": "study",
+      "author": "flohahn22",
+      "title": "Chess Endgames: Reti Idea",
+      "url": "https://lichess.org/study/PLK2LzXH"
+    },
+    {
+      "id": "carreira",
+      "kind": "study",
+      "author": "CarreiraChess",
+      "title": "Richard Reti's Endgame Study",
+      "url": "https://lichess.org/study/Hp71MDeO"
+    },
+    {
+      "id": "alien2798",
+      "kind": "study",
+      "author": "alien2798",
+      "title": "The Reti Manoeuvre",
+      "url": "https://lichess.org/study/LOwS84ta"
+    },
+    {
+      "id": "drfiskeson",
+      "kind": "study",
+      "author": "DrFiskeson",
+      "title": "Brilliant Reti maneuver study",
+      "url": "https://lichess.org/study/liSLeKY9"
+    },
+    {
+      "id": "yatesMarshall",
+      "kind": "game",
+      "white": "Frederick Yates",
+      "black": "Frank Marshall",
+      "event": "Karlsbad, rodada 9",
+      "year": 1929
+    },
+    {
+      "id": "laskerTarrasch",
+      "kind": "game",
+      "white": "Emanuel Lasker",
+      "black": "Siegbert Tarrasch",
+      "event": "São Petersburgo",
+      "year": 1914
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

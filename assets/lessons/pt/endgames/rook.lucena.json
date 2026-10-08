@@ -57,7 +57,7 @@
   "ex.e08.solution": "Rb6: o próximo xeque, em b1, é bloqueado por Tb5, e a ponte está feita. Rb5 deixaria a torre em d5 sem apoio e os xeques continuariam por mais tempo.",
   "ex.e09": "Pretas jogam e empatam. A torre branca corta o rei, o peão está na sétima e o rei branco na frente dele. Parece Lucena. Como as pretas se salvam?",
   "ex.e09.hint": "Meça a distância entre a torre preta e o rei branco, e veja de que lado está o rei preto.",
-  "ex.e09.solution": "Ta8+ e Ta7+: xeques pelo lado, de longe. O rei branco não pode se aproximar da torre sem abandonar o peão, e o rei preto, no lado estreito, não atrapalha. Capturar em f1 perderia: o rei branco sai da frente e o peão coroa. Torre longe e rei no lado estreito: a Lucena não existe.",
+  "ex.e09.solution": "Ta8+ e Ta7+: xeques pelo lado, de longe. O rei branco não pode se aproximar da torre sem abandonar o peão, e o rei preto, no lado estreito, não atrapalha. Qualquer outro lance perde: com tempo, as brancas tiram o rei da frente e armam a ponte. Torre longe e rei no lado estreito: a Lucena não existe.",
   "ex.e10": "Brancas jogam e ganham. A preparação está feita: rei preto a duas colunas, torre na quarta fileira. Agora o caminho inteiro: saia com o rei, aguente os xeques e feche a ponte.",
   "ex.e10.hint": "O rei anda pelas colunas c e b, uma fileira por vez, sempre junto do peão. Na quinta fileira, a torre bloqueia.",
   "ex.e10.solution": "Rc7, e a cada xeque o rei desce: Rb6, Rc6, Rb5. Na quinta fileira, o xeque em b1 é respondido por Tb4, a ponte. Fugir pela coluna a deixa os xeques continuarem; ir para d5 cedo demais perde tempo. Perto do peão, sempre.",

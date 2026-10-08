@@ -4,7 +4,7 @@
 
 Feita: a aula tem `docs/aulas/<id>.md` e `assets/lessons/endgames/<id>.json`.
 
-**Prioridade do roteiro** (T52, 6.3): a ordem em que o roteiro do teste de nível vai precisar das aulas ainda não feitas, das faixas baixas para as altas. Faça primeiro as de prioridade 1, depois 2, e assim por diante; dentro da mesma prioridade, na ordem da trilha. 1: pausadas com dossiê iniciado (`pawns.rookPawn`, `pawns.race`, `pawns.triangulation`, `pawns.reti`); 2: intermediário que aparece muito na prática; 3: dama contra peão que empata e torre que o roteiro já indica; 4: o resto dos finais de peões avançados; 5: o resto do catálogo. Ao fazer a aula, preencha `skills` com os nós do mapa (`tools/placement/skills.json`) e troque o tipo dela no mapa de `catalog` para `endgame`.
+**Prioridade do roteiro** (T52, 6.3): a ordem em que o roteiro do teste de nível vai precisar das aulas ainda não feitas, das faixas baixas para as altas. Faça primeiro as de prioridade 1, depois 2, e assim por diante; dentro da mesma prioridade, na ordem da trilha. 1: pausadas com dossiê iniciado (`pawns.rookPawnDraw`, `pawns.race`, `pawns.triangulation`, `pawns.reti`); 2: intermediário que aparece muito na prática; 3: dama contra peão que empata e torre que o roteiro já indica; 4: o resto dos finais de peões avançados; 5: o resto do catálogo. Ao fazer a aula, preencha `skills` com os nós do mapa (`tools/placement/skills.json`) e troque o tipo dela no mapa de `catalog` para `endgame`.
 
 "Motor" marca os temas com mais de 7 peças, em que a tabela de finais não alcança e o Stockfish julga.
 
@@ -26,7 +26,7 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | 1 | `mates.bishopKnight.w` | Bispo e cavalo I: do canto errado ao canto certo (a manobra em W) | feita |
 | 2 | `mates.bishopKnight.edge` | Bispo e cavalo II: do meio do tabuleiro até a borda | feita |
 | 3 | `mates.bishopKnight.full` | Bispo e cavalo III: o mate inteiro, de qualquer posição (e os triângulos de Delétang) | feita |
-| 4 | `mates.twoKnightsPawn` | Dois cavalos contra peão (a linha de Troitsky) | 5 |
+| 4 | `mates.twoKnightsPawn` | Dois cavalos contra peão (a linha de Troitsky) | feita |
 
 ## 2 · Finais de peões (`pawns`)
 
@@ -34,14 +34,14 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 |---|---|---|---|
 | 5 | `pawns.keySquares` | Casas-chave | feita |
 | 6 | `pawns.distantOpposition` | Oposição distante e diagonal | feita |
-| 7 | `pawns.triangulation` | Triangulação | 1 |
-| 8 | `pawns.rookPawn` | O peão de torre: quando empata | 1 |
-| 9 | `pawns.race` | Corrida de peões: contar tempos, promover com xeque e dama contra dama recém-promovida | 1 |
-| 10 | `pawns.reti` | A manobra de Réti | 1 |
-| 11 | `pawns.shoulder` | O ombro: tirar o rei adversário do caminho | 4 |
-| 12 | `pawns.breakthrough` | Ruptura | 4 |
-| 13 | `pawns.outsidePasser` | O peão passado distante | 4 |
-| 14 | `pawns.protectedPasser` | O peão passado protegido | 4 |
+| 7 | `pawns.triangulation` | Triangulação | feita |
+| 8 | `pawns.rookPawnDraw` | Peão de torre: o empate | feita |
+| 9 | `pawns.race` | Corrida de peões: contar tempos, promover com xeque e dama contra dama recém-promovida | feita |
+| 10 | `pawns.reti` | A manobra de Réti | feita |
+| 11 | `pawns.shoulder` | O ombro: tirar o rei adversário do caminho | feita |
+| 12 | `pawns.breakthrough` | Ruptura | feita |
+| 13 | `pawns.outsidePasser` | O peão passado distante | feita |
+| 14 | `pawns.protectedPasser` | O peão passado protegido | feita |
 | 15 | `pawns.minedSquares` | Zugzwang recíproco e casas minadas | 5 |
 | 16 | `pawns.spareTempi` | Tempos de reserva | 5 |
 | 17 | `pawns.correspondingSquares` | Casas correspondentes | 5 |
@@ -51,7 +51,7 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | # | id | Aula | Prioridade do roteiro |
 |---|---|---|---|
 | 18 | `queen.vsPawn` | Dama contra peão na sétima: peão central e de cavalo | feita |
-| 19 | `queen.vsPawn.draws` | Dama contra peão de torre e de bispo: os empates e as exceções | 3 |
+| 19 | `queen.vsPawn.draws` | Dama contra peão: os empates | feita |
 | 20 | `queen.vsRook.philidor` | Dama contra torre I: a posição de Philidor | feita |
 | 21 | `queen.vsRook.approach` | Dama contra torre II: como chegar a Philidor | feita |
 | 22 | `queen.vsRook.thirdRank` | Dama contra torre III: quebrar a defesa da terceira fileira | feita |
@@ -63,7 +63,7 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | # | id | Aula | Prioridade do roteiro |
 |---|---|---|---|
 | 25 | `rookPawns.vsPawn` | Torre contra peão: o corte, o ombro e a promoção a cavalo | feita |
-| 26 | `rookPawns.vsTwo` | Torre contra dois peões ligados | 3 |
+| 26 | `rookPawns.vsTwo` | Torre contra dois peões ligados | feita |
 
 ## 5 · Finais de torre (`rook`)
 
@@ -73,12 +73,12 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | 28 | `rook.philidor` | A defesa de Philidor | feita |
 | 29 | `rook.backRank` | A defesa passiva na última fileira | feita |
 | 30 | `rook.shortSide` | Lado curto e lado longo | feita |
-| 31 | `rook.cutOff` | O rei cortado | 3 |
-| 32 | `rook.frontal` | A defesa frontal | 3 |
+| 31 | `rook.cutOff` | O rei cortado | feita |
+| 32 | `rook.frontal` | A defesa frontal | feita |
 | 33 | `rook.rookPawn.kingFront` | Peão de torre: o rei na frente do peão | 5 |
 | 34 | `rook.rookPawn.seventh` | Peão de torre na sétima com a torre na frente | 5 |
 | 35 | `rook.vancura` | A posição de Vancura | 5 |
-| 36 | `rook.behindPasser` | Torre atrás do peão passado | 3 |
+| 36 | `rook.behindPasser` | Torre atrás do peão passado | feita |
 | 37 | `rook.twoPawns` | Torre e dois peões contra torre (os peões de bispo e de torre) | 5 |
 | 38 | `rook.activity` | Torre ativa contra torre passiva (motor) | 5 |
 | 39 | `rook.fourVsThree` | Quatro contra três na mesma ala (motor) | 5 |
@@ -88,8 +88,8 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 
 | # | id | Aula | Prioridade do roteiro |
 |---|---|---|---|
-| 41 | `minor.wrongBishop` | O bispo errado com peão de torre | 2 |
-| 42 | `minor.knightVsPawn` | Cavalo contra peão | 2 |
+| 41 | `minor.wrongBishop` | O bispo errado | feita |
+| 42 | `minor.knightVsPawn` | Cavalo contra peão | feita |
 | 43 | `minor.bishopVsPawns` | Bispo contra peões | 5 |
 | 44 | `minor.centurini` | Bispo e peão contra bispo da mesma cor | 5 |
 | 45 | `minor.oppositeBishops.connected` | Bispos de cores opostas I: dois peões ligados | 5 |

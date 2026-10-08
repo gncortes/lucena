@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
@@ -74,7 +74,8 @@ void main() {
     await endgames.openFromHome();
     await $(EndgamesKeys.placementTest).scrollTo();
     expect(find.byKey(EndgamesKeys.filter), findsNothing);
-    await $.tester.pageBack();
+    // O voltar pelo widget (a dica "Back" muda com o idioma).
+    await $(BackButton).tap();
     await $.pumpAndSettle();
 
     await HomeRobot($).openSettings();

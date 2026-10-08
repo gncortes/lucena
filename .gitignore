@@ -67,3 +67,6 @@ __pycache__/
 # Roda a suíte Patrol em vários emuladores ao mesmo tempo: fica só na máquina de quem usa.
 tools/patrol_parallel.sh
 test/goldens/failures/
+
+# Planos, tarefas e pesquisas: só na máquina de quem desenvolve (fora do repositório público).
+docs/

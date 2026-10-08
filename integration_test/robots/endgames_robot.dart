@@ -47,7 +47,8 @@ class EndgamesRobot {
   }
 
   Future<void> openLesson(String id) async {
-    await $(EndgamesKeys.lesson(id)).scrollTo().tap();
+    // A trilha passou de 30 aulas: rolar mais antes de desistir.
+    await $(EndgamesKeys.lesson(id)).scrollTo(maxScrolls: 80).tap();
     await expectLessonScreen();
   }
 

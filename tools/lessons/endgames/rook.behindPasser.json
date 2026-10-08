@@ -1,0 +1,551 @@
+{
+  "id": "rook.behindPasser",
+  "module": "rook",
+  "skills": [
+    "rook.behindPasser"
+  ],
+  "parts": [
+    {
+      "id": "own",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_behind",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "minutes": 5,
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "a1a6"
+          ],
+          "marks": [
+            "a8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "behind",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "arrows": [
+            "a1a6",
+            "a6a7"
+          ],
+          "marks": [
+            "a8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "front",
+          "fen": "R7/6k1/P5p1/8/8/6P1/6K1/r7 w - - 0 1",
+          "arrows": [
+            "a1a8",
+            "a8h8"
+          ],
+          "marks": [
+            "g7",
+            "h7"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_walk",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "a6a7",
+              "marks": [
+                "a8"
+              ]
+            },
+            {
+              "uci": "g7f7"
+            },
+            {
+              "uci": "g2f3"
+            },
+            {
+              "uci": "f7g7"
+            },
+            {
+              "uci": "f3e4"
+            },
+            {
+              "uci": "g7f7"
+            },
+            {
+              "uci": "e4d5"
+            },
+            {
+              "uci": "f7e7"
+            },
+            {
+              "uci": "d5c6"
+            },
+            {
+              "uci": "e7d8"
+            },
+            {
+              "uci": "c6b7",
+              "arrows": [
+                "b7a8"
+              ],
+              "marks": [
+                "a8"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "twoTargets",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "a6a7",
+              "accept": "win",
+              "reply": "g7f7"
+            },
+            {
+              "teach": "g2f3",
+              "accept": "win",
+              "reply": "f7e7"
+            },
+            {
+              "teach": "f3e4",
+              "accept": "win",
+              "reply": "e7d7"
+            },
+            {
+              "teach": "e4f4",
+              "accept": "win",
+              "reply": "d7c7"
+            },
+            {
+              "teach": "f4g5",
+              "accept": "win",
+              "reply": "c7b7"
+            },
+            {
+              "teach": "g5g6",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "get",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_side",
+          "fen": "8/6k1/6p1/P1r5/8/6P1/6K1/3R4 w - - 0 1",
+          "minutes": 3,
+          "hints": 1,
+          "ask": "line",
+          "arrows": [
+            "c5a5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "side",
+          "fen": "8/6k1/6p1/P1r5/8/6P1/6K1/3R4 w - - 0 1",
+          "arrows": [
+            "d1a1",
+            "a1a5"
+          ],
+          "marks": [
+            "a1"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "ra1",
+          "fen": "8/6k1/6p1/P1r5/8/6P1/6K1/3R4 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "d1a1",
+              "accept": "only"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "race",
+          "fen": "8/5rk1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
+          "arrows": [
+            "f7f2",
+            "f2a2"
+          ],
+          "marks": [
+            "a2"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "getFirst",
+          "fen": "8/5rk1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "c6c2",
+              "accept": "only",
+              "reply": "f7a7"
+            },
+            {
+              "teach": "c2a2",
+              "accept": "win",
+              "reply": "g7f6"
+            },
+            {
+              "teach": "h2g3",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "theirs",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_defend",
+          "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/3R4 w - - 0 1",
+          "minutes": 5,
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "d1d8"
+          ],
+          "marks": [
+            "a8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "defend",
+          "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/3R4 w - - 0 1",
+          "arrows": [
+            "d1d8",
+            "d8a8"
+          ],
+          "marks": [
+            "a1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "passive",
+          "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/R7 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "g7b3"
+          ],
+          "marks": [
+            "a1"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "holdBehind",
+          "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/3R4 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "d1d8",
+              "accept": "hold",
+              "reply": "a4a3"
+            },
+            {
+              "teach": "d8a8",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "steps": [
+        {
+          "type": "talk",
+          "id": "tarrasch",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "arrows": [
+            "a1a6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "except",
+          "fen": "8/8/8/5pk1/6rp/P4K2/8/1R6 w - - 0 1",
+          "arrows": [
+            "b1a1",
+            "b1b8"
+          ],
+          "marks": [
+            "a1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/3R4 w - - 0 1",
+          "arrows": [
+            "d8a8"
+          ],
+          "marks": [
+            "a8"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+          "goal": "win"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "8/6k1/6p1/P7/2r5/6P1/6K1/3R4 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1a1",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/6k1/6p1/1P6/2r5/6P1/6K1/3R4 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1b1",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "8/6k1/6p1/8/p7/1r4P1/6K1/3R4 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1d8",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 2,
+      "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/4R3 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e1e8",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "r7/P7/1k1K4/8/8/8/2R5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "shrekdavid",
+      "turns": [
+        {
+          "teach": "c2b2",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "R7/P4k2/6p1/8/8/6P1/6K1/r7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "a8h8",
+          "accept": "only",
+          "reply": "a1a7"
+        },
+        {
+          "teach": "h8h7",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/6k1/6p1/p7/2r5/6P1/6K1/3R4 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1d8",
+          "accept": "hold",
+          "reply": "a5a4"
+        },
+        {
+          "teach": "d8a8",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 3,
+      "fen": "8/4r1k1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c6c2",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/5rk1/1P1R3p/8/6P1/8/7K/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d6d2",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "6r1/8/7K/8/4k2P/2P2R2/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "tarraschRule",
+      "turns": [
+        {
+          "teach": "f3f7",
+          "accept": "win"
+        }
+      ]
+    }
+  ],
+  "passScore": 12,
+  "keyPositions": [
+    {
+      "id": "behind",
+      "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1"
+    },
+    {
+      "id": "front",
+      "fen": "R7/6k1/P5p1/8/8/6P1/6K1/r7 w - - 0 1"
+    },
+    {
+      "id": "defend",
+      "fen": "8/6k1/6p1/8/p1r5/6P1/6K1/3R4 w - - 0 1"
+    },
+    {
+      "id": "race",
+      "fen": "8/5rk1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
+      "ref": "audax6"
+    },
+    {
+      "id": "exception",
+      "fen": "8/8/8/5pk1/6rp/P4K2/8/1R6 w - - 0 1",
+      "ref": "tarraschRule"
+    }
+  ],
+  "practice": {
+    "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
+    "goal": "win",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "tarraschRule",
+      "kind": "web",
+      "title": "Tarrasch rule (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Tarrasch_rule"
+    },
+    {
+      "id": "tarrasch",
+      "kind": "web",
+      "title": "Siegbert Tarrasch (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Siegbert_Tarrasch"
+    },
+    {
+      "id": "audax6",
+      "kind": "study",
+      "author": "Audax6",
+      "title": "E-39 Rook Endings 6: Rooks and Passed Pawns - The rook belongs behind a passed pawn - whether friend",
+      "url": "https://lichess.org/study/PlokBlnu"
+    },
+    {
+      "id": "shrekdavid",
+      "kind": "study",
+      "author": "SHREKDAVID",
+      "title": "Tarrasch Rule Rooks Endgames",
+      "url": "https://lichess.org/study/OuwVp71z"
+    },
+    {
+      "id": "rfanning",
+      "kind": "study",
+      "author": "rfanning",
+      "title": "Tarrasch Rule - Rooks and passed pawn",
+      "url": "https://lichess.org/study/Pumc4nOr"
+    },
+    {
+      "id": "practice",
+      "kind": "study",
+      "author": "Lichess",
+      "title": "Lichess Practice: Basic Rook Endgames",
+      "url": "https://lichess.org/study/pqUSUw8Y"
+    },
+    {
+      "id": "mueller",
+      "kind": "web",
+      "title": "Karsten Müller: Rooks belong behind passed pawns (ChessBase, 2024)",
+      "url": "https://en.chessbase.com/post/rooks-belong-behind-passed-pawns-2"
+    },
+    {
+      "id": "dvoretsky",
+      "kind": "book",
+      "author": "Mark Dvoretsky",
+      "title": "Dvoretsky's Endgame Manual",
+      "publisher": "Russell Enterprises",
+      "year": 2020,
+      "where": "sumário da amostra em PDF, capítulo 9"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

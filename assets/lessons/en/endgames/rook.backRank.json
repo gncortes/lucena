@@ -7,7 +7,7 @@
   "part.corner.summary": "Black's only trick, and why the same defence loses against a bishop's pawn.",
   "part.home.title": "Back home and recap",
   "part.home.summary": "When the rook must return to the first rank, the rook's pawn, and the rules for your games.",
-  "step.intro": "There is not always time to set up the Philidor defence. Here the black king is already past the third rank and the knight's pawn is on the third. What is left is the most modest defence there is: the king in front of the pawn and the rook on the first rank, shielding the king from checks. It looks like little, and against this pawn it is enough. Black has no way in.",
+  "step.intro": "There is not always time to set up the Philidor defence. Here the black king is already on the third rank and the knight's pawn is on the third. What is left is the most modest defence there is: the king in front of the pawn and the rook on the first rank, shielding the king from checks. It looks like little, and against this pawn it is enough. Black has no way in.",
   "step.wait": "Wait. The rook goes back and forth along the first rank. There is only one moment that needs thought: when the black rook checks on g2.",
   "step.wait.hint": "Rc1, Rb1 and, on the check on g2, the king goes to the corner: Kh1. Then it returns to g1.",
   "step.wait.done": "Black tried everything there was. Your rook never even left the first rank.",
@@ -64,6 +64,6 @@
   "key.trick": "The only trick: on the rook check the king goes to the corner. The other way loses.",
   "key.bishop": "With a bishop's pawn the same defence loses: the attacking rook has one more file to go round. From Wikipedia, with colours reversed.",
   "key.seventh": "Pawn on the seventh and king beside it: the rook defends from the first rank with only moves. From Wikipedia (quoting Emms), with colours reversed.",
-  "history": "The passive defence has no illustrious name and no date: it is what remains when Philidor's was not set up in time. The manuals treat it as a rule of thumb. Grandmaster Hovhannes Gabuzyan sums it up like this: against pawns on the c, d, e and f files you need to know the Philidor defence; against those on the a, b, g and h files the back rank is enough. Wikipedia, drawing on Averbakh and Kopaev, adds the detail that saves half a point: if the attacking king has not yet reached the sixth rank, the passive defence works against any pawn, and the best course is to leave it with the rook.",
+  "history": "The passive defence has no illustrious name and no date: it is what remains when Philidor's was not set up in time. The manuals treat it as a rule of thumb. Grandmaster Hovhannes Gabuzyan sums it up like this: against pawns on the c, d, e and f files you need to know the Philidor defence; against those on the a, b, g and h files the back rank is enough. Wikipedia, drawing on Averbakh and Kopaev, adds the detail that saves half a point: if the attacking king has not yet reached the sixth rank, there is still time to leave the passive defence with the rook, to the third rank or to the far end, against any pawn.",
   "practice": "Against the machine: a knight's pawn, your rook on the first rank and the king in front of the pawn. Wait, and on the check go to the corner. The goal is to draw."
 }
