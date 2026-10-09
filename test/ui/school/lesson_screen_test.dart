@@ -113,6 +113,19 @@ void main() {
     expect(board.hitTestable(), findsOneWidget);
   });
 
+  testWidgets('fala curta: a folha não abre e o x não aparece', (tester) async {
+    await pump(tester, intro: 'Short.');
+    final board = tester.getRect(find.byKey(LessonKeys.board));
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -400));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(find.byKey(LessonKeys.board)), board);
+    expect(
+      tester.getRect(find.byKey(LessonKeys.speech)).top,
+      greaterThan(board.bottom),
+    );
+    expect(find.byKey(LessonKeys.closeSheet).hitTestable(), findsNothing);
+  });
+
   testWidgets('o botão de voltar aparece do segundo passo em diante e volta '
       'um passo', (tester) async {
     await pump(tester);

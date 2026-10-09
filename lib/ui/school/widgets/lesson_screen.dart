@@ -67,6 +67,22 @@ class _LessonScreenState extends State<LessonScreen>
   // tabuleiro aparecer inteiro.
   final _sheet = DraggableScrollableController();
   double _sheetMin = 0.3;
+
+  // A fala cabe na folha fechada: ela não abre (sem o vaivém do "x").
+  bool _speechFits = false;
+
+  bool _onSpeechMetrics(ScrollMetricsNotification notification) {
+    // Só vale medindo com a folha fechada.
+    final closed = !_sheet.isAttached || _sheet.size <= _sheetMin + 0.005;
+    final fits = notification.metrics.maxScrollExtent <= 0;
+    if (closed && fits != _speechFits) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _speechFits = fits);
+      });
+    }
+    return false;
+  }
+
   final _demoClock = Stopwatch();
   String? _demoAt;
   bool _demoSpoke = false;
@@ -396,9 +412,14 @@ class _LessonScreenState extends State<LessonScreen>
                                       controller: _sheet,
                                       initialChildSize: minSheet,
                                       minChildSize: minSheet,
-                                      maxChildSize: _sheetMax,
-                                      snap: true,
-                                      snapSizes: [minSheet, _sheetMax],
+                                      // Fala curta: a folha fica fechada.
+                                      maxChildSize: _speechFits
+                                          ? minSheet
+                                          : _sheetMax,
+                                      snap: !_speechFits,
+                                      snapSizes: _speechFits
+                                          ? null
+                                          : [minSheet, _sheetMax],
                                       builder: (context, scroll) =>
                                           _speechSheet(
                                             context,
@@ -704,52 +725,55 @@ class _LessonScreenState extends State<LessonScreen>
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppShape.large),
         ),
-        child: ListView(
-          key: LessonKeys.scroll,
-          controller: scroll,
-          padding: const EdgeInsets.only(bottom: _actionsHeight),
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.outlineVariant,
-                    borderRadius: BorderRadius.circular(AppShape.full),
+        child: NotificationListener<ScrollMetricsNotification>(
+          onNotification: _onSpeechMetrics,
+          child: ListView(
+            key: LessonKeys.scroll,
+            controller: scroll,
+            padding: const EdgeInsets.only(bottom: _actionsHeight),
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.outlineVariant,
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                    ),
                   ),
                 ),
               ),
-            ),
-            // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-            // exercício. No resto, o Viktor já diz o que fazer.
-            if (step is TapStep) _guide(context, state, step),
-            if (viktor != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: TeacherSpeech(
-                  teacher: viktor,
-                  text: _speechText(context, state),
-                  emotion: state.emotion,
-                  avatarSize: 56,
-                  bubbleKey: LessonKeys.speech,
-                  onLink: (link) => _flash.toggle(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
+              // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
+              // exercício. No resto, o Viktor já diz o que fazer.
+              if (step is TapStep) _guide(context, state, step),
+              if (viktor != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: TeacherSpeech(
+                    teacher: viktor,
+                    text: _speechText(context, state),
+                    emotion: state.emotion,
+                    avatarSize: 56,
+                    bubbleKey: LessonKeys.speech,
+                    onLink: (link) => _flash.toggle(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onSpoken: (link) => _flash.show(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    speaks: true,
+                    speechContext: SpeechContext.teaching,
+                    typed: true,
                   ),
-                  onSpoken: (link) => _flash.show(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
-                  ),
-                  speaks: true,
-                  speechContext: SpeechContext.teaching,
-                  typed: true,
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
