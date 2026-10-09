@@ -446,27 +446,11 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "a5e5",
-          "accept": [
-            "a5d5",
-            "a5e5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e02",
       "stars": 1,
       "fen": "1k6/8/2K5/Q7/8/8/1r6/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "calmodee",
       "line": [
         {
           "teach": "a5e5",
@@ -486,150 +470,69 @@
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "1k6/4r3/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a5b4",
-          "accept": [
-            "a5b4",
-            "a5d8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "2k5/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a5a6",
-          "accept": [
-            "a5a6",
-            "a5a8",
-            "a5e5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e11",
       "stars": 2,
-      "fen": "6k1/6r1/5K2/7Q/8/8/8/8 w - - 0 1",
+      "fen": "1k6/2r5/K7/2Q5/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "bxms",
+      "origin": "calmodee",
       "line": [
         {
-          "teach": "h5d5",
+          "teach": "c5e5",
           "accept": [
-            "h5d5",
-            "h5e5"
+            "c5b5",
+            "c5e5"
           ],
-          "reply": "g8h7"
+          "reply": "b8a8"
         },
         {
-          "teach": "d5h1",
+          "teach": "e5e8",
           "accept": [
-            "d5d3",
-            "d5d4",
-            "d5e4",
-            "d5e5",
-            "d5f5",
-            "d5h1"
-          ],
-          "reply": "h7g8"
-        },
-        {
-          "teach": "h1h5",
-          "accept": [
-            "h1a8",
-            "h1h5"
+            "e5e8",
+            "e5h8"
           ]
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e12",
       "stars": 2,
-      "fen": "1k6/7r/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a5e5",
-          "accept": [
-            "a5e5"
-          ],
-          "reply": "b8a7"
-        },
-        {
-          "teach": "e5a1",
-          "accept": [
-            "e5a1"
-          ],
-          "reply": "a7b8"
-        },
-        {
-          "teach": "a1b1",
-          "accept": [
-            "a1b1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "1k6/5r2/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a5b4",
-          "accept": [
-            "a5b4",
-            "a5d8",
-            "a5e5"
-          ],
-          "reply": "b8a7"
-        },
-        {
-          "teach": "b4a3",
-          "accept": [
-            "b4a3",
-            "b4a4",
-            "b4d4"
-          ],
-          "reply": "a7b8"
-        },
-        {
-          "teach": "a3b3",
-          "accept": [
-            "a3b2",
-            "a3b3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "1k6/2r5/Q1K5/8/8/8/8/8 w - - 0 1",
+      "fen": "2k5/5r2/2K5/8/1Q6/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "line": [
         {
-          "teach": "c6d6",
+          "teach": "b4d6",
           "accept": [
-            "c6b5",
-            "c6d5",
-            "c6d6"
+            "b4d6"
+          ],
+          "reply": "f7f6"
+        },
+        {
+          "teach": "d6f6",
+          "accept": [
+            "d6f6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "6k1/6r1/5Q2/8/8/8/8/7K b - - 0 1",
+      "goal": "draw",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "g7h7",
+          "accept": [
+            "g7h7"
+          ],
+          "reply": "h1g1"
+        },
+        {
+          "teach": "h7g7",
+          "accept": [
+            "h7g7"
           ]
         }
       ]
@@ -678,47 +581,54 @@
       ]
     },
     {
-      "id": "e10",
+      "id": "e15",
       "stars": 3,
-      "fen": "1k6/8/2K5/Q7/8/8/8/1r6 w - - 0 1",
+      "fen": "1k6/2r5/1K6/8/8/8/8/7Q w - - 0 1",
       "goal": "win",
-      "origin": "calmodee",
+      "origin": "own",
       "line": [
         {
-          "teach": "a5e5",
+          "teach": "h1h2",
           "accept": [
-            "a5c7",
-            "a5d8",
-            "a5e5"
+            "h1e4",
+            "h1h2",
+            "h1h8"
           ],
-          "reply": "b8a7"
+          "reply": "b8a8"
         },
         {
-          "teach": "e5d4",
+          "teach": "b6c7",
           "accept": [
-            "e5d4"
+            "b6c7",
+            "h2h8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "7k/5Q2/8/6r1/8/1K6/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "wikipedia",
+      "line": [
+        {
+          "teach": "g5g3",
+          "accept": [
+            "g5g3"
           ],
-          "reply": "a7a8"
+          "reply": "b3a2"
         },
         {
-          "teach": "d4h8",
+          "teach": "g3g2",
           "accept": [
-            "d4c4",
-            "d4d3",
-            "d4h8"
-          ],
-          "reply": "a8a7"
-        },
-        {
-          "teach": "h8h7",
-          "accept": [
-            "h8h7"
+            "g3g2"
           ]
         }
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "black",
@@ -789,5 +699,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 18
+  "maxScore": 16
 }

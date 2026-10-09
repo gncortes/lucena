@@ -55,12 +55,13 @@ void main() {
     }
   });
 
-  test('toda aula tem lição, de 8 a 12 exercícios e nota mínima válida', () {
+  test('toda aula tem lição, ao menos 3 exercícios e nota mínima válida', () {
     for (final lesson in lessons) {
       expect(lesson.lesson.steps, isNotEmpty, reason: lesson.id);
+      // Um exercício por ideia distinta, sem cota: o mínimo é 3.
       expect(
         lesson.exercises.length,
-        inInclusiveRange(8, 12),
+        greaterThanOrEqualTo(3),
         reason: lesson.id,
       );
       for (final exercise in lesson.exercises) {

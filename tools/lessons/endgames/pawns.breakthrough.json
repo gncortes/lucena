@@ -502,95 +502,43 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/1pp5/1p6/P1P5/8/5k2/8/7K w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c5c6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/pp6/1p6/P1P5/8/8/5k2/7K w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a5a6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "1k6/6pp/6p1/5P1P/8/8/8/1K6 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "h5h6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e11",
       "stars": 2,
-      "fen": "1k6/5pp1/6p1/5P1P/8/8/8/1K6 w - - 0 1",
+      "fen": "8/8/1p6/6k1/1PP5/8/8/7K w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "studyReinhold",
       "turns": [
         {
-          "teach": "f5f6",
+          "teach": "b4b5",
           "accept": "win",
-          "reply": "g7f6"
+          "reply": "g5f4"
         },
         {
-          "teach": "h5h6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "7k/4pp2/4p3/3P1P2/8/8/8/7K w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f5f6",
+          "teach": "c4c5",
           "accept": "win",
-          "reply": "e7f6"
+          "reply": "b6c5"
         },
         {
-          "teach": "d5d6",
+          "teach": "b5b6",
           "accept": "win"
         }
       ]
     },
     {
-      "id": "e07",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/p1p5/1P6/1PP5/8/1k6/8/1K6 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
+      "fen": "8/p3k1pp/7P/4K1P1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyWastl",
       "turns": [
         {
-          "teach": "a7b6",
-          "accept": "hold",
-          "reply": "c5b6"
+          "teach": "g5g6",
+          "accept": "win",
+          "reply": "g7h6"
         },
         {
-          "teach": "c7b6",
-          "accept": "hold"
+          "teach": "g6h7",
+          "accept": "win"
         }
       ]
     },
@@ -608,24 +556,24 @@
       ]
     },
     {
-      "id": "e09",
+      "id": "e13",
       "stars": 3,
-      "fen": "8/pp6/1p6/P1P5/8/1k6/8/1K6 w - - 0 1",
+      "fen": "8/2p5/P1kp4/8/2P5/4P3/3K4/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "studyReinhold",
       "turns": [
         {
-          "teach": "a5a6",
+          "teach": "c4c5",
           "accept": "win",
-          "reply": "b7a6"
+          "reply": "d6c5"
         },
         {
-          "teach": "c5c6",
+          "teach": "e3e4",
           "accept": "win",
-          "reply": "b3c4"
+          "reply": "c6b6"
         },
         {
-          "teach": "c6c7",
+          "teach": "e4e5",
           "accept": "win"
         }
       ]
@@ -652,9 +600,65 @@
           "accept": "hold"
         }
       ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "5K1k/8/6p1/7p/6P1/8/5P2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyReinhold",
+      "turns": [
+        {
+          "teach": "g4g5",
+          "accept": "win",
+          "reply": "h5h4"
+        },
+        {
+          "teach": "f2f4",
+          "accept": "win",
+          "reply": "h4h3"
+        },
+        {
+          "teach": "f4f5",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/1kp3p1/8/K4P1P/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyDarkSharky",
+      "turns": [
+        {
+          "teach": "a4b3",
+          "accept": "win",
+          "reply": "c6c5"
+        },
+        {
+          "teach": "b3c2",
+          "accept": "win",
+          "reply": "c5c4"
+        },
+        {
+          "teach": "c2d1",
+          "accept": "win",
+          "reply": "b6c5"
+        },
+        {
+          "teach": "f4f5",
+          "accept": "win",
+          "reply": "g6f5"
+        },
+        {
+          "teach": "h4h5",
+          "accept": "win"
+        }
+      ]
     }
   ],
-  "passScore": 11,
+  "passScore": 12,
   "keyPositions": [
     {
       "id": "classic",
@@ -732,6 +736,27 @@
       "author": "DarkSkull",
       "title": "pawn breakthroughs",
       "url": "https://lichess.org/study/cvuGdHYK"
+    },
+    {
+      "id": "studyReinhold",
+      "kind": "study",
+      "author": "Reinhold53",
+      "title": "Durchbruch Schlüsselfelder",
+      "url": "https://lichess.org/study/PBs6ES3h"
+    },
+    {
+      "id": "studyWastl",
+      "kind": "study",
+      "author": "Wastl2002",
+      "title": "AT Durchbruch",
+      "url": "https://lichess.org/study/8B1x0YzU"
+    },
+    {
+      "id": "studyDarkSharky",
+      "kind": "study",
+      "author": "Dark-Sharky",
+      "title": "Pawn Breaks",
+      "url": "https://lichess.org/study/pRq9j9df"
     },
     {
       "id": "wikiPassed",

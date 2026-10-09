@@ -683,146 +683,23 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "1k6/8/1K6/P7/8/8/8/4B3 b - - 0 1",
+      "fen": "8/8/8/8/p7/k7/b2K4/8 w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "olaffo",
       "line": [
         {
-          "teach": "b8a8",
+          "teach": "d2c2",
           "accept": [
-            "b8a8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "2k5/8/2K5/8/8/P7/8/2B5 w - - 0 1",
-      "goal": "win",
-      "origin": "ibmm",
-      "line": [
-        {
-          "teach": "c1f4",
-          "accept": [
-            "c1f4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3k4/8/8/8/5K1P/3B4/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d8e7",
-          "accept": [
-            "d8e7",
-            "d8e8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "k7/8/PK6/8/8/8/2B5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "studier",
-      "line": [
-        {
-          "teach": "c2e4",
-          "accept": [
-            "b6a5",
-            "b6b5",
-            "b6c5",
-            "b6c6",
-            "b6c7",
-            "c2a4",
-            "c2b1",
-            "c2b3",
-            "c2d1",
-            "c2d3",
-            "c2e4",
-            "c2f5",
-            "c2g6",
-            "c2h7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "5K2/5B2/7k/7P/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiWrongRookPawn",
-      "line": [
-        {
-          "teach": "f8g8",
-          "accept": [
-            "f7g6",
-            "f8g8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "4k3/8/8/8/2B1K2P/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e8f8",
-          "accept": [
-            "e8f8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/4k3/8/8/2B1K2P/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e4f5",
-          "accept": [
-            "e4e5",
-            "e4f5"
+            "d2c2"
           ],
-          "reply": "e7f8"
+          "reply": "a2b3"
         },
         {
-          "teach": "f5g6",
+          "teach": "c2b1",
           "accept": [
-            "f5f6",
-            "f5g6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "4k3/8/8/5K1P/7P/8/8/3B4 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e8f7",
-          "accept": [
-            "e8f7",
-            "e8f8"
+            "c2b1"
           ]
         }
       ]
@@ -843,60 +720,133 @@
       ]
     },
     {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/3k4/5K1P/3B4/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/4K3/8/6k1/6B1/7P/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "olaffo",
       "line": [
         {
-          "teach": "d5e6",
+          "teach": "e7f7",
           "accept": [
-            "d5e6"
-          ],
-          "reply": "f4g5"
-        },
-        {
-          "teach": "e6f7",
-          "accept": [
-            "e6f7"
+            "e7f7",
+            "e7f8"
           ],
           "reply": "g5h6"
         },
         {
           "teach": "f7g8",
           "accept": [
-            "f7g8"
+            "f7g8",
+            "g4f5"
           ]
         }
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "5k2/5b2/8/8/4B1PP/5K2/8/8 b - - 0 1",
+      "id": "e14",
+      "stars": 2,
+      "fen": "k7/8/PpK5/8/P7/4B3/8/8 b - - 0 1",
       "goal": "draw",
-      "origin": "studier",
+      "origin": "perdomod",
       "line": [
         {
-          "teach": "f7h5",
+          "teach": "a8b8",
           "accept": [
-            "f7h5"
+            "a8b8"
           ],
-          "reply": "g4h5"
+          "reply": "e3b6"
         },
         {
-          "teach": "f8g7",
+          "teach": "b8a8",
           "accept": [
-            "f8f7",
-            "f8g7",
-            "f8g8"
+            "b8a8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 2,
+      "fen": "8/8/1p2k3/3b4/P7/8/8/6KB w - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "line": [
+        {
+          "teach": "a4a5",
+          "accept": [
+            "a4a5"
+          ],
+          "reply": "b6a5"
+        },
+        {
+          "teach": "g1f2",
+          "accept": [
+            "g1f2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "1K6/4b3/7p/P7/k7/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "line": [
+        {
+          "teach": "a5a6",
+          "accept": [
+            "a5a6"
+          ],
+          "reply": "e7c5"
+        },
+        {
+          "teach": "b8c7",
+          "accept": [
+            "b8c7"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "c7c6",
+          "accept": [
+            "c7c6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 3,
+      "fen": "3B1b2/6pp/8/8/8/8/2k5/1N5K w - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "line": [
+        {
+          "teach": "b1d2",
+          "accept": [
+            "b1d2"
+          ],
+          "reply": "c2d2"
+        },
+        {
+          "teach": "d8g5",
+          "accept": [
+            "d8g5"
+          ],
+          "reply": "d2d1"
+        },
+        {
+          "teach": "g5h6",
+          "accept": [
+            "g5h6"
           ]
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "corner",
@@ -1007,11 +957,25 @@
       "year": 1978
     },
     {
+      "id": "olaffo",
+      "kind": "study",
+      "author": "Olaffo",
+      "title": "Wrong Bishop: A",
+      "url": "https://lichess.org/study/nUe9N3D2"
+    },
+    {
+      "id": "perdomod",
+      "kind": "study",
+      "author": "perdomod",
+      "title": "Wrong Bishop: A",
+      "url": "https://lichess.org/study/SxoBxSv7"
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 21
+  "maxScore": 15
 }

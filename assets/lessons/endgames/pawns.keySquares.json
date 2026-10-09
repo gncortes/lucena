@@ -268,7 +268,7 @@
         {
           "type": "play",
           "id": "finish",
-          "fen": "2k5/8/8/8/8/5P2/8/4K3 w - - 0 1",
+          "fen": "8/8/K3k3/8/8/8/2P5/8 w - - 0 1",
           "goal": "win"
         }
       ]
@@ -276,151 +276,40 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e14",
       "stars": 1,
-      "fen": "4k3/8/8/3K4/4P3/8/8/8 w - - 0 1",
+      "fen": "8/8/8/6p1/7k/8/6K1/8 b - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "maroczyMarshall",
       "line": [
         {
-          "teach": "d5d6",
+          "teach": "h4g4",
           "accept": [
-            "d5d6",
-            "d5e6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/6k1/8/8/5K2/6P1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "f4g5",
-          "accept": [
-            "f4f5",
-            "f4g5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3k4/8/8/2KP4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c5d6",
-          "accept": [
-            "c5c6",
-            "c5d6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "4k3/8/3KP3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e6e7",
-          "accept": [
-            "e6e7"
+            "h4g4"
           ],
-          "reply": "e8f7"
+          "reply": "g2h2"
         },
         {
-          "teach": "d6d7",
+          "teach": "g4f3",
           "accept": [
-            "d6d7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/4k3/8/3K4/4P3/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d5e5",
-          "accept": [
-            "d5e5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
-      "line": [
-        {
-          "teach": "d4c5",
-          "accept": [
-            "d4c5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/2k5/8/3K4/3P4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "strategically",
-      "line": [
-        {
-          "teach": "d5e6",
-          "accept": [
-            "d5c5",
-            "d5e5",
-            "d5e6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "7k/8/6K1/6P1/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
-      "line": [
-        {
-          "teach": "g6f7",
-          "accept": [
-            "g6f6",
-            "g6f7",
-            "g6h6"
+            "g4f3",
+            "g4f4",
+            "g4h4"
           ],
-          "reply": "h8h7"
+          "reply": "h2h3"
         },
         {
-          "teach": "g5g6",
+          "teach": "g5g4",
           "accept": [
-            "f7f6",
-            "g5g6"
+            "f3f4",
+            "g5g4"
           ],
-          "reply": "h7h8"
+          "reply": "h3h2"
         },
         {
-          "teach": "g6g7",
+          "teach": "f3f2",
           "accept": [
-            "f7f6",
-            "g6g7"
+            "f3f2"
           ]
         }
       ]
@@ -457,6 +346,88 @@
           "teach": "b7b8",
           "accept": [
             "b7b8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 2,
+      "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKpk",
+      "line": [
+        {
+          "teach": "g6h6",
+          "accept": [
+            "g6f6",
+            "g6h6"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "g5g6",
+          "accept": [
+            "g5g6",
+            "h6g6"
+          ],
+          "reply": "h8g8"
+        },
+        {
+          "teach": "g6g7",
+          "accept": [
+            "g6g7"
+          ],
+          "reply": "g8f7"
+        },
+        {
+          "teach": "h6h7",
+          "accept": [
+            "h6h7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 2,
+      "fen": "k7/8/1p6/1P6/8/8/7K/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiKeySquare",
+      "line": [
+        {
+          "teach": "h2g3",
+          "accept": [
+            "h2g3"
+          ],
+          "reply": "a8b7"
+        },
+        {
+          "teach": "g3f4",
+          "accept": [
+            "g3f4"
+          ],
+          "reply": "b7c7"
+        },
+        {
+          "teach": "f4e5",
+          "accept": [
+            "f4e5"
+          ],
+          "reply": "c7d7"
+        },
+        {
+          "teach": "e5d5",
+          "accept": [
+            "e5d5"
+          ],
+          "reply": "d7c7"
+        },
+        {
+          "teach": "d5e6",
+          "accept": [
+            "d5e5",
+            "d5e6"
           ]
         }
       ]
@@ -507,76 +478,97 @@
       ]
     },
     {
-      "id": "e11",
+      "id": "e16",
       "stars": 3,
-      "fen": "8/8/8/3k4/8/8/1KP5/8 w - - 0 1",
+      "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "wikiKeySquare",
       "line": [
         {
-          "teach": "b2b3",
+          "teach": "c7d7",
           "accept": [
-            "b2b3"
+            "c7d7"
           ],
-          "reply": "d5c5"
+          "reply": "g4f5"
         },
         {
-          "teach": "b3c3",
+          "teach": "d7d6",
           "accept": [
-            "b3c3"
+            "d7d6"
           ],
-          "reply": "c5d5"
+          "reply": "f5g6"
         },
         {
-          "teach": "c3b4",
+          "teach": "d6e6",
           "accept": [
-            "c3b3",
-            "c3b4",
-            "c3d3"
+            "d6c6",
+            "d6c7",
+            "d6d7",
+            "d6e6",
+            "d6e7"
           ]
         }
       ]
     },
     {
-      "id": "e12",
+      "id": "e17",
       "stars": 3,
-      "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
+      "fen": "8/6k1/1K3p2/4p1p1/4P1P1/5P2/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "wikiKeySquare",
       "line": [
         {
-          "teach": "g6h6",
+          "teach": "g7h6",
           "accept": [
-            "g6f6",
-            "g6h6"
+            "g7h6"
           ],
-          "reply": "g8h8"
+          "reply": "b6c7"
         },
         {
-          "teach": "g5g6",
+          "teach": "h6g7",
           "accept": [
-            "g5g6",
-            "h6g6"
+            "h6g7"
           ],
-          "reply": "h8g8"
+          "reply": "c7b7"
         },
         {
-          "teach": "g6g7",
+          "teach": "g7h7",
           "accept": [
-            "g6g7"
+            "g7h7"
           ],
-          "reply": "g8f7"
+          "reply": "b7b8"
         },
         {
-          "teach": "h6h7",
+          "teach": "h7h8",
           "accept": [
-            "h6h7"
+            "h7h8"
+          ],
+          "reply": "b8c8"
+        },
+        {
+          "teach": "h8g8",
+          "accept": [
+            "h8g8"
+          ],
+          "reply": "c8d7"
+        },
+        {
+          "teach": "g8h7",
+          "accept": [
+            "g8h7"
+          ],
+          "reply": "d7e6"
+        },
+        {
+          "teach": "h7g6",
+          "accept": [
+            "h7g6"
           ]
         }
       ]
     }
   ],
-  "passScore": 15,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "count",
@@ -591,16 +583,6 @@
       "id": "opposition",
       "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
       "ref": "wikiKpk"
-    },
-    {
-      "id": "drtina",
-      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
-      "ref": "wikiKpk"
-    },
-    {
-      "id": "gligoricFischer",
-      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
-      "ref": "gligoricFischer"
     },
     {
       "id": "kamskyKramnik",
@@ -665,11 +647,19 @@
       "year": 2009
     },
     {
+      "id": "maroczyMarshall",
+      "kind": "game",
+      "white": "Géza Maróczy",
+      "black": "Frank Marshall",
+      "event": "Torneio de Monte Carlo",
+      "year": 1903
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 24
+  "maxScore": 16
 }

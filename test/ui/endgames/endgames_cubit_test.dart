@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/endgames/view_models/endgames_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
 
 void main() {
   Future<EndgamesState> load([
@@ -76,5 +78,23 @@ void main() {
     );
     expect(state.next, isNull);
     expect(state.passed, 2);
+  });
+
+  test('o filtro da rota vale na visita e não muda o gravado', () async {
+    final settings = FakeSettingsRepository(
+      const AppSettings(endgamesAll: true),
+    );
+    final cubit = EndgamesCubit(
+      lessons: FakeEndgameLessonRepository(),
+      progress: FakeEndgameProgressRepository(),
+      characters: FakeCharacterRepository(),
+      settings: settings,
+    );
+    addTearDown(cubit.close);
+    await cubit.load('en', showAll: false);
+    expect(cubit.state.showAll, isFalse);
+    expect((await settings.load()).endgamesAll, isTrue);
+    await cubit.load('en');
+    expect(cubit.state.showAll, isTrue);
   });
 }

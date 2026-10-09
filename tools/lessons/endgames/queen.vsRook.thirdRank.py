@@ -16,6 +16,11 @@ SEVEN = '3k4/1Q6/3r4/5K2/8/8/8/8 w - - 0 1'
 PONZIANI = '5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1'
 MORO = '8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1'   # Morozevich-Jakovenko, lance 110
 BROWNE = '2KQ4/8/8/8/2r5/2k5/8/8 w - - 0 1'
+# Exercícios (T58): partidas e estudos abertos, conferidos na tabela.
+ADROOD = 'k7/2r5/3Q4/1K6/8/8/8/8 w - - 0 1'     # estudo de adrood, lance 20
+MORO93 = '8/8/5Q2/2K5/r7/3k4/8/8 w - - 0 1'     # Morozevich-Jakovenko, lance 93
+MORO82 = '6r1/8/4K3/1k6/8/2Q5/8/8 w - - 0 1'    # Morozevich-Jakovenko, lance 82
+METHURST = '8/6Q1/8/5r1k/8/4K3/8/8 w - - 0 1'   # estudo de methurst
 
 REFERENCES = [
     {'id': 'wikipedia', 'kind': 'web',
@@ -29,6 +34,9 @@ REFERENCES = [
     {'id': 'belle', 'kind': 'game', 'white': 'Walter Browne',
      'black': 'Belle (computador)', 'event': 'Desafio de dama contra torre, revanche',
      'year': 1978},
+    {'id': 'adrood', 'kind': 'study', 'author': 'adrood',
+     'title': 'Queen versus Rook endgame',
+     'url': 'https://lichess.org/study/tEH40nAS'},
     {'id': 'belle1979', 'kind': 'web',
      'title': 'Stenberg, Conway e Larkins: Queen vs. Rook (1979, cópia Usenet)',
      'url': 'http://quux.org:70/Archives/usenet-a-news/NET.chess/82.01.07_sri-unix.458_net.chess.txt'},
@@ -52,6 +60,7 @@ REFERENCES = [
 write({
     'id': 'queen.vsRook.thirdRank',
     'module': 'queen',
+    'skills': ['queen.vsRook'],
     'parts': [
         {'id': 'third', 'steps': [
             think('t_third', T, 5, 1),
@@ -96,22 +105,18 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, T, 'Qf4', origin='wikipedia'),
-        exercise('e02', 1, after(TB, 'Rg6'), 'Qf8+ Kd7 Qf7+', origin='cgbarros'),
-        exercise('e03', 1, after(TB, 'Ra6'), 'Qb8+ Ke7 Qb7+', origin='cgbarros'),
-        exercise('e04', 1, after(TB, 'Rb2'), 'Qf6+', origin='cgbarros'),
-        exercise('e05', 2, after(TB, 'Kd7'), 'Qa4+ Kc7 Qa7+ Rb7 Qc5+',
+        exercise('e12', 1, ADROOD, 'Qd5+', origin='adrood'),
+        exercise('e18', 1, MORO93, 'Qf1+ Kd2 Qf3', origin='moro'),
+        exercise('e14', 2, METHURST, 'Ke4 Rf1 Qg3 Rf6 Ke5 Rf7 Qd3',
+                 origin='methurst'),
+        exercise('e15', 2, after(F, 'Kd4 Ra1'), 'Qf7+ Kd6 Qb3',
                  origin='wikipedia'),
-        exercise('e06', 2, TA, 'Kc5 Kc8 Qe7', origin='wikipedia'),
-        exercise('e07', 2, MORO, 'Qe5 Kg1 Kg3', accept={1: 'only'}, origin='moro'),
-        exercise('e08', 2, SEVEN, 'Qf7 Rb6 Ke5 Rc6 Kd5', origin='parker'),
-        exercise('e09', 3, F, 'Qf7+ Kd8 Qe6 Kc7 Kd3', origin='wikipedia'),
-        exercise('e10', 3, after(TB, 'Kc8'), 'Kc5 Ra6 Qe4 Kc7 Qe7+ Kb8 Kb5',
+        exercise('e16', 3, after(F, 'Qf7+ Kd6'), 'Qe8 Kc7 Qe6 Rb5 Kd4',
                  origin='wikipedia'),
-        exercise('e11', 3, PONZIANI, 'Rg7+ Kf6 Rg6+', accept='hold',
-                 goal='draw', origin='wikipedia'),
+        exercise('e19', 3, MORO82, 'Qe5+ Kc6 Qf6 Rb8 Ke7+ Kb7 Qe5 Kc8 Kd6',
+                 origin='moro'),
     ],
-    'passScore': 13,
+    'passScore': 8,
     'keyPositions': [
         {'id': 'third', 'fen': T, 'ref': 'wikipedia'},
         {'id': 'thirdA', 'fen': TA, 'ref': 'wikipedia'},

@@ -1,0 +1,631 @@
+{
+  "id": "pawns.minedSquares",
+  "module": "pawns",
+  "skills": [
+    "pawns.trebuchet"
+  ],
+  "parts": [
+    {
+      "id": "trebuchet",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_treb",
+          "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "side": "white",
+          "marks": [
+            "d4",
+            "d5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "treb",
+          "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "c4d5",
+            "e5d4"
+          ],
+          "marks": [
+            "d4",
+            "d5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "name",
+          "fen": "8/8/8/3pK3/2kP4/8/8/8 w - - 0 1",
+          "arrows": [
+            "c4d5",
+            "e5d4"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_treb",
+          "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
+          "goal": "win",
+          "side": "white",
+          "line": [
+            {
+              "uci": "c4b4"
+            },
+            {
+              "uci": "e5d5",
+              "marks": [
+                "d5"
+              ]
+            },
+            {
+              "uci": "b4b5"
+            },
+            {
+              "uci": "d5d6",
+              "marks": [
+                "c6",
+                "d6",
+                "e6"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "trebMove",
+          "fen": "8/8/4K3/3p4/2kP4/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e6e5",
+              "accept": [
+                "e6e5"
+              ],
+              "reply": "c4b4"
+            },
+            {
+              "teach": "e5d5",
+              "accept": [
+                "e5d5",
+                "e5d6",
+                "e5e6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mined",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_mined",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 3,
+          "ask": "plan",
+          "marks": [
+            "e6",
+            "c5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "mines",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "f5e6",
+            "b6c5"
+          ],
+          "marks": [
+            "e6",
+            "c5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "trap",
+          "fen": "8/8/3pK3/2kP4/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "c5d5"
+          ],
+          "marks": [
+            "e6",
+            "c5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_mined",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "f5f6",
+              "marks": [
+                "e7"
+              ]
+            },
+            {
+              "uci": "b6b5"
+            },
+            {
+              "uci": "f6e7",
+              "arrows": [
+                "e7d6"
+              ]
+            },
+            {
+              "uci": "b5c5"
+            },
+            {
+              "uci": "e7e6",
+              "marks": [
+                "e6",
+                "c5"
+              ]
+            },
+            {
+              "uci": "c5b6"
+            },
+            {
+              "uci": "e6d6"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "minedMove",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "f5f6",
+              "accept": [
+                "f5f6"
+              ],
+              "reply": "b6b5"
+            },
+            {
+              "teach": "f6e7",
+              "accept": [
+                "f6e7"
+              ],
+              "reply": "b5c5"
+            },
+            {
+              "teach": "e7e6",
+              "accept": [
+                "e7e6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "race",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_race",
+          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "d6",
+            "f5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "race",
+          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "arrows": [
+            "c7d7",
+            "d7e6"
+          ],
+          "marks": [
+            "d6",
+            "f5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "raceTrap",
+          "fen": "8/8/3Kp3/4Pk2/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "f5e5"
+          ],
+          "marks": [
+            "d6",
+            "f5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_race",
+          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "c7d7",
+              "arrows": [
+                "d7e6"
+              ]
+            },
+            {
+              "uci": "g4f5"
+            },
+            {
+              "uci": "d7d6",
+              "marks": [
+                "d6",
+                "f5"
+              ]
+            },
+            {
+              "uci": "f5g5"
+            },
+            {
+              "uci": "d6e6"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "raceMove",
+          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "c7d7",
+              "accept": [
+                "c7d7"
+              ],
+              "reply": "g4f4"
+            },
+            {
+              "teach": "d7e6",
+              "accept": [
+                "d7e6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "defend",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_defend",
+          "fen": "8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "c4",
+            "e3"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "defend",
+          "fen": "8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1",
+          "arrows": [
+            "b3b4",
+            "f4e3"
+          ],
+          "marks": [
+            "c4",
+            "e3"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "defendTrap",
+          "fen": "8/8/8/8/2Kp4/3Pk3/8/8 w - - 0 1",
+          "arrows": [
+            "e3d3"
+          ],
+          "marks": [
+            "c4",
+            "e3"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_defend",
+          "fen": "8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "b3b4",
+              "marks": [
+                "c4"
+              ]
+            },
+            {
+              "uci": "f4e3"
+            },
+            {
+              "uci": "b4c4",
+              "marks": [
+                "c4",
+                "e3"
+              ]
+            },
+            {
+              "uci": "e3f3"
+            },
+            {
+              "uci": "c4d4"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "defendMove",
+          "fen": "8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "b3b4",
+              "accept": [
+                "b3b4"
+              ],
+              "reply": "f4f3"
+            },
+            {
+              "teach": "b4c5",
+              "accept": [
+                "b4c5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recap",
+      "steps": [
+        {
+          "type": "talk",
+          "id": "rules",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "marks": [
+            "e6",
+            "c5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "mirror",
+          "fen": "8/8/4p1k1/2K1P3/8/8/8/8 w - - 0 1",
+          "marks": [
+            "d6",
+            "f5"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "mirrorMove",
+          "fen": "8/8/4p1k1/2K1P3/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "c5c6",
+              "accept": [
+                "c5c6"
+              ],
+              "reply": "g6g5"
+            },
+            {
+              "teach": "c6d7",
+              "accept": [
+                "c6d7"
+              ],
+              "reply": "g5f5"
+            },
+            {
+              "teach": "d7d6",
+              "accept": [
+                "d7d6"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+          "goal": "win"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e11",
+      "stars": 1,
+      "fen": "2k5/2P5/K7/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiZugzwang",
+      "line": [
+        {
+          "teach": "a6b6",
+          "accept": [
+            "a6b6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/8/8/4K3/k1p5/2P5/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "monsienne",
+      "line": [
+        {
+          "teach": "e5d5",
+          "accept": [
+            "e5d5",
+            "e5e4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 2,
+      "fen": "8/1k6/8/1Pp3p1/6P1/2K5/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "rodneyOpada",
+      "line": [
+        {
+          "teach": "c3d3",
+          "accept": [
+            "c3b3",
+            "c3d3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/1Kp5/4p3/4P3/7k/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "cheeseman",
+      "line": [
+        {
+          "teach": "b6c6",
+          "accept": [
+            "b6c6"
+          ],
+          "reply": "h3g4"
+        },
+        {
+          "teach": "c6d6",
+          "accept": [
+            "c6d6"
+          ],
+          "reply": "g4f4"
+        },
+        {
+          "teach": "d6d5",
+          "accept": [
+            "d6d5"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 5,
+  "keyPositions": [
+    {
+      "id": "trebuchet",
+      "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
+      "ref": "wikiZugzwang"
+    },
+    {
+      "id": "mined",
+      "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+      "ref": "wikiZugzwang"
+    },
+    {
+      "id": "race",
+      "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+      "ref": "monsienne"
+    },
+    {
+      "id": "cheeseman",
+      "fen": "8/8/7p/4p2K/4P3/1kP5/8/8 w - - 0 1",
+      "ref": "cheeseman"
+    }
+  ],
+  "practice": {
+    "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
+    "goal": "win",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "wikiZugzwang",
+      "kind": "web",
+      "title": "Wikipedia: Zugzwang (seções \"Reciprocal zugzwang\", \"Trébuchet\" e \"Mined squares\")",
+      "url": "https://en.wikipedia.org/wiki/Zugzwang"
+    },
+    {
+      "id": "wikiCorresponding",
+      "kind": "web",
+      "title": "Wikipedia: Corresponding squares",
+      "url": "https://en.wikipedia.org/wiki/Corresponding_squares"
+    },
+    {
+      "id": "wikiTrebuchet",
+      "kind": "web",
+      "title": "Wikipedia: Trebuchet (etimologia)",
+      "url": "https://en.wikipedia.org/wiki/Trebuchet"
+    },
+    {
+      "id": "dvoretsky",
+      "kind": "book",
+      "author": "Mark Dvoretsky",
+      "title": "Dvoretsky's Endgame Manual (6.ª edição, revista por Karsten Müller e Alex Fishbein)",
+      "publisher": "Russell Enterprises",
+      "year": 2025,
+      "where": "Índice da amostra da editora: \"Mined Squares\", p. 23"
+    },
+    {
+      "id": "monsienne",
+      "kind": "study",
+      "author": "monsienne",
+      "title": "TREBUCHETs",
+      "url": "https://lichess.org/study/eolTlSZl"
+    },
+    {
+      "id": "ryanGarg",
+      "kind": "study",
+      "author": "RyanGarg",
+      "title": "Mined Squares",
+      "url": "https://lichess.org/study/sRutl3W9"
+    },
+    {
+      "id": "rodneyOpada",
+      "kind": "study",
+      "author": "Rodney_Opada",
+      "title": "Reciprocal Zugzwang",
+      "url": "https://lichess.org/study/fu63jTLH"
+    },
+    {
+      "id": "daedricrift",
+      "kind": "study",
+      "author": "Daedricrift",
+      "title": "Mined Squares",
+      "url": "https://lichess.org/study/Iw9Nv19E"
+    },
+    {
+      "id": "cheeseman",
+      "kind": "study",
+      "author": "ThisIsCheeseman",
+      "title": "Endgame - Trebuchet",
+      "url": "https://lichess.org/study/Ga9cbsMH"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ],
+  "maxScore": 8
+}

@@ -48,6 +48,8 @@ class ExerciseState {
     this.speech,
     this.emotion = Emotion.calm,
     this.earned,
+    this.explained = false,
+    this.locked = false,
     this.number = 0,
     this.count = 0,
     this.nextExercise,
@@ -85,6 +87,13 @@ class ExerciseState {
   /// As estrelas ganhas, quando resolvido.
   final int? earned;
 
+  /// O aluno abriu a explicação detalhada da solução.
+  final bool explained;
+
+  /// A nota da aula já fechou (todos os exercícios resolvidos): este é
+  /// treino livre, e o resultado não muda. Só "refazer os exercícios" zera.
+  final bool locked;
+
   /// O número do exercício na aula (1 é o primeiro) e quantos há.
   final int number;
   final int count;
@@ -93,6 +102,15 @@ class ExerciseState {
   final String? nextExercise;
 
   bool get interactive => phase == ExercisePhase.active;
+
+  /// A explicação detalhada da solução, quando a aula tem.
+  String? get explanation => lesson == null || exercise == null
+      ? null
+      : texts.say('${lesson!.id}.ex.${exercise!.id}.solution');
+
+  /// Resolvido, com explicação a pedir: o botão "Ver explicação".
+  bool get canExplain =>
+      phase == ExercisePhase.done && !explained && explanation != null;
 
   /// O lado do aluno: o que joga no FEN do exercício.
   Side get side => exercise?.step.side ?? Side.white;
@@ -117,8 +135,10 @@ class ExerciseState {
     bool clearHint = false,
     ExercisePhase? phase,
     String? speech,
+    bool clearSpeech = false,
     Emotion? emotion,
     int? earned,
+    bool? explained,
   }) => ExerciseState(
     ready: ready,
     missing: missing,
@@ -134,9 +154,11 @@ class ExerciseState {
     hint: clearHint ? null : hint ?? this.hint,
     wrongMove: clearWrongMove ? null : wrongMove ?? this.wrongMove,
     phase: phase ?? this.phase,
-    speech: speech ?? this.speech,
+    speech: clearSpeech ? null : speech ?? this.speech,
     emotion: emotion ?? this.emotion,
     earned: earned ?? this.earned,
+    explained: explained ?? this.explained,
+    locked: locked,
     number: number,
     count: count,
     nextExercise: nextExercise,
@@ -209,12 +231,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      // O enunciado fica para a ajuda: aqui só o convite.
-      speech: texts.say('coach.exerciseStart', 0),
+      // O objetivo fica sob o tabuleiro; o Viktor só fala com erro, dica ou
+      // explicação pedida.
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
       nextExercise: next,
+      locked: lesson.exercises.every(
+        (other) => each.stars.containsKey(other.id),
+      ),
     );
     final saved = each.exercise;
     if (saved != null && saved.exerciseId == exerciseId) {
@@ -321,6 +346,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _save();
   }
 
+  /// "Ver explicação": a fala detalhada da solução, depois de resolver.
+  void showExplanation() {
+    final text = state.explanation;
+    if (!state.canExplain || text == null) return;
+    emit(
+      state.copyWith(speech: text, explained: true, emotion: Emotion.focused),
+    );
+  }
+
   /// Sair pelo voltar: o exercício fica guardado onde parou.
   Future<void> leave() async {
     if (state.phase == ExercisePhase.done) return;
@@ -336,18 +370,24 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       mistakes: state.mistakes,
       hints: state.hints,
     );
-    final all = await _progress.load();
-    final each = all.of(lesson.id);
-    await _progress.save(
-      all.withLesson(
-        lesson.id,
-        each.copyWith(
-          stars: {...each.stars, exercise.id: earned},
-          clearExercise: true,
+    // Com a nota fechada, o treino não grava nada.
+    if (!state.locked) {
+      final all = await _progress.load();
+      final each = all.of(lesson.id);
+      await _progress.save(
+        all.withLesson(
+          lesson.id,
+          each.copyWith(
+            stars: {...each.stars, exercise.id: earned},
+            clearExercise: true,
+          ),
         ),
-      ),
-    );
+      );
+    }
     if (isClosed) return;
+    // Acerto limpo: o Viktor fica quieto, e a explicação vem a pedido. Com
+    // erro ou dica, a correção vem sozinha.
+    final corrected = state.mistakes > 0 || state.hints > 0;
     emit(
       state.copyWith(
         fen: fen,
@@ -357,9 +397,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         clearWrongMove: true,
         phase: ExercisePhase.done,
         earned: earned,
-        speech:
-            state.texts.say('${lesson.id}.ex.${exercise.id}.solution') ??
-            _pick('coach.praise'),
+        clearSpeech: !corrected,
+        speech: corrected ? (state.explanation ?? _pick('coach.praise')) : null,
+        explained: corrected,
         emotion: earned == exercise.stars ? Emotion.happy : Emotion.calm,
       ),
     );
@@ -369,7 +409,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final lesson = state.lesson;
     final exercise = state.exercise;
     if (lesson == null || exercise == null) return;
-    if (state.phase == ExercisePhase.done) return;
+    if (state.phase == ExercisePhase.done || state.locked) return;
     final all = await _progress.load();
     await _progress.save(
       all.withLesson(

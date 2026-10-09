@@ -35,6 +35,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _thinkMinutesKey = 'lessons.thinkMinutes';
   static const _thinkChosenKey = 'lessons.thinkChosen';
   static const _endgamesAllKey = 'endgames.all';
+  static const _endgamesHideDoneKey = 'endgames.hideDone';
   static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
@@ -89,6 +90,8 @@ class LocalSettingsRepository implements SettingsRepository {
           await _preferences.getBool(_evalBarKey) ??
           const AppSettings().evalBar,
       endgamesAll: await _preferences.getBool(_endgamesAllKey) ?? false,
+      endgamesHideDone:
+          await _preferences.getBool(_endgamesHideDoneKey) ?? false,
     );
   }
 
@@ -176,6 +179,10 @@ class LocalSettingsRepository implements SettingsRepository {
     await _preferences.setBool(_thinkChosenKey, value: settings.thinkChosen);
     await _preferences.setBool(_evalBarKey, value: settings.evalBar);
     await _preferences.setBool(_endgamesAllKey, value: settings.endgamesAll);
+    await _preferences.setBool(
+      _endgamesHideDoneKey,
+      value: settings.endgamesHideDone,
+    );
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

@@ -240,211 +240,150 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "8/1P2k3/8/1K6/3R4/8/8/1r6 w - - 0 1",
+      "fen": "2k1K3/4P3/8/8/5r2/8/8/3R4 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "wikiRookPawn",
       "turns": [
         {
-          "teach": "d4b4",
+          "teach": "d1c1",
+          "accept": "best",
+          "reply": "c8b7"
+        },
+        {
+          "teach": "e8d7",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e13",
       "stars": 1,
-      "fen": "1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1",
+      "fen": "8/8/3k1K2/3pRP2/8/4P3/8/5r2 w - - 0 1",
+      "goal": "win",
+      "origin": "andersson",
+      "turns": [
+        {
+          "teach": "e3e4",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 2,
+      "fen": "8/6R1/8/5K2/1k6/r3P3/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "lichessPractice",
+      "turns": [
+        {
+          "teach": "e3e4",
+          "accept": "win",
+          "reply": "b4c5"
+        },
+        {
+          "teach": "e4e5",
+          "accept": "best",
+          "reply": "c5d5"
+        },
+        {
+          "teach": "g7d7",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 2,
+      "fen": "K1k5/P7/8/8/1R6/8/8/r7 w - - 0 1",
+      "goal": "win",
+      "origin": "akhil",
+      "turns": [
+        {
+          "teach": "b4c4",
+          "accept": "win",
+          "reply": "c8d7"
+        },
+        {
+          "teach": "a8b7",
+          "accept": "win",
+          "reply": "a1b1"
+        },
+        {
+          "teach": "b7a6",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "1K6/1P1k4/7R/8/r6p/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "topalov",
+      "turns": [
+        {
+          "teach": "h6h7",
+          "accept": "best",
+          "reply": "d7d8"
+        },
+        {
+          "teach": "h7h8",
+          "accept": "best",
+          "reply": "d8d7"
+        },
+        {
+          "teach": "h8h6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 3,
+      "fen": "K7/P3k3/8/8/8/8/1r6/2R5 w - - 0 1",
       "goal": "win",
       "origin": "wikiLucena",
       "turns": [
         {
-          "teach": "c1d1",
-          "accept": "only",
-          "reply": "d8e7"
-        },
-        {
-          "teach": "d1d4",
-          "accept": [
-            "d1d4",
-            "d1d5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "6K1/3k2P1/8/8/8/8/7r/4R3 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e1e4",
-          "accept": [
-            "e1e4",
-            "e1e5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "8/1P2k3/1K6/3R4/8/8/8/1r6 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d5b5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/1P6/2K1k3/8/3R4/8/8/1r6 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d4d6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/1P2k3/K7/8/8/8/1r6/3R4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d1d5",
+          "teach": "c1c8",
           "accept": "best",
-          "reply": "auto"
+          "reply": "e7d6"
         },
         {
-          "teach": "a6b6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/1K2k3/1P6/8/8/8/r7/3R4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
+          "teach": "c8b8",
+          "accept": "best",
+          "reply": "b2a2"
+        },
         {
-          "teach": "b7b8",
-          "accept": "only",
+          "teach": "a8b7",
+          "accept": "best",
           "reply": "a2b2"
         },
         {
-          "teach": "b6b7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/1P2k3/2K5/3R4/8/8/8/2r5 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c6b6",
-          "accept": "only",
-          "reply": "c1b1"
-        },
-        {
-          "teach": "d5b5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 2,
-      "fen": "4K3/4P1k1/8/8/8/8/r7/5R2 b - - 0 1",
-      "goal": "draw",
-      "origin": "wikiLucena",
-      "turns": [
-        {
-          "teach": "a2a8",
-          "accept": "hold",
-          "reply": "e8d7"
-        },
-        {
-          "teach": "a8a7",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "1K6/1P2k3/8/8/3R4/8/8/r7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "b8c7",
+          "teach": "b7c8",
           "accept": "best",
-          "reply": "a1c1"
+          "reply": "b2c2"
         },
         {
-          "teach": "c7b6",
+          "teach": "c8d8",
           "accept": "best",
-          "reply": "c1b1"
+          "reply": "c2h2"
+        },
+        {
+          "teach": "b8b6",
+          "accept": "best",
+          "reply": "d6c5"
         },
         {
           "teach": "b6c6",
-          "accept": "best",
-          "reply": "b1c1"
-        },
-        {
-          "teach": "c6b5",
-          "accept": "best",
-          "reply": "c1b1"
-        },
-        {
-          "teach": "d4b4",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "4K3/4P1k1/8/8/8/8/r7/5R2 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiLucena",
-      "turns": [
-        {
-          "teach": "f1g1",
-          "accept": "only",
-          "reply": "g7h7"
-        },
-        {
-          "teach": "g1g4",
-          "accept": "only",
-          "reply": "a2a1"
-        },
-        {
-          "teach": "e8f7",
           "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "lucena",
@@ -525,6 +464,28 @@
       "black": "Ralf Åkesson",
       "event": "Kraft Chess Cup KO, Skellefteå",
       "year": 1999
+    },
+    {
+      "id": "akhil",
+      "kind": "study",
+      "author": "AKHIL",
+      "title": "PG I Session 25 Bridge building, Lucena Position - Defending with the rook.",
+      "url": "https://lichess.org/study/Jww8Ta5h"
+    },
+    {
+      "id": "topalov",
+      "kind": "game",
+      "white": "Veselin Topalov",
+      "black": "Anatoly Karpov",
+      "event": "NAO Masters, Cannes",
+      "year": 2002
+    },
+    {
+      "id": "audax",
+      "kind": "study",
+      "author": "Audax6",
+      "title": "E-36 Rook Endings 3: Winning with the Lucena - The mother of many winning positions",
+      "url": "https://lichess.org/study/SSghusZQ"
     },
     {
       "id": "tablebase",

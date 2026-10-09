@@ -72,11 +72,32 @@ class EndgameLessonState {
   /// A aula seguinte na trilha. Nula na última.
   final String? nextLesson;
 
-  int get score => progress.score;
+  int get score {
+    final lesson = this.lesson;
+    return lesson == null ? 0 : progress.scoreOf(lesson);
+  }
+
   int get maxScore => lesson?.maxScore ?? 0;
   int get passScore => lesson?.passScore ?? 0;
 
-  int get solved => progress.stars.length;
+  /// A faixa da nota atual e as estrelas que cada faixa pede.
+  ExerciseGrade get grade {
+    final lesson = this.lesson;
+    return lesson == null
+        ? ExerciseGrade.below
+        : EndgameLessonRules.grade(lesson, score);
+  }
+
+  Map<ExerciseGrade, int> get gradeStars {
+    final lesson = this.lesson;
+    return lesson == null ? const {} : EndgameLessonRules.gradeStars(lesson);
+  }
+
+  int get solved {
+    final lesson = this.lesson;
+    return lesson == null ? 0 : progress.solvedOf(lesson);
+  }
+
   int get exerciseCount => lesson?.exercises.length ?? 0;
 
   bool get allSolved {
@@ -97,7 +118,8 @@ class EndgameLessonState {
     if (lesson == null) return null;
     final open = progress.exercise?.exerciseId;
     if (open != null && !progress.stars.containsKey(open)) {
-      return lesson.exercise(open);
+      final exercise = lesson.exercise(open);
+      if (exercise != null) return exercise;
     }
     for (final exercise in lesson.exercises) {
       if (!progress.stars.containsKey(exercise.id)) return exercise;
@@ -150,7 +172,13 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
       return;
     }
     final texts = await _lessons.texts(language);
-    final progress = await _progress.load();
+    var progress = await _progress.load();
+    // Exercício cortado da aula: a estrela e o exercício aberto dele saem.
+    final pruned = EndgameLessonRules.prune(lesson, progress.of(lessonId));
+    if (!identical(pruned, progress.of(lessonId))) {
+      progress = progress.withLesson(lessonId, pruned);
+      await _progress.save(progress);
+    }
     final speedruns = await _journey.speedruns();
     final characters = await _characters.characters();
     if (isClosed) return;

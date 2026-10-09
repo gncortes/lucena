@@ -7,8 +7,37 @@ import '../models/lesson.dart';
 import '../models/speedrun.dart';
 import 'game_rules.dart';
 
+/// A faixa da nota nos exercícios de uma aula, da menor à maior.
+enum ExerciseGrade { below, passed, good, excellent, perfect }
+
 /// As regras das aulas de finais: pontos, nota e o que o passo final abre.
 abstract final class EndgameLessonRules {
+  /// As estrelas que cada faixa pede: o mínimo da aula, depois 75% e 85% do
+  /// total (sempre acima da faixa anterior) e, por fim, todas.
+  static Map<ExerciseGrade, int> gradeStars(EndgameLesson lesson) {
+    final total = lesson.maxScore;
+    int above(int previous, int target) =>
+        min(total, max(previous + 1, target));
+    final passed = min(lesson.passScore, total);
+    final good = above(passed, (3 * total + 3) ~/ 4);
+    final excellent = above(good, (17 * total + 19) ~/ 20);
+    return {
+      ExerciseGrade.passed: passed,
+      ExerciseGrade.good: good,
+      ExerciseGrade.excellent: excellent,
+      ExerciseGrade.perfect: total,
+    };
+  }
+
+  /// A faixa de quem fez [score] estrelas nos exercícios da aula.
+  static ExerciseGrade grade(EndgameLesson lesson, int score) {
+    var grade = ExerciseGrade.below;
+    for (final entry in gradeStars(lesson).entries) {
+      if (score >= entry.value) grade = entry.key;
+    }
+    return grade;
+  }
+
   /// As estrelas que um exercício de [stars] vale depois de [mistakes] erros
   /// e [hints] dicas: acerto de primeira vale tudo; cada erro ou dica tira
   /// uma, até zero.
@@ -26,7 +55,28 @@ abstract final class EndgameLessonRules {
   static bool passed(EndgameLesson lesson, EndgameLessonProgress progress) =>
       progress.lessonDone &&
       allSolved(lesson, progress) &&
-      progress.score >= lesson.passScore;
+      progress.scoreOf(lesson) >= lesson.passScore;
+
+  /// O progresso sem o que aponta para exercício que a aula não tem mais
+  /// (estrela ou exercício aberto de um id cortado). O mesmo objeto se não
+  /// há nada a tirar.
+  static EndgameLessonProgress prune(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+  ) {
+    final ids = {for (final exercise in lesson.exercises) exercise.id};
+    final orphanStars = progress.stars.keys.any((id) => !ids.contains(id));
+    final open = progress.exercise?.exerciseId;
+    final orphanOpen = open != null && !ids.contains(open);
+    if (!orphanStars && !orphanOpen) return progress;
+    return progress.copyWith(
+      stars: {
+        for (final MapEntry(:key, :value) in progress.stars.entries)
+          if (ids.contains(key)) key: value,
+      },
+      clearExercise: orphanOpen,
+    );
+  }
 
   /// O speedrun do final da aula: o de modalidade "final" na mesma posição
   /// do treino. Nulo se o final não tem speedrun.

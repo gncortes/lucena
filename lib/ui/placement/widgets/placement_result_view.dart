@@ -1,8 +1,10 @@
+import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/placement.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
@@ -47,36 +49,49 @@ class _PlacementResultViewState extends State<PlacementResultView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.screen,
-              top: AppSpacing.sm,
-              right: AppSpacing.screen,
-              bottom: AppSpacing.lg,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _LevelCard(result: result, shown: chosen),
-                if (levels.length > 1) ...[
-                  const SizedBox(height: AppSpacing.betweenCards),
-                  _TwoLevels(
-                    levels: levels,
-                    chosen: chosen,
-                    onChoose: (level) => setState(() => _chosen = level),
+          // Cabeçalho grande que recolhe ao rolar: o título ganha destaque
+          // sobre a faixa e some do caminho do mapa e do roteiro.
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar.large(
+                key: PlacementKeys.resultHeader,
+                pinned: true,
+                title: Text(l10n.placementTitle),
+              ),
+              SliverPadding(
+                padding: scrollPadding(
+                  context,
+                  left: AppSpacing.screen,
+                  top: AppSpacing.sm,
+                  right: AppSpacing.screen,
+                  bottom: AppSpacing.lg,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _LevelCard(result: result, shown: chosen),
+                      if (levels.length > 1) ...[
+                        const SizedBox(height: AppSpacing.betweenCards),
+                        _TwoLevels(
+                          levels: levels,
+                          chosen: chosen,
+                          onChoose: (level) => setState(() => _chosen = level),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.xl),
+                      _SkillMapSection(state: widget.state),
+                      if (widget.state.roadmap?.steps.isNotEmpty ?? false) ...[
+                        const SizedBox(height: AppSpacing.xl),
+                        _Roadmap(state: widget.state),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      _Sources(text: l10n.placementSources),
+                    ],
                   ),
-                ],
-                const SizedBox(height: AppSpacing.xl),
-                _SkillMapSection(state: widget.state),
-                if (widget.state.roadmap?.steps.isNotEmpty ?? false) ...[
-                  const SizedBox(height: AppSpacing.xl),
-                  _Roadmap(state: widget.state),
-                ],
-                const SizedBox(height: AppSpacing.lg),
-                _Sources(text: l10n.placementSources),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
         _Actions(
@@ -113,52 +128,68 @@ class _LevelCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l10n.placementResultTitle,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colors.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            AnimatedSwitcher(
-              duration: AppMotion.of(context).state,
-              child: Row(
-                key: ValueKey(shown),
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Flexible(
-                    child: Text(
-                      shown.name(l10n),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: colors.onPrimaryContainer,
+            Row(
+              children: [
+                _LevelPiece(level: shown),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.placementResultTitle,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colors.onPrimaryContainer.withValues(
+                            alpha: 0.8,
+                          ),
+                        ),
                       ),
-                    ),
+                      AnimatedSwitcher(
+                        duration: AppMotion.of(context).state,
+                        child: Row(
+                          key: ValueKey(shown),
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                shown.name(l10n),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: colors.onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              shown == result.level
+                                  ? '${result.theta}'
+                                  : '${shown.rating}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colors.onPrimaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        l10n.placementBetween(result.low, result.high),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onPrimaryContainer.withValues(
+                            alpha: 0.8,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    shown == result.level
-                        ? '${result.theta}'
-                        : '${shown.rating}',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: colors.onPrimaryContainer,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l10n.placementBetween(result.low, result.high),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _Ruler(result: result),
+            const SizedBox(height: AppSpacing.lg),
+            _Ruler(shown: shown),
           ],
         ),
       ),
@@ -166,117 +197,129 @@ class _LevelCard extends StatelessWidget {
   }
 }
 
-/// A régua: as faixas lado a lado, o intervalo em destaque e um marcador no
-/// número. O intervalo abre a partir do número quando a tela entra.
-class _Ruler extends StatelessWidget {
-  const _Ruler({required this.result});
+/// A peça da faixa (do peão ao rei), num círculo da cor principal.
+class _LevelPiece extends StatelessWidget {
+  const _LevelPiece({required this.level});
 
-  final PlacementResult result;
+  final RatingLevel level;
 
-  static const _min = 400.0;
-  static const _max = 2800.0;
-
-  static double _at(num rating) =>
-      ((rating - _min) / (_max - _min)).clamp(0.0, 1.0);
+  static const _size = 60.0;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final theme = Theme.of(context);
-    return TweenAnimationBuilder<double>(
-      key: PlacementKeys.ruler,
-      tween: Tween(begin: 0, end: 1),
-      duration: AppMotion.of(context).screen,
-      curve: AppMotion.enter,
-      builder: (context, t, _) => LayoutBuilder(
-        builder: (context, box) {
-          final width = box.maxWidth;
-          final theta = _at(result.theta) * width;
-          final low = theta + (_at(result.low) * width - theta) * t;
-          final high = theta + (_at(result.high) * width - theta) * t;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 28,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    // As faixas, alternando o tom.
-                    Positioned.fill(
-                      top: 10,
-                      bottom: 10,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppShape.full),
-                        child: Row(
-                          children: [
-                            for (final level in RatingLevel.values)
-                              Expanded(
-                                flex: _span(level),
-                                child: ColoredBox(
-                                  color: level.index.isEven
-                                      ? colors.surface.withValues(alpha: 0.7)
-                                      : colors.surface.withValues(alpha: 0.4),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // O intervalo.
-                    Positioned(
-                      left: low,
-                      width: (high - low).clamp(0, width),
-                      top: 8,
-                      bottom: 8,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.primary.withValues(alpha: 0.45),
-                          borderRadius: BorderRadius.circular(AppShape.full),
-                        ),
-                      ),
-                    ),
-                    // O número.
-                    Positioned(
-                      left: theta - 4,
-                      width: 8,
-                      top: 2,
-                      bottom: 2,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          borderRadius: BorderRadius.circular(AppShape.full),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (final label in ['400', '1000', '1600', '2200', '2800'])
-                    Text(
-                      label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimaryContainer.withValues(alpha: 0.7),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          );
-        },
+    return AnimatedContainer(
+      duration: AppMotion.of(context).state,
+      width: _size,
+      height: _size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: colors.primary),
+      // A imagem da peça já vem centralizada no próprio quadro.
+      child: ExcludeSemantics(
+        child: Image(
+          image: PieceSet.cburnettAssets[level.piece]!,
+          width: _size * 0.72,
+          height: _size * 0.72,
+        ),
       ),
     );
   }
+}
 
-  // A largura de cada faixa na régua, em pontos de rating.
-  static int _span(RatingLevel level) {
-    final min = level.min ?? _min.toInt();
-    final max = (level.max ?? _max.toInt() - 1) + 1;
-    return max - min;
+/// A escada das faixas: seis degraus do mesmo tamanho, cada um com a peça da
+/// faixa (do peão ao rei) em cima; o degrau do jogador fica preenchido e os
+/// outros, apagados. Embaixo, o rating em que cada faixa começa, na divisa.
+class _Ruler extends StatelessWidget {
+  const _Ruler({required this.shown});
+
+  final RatingLevel shown;
+
+  static const _gap = 4.0;
+  static const _bar = 12.0;
+  static const _piece = 26.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final duration = AppMotion.of(context).state;
+    return LayoutBuilder(
+      key: PlacementKeys.ruler,
+      builder: (context, box) {
+        final width = box.maxWidth;
+        final step =
+            (width - _gap * (RatingLevel.values.length - 1)) /
+            RatingLevel.values.length;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (final level in RatingLevel.values) ...[
+                  if (level.index > 0) const SizedBox(width: _gap),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        AnimatedOpacity(
+                          duration: duration,
+                          opacity: level == shown ? 1 : 0.35,
+                          child: ExcludeSemantics(
+                            child: Image(
+                              image: PieceSet.cburnettAssets[level.piece]!,
+                              width: _piece,
+                              height: _piece,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        AnimatedContainer(
+                          duration: duration,
+                          height: _bar,
+                          decoration: BoxDecoration(
+                            color: level == shown
+                                ? colors.primary
+                                : colors.onPrimaryContainer.withValues(
+                                    alpha: 0.14,
+                                  ),
+                            borderRadius: BorderRadius.circular(AppShape.full),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            // O rating em que cada faixa começa, na divisa.
+            SizedBox(
+              height: 16,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  for (final level in RatingLevel.values)
+                    if (level.min case final min?)
+                      Positioned(
+                        left: level.index * (step + _gap) - _gap / 2 - 24,
+                        width: 48,
+                        child: Text(
+                          '$min',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colors.onPrimaryContainer.withValues(
+                              alpha: 0.7,
+                            ),
+                          ),
+                        ),
+                      ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -484,6 +527,11 @@ class _Roadmap extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final steps = state.roadmap!.steps.take(3).toList();
+    // Aula que ainda não existe não tem título nos textos: vale o nome
+    // traduzido do final, com "em breve".
+    String titleOf(RoadmapStep step) => step.soon
+        ? skillName(l10n, step.node)
+        : state.titles[step.lessonId] ?? step.lessonId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -527,12 +575,12 @@ class _Roadmap extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.titles[step.lessonId] ?? step.lessonId,
+                            titleOf(step),
                             style: theme.textTheme.titleSmall,
                           ),
                           // O nó só quando o título da aula não diz o mesmo.
                           if (skillName(l10n, step.node) case final skill
-                              when skill != state.titles[step.lessonId])
+                              when skill != titleOf(step))
                             Text(
                               skill,
                               style: theme.textTheme.bodySmall?.copyWith(

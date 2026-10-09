@@ -184,6 +184,9 @@ src = {
         {'id': 'dang', 'kind': 'study', 'author': 'Danghiangmanh',
          'title': 'Queen vs Pawn',
          'url': 'https://lichess.org/study/4JKLMbtH'},
+        {'id': 'tonyro', 'kind': 'study', 'author': 'TonyRo',
+         'title': 'Queen vs. Rook or Bishop Pawns',
+         'url': 'https://lichess.org/study/kkoVo7Fy'},
         {'id': 'tablebase', 'kind': 'tablebase',
          'title': 'Lichess tablebase (Syzygy)',
          'url': 'https://tablebase.lichess.ovh'},
@@ -192,24 +195,20 @@ src = {
 
 EX = [
     # id, estrelas, FEN, objetivo, origem, lances (aluno, resposta, ...), regras
-    ('e01', 1, '8/8/2K5/8/8/1Q6/p7/1k6 b', 'draw', 'own', 'Ka1', ['hold']),
-    ('e02', 1, '8/8/8/8/4K3/8/p2Q4/1k6 w', 'win', 'own',
-     'Kd3 a1=Q Qc2#', ['best', 'win']),
-    ('e03', 1, '8/8/8/8/2K5/1Q6/2p5/k7 w', 'win', 'own', 'Qc3+', ['win']),
+    # T58 (2026-10-09): cortados e01, e02, e03, e05, e06, e07, e08, e09, e11
+    # (repetiam passos ou posições-base da lição, ou um ao outro).
+    ('e12', 1, '7K/8/Q7/8/8/6k1/5p2/8 w', 'win', 'tonyro', 'Qf1', ['win']),
     ('e04', 2, '8/6K1/8/8/8/8/1kp5/4Q3 b', 'draw', 'own',
      'c1=Q Qxc1+ Kxc1', ['hold', 'hold']),
-    ('e05', 2, '8/8/8/8/8/8/2pk2K1/7Q w', 'win', 'mario',
-     'Qh6+ Kd1 Qd6+', ['win', 'win']),
-    ('e06', 2, '8/8/8/5K2/8/8/3Q1pk1/8 b', 'draw', 'own', 'Kh1', ['hold']),
-    ('e07', 2, '6Q1/8/8/2K5/8/8/pk6/8 w', 'win', 'own',
-     'Qg2+ Kb1 Kc4', ['win', 'win']),
-    ('e08', 2, '6Q1/8/8/7K/8/3k4/2p5/8 w', 'win', 'wikipedia', 'Qg5', ['win']),
-    ('e09', 3, '8/8/8/5K2/8/8/Q1pk4/8 b', 'draw', 'own',
-     'Kc3 Qa1+ Kd2', ['hold', 'hold']),
-    ('e10', 3, '6Q1/8/8/4K3/8/8/4kp2/8 w', 'win', 'wikipedia',
+    ('e13', 2, '8/8/8/8/8/1K1Q4/2p5/k7 b', 'draw', 'own', 'c1=N+', ['hold']),
+    ('e10', 2, '6Q1/8/8/4K3/8/8/4kp2/8 w', 'win', 'wikipedia',
      'Qc4+ Ke1 Qe4+ Kf1 Kf4', ['win'] * 3),
-    ('e11', 3, '1Q6/8/8/8/8/8/6kp/3K4 w', 'win', 'mario',
-     'Qb2+ Kg1 Ke1 h1=Q Qf2#', ['win'] * 3),
+    ('e14', 2, '2Q5/7p/8/1K6/8/8/5p2/6k1 w', 'win', 'wikipedia',
+     'Qg4+ Kh2 Qf3 Kg1 Qg3+ Kh1 Qxf2', ['win'] * 4),
+    ('e16', 3, '8/8/8/6K1/6Q1/2k5/p7/8 w', 'win', 'own',
+     'Qe2 Kb3 Qe5 Kc2 Qa1', ['win'] * 3),
+    ('e15', 3, '8/1Q6/7K/8/8/4k3/2p5/8 w', 'win', 'own',
+     'Qg2 Kd3 Qg5 Kc3 Qc1', ['win'] * 3),
 ]
 for id_, st, fen, goal, origin, sans, acc in EX:
     m = move(id_, F(fen), goal, sans, acc)

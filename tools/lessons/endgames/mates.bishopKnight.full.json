@@ -243,65 +243,6 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "k1B5/2K5/2N5/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c8b7",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "k1B5/2K5/8/3N4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "lichessPractice",
-      "turns": [
-        {
-          "teach": "d5b4",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "b4c6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c8b7",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "k1B5/3K4/8/8/1N6/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d7c7",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "b4c6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c8b7",
-          "accept": "only"
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 1,
       "fen": "8/8/3k2K1/3B4/8/3N4/8/8 w - - 0 1",
@@ -315,108 +256,102 @@
       ]
     },
     {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/8/k7/2KN4/8/1B6/8/8 w - - 0 1",
+      "id": "e12",
+      "stars": 1,
+      "fen": "B1k5/8/1K6/8/4N3/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
         {
-          "teach": "b3a4",
-          "accept": "only"
+          "teach": "b6c6",
+          "accept": "best"
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e16",
       "stars": 2,
-      "fen": "8/4K3/2k5/8/8/1B1N4/8/8 w - - 0 1",
+      "fen": "8/8/8/2N5/4B3/3K2k1/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "lichessPractice",
+      "origin": "own",
       "turns": [
         {
-          "teach": "e7e6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "e8b5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/8/8/8/4N1B1/4K3/8/5k2 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "e3d2",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/8/8/8/3N4/3K4/B4k2/8 w - - 0 1",
-      "goal": "win",
-      "origin": "ushenina",
-      "turns": [
-        {
-          "teach": "d4e2",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "6k1/8/5K2/4N3/4B3/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "e5f7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/4N1B1/8/8/4k3/8/2K5 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "c1d1",
+          "teach": "c5e6",
           "accept": "best",
-          "reply": "auto"
+          "reply": "g3g4"
         },
         {
-          "teach": "d1d2",
+          "teach": "e4g6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "K7/2b5/2kn4/8/8/8/8/8 b - - 0 1",
+      "goal": "win",
+      "origin": "kempinski",
+      "turns": [
+        {
+          "teach": "d6c4",
           "accept": "best",
-          "reply": "auto"
+          "reply": "a8a7"
         },
         {
-          "teach": "d2d3",
+          "teach": "c4b6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "8/8/8/8/2BKNk2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "deletang1923",
+      "turns": [
+        {
+          "teach": "c4e6",
+          "accept": "best",
+          "reply": "f4f3"
+        },
+        {
+          "teach": "e6f5",
+          "accept": "best",
+          "reply": "f3f4"
+        },
+        {
+          "teach": "f5g6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c5d4",
+          "accept": "best",
+          "reply": "f4f3"
+        },
+        {
+          "teach": "f2h1",
+          "accept": "best",
+          "reply": "f3g2"
+        },
+        {
+          "teach": "b1e4",
           "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "net1",
@@ -481,6 +416,14 @@
       "black": "Olga Girya",
       "event": "FIDE Women's Grand Prix, Genebra",
       "year": 2013
+    },
+    {
+      "id": "kempinski",
+      "kind": "game",
+      "white": "Robert Kempinski",
+      "black": "Vladimir Epishin",
+      "event": "Bundesliga",
+      "year": 2001
     },
     {
       "id": "tablebase",

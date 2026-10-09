@@ -337,58 +337,8 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "8/8/5k2/8/4B3/3NK3/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e3d4",
-          "accept": [
-            "e3d4",
-            "e3f4",
-            "e4d5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/8/5k2/8/4B3/4K3/8/2N5 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c1d3",
-          "accept": [
-            "c1d3",
-            "c1e2",
-            "e3d4",
-            "e3f4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/6k1/8/3NK3/6B1/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "g2e4",
-          "accept": [
-            "g2e4"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e04",
-      "stars": 2,
+      "stars": 1,
       "fen": "8/8/8/8/2k1K3/8/1B6/3N4 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -397,6 +347,21 @@
           "teach": "b2d4",
           "accept": [
             "b2d4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 1,
+      "fen": "8/B2N4/8/8/1k6/8/2K5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c2d3",
+          "accept": [
+            "c2d3"
           ]
         }
       ]
@@ -432,16 +397,23 @@
       ]
     },
     {
-      "id": "e07",
+      "id": "e11",
       "stars": 2,
-      "fen": "8/B2N4/8/8/1k6/8/2K5/8 w - - 0 1",
+      "fen": "8/8/B2N4/3k4/8/8/8/K7 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "c2d3",
+          "teach": "d6f7",
           "accept": [
-            "c2d3"
+            "d6f7"
+          ],
+          "reply": "d5e6"
+        },
+        {
+          "teach": "a6c4",
+          "accept": [
+            "a6c4"
           ]
         }
       ]
@@ -464,35 +436,13 @@
           "teach": "d4c3",
           "accept": [
             "d4c3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/8/8/8/4K3/2k5/1N6/B7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b2d3",
-          "accept": [
-            "b2d3"
           ],
-          "reply": "c3c4"
+          "reply": "a3a4"
         },
         {
-          "teach": "a1d4",
+          "teach": "e1c2",
           "accept": [
-            "a1d4"
-          ],
-          "reply": "c4b5"
-        },
-        {
-          "teach": "e4d5",
-          "accept": [
-            "e4d5"
+            "e1c2"
           ]
         }
       ]
@@ -522,12 +472,55 @@
           "teach": "a2c4",
           "accept": [
             "a2c4"
+          ],
+          "reply": "c5b6"
+        },
+        {
+          "teach": "c3b4",
+          "accept": [
+            "c3b4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/8/8/8/4K3/2k5/1N6/B7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "b2d3",
+          "accept": [
+            "b2d3"
+          ],
+          "reply": "c3c4"
+        },
+        {
+          "teach": "a1d4",
+          "accept": [
+            "a1d4"
+          ],
+          "reply": "c4b5"
+        },
+        {
+          "teach": "e4d5",
+          "accept": [
+            "e4d5"
+          ],
+          "reply": "b5a6"
+        },
+        {
+          "teach": "d5c6",
+          "accept": [
+            "d5c6"
           ]
         }
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "start",
@@ -598,5 +591,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 17
 }

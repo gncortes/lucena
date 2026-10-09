@@ -41,8 +41,8 @@ void main() {
     await exercise.load('rook.lucena', 'e01', 'en');
     final state = exercise.state;
     expect(state.viktor!.name, 'Viktor');
-    // O enunciado fica para a ajuda.
-    expect(state.speech, 'Your move.');
+    // O Viktor começa quieto: o objetivo fica sob o tabuleiro.
+    expect(state.speech, isNull);
     expect(state.number, 1);
     expect(state.count, 3);
     expect(state.nextExercise, 'e02');
@@ -52,23 +52,28 @@ void main() {
     expect(saved.open, isTrue);
   });
 
-  test(
-    'acerto de primeira vale todas as estrelas e mostra a solução',
-    () async {
-      final exercise = cubit();
-      await exercise.load('rook.lucena', 'e03', 'en');
-      await exercise.play(move('c1c4'));
-      final state = exercise.state;
-      expect(state.phase, ExercisePhase.done);
-      expect(state.earned, 3);
-      expect(state.speech, 'Same bridge.');
-      expect(state.emotion, Emotion.happy);
-      expect(progress.saved.of('rook.lucena').stars, {'e03': 3});
-      expect(progress.saved.of('rook.lucena').exercise, isNull);
-      // Os outros ainda estão por resolver: o próximo é o primeiro deles.
-      expect(state.nextExercise, 'e01');
-    },
-  );
+  test('acerto de primeira vale todas as estrelas; o Viktor fica quieto, e a '
+      'solução detalhada vem a pedido', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+    await exercise.play(move('c1c4'));
+    final state = exercise.state;
+    expect(state.phase, ExercisePhase.done);
+    expect(state.earned, 3);
+    expect(state.speech, isNull);
+    expect(state.canExplain, isTrue);
+    expect(state.locked, isFalse);
+    expect(state.emotion, Emotion.happy);
+    expect(progress.saved.of('rook.lucena').stars, {'e03': 3});
+    expect(progress.saved.of('rook.lucena').exercise, isNull);
+    // Os outros ainda estão por resolver: o próximo é o primeiro deles.
+    expect(state.nextExercise, 'e01');
+
+    exercise.showExplanation();
+    expect(exercise.state.speech, 'Same bridge.');
+    expect(exercise.state.explained, isTrue);
+    expect(exercise.state.canExplain, isFalse);
+  });
 
   test('erro e dica tiram uma estrela cada; a peça volta', () async {
     final exercise = cubit();
@@ -94,6 +99,38 @@ void main() {
     await exercise.play(move('c1c4'));
     expect(exercise.state.earned, 1);
     expect(progress.saved.of('rook.lucena').stars, {'e03': 1});
+  });
+
+  test('com todos resolvidos, o exercício é treino: a nota não muda e a '
+      'explicação vem sozinha com erro', () async {
+    progress = FakeEndgameProgressRepository(
+      const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            stars: {'e01': 1, 'e02': 2, 'e03': 1},
+          ),
+        },
+      ),
+    );
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+    expect(exercise.state.locked, isTrue);
+    // Nem o exercício aberto é gravado.
+    expect(progress.saved.of('rook.lucena').exercise, isNull);
+
+    await exercise.play(move('c1c2'));
+    await exercise.play(move('c1c4'));
+    expect(exercise.state.phase, ExercisePhase.done);
+    expect(exercise.state.earned, 2);
+    // Com erro, a correção vem sozinha.
+    expect(exercise.state.speech, 'Same bridge.');
+    expect(exercise.state.canExplain, isFalse);
+    // A nota gravada continua a mesma.
+    expect(progress.saved.of('rook.lucena').stars, {
+      'e01': 1,
+      'e02': 2,
+      'e03': 1,
+    });
   });
 
   test('a resposta do outro lado vem sozinha, e a vez avança', () async {

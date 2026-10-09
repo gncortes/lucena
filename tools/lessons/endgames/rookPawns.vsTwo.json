@@ -535,64 +535,43 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e06",
       "stars": 1,
-      "fen": "K6k/8/8/8/5pp1/8/8/1R6 w - - 0 1",
+      "fen": "8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "parligras",
       "turns": [
         {
-          "teach": "b1b4",
+          "teach": "b3a2",
           "accept": "only"
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e12",
       "stars": 1,
-      "fen": "7k/8/8/3K4/8/5pp1/8/R7 w - - 0 1",
+      "fen": "8/8/6P1/8/5K1P/3k4/8/4r3 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "mavens",
       "turns": [
         {
-          "teach": "d5e4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "7k/4K3/8/8/8/5pp1/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e7f7",
+          "teach": "h4h5",
           "accept": "only"
         }
       ]
     },
     {
-      "id": "e04",
-      "stars": 1,
-      "fen": "K6k/8/8/8/8/5pp1/8/5R2 b - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "g3g2",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e13",
       "stars": 2,
-      "fen": "K7/3k4/6R1/8/5p2/6p1/8/8 w - - 0 1",
+      "fen": "K7/2k5/R7/8/5p2/6p1/8/8 w - - 0 1",
       "goal": "win",
       "origin": "audax",
       "turns": [
+        {
+          "teach": "a6g6",
+          "accept": "only",
+          "reply": "c7d7"
+        },
         {
           "teach": "g6g4",
           "accept": "only",
@@ -605,105 +584,132 @@
       ]
     },
     {
-      "id": "e06",
+      "id": "e14",
       "stars": 2,
-      "fen": "8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1",
+      "fen": "7R/8/8/8/2p5/3k1K2/7p/8 w - - 0 1",
       "goal": "win",
-      "origin": "audax",
+      "origin": "leko",
       "turns": [
         {
-          "teach": "b3a2",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/PK6/1P6/8/4k3/2r5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "shankland",
-      "turns": [
+          "teach": "f3f2",
+          "accept": "only",
+          "reply": "d3d2"
+        },
         {
-          "teach": "b6a7",
+          "teach": "h8h2",
           "accept": "win"
         }
       ]
     },
     {
-      "id": "e08",
+      "id": "e16",
       "stars": 2,
-      "fen": "8/8/3R4/4K1k1/8/pp6/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
+      "fen": "8/4K3/8/4kpp1/2R5/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "nabaty",
       "turns": [
         {
-          "teach": "d6d1",
+          "teach": "e7f7",
+          "accept": "only",
+          "reply": "g5g4"
+        },
+        {
+          "teach": "f7g6",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/R7/2K2kp1/7p/8/8/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "gao",
+      "turns": [
+        {
+          "teach": "f6e5",
+          "accept": "hold",
+          "reply": "c6c5"
+        },
+        {
+          "teach": "h5h4",
+          "accept": "hold",
+          "reply": "c5c4"
+        },
+        {
+          "teach": "e5e4",
+          "accept": "hold",
+          "reply": "a7h7"
+        },
+        {
+          "teach": "g6g5",
           "accept": "hold"
         }
       ]
     },
     {
-      "id": "e09",
+      "id": "e17",
       "stars": 3,
-      "fen": "8/8/8/2R1K1k1/8/pp6/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "fen": "8/8/8/7K/2k5/3pp3/8/5R2 w - - 0 1",
+      "goal": "draw",
+      "origin": "prokesStudy",
       "turns": [
         {
-          "teach": "e5d4",
-          "accept": "only",
-          "reply": "g5f4"
+          "teach": "h5g4",
+          "accept": "hold",
+          "reply": "e3e2"
         },
         {
-          "teach": "d4c3",
-          "accept": "win"
+          "teach": "f1c1",
+          "accept": "hold",
+          "reply": "c4d4"
+        },
+        {
+          "teach": "g4f3",
+          "accept": "hold",
+          "reply": "d3d2"
+        },
+        {
+          "teach": "c1c4",
+          "accept": "hold",
+          "reply": "d4c4"
+        },
+        {
+          "teach": "f3e2",
+          "accept": "hold"
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e18",
       "stars": 3,
-      "fen": "8/3K4/8/7k/5pp1/8/8/R7 w - - 0 1",
+      "fen": "8/8/8/5k2/8/8/2p1p1p1/2R3K1 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "retiStudy",
       "turns": [
         {
-          "teach": "d7e6",
+          "teach": "g1f2",
           "accept": "only",
-          "reply": "h5h4"
+          "reply": "f5e4"
         },
         {
-          "teach": "e6e5",
+          "teach": "f2e2",
+          "accept": "only",
+          "reply": "e4d4"
+        },
+        {
+          "teach": "c1g1",
+          "accept": "win",
+          "reply": "d4e4"
+        },
+        {
+          "teach": "g1e1",
           "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/8/1K5k/5pp1/8/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "b5c4",
-          "accept": "only",
-          "reply": "g4g3"
-        },
-        {
-          "teach": "c4d3",
-          "accept": "only",
-          "reply": "h5g4"
-        },
-        {
-          "teach": "d3e2",
-          "accept": "only"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "sixth",
@@ -787,6 +793,59 @@
       "author": "Anki_Thief_of_Crowns",
       "title": "Rook against Pawns",
       "url": "https://lichess.org/study/zLovcaQR"
+    },
+    {
+      "id": "mavens",
+      "kind": "study",
+      "author": "Mavens",
+      "title": "Mavens's Study- Rook against Pawns",
+      "url": "https://lichess.org/study/ngG45jve"
+    },
+    {
+      "id": "prokesStudy",
+      "kind": "study",
+      "author": "beteferoce",
+      "title": "Finales de Estudio - Prokes",
+      "url": "https://lichess.org/study/tJuNkFhl"
+    },
+    {
+      "id": "retiStudy",
+      "kind": "study",
+      "author": "Tenakel",
+      "title": "Reti-Studies",
+      "url": "https://lichess.org/study/pgf3RcVp"
+    },
+    {
+      "id": "parligras",
+      "kind": "game",
+      "white": "Parligras",
+      "black": "Gopal",
+      "event": "Gibraltar",
+      "year": 2012
+    },
+    {
+      "id": "leko",
+      "kind": "game",
+      "white": "Leko",
+      "black": "Markowski",
+      "event": "Polanica Zdroj",
+      "year": 1998
+    },
+    {
+      "id": "nabaty",
+      "kind": "game",
+      "white": "Tamir Nabaty",
+      "black": "Robert Zelcic",
+      "event": "Malinska",
+      "year": 2014
+    },
+    {
+      "id": "gao",
+      "kind": "game",
+      "white": "Sam Shankland",
+      "black": "Rui Gao",
+      "event": "Doha",
+      "year": 2014
     },
     {
       "id": "shankland",

@@ -176,86 +176,135 @@ class PartFinished extends StatelessWidget {
     final next = state.nextPart;
     final viktor = state.viktor;
     final motion = AppMotion.of(context);
+    final summary = state.texts.partSummary(lessonId, part.id);
     return Stack(
       children: [
-        Center(
-          child: SingleChildScrollView(
-            key: LessonKeys.partFinished,
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              children: [
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 1),
-                  duration: motion.celebrate,
-                  curve: AppMotion.pop,
-                  builder: (context, value, child) =>
-                      Transform.scale(scale: value, child: child),
-                  child: CircleAvatar(
-                    radius: 44,
-                    backgroundColor: colors.primaryContainer,
-                    child: Icon(
-                      Icons.check_circle_rounded,
-                      size: 52,
-                      color: colors.onPrimaryContainer,
+        Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                key: LessonKeys.partFinished,
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Column(
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: 1),
+                      duration: motion.celebrate,
+                      curve: AppMotion.pop,
+                      builder: (context, value, child) =>
+                          Transform.scale(scale: value, child: child),
+                      child: CircleAvatar(
+                        radius: 44,
+                        backgroundColor: colors.primaryContainer,
+                        child: Icon(
+                          Icons.check_circle_rounded,
+                          size: 52,
+                          color: colors.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      l10n.lessonPartDone(state.partNumber),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      state.texts.partTitle(lessonId, part.id) ?? '',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    // O que a etapa ensinou: para bater o olho e decidir se
+                    // vale rever.
+                    if (summary != null) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      Container(
+                        key: LessonKeys.partSummary,
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(AppShape.medium),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.lessonPartLearned,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: colors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(summary, style: theme.textTheme.bodyMedium),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (viktor != null) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      TeacherSpeech(
+                        teacher: viktor,
+                        text: state.speech,
+                        emotion: state.emotion,
+                        avatarSize: 56,
+                        speaks: true,
+                        speechContext: SpeechContext.teaching,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            // Fixos embaixo: rever esta etapa ou seguir.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screen,
+                AppSpacing.sm,
+                AppSpacing.screen,
+                AppSpacing.md,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: LessonKeys.reviewPartButton,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                      ),
+                      onPressed: () => context.pushReplacement(
+                        Routes.endgameLessonSteps(lessonId, part: part.id),
+                      ),
+                      icon: const Icon(Icons.replay),
+                      label: Text(l10n.lessonReviewPart),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  l10n.lessonPartDone(state.partNumber),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  state.texts.partTitle(lessonId, part.id) ?? '',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                if (viktor != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  TeacherSpeech(
-                    teacher: viktor,
-                    text: state.speech,
-                    emotion: state.emotion,
-                    avatarSize: 56,
-                    speaks: true,
-                    speechContext: SpeechContext.teaching,
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: FilledButton.icon(
+                      key: LessonKeys.nextPartButton,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
+                      ),
+                      // Na última etapa, "próximo" é a aula (o teste final).
+                      onPressed: () => next == null
+                          ? context.pop()
+                          : context.pushReplacement(
+                              Routes.endgameLessonSteps(lessonId, part: next),
+                            ),
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: Text(l10n.lessonPartNext),
+                    ),
                   ),
                 ],
-                const SizedBox(height: AppSpacing.xl),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    key: LessonKeys.nextPartButton,
-                    onPressed: () => next == null
-                        ? context.pop()
-                        : context.pushReplacement(
-                            Routes.endgameLessonSteps(lessonId, part: next),
-                          ),
-                    child: Text(
-                      next == null
-                          ? l10n.lessonToFinalTest
-                          : l10n.lessonNextPart(state.partNumber + 1),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    key: LessonKeys.backToLessonButton,
-                    onPressed: () => context.pop(),
-                    child: Text(l10n.lessonBackToLesson),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
         if (!motion.disabled) const Celebration(),
       ],

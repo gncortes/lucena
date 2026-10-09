@@ -19,8 +19,12 @@ TRADE = after('8/8/8/8/3kp3/8/4K2R/6r1 w - - 0 1',
               'Rh3 Rg2+ Kd1 Ra2 Rg3 e3 Rg8 Ra5')
 BISHOP = '6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1'
 ADVANCED = '8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1'
-HARASS = after('8/8/8/8/4pk2/R7/1r6/4K3 w - - 0 1',
-               'Rc3 Rb1+ Ke2 Rb2+ Ke1 Rh2 Ra3 Rh1+')
+# Exercícios da régua T58 (2026-10-09).
+AVOID = '8/8/8/8/3kp1R1/8/7r/4K3 w - - 0 1'      # tomar a terceira, sem pegar o peão
+EXPEL = '8/8/8/8/2pk4/8/7r/3KR3 w - - 0 1'       # rei na frente, xeque na terceira
+PH1777 = '8/8/8/5R2/3kp3/8/r7/4K3 w - - 0 1'     # Philidor 1777, cores trocadas
+SIDE = '8/8/8/8/3pk3/R7/8/3K3r w - - 0 1'        # xeque lateral, peão de dama
+KINGFIRST = '8/8/8/8/1kp5/1r6/4K3/4R3 w - - 0 1'  # rei primeiro, sem o espeto
 
 REFERENCES = [
     {'id': 'wikipedia', 'kind': 'web', 'title': 'Philidor position (Wikipedia)',
@@ -52,6 +56,9 @@ REFERENCES = [
     {'id': 'nunn', 'kind': 'book', 'author': 'John Nunn',
      'title': 'Secrets of Rook Endings', 'publisher': 'Gambit Publications',
      'year': 1999},
+    {'id': 'audax6', 'kind': 'study', 'author': 'Audax6',
+     'title': '14 The Philidor Position (Third Rank Defense)',
+     'url': 'https://lichess.org/study/AvGk7RWH'},
     {'id': 'tablebase', 'kind': 'tablebase',
      'title': 'Lichess tablebase (Syzygy)',
      'url': 'https://tablebase.lichess.ovh'},
@@ -60,6 +67,7 @@ REFERENCES = [
 write({
     'id': 'rook.philidor',
     'module': 'rook',
+    'skills': ['rook.philidor'],
     'parts': [
         {'id': 'third', 'steps': [
             think('t_classic', PH, 5, 1, side='white'),
@@ -87,31 +95,19 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, REACH, 'Rb3', accept='hold', goal='draw',
+        exercise('e15', 1, AVOID, 'Rg3', accept='hold', goal='draw',
                  origin='practice'),
-        exercise('e02', 1, E3, 'Ra8', accept='hold', goal='draw'),
-        exercise('e03', 1, after(E3, 'Ra8 Kf3'), 'Rf8+', accept='only',
-                 goal='draw'),
-        exercise('e04', 1, BISHOP, 'Rg3', accept='hold', goal='draw',
-                 origin='yuri61'),
-        exercise('e05', 2, '8/8/8/8/3k4/4p3/4K3/8 w - - 0 1', 'Ke1',
-                 accept='only', goal='draw'),
-        exercise('e06', 2, PHW, 'Rb3 e3 Rb8 Kf3 Rf8+',
-                 accept={1: 'hold', 2: 'hold', 3: 'only'}, goal='draw',
+        exercise('e12', 2, SIDE, 'Kd2', accept='hold', goal='draw',
+                 origin='audax6'),
+        exercise('e11', 2, PH1777, 'Rb5 Ke3 Rb3+',
+                 accept={1: 'hold', 2: 'hold'}, goal='draw',
                  origin='wikipedia'),
-        exercise('e07', 2, after(E3, 'Ra8 Kf3 Rf8+ Ke4 Re8+ Kd3'), 'Rd8+',
-                 accept='only', goal='draw'),
-        exercise('e08', 2, TRADE, 'Rd8+ Rd5 Rxd5+ Kxd5 Ke2 Kd4 Ke1',
-                 accept={1: 'hold', 2: 'hold', 3: 'hold', 4: 'only'},
-                 goal='draw', origin='ehenkes'),
-        exercise('e09', 3, HARASS, 'Ke2 Rh2+ Ke1 e3 Ra8 Kf3 Rf8+',
-                 accept={1: 'hold', 2: 'hold', 3: 'hold', 4: 'only'},
-                 goal='draw', origin='noseknows'),
-        exercise('e10', 3, ADVANCED, 'Rf7 Kd3 Re7 Rh1+ Kf2',
-                 accept={1: 'hold', 2: 'only', 3: 'only'}, goal='draw',
-                 origin='practice2'),
+        exercise('e16', 3, EXPEL, 'Kc1 Kc3 Re3+',
+                 accept={1: 'only', 2: 'only'}, goal='draw'),
+        exercise('e14', 3, KINGFIRST, 'Kd2 Rb2+ Kc1 Rh2 Re3',
+                 accept={1: 'only', 2: 'only', 3: 'hold'}, goal='draw'),
     ],
-    'passScore': 11,
+    'passScore': 7,
     'keyPositions': [
         {'id': 'classic', 'fen': PH, 'ref': 'wikipedia'},
         {'id': 'reach', 'fen': REACH, 'ref': 'practice'},

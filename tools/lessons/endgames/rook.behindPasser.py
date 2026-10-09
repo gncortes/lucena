@@ -1,7 +1,8 @@
 """Gera `rook.behindPasser.json` (a fonte da aula) a partir dos lances em SAN.
 Rodar: `tools/.cache/venv/bin/python tools/lessons/endgames/rook.behindPasser.py`
 e depois o `build_aula.py rook.behindPasser`. O aluno joga de brancas em todas
-as posições; todas têm até 7 peças, e a tabela decide."""
+as posições. A lição e os exercícios até 7 peças passam pela tabela; e13, e14
+e e15 têm mais de 7 peças e são julgados pelo Stockfish (rodar o build com --stockfish)."""
 import sys
 from pathlib import Path
 
@@ -34,6 +35,9 @@ REFERENCES = [
     {'id': 'rfanning', 'kind': 'study', 'author': 'rfanning',
      'title': 'Tarrasch Rule - Rooks and passed pawn',
      'url': 'https://lichess.org/study/Pumc4nOr'},
+    {'id': 'miles26', 'kind': 'study', 'author': 'miles26',
+     'title': 'Rook behind the pawns',
+     'url': 'https://lichess.org/study/2bxusiQ6'},
     {'id': 'practice', 'kind': 'study', 'author': 'Lichess',
      'title': 'Lichess Practice: Basic Rook Endgames',
      'url': 'https://lichess.org/study/pqUSUw8Y'},
@@ -91,27 +95,23 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, '8/6k1/6p1/P7/2r5/6P1/6K1/3R4 w - - 0 1', 'Ra1',
-                 accept='only'),
-        exercise('e02', 1, '8/6k1/6p1/1P6/2r5/6P1/6K1/3R4 w - - 0 1', 'Rb1',
-                 accept='only'),
-        exercise('e03', 1, '8/6k1/6p1/8/p7/1r4P1/6K1/3R4 w - - 0 1', 'Rd8',
-                 accept='hold', goal='draw'),
-        exercise('e04', 2, '8/6k1/6p1/8/p1r5/6P1/6K1/4R3 w - - 0 1', 'Re8',
-                 accept='hold', goal='draw'),
-        exercise('e05', 2, 'r7/P7/1k1K4/8/8/8/2R5/8 w - - 0 1', 'Rb2+',
+        exercise('e05', 1, 'r7/P7/1k1K4/8/8/8/2R5/8 w - - 0 1', 'Rb2+ Ka6 Kc7',
                  accept='only', origin='shrekdavid'),
-        exercise('e06', 2, SKEWER, 'Rh8 Rxa7 Rh7+', accept='only'),
-        exercise('e07', 2, '8/6k1/6p1/p7/2r5/6P1/6K1/3R4 w - - 0 1',
-                 'Rd8 a4 Ra8', accept='hold', goal='draw'),
-        exercise('e08', 3, '8/4r1k1/P1R4p/8/6P1/8/7K/8 w - - 0 1', 'Rc2',
-                 accept='only'),
-        exercise('e09', 3, '8/5rk1/1P1R3p/8/6P1/8/7K/8 w - - 0 1', 'Rd2',
-                 accept='only'),
-        exercise('e10', 3, '6r1/8/7K/8/4k2P/2P2R2/8/8 w - - 0 1', 'Rf7',
+        exercise('e06', 1, SKEWER, 'Rh8 Rxa7 Rh7+', accept='only'),
+        exercise('e11', 2, '2R5/8/Pr6/7k/8/8/K7/8 w - - 0 1', 'Rc5+ Kg4 Ra5',
+                 accept={1: 'only', 2: 'win'}, origin='miles26'),
+        exercise('e10', 2, '6r1/8/7K/8/4k2P/2P2R2/8/8 w - - 0 1', 'Rf7',
                  accept='win', origin='tarraschRule'),
+        exercise('e12', 2, '8/8/8/1r3P2/2p5/7R/3k2K1/8 w - - 0 1', 'f6',
+                 accept='hold', goal='draw', origin='audax6'),
+        exercise('e13', 2, 'r7/8/4pkp1/7p/P4P1P/6P1/5K2/4R3 w - - 0 1', 'Re4',
+                 accept='only', origin='tarraschRule'),
+        exercise('e14', 3, 'R7/8/P4pp1/7p/4k2P/r5P1/4KP2/8 w - - 0 1', 'f3+',
+                 accept='only', origin='tarraschRule'),
+        exercise('e15', 3, '1R6/5P2/4K3/8/2p5/p1P5/k4r2/8 w - - 0 1', 'Rb5',
+                 accept='only', origin='audax6'),
     ],
-    'passScore': 12,
+    'passScore': 10,
     'keyPositions': [
         {'id': 'behind', 'fen': BEHIND},
         {'id': 'front', 'fen': FRONT},

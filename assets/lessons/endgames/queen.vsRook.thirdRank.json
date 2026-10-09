@@ -486,307 +486,199 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "fen": "k7/2r5/3Q4/1K6/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "adrood",
       "line": [
         {
-          "teach": "f7f4",
+          "teach": "d6d5",
           "accept": [
-            "f7f2",
-            "f7f3",
-            "f7f4"
+            "d6a3",
+            "d6d1",
+            "d6d3",
+            "d6d5",
+            "d6f4",
+            "d6f6",
+            "d6f8",
+            "d6g3",
+            "d6h2"
           ]
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e18",
       "stars": 1,
-      "fen": "3k4/8/6r1/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "line": [
-        {
-          "teach": "f4f8",
-          "accept": [
-            "f4f8"
-          ],
-          "reply": "d8d7"
-        },
-        {
-          "teach": "f8f7",
-          "accept": [
-            "f8f5",
-            "f8f7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "line": [
-        {
-          "teach": "f4b8",
-          "accept": [
-            "f4b8"
-          ],
-          "reply": "d8e7"
-        },
-        {
-          "teach": "b8b7",
-          "accept": [
-            "b8b7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "3k4/8/8/3K4/5Q2/8/1r6/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "line": [
-        {
-          "teach": "f4f6",
-          "accept": [
-            "f4f6",
-            "f4f8",
-            "f4g5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/3k4/1r6/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "f4a4",
-          "accept": [
-            "f4a4"
-          ],
-          "reply": "d7c7"
-        },
-        {
-          "teach": "a4a7",
-          "accept": [
-            "a4a7",
-            "a4e8"
-          ],
-          "reply": "b6b7"
-        },
-        {
-          "teach": "a7c5",
-          "accept": [
-            "a7a5",
-            "a7c5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "d5c5",
-          "accept": [
-            "d5c5"
-          ],
-          "reply": "d8c8"
-        },
-        {
-          "teach": "f7e7",
-          "accept": [
-            "f7c4",
-            "f7e7",
-            "f7f1",
-            "f7h7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1",
+      "fen": "8/8/5Q2/2K5/r7/3k4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "moro",
       "line": [
         {
-          "teach": "e1e5",
+          "teach": "f6f1",
           "accept": [
-            "e1e5"
+            "f6f1"
           ],
-          "reply": "g2g1"
+          "reply": "d3d2"
         },
         {
-          "teach": "g4g3",
+          "teach": "f1f3",
           "accept": [
-            "g4g3"
+            "f1f3"
           ]
         }
       ]
     },
     {
-      "id": "e08",
+      "id": "e14",
       "stars": 2,
-      "fen": "3k4/1Q6/3r4/5K2/8/8/8/8 w - - 0 1",
+      "fen": "8/6Q1/8/5r1k/8/4K3/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "parker",
+      "origin": "methurst",
       "line": [
         {
-          "teach": "b7f7",
+          "teach": "e3e4",
           "accept": [
-            "b7a7",
-            "b7f7",
-            "f5e4",
-            "f5e5"
+            "e3d4",
+            "e3e4",
+            "g7g3",
+            "g7g8"
           ],
-          "reply": "d6b6"
+          "reply": "f5f1"
         },
         {
-          "teach": "f5e5",
+          "teach": "g7g3",
           "accept": [
-            "f5e5",
-            "f5f4"
+            "g7d4",
+            "g7g2",
+            "g7g3",
+            "g7h7",
+            "g7h8"
           ],
-          "reply": "b6c6"
+          "reply": "f1f6"
         },
         {
-          "teach": "e5d5",
+          "teach": "e4e5",
           "accept": [
-            "e5d5"
+            "e4e5"
+          ],
+          "reply": "f6f7"
+        },
+        {
+          "teach": "g3d3",
+          "accept": [
+            "g3b3",
+            "g3c3",
+            "g3d3"
           ]
         }
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "id": "e15",
+      "stars": 2,
+      "fen": "8/3k4/5Q2/8/3K4/8/8/r7 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "line": [
         {
           "teach": "f6f7",
           "accept": [
-            "e4d3",
-            "e4d4",
-            "f6d4",
-            "f6f7",
-            "f6f8",
-            "f6g7"
+            "f6f5",
+            "f6f7"
           ],
-          "reply": "d7d8"
+          "reply": "d7d6"
         },
         {
-          "teach": "f7e6",
+          "teach": "f7b3",
           "accept": [
-            "e4d3",
-            "e4d4",
-            "e4e3",
-            "e4f4",
             "f7b3",
-            "f7e6"
-          ],
-          "reply": "d8c7"
-        },
-        {
-          "teach": "e4d3",
-          "accept": [
-            "e4d3",
-            "e4d4",
-            "e4e3",
-            "e6e8"
+            "f7d5"
           ]
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e16",
       "stars": 3,
-      "fen": "2k5/8/1r6/3K4/5Q2/8/8/8 w - - 0 1",
+      "fen": "8/5Q2/3k4/r7/4K3/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "line": [
         {
-          "teach": "d5c5",
+          "teach": "f7e8",
           "accept": [
-            "d5c5"
+            "f7e8"
           ],
-          "reply": "b6a6"
+          "reply": "d6c7"
         },
         {
-          "teach": "f4e4",
+          "teach": "e8e6",
           "accept": [
-            "f4c4",
-            "f4e3",
-            "f4e4",
-            "f4f1",
-            "f4g3"
+            "e4d3",
+            "e4d4",
+            "e8e6"
           ],
-          "reply": "c8c7"
+          "reply": "a5b5"
         },
         {
-          "teach": "e4e7",
+          "teach": "e4d4",
           "accept": [
-            "e4e7",
-            "e4h7"
-          ],
-          "reply": "c7b8"
-        },
-        {
-          "teach": "c5b5",
-          "accept": [
-            "c5b5",
-            "e7d7",
-            "e7d8",
-            "e7e2",
-            "e7f7",
-            "e7g7"
+            "e4d4"
           ]
         }
       ]
     },
     {
-      "id": "e11",
+      "id": "e19",
       "stars": 3,
-      "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "wikipedia",
+      "fen": "6r1/8/4K3/1k6/8/2Q5/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "moro",
       "line": [
         {
-          "teach": "f7g7",
+          "teach": "c3e5",
           "accept": [
-            "f7g7"
+            "c3d3",
+            "c3e5"
           ],
-          "reply": "g5f6"
+          "reply": "b5c6"
         },
         {
-          "teach": "g7g6",
+          "teach": "e5f6",
           "accept": [
-            "g7g6"
+            "e5e4",
+            "e5f6"
+          ],
+          "reply": "g8b8"
+        },
+        {
+          "teach": "e6e7",
+          "accept": [
+            "e6e7",
+            "f6c3"
+          ],
+          "reply": "c6b7"
+        },
+        {
+          "teach": "f6e5",
+          "accept": [
+            "e7d7",
+            "f6e5"
+          ],
+          "reply": "b7c8"
+        },
+        {
+          "teach": "e7d6",
+          "accept": [
+            "e7d6"
           ]
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "third",
@@ -849,6 +741,13 @@
       "year": 1978
     },
     {
+      "id": "adrood",
+      "kind": "study",
+      "author": "adrood",
+      "title": "Queen versus Rook endgame",
+      "url": "https://lichess.org/study/tEH40nAS"
+    },
+    {
       "id": "belle1979",
       "kind": "web",
       "title": "Stenberg, Conway e Larkins: Queen vs. Rook (1979, cópia Usenet)",
@@ -890,5 +789,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 21
+  "maxScore": 12
 }

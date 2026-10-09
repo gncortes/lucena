@@ -110,6 +110,19 @@ class EndgamesScreen extends StatelessWidget {
                   onSelectionChanged: (selected) =>
                       context.read<EndgamesCubit>().setShowAll(selected.first),
                 ),
+                // As aulas concluídas continuam na lista; quem quiser, as
+                // esconde.
+                if (!state.showAll && state.doneLessons.isNotEmpty)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: FilterChip(
+                      key: EndgamesKeys.hideDone,
+                      label: Text(l10n.endgamesHideDone),
+                      selected: state.hideDone,
+                      onSelected: (hide) =>
+                          context.read<EndgamesCubit>().setHideDone(hide),
+                    ),
+                  ),
               ],
               if (state.forYou)
                 ..._forYou(context, state)
@@ -136,7 +149,8 @@ List<Widget> _forYou(BuildContext context, EndgamesState state) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
   final steps = state.roadmap!.endgameSteps;
-  if (steps.isEmpty) {
+  final showsDone = !state.hideDone && state.doneLessons.isNotEmpty;
+  if (steps.isEmpty && !showsDone) {
     return [
       const SizedBox(height: 16),
       Text(
@@ -151,6 +165,10 @@ List<Widget> _forYou(BuildContext context, EndgamesState state) {
   }
   return [
     const SizedBox(height: 12),
+    // As concluídas primeiro, na ordem da trilha, já marcadas como feitas.
+    if (showsDone)
+      for (final lesson in state.doneLessons)
+        _LessonTile(lesson: lesson, state: state),
     for (final step in steps)
       if (state.trail.lesson(step.lessonId) case final lesson? when !step.soon)
         _LessonTile(lesson: lesson, state: state)

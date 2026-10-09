@@ -5,10 +5,12 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/models/endgame_position.dart';
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
+import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -17,7 +19,6 @@ import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/position_board.dart';
-import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
@@ -141,6 +142,22 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                       l10n.exerciseTitle(state.number, state.count),
                       key: ExerciseKeys.counter,
                     ),
+              // O que o exercício vale agora: dourada (3), prata (2) ou
+              // bronze (1); cada erro ou dica desce um degrau.
+              actions: [
+                if (state.exercise case final exercise?)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 12),
+                    child: Semantics(
+                      label: l10n.exercisePoints(_worth(state, exercise)),
+                      excludeSemantics: true,
+                      child: ValueStar(
+                        key: ExerciseKeys.stars,
+                        points: _worth(state, exercise),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             body: SafeArea(child: _body(context, state, boardSettings)),
           );
@@ -148,6 +165,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       ),
     );
   }
+
+  /// O que o exercício vale agora: as estrelas dele menos erros e dicas, ou
+  /// o ganho, depois de resolvido.
+  static int _worth(ExerciseState state, Exercise exercise) =>
+      state.phase == ExercisePhase.done
+      ? (state.earned ?? 0)
+      : max(0, exercise.stars - state.mistakes - state.hints);
 
   /// O tabuleiro fica com chave: a coluna troca de filhos quando o exercício
   /// carrega, e o voo da miniatura só continua se o widget for o mesmo.
@@ -173,55 +197,40 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       boardSettings,
       top: [
         SizedBox.shrink(key: ExerciseKeys.open(state.lesson!.id, exercise.id)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: Row(
-            children: [
-              Expanded(
-                child: StepProgress(
-                  total: exercise.line.length,
-                  value: state.progress * exercise.line.length,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Semantics(
-                label: l10n.endgameStars(exercise.stars),
-                excludeSemantics: true,
-                child: StarsRow(
-                  key: ExerciseKeys.stars,
-                  total: exercise.stars,
-                  earned: state.phase == ExercisePhase.done
-                      ? state.earned
-                      : max(0, exercise.stars - state.mistakes - state.hints),
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (viktor != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: state.speech,
-              emotion: state.emotion,
-              avatarSize: 56,
-              bubbleKey: ExerciseKeys.speech,
-              onLink: (link) => _flash.toggle(
-                link,
-                fen: state.fen,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              onSpoken: (link) => _flash.show(
-                link,
-                fen: state.fen,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              speaks: true,
-            ),
-          ),
       ],
+      // O Viktor só entra quando tem o que dizer (erro, dica, explicação),
+      // abaixo do tabuleiro, como na lição.
+      below: viktor == null
+          ? null
+          : AnimatedSize(
+              duration: AppMotion.of(context).component,
+              curve: AppMotion.enter,
+              alignment: Alignment.topCenter,
+              child: state.speech == null
+                  ? const SizedBox(width: double.infinity)
+                  : Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                      child: TeacherSpeech(
+                        speechContext: SpeechContext.teaching,
+                        teacher: viktor,
+                        text: state.speech,
+                        emotion: state.emotion,
+                        avatarSize: 56,
+                        bubbleKey: ExerciseKeys.speech,
+                        onLink: (link) => _flash.toggle(
+                          link,
+                          fen: state.fen,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onSpoken: (link) => _flash.show(
+                          link,
+                          fen: state.fen,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        speaks: true,
+                      ),
+                    ),
+            ),
       bottom: _actions(context, state),
     );
   }
@@ -234,6 +243,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     ExerciseState state,
     BoardSettings boardSettings, {
     required List<Widget> top,
+    Widget? below,
     required Widget bottom,
   }) => Column(
     children: [
@@ -259,6 +269,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                     ),
                   ),
                 ),
+                ?below,
               ],
             ),
           ),
@@ -280,20 +291,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       context,
       state,
       boardSettings,
-      top: const [
-        Padding(
-          padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: Row(
-            children: [
-              Expanded(child: StepProgress(total: 1, value: 0)),
-              SizedBox(width: 12),
-              StarsRow(total: 1, earned: 0),
-            ],
-          ),
-        ),
-        // O lugar do Viktor, que chega com o exercício.
-        SizedBox(height: 96),
-      ],
+      top: const [SizedBox(height: 8)],
       bottom: const SizedBox(height: 64),
     );
   }
@@ -403,28 +401,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               ),
             ),
             const SizedBox(height: 2),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  exercise.goal == PositionGoal.win
-                      ? Icons.emoji_events_outlined
-                      : Icons.shield_outlined,
-                  size: 20,
-                  color: colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.exerciseGoal(
-                    state.side == Side.white ? 'white' : 'black',
-                    exercise.goal == PositionGoal.win ? 'win' : 'hold',
-                  ),
-                  key: ExerciseKeys.goal,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
+            // Só de quem é a vez: se ganha ou empata, o aluno descobre.
+            Text(
+              l10n.exerciseTurn(state.side == Side.white ? 'white' : 'black'),
+              key: ExerciseKeys.goal,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -439,7 +422,18 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           Semantics(
             label: l10n.exerciseEarned(earned, exercise.stars),
             excludeSemantics: true,
-            child: StarsRow(total: exercise.stars, earned: earned, size: 36),
+            // A estrela entra girando e com rebote ao resolver.
+            child: TweenAnimationBuilder<double>(
+              key: ExerciseKeys.earnedStar,
+              tween: Tween(begin: 0, end: 1),
+              duration: AppMotion.of(context).celebrate,
+              curve: AppMotion.pop,
+              builder: (context, value, child) => Transform.rotate(
+                angle: (1 - value) * pi,
+                child: Transform.scale(scale: value, child: child),
+              ),
+              child: ValueStar(points: earned, size: 56),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -460,6 +454,18 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
+  /// "Analisar no Lichess": a posição do exercício no tabuleiro de análise.
+  Widget _lichessButton(BuildContext context, ExerciseState state) =>
+      TextButton.icon(
+        key: ExerciseKeys.lichessButton,
+        onPressed: () => launchUrl(
+          GameExport.lichess(state.exercise!.fen),
+          mode: LaunchMode.externalApplication,
+        ),
+        icon: const Icon(Icons.open_in_new_rounded),
+        label: Text(context.l10n.exerciseLichess),
+      );
+
   Widget _actions(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
@@ -472,32 +478,90 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: ExerciseKeys.solved,
         color: Colors.transparent,
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: Text(
-                l10n.exerciseSolved,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+            // Nota fechada: este é treino livre.
+            if (state.locked)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  l10n.exerciseScoreLocked,
+                  key: ExerciseKeys.locked,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
+            // A explicação detalhada só a pedido: sem ela, o elogio curto
+            // não empurra o tabuleiro. Com a nota fechada, também a análise
+            // no Lichess.
+            if (state.canExplain || state.locked)
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (state.canExplain)
+                    TextButton.icon(
+                      key: ExerciseKeys.explainButton,
+                      onPressed: cubit.showExplanation,
+                      icon: const Icon(Icons.forum_outlined),
+                      label: Text(l10n.lessonSeeExplanation),
+                    ),
+                  if (state.locked) _lichessButton(context, state),
+                ],
+              ),
+            Row(
+              children: [
+                // "Resolvido!" só no acerto limpo: com erro ou dica, a correção
+                // do Viktor já diz o que houve.
+                Expanded(
+                  child: state.earned == state.exercise?.stars
+                      ? Text(
+                          l10n.exerciseSolved,
+                          key: ExerciseKeys.solvedLabel,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                if (next != null)
+                  FilledButton(
+                    key: ExerciseKeys.nextButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(140, 48),
+                    ),
+                    onPressed: () => context.pushReplacement(
+                      Routes.endgameExercise(lesson.id, next),
+                    ),
+                    child: Text(l10n.exerciseNext),
+                  )
+                else if (state.locked)
+                  // Treino avulso: a nota já está fechada, volta à aula.
+                  FilledButton(
+                    key: ExerciseKeys.backButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(140, 48),
+                    ),
+                    onPressed: () => context.pop(),
+                    child: Text(l10n.exerciseBack),
+                  )
+                else
+                  FilledButton(
+                    // O último da série: a tela de resultado, que volta à
+                    // aula.
+                    key: ExerciseKeys.resultButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(140, 48),
+                    ),
+                    onPressed: () => context.pushReplacement(
+                      Routes.endgameExercisesDone(lesson.id),
+                    ),
+                    child: Text(l10n.exerciseSeeResult),
+                  ),
+              ],
             ),
-            if (next != null)
-              FilledButton(
-                key: ExerciseKeys.nextButton,
-                style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
-                onPressed: () => context.pushReplacement(
-                  Routes.endgameExercise(lesson.id, next),
-                ),
-                child: Text(l10n.exerciseNext),
-              )
-            else
-              FilledButton(
-                key: ExerciseKeys.backButton,
-                style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
-                onPressed: () => context.pop(),
-                child: Text(l10n.exerciseBack),
-              ),
           ],
         ),
       );
@@ -511,8 +575,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               key: ExerciseKeys.hintButton,
               onPressed: cubit.askHint,
               icon: const Icon(Icons.lightbulb_outline),
-              label: Text(l10n.exerciseHint),
+              // O texto diz o que a dica custa agora: um ponto, o último
+              // (o exercício deixa de pontuar) ou nada.
+              label: Text(switch (_worth(state, state.exercise!)) {
+                0 => l10n.exerciseHintFree,
+                1 => l10n.exerciseHintLast,
+                _ => l10n.exerciseHint,
+              }),
             ),
+          // Com a nota fechada, a posição vai para a análise do Lichess.
+          if (state.locked && state.interactive) ...[
+            const SizedBox(width: 8),
+            _lichessButton(context, state),
+          ],
           if (state.phase == ExercisePhase.waiting)
             Row(
               mainAxisSize: MainAxisSize.min,

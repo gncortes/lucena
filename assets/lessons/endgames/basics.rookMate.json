@@ -222,61 +222,139 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e11",
       "stars": 1,
-      "fen": "8/8/8/5K1k/8/8/8/R7 w - - 0 1",
+      "fen": "8/5R2/8/8/5K2/8/8/6k1 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "a1h1",
+          "teach": "f4g3",
           "accept": [
-            "a1h1"
+            "f4g3"
+          ],
+          "reply": "g1h1"
+        },
+        {
+          "teach": "f7f1",
+          "accept": [
+            "f7f1"
           ]
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e12",
       "stars": 1,
-      "fen": "k7/2K5/8/8/8/8/8/7R w - - 0 1",
+      "fen": "5R2/8/7k/5K2/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "h1a1",
+          "teach": "f8f7",
           "accept": [
-            "h1a1"
+            "f8f7"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "f7h7",
+          "accept": [
+            "f7h7"
           ]
         }
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/1k6/8/2RK4/8/8 w - - 0 1",
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/8/4k3/3R4/8/1K6/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "c3c4",
+          "teach": "b3c4",
           "accept": [
-            "c3c1",
-            "c3c2",
-            "c3c4",
-            "c3c7",
-            "c3c8",
-            "d3c2",
-            "d3d2",
-            "d3d4"
+            "b3c4"
+          ],
+          "reply": "e6f6"
+        },
+        {
+          "teach": "c4c5",
+          "accept": [
+            "c4b4",
+            "c4b5",
+            "c4c5",
+            "c4d4"
           ]
         }
       ]
     },
     {
-      "id": "e04",
-      "stars": 1,
-      "fen": "8/3k4/7R/3K4/8/8/8/8 w - - 0 1",
+      "id": "e14",
+      "stars": 2,
+      "fen": "7k/8/8/7K/8/8/8/6R1 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "h5g6",
+          "accept": [
+            "h5g6"
+          ],
+          "reply": "h8g8"
+        },
+        {
+          "teach": "g1f1",
+          "accept": [
+            "g1a1",
+            "g1b1",
+            "g1c1",
+            "g1d1",
+            "g1e1",
+            "g1f1",
+            "g1g2",
+            "g1g3",
+            "g1g4",
+            "g1g5",
+            "g1h1"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "f1f8",
+          "accept": [
+            "f1f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 2,
+      "fen": "5K2/6R1/5k2/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "g7e7",
+          "accept": [
+            "g7e7"
+          ],
+          "reply": "f6g6"
+        },
+        {
+          "teach": "e7f7",
+          "accept": [
+            "e7f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "k7/8/7R/8/8/7K/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
@@ -284,26 +362,34 @@
           "teach": "h6h7",
           "accept": [
             "h6h7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "2k5/R7/3K4/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
+          ],
+          "reply": "a8b8"
+        },
         {
-          "teach": "a7h7",
+          "teach": "h3g4",
           "accept": [
-            "a7c7",
-            "a7d7",
-            "a7e7",
-            "a7f7",
-            "a7g7",
-            "a7h7"
+            "h3g4"
+          ],
+          "reply": "b8c8"
+        },
+        {
+          "teach": "g4f5",
+          "accept": [
+            "g4f5"
+          ],
+          "reply": "c8d8"
+        },
+        {
+          "teach": "f5e6",
+          "accept": [
+            "f5e6"
+          ],
+          "reply": "d8c8"
+        },
+        {
+          "teach": "e6d6",
+          "accept": [
+            "e6d6"
           ],
           "reply": "c8b8"
         },
@@ -312,49 +398,9 @@
           "accept": [
             "d6c6",
             "h7c7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "capablanca",
-      "line": [
-        {
-          "teach": "d5d6",
-          "accept": [
-            "a7e7",
-            "a7f7",
-            "a7g7",
-            "a7h7",
-            "d5d6",
-            "d5e6"
           ],
-          "reply": "c8b8"
+          "reply": "b8a8"
         },
-        {
-          "teach": "a7c7",
-          "accept": [
-            "a7c7",
-            "a7d7",
-            "a7e7",
-            "a7f7",
-            "a7g7",
-            "a7h7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "k7/7R/2K5/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
         {
           "teach": "c6b6",
           "accept": [
@@ -379,100 +425,41 @@
       ]
     },
     {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/8/8/4k3/3R4/8/2K5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c2d3",
-          "accept": [
-            "c2c3",
-            "c2d3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
+      "id": "e17",
       "stars": 3,
-      "fen": "4k3/R7/8/4K3/8/8/8/8 w - - 0 1",
+      "fen": "8/6k1/5R2/8/8/8/8/3K4 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "e5d6",
+          "teach": "f6f4",
           "accept": [
-            "a7h7",
-            "e5d6",
-            "e5e6"
+            "f6f4"
           ],
-          "reply": "e8f8"
+          "reply": "g7h7"
         },
         {
-          "teach": "d6e6",
+          "teach": "d1e2",
           "accept": [
-            "d6e6"
+            "d1d2",
+            "d1e1",
+            "d1e2",
+            "f4g4"
           ],
-          "reply": "f8g8"
+          "reply": "h7g7"
         },
         {
-          "teach": "e6f6",
+          "teach": "e2f3",
           "accept": [
-            "a7f7",
-            "e6f6"
-          ],
-          "reply": "g8h8"
-        },
-        {
-          "teach": "f6g6",
-          "accept": [
-            "a7a1",
-            "a7a2",
-            "a7a3",
-            "a7a4",
-            "a7a5",
-            "a7a8",
-            "a7f7",
-            "f6f7",
-            "f6g6"
-          ],
-          "reply": "h8g8"
-        },
-        {
-          "teach": "a7a8",
-          "accept": [
-            "a7a8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/2k5/3R4/3K4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d3c3",
-          "accept": [
-            "d3c3"
-          ],
-          "reply": "c5b5"
-        },
-        {
-          "teach": "d4c4",
-          "accept": [
-            "d4c4",
-            "d4d5"
+            "e2e3",
+            "e2f2",
+            "e2f3"
           ]
         }
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "box",
@@ -548,5 +535,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 18
+  "maxScore": 14
 }

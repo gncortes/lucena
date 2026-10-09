@@ -223,45 +223,6 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "7k/8/6K1/8/2B2B2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f4e5",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "1k3B2/1B6/1K6/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f8d6",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/8/8/3K4/5BB1/2k5 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d3c3",
-          "accept": "best"
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 1,
       "fen": "7k/5K2/7B/8/8/8/8/5B2 w - - 0 1",
@@ -275,153 +236,145 @@
       ]
     },
     {
-      "id": "e05",
-      "stars": 2,
-      "fen": "7k/2B5/6K1/5B2/8/8/8/8 w - - 0 1",
+      "id": "e12",
+      "stars": 1,
+      "fen": "8/8/8/8/5B2/3K4/8/3k1B2 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
         {
-          "teach": "c7d6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/8/8/8/1K6/4BB2/2k5 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f2e3",
+          "teach": "f1e2",
           "accept": "best",
           "reply": "auto"
         },
         {
-          "teach": "e2d3",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "e3d4",
+          "teach": "f4g3",
           "accept": "only"
         }
       ]
     },
     {
-      "id": "e07",
+      "id": "e13",
       "stars": 2,
-      "fen": "3k4/6B1/3K4/3B4/8/8/8/8 w - - 0 1",
+      "fen": "6B1/8/8/8/8/K1B5/8/3k4 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
         {
-          "teach": "d5f7",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d6c6",
+          "teach": "g8c4",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e08",
+      "id": "e14",
       "stars": 2,
-      "fen": "8/8/8/8/3BBK2/8/8/2k5 w - - 0 1",
+      "fen": "k1K1B3/8/3B4/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
+        {
+          "teach": "e8b5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d6c5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "b5c6",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/8/8/3B4/8/8/1k1K1B2 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "f1b5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d1c2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d4c5",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "b5c4",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "c5d4",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/8/8/8/5B2/8/4K3/3B3k w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e2f3",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "d1e2",
+          "accept": "best",
+          "reply": "auto"
+        },
+        {
+          "teach": "f3g3",
+          "accept": "best",
+          "reply": "auto"
+        },
         {
           "teach": "f4e3",
           "accept": "best",
           "reply": "auto"
         },
         {
-          "teach": "d4b2",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "6k1/2B5/5K2/8/4B3/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c7d6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "f6g6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "e4d5",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d6e5",
+          "teach": "e2f3",
           "accept": "only"
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e17",
       "stars": 3,
-      "fen": "8/8/8/k2B4/2KB4/8/8/8 w - - 0 1",
+      "fen": "8/8/3B4/1B6/3k4/8/3K4/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
         {
-          "teach": "d5b7",
+          "teach": "b5c6",
           "accept": "best",
           "reply": "auto"
         },
         {
-          "teach": "d4b6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c4c3",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/8/3KB3/4B1k1/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d5e6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "e6f5",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "e4g2",
+          "teach": "d2e3",
           "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "wall",

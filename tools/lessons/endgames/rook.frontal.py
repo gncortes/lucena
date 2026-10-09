@@ -24,6 +24,14 @@ FAR = '8/5r2/6k1/6p1/8/8/2K5/R7 w - - 0 1'     # rei longe: só Rd3
 QUICK = '8/5r2/6k1/6p1/8/8/3K4/4R3 w - - 0 1'  # torre fora do lugar
 CAPA = '8/3r1p2/4k3/8/2K5/8/8/7R w - - 0 1'    # Capablanca, torre pronta
 SIDE = after('3r4/8/2k5/2p5/8/4K3/8/2R5 w - - 0 1', 'Rh1 c4')  # Yuri61
+# T58: exercícios novos (posições conferidas na tabela).
+STUDY = 'R7/8/8/6pk/5r2/4K3/8/8 w - - 0 1'       # emanuelrigelnuma: só Ta1
+CAPA4 = after('8/5p2/4k3/8/8/2K5/7R/3r4 b - - 0 1', 'f5')  # Capablanca, f4
+CENTER = '8/3r4/8/4pk2/8/2K5/8/4R3 w - - 0 1'    # peão central: só Tf1+
+# GothamMath (Emms com o rei em d6), espelhada: depois de ...Te5, só Rd4!
+GOTHAM = '8/8/8/4rp2/8/3K3k/8/5R2 w - - 0 1'
+# Chéron 1923 (Wikipedia), espelhada: depois de 1...Td5, só Re4!
+CHERON = after('3r4/8/1k6/1p6/8/4K3/8/1R6 b - - 0 1', 'Rd5')
 
 REFERENCES = [
     {'id': 'rookPawn', 'kind': 'web',
@@ -35,6 +43,12 @@ REFERENCES = [
     {'id': 'yuri61', 'kind': 'study', 'author': 'Yuri61',
      'title': 'Rook Endgames: Lucena & Philidor',
      'url': 'https://lichess.org/study/dDyC6HS6'},
+    {'id': 'rigel', 'kind': 'study', 'author': 'emanuelrigelnuma',
+     'title': 'finales de torre defensa frontal',
+     'url': 'https://lichess.org/study/8qRywecv'},
+    {'id': 'gotham', 'kind': 'study', 'author': 'GothamMath',
+     'title': 'Frontal Defence',
+     'url': 'https://lichess.org/study/tBm9cysU'},
     {'id': 'tablebase', 'kind': 'tablebase',
      'title': 'Lichess tablebase (Syzygy)',
      'url': 'https://tablebase.lichess.ovh'},
@@ -88,32 +102,24 @@ LESSON = {
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, '8/5r2/8/6pk/8/8/3K4/R7 w - - 0 1',
-                 'Rh1+ Kg4 Rg1+', accept='only', goal='draw'),
-        exercise('e02', 1, '8/2r5/8/kp6/8/8/4K3/1R6 w - - 0 1', 'Ra1+',
-                 accept='only', goal='draw'),
-        exercise('e03', 1, '8/2r5/8/1k6/1p6/8/3K4/7R w - - 0 1',
-                 'Rc1 Rxc1 Kxc1', accept='only', goal='draw'),
-        exercise('e04', 2, '8/2r5/1k6/1p6/8/8/4K3/3R4 w - - 0 1',
-                 'Rb1 Ka5 Ra1+ Kb4 Rb1+ Ka4 Ra1+', accept='only',
-                 goal='draw'),
-        exercise('e05', 2, '5r2/8/6k1/4K1p1/8/8/8/6R1 w - - 0 1',
-                 'Ke4 Kh5 Rh1+ Kg4 Rg1+', accept='only', goal='draw'),
-        exercise('e06', 2, EMMS, 'Re1 Rxe1 Kxe1 Ke5 Kf1',
+        exercise('e11', 1, STUDY, 'Ra1 Kg4 Rg1+ Kh4 Rh1+', accept='only',
+                 goal='draw', origin='rigel'),
+        exercise('e12', 2, CAPA4, 'Rd2', accept='hold', goal='draw',
+                 origin='rookPawn'),
+        exercise('e08', 2, SIDE, 'Rh5 c3 Ke2 c2 Rh1',
                  accept={1: 'hold', 2: 'only', 3: 'only'}, goal='draw',
-                 origin='rookPawn'),
-        exercise('e07', 2, CAPA, 'Re1+ Kf5 Rf1+ Kg4 Rg1+ Kh3 Rf1',
-                 accept={1: 'only', 2: 'hold', 3: 'only', 4: 'only'},
-                 goal='draw', origin='rookPawn'),
-        exercise('e08', 3, SIDE, 'Rh5', accept='hold', goal='draw',
                  origin='yuri61'),
-        exercise('e09', 3, after(EMMS, 'Kd3 Kg5'),
-                 'Rg1+ Kh4 Rf1 Kg4 Rg1+', accept='only', goal='draw',
-                 origin='rookPawn'),
-        exercise('e10', 3, '8/2r5/8/1pk5/8/8/5K2/R7 w - - 0 1',
-                 'Ke3 Kb4 Rb1+ Ka3 Rxb5', accept='only', goal='draw'),
+        exercise('e13', 2, CENTER, 'Rf1+ Kg4 Re1 Kf4 Rf1+ Ke4 Re1+ Kf3 Rxe5',
+                 accept='only', goal='draw'),
+        exercise('e14', 3, GOTHAM, 'Kd4 Re4+ Kd3 Kg4 Rg1+ Kf3 Rf1+',
+                 accept='only', goal='draw', origin='gotham'),
+        exercise('e15', 3, CHERON,
+                 'Ke4 Kc6 Rc1+ Rc5 Rb1 Rc3 Kd4 Ra3 Rc1+ Kb6 Rc3',
+                 accept={1: 'only', 2: 'hold', 3: 'only', 4: 'only',
+                         5: 'only', 6: 'only'},
+                 goal='draw', origin='rookPawn'),
     ],
-    'passScore': 12,
+    'passScore': 8,
     'keyPositions': [
         {'id': 'front', 'fen': FRONT, 'ref': 'rookPawn'},
         {'id': 'emms', 'fen': EMMS, 'ref': 'rookPawn'},

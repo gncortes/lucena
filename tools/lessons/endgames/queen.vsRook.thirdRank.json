@@ -381,220 +381,140 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+      "fen": "k7/2r5/3Q4/1K6/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "adrood",
       "turns": [
         {
-          "teach": "f7f4",
+          "teach": "d6d5",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e18",
       "stars": 1,
-      "fen": "3k4/8/6r1/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "turns": [
-        {
-          "teach": "f4f8",
-          "accept": "best",
-          "reply": "d8d7"
-        },
-        {
-          "teach": "f8f7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "turns": [
-        {
-          "teach": "f4b8",
-          "accept": "best",
-          "reply": "d8e7"
-        },
-        {
-          "teach": "b8b7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "3k4/8/8/3K4/5Q2/8/1r6/8 w - - 0 1",
-      "goal": "win",
-      "origin": "cgbarros",
-      "turns": [
-        {
-          "teach": "f4f6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/3k4/1r6/3K4/5Q2/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "f4a4",
-          "accept": "best",
-          "reply": "d7c7"
-        },
-        {
-          "teach": "a4a7",
-          "accept": "best",
-          "reply": "b6b7"
-        },
-        {
-          "teach": "a7c5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "3k4/5Q2/r7/3K4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "d5c5",
-          "accept": "best",
-          "reply": "d8c8"
-        },
-        {
-          "teach": "f7e7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/8/8/6K1/8/6kr/4Q3 w - - 0 1",
+      "fen": "8/8/5Q2/2K5/r7/3k4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "moro",
       "turns": [
         {
-          "teach": "e1e5",
-          "accept": "only",
-          "reply": "g2g1"
+          "teach": "f6f1",
+          "accept": "best",
+          "reply": "d3d2"
         },
         {
-          "teach": "g4g3",
+          "teach": "f1f3",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e08",
+      "id": "e14",
       "stars": 2,
-      "fen": "3k4/1Q6/3r4/5K2/8/8/8/8 w - - 0 1",
+      "fen": "8/6Q1/8/5r1k/8/4K3/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "parker",
+      "origin": "methurst",
       "turns": [
         {
-          "teach": "b7f7",
+          "teach": "e3e4",
           "accept": "best",
-          "reply": "d6b6"
+          "reply": "f5f1"
         },
         {
-          "teach": "f5e5",
+          "teach": "g7g3",
           "accept": "best",
-          "reply": "b6c6"
+          "reply": "f1f6"
         },
         {
-          "teach": "e5d5",
+          "teach": "e4e5",
+          "accept": "best",
+          "reply": "f6f7"
+        },
+        {
+          "teach": "g3d3",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/3k4/5Q2/r7/4K3/8/8/8 w - - 0 1",
+      "id": "e15",
+      "stars": 2,
+      "fen": "8/3k4/5Q2/8/3K4/8/8/r7 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "turns": [
         {
           "teach": "f6f7",
           "accept": "best",
-          "reply": "d7d8"
+          "reply": "d7d6"
         },
         {
-          "teach": "f7e6",
-          "accept": "best",
-          "reply": "d8c7"
-        },
-        {
-          "teach": "e4d3",
+          "teach": "f7b3",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e16",
       "stars": 3,
-      "fen": "2k5/8/1r6/3K4/5Q2/8/8/8 w - - 0 1",
+      "fen": "8/5Q2/3k4/r7/4K3/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "turns": [
         {
-          "teach": "d5c5",
+          "teach": "f7e8",
           "accept": "best",
-          "reply": "b6a6"
+          "reply": "d6c7"
         },
         {
-          "teach": "f4e4",
+          "teach": "e8e6",
           "accept": "best",
-          "reply": "c8c7"
+          "reply": "a5b5"
         },
         {
-          "teach": "e4e7",
-          "accept": "best",
-          "reply": "c7b8"
-        },
-        {
-          "teach": "c5b5",
+          "teach": "e4d4",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e11",
+      "id": "e19",
       "stars": 3,
-      "fen": "5k2/5r2/4Q3/6K1/8/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "wikipedia",
+      "fen": "6r1/8/4K3/1k6/8/2Q5/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "moro",
       "turns": [
         {
-          "teach": "f7g7",
-          "accept": "hold",
-          "reply": "g5f6"
+          "teach": "c3e5",
+          "accept": "best",
+          "reply": "b5c6"
         },
         {
-          "teach": "g7g6",
-          "accept": "hold"
+          "teach": "e5f6",
+          "accept": "best",
+          "reply": "g8b8"
+        },
+        {
+          "teach": "e6e7",
+          "accept": "best",
+          "reply": "c6b7"
+        },
+        {
+          "teach": "f6e5",
+          "accept": "best",
+          "reply": "b7c8"
+        },
+        {
+          "teach": "e7d6",
+          "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "third",
@@ -655,6 +575,13 @@
       "black": "Belle (computador)",
       "event": "Desafio de dama contra torre, revanche",
       "year": 1978
+    },
+    {
+      "id": "adrood",
+      "kind": "study",
+      "author": "adrood",
+      "title": "Queen versus Rook endgame",
+      "url": "https://lichess.org/study/tEH40nAS"
     },
     {
       "id": "belle1979",

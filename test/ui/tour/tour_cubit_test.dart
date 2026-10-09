@@ -171,6 +171,7 @@ void main() {
       expect(tour.state.paths.first, HomePath.speedrun);
       expect(tour.state.goals, {
         HomePath.speedrun,
+        HomePath.forYou,
         HomePath.endgames,
         HomePath.train,
       });
@@ -200,6 +201,7 @@ void main() {
       final layout = home.layout!;
       expect(layout.shown, [
         HomePath.journey,
+        HomePath.forYou,
         HomePath.endgames,
         HomePath.train,
         HomePath.speedrun,

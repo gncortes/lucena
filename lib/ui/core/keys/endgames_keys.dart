@@ -10,6 +10,7 @@ abstract final class EndgamesKeys {
   static const filter = Key('endgames.filter');
   static const forYou = Key('endgames.filter.forYou');
   static const all = Key('endgames.filter.all');
+  static const hideDone = Key('endgames.hideDone');
   static const forYouEmpty = Key('endgames.forYouEmpty');
   static Key badge(String lessonId) => Key('endgames.badge.$lessonId');
 
@@ -20,6 +21,33 @@ abstract final class EndgamesKeys {
   static Key module(String id) => Key('endgames.module.$id');
   static Key lesson(String id) => Key('endgames.lesson.$id');
   static Key lessonScore(String id) => Key('endgames.lesson.$id.score');
+}
+
+/// A introdução aos exercícios de uma aula de final.
+abstract final class ExercisesIntroKeys {
+  static const screen = Key('exercisesIntro.screen');
+  static const legend = Key('exercisesIntro.legend');
+  static const after = Key('exercisesIntro.after');
+  static const tiers = Key('exercisesIntro.tiers');
+  static const start = Key('exercisesIntro.start');
+}
+
+/// O resultado dos exercícios de uma aula de final.
+abstract final class ExercisesDoneKeys {
+  static const screen = Key('exercisesDone.screen');
+  static const score = Key('exercisesDone.score');
+  static const needMore = Key('exercisesDone.needMore');
+  static const back = Key('exercisesDone.back');
+  static const practice = Key('exercisesDone.practice');
+  static const redo = Key('exercisesDone.redo');
+  static const retrySpeech = Key('exercisesDone.retrySpeech');
+  static const reviewLesson = Key('exercisesDone.reviewLesson');
+  static Key grade(String name) => Key('exercisesDone.grade.$name');
+  static const current = Key('exercisesDone.current');
+  static const diploma = Key('exercisesDone.diploma');
+  static const shareCard = Key('exercisesDone.shareCard');
+  static const diplomaName = Key('exercisesDone.diploma.name');
+  static const share = Key('exercisesDone.share');
 }
 
 /// Uma aula de final: a lição, os exercícios, a nota e o passo final.
@@ -45,7 +73,9 @@ abstract final class EndgameLessonKeys {
   static const passed = Key('endgameLesson.passed');
   static const failed = Key('endgameLesson.failed');
   static const redoButton = Key('endgameLesson.redo');
+  static const startExercises = Key('endgameLesson.startExercises');
   static const finalStep = Key('endgameLesson.final');
+  static const finalBoard = Key('endgameLesson.final.board');
   static const speedrunButton = Key('endgameLesson.speedrun');
   static const trainButton = Key('endgameLesson.train');
   static const nextLessonButton = Key('endgameLesson.nextLesson');
@@ -77,9 +107,15 @@ abstract final class ExerciseKeys {
   static const hintButton = Key('exercise.hint');
   static const stars = Key('exercise.stars');
   static const earned = Key('exercise.earned');
+  static const earnedStar = Key('exercise.earnedStar');
   static const solved = Key('exercise.solved');
-  static const nextButton = Key('exercise.next');
+  static const solvedLabel = Key('exercise.solvedLabel');
+  static const explainButton = Key('exercise.explain');
+  static const resultButton = Key('exercise.result');
   static const backButton = Key('exercise.back');
+  static const locked = Key('exercise.locked');
+  static const lichessButton = Key('exercise.lichess');
+  static const nextButton = Key('exercise.next');
   static const counter = Key('exercise.counter');
 
   /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.

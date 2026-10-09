@@ -125,7 +125,7 @@ src = {
         ]},
     ],
     'exercises': [],
-    'passScore': 13,
+    'passScore': 9,
     'keyPositions': [
         {'id': 'corner', 'fen': CORNER, 'ref': 'ibmm'},
         {'id': 'rightBishop', 'fen': RIGHT},
@@ -146,22 +146,21 @@ src = {
         {'id': 'wikiFortress', 'kind': 'web', 'title': 'Wikipedia: Fortress (chess)', 'url': 'https://en.wikipedia.org/wiki/Fortress_(chess)'},
         {'id': 'fischerTaimanov', 'kind': 'game', 'white': 'Bobby Fischer', 'black': 'Mark Taimanov', 'event': 'Candidatos, Vancouver (partida 2)', 'year': 1971},
         {'id': 'korchnoiKarpov', 'kind': 'game', 'white': 'Viktor Korchnoi', 'black': 'Anatoly Karpov', 'event': 'Campeonato mundial, Baguio (partida 5)', 'year': 1978},
+        {'id': 'olaffo', 'kind': 'study', 'author': 'Olaffo', 'title': 'Wrong Bishop: A', 'url': 'https://lichess.org/study/nUe9N3D2'},
+        {'id': 'perdomod', 'kind': 'study', 'author': 'perdomod', 'title': 'Wrong Bishop: A', 'url': 'https://lichess.org/study/SxoBxSv7'},
         {'id': 'tablebase', 'kind': 'tablebase', 'title': 'Lichess tablebase (Syzygy)', 'url': 'https://tablebase.lichess.ovh'},
     ],
 }
 
 EX = [
-    ('e01', 1, '1k6/8/1K6/P7/8/8/8/4B3 b', 'draw', 'own', 'Ka8', ['hold']),
-    ('e02', 1, '2k5/8/2K5/8/8/P7/8/2B5 w', 'win', 'ibmm', 'Bf4', ['win']),
-    ('e03', 1, '3k4/8/8/8/5K1P/3B4/8/8 b', 'draw', 'own', 'Ke7', ['hold']),
-    ('e04', 2, 'k7/8/PK6/8/8/8/2B5/8 w', 'win', 'studier', 'Be4+', ['win']),
-    ('e05', 2, '5K2/5B2/7k/7P/8/8/8/8 w', 'win', 'wikiWrongRookPawn', 'Kg8', ['win']),
-    ('e06', 2, '4k3/8/8/8/2B1K2P/8/8/8 b', 'draw', 'own', 'Kf8', ['hold']),
-    ('e07', 2, '8/4k3/8/8/2B1K2P/8/8/8 w', 'win', 'own', 'Kf5 Kf8 Kg6', ['win'] * 2),
-    ('e08', 2, '4k3/8/8/5K1P/7P/8/8/3B4 b', 'draw', 'own', 'Kf7', ['hold']),
+    # T58: e01-e08, e10 e e11 saíram (repetiam a lição ou outro exercício). Ids cortados não voltam.
+    ('e12', 1, '8/8/8/8/p7/k7/b2K4/8 w', 'draw', 'olaffo', 'Kc2 Bb3+ Kb1', ['hold'] * 2),
     ('e09', 2, '6k1/8/6PP/5K2/2B5/2b5/8/8 b', 'draw', 'wikiWrongRookPawn', 'Kf8', ['hold']),
-    ('e10', 3, '8/8/8/3k4/5K1P/3B4/8/8 b', 'draw', 'own', 'Ke6 Kg5 Kf7 Kh6 Kg8', ['hold'] * 3),
-    ('e11', 3, '5k2/5b2/8/8/4B1PP/5K2/8/8 b', 'draw', 'studier', 'Bh5 gxh5 Kg7', ['hold'] * 2),
+    ('e13', 2, '8/4K3/8/6k1/6B1/7P/8/8 w', 'win', 'olaffo', 'Kf7 Kh6 Kg8', ['win'] * 2),
+    ('e14', 2, 'k7/8/PpK5/8/P7/4B3/8/8 b', 'draw', 'perdomod', 'Kb8 Bxb6 Ka8', ['hold'] * 2),
+    ('e15', 2, '8/8/1p2k3/3b4/P7/8/8/6KB w', 'draw', 'perdomod', 'a5 bxa5 Kf2', ['hold'] * 2),
+    ('e16', 3, '1K6/4b3/7p/P7/k7/8/8/8 w', 'draw', 'perdomod', 'a6 Bc5 Kc7 h5 Kc6', ['hold'] * 3),
+    ('e17', 3, '3B1b2/6pp/8/8/8/8/2k5/1N5K w', 'draw', 'perdomod', 'Nd2 Kxd2 Bg5+ Kd1 Bh6', ['hold'] * 3),
 ]
 for id_, st, fen, goal, origin, sans, acc in EX:
     m = move(id_, F(fen), goal, sans, acc)

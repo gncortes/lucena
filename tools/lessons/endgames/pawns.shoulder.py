@@ -67,7 +67,7 @@ WALL = F('8/5p2/8/8/1k2K3/8/5P2/8 w')      # TLQ2JepT, cap. 3: só Kd4
 ACROSS = F('8/5K2/p6k/8/8/8/1P6/8 w')      # TLQ2JepT, cap. 4: só Kf6
 AWAY = F('8/5p2/8/8/5K2/5P2/8/7k w')       # TLQ2JepT, cap. 2: só Kg3
 RACE = F('8/8/5p2/4kP2/K7/8/P7/8 w')       # TLQ2JepT, cap. 1: só Kb5
-DEFEND = F('8/5p2/1p6/1P2K2k/8/8/8/8 w')   # 1tpnHFlG, cap. 7: só Kf5 empata
+DEFEND = F('8/5p2/1p6/1P2K2k/8/8/8/8 w')   # Grigoriev 1925 (0iaDBwxT); 1tpnHFlG, cap. 7: só Kf5 empata
 BLACK = F('8/8/3k4/1p6/6K1/8/P7/8 b')      # iA0o5q69, cap. 4: só Ke5
 RULES = F('8/8/4k3/8/8/5P1K/8/8 w')        # catálogo pawn.pawnVsKing.0002: só Kg4
 FINISH = F('8/k7/5K2/8/8/8/2P5/8 w')       # catálogo pawn.pawnVsKing.0004
@@ -148,14 +148,14 @@ src = {
         ]},
     ],
     'exercises': [],
-    'passScore': 12,
+    'passScore': 10,
     'keyPositions': [
         {'id': 'stairs', 'fen': STAIRS, 'ref': 'sibi'},
         {'id': 'wall', 'fen': WALL, 'ref': 'drMkc'},
         {'id': 'across', 'fen': ACROSS, 'ref': 'drMkc'},
         {'id': 'away', 'fen': AWAY, 'ref': 'drMkc'},
         {'id': 'race', 'fen': RACE, 'ref': 'drMkc'},
-        {'id': 'defend', 'fen': DEFEND, 'ref': 'poojakanth'},
+        {'id': 'defend', 'fen': DEFEND, 'ref': 'grigoriev'},
     ],
     'practice': {'fen': FINISH, 'goal': 'win', 'positionId': 'pawn.pawnVsKing.0004'},
     'references': [
@@ -173,6 +173,10 @@ src = {
          'title': 'endgame study-shouldering', 'url': 'https://lichess.org/study/1tpnHFlG'},
         {'id': 'sibi', 'kind': 'study', 'author': 'sibi.m',
          'title': 'shouldering in the king and pawn endgame', 'url': 'https://lichess.org/study/UDGX1K3Z'},
+        {'id': 'grigoriev', 'kind': 'study', 'author': 'humoresque',
+         'title': 'Grigoriev, Nikolai', 'url': 'https://lichess.org/study/0iaDBwxT'},
+        {'id': 'njswift', 'kind': 'study', 'author': 'njswift',
+         'title': 'Pawn Races', 'url': 'https://lichess.org/study/OX3hApYw'},
         {'id': 'wikiKing', 'kind': 'web', 'title': 'Wikipedia: King (chess), "Shouldering"',
          'url': 'https://en.wikipedia.org/wiki/King_(chess)#Shouldering'},
         {'id': 'tablebase', 'kind': 'tablebase', 'title': 'Lichess tablebase (Syzygy)',
@@ -182,16 +186,18 @@ src = {
 
 # (id, estrelas, fen, objetivo, origem, lances do aluno e respostas, regra por vez)
 EX = [
-    ('e01', 1, '8/8/8/k7/8/8/K4P2/8 w', 'win', 'own', 'Ka3 Kb5 Kb3', ['win'] * 2),
     ('e02', 1, '7k/6p1/6K1/8/8/8/4P3/8 w', 'win', 'sibi', 'Kf7 Kh7 e4', ['win'] * 2),
-    ('e03', 1, '8/8/8/1k6/8/8/K3P3/8 w', 'win', 'own', 'Kb3 Kc5 Kc3', ['win'] * 2),
-    ('e04', 2, '8/2p5/8/8/2K5/2P5/8/k7 w', 'win', 'own', 'Kb3 Kb1 c4', ['win'] * 2),
     ('e05', 2, '8/7k/8/6K1/p7/8/1P6/8 w', 'win', 'zeeshan', 'Kf6 Kh6 Ke5', ['win'] * 2),
-    ('e06', 2, '8/8/4k3/2p5/7K/8/1P6/8 b', 'win', 'own', 'Kf5 Kg3 Ke4 Kf2 Kd3', ['win'] * 3),
-    ('e07', 2, '8/2p5/6p1/k2K2P1/8/8/8/8 w', 'draw', 'own', 'Kc5 Ka4 Kc4 Ka3 Kc3', ['hold'] * 3),
-    ('e08', 3, '8/1p6/8/8/8/3K4/P7/6k1 w', 'win', 'manoj', 'Ke2 Kg2 a4 Kg3 Ke3', ['win'] * 3),
-    ('e09', 3, '8/p4K2/P7/8/8/8/1k6/8 w', 'win', 'poojakanth', 'Ke6 Ka2 Kd5 Ka3 Kc6', ['win'] * 3),
-    ('e10', 3, '8/2p5/6K1/8/8/5k2/P7/8 w', 'win', 'sibi', 'Kf5 c5 Ke5 c4 Kd4', ['win'] * 3),
+    ('e08', 2, '8/1p6/8/8/8/3K4/P7/6k1 w', 'win', 'manoj', 'Ke2 Kg2 a4 Kg3 Ke3', ['win'] * 3),
+    # Duras 1905, citado em njswift, "Pawn Races", cap. "Exercise #13".
+    ('e11', 2, '8/6p1/7k/8/1K6/8/1P6/8 w', 'win', 'njswift', 'Kc5 Kg6 b4 Kf7 b5', ['win'] * 3),
+    # Grigoriev 1932, citado em njswift, "Pawn Races", cap. "Exercise #18".
+    ('e10', 3, '8/2p5/6K1/8/8/5k2/P7/8 w', 'win', 'njswift', 'Kf5 c5 Ke5 c4 Kd4', ['win'] * 3),
+    # njswift, "Pawn Races", cap. "Exercise #5" (o estudo não dá o autor).
+    ('e12', 3, '8/2p5/8/8/5K2/8/1k5P/8 w', 'win', 'njswift',
+     'Ke4 Kb3 Kd4 Kb4 h4 c5+ Ke3', ['win'] * 4),
+    # Mandler 1938, citado em njswift, "Pawn Races", cap. "King activity for the queen ending".
+    ('e13', 3, '8/1pK5/8/8/8/8/k4P2/8 w', 'win', 'njswift', 'Kd6 Ka3 Kc5 Ka4 f4', ['win'] * 3),
 ]
 for id_, st, fen, goal, origin, sans, acc in EX:
     src['exercises'].append({'id': id_, 'stars': st, 'fen': F(fen), 'goal': goal,

@@ -404,205 +404,53 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e11",
       "stars": 1,
-      "fen": "8/5r2/8/6pk/8/8/3K4/R7 w - - 0 1",
+      "fen": "R7/8/8/6pk/5r2/4K3/8/8 w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "rigel",
       "line": [
         {
-          "teach": "a1h1",
+          "teach": "a8a1",
           "accept": [
-            "a1h1"
+            "a8a1"
           ],
           "reply": "h5g4"
         },
         {
-          "teach": "h1g1",
+          "teach": "a1g1",
           "accept": [
-            "h1g1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/2r5/8/kp6/8/8/4K3/1R6 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b1a1",
-          "accept": [
-            "b1a1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/2r5/8/1k6/1p6/8/3K4/7R w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h1c1",
-          "accept": [
-            "h1c1"
+            "a1g1"
           ],
-          "reply": "c7c1"
-        },
-        {
-          "teach": "d2c1",
-          "accept": [
-            "d2c1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/2r5/1k6/1p6/8/8/4K3/3R4 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d1b1",
-          "accept": [
-            "d1b1"
-          ],
-          "reply": "b6a5"
-        },
-        {
-          "teach": "b1a1",
-          "accept": [
-            "b1a1"
-          ],
-          "reply": "a5b4"
-        },
-        {
-          "teach": "a1b1",
-          "accept": [
-            "a1b1"
-          ],
-          "reply": "b4a4"
-        },
-        {
-          "teach": "b1a1",
-          "accept": [
-            "b1a1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "5r2/8/6k1/4K1p1/8/8/8/6R1 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e5e4",
-          "accept": [
-            "e5e4"
-          ],
-          "reply": "g6h5"
+          "reply": "g4h4"
         },
         {
           "teach": "g1h1",
           "accept": [
             "g1h1"
-          ],
-          "reply": "h5g4"
-        },
-        {
-          "teach": "h1g1",
-          "accept": [
-            "h1g1"
           ]
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/4r3/5k2/5p2/8/8/3K4/1R6 w - - 0 1",
+      "fen": "8/8/4k3/5p2/8/2K5/7R/3r4 w - - 0 1",
       "goal": "draw",
       "origin": "rookPawn",
       "line": [
         {
-          "teach": "b1e1",
+          "teach": "h2d2",
           "accept": [
-            "b1e1",
-            "b1g1",
-            "d2d3"
-          ],
-          "reply": "e7e1"
-        },
-        {
-          "teach": "d2e1",
-          "accept": [
-            "d2e1"
-          ],
-          "reply": "f6e5"
-        },
-        {
-          "teach": "e1f1",
-          "accept": [
-            "e1f1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/3r1p2/4k3/8/2K5/8/8/7R w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "line": [
-        {
-          "teach": "h1e1",
-          "accept": [
-            "h1e1"
-          ],
-          "reply": "e6f5"
-        },
-        {
-          "teach": "e1f1",
-          "accept": [
-            "c4b4",
-            "c4c5",
-            "e1a1",
-            "e1b1",
-            "e1f1",
-            "e1g1",
-            "e1h1"
-          ],
-          "reply": "f5g4"
-        },
-        {
-          "teach": "f1g1",
-          "accept": [
-            "f1g1"
-          ],
-          "reply": "g4h3"
-        },
-        {
-          "teach": "g1f1",
-          "accept": [
-            "g1f1"
+            "c3c2",
+            "h2d2"
           ]
         }
       ]
     },
     {
       "id": "e08",
-      "stars": 3,
+      "stars": 2,
       "fen": "3r4/8/2k5/8/2p5/4K3/8/7R w - - 0 1",
       "goal": "draw",
       "origin": "yuri61",
@@ -612,70 +460,160 @@
           "accept": [
             "e3e2",
             "h1h5"
+          ],
+          "reply": "c4c3"
+        },
+        {
+          "teach": "e3e2",
+          "accept": [
+            "e3e2"
+          ],
+          "reply": "c3c2"
+        },
+        {
+          "teach": "h5h1",
+          "accept": [
+            "h5h1"
           ]
         }
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/4r3/8/5pk1/8/3K4/8/1R6 w - - 0 1",
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/3r4/8/4pk2/8/2K5/8/4R3 w - - 0 1",
       "goal": "draw",
-      "origin": "rookPawn",
+      "origin": "own",
       "line": [
         {
-          "teach": "b1g1",
+          "teach": "e1f1",
           "accept": [
-            "b1g1"
+            "e1f1"
           ],
-          "reply": "g5h4"
+          "reply": "f5g4"
         },
         {
-          "teach": "g1f1",
+          "teach": "f1e1",
           "accept": [
-            "g1f1"
+            "f1e1"
           ],
-          "reply": "h4g4"
+          "reply": "g4f4"
+        },
+        {
+          "teach": "e1f1",
+          "accept": [
+            "e1f1"
+          ],
+          "reply": "f4e4"
+        },
+        {
+          "teach": "f1e1",
+          "accept": [
+            "f1e1"
+          ],
+          "reply": "e4f3"
+        },
+        {
+          "teach": "e1e5",
+          "accept": [
+            "e1e5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "8/8/8/4rp2/8/3K3k/8/5R2 w - - 0 1",
+      "goal": "draw",
+      "origin": "gotham",
+      "line": [
+        {
+          "teach": "d3d4",
+          "accept": [
+            "d3d4"
+          ],
+          "reply": "e5e4"
+        },
+        {
+          "teach": "d4d3",
+          "accept": [
+            "d4d3"
+          ],
+          "reply": "h3g4"
         },
         {
           "teach": "f1g1",
           "accept": [
             "f1g1"
+          ],
+          "reply": "g4f3"
+        },
+        {
+          "teach": "g1f1",
+          "accept": [
+            "g1f1"
           ]
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e15",
       "stars": 3,
-      "fen": "8/2r5/8/1pk5/8/8/5K2/R7 w - - 0 1",
+      "fen": "8/8/1k6/1p1r4/8/4K3/8/1R6 w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "rookPawn",
       "line": [
         {
-          "teach": "f2e3",
+          "teach": "e3e4",
           "accept": [
-            "f2e3"
+            "e3e4"
           ],
-          "reply": "c5b4"
+          "reply": "b6c6"
         },
         {
-          "teach": "a1b1",
+          "teach": "b1c1",
           "accept": [
-            "a1b1"
+            "b1a1",
+            "b1c1",
+            "b1e1",
+            "b1f1",
+            "b1g1",
+            "b1h1"
           ],
-          "reply": "b4a3"
+          "reply": "d5c5"
         },
         {
-          "teach": "b1b5",
+          "teach": "c1b1",
           "accept": [
-            "b1b5"
+            "c1b1"
+          ],
+          "reply": "c5c3"
+        },
+        {
+          "teach": "e4d4",
+          "accept": [
+            "e4d4"
+          ],
+          "reply": "c3a3"
+        },
+        {
+          "teach": "b1c1",
+          "accept": [
+            "b1c1"
+          ],
+          "reply": "c6b6"
+        },
+        {
+          "teach": "c1c3",
+          "accept": [
+            "c1c3"
           ]
         }
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "front",
@@ -730,11 +668,25 @@
       "url": "https://lichess.org/study/dDyC6HS6"
     },
     {
+      "id": "rigel",
+      "kind": "study",
+      "author": "emanuelrigelnuma",
+      "title": "finales de torre defensa frontal",
+      "url": "https://lichess.org/study/8qRywecv"
+    },
+    {
+      "id": "gotham",
+      "kind": "study",
+      "author": "GothamMath",
+      "title": "Frontal Defence",
+      "url": "https://lichess.org/study/tBm9cysU"
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 13
 }

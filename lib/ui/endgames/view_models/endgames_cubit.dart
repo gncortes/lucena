@@ -36,7 +36,17 @@ class EndgamesState {
     this.viktor,
     this.roadmap,
     this.showAll = false,
+    this.hideDone = false,
   });
+
+  /// "Para você": esconde as aulas já concluídas.
+  final bool hideDone;
+
+  /// As aulas concluídas, na ordem da trilha.
+  List<EndgameLesson> get doneLessons => [
+    for (final lesson in trail.lessons)
+      if (status(lesson.id) == EndgameLessonStatus.passed) lesson,
+  ];
 
   /// "Todos": a trilha inteira, em vez do roteiro. Sem teste feito, a
   /// trilha aparece sempre inteira.
@@ -92,8 +102,11 @@ class EndgamesState {
   }
 
   /// A nota de uma aula, sobre o total de estrelas.
-  (int, int) score(String lessonId) =>
-      (progress.of(lessonId).score, trail.lesson(lessonId)?.maxScore ?? 0);
+  (int, int) score(String lessonId) {
+    final lesson = trail.lesson(lessonId);
+    if (lesson == null) return (0, 0);
+    return (progress.of(lessonId).scoreOf(lesson), lesson.maxScore);
+  }
 }
 
 /// A trilha das aulas de finais: os módulos e as aulas, com o que já foi
@@ -122,11 +135,33 @@ class EndgamesCubit extends Cubit<EndgamesState> {
         viktor: state.viktor,
         roadmap: state.roadmap,
         showAll: showAll,
+        hideDone: state.hideDone,
       ),
     );
     final settings = _settings;
     if (settings == null) return;
     await settings.save((await settings.load()).copyWith(endgamesAll: showAll));
+  }
+
+  /// Mostra ou esconde as aulas concluídas em "Para você", e grava a escolha.
+  Future<void> setHideDone(bool hideDone) async {
+    emit(
+      EndgamesState(
+        ready: state.ready,
+        trail: state.trail,
+        texts: state.texts,
+        progress: state.progress,
+        viktor: state.viktor,
+        roadmap: state.roadmap,
+        showAll: state.showAll,
+        hideDone: hideDone,
+      ),
+    );
+    final settings = _settings;
+    if (settings == null) return;
+    await settings.save(
+      (await settings.load()).copyWith(endgamesHideDone: hideDone),
+    );
   }
 
   final PlacementRepository? _placement;
@@ -137,12 +172,16 @@ class EndgamesCubit extends Cubit<EndgamesState> {
   final EndgameProgressRepository _progress;
   final CharacterRepository _characters;
 
-  Future<void> load(String language) async {
+  /// [showAll] escolhe o filtro desta visita (sem gravar); nulo, vale o
+  /// gravado.
+  Future<void> load(String language, {bool? showAll}) async {
     final trail = await _lessons.trail();
     final texts = await _lessons.texts(language);
     final progress = await _progress.load();
     final characters = await _characters.characters();
-    final showAll = (await _settings?.load())?.endgamesAll ?? false;
+    final saved = await _settings?.load();
+    final all = showAll ?? saved?.endgamesAll ?? false;
+    final hideDone = saved?.endgamesHideDone ?? false;
     final placement = _placement;
     final school = _school;
     final schoolProgress = _schoolProgress;
@@ -169,7 +208,8 @@ class EndgamesCubit extends Cubit<EndgamesState> {
         progress: progress,
         viktor: viktor,
         roadmap: roadmap,
-        showAll: showAll,
+        showAll: all,
+        hideDone: hideDone,
       ),
     );
   }

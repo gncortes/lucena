@@ -372,7 +372,7 @@ class HomeCubit extends Cubit<HomeState> {
     return EndgameSummary(
       lessonId: lesson.id,
       title: texts.lessonTitle(lesson.id),
-      score: done.score,
+      score: done.scoreOf(lesson),
       maxScore: lesson.maxScore,
       teacher: teacher,
       openExerciseId: exerciseIndex < 0 ? null : openExercise!.$2.exerciseId,

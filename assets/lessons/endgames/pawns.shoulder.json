@@ -682,28 +682,6 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "8/8/8/k7/8/8/K4P2/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a2a3",
-          "accept": [
-            "a2a3"
-          ],
-          "reply": "a5b5"
-        },
-        {
-          "teach": "a3b3",
-          "accept": [
-            "a3b3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e02",
       "stars": 1,
       "fen": "7k/6p1/6K1/8/8/8/4P3/8 w - - 0 1",
@@ -721,50 +699,6 @@
           "teach": "e2e4",
           "accept": [
             "e2e4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/1k6/8/8/K3P3/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a2b3",
-          "accept": [
-            "a2b3"
-          ],
-          "reply": "b5c5"
-        },
-        {
-          "teach": "b3c3",
-          "accept": [
-            "b3c3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/2p5/8/8/2K5/2P5/8/k7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c4b3",
-          "accept": [
-            "c4b3"
-          ],
-          "reply": "a1b1"
-        },
-        {
-          "teach": "c3c4",
-          "accept": [
-            "c3c4"
           ]
         }
       ]
@@ -794,66 +728,8 @@
       ]
     },
     {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/4k3/2p5/7K/8/1P6/8 b - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e6f5",
-          "accept": [
-            "e6f5"
-          ],
-          "reply": "h4g3"
-        },
-        {
-          "teach": "f5e4",
-          "accept": [
-            "f5e4"
-          ],
-          "reply": "g3f2"
-        },
-        {
-          "teach": "e4d3",
-          "accept": [
-            "e4d3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/2p5/6p1/k2K2P1/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d5c5",
-          "accept": [
-            "d5c5"
-          ],
-          "reply": "a5a4"
-        },
-        {
-          "teach": "c5c4",
-          "accept": [
-            "c5c4"
-          ],
-          "reply": "a4a3"
-        },
-        {
-          "teach": "c4c3",
-          "accept": [
-            "c4c3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e08",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/1p6/8/8/8/3K4/P7/6k1 w - - 0 1",
       "goal": "win",
       "origin": "manoj",
@@ -881,36 +757,30 @@
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/p4K2/P7/8/8/8/1k6/8 w - - 0 1",
+      "id": "e11",
+      "stars": 2,
+      "fen": "8/6p1/7k/8/1K6/8/1P6/8 w - - 0 1",
       "goal": "win",
-      "origin": "poojakanth",
+      "origin": "njswift",
       "line": [
         {
-          "teach": "f7e6",
+          "teach": "b4c5",
           "accept": [
-            "f7e6"
+            "b4c5"
           ],
-          "reply": "b2a2"
+          "reply": "h6g6"
         },
         {
-          "teach": "e6d5",
+          "teach": "b2b4",
           "accept": [
-            "e6d5",
-            "e6d6",
-            "e6d7",
-            "e6e5",
-            "e6e7"
+            "b2b4"
           ],
-          "reply": "a2a3"
+          "reply": "g6f7"
         },
         {
-          "teach": "d5c6",
+          "teach": "b4b5",
           "accept": [
-            "d5c5",
-            "d5c6",
-            "d5d6"
+            "b4b5"
           ]
         }
       ]
@@ -920,7 +790,7 @@
       "stars": 3,
       "fen": "8/2p5/6K1/8/8/5k2/P7/8 w - - 0 1",
       "goal": "win",
-      "origin": "sibi",
+      "origin": "njswift",
       "line": [
         {
           "teach": "g6f5",
@@ -943,9 +813,74 @@
           ]
         }
       ]
+    },
+    {
+      "id": "e12",
+      "stars": 3,
+      "fen": "8/2p5/8/8/5K2/8/1k5P/8 w - - 0 1",
+      "goal": "win",
+      "origin": "njswift",
+      "line": [
+        {
+          "teach": "f4e4",
+          "accept": [
+            "f4e4"
+          ],
+          "reply": "b2b3"
+        },
+        {
+          "teach": "e4d4",
+          "accept": [
+            "e4d4"
+          ],
+          "reply": "b3b4"
+        },
+        {
+          "teach": "h2h4",
+          "accept": [
+            "h2h4"
+          ],
+          "reply": "c7c5"
+        },
+        {
+          "teach": "d4e3",
+          "accept": [
+            "d4e3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 3,
+      "fen": "8/1pK5/8/8/8/8/k4P2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "njswift",
+      "line": [
+        {
+          "teach": "c7d6",
+          "accept": [
+            "c7d6"
+          ],
+          "reply": "a2a3"
+        },
+        {
+          "teach": "d6c5",
+          "accept": [
+            "d6c5"
+          ],
+          "reply": "a3a4"
+        },
+        {
+          "teach": "f2f4",
+          "accept": [
+            "f2f4"
+          ]
+        }
+      ]
     }
   ],
-  "passScore": 12,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "stairs",
@@ -975,7 +910,7 @@
     {
       "id": "defend",
       "fen": "8/5p2/1p6/1P2K2k/8/8/8/8 w - - 0 1",
-      "ref": "poojakanth"
+      "ref": "grigoriev"
     }
   ],
   "practice": {
@@ -1029,6 +964,20 @@
       "url": "https://lichess.org/study/UDGX1K3Z"
     },
     {
+      "id": "grigoriev",
+      "kind": "study",
+      "author": "humoresque",
+      "title": "Grigoriev, Nikolai",
+      "url": "https://lichess.org/study/0iaDBwxT"
+    },
+    {
+      "id": "njswift",
+      "kind": "study",
+      "author": "njswift",
+      "title": "Pawn Races",
+      "url": "https://lichess.org/study/OX3hApYw"
+    },
+    {
       "id": "wikiKing",
       "kind": "web",
       "title": "Wikipedia: King (chess), \"Shouldering\"",
@@ -1041,5 +990,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 16
 }

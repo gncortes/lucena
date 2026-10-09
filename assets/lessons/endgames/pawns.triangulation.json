@@ -451,83 +451,8 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "8/2k5/p1P5/P7/1K6/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b4c5",
-          "accept": [
-            "b4c5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/4k3/p1P5/P3K3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e5d5",
-          "accept": [
-            "e5d5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/3k4/1p1P4/1P1K4/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d5e5",
-          "accept": [
-            "d5e5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/3k1p1K/5P2/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "guingamp",
-      "line": [
-        {
-          "teach": "h7g8",
-          "accept": [
-            "h7g8",
-            "h7h8"
-          ],
-          "reply": "d7e6"
-        },
-        {
-          "teach": "g8g7",
-          "accept": [
-            "g8g7"
-          ],
-          "reply": "e6e5"
-        },
-        {
-          "teach": "g7f7",
-          "accept": [
-            "g7f7"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e05",
-      "stars": 2,
+      "stars": 1,
       "fen": "8/1p1k4/1P6/2PK4/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikiTriangulation",
@@ -564,135 +489,254 @@
       ]
     },
     {
-      "id": "e06",
+      "id": "e11",
       "stars": 2,
-      "fen": "3k4/8/4p3/4P3/1K6/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d8c8",
-          "accept": [
-            "d8c8"
-          ],
-          "reply": "b4c4"
-        },
-        {
-          "teach": "c8b8",
-          "accept": [
-            "c8b8"
-          ],
-          "reply": "c4b5"
-        },
-        {
-          "teach": "b8b7",
-          "accept": [
-            "b8b7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "5k2/8/5P1p/4K2P/8/8/8/8 w - - 0 1",
+      "fen": "8/8/8/5p2/5k1p/7P/5K2/8 b - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "behrens",
       "line": [
-        {
-          "teach": "e5f4",
-          "accept": [
-            "e5d4",
-            "e5d5",
-            "e5d6",
-            "e5e4",
-            "e5e6",
-            "e5f4",
-            "e5f5"
-          ],
-          "reply": "f8e8"
-        },
         {
           "teach": "f4e4",
           "accept": [
             "f4e4",
             "f4e5",
-            "f4f5",
-            "f4g4"
+            "f4g5"
           ],
-          "reply": "e8f8"
+          "reply": "f2e2"
         },
         {
-          "teach": "e4e5",
+          "teach": "f5f4",
           "accept": [
             "e4d4",
             "e4d5",
             "e4e5",
             "e4f4",
-            "e4f5"
+            "f5f4"
           ],
-          "reply": "f8f7"
+          "reply": "e2f2"
         },
         {
-          "teach": "e5f5",
+          "teach": "f4f3",
           "accept": [
+            "e4d4",
+            "e4d5",
+            "e4e5",
+            "e4f5",
+            "f4f3"
+          ],
+          "reply": "f2f1"
+        },
+        {
+          "teach": "e4f5",
+          "accept": [
+            "e4d3",
+            "e4d4",
+            "e4d5",
+            "e4e3",
+            "e4e5",
+            "e4f4",
+            "e4f5"
+          ],
+          "reply": "f1g1"
+        },
+        {
+          "teach": "f5e5",
+          "accept": [
+            "f5e4",
+            "f5e5",
+            "f5f4",
+            "f5g5"
+          ],
+          "reply": "g1f1"
+        },
+        {
+          "teach": "e5e4",
+          "accept": [
+            "e5d4",
+            "e5d5",
+            "e5e4",
+            "e5f4",
             "e5f5"
           ]
         }
       ]
     },
     {
-      "id": "e08",
-      "stars": 3,
-      "fen": "8/2k5/p1P5/P1K5/8/8/8/8 w - - 0 1",
+      "id": "e04",
+      "stars": 2,
+      "fen": "8/3k1p1K/5P2/8/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "guingamp",
       "line": [
         {
-          "teach": "c5d5",
+          "teach": "h7g8",
           "accept": [
-            "c5d5"
+            "h7g8",
+            "h7h8"
           ],
-          "reply": "c7c8"
+          "reply": "d7e6"
         },
         {
-          "teach": "d5c4",
+          "teach": "g8g7",
           "accept": [
-            "d5c4",
-            "d5c5",
-            "d5d4",
-            "d5d6",
-            "d5e4",
-            "d5e5",
-            "d5e6"
+            "g8g7"
           ],
-          "reply": "c8d8"
+          "reply": "e6e5"
         },
         {
-          "teach": "c4d4",
+          "teach": "g7f7",
           "accept": [
-            "c4b4",
-            "c4c5",
-            "c4d4",
-            "c4d5"
+            "g7f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 2,
+      "fen": "8/8/8/4kP2/3p2P1/3K4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "hasanwa",
+      "line": [
+        {
+          "teach": "d3d2",
+          "accept": [
+            "d3c2",
+            "d3d2",
+            "d3e2"
           ],
-          "reply": "d8c8"
+          "reply": "e5f6"
         },
         {
-          "teach": "d4d5",
+          "teach": "d2e2",
           "accept": [
-            "d4c4",
-            "d4c5",
-            "d4d5",
-            "d4e4",
-            "d4e5"
+            "d2c1",
+            "d2c2",
+            "d2d1",
+            "d2d3",
+            "d2e1",
+            "d2e2"
           ],
-          "reply": "c8c7"
+          "reply": "f6e5"
         },
         {
-          "teach": "d5c5",
+          "teach": "e2d3",
           "accept": [
-            "d5c5"
+            "e2d1",
+            "e2d2",
+            "e2d3",
+            "e2e1",
+            "e2f1",
+            "e2f2",
+            "e2f3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/8/3p2k1/3P4/2P5/6K1/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "audax",
+      "line": [
+        {
+          "teach": "g6g7",
+          "accept": [
+            "g6g7"
+          ],
+          "reply": "g3f3"
+        },
+        {
+          "teach": "g7f7",
+          "accept": [
+            "g7f7"
+          ],
+          "reply": "f3f4"
+        },
+        {
+          "teach": "f7f6",
+          "accept": [
+            "f7f6",
+            "f7f8"
+          ],
+          "reply": "f4e4"
+        },
+        {
+          "teach": "f6e7",
+          "accept": [
+            "f6e7"
+          ],
+          "reply": "e4d4"
+        },
+        {
+          "teach": "e7d7",
+          "accept": [
+            "e7d7",
+            "e7d8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/8/8/p2p4/P3kP2/4P3/4K3/8 w - - 0 1",
+      "goal": "win",
+      "origin": "guingamp",
+      "line": [
+        {
+          "teach": "e2e1",
+          "accept": [
+            "e2e1"
+          ],
+          "reply": "e4f5"
+        },
+        {
+          "teach": "e1d2",
+          "accept": [
+            "e1d1",
+            "e1d2",
+            "e1e2",
+            "e1f1",
+            "e1f2"
+          ],
+          "reply": "f5e4"
+        },
+        {
+          "teach": "d2e2",
+          "accept": [
+            "d2e1",
+            "d2e2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/6k1/3p2P1/7P/4p3/7K/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "lainate",
+      "line": [
+        {
+          "teach": "h3g4",
+          "accept": [
+            "h3g4"
+          ],
+          "reply": "g7f6"
+        },
+        {
+          "teach": "g4g3",
+          "accept": [
+            "g4g3"
+          ],
+          "reply": "d6d5"
+        },
+        {
+          "teach": "g3f4",
+          "accept": [
+            "g3f4"
           ]
         }
       ]
@@ -771,43 +815,9 @@
           ]
         }
       ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/p2p4/P3kP2/4P3/4K3/8 w - - 0 1",
-      "goal": "win",
-      "origin": "guingamp",
-      "line": [
-        {
-          "teach": "e2e1",
-          "accept": [
-            "e2e1"
-          ],
-          "reply": "e4f5"
-        },
-        {
-          "teach": "e1d2",
-          "accept": [
-            "e1d1",
-            "e1d2",
-            "e1e2",
-            "e1f1",
-            "e1f2"
-          ],
-          "reply": "f5e4"
-        },
-        {
-          "teach": "d2e2",
-          "accept": [
-            "d2e1",
-            "d2e2"
-          ]
-        }
-      ]
     }
   ],
-  "passScore": 12,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "zugzwang",
@@ -820,19 +830,9 @@
       "ref": "bgabor"
     },
     {
-      "id": "wikipedia",
-      "fen": "8/1p1k4/1P6/2PK4/8/8/8/8 w - - 0 1",
-      "ref": "wikiTriangulation"
-    },
-    {
       "id": "alburtKasparov",
       "fen": "8/8/8/8/4k2p/5p1P/8/5K2 b - - 0 1",
       "ref": "alburtKasparov"
-    },
-    {
-      "id": "grigoriev",
-      "fen": "8/8/8/1p6/1P6/3P1k2/3K4/8 w - - 0 1",
-      "ref": "wikiCorresponding"
     },
     {
       "id": "defend",
@@ -896,11 +896,39 @@
       "year": 1978
     },
     {
+      "id": "behrens",
+      "kind": "study",
+      "author": "behrens",
+      "title": "Dvoretsky: Triangulation continued",
+      "url": "https://lichess.org/study/yusAy5pe"
+    },
+    {
+      "id": "hasanwa",
+      "kind": "study",
+      "author": "hasanwa",
+      "title": "triangulation",
+      "url": "https://lichess.org/study/aZ5DWjB0"
+    },
+    {
+      "id": "audax",
+      "kind": "study",
+      "author": "Audax6",
+      "title": "E-14 Triangulation and More Opposition - The triangle can work wonders as three is not an even numbe",
+      "url": "https://lichess.org/study/8negSCUD"
+    },
+    {
+      "id": "lainate",
+      "kind": "study",
+      "author": "LainateScacchi",
+      "title": "Finali - Lezione 7 - Triangolazione",
+      "url": "https://lichess.org/study/Jh3le1Xb"
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 18
 }

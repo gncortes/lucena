@@ -186,6 +186,10 @@ abstract final class Routes {
   /// As aulas de finais: a trilha, uma aula, a lição dela, as informações e
   /// um exercício.
   static const endgames = '/endgames';
+
+  /// As aulas de finais já num filtro: "Para você" ([forYou]) ou "Todos".
+  static String endgamesFiltered({required bool forYou}) =>
+      '/endgames?filter=${forYou ? 'forYou' : 'all'}';
   static String endgameLesson(String id) => '/endgames/$id';
 
   /// A lição de uma aula de final; numa aula em partes, a parte [part].
@@ -196,6 +200,12 @@ abstract final class Routes {
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
+
+  /// A introdução aos exercícios da aula, antes do primeiro (ou do próximo).
+  static String endgameExercisesIntro(String id) => '/endgames/$id/intro';
+
+  /// O resultado dos exercícios da aula, depois do último.
+  static String endgameExercisesDone(String id) => '/endgames/$id/done';
 
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';

@@ -27,7 +27,7 @@ class WhereCard extends StatelessWidget {
     switch (state.continuePath) {
       case null:
         return const SizedBox.shrink();
-      case HomePath.endgames when state.endgame != null:
+      case HomePath.endgames || HomePath.forYou when state.endgame != null:
         return _EndgameCard(endgame: state.endgame!);
       case HomePath.learn when state.school != null:
         return _SchoolCard(school: state.school!);

@@ -7,34 +7,37 @@ void main() {
   const learn = HomePath.learn;
   const journey = HomePath.journey;
   const endgames = HomePath.endgames;
+  const forYou = HomePath.forYou;
   const speedrun = HomePath.speedrun;
   const train = HomePath.train;
 
   test('a sugestão de cada nível: a ordem e os marcados', () {
     final expected = {
+      // Os finais para você vêm logo antes das aulas de finais e são
+      // marcados com elas.
       RatingLevel.beginner: (
-        [learn, journey, endgames, train, speedrun],
+        [learn, journey, forYou, endgames, train, speedrun],
         {learn, journey},
       ),
       RatingLevel.casual: (
-        [journey, endgames, train, speedrun, learn],
-        {journey, endgames, train},
+        [journey, forYou, endgames, train, speedrun, learn],
+        {journey, forYou, endgames, train},
       ),
       RatingLevel.intermediate: (
-        [journey, endgames, train, speedrun, learn],
-        {journey, endgames, train, speedrun},
+        [journey, forYou, endgames, train, speedrun, learn],
+        {journey, forYou, endgames, train, speedrun},
       ),
       RatingLevel.advanced: (
-        [endgames, journey, speedrun, train, learn],
-        {endgames, journey, speedrun, train},
+        [forYou, endgames, journey, speedrun, train, learn],
+        {forYou, endgames, journey, speedrun, train},
       ),
       RatingLevel.expert: (
-        [endgames, speedrun, train, journey, learn],
-        {endgames, speedrun, train},
+        [forYou, endgames, speedrun, train, journey, learn],
+        {forYou, endgames, speedrun, train},
       ),
       RatingLevel.master: (
-        [speedrun, endgames, train, journey, learn],
-        {speedrun, endgames, train},
+        [speedrun, forYou, endgames, train, journey, learn],
+        {speedrun, forYou, endgames, train},
       ),
     };
     for (final MapEntry(key: level, value: (order, visible))
@@ -78,7 +81,7 @@ void main() {
   test('voltar a ficar igual à sugestão deixa de ser ajuste', () {
     final suggestion = HomeSuggestion.of(RatingLevel.casual);
     final moved = HomeSuggestion.move(suggestion, 0, 2, RatingLevel.casual);
-    expect(moved.order.take(3), [endgames, train, journey]);
+    expect(moved.order.take(3), [forYou, endgames, journey]);
     expect(moved.custom, isTrue);
     final back = HomeSuggestion.move(moved, 2, 0, RatingLevel.casual);
     expect(back, suggestion);

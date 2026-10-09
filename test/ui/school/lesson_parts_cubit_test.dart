@@ -172,16 +172,29 @@ void main() {
     },
   );
 
-  test(
-    'pensar: mexe as peças à vontade e "Voltar à posição" restaura',
-    () async {
-      final cubit = await open();
-      await cubit.play(Move.parse('c1c3')!);
-      expect(cubit.state.fen, isNot(fen));
-      cubit.resetThink();
-      expect(cubit.state.fen, fen);
-    },
-  );
+  test('pensar: jogou um lance, a explicação vem logo, sem relógio', () async {
+    final cubit = await open();
+    final states = <LessonState>[];
+    final sub = cubit.stream.listen(states.add);
+    addTearDown(sub.cancel);
+    await cubit.play(Move.parse('c1c3')!);
+    // O relógio some junto com o lance, antes de trocar de passo.
+    expect(states.first.thinking, isFalse);
+    expect(states.first.fen, isNot(fen));
+    expect(cubit.state.current?.id, 'demo');
+  });
+
+  test('pensar: depois do tempo, mexe as peças à vontade e "Voltar à posição" '
+      'restaura', () async {
+    final cubit = await open();
+    now.advance(const Duration(minutes: 3));
+    await cubit.tick();
+    await cubit.play(Move.parse('c1c3')!);
+    expect(cubit.state.current?.id, 'think');
+    expect(cubit.state.fen, isNot(fen));
+    cubit.resetThink();
+    expect(cubit.state.fen, fen);
+  });
 
   test('pensar: fechar no meio volta com o tempo certo', () async {
     final first = await open();

@@ -404,12 +404,19 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e13",
       "stars": 1,
-      "fen": "k7/8/NK6/8/8/8/8/5B2 w - - 0 1",
+      "fen": "8/k1K5/3N4/8/8/8/8/5B2 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
+        {
+          "teach": "d6c8",
+          "accept": [
+            "d6c8"
+          ],
+          "reply": "a7a8"
+        },
         {
           "teach": "f1g2",
           "accept": [
@@ -419,279 +426,177 @@
       ]
     },
     {
-      "id": "e02",
+      "id": "e14",
       "stars": 1,
-      "fen": "1k6/3B4/1K6/2N5/8/8/8/8 w - - 0 1",
+      "fen": "8/8/8/8/8/1BK5/8/k2N4 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "ushenina",
       "line": [
         {
-          "teach": "c5a6",
+          "teach": "d1e3",
           "accept": [
-            "c5a6"
+            "d1e3"
           ],
-          "reply": "b8a8"
+          "reply": "a1b1"
         },
         {
-          "teach": "d7c6",
+          "teach": "e3c2",
           "accept": [
-            "d7c6"
+            "e3c2"
           ]
         }
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "6k1/5N2/5K2/8/8/3B4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d3f5",
-          "accept": [
-            "d3b1",
-            "d3c2",
-            "d3e4",
-            "d3f5",
-            "d3g6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "e5f7",
-          "accept": [
-            "d3a6",
-            "d3b1",
-            "d3b5",
-            "d3c2",
-            "d3c4",
-            "d3e2",
-            "d3e4",
-            "d3f1",
-            "d3f5",
-            "d3g6",
-            "e5f7",
-            "e5g6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e15",
       "stars": 2,
-      "fen": "4k3/5N1B/5K2/8/8/8/8/8 w - - 0 1",
+      "fen": "kN6/8/BK6/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "f7e5",
+          "teach": "b6c7",
           "accept": [
-            "f7e5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "k7/8/1K6/2N5/8/8/8/3B4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d1g4",
-          "accept": [
-            "d1e2",
-            "d1g4"
+            "b6c7"
           ],
-          "reply": "a8b8"
+          "reply": "a8a7"
         },
         {
-          "teach": "c5a6",
+          "teach": "a6c8",
           "accept": [
-            "c5a6"
+            "a6c8"
           ],
-          "reply": "b8a8"
+          "reply": "a7a8"
         },
         {
-          "teach": "g4f3",
+          "teach": "c8b7",
           "accept": [
-            "g4f3"
+            "c8b7"
+          ],
+          "reply": "a8a7"
+        },
+        {
+          "teach": "b8c6",
+          "accept": [
+            "b8c6"
           ]
         }
       ]
     },
     {
-      "id": "e07",
+      "id": "e17",
       "stars": 2,
-      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
+      "fen": "8/B3N3/3K1k2/8/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "karttunen",
       "line": [
         {
-          "teach": "e8b5",
+          "teach": "a7e3",
           "accept": [
-            "c4a5",
-            "c4b2",
-            "c4d2",
-            "c4e5",
-            "d6e7",
-            "e8a4",
-            "e8b5",
-            "e8c6",
-            "e8d7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/1k1N3B/4K3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
+            "a7e3"
+          ],
+          "reply": "f6f7"
+        },
         {
-          "teach": "h7d3",
+          "teach": "e3d4",
           "accept": [
-            "e6d5",
-            "e6d6",
-            "h7d3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 2,
-      "fen": "8/8/3B4/8/4N3/5K2/8/7k w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
+            "d6d7",
+            "e3d4",
+            "e3f4",
+            "e3g5"
+          ],
+          "reply": "f7e8"
+        },
         {
-          "teach": "e4f2",
+          "teach": "d6e6",
           "accept": [
-            "d6a3",
-            "d6b4",
-            "d6b8",
-            "d6c5",
-            "d6c7",
-            "d6e5",
-            "d6e7",
-            "d6f4",
-            "d6f8",
-            "d6g3",
-            "e4f2",
-            "e4g3"
+            "d6e6"
           ]
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e18",
       "stars": 3,
-      "fen": "4k3/3N3B/5K2/8/8/8/8/8 w - - 0 1",
+      "fen": "8/2kN4/4K3/8/2B5/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "wikipedia",
       "line": [
         {
-          "teach": "f6e6",
+          "teach": "c4b5",
           "accept": [
-            "f6e6"
+            "c4b5",
+            "c4d5"
           ],
-          "reply": "e8d8"
+          "reply": "c7d8"
         },
         {
-          "teach": "e6d6",
+          "teach": "d7f6",
           "accept": [
+            "d7b6",
+            "d7c5",
+            "d7e5",
+            "d7f6",
             "e6d6"
           ],
-          "reply": "d8e8"
+          "reply": "d8c7"
         },
         {
-          "teach": "h7g6",
+          "teach": "f6d5",
           "accept": [
-            "h7g6",
-            "h7g8"
+            "f6d5"
           ]
         }
       ]
     },
     {
-      "id": "e11",
+      "id": "e19",
       "stars": 3,
-      "fen": "7k/8/5K2/8/4B3/3N4/8/8 w - - 0 1",
+      "fen": "8/7k/5KN1/5B2/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "ushenina",
       "line": [
         {
-          "teach": "d3e5",
+          "teach": "f5e6",
           "accept": [
-            "d3e5",
-            "d3f4"
+            "f5e6"
           ],
-          "reply": "h8g8"
+          "reply": "h7h6"
         },
         {
-          "teach": "e5f7",
+          "teach": "e6g8",
           "accept": [
-            "e5f7",
-            "e5g6"
+            "e6g8"
           ],
-          "reply": "g8f8"
+          "reply": "h6h5"
         },
         {
-          "teach": "e4h7",
+          "teach": "g6e5",
           "accept": [
-            "e4h7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e12",
-      "stars": 3,
-      "fen": "1k6/2N5/2K5/8/8/4B3/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e3c5",
-          "accept": [
-            "e3b6",
-            "e3c5",
-            "e3d4",
-            "e3f2",
-            "e3g1"
+            "g6e5"
           ],
-          "reply": "b8c8"
+          "reply": "h5h4"
         },
         {
-          "teach": "c5a7",
+          "teach": "f6f5",
           "accept": [
-            "c5a7"
+            "f6f5",
+            "g8b3",
+            "g8d5"
           ],
-          "reply": "c8d8"
+          "reply": "h4g3"
         },
         {
-          "teach": "c7d5",
+          "teach": "e5g4",
           "accept": [
-            "c7d5"
+            "e5g4",
+            "g8b3"
           ]
         }
       ]
     }
   ],
-  "passScore": 14,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "wStart",
@@ -769,11 +674,19 @@
       "year": 2003
     },
     {
+      "id": "ushenina",
+      "kind": "game",
+      "white": "Anna Ushenina",
+      "black": "Olga Girya",
+      "event": "FIDE Women's Grand Prix, Genebra",
+      "year": 2013
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 23
+  "maxScore": 12
 }

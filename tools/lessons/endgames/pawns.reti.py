@@ -27,6 +27,9 @@ A7 = '8/k5K1/2P5/7p/8/8/8/8 b - - 0 1'             # rei preto em a7: perde
 RETI1928 = '8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1'    # Réti, 1928
 LASKER = '8/8/6K1/ppp5/7k/1P6/1P6/8 w - - 0 1'     # Lasker–Tarrasch, 41...Kxh4
 SARYCHEV = '8/1pPK3b/8/8/8/5k2/8/8 w - - 0 1'      # Sarychev
+PROKES = '3K4/7p/3k4/P7/8/8/8/8 w - - 0 1'         # Prokeš
+RETI_BISHOP = '5K2/k7/4P1p1/8/8/8/4b3/8 w - - 0 1'  # Réti, com bispo
+RETI_ZUGZWANG = 'K7/2P5/b4k1p/3P4/6P1/8/8/8 w - - 0 1'  # Réti, d6! e Ka7
 
 REFERENCES = [
     {'id': 'wikiReti', 'kind': 'web',
@@ -59,6 +62,15 @@ REFERENCES = [
      'black': 'Frank Marshall', 'event': 'Karlsbad, rodada 9', 'year': 1929},
     {'id': 'laskerTarrasch', 'kind': 'game', 'white': 'Emanuel Lasker',
      'black': 'Siegbert Tarrasch', 'event': 'São Petersburgo', 'year': 1914},
+    {'id': 'jcaselas', 'kind': 'study', 'author': 'JCaselas',
+     'title': 'Prokes-Studies',
+     'url': 'https://lichess.org/study/0LkYXajC'},
+    {'id': 'suvkos', 'kind': 'study', 'author': 'suvkos',
+     'title': 'The Reti Idea',
+     'url': 'https://lichess.org/study/TLBUTcye'},
+    {'id': 'tenakel', 'kind': 'study', 'author': 'Tenakel',
+     'title': 'Reti-Studies',
+     'url': 'https://lichess.org/study/pgf3RcVp'},
     {'id': 'tablebase', 'kind': 'tablebase',
      'title': 'Lichess tablebase (Syzygy)',
      'url': 'https://tablebase.lichess.ovh'},
@@ -121,33 +133,31 @@ write({
             play('finish', KG8, goal='draw'),
         ]},
     ],
+    # Do mais fácil para o mais difícil (a tela segue a ordem). Cortados na
+    # T58: e01, e03, e05 e e07 (repetem passos da lição), antes e02, e04, e06.
     'exercises': [
-        exercise('e01', 1, RETI, 'Kg7', accept='hold', goal='draw',
-                 origin='wikiReti'),
-        exercise('e02', 1, KH7, 'Kg6', accept='hold', goal='draw'),
-        exercise('e03', 1, CLOSE_A5, 'c7', accept='win', goal='win'),
-        exercise('e04', 1, G5, 'Kg7', accept='hold', goal='draw'),
-        exercise('e05', 2, after(MIRROR, 'Kb7 a4 Kc6 a3'),
-                 'Kd7 a2 f7 Kg7 Ke7', accept='hold', goal='draw'),
-        exercise('e06', 2, SWAP, 'Kg2 h5 Kf3 h6 Ke3',
-                 accept='hold', goal='draw'),
-        exercise('e07', 2, MARSHALL_WRONG, 'f4', accept='win', goal='win',
-                 origin='yatesMarshall'),
-        exercise('e08', 2, A7, 'h4 Kf6 Kb8', accept='win', goal='win'),
-        exercise('e09', 2, RETI1928, 'Kg6 Kb6 Kxg7 h5 Kxf6',
+        exercise('e09', 1, RETI1928, 'Kg6 Kb6 Kxg7 h5 Kxf6',
                  accept='hold', goal='draw', origin='wikiReti'),
-        exercise('e10', 3, LASKER, 'Kf5 Kg3 Ke4 Kf2 Kd5',
+        exercise('e08', 2, A7, 'h4 Kf6 Kb8', accept='win', goal='win'),
+        exercise('e12', 2, PROKES, 'Kc8 Kc6 Kb8 Kb5 Kb7 Kxa5 Kc6 h5 Kd5',
+                 accept='hold', goal='draw', origin='jcaselas'),
+        exercise('e10', 2, LASKER, 'Kf5 Kg3 Ke4 Kf2 Kd5',
                  accept='hold', goal='draw', origin='laskerTarrasch'),
+        exercise('e13', 3, RETI_BISHOP,
+                 'Ke7 g5 Kd6 g4 e7 Bb5 Kc5 Bd7 Kd4 g3 Ke3 g2 Kf2',
+                 accept='hold', goal='draw', origin='tenakel'),
         exercise('e11', 3, SARYCHEV, 'Kc8 b5 Kd7 b4 Kd6 Bf5 Ke5',
                  accept='hold', goal='draw', origin='drfiskeson'),
+        exercise('e14', 3, RETI_ZUGZWANG,
+                 'd6 Ke6 d7 Kxd7 Ka7 Bc8 Kb8 Ba6 Ka7 Kxc7 Kxa6 Kd6 Kb5 Ke5 '
+                 'Kc4 Kf4 Kd3', accept='hold', goal='draw', origin='tenakel'),
     ],
-    'passScore': 12,
+    'passScore': 10,
+    # Só o que a lição mostra: Réti 1928, Lasker–Tarrasch e Sarychev são
+    # exercícios, e a legenda deles entregaria a solução.
     'keyPositions': [
         {'id': 'reti', 'fen': RETI, 'ref': 'wikiReti'},
-        {'id': 'reti1928', 'fen': RETI1928, 'ref': 'wikiReti'},
-        {'id': 'laskerTarrasch', 'fen': LASKER, 'ref': 'laskerTarrasch'},
         {'id': 'yatesMarshall', 'fen': MARSHALL, 'ref': 'yatesMarshall'},
-        {'id': 'sarychev', 'fen': SARYCHEV, 'ref': 'drfiskeson'},
     ],
     'practice': {'fen': RETI, 'goal': 'draw', 'positionId': None},
     'references': REFERENCES,

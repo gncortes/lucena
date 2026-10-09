@@ -601,75 +601,49 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e06",
       "stars": 1,
-      "fen": "K6k/8/8/8/5pp1/8/8/1R6 w - - 0 1",
+      "fen": "8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "parligras",
       "line": [
         {
-          "teach": "b1b4",
+          "teach": "b3a2",
           "accept": [
-            "b1b4"
+            "b3a2"
           ]
         }
       ]
     },
     {
-      "id": "e02",
+      "id": "e12",
       "stars": 1,
-      "fen": "7k/8/8/3K4/8/5pp1/8/R7 w - - 0 1",
+      "fen": "8/8/6P1/8/5K1P/3k4/8/4r3 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "mavens",
       "line": [
         {
-          "teach": "d5e4",
+          "teach": "h4h5",
           "accept": [
-            "a1h1",
-            "d5d4",
-            "d5e4"
+            "h4h5"
           ]
         }
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "7k/4K3/8/8/8/5pp1/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e7f7",
-          "accept": [
-            "e7f7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "K6k/8/8/8/8/5pp1/8/5R2 b - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "g3g2",
-          "accept": [
-            "f3f2",
-            "g3g2"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e13",
       "stars": 2,
-      "fen": "K7/3k4/6R1/8/5p2/6p1/8/8 w - - 0 1",
+      "fen": "K7/2k5/R7/8/5p2/6p1/8/8 w - - 0 1",
       "goal": "win",
       "origin": "audax",
       "line": [
+        {
+          "teach": "a6g6",
+          "accept": [
+            "a6g6"
+          ],
+          "reply": "c7d7"
+        },
         {
           "teach": "g6g4",
           "accept": [
@@ -686,130 +660,173 @@
       ]
     },
     {
-      "id": "e06",
+      "id": "e14",
       "stars": 2,
-      "fen": "8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1",
+      "fen": "7R/8/8/8/2p5/3k1K2/7p/8 w - - 0 1",
       "goal": "win",
-      "origin": "audax",
+      "origin": "leko",
       "line": [
         {
-          "teach": "b3a2",
+          "teach": "f3f2",
           "accept": [
-            "b3a2"
+            "f3f2"
+          ],
+          "reply": "d3d2"
+        },
+        {
+          "teach": "h8h2",
+          "accept": [
+            "f2f1",
+            "h8h2"
           ]
         }
       ]
     },
     {
-      "id": "e07",
+      "id": "e16",
       "stars": 2,
-      "fen": "8/8/PK6/1P6/8/4k3/2r5/8 w - - 0 1",
+      "fen": "8/4K3/8/4kpp1/2R5/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "shankland",
+      "origin": "nabaty",
       "line": [
         {
-          "teach": "b6a7",
+          "teach": "e7f7",
           "accept": [
-            "b6a7",
-            "b6b7"
+            "e7f7"
+          ],
+          "reply": "g5g4"
+        },
+        {
+          "teach": "f7g6",
+          "accept": [
+            "c4c1",
+            "f7g6"
           ]
         }
       ]
     },
     {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/8/3R4/4K1k1/8/pp6/8/8 w - - 0 1",
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/R7/2K2kp1/7p/8/8/8/8 b - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "gao",
       "line": [
         {
-          "teach": "d6d1",
+          "teach": "f6e5",
           "accept": [
-            "d6d1"
+            "f6e5"
+          ],
+          "reply": "c6c5"
+        },
+        {
+          "teach": "h5h4",
+          "accept": [
+            "h5h4"
+          ],
+          "reply": "c5c4"
+        },
+        {
+          "teach": "e5e4",
+          "accept": [
+            "e5e4"
+          ],
+          "reply": "a7h7"
+        },
+        {
+          "teach": "g6g5",
+          "accept": [
+            "g6g5"
           ]
         }
       ]
     },
     {
-      "id": "e09",
+      "id": "e17",
       "stars": 3,
-      "fen": "8/8/8/2R1K1k1/8/pp6/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "fen": "8/8/8/7K/2k5/3pp3/8/5R2 w - - 0 1",
+      "goal": "draw",
+      "origin": "prokesStudy",
       "line": [
         {
-          "teach": "e5d4",
+          "teach": "h5g4",
           "accept": [
-            "e5d4"
+            "h5g4"
           ],
-          "reply": "g5f4"
+          "reply": "e3e2"
         },
         {
-          "teach": "d4c3",
+          "teach": "f1c1",
           "accept": [
-            "c5c1",
-            "c5c4",
-            "d4c3"
+            "f1c1"
+          ],
+          "reply": "c4d4"
+        },
+        {
+          "teach": "g4f3",
+          "accept": [
+            "g4f3"
+          ],
+          "reply": "d3d2"
+        },
+        {
+          "teach": "c1c4",
+          "accept": [
+            "c1c4"
+          ],
+          "reply": "d4c4"
+        },
+        {
+          "teach": "f3e2",
+          "accept": [
+            "f3e2"
           ]
         }
       ]
     },
     {
-      "id": "e10",
+      "id": "e18",
       "stars": 3,
-      "fen": "8/3K4/8/7k/5pp1/8/8/R7 w - - 0 1",
+      "fen": "8/8/8/5k2/8/8/2p1p1p1/2R3K1 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "retiStudy",
       "line": [
         {
-          "teach": "d7e6",
+          "teach": "g1f2",
           "accept": [
-            "d7e6"
+            "g1f2"
           ],
-          "reply": "h5h4"
+          "reply": "f5e4"
         },
         {
-          "teach": "e6e5",
+          "teach": "f2e2",
           "accept": [
-            "e6d5",
-            "e6e5",
-            "e6f5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/8/1K5k/5pp1/8/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b5c4",
-          "accept": [
-            "b5c4"
+            "f2e2"
           ],
-          "reply": "g4g3"
+          "reply": "e4d4"
         },
         {
-          "teach": "c4d3",
+          "teach": "c1g1",
           "accept": [
-            "c4d3"
+            "c1a1",
+            "c1e1",
+            "c1g1",
+            "e2d2"
           ],
-          "reply": "h5g4"
+          "reply": "d4e4"
         },
         {
-          "teach": "d3e2",
+          "teach": "g1e1",
           "accept": [
-            "d3e2"
+            "g1a1",
+            "g1c1",
+            "g1e1"
           ]
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "sixth",
@@ -895,6 +912,59 @@
       "url": "https://lichess.org/study/zLovcaQR"
     },
     {
+      "id": "mavens",
+      "kind": "study",
+      "author": "Mavens",
+      "title": "Mavens's Study- Rook against Pawns",
+      "url": "https://lichess.org/study/ngG45jve"
+    },
+    {
+      "id": "prokesStudy",
+      "kind": "study",
+      "author": "beteferoce",
+      "title": "Finales de Estudio - Prokes",
+      "url": "https://lichess.org/study/tJuNkFhl"
+    },
+    {
+      "id": "retiStudy",
+      "kind": "study",
+      "author": "Tenakel",
+      "title": "Reti-Studies",
+      "url": "https://lichess.org/study/pgf3RcVp"
+    },
+    {
+      "id": "parligras",
+      "kind": "game",
+      "white": "Parligras",
+      "black": "Gopal",
+      "event": "Gibraltar",
+      "year": 2012
+    },
+    {
+      "id": "leko",
+      "kind": "game",
+      "white": "Leko",
+      "black": "Markowski",
+      "event": "Polanica Zdroj",
+      "year": 1998
+    },
+    {
+      "id": "nabaty",
+      "kind": "game",
+      "white": "Tamir Nabaty",
+      "black": "Robert Zelcic",
+      "event": "Malinska",
+      "year": 2014
+    },
+    {
+      "id": "gao",
+      "kind": "game",
+      "white": "Sam Shankland",
+      "black": "Rui Gao",
+      "event": "Doha",
+      "year": 2014
+    },
+    {
       "id": "shankland",
       "kind": "game",
       "white": "Sam Shankland",
@@ -921,5 +991,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 21
+  "maxScore": 17
 }

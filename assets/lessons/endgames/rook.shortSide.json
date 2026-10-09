@@ -314,129 +314,8 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "profangel",
-      "line": [
-        {
-          "teach": "b8e8",
-          "accept": [
-            "b8e8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "4R3/8/8/8/4p3/4k3/r7/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "profangel",
-      "line": [
-        {
-          "teach": "e1f1",
-          "accept": [
-            "e1d1",
-            "e1f1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "5R2/8/8/8/5p2/5k2/r7/5K2 w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "line": [
-        {
-          "teach": "f1g1",
-          "accept": [
-            "f1g1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "line": [
-        {
-          "teach": "a7a1",
-          "accept": [
-            "a7a1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "R7/8/8/8/4p3/5k2/1r6/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "yuri61",
-      "line": [
-        {
-          "teach": "a8f8",
-          "accept": [
-            "a8e8",
-            "a8f8"
-          ],
-          "reply": "f3e3"
-        },
-        {
-          "teach": "e1f1",
-          "accept": [
-            "e1f1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "5r2/8/8/8/R7/2k5/4p1K1/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "line": [
-        {
-          "teach": "a4a3",
-          "accept": [
-            "a4a3"
-          ],
-          "reply": "c3b2"
-        },
-        {
-          "teach": "a3e3",
-          "accept": [
-            "a3e3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1",
-      "goal": "draw",
-      "origin": "noseknows",
-      "line": [
-        {
-          "teach": "g2g3",
-          "accept": [
-            "g2g3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e08",
-      "stars": 2,
+      "stars": 1,
       "fen": "5R2/8/8/8/8/5p2/5k1K/5r2 w - - 0 1",
       "goal": "draw",
       "origin": "profangel",
@@ -454,6 +333,138 @@
           "accept": [
             "a8a2",
             "a8a3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 2,
+      "fen": "5R2/8/8/8/4p3/4k3/7r/4K3 w - - 0 1",
+      "goal": "draw",
+      "origin": "karstedt",
+      "line": [
+        {
+          "teach": "e1f1",
+          "accept": [
+            "e1f1"
+          ],
+          "reply": "h2h1"
+        },
+        {
+          "teach": "f1g2",
+          "accept": [
+            "f1g2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 2,
+      "fen": "4R3/8/8/8/8/4p3/4k1K1/4r3 w - - 0 1",
+      "goal": "draw",
+      "origin": "karstedt",
+      "line": [
+        {
+          "teach": "e8a8",
+          "accept": [
+            "e8a8"
+          ],
+          "reply": "e2d2"
+        },
+        {
+          "teach": "a8a2",
+          "accept": [
+            "a8a2",
+            "a8a3",
+            "a8a4",
+            "a8a5",
+            "a8a6",
+            "a8a7",
+            "a8d8",
+            "g2f3",
+            "g2g3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "r2K4/3P1k2/8/8/8/8/8/4R3 w - - 0 1",
+      "goal": "win",
+      "origin": "rookPawn",
+      "line": [
+        {
+          "teach": "d8c7",
+          "accept": [
+            "d8c7"
+          ],
+          "reply": "a8a7"
+        },
+        {
+          "teach": "c7c8",
+          "accept": [
+            "c7c6",
+            "c7c8",
+            "c7d6",
+            "c7d8"
+          ],
+          "reply": "a7a8"
+        },
+        {
+          "teach": "c8b7",
+          "accept": [
+            "c8b7",
+            "c8c7"
+          ],
+          "reply": "a8d8"
+        },
+        {
+          "teach": "b7c7",
+          "accept": [
+            "b7c6",
+            "b7c7",
+            "e1d1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "5R2/8/8/8/4p3/8/4k1K1/1r6 w - - 0 1",
+      "goal": "draw",
+      "origin": "yuri61",
+      "line": [
+        {
+          "teach": "f8f2",
+          "accept": [
+            "f8a8",
+            "f8f2"
+          ],
+          "reply": "e2d3"
+        },
+        {
+          "teach": "f2a2",
+          "accept": [
+            "f2a2"
+          ],
+          "reply": "e4e3"
+        },
+        {
+          "teach": "a2a3",
+          "accept": [
+            "a2a3"
+          ],
+          "reply": "d3d2"
+        },
+        {
+          "teach": "a3a2",
+          "accept": [
+            "a3a2",
+            "g2f3"
           ]
         }
       ]
@@ -508,47 +519,9 @@
           ]
         }
       ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "5R2/8/8/8/4p3/8/4k1K1/1r6 w - - 0 1",
-      "goal": "draw",
-      "origin": "yuri61",
-      "line": [
-        {
-          "teach": "f8f2",
-          "accept": [
-            "f8a8",
-            "f8f2"
-          ],
-          "reply": "e2d3"
-        },
-        {
-          "teach": "f2a2",
-          "accept": [
-            "f2a2"
-          ],
-          "reply": "e4e3"
-        },
-        {
-          "teach": "a2a3",
-          "accept": [
-            "a2a3"
-          ],
-          "reply": "d3d2"
-        },
-        {
-          "teach": "a3a2",
-          "accept": [
-            "a3a2",
-            "g2f3"
-          ]
-        }
-      ]
     }
   ],
-  "passScore": 11,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "behind",
@@ -617,6 +590,13 @@
       "url": "https://lichess.org/study/UsqmCsgC"
     },
     {
+      "id": "gotham",
+      "kind": "study",
+      "author": "GothamMath",
+      "title": "Short-Side Defence",
+      "url": "https://lichess.org/study/F1UmnASX"
+    },
+    {
       "id": "practice2",
       "kind": "study",
       "author": "Lichess",
@@ -638,5 +618,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 18
+  "maxScore": 13
 }

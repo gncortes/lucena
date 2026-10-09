@@ -560,6 +560,7 @@
   "endgames.lesson.test": "Etapas feitas. Agora o teste final: sem a minha ajuda. Quando a nota passar do mínimo, eu libero o final de verdade.",
   "endgames.lesson.passed": "Aprovado. Agora só falta provar isso contra um adversário de carne e osso. Ou de silício.",
   "endgames.lesson.failed": "Ainda não foi desta vez. Releia a lição se quiser e refaça os exercícios: a segunda vez costuma ser bem melhor.",
+  "endgames.lesson.lessonLeft": "Nota alcançada nos exercícios. Agora termine as etapas da lição para concluir a aula e liberar o final de verdade.",
   "module.notation": "Notação",
   "notation.coordinates.title": "As coordenadas",
   "notation.coordinates.summary": "Cada casa tem um nome: a letra da coluna e o número da fileira.",

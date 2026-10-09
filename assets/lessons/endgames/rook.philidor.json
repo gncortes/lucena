@@ -269,273 +269,124 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e15",
       "stars": 1,
-      "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+      "fen": "8/8/8/8/3kp1R1/8/7r/4K3 w - - 0 1",
       "goal": "draw",
       "origin": "practice",
       "line": [
         {
-          "teach": "b1b3",
+          "teach": "g4g3",
           "accept": [
-            "b1b3",
-            "b1b5",
-            "b1b6",
-            "b1b7",
-            "b1b8"
+            "g4g3",
+            "g4g5",
+            "g4g6",
+            "g4g7",
+            "g4g8"
           ]
         }
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a3a8",
-          "accept": [
-            "a3a5",
-            "a3a6",
-            "a3a7",
-            "a3a8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "R7/8/8/8/8/4pk2/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a8f8",
-          "accept": [
-            "a8f8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
-      "goal": "draw",
-      "origin": "yuri61",
-      "line": [
-        {
-          "teach": "g8g3",
-          "accept": [
-            "d1c1",
-            "g8g3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/8/8/8/3k4/4p3/4K3/8 w - - 0 1",
+      "fen": "8/8/8/8/3pk3/R7/8/3K3r w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "audax6",
       "line": [
         {
-          "teach": "e2e1",
+          "teach": "d1d2",
           "accept": [
-            "e2e1"
+            "d1c2",
+            "d1d2"
           ]
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e11",
       "stars": 2,
-      "fen": "8/8/8/8/4pk2/R7/7r/4K3 w - - 0 1",
+      "fen": "8/8/8/5R2/3kp3/8/r7/4K3 w - - 0 1",
       "goal": "draw",
       "origin": "wikipedia",
       "line": [
         {
-          "teach": "a3b3",
+          "teach": "f5b5",
           "accept": [
-            "a3a5",
-            "a3a6",
-            "a3a7",
-            "a3a8",
-            "a3b3",
-            "a3c3",
             "e1d1",
+            "e1f1",
+            "f5b5",
+            "f5g5",
+            "f5h5"
+          ],
+          "reply": "d4e3"
+        },
+        {
+          "teach": "b5b3",
+          "accept": [
+            "b5b3",
             "e1f1"
-          ],
-          "reply": "e4e3"
-        },
-        {
-          "teach": "b3b8",
-          "accept": [
-            "b3b5",
-            "b3b6",
-            "b3b7",
-            "b3b8"
-          ],
-          "reply": "f4f3"
-        },
-        {
-          "teach": "b8f8",
-          "accept": [
-            "b8f8"
           ]
         }
       ]
     },
     {
-      "id": "e07",
-      "stars": 2,
-      "fen": "4R3/8/8/8/8/3kp3/7r/4K3 w - - 0 1",
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/8/8/8/2pk4/8/7r/3KR3 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "line": [
         {
-          "teach": "e8d8",
+          "teach": "d1c1",
           "accept": [
-            "e8d8"
+            "d1c1"
+          ],
+          "reply": "d4c3"
+        },
+        {
+          "teach": "e1e3",
+          "accept": [
+            "e1e3"
           ]
         }
       ]
     },
     {
-      "id": "e08",
-      "stars": 2,
-      "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
-      "goal": "draw",
-      "origin": "ehenkes",
-      "line": [
-        {
-          "teach": "g8d8",
-          "accept": [
-            "d1c2",
-            "d1e1",
-            "d1e2",
-            "g8b8",
-            "g8c8",
-            "g8d8",
-            "g8e8",
-            "g8f8",
-            "g8g6",
-            "g8g7",
-            "g8h8"
-          ],
-          "reply": "a5d5"
-        },
-        {
-          "teach": "d8d5",
-          "accept": [
-            "d8a8",
-            "d8b8",
-            "d8c8",
-            "d8d5",
-            "d8e8",
-            "d8f8",
-            "d8g8",
-            "d8h8"
-          ],
-          "reply": "d4d5"
-        },
-        {
-          "teach": "d1e2",
-          "accept": [
-            "d1e1",
-            "d1e2"
-          ],
-          "reply": "d5d4"
-        },
-        {
-          "teach": "e2e1",
-          "accept": [
-            "e2e1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
+      "id": "e14",
       "stars": 3,
-      "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
+      "fen": "8/8/8/8/1kp5/1r6/4K3/4R3 w - - 0 1",
       "goal": "draw",
-      "origin": "noseknows",
+      "origin": "own",
       "line": [
         {
-          "teach": "e1e2",
+          "teach": "e2d2",
           "accept": [
-            "e1d2",
-            "e1e2",
-            "e1f2"
+            "e2d2"
           ],
-          "reply": "h1h2"
+          "reply": "b3b2"
         },
         {
-          "teach": "e2e1",
+          "teach": "d2c1",
           "accept": [
-            "e2d1",
-            "e2e1",
-            "e2f1"
+            "d2c1"
           ],
-          "reply": "e4e3"
+          "reply": "b2h2"
         },
         {
-          "teach": "a3a8",
+          "teach": "e1e3",
           "accept": [
-            "a3a5",
-            "a3a6",
-            "a3a7",
-            "a3a8"
-          ],
-          "reply": "f4f3"
-        },
-        {
-          "teach": "a8f8",
-          "accept": [
-            "a8f8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "practice2",
-      "line": [
-        {
-          "teach": "f4f7",
-          "accept": [
-            "f4f5",
-            "f4f6",
-            "f4f7",
-            "f4f8"
-          ],
-          "reply": "d4d3"
-        },
-        {
-          "teach": "f7e7",
-          "accept": [
-            "f7e7"
-          ],
-          "reply": "h2h1"
-        },
-        {
-          "teach": "e1f2",
-          "accept": [
-            "e1f2"
+            "e1e3",
+            "e1e5",
+            "e1e6",
+            "e1e7",
+            "e1e8"
           ]
         }
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 7,
   "keyPositions": [
     {
       "id": "classic",
@@ -633,11 +484,18 @@
       "year": 1999
     },
     {
+      "id": "audax6",
+      "kind": "study",
+      "author": "Audax6",
+      "title": "14 The Philidor Position (Third Rank Defense)",
+      "url": "https://lichess.org/study/AvGk7RWH"
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 18
+  "maxScore": 11
 }

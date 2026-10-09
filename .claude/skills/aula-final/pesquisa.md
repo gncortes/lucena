@@ -49,7 +49,13 @@ Uma seção curta por fonte consultada: a ordem das ideias, os nomes que usa par
 Quem estudou primeiro, quando, partidas conhecidas (jogadores, torneio, ano, resultado). Cada fato com a fonte.
 
 ## Plano da aula
-Os passos da lição, em ordem, e os exercícios previstos (ideia de cada um e estrelas).
+Os passos da lição, em ordem.
+
+## Ideias para os exercícios
+Uma linha por ideia distinta do tema; é dela que saem os exercícios, um por linha. Mexer nos reis, espelhar ou trocar as cores não é ideia nova, e posição que a lição mostra não entra.
+
+| Ideia | Posição (FEN) | ★ | Por que é diferente das outras | Fonte |
+|---|---|---|---|---|
 
 ## Treino final
 A posição do treino e o id do catálogo, se houver. Se o catálogo não tem a posição, dizer aqui.

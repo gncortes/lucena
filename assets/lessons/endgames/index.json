@@ -30,7 +30,10 @@
         "pawns.shoulder",
         "pawns.breakthrough",
         "pawns.outsidePasser",
-        "pawns.protectedPasser"
+        "pawns.protectedPasser",
+        "pawns.minedSquares",
+        "pawns.spareTempi",
+        "pawns.correspondingSquares"
       ]
     },
     {
@@ -40,7 +43,8 @@
         "queen.vsPawn.draws",
         "queen.vsRook.philidor",
         "queen.vsRook.approach",
-        "queen.vsRook.thirdRank"
+        "queen.vsRook.thirdRank",
+        "queen.vsRookPawn"
       ]
     },
     {

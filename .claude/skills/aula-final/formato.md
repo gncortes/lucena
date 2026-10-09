@@ -78,7 +78,7 @@ catálogo, troque também, no mapa, o tipo dela de `catalog` para `endgame` (o
 
   Em finais como bispo e cavalo, `win` aceita quase todos os lances legais e o exercício não ensina nada: use `best` ou lista. `best` precisa da distância do mate, que a tabela só dá até 5 peças.
 - No JSON gerado, cada vez vira `{"teach": …, "accept": […], "reply": …}`: o app põe o lance ensinado em primeiro entre os aceitos (é ele que a dica mostra e a quem a resposta combinada serve; outro lance aceito que deixe a resposta ilegal encerra a linha como cumprida).
-- `exercises`: de 8 a 12. `stars` de 1 a 3. `origin` é `own` (posição própria) ou o id de uma referência.
+- `exercises`: um por ideia distinta, sem cota (mínimo 3). `stars` de 1 a 3. `origin` é `own` (posição própria) ou o id de uma referência. Dois exercícios que diferem só pela casa dos reis, pelo espelho ou pelas cores são o mesmo exercício: o script reprova (`tools/lessons/check_variety.py` tem a conta).
 - `passScore`: o mínimo de estrelas para liberar o passo final. Padrão: 60% do total, arredondado para cima. O script exige entre a metade e o total.
 - `keyPositions`: as posições-base que o botão de informações mostra. `ref` (opcional) aponta a referência do crédito.
 - `practice`: a posição do treino final. `positionId` é o id em `assets/positions/positions.json`, quando o catálogo tem o final (é ele que liga a aula ao speedrun de final); sem ele, o treino abre o `fen` como posição personalizada.
@@ -101,13 +101,17 @@ final: os exercícios com estrelas e a nota mínima.
 
 ## Estrelas
 
-| Estrelas | O exercício pede |
-|---|---|
-| 1 | reconhecer a posição-chave e achar o lance da técnica, um ou dois lances |
-| 2 | chegar à posição-chave de perto, ou escapar de uma armadilha (afogamento, canto errado) |
-| 3 | o caminho de longe, a defesa mais teimosa, ou escolher entre dois planos em que só um funciona |
+A régua é alta de propósito: o aluno aprende quando gasta tempo na posição. Exercício que se resolve de
+olhar, porque é a posição da lição com outro rei, não ensina.
 
-Uma aula boa tem os três níveis, com mais exercícios de 1 e 2 do que de 3.
+| Estrelas | O exercício pede | Tempo esperado |
+|---|---|---|
+| 1 | aplicar a técnica numa posição que a lição **não** mostrou (outra estrutura, outro material, outra ala com algo a mais); um ou dois lances, mas é preciso reconhecer o tema | 1 a 2 minutos |
+| 2 | uma decisão: dois planos em que só um funciona, uma exceção à regra, uma conta (o quadrado, a oposição distante), uma defesa com um só lance que segura | uns 3 minutos |
+| 3 | composição no estilo de estudo: solução única, lance que surpreende, várias jogadas de profundidade, a defesa mais teimosa; de preferência um estudo publicado, com crédito | uns 5 minutos |
+
+Uma aula boa tem os três níveis. A dificuldade vem da **ideia**, não do tamanho do tabuleiro: 3 estrelas é
+uma ideia a mais, não a mesma posição com o rei mais longe.
 
 ## Falas: `assets/lessons/<pt|en>/endgames/<id>.json`
 
@@ -133,7 +137,7 @@ Mapa de chave para texto, como em `assets/lessons/pt/lessons.json`. As mesmas ch
 ## O que o script confere
 
 FEN válido; lances e respostas legais; as regras de uma parte boa (acima); lances de `demo` legais e sem
-jogar fora o objetivo; lance ensinado entre os aceitos; nenhum lance aceito que jogue fora o objetivo; posição de cada exercício, passo `play` e treino com o veredito da tabela igual ao objetivo; estrelas de 1 a 3; de 8 a 12 exercícios; `passScore` no intervalo; referências com os campos do tipo; origem de cada exercício; todas as chaves de fala em pt e en, sem sobra e sem "mate em N".
+jogar fora o objetivo; lance ensinado entre os aceitos; nenhum lance aceito que jogue fora o objetivo; posição de cada exercício, passo `play` e treino com o veredito da tabela igual ao objetivo; estrelas de 1 a 3; ao menos 3 exercícios, sem dois iguais a menos da casa dos reis, do espelho ou das cores (as outras repetições saem como aviso no relatório); `passScore` no intervalo; referências com os campos do tipo; origem de cada exercício; todas as chaves de fala em pt e en, sem sobra e sem "mate em N".
 
 Vitória que só existe sem a regra dos 50 lances (a tabela responde `cursed-win`) não passa como `win`. Em dois cavalos contra peão isso é parte da aula: escolha posições que ganham dentro da regra e conte o resto na fala.
 

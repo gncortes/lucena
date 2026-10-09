@@ -630,24 +630,6 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "8/8/8/k7/8/8/K4P2/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a2a3",
-          "accept": "win",
-          "reply": "a5b5"
-        },
-        {
-          "teach": "a3b3",
-          "accept": "win"
-        }
-      ]
-    },
-    {
       "id": "e02",
       "stars": 1,
       "fen": "7k/6p1/6K1/8/8/8/4P3/8 w - - 0 1",
@@ -661,42 +643,6 @@
         },
         {
           "teach": "e2e4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/1k6/8/8/K3P3/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a2b3",
-          "accept": "win",
-          "reply": "b5c5"
-        },
-        {
-          "teach": "b3c3",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/2p5/8/8/2K5/2P5/8/k7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c4b3",
-          "accept": "win",
-          "reply": "a1b1"
-        },
-        {
-          "teach": "c3c4",
           "accept": "win"
         }
       ]
@@ -720,54 +666,8 @@
       ]
     },
     {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/4k3/2p5/7K/8/1P6/8 b - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e6f5",
-          "accept": "win",
-          "reply": "h4g3"
-        },
-        {
-          "teach": "f5e4",
-          "accept": "win",
-          "reply": "g3f2"
-        },
-        {
-          "teach": "e4d3",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/2p5/6p1/k2K2P1/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d5c5",
-          "accept": "hold",
-          "reply": "a5a4"
-        },
-        {
-          "teach": "c5c4",
-          "accept": "hold",
-          "reply": "a4a3"
-        },
-        {
-          "teach": "c4c3",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
       "id": "e08",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/1p6/8/8/8/3K4/P7/6k1 w - - 0 1",
       "goal": "win",
       "origin": "manoj",
@@ -789,24 +689,24 @@
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/p4K2/P7/8/8/8/1k6/8 w - - 0 1",
+      "id": "e11",
+      "stars": 2,
+      "fen": "8/6p1/7k/8/1K6/8/1P6/8 w - - 0 1",
       "goal": "win",
-      "origin": "poojakanth",
+      "origin": "njswift",
       "turns": [
         {
-          "teach": "f7e6",
+          "teach": "b4c5",
           "accept": "win",
-          "reply": "b2a2"
+          "reply": "h6g6"
         },
         {
-          "teach": "e6d5",
+          "teach": "b2b4",
           "accept": "win",
-          "reply": "a2a3"
+          "reply": "g6f7"
         },
         {
-          "teach": "d5c6",
+          "teach": "b4b5",
           "accept": "win"
         }
       ]
@@ -816,7 +716,7 @@
       "stars": 3,
       "fen": "8/2p5/6K1/8/8/5k2/P7/8 w - - 0 1",
       "goal": "win",
-      "origin": "sibi",
+      "origin": "njswift",
       "turns": [
         {
           "teach": "g6f5",
@@ -833,9 +733,60 @@
           "accept": "win"
         }
       ]
+    },
+    {
+      "id": "e12",
+      "stars": 3,
+      "fen": "8/2p5/8/8/5K2/8/1k5P/8 w - - 0 1",
+      "goal": "win",
+      "origin": "njswift",
+      "turns": [
+        {
+          "teach": "f4e4",
+          "accept": "win",
+          "reply": "b2b3"
+        },
+        {
+          "teach": "e4d4",
+          "accept": "win",
+          "reply": "b3b4"
+        },
+        {
+          "teach": "h2h4",
+          "accept": "win",
+          "reply": "c7c5"
+        },
+        {
+          "teach": "d4e3",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 3,
+      "fen": "8/1pK5/8/8/8/8/k4P2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "njswift",
+      "turns": [
+        {
+          "teach": "c7d6",
+          "accept": "win",
+          "reply": "a2a3"
+        },
+        {
+          "teach": "d6c5",
+          "accept": "win",
+          "reply": "a3a4"
+        },
+        {
+          "teach": "f2f4",
+          "accept": "win"
+        }
+      ]
     }
   ],
-  "passScore": 12,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "stairs",
@@ -865,7 +816,7 @@
     {
       "id": "defend",
       "fen": "8/5p2/1p6/1P2K2k/8/8/8/8 w - - 0 1",
-      "ref": "poojakanth"
+      "ref": "grigoriev"
     }
   ],
   "practice": {
@@ -917,6 +868,20 @@
       "author": "sibi.m",
       "title": "shouldering in the king and pawn endgame",
       "url": "https://lichess.org/study/UDGX1K3Z"
+    },
+    {
+      "id": "grigoriev",
+      "kind": "study",
+      "author": "humoresque",
+      "title": "Grigoriev, Nikolai",
+      "url": "https://lichess.org/study/0iaDBwxT"
+    },
+    {
+      "id": "njswift",
+      "kind": "study",
+      "author": "njswift",
+      "title": "Pawn Races",
+      "url": "https://lichess.org/study/OX3hApYw"
     },
     {
       "id": "wikiKing",

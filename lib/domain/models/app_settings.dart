@@ -51,6 +51,9 @@ abstract class AppSettings with _$AppSettings {
     /// Nas aulas de finais, com o teste de nível feito: a trilha inteira
     /// ("Todos") em vez do roteiro ("Para você") (T52).
     @Default(false) bool endgamesAll,
+
+    /// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
+    @Default(false) bool endgamesHideDone,
   }) = _AppSettings;
 
   /// As escolhas do tempo de pensar nas aulas, em minutos; 0 é o

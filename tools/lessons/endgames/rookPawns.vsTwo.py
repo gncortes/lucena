@@ -50,6 +50,22 @@ REFERENCES = [
     {'id': 'anki', 'kind': 'study', 'author': 'Anki_Thief_of_Crowns',
      'title': 'Rook against Pawns',
      'url': 'https://lichess.org/study/zLovcaQR'},
+    {'id': 'mavens', 'kind': 'study', 'author': 'Mavens',
+     'title': "Mavens's Study- Rook against Pawns",
+     'url': 'https://lichess.org/study/ngG45jve'},
+    {'id': 'prokesStudy', 'kind': 'study', 'author': 'beteferoce',
+     'title': 'Finales de Estudio - Prokes',
+     'url': 'https://lichess.org/study/tJuNkFhl'},
+    {'id': 'retiStudy', 'kind': 'study', 'author': 'Tenakel',
+     'title': 'Reti-Studies', 'url': 'https://lichess.org/study/pgf3RcVp'},
+    {'id': 'parligras', 'kind': 'game', 'white': 'Parligras',
+     'black': 'Gopal', 'event': 'Gibraltar', 'year': 2012},
+    {'id': 'leko', 'kind': 'game', 'white': 'Leko', 'black': 'Markowski',
+     'event': 'Polanica Zdroj', 'year': 1998},
+    {'id': 'nabaty', 'kind': 'game', 'white': 'Tamir Nabaty',
+     'black': 'Robert Zelcic', 'event': 'Malinska', 'year': 2014},
+    {'id': 'gao', 'kind': 'game', 'white': 'Sam Shankland',
+     'black': 'Rui Gao', 'event': 'Doha', 'year': 2014},
     {'id': 'shankland', 'kind': 'game', 'white': 'Sam Shankland',
      'black': 'Parham Maghsoodloo', 'event': 'Praga', 'year': 2022},
     {'id': 'wikiEndgame', 'kind': 'web', 'title': 'Wikipedia: Chess endgame',
@@ -123,27 +139,35 @@ PARTS = [
 ]
 
 EXERCISES = [
-    exercise('e01', 1, 'K6k/8/8/8/5pp1/8/8/1R6 w - - 0 1', 'Rb4',
-             accept='only'),
-    exercise('e02', 1, '7k/8/8/3K4/8/5pp1/8/R7 w - - 0 1', 'Ke4',
-             accept='win'),
-    exercise('e03', 1, '7k/4K3/8/8/8/5pp1/8/R7 w - - 0 1', 'Kf7',
-             accept='only'),
-    exercise('e04', 1, after(SIXTH, 'Rf1'), 'g2', accept='win'),
-    exercise('e05', 2, 'K7/3k4/6R1/8/5p2/6p1/8/8 w - - 0 1', 'Rg4 g2 Rxg2',
-             accept='only', origin='audax'),
-    exercise('e06', 2, '8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1', 'Ka2',
-             accept='only', origin='audax'),
-    exercise('e07', 2, '8/8/PK6/1P6/8/4k3/2r5/8 w - - 0 1', 'Ka7',
-             accept='win', origin='shankland'),
-    exercise('e08', 2, '8/8/3R4/4K1k1/8/pp6/8/8 w - - 0 1', 'Rd1',
-             accept='hold', goal='draw'),
-    exercise('e09', 3, '8/8/8/2R1K1k1/8/pp6/8/8 w - - 0 1', 'Kd4+ Kf4 Kc3',
-             accept={1: 'only', 2: 'win'}),
-    exercise('e10', 3, '8/3K4/8/7k/5pp1/8/8/R7 w - - 0 1', 'Ke6 Kh4 Ke5',
-             accept={1: 'only', 2: 'win'}),
-    exercise('e11', 3, '8/8/8/1K5k/5pp1/8/8/R7 w - - 0 1',
-             'Kc4 g3 Kd3 Kg4 Ke2', accept='only'),
+    # Parligras–Gopal, Gibraltar 2012 (no estudo de Audax6): o rei antes.
+    exercise('e06', 1, '8/8/4K3/R7/1p6/pk6/8/8 b - - 0 1', 'Ka2',
+             accept='only', origin='parligras'),
+    # Mavens: o peão de trás anda e protege o da frente.
+    exercise('e12', 1, '8/8/6P1/8/5K1P/3k4/8/4r3 w - - 0 1', 'h5',
+             accept='only', origin='mavens'),
+    # Audax6, cap. 3: xeque (empata) ou atacar por trás (ganha).
+    exercise('e13', 2, 'K7/2k5/R7/8/5p2/6p1/8/8 w - - 0 1',
+             'Rg6 Kd7 Rg4 g2 Rxg2', accept='only', origin='audax'),
+    # Leko–Markowski, Polanica Zdroj 1998: peões separados, o rei toma.
+    exercise('e14', 2, '7R/8/8/8/2p5/3k1K2/7p/8 w - - 0 1', 'Kf2 Kd2 Rxh2',
+             accept={1: 'only', 2: 'win'}, origin='leko'),
+    # Nabaty–Zelcic, Malinska 2014: o rei contorna os peões por trás.
+    exercise('e16', 2, '8/4K3/8/4kpp1/2R5/8/8/8 w - - 0 1', 'Kf7 g4 Kg6',
+             accept={1: 'only', 2: 'win'}, origin='nabaty'),
+    # Shankland–Gao, Doha 2014: o rei dos peões barra o rei da torre.
+    exercise('e15', 3, '8/R7/2K2kp1/7p/8/8/8/8 b - - 0 1',
+             'Ke5 Kc5 h4 Kc4 Ke4 Rh7 g5', accept='hold', goal='draw',
+             origin='gao'),
+    # Prokeš, 1939: quatro lances únicos e a torre se entrega.
+    exercise('e17', 3, '8/8/8/7K/2k5/3pp3/8/5R2 w - - 0 1',
+             'Kg4 e2 Rc1+ Kd4 Kf3 d2 Rc4+ Kxc4 Kxe2', accept='hold',
+             goal='draw', origin='prokesStudy'),
+    # Réti: torre contra três peões; o rei toma o do meio, a torre muda de
+    # coluna.
+    exercise('e18', 3, '8/8/8/5k2/8/8/2p1p1p1/2R3K1 w - - 0 1',
+             'Kf2 Ke4 Kxe2 Kd4 Rg1 Ke4 Re1',
+             accept={1: 'only', 2: 'only', 3: 'win', 4: 'win'},
+             origin='retiStudy'),
 ]
 
 LESSON = {
@@ -152,7 +176,7 @@ LESSON = {
     'skills': ['rook.vsTwoPawns'],
     'parts': PARTS,
     'exercises': EXERCISES,
-    'passScore': 13,
+    'passScore': 11,
     'keyPositions': [
         {'id': 'sixth', 'fen': SIXTH, 'ref': 'wikiEndgame'},
         {'id': 'fifth', 'fen': FIFTH},
