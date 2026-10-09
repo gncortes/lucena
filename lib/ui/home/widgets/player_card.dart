@@ -7,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// O jogador no alto da tela inicial: o apelido e a faixa, e o rating em
 /// destaque com a variação da última partida. Tocar abre os detalhes do
@@ -60,26 +61,11 @@ class PlayerCard extends StatelessWidget {
                     state.ratingChange ?? 0,
                   ),
                   excludeSemantics: true,
-                  child: Column(
+                  // Só o número e a seta: o card inteiro já abre o rating.
+                  child: Row(
                     key: HomeKeys.rating,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.reportRatingLabel,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 18,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
                       // Ao voltar de uma partida, o número conta até o
                       // rating novo.
                       TweenAnimationBuilder<double>(
@@ -92,6 +78,8 @@ class PlayerCard extends StatelessWidget {
                           valueKey: HomeKeys.ratingValue,
                         ),
                       ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
                     ],
                   ),
                 ),
