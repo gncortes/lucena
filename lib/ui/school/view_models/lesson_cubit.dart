@@ -564,16 +564,101 @@ class LessonCubit extends Cubit<LessonState> {
     emit(state.copyWith(fen: step.fen, clearLastMove: true));
   }
 
-  // No passo de pensar, o aluno testa ideias à vontade, pelos dois lados,
-  // sem certo nem errado; "Voltar à posição" desfaz e "Ver explicação"
-  // segue para a explicação.
+  // No passo de pensar, o lance do aluno é a resposta: o cronômetro para e
+  // a explicação vem logo, com um "correto" se ele achou o lance da aula
+  // (T59). "Ver explicação" faz o mesmo sem lance.
   Future<void> _playThink(Move move) async {
     final position = _position();
     if (position == null) return;
     final played = GameRules.play(position, move);
     if (played == null) return;
     unawaited(_sounds?.move(played.san));
+    final stepIndex = state.step;
     emit(state.copyWith(fen: played.position.fen, lastMove: move));
+    // Uma pausa para o aluno ver o próprio lance antes da explicação.
+    await Future<void>.delayed(replyDelay);
+    if (isClosed || state.step != stepIndex) return;
+    final nextIndex = stepIndex + 1;
+    if (nextIndex < state.stepCount) {
+      final steps = state.lesson!.steps;
+      final thinkFen = steps[stepIndex].fen;
+      // O lance que a explicação mostra: o tabuleiro segue dele.
+      if (_guessed(steps[nextIndex], move.uci)) {
+        _explainGuessed(nextIndex, played.position.fen, move);
+        await _save();
+        return;
+      }
+      // Outro lance que a aula também aceita (o passo de jogar da mesma
+      // posição): está certo, mas a explicação parte da posição dela.
+      if (_alsoAccepted(steps, nextIndex, thinkFen, move.uci)) {
+        _explainGuessed(nextIndex, null, move);
+        await _save();
+        return;
+      }
+    }
+    await _explain();
+  }
+
+  /// A explicação: o passo seguinte (ou o fim da parte).
+  Future<void> _explain() async {
+    final nextStep = state.step + 1;
+    if (nextStep < state.stepCount) {
+      emit(_open(state, nextStep));
+      await _save();
+      return;
+    }
+    await _finish();
+  }
+
+  /// [uci] é aceito pelo passo de jogar que vem depois da explicação, na
+  /// mesma posição do passo de pensar (antes do próximo passo de pensar).
+  static bool _alsoAccepted(
+    List<LessonStep> steps,
+    int from,
+    String? fen,
+    String uci,
+  ) {
+    for (final step in steps.skip(from)) {
+      if (step is ThinkStep) return false;
+      if (step is MoveStep && step.fen == fen && step.line.isNotEmpty) {
+        return step.line.first.accept.contains(uci);
+      }
+    }
+    return false;
+  }
+
+  /// O lance [uci] é o que o passo [next] (a explicação) mostra primeiro.
+  static bool _guessed(LessonStep next, String uci) => switch (next) {
+    TalkStep(:final arrows) when arrows.isNotEmpty =>
+      '${arrows.first.$1}${arrows.first.$2}' == uci,
+    DemoStep(:final line) when line.isNotEmpty => line.first.uci == uci,
+    MoveStep(:final line) when line.isNotEmpty => line.first.accept.contains(
+      uci,
+    ),
+    _ => false,
+  };
+
+  /// Acertou o lance pensando: a explicação abre com um "correto" antes da
+  /// fala e, com [fen] (o lance que ela mostra), o tabuleiro onde o aluno
+  /// deixou, sem voltar e refazer o lance.
+  void _explainGuessed(int index, String? fen, Move move) {
+    final step = state.lesson!.steps[index];
+    var opened = _open(state, index);
+    // Sem [fen]: certo, mas não é o lance que a explicação mostra; ela
+    // parte da posição dela.
+    if (fen != null && step is TalkStep) {
+      opened = opened.copyWith(fen: fen, lastMove: move);
+    } else if (fen != null && step is DemoStep) {
+      opened = _demoAt(opened, step, 1);
+    }
+    final right = _pick('coach.thinkRight') ?? _pick('coach.praise');
+    final speech = opened.speech;
+    emit(
+      opened.copyWith(
+        speech: [?right, ?speech].join(' '),
+        emotion: Emotion.happy,
+      ),
+    );
   }
 
   // --- demonstração (T51) -------------------------------------------------
@@ -593,6 +678,12 @@ class LessonCubit extends Cubit<LessonState> {
     if (step is! DemoStep || state.demoMove == 0) return;
     emit(_demoAt(state, step, state.demoMove - 1).copyWith(demoPlaying: false));
     await _save();
+  }
+
+  /// Pausa a demonstração (ela para de andar sozinha) ou a retoma.
+  void demoTogglePause() {
+    if (state.current is! DemoStep) return;
+    emit(state.copyWith(demoPlaying: !state.demoPlaying));
   }
 
   /// Repete a demonstração do começo.

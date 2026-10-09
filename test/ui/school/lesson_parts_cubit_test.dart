@@ -34,7 +34,7 @@ void main() {
             id: 'try',
             fen: fen,
             line: [
-              MoveTurn(accept: {'c1c4'}),
+              MoveTurn(accept: {'c1c4', 'c1c5'}),
             ],
           ),
         ],
@@ -52,6 +52,7 @@ void main() {
     'rook.lucena.demo': 'Watch.',
     'rook.lucena.demo.m1': 'The rook builds the bridge.',
     'rook.lucena.demo.m2': 'Black checks.',
+    'coach.thinkRight': ['Correct!'],
   });
   final trail = EndgameTrail(
     modules: [
@@ -122,6 +123,33 @@ void main() {
     },
   );
 
+  test('pensar: o lance certo segue no tabuleiro, com "correto"', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c4')!);
+    expect(cubit.state.current?.id, 'demo');
+    // A demonstração já começa depois do lance do aluno, sem refazê-lo.
+    expect(cubit.state.demoMove, 1);
+    expect(cubit.state.lastMove, Move.parse('c1c4'));
+    expect(cubit.state.speech, startsWith('Correct!'));
+  });
+
+  test('pensar: outro lance aceito também é "correto", sem seguir no '
+      'tabuleiro', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c5')!);
+    expect(cubit.state.current?.id, 'demo');
+    expect(cubit.state.demoMove, 0);
+    expect(cubit.state.speech, startsWith('Correct!'));
+  });
+
+  test('pensar: lance diferente abre a explicação do começo', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c2')!);
+    expect(cubit.state.current?.id, 'demo');
+    expect(cubit.state.demoMove, 0);
+    expect(cubit.state.speech, isNot(startsWith('Correct!')));
+  });
+
   test('cronômetro: zero ao abrir, cresce, e passar de 6 minutos não muda '
       'nada', () async {
     final cubit = await open();
@@ -147,17 +175,6 @@ void main() {
     await cubit.next();
     expect(cubit.state.current?.id, 'demo');
     expect(cubit.state.layout, LessonLayoutMode.explaining);
-  });
-
-  test('pensar: mexe as peças à vontade, sem explicação automática, e '
-      '"Voltar à posição" restaura', () async {
-    final cubit = await open();
-    await cubit.play(Move.parse('c1c3')!);
-    expect(cubit.state.current?.id, 'think');
-    expect(cubit.state.fen, isNot(fen));
-    expect(cubit.state.layout, LessonLayoutMode.solving);
-    cubit.resetThink();
-    expect(cubit.state.fen, fen);
   });
 
   test(
@@ -264,6 +281,15 @@ void main() {
       expect(cubit.state.fen, fen);
     },
   );
+
+  test('demonstração: pausar e retomar', () async {
+    final cubit = await atDemo();
+    expect(cubit.state.demoPlaying, isTrue);
+    cubit.demoTogglePause();
+    expect(cubit.state.demoPlaying, isFalse);
+    cubit.demoTogglePause();
+    expect(cubit.state.demoPlaying, isTrue);
+  });
 
   test('fim da parte: grava a parte e oferece a próxima', () async {
     final cubit = await atDemo();

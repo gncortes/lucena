@@ -65,6 +65,13 @@ class DemoControls extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            // Voltar ao passo anterior da lição, como nos outros passos.
+            button(
+              LessonKeys.backButton,
+              Icons.arrow_back,
+              l10n.lessonPrevious,
+              state.step == 0 ? null : cubit.back,
+            ),
             button(
               LessonKeys.demoReplay,
               Icons.replay,
@@ -76,6 +83,14 @@ class DemoControls extends StatelessWidget {
               Icons.skip_previous_rounded,
               l10n.lessonDemoBack,
               state.demoMove == 0 ? null : cubit.demoBack,
+            ),
+            button(
+              LessonKeys.demoPause,
+              state.demoPlaying
+                  ? Icons.pause_rounded
+                  : Icons.play_arrow_rounded,
+              state.demoPlaying ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
+              cubit.demoTogglePause,
             ),
             button(
               LessonKeys.demoForward,
@@ -137,7 +152,10 @@ class PartFinished extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      l10n.lessonPartDone(state.partNumber),
+                      // Na última: todas as etapas, e o convite para a prova.
+                      next == null
+                          ? l10n.lessonAllPartsDone
+                          : l10n.lessonPartDone(state.partNumber),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
@@ -145,7 +163,10 @@ class PartFinished extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      state.texts.partTitle(lessonId, part.id) ?? '',
+                      next == null
+                          ? l10n.lessonAllPartsDoneBody
+                          : state.texts.partTitle(lessonId, part.id) ?? '',
+                      key: next == null ? LessonKeys.allPartsDone : null,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: colors.onSurfaceVariant,
@@ -223,14 +244,22 @@ class PartFinished extends StatelessWidget {
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),
                       ),
-                      // Na última etapa, "próximo" é a aula (o teste final).
-                      onPressed: () => next == null
-                          ? context.pop()
-                          : context.pushReplacement(
-                              Routes.endgameLessonSteps(lessonId, part: next),
-                            ),
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                      label: Text(l10n.lessonPartNext),
+                      // Na última etapa, o teste final (pela introdução).
+                      onPressed: () => context.pushReplacement(
+                        next == null
+                            ? Routes.endgameExercisesIntro(lessonId)
+                            : Routes.endgameLessonSteps(lessonId, part: next),
+                      ),
+                      icon: Icon(
+                        next == null
+                            ? Icons.quiz_outlined
+                            : Icons.arrow_forward_rounded,
+                      ),
+                      label: Text(
+                        next == null
+                            ? l10n.lessonToFinalTest
+                            : l10n.lessonPartNext,
+                      ),
                     ),
                   ),
                 ],

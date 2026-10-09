@@ -2721,6 +2721,10 @@
   "@reviewStartPosition": {
     "description": "Game details: the board shows the position before the first move."
   },
+  "reviewVariation": "Your variation (not part of the game)",
+  "@reviewVariation": {
+    "description": "Game details: the board shows a move of the variation the user played on the board, which is not saved to the game."
+  },
   "reviewFirst": "First move",
   "@reviewFirst": {
     "description": "Game details: tooltip of the button that goes to the starting position."
@@ -3790,6 +3794,10 @@
   "@lessonDemoReplay": {
     "description": "Tooltip: replay the demonstration from the start."
   },
+  "lessonDemoPause": "Pause",
+  "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
+  "lessonDemoPlay": "Play",
+  "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
   "lessonPartDone": "Part {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",
@@ -3808,7 +3816,7 @@
       }
     }
   },
-  "lessonToFinalTest": "Go to the final test",
+  "lessonToFinalTest": "Take the final test",
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
@@ -3818,8 +3826,16 @@
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
   "lessonPartLearned": "What you learned",
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "lessonAllPartsDone": "All parts complete",
+  "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
+  "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
+  "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
   "lessonCloseSpeech": "Close",
   "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
+  "lessonHideMarks": "Hide the marks",
+  "@lessonHideMarks": {"description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."},
+  "lessonShowMarks": "Show the marks",
+  "@lessonShowMarks": {"description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."},
   "lessonBackToLesson": "Back to the lesson",
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
@@ -3841,7 +3857,7 @@
       }
     }
   },
-  "endgameContinueTest": "Continue: final test",
+  "endgameContinueTest": "Take the final test",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
@@ -4202,9 +4218,38 @@
   "@conclusionMarathonDone": {
     "description": "Conclusion title when the Marathon is completed."
   },
-  "conclusionAnalyze": "Analyze the game",
-  "@conclusionAnalyze": {
-    "description": "Main bottom button of the conclusion: opens the move-by-move review of this game."
+  "conclusionDetailedReview": "See the detailed analysis",
+  "@conclusionDetailedReview": {
+    "description": "Button right under the precision in the finished quick analysis card of the conclusion: opens the full move-by-move review of this game."
+  },
+  "conclusionBestLine": "See the best line",
+  "@conclusionBestLine": {
+    "description": "Conclusion card title: the game played again from the start, Stockfish in the player's place against the same opponent, move by move on a board."
+  },
+  "conclusionBestLineHint": "Stockfish in your place against {opponent}",
+  "@conclusionBestLineHint": {
+    "description": "Subtitle of the best line card. The opponent is the character (or engine) the player faced.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "conclusionBestLineMove": "Move {move} of {total}",
+  "@conclusionBestLineMove": {
+    "description": "Best line stepper: which move of the line is shown.",
+    "placeholders": {
+      "move": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionBestLineDisclaimer": "Stockfish played fast (1 s per move), so in some positions it may miss the best defence or the win. For a deeper look, open the detailed analysis.",
+  "@conclusionBestLineDisclaimer": {
+    "description": "Short note under the best line board: it was played fast, so it may not be perfect; points to the detailed analysis button below."
   },
   "conclusionRatingHistory": "Rating history",
   "@conclusionRatingHistory": {
@@ -4254,26 +4299,6 @@
   "conclusionReviewTitle": "Your moves",
   "@conclusionReviewTitle": {
     "description": "Conclusion card: summary of the move quality of the player in this game."
-  },
-  "conclusionBestLine": "See the best line",
-  "@conclusionBestLine": {
-    "description": "Conclusion card title: the engine best line from the starting position, played move by move on a board."
-  },
-  "conclusionBestLineHint": "How Stockfish plays this position from the start",
-  "@conclusionBestLineHint": {
-    "description": "Subtitle of the best line card."
-  },
-  "conclusionBestLineMove": "Move {move} of {total}",
-  "@conclusionBestLineMove": {
-    "description": "Best line stepper: which move of the line is shown.",
-    "placeholders": {
-      "move": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
   },
   "conclusionFastest": "Fastest",
   "@conclusionFastest": {

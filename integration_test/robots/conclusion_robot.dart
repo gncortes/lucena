@@ -69,15 +69,10 @@ class ConclusionRobot {
     expect(find.byKey(ConclusionKeys.action(action)), findsNothing);
   }
 
-  /// Toca na ação [action]. "Analisar a partida" fica fixo embaixo; as
-  /// outras ficam na lista e podem estar fora da tela.
+  /// Toca na ação [action] (pode estar fora da tela).
   Future<void> tap(ConclusionAction action) async {
     await waitConclusion();
-    if (action == ConclusionAction.analyze) {
-      await $(ConclusionKeys.action(action)).tap();
-    } else {
-      await $(ConclusionKeys.action(action)).scrollTo().tap();
-    }
+    await $(ConclusionKeys.action(action)).scrollTo().tap();
     await $.pumpAndSettle();
   }
 

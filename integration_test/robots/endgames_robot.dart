@@ -227,12 +227,15 @@ class EndgamesRobot {
 
   /// No fim da lição: volta para a aula, com os exercícios.
   Future<void> backToExercises() async {
-    // Na aula em partes, o fim da última parte volta à aula por "próximo";
-    // na aula inteira, por "exercícios".
+    // Na aula em partes, o fim da última parte leva ao teste final (a
+    // introdução), e dela se volta à aula; na aula inteira, "exercícios".
     if ($(LessonKeys.exercisesButton).exists) {
       await $(LessonKeys.exercisesButton).tap();
     } else {
+      await $(LessonKeys.allPartsDone).waitUntilVisible();
       await $(LessonKeys.nextPartButton).tap();
+      await $(ExercisesIntroKeys.screen).waitUntilVisible();
+      await $(BackButton).tap();
     }
     await expectLessonScreen();
   }

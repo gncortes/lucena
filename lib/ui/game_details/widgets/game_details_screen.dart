@@ -302,7 +302,9 @@ class _Header extends StatelessWidget {
 }
 
 /// Os lances em tabela (número, brancas, pretas), cada um com o tempo que
-/// levou. Tocar num lance mostra a posição depois dele.
+/// levou. Tocar num lance mostra a posição depois dele. A variante feita no
+/// tabuleiro entra entre parênteses, menor e em itálico, logo abaixo da
+/// linha do lance que ela troca.
 class _MoveTable extends StatelessWidget {
   const _MoveTable({required this.state});
 
@@ -313,9 +315,18 @@ class _MoveTable extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final start = state.start;
-    if (start == null || state.moves.isEmpty) return const SizedBox.shrink();
+    if (start == null || (state.moves.isEmpty && state.variation.isEmpty)) {
+      return const SizedBox.shrink();
+    }
     final offset = start.turn == Side.black ? 1 : 0;
     final rows = (state.moves.length + offset + 1) ~/ 2;
+    // A variante fica sob a linha do lance da partida que ela troca (ou da
+    // última, se sai do fim).
+    final replaced = math.min(state.variationFrom + 1, state.moves.length - 1);
+    final variationRow = state.variation.isEmpty
+        ? null
+        : math.max(0, (replaced + offset) ~/ 2);
+    final variation = _VariationLine(state: state);
     return Directionality(
       // A notação de xadrez é sempre da esquerda para a direita.
       textDirection: TextDirection.ltr,
@@ -325,7 +336,8 @@ class _MoveTable extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Column(
           children: [
-            for (var row = 0; row < rows; row++)
+            if (variationRow != null && rows == 0) variation,
+            for (var row = 0; row < rows; row++) ...[
               Container(
                 color: row.isOdd
                     ? colors.onSurface.withValues(alpha: 0.04)
@@ -348,6 +360,8 @@ class _MoveTable extends StatelessWidget {
                   ],
                 ),
               ),
+              if (row == variationRow) variation,
+            ],
           ],
         ),
       ),
@@ -435,5 +449,85 @@ class _MoveTable extends StatelessWidget {
     final locale = Localizations.localeOf(context).toString();
     final format = NumberFormat('0.0', locale);
     return '${format.format(time.inMilliseconds / 1000)} s';
+  }
+}
+
+/// A variante feita no tabuleiro, entre parênteses: `(7... Rf7 8. Qg5)`.
+/// Tocar num lance dela mostra a posição depois dele.
+class _VariationLine extends StatelessWidget {
+  const _VariationLine({required this.state});
+
+  final GameDetailsState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final cubit = context.read<GameDetailsCubit>();
+    final base = theme.textTheme.bodyMedium?.copyWith(
+      fontStyle: FontStyle.italic,
+      color: colors.onSurfaceVariant,
+    );
+    var position = state.variationStart!;
+    final children = <Widget>[];
+    for (final (ply, move) in state.variation.indexed) {
+      final white = position.turn == Side.white;
+      final number = white
+          ? '${position.fullmoves}. '
+          : ply == 0
+          ? '${position.fullmoves}... '
+          : '';
+      final selected = ply == state.variationPly;
+      children.add(
+        InkWell(
+          key: GameDetailsKeys.variationMove(ply),
+          borderRadius: BorderRadius.circular(AppShape.small),
+          onTap: () => cubit.selectVariation(ply),
+          child: AnimatedContainer(
+            duration: AppMotion.state,
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            decoration: BoxDecoration(
+              color: selected ? colors.secondaryContainer : Colors.transparent,
+              borderRadius: BorderRadius.circular(AppShape.small),
+            ),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  if (ply == 0) const TextSpan(text: '('),
+                  TextSpan(text: number),
+                  for (final char in move.san.split(''))
+                    if (Figurine.ofLetter[char] case final figurine?)
+                      TextSpan(
+                        text: figurine,
+                        style: const TextStyle(
+                          fontFamily: Figurine.fontFamily,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      )
+                    else
+                      TextSpan(text: char),
+                  if (ply == state.variation.length - 1)
+                    const TextSpan(text: ')'),
+                ],
+              ),
+              style: base?.copyWith(
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                color: selected ? colors.onSecondaryContainer : null,
+              ),
+            ),
+          ),
+        ),
+      );
+      position = move.position;
+    }
+    return Padding(
+      key: GameDetailsKeys.variation,
+      // Recuada, como um comentário sob o lance.
+      padding: const EdgeInsets.fromLTRB(48, 2, 8, 6),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Wrap(runSpacing: 2, children: children),
+      ),
+    );
   }
 }

@@ -189,7 +189,7 @@
       "category": "bigDisadvantage",
       "intensity": 1,
       "emotion": "nervous",
-      "text": "Te dou a última fatia. A última! Larga essa torre."
+      "text": "Te dou a última fatia. A última! Pega leve comigo."
     },
     {
       "id": "foodie.bigDisadvantage.2",
@@ -784,14 +784,14 @@
       "category": "draw",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Afogamento? Sério? Logo agora?"
+      "text": "Empate? Sério? Logo agora que vinha a sobremesa?"
     },
     {
       "id": "foodie.draw.4",
       "category": "draw",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Repetindo o prato, é? Também gosto."
+      "text": "Ninguém raspou o prato. Fica pra próxima rodada."
     },
     {
       "id": "foodie.draw.5",

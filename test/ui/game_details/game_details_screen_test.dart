@@ -130,7 +130,12 @@ void main() {
   testWidgets('tocar num lance mostra a posição depois dele', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
-    // Abre no último lance: o mate.
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    expect(boardFen(tester), cubit.state.start!.fen);
+
+    cubit.last();
+    await tester.pumpAndSettle();
     expect(boardFen(tester), cubit.state.moves.last.position.fen);
 
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));
@@ -145,6 +150,87 @@ void main() {
       ).board.pieceAt(Square.e4),
       Piece.whitePawn,
     );
+  });
+
+  /// O texto do lance [ply] da variante na tabela.
+  String variationText(WidgetTester tester, int ply) => tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(GameDetailsKeys.variationMove(ply)),
+          matching: find.byType(Text),
+        ),
+      )
+      .textSpan!
+      .toPlainText();
+
+  /// Toca na casa [square] do tabuleiro (brancas embaixo).
+  Future<void> tapSquare(WidgetTester tester, Square square) async {
+    final rect = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final size = rect.width / 8;
+    await tester.tapAt(
+      rect.topLeft +
+          Offset(
+            (square.file.value + 0.5) * size,
+            (7 - square.rank.value + 0.5) * size,
+          ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('um lance no tabuleiro vira variante na tabela; tocar num '
+      'lance da partida volta para ela', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    await tester.tap(find.byKey(GameDetailsKeys.move(0)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.variation), findsNothing);
+
+    // 1... c5 no lugar de 1... e5.
+    await tapSquare(tester, Square.c7);
+    await tapSquare(tester, Square.c5);
+
+    expect(cubit.state.inVariation, isTrue);
+    final fen = cubit.state.variation.single.position.fen;
+    expect(boardFen(tester), fen);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
+    expect(variationText(tester, 0), '(1... c5)');
+
+    // A variante continua: 2. Nf3.
+    await tapSquare(tester, Square.g1);
+    await tapSquare(tester, Square.f3);
+    expect(cubit.state.variation, hasLength(2));
+    expect(variationText(tester, 0), '(1... c5');
+    expect(variationText(tester, 1), '2. ♘f3)');
+
+    // Tocar num lance da variante mostra a posição dele.
+    await tester.tap(find.byKey(GameDetailsKeys.variationMove(0)));
+    await tester.pumpAndSettle();
+    expect(boardFen(tester), fen);
+
+    // Tocar num lance da partida volta para ela; a variante fica na lista.
+    await tester.tap(find.byKey(GameDetailsKeys.move(2)));
+    await tester.pumpAndSettle();
+    expect(cubit.state.inVariation, isFalse);
+    expect(boardFen(tester), cubit.state.moves[2].position.fen);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
+  });
+
+  testWidgets('lance ilegal no tabuleiro não muda nada', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    final before = boardFen(tester);
+
+    // Na posição de início, a dama não anda.
+    await tapSquare(tester, Square.d1);
+    await tapSquare(tester, Square.d4);
+    tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board)).onMove!(
+      Move.parse('d1d4')!,
+    );
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.inVariation, isFalse);
+    expect(boardFen(tester), before);
+    expect(find.byKey(GameDetailsKeys.variation), findsNothing);
   });
 
   testWidgets('partida que não existe mais: o aviso', (tester) async {

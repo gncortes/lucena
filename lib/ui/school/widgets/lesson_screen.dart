@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:go_router/go_router.dart';
@@ -94,6 +96,40 @@ class _LessonScreenState extends State<LessonScreen>
   // tabuleiro aparecer inteiro.
   final _sheet = DraggableScrollableController();
   double _sheetMin = 0.3;
+
+  // O tamanho da folha, para o "x". A folha avisa até durante a montagem da
+  // tela (quando o passo troca e o tamanho dela é refeito): o aviso passa
+  // para depois do quadro.
+  final _sheetSize = ValueNotifier<double?>(null);
+
+  void _onSheetChanged() {
+    void update() {
+      if (mounted && _sheet.isAttached) _sheetSize.value = _sheet.size;
+    }
+
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => update());
+    } else {
+      update();
+    }
+  }
+
+  // A fala cabe na folha fechada: ela não abre (sem o vaivém do "x").
+  bool _speechFits = false;
+
+  bool _onSpeechMetrics(ScrollMetricsNotification notification) {
+    // Só vale medindo com a folha fechada.
+    final closed = !_sheet.isAttached || _sheet.size <= _sheetMin + 0.005;
+    final fits = notification.metrics.maxScrollExtent <= 0;
+    if (closed && fits != _speechFits) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _speechFits = fits);
+      });
+    }
+    return false;
+  }
+
   final _demoClock = Stopwatch();
   String? _demoAt;
   bool _demoSpoke = false;
@@ -101,6 +137,7 @@ class _LessonScreenState extends State<LessonScreen>
   @override
   void initState() {
     super.initState();
+    _sheet.addListener(_onSheetChanged);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
   }
 
@@ -157,7 +194,9 @@ class _LessonScreenState extends State<LessonScreen>
   void dispose() {
     _ticker?.cancel();
     _board?.dispose();
+    _sheet.removeListener(_onSheetChanged);
     _sheet.dispose();
+    _sheetSize.dispose();
     _shake.dispose();
     _landing.dispose();
     _mode.dispose();
@@ -423,7 +462,7 @@ class _LessonScreenState extends State<LessonScreen>
                         if (state.link case final reference?)
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                              84,
+                              12,
                               0,
                               16,
                               0,
@@ -511,7 +550,7 @@ class _LessonScreenState extends State<LessonScreen>
                     _screen.height / 2 -
                     (_screen.height - _bottomInset - area.height),
                 mode: _mode,
-                sheet: _sheet,
+                sheet: _sheetSize,
                 footer: _actionsHeight,
                 sheetRoom: _sheetRoom,
               ),
@@ -547,9 +586,10 @@ class _LessonScreenState extends State<LessonScreen>
                       controller: _sheet,
                       initialChildSize: minSheet,
                       minChildSize: minSheet,
-                      maxChildSize: _sheetMax,
-                      snap: true,
-                      snapSizes: [minSheet, _sheetMax],
+                      // Fala curta: a folha fica fechada (T59).
+                      maxChildSize: _speechFits ? minSheet : _sheetMax,
+                      snap: !_speechFits,
+                      snapSizes: _speechFits ? null : [minSheet, _sheetMax],
                       builder: (context, scroll) =>
                           _speechSheet(context, state, step, viktor, scroll),
                     ),
@@ -558,10 +598,12 @@ class _LessonScreenState extends State<LessonScreen>
                   // descer de uma vez.
                   LayoutId(
                     id: _Slot.close,
-                    child: ListenableBuilder(
-                      listenable: _sheet,
-                      builder: (context, _) {
-                        final open = _sheet.isAttached ? _sheet.size : minSheet;
+                    // O tamanho chega depois do quadro (T59): sem rebuild no
+                    // meio da montagem quando o passo troca.
+                    child: ValueListenableBuilder(
+                      valueListenable: _sheetSize,
+                      builder: (context, size, _) {
+                        final open = size ?? minSheet;
                         final covering = open > minSheet + 0.03;
                         return IgnorePointer(
                           ignoring: !covering,
@@ -678,15 +720,21 @@ class _LessonScreenState extends State<LessonScreen>
   }) {
     final colors = Theme.of(context).colorScheme;
     final hint = state.hint;
+    // As marcações do professor (setas e casas): o aluno pode escondê-las.
+    final marked = context.select(
+      (SettingsCubit cubit) => cubit.state?.lessonMarks ?? true,
+    );
     final shapes = <Shape>{
-      for (final (from, to) in state.arrows)
-        Arrow(
-          color: colors.primary.withValues(alpha: 0.75),
-          orig: Square.fromName(from),
-          dest: Square.fromName(to),
-        ),
-      for (final mark in state.marks)
-        Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
+      if (marked)
+        for (final (from, to) in state.arrows)
+          Arrow(
+            color: colors.primary.withValues(alpha: 0.75),
+            orig: Square.fromName(from),
+            dest: Square.fromName(to),
+          ),
+      if (marked)
+        for (final mark in state.marks)
+          Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
       for (final star in state.stars)
         CustomShape(
           orig: Square.fromName(star),
@@ -866,60 +914,88 @@ class _LessonScreenState extends State<LessonScreen>
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppShape.large),
         ),
-        child: ListView(
-          key: LessonKeys.scroll,
-          controller: scroll,
-          padding: const EdgeInsets.only(bottom: _actionsHeight),
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.outlineVariant,
-                    borderRadius: BorderRadius.circular(AppShape.full),
+        child: NotificationListener<ScrollMetricsNotification>(
+          onNotification: _onSpeechMetrics,
+          child: ListView(
+            key: LessonKeys.scroll,
+            controller: scroll,
+            padding: const EdgeInsets.only(bottom: _actionsHeight),
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.outlineVariant,
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                    ),
                   ),
                 ),
               ),
-            ),
-            // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-            // exercício. No resto, o Viktor já diz o que fazer.
-            if (step is TapStep) _guide(context, state, step),
-            if (viktor != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: TeacherSpeech(
-                  teacher: viktor,
-                  text: state.speech,
-                  emotion: state.emotion,
-                  avatarSize: 56,
-                  bubbleKey: LessonKeys.speech,
-                  onLink: (link) => _flash.toggle(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
+              // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
+              // exercício. No resto, o Viktor já diz o que fazer.
+              if (step is TapStep) _guide(context, state, step),
+              if (viktor != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: TeacherSpeech(
+                    teacher: viktor,
+                    text: state.speech,
+                    emotion: state.emotion,
+                    avatarSize: 56,
+                    bubbleKey: LessonKeys.speech,
+                    onLink: (link) => _flash.toggle(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onSpoken: (link) => _flash.show(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    speaks: true,
+                    speechContext: SpeechContext.teaching,
+                    typed: true,
+                    // Ao lado do som: mostrar ou esconder as marcações.
+                    headerAction: Builder(
+                      builder: (context) {
+                        final shown = context.select(
+                          (SettingsCubit cubit) =>
+                              cubit.state?.lessonMarks ?? true,
+                        );
+                        final l10n = context.l10n;
+                        return IconButton(
+                          key: LessonKeys.marksToggle,
+                          visualDensity: VisualDensity.compact,
+                          tooltip: shown
+                              ? l10n.lessonHideMarks
+                              : l10n.lessonShowMarks,
+                          isSelected: shown,
+                          icon: const Icon(Icons.layers_clear_outlined),
+                          selectedIcon: const Icon(Icons.layers_outlined),
+                          onPressed: () => context
+                              .read<SettingsCubit>()
+                              .setLessonMarks(shown: !shown),
+                        );
+                      },
+                    ),
                   ),
-                  onSpoken: (link) => _flash.show(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
+                ),
+              if (state.link case final reference?)
+                Padding(
+                  // No canto de início, logo abaixo do balão (alinhado à
+                  // borda dele).
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
+                  child: ReferenceLink(
+                    key: LessonKeys.referenceLink,
+                    reference: reference,
                   ),
-                  speaks: true,
-                  speechContext: SpeechContext.teaching,
-                  typed: true,
                 ),
-              ),
-            if (state.link case final reference?)
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(84, 0, 16, 0),
-                child: ReferenceLink(
-                  key: LessonKeys.referenceLink,
-                  reference: reference,
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1219,7 +1295,7 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
   final HeaderMemo header;
   final double centerY;
   final Animation<double> mode;
-  final DraggableScrollableController sheet;
+  final ValueListenable<double?> sheet;
   final double footer;
   final double sheetRoom;
 
@@ -1269,12 +1345,12 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
     }
     if (hasChild(_Slot.close)) {
       final close = layoutChild(_Slot.close, BoxConstraints.loose(size));
-      final open = sheet.isAttached ? sheet.size : 0.0;
+      final open = sheet.value ?? 0.0;
       positionChild(
         _Slot.close,
         Offset(
           size.width - 12 - close.width,
-          max(0.0, size.height * (1 - open) - 56),
+          max(0.0, size.height * (1 - open) - 68),
         ),
       );
     }

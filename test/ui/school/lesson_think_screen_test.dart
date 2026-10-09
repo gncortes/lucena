@@ -187,23 +187,12 @@ void main() {
     (const Locale('pt'), 1.0),
   ]) {
     testWidgets('pensando, em ${locale.languageCode} com letra ×$scale e 360 '
-        'dp: cronômetro, dica, voltar à posição e "Ver explicação" cabem', (
-      tester,
-    ) async {
+        'dp: dica, "Ver explicação" e cronômetro cabem', (tester) async {
       const size = Size(360, 780);
-      final cubit = await pump(
-        tester,
-        size: size,
-        locale: locale,
-        scale: scale,
-      );
-      // Mexeu numa peça: "Voltar à posição" aparece.
-      await cubit.play(Move.parse('c1c3')!);
-      await tester.pumpAndSettle();
+      await pump(tester, size: size, locale: locale, scale: scale);
       expect(tester.takeException(), isNull);
       final keys = [
         LessonKeys.moreHintButton,
-        LessonKeys.thinkReset,
         LessonKeys.nextButton,
         LessonKeys.stepTimer,
       ];
@@ -214,7 +203,7 @@ void main() {
         expect(find.byKey(key).hitTestable(), findsOneWidget, reason: '$key');
       }
       // Os botões da mesma altura.
-      for (final key in keys.take(3)) {
+      for (final key in keys.take(2)) {
         expect(tester.getRect(find.byKey(key)).height, 56, reason: '$key');
       }
       // Lado a lado, sem se cobrir.
@@ -225,10 +214,6 @@ void main() {
           reason: '${keys[i - 1]} / ${keys[i]}',
         );
       }
-      await tester.tap(find.byKey(LessonKeys.thinkReset));
-      await tester.pumpAndSettle();
-      expect(cubit.state.fen, fen);
-      expect(find.byKey(LessonKeys.thinkReset), findsNothing);
     });
   }
 

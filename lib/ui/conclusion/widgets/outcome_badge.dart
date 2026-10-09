@@ -45,7 +45,7 @@ class OutcomeStrip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          AnimatedMark(mark: mark, color: color),
+          AnimatedMark(mark: mark, color: color, size: 48),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
@@ -53,7 +53,7 @@ class OutcomeStrip extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: color,
                   ),
@@ -263,4 +263,106 @@ class _MarkPainter extends CustomPainter {
   @override
   bool shouldRepaint(_MarkPainter old) =>
       old.t != t || old.mark != mark || old.color != color;
+}
+
+/// A comemoração de quem venceu: um anel que gira em volta do [child] e um
+/// brilho que pulsa, algumas voltas e some (a moldura colorida fica).
+class WinnerGlow extends StatefulWidget {
+  const WinnerGlow({required this.color, required this.child, super.key});
+
+  final Color color;
+  final Widget child;
+
+  /// Quantas voltas o anel dá antes de sumir.
+  static const loops = 3;
+
+  @override
+  State<WinnerGlow> createState() => _WinnerGlowState();
+}
+
+class _WinnerGlowState extends State<WinnerGlow>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: AppMotion.celebrate,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (AppMotion.of(context).disabled) {
+      _controller.stop();
+      _controller.value = 1;
+    } else if (_controller.value == 0 && !_controller.isAnimating) {
+      _controller.repeat(count: WinnerGlow.loops);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    foregroundPainter: _GlowPainter(
+      animation: _controller,
+      color: widget.color,
+    ),
+    child: widget.child,
+  );
+}
+
+/// Desenha o anel e o brilho do quadro atual de [animation] (0 a 1 por
+/// volta), um pouco para fora do retrato.
+class _GlowPainter extends CustomPainter {
+  _GlowPainter({required this.animation, required this.color})
+    : super(repaint: animation);
+
+  final Animation<double> animation;
+  final Color color;
+
+  static const _gap = 5.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final t = animation.value;
+    // No começo e no fim de cada volta, nada: o pulso sobe e desce.
+    final pulse = math.sin(t * math.pi);
+    if (pulse <= 0) return;
+    final rect = (Offset.zero & size).inflate(_gap);
+    final ring = RRect.fromRectAndRadius(
+      rect,
+      const Radius.circular(AppShape.medium + _gap),
+    );
+    canvas.drawRRect(
+      ring,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6
+        ..color = color.withValues(alpha: 0.35 * pulse)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+    );
+    canvas.drawRRect(
+      ring,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round
+        ..shader = SweepGradient(
+          colors: [
+            color.withValues(alpha: 0),
+            color.withValues(alpha: pulse),
+            color.withValues(alpha: 0),
+          ],
+          stops: const [0, 0.15, 0.5],
+          transform: GradientRotation(t * 2 * math.pi),
+        ).createShader(rect),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GlowPainter old) =>
+      old.animation != animation || old.color != color;
 }

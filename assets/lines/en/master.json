@@ -246,7 +246,7 @@
       "category": "bigAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Remember the lesson on cutting off with the rook? Watch.",
+      "text": "Remember the lesson on cutting off the king? Watch.",
       "audience": "student"
     },
     {
@@ -261,7 +261,7 @@
       "category": "better",
       "intensity": 2,
       "emotion": "calm",
-      "text": "My king is more active. That detail decides endgames."
+      "text": "Small details decide endgames. Today they favor me."
     },
     {
       "id": "master.better.3",
@@ -729,7 +729,7 @@
       "category": "strongMove",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Bravo. Active king, exactly by the book."
+      "text": "Bravo. Exactly by the book."
     },
     {
       "id": "master.strongMove.4",
@@ -743,7 +743,7 @@
       "category": "strongMove",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Correct. The opposition was the key. You saw it."
+      "text": "Correct. You found the key to the position."
     },
     {
       "id": "master.strongMove.6",
@@ -816,7 +816,7 @@
       "category": "comeback",
       "intensity": 2,
       "emotion": "confident",
-      "text": "The game has turned. One tempo of opposition changes everything."
+      "text": "The game has turned. A single tempo changes everything."
     },
     {
       "id": "master.comeback.3",
@@ -939,14 +939,14 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Thank you. An extra piece, a simpler endgame."
+      "text": "Thank you. Fewer pieces, a clearer endgame."
     },
     {
       "id": "master.pieceCaptured.2",
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Extra material and an active king. A known recipe."
+      "text": "Emptier board, clearer ideas. A known recipe."
     },
     {
       "id": "master.pieceCaptured.3",
@@ -960,7 +960,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "An undefended piece falls. True for everyone, even me."
+      "text": "A piece that leaves the board never returns. True for everyone, even me."
     },
     {
       "id": "master.pieceCaptured.5",
@@ -974,7 +974,7 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "calm",
-      "text": "One piece up. Trading now makes everything simpler."
+      "text": "One less piece for you. Every trade makes things simpler."
     },
     {
       "id": "master.pieceCaptured.7",
@@ -988,7 +988,7 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "calm",
-      "text": "A loose piece. Remember what I said at school?",
+      "text": "Remember what I said at school? Count material before every move.",
       "audience": "student"
     },
     {
@@ -1004,7 +1004,7 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "calm",
-      "text": "One piece down. I still have my king, and he works."
+      "text": "There goes a piece. I still have my king, and he works."
     },
     {
       "id": "master.pieceLost.2",
@@ -1018,7 +1018,7 @@
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Material lost. Now every tempo is gold."
+      "text": "Fewer pieces on the board. Now every tempo is gold."
     },
     {
       "id": "master.pieceLost.4",
@@ -1032,7 +1032,7 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "nervous",
-      "text": "Well played. I need a fortress, and quickly."
+      "text": "Well played. Now I must recalculate everything."
     },
     {
       "id": "master.pieceLost.6",
@@ -1046,14 +1046,14 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "focused",
-      "text": "A piece down. Now I play for a draw with dignity."
+      "text": "There goes a piece. Now, every move with dignity."
     },
     {
       "id": "master.pieceLost.8",
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "happy",
-      "text": "You won material from me. I did not teach that; you learned it.",
+      "text": "You took a piece from me. I did not teach that; you learned it.",
       "audience": "student"
     },
     {
@@ -1097,7 +1097,7 @@
       "category": "ownPromotion",
       "intensity": 1,
       "emotion": "calm",
-      "text": "The king escorted, the pawn arrived. Teamwork."
+      "text": "The pawn reached the end of the road. Patient work."
     },
     {
       "id": "master.ownPromotion.6",
@@ -1161,7 +1161,7 @@
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "calm",
-      "text": "King in front of the pawn, as it should be. Well done."
+      "text": "A clean promotion. Exactly what the position asked for."
     },
     {
       "id": "master.opponentPromotion.7",
@@ -1427,7 +1427,7 @@
       "category": "win",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Today's lesson: active king, passed pawn, patience."
+      "text": "Today's lesson: active king, clear plan, patience."
     },
     {
       "id": "master.win.4",
@@ -1604,14 +1604,14 @@
       "category": "draw",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Stalemate. A classic. Always check the king's squares."
+      "text": "A draw. In endgames, one square more or less decides everything."
     },
     {
       "id": "master.draw.3",
       "category": "draw",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Repetition. Neither of us found anything more."
+      "text": "A draw. Neither of us found anything more."
     },
     {
       "id": "master.draw.4",
@@ -1625,7 +1625,7 @@
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Insufficient material. Sometimes chess simply ends."
+      "text": "A draw. Sometimes chess simply ends."
     },
     {
       "id": "master.draw.6",
@@ -1654,7 +1654,7 @@
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Stalemate? Ah, my student, I taught that in the first week!",
+      "text": "A draw, my student. Review the game with me later, like at school.",
       "audience": "student"
     },
     {
@@ -1690,7 +1690,7 @@
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Accepted, with thanks. My king was running out of squares."
+      "text": "Accepted, with thanks. My position was getting tight."
     },
     {
       "id": "master.drawAccepted.6",
@@ -1732,7 +1732,7 @@
       "category": "drawDeclined",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Declined. I hold the opposition and a passed pawn."
+      "text": "Declined. I still have trumps in this position."
     },
     {
       "id": "master.drawDeclined.6",

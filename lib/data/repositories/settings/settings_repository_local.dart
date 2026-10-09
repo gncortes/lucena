@@ -34,6 +34,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _vibrationKey = 'haptics.enabled';
   static const _endgamesAllKey = 'endgames.all';
   static const _endgamesHideDoneKey = 'endgames.hideDone';
+  static const _lessonMarksKey = 'lesson.marks';
   static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
@@ -78,6 +79,7 @@ class LocalSettingsRepository implements SettingsRepository {
       endgamesAll: await _preferences.getBool(_endgamesAllKey) ?? false,
       endgamesHideDone:
           await _preferences.getBool(_endgamesHideDoneKey) ?? false,
+      lessonMarks: await _preferences.getBool(_lessonMarksKey) ?? true,
     );
   }
 
@@ -167,6 +169,7 @@ class LocalSettingsRepository implements SettingsRepository {
       _endgamesHideDoneKey,
       value: settings.endgamesHideDone,
     );
+    await _preferences.setBool(_lessonMarksKey, value: settings.lessonMarks);
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

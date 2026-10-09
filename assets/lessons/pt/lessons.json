@@ -471,6 +471,7 @@
     "Lance de espera, quando precisar."
   ],
   "graduation.twoBishops.play2.done": "Você conseguiu. Mate com dois bispos.",
+  "coach.thinkRight": ["Isso, correto!", "Exato, era esse o lance!", "Correto: você achou sozinho."],
   "coach.praise": [
     "Muito bem!",
     "Excelente.",
