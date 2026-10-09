@@ -16,7 +16,8 @@ Antes de começar, leia `.claude/skills/aula-final/SKILL.md`, `revisao.md` (prin
 3. **Qualidade dos lances, com nome.** Ao narrar uma linha, qualifique os lances como um professor: lance excelente (!), único lance, imprecisão (?!), erro (?), capivarada (??) e "havia sequência melhor: ...". Mantenha a notação do idioma (pt R/D/T/B/C, en K/Q/R/B/N) e os sinais `!`, `?`, `!?`, `?!`, `??`.
 4. **Passo que pula do assunto.** Se a fala apresenta uma posição interessante (exceção, partida histórica, armadilha) e o passo seguinte já muda de tema, proponha (no relatório) um `demo` ou um passo de jogar que mostre a posição, com a linha.
 5. **Alternativas citadas.** Todo lance que a fala diz que também funciona entra no `accept` do passo de jogar da mesma posição; se o passo de pensar não tem passo de jogar na mesma posição, proponha criar um (ver `revisao.md`, item 8).
-6. **Soluções dos exercícios.** A solução diz o lance, a ideia, a linha principal até a decisão e por que a tentativa natural falha.
+6. **Citações.** Livro, partida, estudo ou autor citado precisa de uma entrada em `references` com `url` (vai virar link no app; `revisao.md`, item 9).
+7. **Soluções dos exercícios.** A solução diz o lance, a ideia, a linha principal até a decisão e por que a tentativa natural falha.
 
 Confira toda linha que escrever com python-chess (`tools/.cache/venv/bin/python`) e, quando for avaliação ("ganha", "empata", "perde"), com a tabela de finais (cache em `tools/.cache/tablebase/`; API `https://tablebase.lichess.ovh/standard?fen=...`, 1 s entre consultas). As falas continuam **sem** citar motor, tabela, Wikipedia ou Lichess, e sem "mate em N". pt e en dizem a mesma coisa.
 

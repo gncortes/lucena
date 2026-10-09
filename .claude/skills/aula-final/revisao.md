@@ -57,6 +57,11 @@ Regras para o lote:
    `accept` do passo de jogar da mesma posição. Passo de pensar sem passo de jogar na mesma posição só aceita o
    lance da seta: avalie criar o passo de jogar quando a explicação admite mais de uma resposta.
 
+9. **Citação é link** (pedido do Gabriel, 2026-10-09): livro, partida, estudo ou autor citado numa fala, na história
+   ou numa legenda vira link sublinhado que abre a fonte no navegador. Toda citação precisa de uma entrada em
+   `references` com `url`. A marcação no texto e o suporte no app ainda estão por fazer (ver a memória
+   `pr28-rodada-ux-exercicios`, item 6); até lá, o revisor só confere que cada citação tem a referência com `url`.
+
 ## O que o revisor de textos confere
 
 - Notação pt R/D/T/B/C, en K/Q/R/B/N; sem "mate em N"; pt e en dizem a mesma coisa.
