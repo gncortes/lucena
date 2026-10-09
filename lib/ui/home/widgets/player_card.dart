@@ -5,7 +5,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
-import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/theme/app_motion.dart';
 
@@ -49,13 +48,6 @@ class PlayerCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    if (state.level case final level?)
-                      Text(
-                        level.name(l10n),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
                   ],
                 ),
               ),
