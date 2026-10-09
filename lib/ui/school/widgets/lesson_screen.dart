@@ -61,6 +61,12 @@ class _LessonScreenState extends State<LessonScreen>
 
   // O relógio do passo de pensar e o ritmo da demonstração (T51).
   Timer? _ticker;
+
+  // Lendo a fala (rolando para baixo), os botões saem da frente; voltam ao
+  // rolar para cima, ao chegar no fim do texto e a cada passo novo.
+  bool _actionsShown = true;
+  final _scroll = ScrollController();
+  double _lastOffset = 0;
   final _demoClock = Stopwatch();
   String? _demoAt;
   bool _demoSpoke = false;
@@ -69,6 +75,7 @@ class _LessonScreenState extends State<LessonScreen>
   void initState() {
     super.initState();
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
+    _scroll.addListener(_onScroll);
   }
 
   /// O aluno ainda não escolheu o tempo de pensar e a aula tem passo de
@@ -131,6 +138,7 @@ class _LessonScreenState extends State<LessonScreen>
   void dispose() {
     _ticker?.cancel();
     _board?.dispose();
+    _scroll.dispose();
     _shake.dispose();
     _landing.dispose();
     _flash.dispose();
@@ -169,9 +177,30 @@ class _LessonScreenState extends State<LessonScreen>
   // O estado anterior, para saber o que mudou.
   LessonState _previous = const LessonState();
 
+  void _onScroll() {
+    if (_scroll.positions.length != 1) return;
+    final position = _scroll.position;
+    final delta = position.pixels - _lastOffset;
+    _lastOffset = position.pixels;
+    bool? show;
+    if (delta > 0) show = false;
+    if (delta < 0) show = true;
+    // Sem o que rolar, ou no fim da fala: os botões à vista.
+    if (position.maxScrollExtent <= 0 || position.extentAfter < _endReach) {
+      show = true;
+    }
+    final next = show;
+    if (next != null && next != _actionsShown) {
+      setState(() => _actionsShown = next);
+    }
+  }
+
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
     _previous = state;
+    if (state.step != previous.step && !_actionsShown) {
+      setState(() => _actionsShown = true);
+    }
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
     if (previous.current != null &&
         state.current?.id != previous.current?.id &&
@@ -351,6 +380,7 @@ class _LessonScreenState extends State<LessonScreen>
                         Expanded(
                           child: CustomScrollView(
                             key: LessonKeys.scroll,
+                            controller: _scroll,
                             slivers: [
                               SliverPersistentHeader(
                                 pinned: true,
@@ -462,7 +492,11 @@ class _LessonScreenState extends State<LessonScreen>
                     start: 0,
                     end: 0,
                     bottom: 0,
-                    child: _actions(context, state),
+                    child: _hideable(
+                      context,
+                      shown: _actionsShown || !hasBoard || step is DemoStep,
+                      child: _actions(context, state),
+                    ),
                   ),
                 ],
               ),
@@ -632,6 +666,29 @@ class _LessonScreenState extends State<LessonScreen>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Os botões saem para baixo (e deixam de receber toque) enquanto a fala
+  /// é lida; voltam quando [shown].
+  Widget _hideable(
+    BuildContext context, {
+    required bool shown,
+    required Widget child,
+  }) {
+    final duration = AppMotion.of(context).component;
+    return IgnorePointer(
+      ignoring: !shown,
+      child: AnimatedSlide(
+        duration: duration,
+        curve: AppMotion.enter,
+        offset: shown ? Offset.zero : const Offset(0, 1),
+        child: AnimatedOpacity(
+          duration: duration,
+          opacity: shown ? 1 : 0,
+          child: child,
         ),
       ),
     );
@@ -807,6 +864,9 @@ class _LessonScreenState extends State<LessonScreen>
   /// O que fica para a fala embaixo do tabuleiro fixo: o título, o retrato e
   /// umas 4 linhas, mais os botões.
   static const _speechRoom = 312.0;
+
+  /// Faltando menos que isto para o fim da fala, os botões voltam.
+  static const _endReach = 24.0;
 
   /// A fala do balão. Enquanto o aluno pensa, o Viktor só diz quanto
   /// tempo ele tem (o tempo das preferências; a frase vem das traduções).

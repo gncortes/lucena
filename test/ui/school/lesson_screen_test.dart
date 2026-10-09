@@ -102,6 +102,25 @@ void main() {
     expect(tester.getSize(find.byKey(LessonKeys.board)).width, full.width);
   });
 
+  testWidgets('lendo a fala longa, os botões saem da frente; voltam ao rolar '
+      'para cima e no fim do texto', (tester) async {
+    await pump(tester);
+    final next = find.byKey(LessonKeys.nextButton);
+    expect(next.hitTestable(), findsOneWidget);
+
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -100));
+    await tester.pumpAndSettle();
+    expect(next.hitTestable(), findsNothing);
+
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, 40));
+    await tester.pumpAndSettle();
+    expect(next.hitTestable(), findsOneWidget);
+
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
+    await tester.pumpAndSettle();
+    expect(next.hitTestable(), findsOneWidget);
+  });
+
   testWidgets('o botão de voltar aparece do segundo passo em diante e volta '
       'um passo', (tester) async {
     await pump(tester);
