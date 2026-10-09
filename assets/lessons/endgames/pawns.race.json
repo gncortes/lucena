@@ -520,133 +520,129 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e11",
       "stars": 1,
-      "fen": "8/P7/8/8/5k2/3K4/7p/8 w - - 0 1",
+      "fen": "6Q1/8/4K3/k7/8/8/8/1q6 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "studyNjswift",
       "line": [
         {
-          "teach": "a7a8q",
+          "teach": "g8a8",
           "accept": [
-            "a7a8q"
+            "g8a8"
+          ],
+          "reply": "a5b4"
+        },
+        {
+          "teach": "a8b8",
+          "accept": [
+            "a8b7",
+            "a8b8"
+          ],
+          "reply": "b4c3"
+        },
+        {
+          "teach": "b8b1",
+          "accept": [
+            "b8b1"
           ]
         }
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/p7/8/8/2k1K3/8/7P/8 w - - 0 1",
-      "goal": "win",
-      "origin": "studyWolf",
-      "line": [
-        {
-          "teach": "h2h4",
-          "accept": [
-            "h2h4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/7k/8/8/P4p2/1K6/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "fen": "8/8/8/5p2/1P5k/3K4/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "najdorfVinueza",
       "line": [
         {
-          "teach": "b3c2",
+          "teach": "h4h3",
           "accept": [
-            "b3c2",
-            "b3c3",
-            "b3c4"
+            "h4h3"
           ],
-          "reply": "f4f3"
+          "reply": "b4b5"
         },
         {
-          "teach": "c2d2",
+          "teach": "f5f4",
           "accept": [
-            "c2d1",
-            "c2d2",
-            "c2d3"
+            "f5f4"
           ],
-          "reply": "f3f2"
+          "reply": "d3e4"
         },
         {
-          "teach": "d2e2",
+          "teach": "h3g3",
           "accept": [
-            "d2e2"
+            "h3g3"
           ]
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e13",
       "stars": 2,
-      "fen": "8/8/7P/4k3/8/p7/6K1/8 b - - 0 1",
+      "fen": "8/5p2/2k5/K7/8/1P6/8/8 b - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "studyNjswift",
       "line": [
         {
-          "teach": "e5f6",
+          "teach": "c6d5",
           "accept": [
-            "e5f6"
+            "c6d5"
           ],
-          "reply": "h6h7"
+          "reply": "a5b4"
         },
         {
-          "teach": "f6g7",
+          "teach": "d5d4",
           "accept": [
-            "f6g7"
+            "d5d4"
+          ],
+          "reply": "b4a5"
+        },
+        {
+          "teach": "f7f5",
+          "accept": [
+            "d4d5",
+            "f7f5"
           ]
         }
       ]
     },
     {
-      "id": "e07",
+      "id": "e14",
       "stars": 2,
-      "fen": "8/8/8/p7/7P/2k5/6K1/8 w - - 0 1",
+      "fen": "8/8/1p5p/7P/1k3K2/5P2/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "nesterovZolnierowicz",
       "line": [
         {
-          "teach": "h4h5",
+          "teach": "f4e5",
           "accept": [
-            "h4h5"
+            "f4e5"
           ],
-          "reply": "a5a4"
+          "reply": "b4c3"
         },
         {
-          "teach": "h5h6",
+          "teach": "f3f4",
           "accept": [
-            "h5h6"
+            "f3f4"
           ],
-          "reply": "a4a3"
+          "reply": "b6b5"
         },
         {
-          "teach": "h6h7",
+          "teach": "f4f5",
           "accept": [
-            "h6h7"
+            "f4f5"
           ],
-          "reply": "a3a2"
+          "reply": "b5b4"
         },
         {
-          "teach": "h7h8q",
+          "teach": "f5f6",
           "accept": [
-            "h7h8q"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 3,
-      "fen": "8/8/5P2/1k6/8/1p4K1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
+            "f5f6"
+          ],
+          "reply": "b4b3"
+        },
         {
           "teach": "f6f7",
           "accept": [
@@ -662,84 +658,341 @@
           "reply": "b2b1q"
         },
         {
-          "teach": "f8b8",
+          "teach": "f8c5",
           "accept": [
-            "f8b8"
+            "f8c5"
           ],
-          "reply": "b5c4"
+          "reply": "c3d2"
         },
         {
-          "teach": "b8b1",
+          "teach": "c5f2",
           "accept": [
-            "b8b1"
+            "c5f2"
+          ],
+          "reply": "d2c3"
+        },
+        {
+          "teach": "f2d4",
+          "accept": [
+            "f2c5",
+            "f2d4"
+          ],
+          "reply": "c3b3"
+        },
+        {
+          "teach": "d4b6",
+          "accept": [
+            "d4b6",
+            "d4d5",
+            "d4e3"
+          ],
+          "reply": "b3c2"
+        },
+        {
+          "teach": "b6b1",
+          "accept": [
+            "b6b1",
+            "b6c5",
+            "b6f2",
+            "b6g6"
           ]
         }
       ]
     },
     {
-      "id": "e09",
+      "id": "e15",
       "stars": 3,
-      "fen": "8/7p/8/8/1K6/5k2/P7/8 w - - 0 1",
+      "fen": "8/4K1pp/8/8/8/8/k6P/8 w - - 0 1",
       "goal": "win",
-      "origin": "studyArthus",
+      "origin": "studyNjswift",
       "line": [
         {
-          "teach": "a2a4",
+          "teach": "h2h4",
           "accept": [
-            "a2a4"
+            "h2h4"
           ],
           "reply": "h7h5"
         },
         {
-          "teach": "a4a5",
+          "teach": "e7f8",
           "accept": [
-            "a4a5"
+            "e7f8"
+          ],
+          "reply": "g7g6"
+        },
+        {
+          "teach": "f8e7",
+          "accept": [
+            "f8e7"
+          ],
+          "reply": "g6g5"
+        },
+        {
+          "teach": "h4g5",
+          "accept": [
+            "h4g5"
           ],
           "reply": "h5h4"
+        },
+        {
+          "teach": "g5g6",
+          "accept": [
+            "g5g6"
+          ],
+          "reply": "h4h3"
+        },
+        {
+          "teach": "g6g7",
+          "accept": [
+            "g6g7"
+          ],
+          "reply": "h3h2"
+        },
+        {
+          "teach": "g7g8q",
+          "accept": [
+            "g7g8q"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/p7/8/8/1K6/4k3/2P5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyNjswift",
+      "line": [
+        {
+          "teach": "c2c4",
+          "accept": [
+            "c2c4"
+          ],
+          "reply": "e3d4"
+        },
+        {
+          "teach": "c4c5",
+          "accept": [
+            "c4c5"
+          ],
+          "reply": "d4e5"
+        },
+        {
+          "teach": "b4a5",
+          "accept": [
+            "b4a5"
+          ],
+          "reply": "e5e6"
         },
         {
           "teach": "a5a6",
           "accept": [
             "a5a6"
           ],
-          "reply": "h4h3"
+          "reply": "e6d5"
         },
         {
-          "teach": "a6a7",
+          "teach": "a6b5",
           "accept": [
-            "a6a7"
+            "a6b5"
           ],
-          "reply": "h3h2"
+          "reply": "d5e5"
         },
         {
-          "teach": "a7a8q",
+          "teach": "b5c6",
           "accept": [
-            "a7a8q"
+            "b5a5",
+            "b5a6",
+            "b5c6"
           ],
-          "reply": "f3g3"
+          "reply": "a7a5"
         },
         {
-          "teach": "a8h1",
+          "teach": "c6b7",
           "accept": [
-            "a8b7",
-            "a8c6",
-            "a8d5",
-            "a8e4",
-            "a8h1",
-            "b4a3",
-            "b4a4",
-            "b4a5",
-            "b4b3",
-            "b4b5",
-            "b4c3",
-            "b4c4",
-            "b4c5"
+            "c6b5",
+            "c6b6",
+            "c6b7",
+            "c6d7"
+          ],
+          "reply": "a5a4"
+        },
+        {
+          "teach": "c5c6",
+          "accept": [
+            "c5c6"
+          ],
+          "reply": "a4a3"
+        },
+        {
+          "teach": "c6c7",
+          "accept": [
+            "c6c7"
+          ],
+          "reply": "a3a2"
+        },
+        {
+          "teach": "c7c8q",
+          "accept": [
+            "c7c8q"
+          ],
+          "reply": "a2a1q"
+        },
+        {
+          "teach": "c8h8",
+          "accept": [
+            "c8h8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 3,
+      "fen": "8/8/8/3p4/1k3PpP/8/3K4/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyNjswift",
+      "line": [
+        {
+          "teach": "f4f5",
+          "accept": [
+            "f4f5"
+          ],
+          "reply": "b4c5"
+        },
+        {
+          "teach": "h4h5",
+          "accept": [
+            "h4h5"
+          ],
+          "reply": "g4g3"
+        },
+        {
+          "teach": "d2e1",
+          "accept": [
+            "d2e1"
+          ],
+          "reply": "d5d4"
+        },
+        {
+          "teach": "f5f6",
+          "accept": [
+            "f5f6"
+          ],
+          "reply": "c5d6"
+        },
+        {
+          "teach": "h5h6",
+          "accept": [
+            "h5h6"
+          ],
+          "reply": "g3g2"
+        },
+        {
+          "teach": "e1f2",
+          "accept": [
+            "e1f2"
+          ],
+          "reply": "d4d3"
+        },
+        {
+          "teach": "f6f7",
+          "accept": [
+            "f6f7"
+          ],
+          "reply": "d6e7"
+        },
+        {
+          "teach": "h6h7",
+          "accept": [
+            "h6h7"
+          ],
+          "reply": "g2g1q"
+        },
+        {
+          "teach": "f2g1",
+          "accept": [
+            "f2g1"
+          ],
+          "reply": "d3d2"
+        },
+        {
+          "teach": "f7f8q",
+          "accept": [
+            "f7f8q"
+          ],
+          "reply": "e7f8"
+        },
+        {
+          "teach": "h7h8q",
+          "accept": [
+            "h7h8q"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e18",
+      "stars": 3,
+      "fen": "8/8/2Kp4/4p3/8/8/2P2k2/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "studyNjswift",
+      "line": [
+        {
+          "teach": "c6d5",
+          "accept": [
+            "c6d5"
+          ],
+          "reply": "f2f3"
+        },
+        {
+          "teach": "d5d6",
+          "accept": [
+            "c2c4",
+            "d5d6"
+          ],
+          "reply": "e5e4"
+        },
+        {
+          "teach": "c2c4",
+          "accept": [
+            "c2c4"
+          ],
+          "reply": "e4e3"
+        },
+        {
+          "teach": "c4c5",
+          "accept": [
+            "c4c5",
+            "d6d7"
+          ],
+          "reply": "e3e2"
+        },
+        {
+          "teach": "c5c6",
+          "accept": [
+            "c5c6",
+            "d6d7"
+          ],
+          "reply": "e2e1q"
+        },
+        {
+          "teach": "d6d7",
+          "accept": [
+            "d6d7"
+          ],
+          "reply": "e1d1"
+        },
+        {
+          "teach": "d7c8",
+          "accept": [
+            "d7c8"
           ]
         }
       ]
     }
   ],
-  "passScore": 9,
+  "passScore": 12,
   "keyPositions": [
     {
       "id": "race",
@@ -836,11 +1089,34 @@
       "year": 1937
     },
     {
+      "id": "studyNjswift",
+      "kind": "study",
+      "author": "njswift",
+      "title": "Pawn Races",
+      "url": "https://lichess.org/study/OX3hApYw"
+    },
+    {
+      "id": "najdorfVinueza",
+      "kind": "game",
+      "white": "Miguel Najdorf",
+      "black": "Vinueza",
+      "event": "partida citada no estudo \"Pawn Races\" (Lichess)",
+      "year": 1941
+    },
+    {
+      "id": "nesterovZolnierowicz",
+      "kind": "game",
+      "white": "Nesterov",
+      "black": "Zolnierowicz",
+      "event": "partida citada no estudo \"Pawn Races\" (Lichess)",
+      "year": 1993
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 14
+  "maxScore": 19
 }
