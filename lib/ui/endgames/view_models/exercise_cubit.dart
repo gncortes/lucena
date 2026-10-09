@@ -341,11 +341,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final text = state.explanation;
     if (!state.canExplain || text == null) return;
     emit(
-      state.copyWith(
-        speech: text,
-        explained: true,
-        emotion: Emotion.focused,
-      ),
+      state.copyWith(speech: text, explained: true, emotion: Emotion.focused),
     );
   }
 

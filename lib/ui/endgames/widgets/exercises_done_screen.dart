@@ -45,9 +45,7 @@ class ExercisesDoneScreen extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    below
-                        ? l10n.endgameFailedTitle
-                        : l10n.exercisesDoneTitle,
+                    below ? l10n.endgameFailedTitle : l10n.exercisesDoneTitle,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
@@ -150,9 +148,7 @@ class _GradeTile extends StatelessWidget {
           vertical: AppSpacing.md,
         ),
         decoration: BoxDecoration(
-          color: current
-              ? colors.primaryContainer
-              : colors.surfaceContainerLow,
+          color: current ? colors.primaryContainer : colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(AppShape.medium),
           border: current ? Border.all(color: colors.primary, width: 2) : null,
         ),

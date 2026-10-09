@@ -184,20 +184,17 @@ void main() {
     expect(cubit.state.current?.id, 'demo');
   });
 
-  test(
-    'pensar: depois do tempo, mexe as peças à vontade e "Voltar à posição" '
-    'restaura',
-    () async {
-      final cubit = await open();
-      now.advance(const Duration(minutes: 3));
-      await cubit.tick();
-      await cubit.play(Move.parse('c1c3')!);
-      expect(cubit.state.current?.id, 'think');
-      expect(cubit.state.fen, isNot(fen));
-      cubit.resetThink();
-      expect(cubit.state.fen, fen);
-    },
-  );
+  test('pensar: depois do tempo, mexe as peças à vontade e "Voltar à posição" '
+      'restaura', () async {
+    final cubit = await open();
+    now.advance(const Duration(minutes: 3));
+    await cubit.tick();
+    await cubit.play(Move.parse('c1c3')!);
+    expect(cubit.state.current?.id, 'think');
+    expect(cubit.state.fen, isNot(fen));
+    cubit.resetThink();
+    expect(cubit.state.fen, fen);
+  });
 
   test('pensar: fechar no meio volta com o tempo certo', () async {
     final first = await open();
