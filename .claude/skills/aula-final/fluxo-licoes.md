@@ -55,6 +55,13 @@ mesma aula. Até uns 6 agentes com a tabela do Lichess ao mesmo tempo.
   exato do relatório (Lucena: 20 correções em 4 min).
 - O revisor da 2.ª passada também aponta exercício encostado demais na lição nova (Lucena e16, e15): vai
   para o Gabriel, não se mexe.
+- Rei e peão e casas-chave (2026-10-09) fizeram o ciclo inteiro sem Fable: 1.ª passada e reescrita no Opus,
+  2.ª passada e aplicação das correções no Sonnet. O Sonnet achou 3 e 4 frases erradas com texto exato,
+  conferiu tabela, PGN e pt = en com scripts; a aplicação levou 1 min. É o padrão daqui em diante; Fable
+  só nas marcadas.
+- Pedido de aplicação de correções: dizer "só o que tem texto exato está → deveria; nada de passo novo;
+  assert antes de trocar; o que não bater, relate". A numeração dos itens no relatório e no pedido pode
+  divergir: cite as chaves, não os números.
 
 ## Ordem das aulas e andamento
 
@@ -67,8 +74,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
 | 1 | rook.lucena | D | 5 | Fable (piloto) | sem demo; peão de torre, zugzwang da torre, Andersson–Åkesson | **feita: B**, commitada (lote2) |
 | 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada (lote2) |
-| 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | 1.ª passada C (Opus); reescrita (Opus) |
-| 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | 1.ª passada D (Opus); reescrita (Opus) |
+| 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | **feita: B**, commitada (lote2); ciclo todo sem Fable |
+| 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | **feita: B**, commitada (lote2); ciclo todo sem Fable; e17 pendente |
 | 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | |
 | 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | |
 | 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | |
