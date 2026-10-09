@@ -9,7 +9,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/profile_cubit.dart';
-import 'rating_card.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
 import '../../core/theme/app_shape.dart';
@@ -129,8 +128,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: level == null ? null : () => _save(level),
                   child: Text(l10n.profileSave),
                 ),
-                const SizedBox(height: 32),
-                const RatingCard(),
+                const SizedBox(height: 16),
+                // O rating de finais fica no histórico, com os detalhes.
+                OutlinedButton.icon(
+                  key: ProfileKeys.ratingCard,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  onPressed: () => context.push(Routes.rating),
+                  icon: const Icon(Icons.show_chart_rounded),
+                  label: Text(l10n.ratingHistory),
+                ),
               ],
             ),
           ),
