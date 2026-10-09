@@ -172,13 +172,15 @@ class EndgamesCubit extends Cubit<EndgamesState> {
   final EndgameProgressRepository _progress;
   final CharacterRepository _characters;
 
-  Future<void> load(String language) async {
+  /// [showAll] escolhe o filtro desta visita (sem gravar); nulo, vale o
+  /// gravado.
+  Future<void> load(String language, {bool? showAll}) async {
     final trail = await _lessons.trail();
     final texts = await _lessons.texts(language);
     final progress = await _progress.load();
     final characters = await _characters.characters();
     final saved = await _settings?.load();
-    final showAll = saved?.endgamesAll ?? false;
+    final all = showAll ?? saved?.endgamesAll ?? false;
     final hideDone = saved?.endgamesHideDone ?? false;
     final placement = _placement;
     final school = _school;
@@ -206,7 +208,7 @@ class EndgamesCubit extends Cubit<EndgamesState> {
         progress: progress,
         viktor: viktor,
         roadmap: roadmap,
-        showAll: showAll,
+        showAll: all,
         hideDone: hideDone,
       ),
     );

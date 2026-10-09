@@ -11,7 +11,7 @@ import '../../../testing/test_app.dart';
 
 void main() {
   testWidgets('todos os modos num lugar só', (tester) async {
-    tester.view.physicalSize = const Size(1080, 6000);
+    tester.view.physicalSize = const Size(1080, 8000);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
@@ -21,6 +21,7 @@ void main() {
     for (final mode in [
       'learn',
       'stars',
+      'forYou',
       'endgames',
       'journey',
       'train',
@@ -40,7 +41,7 @@ void main() {
   testWidgets('quem já joga vê Jogar primeiro; o iniciante, Aprender', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(1080, 6000);
+    tester.view.physicalSize = const Size(1080, 8000);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     Future<double> top(UserProfile profile, String mode) async {

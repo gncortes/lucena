@@ -9,6 +9,8 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../routing/routes.dart';
+import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
@@ -74,6 +76,10 @@ class _Body extends StatelessWidget {
     final texts = state.texts;
     final intro = texts.say('endgames.lesson.intro');
     if (state.passed) return texts.say('endgames.lesson.passed');
+    // Nota alcançada, mas a lição (as etapas) ainda não: falta ela.
+    if (state.allSolved && state.score >= state.passScore) {
+      return texts.say('endgames.lesson.lessonLeft');
+    }
     if (state.allSolved) return texts.say('endgames.lesson.failed');
     if (state.allPartsDone) return texts.say('endgames.lesson.test') ?? intro;
     if (state.partsDone.isNotEmpty) {
@@ -360,13 +366,15 @@ class _FinalTest extends StatefulWidget {
 }
 
 class _FinalTestState extends State<_FinalTest> {
-  late bool _open = widget.state.allPartsDone;
+  // A lista dos exercícios só existe com todos resolvidos; até lá o card
+  // mostra só o botão de começar (ou continuar).
+  late bool _open = widget.state.allSolved;
 
   @override
   void didUpdateWidget(_FinalTest old) {
     super.didUpdateWidget(old);
-    // Ao terminar as partes, o teste abre sozinho.
-    if (!old.state.allPartsDone && widget.state.allPartsDone) _open = true;
+    // Ao resolver o último, a lista abre sozinha.
+    if (!old.state.allSolved && widget.state.allSolved) _open = true;
   }
 
   @override
@@ -376,6 +384,7 @@ class _FinalTestState extends State<_FinalTest> {
     final colors = theme.colorScheme;
     final state = widget.state;
     final ready = state.allPartsDone;
+    final expandable = state.allSolved;
     final max = state.maxScore;
     final motion = AppMotion.of(context);
     return Card(
@@ -388,7 +397,7 @@ class _FinalTestState extends State<_FinalTest> {
         children: [
           InkWell(
             key: EndgameLessonKeys.finalTestSummary,
-            onTap: () => setState(() => _open = !_open),
+            onTap: expandable ? () => setState(() => _open = !_open) : null,
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
@@ -420,6 +429,9 @@ class _FinalTestState extends State<_FinalTest> {
                               // Um retorno, sem a conta da nota mínima.
                               state.passed
                                   ? l10n.endgameTestLearned
+                                  : state.allSolved &&
+                                        state.score >= state.passScore
+                                  ? l10n.endgameTestLessonLeft
                                   : state.allSolved
                                   ? l10n.endgameTestAlmost
                                   : l10n.endgameTestPrompt,
@@ -431,21 +443,26 @@ class _FinalTestState extends State<_FinalTest> {
                           ],
                         ),
                       ),
-                      Icon(Icons.star_rounded, color: StarsRow.color),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        '${state.score}/$max',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontFeatures: const [FontFeature.tabularFigures()],
+                      // A nota só depois do primeiro resolvido.
+                      if (state.solved > 0) ...[
+                        Icon(Icons.star_rounded, color: StarsRow.color),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          '${state.score}/$max',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      AnimatedRotation(
-                        turns: _open ? 0.5 : 0,
-                        duration: motion.state,
-                        child: const Icon(Icons.expand_more),
-                      ),
+                      ],
+                      if (expandable) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        AnimatedRotation(
+                          turns: _open ? 0.5 : 0,
+                          duration: motion.state,
+                          child: const Icon(Icons.expand_more),
+                        ),
+                      ],
                     ],
                   ),
                 ],
@@ -456,7 +473,7 @@ class _FinalTestState extends State<_FinalTest> {
             duration: motion.component,
             curve: AppMotion.move,
             alignment: Alignment.topCenter,
-            child: !_open
+            child: expandable && !_open
                 ? const SizedBox(width: double.infinity)
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -521,8 +538,7 @@ class _ContinueBar extends StatelessWidget {
       );
     } else if (exercise != null) {
       label = l10n.endgameContinueTest;
-      onPressed = () =>
-          context.push(Routes.endgameExercise(lesson.id, exercise.id));
+      onPressed = () => context.push(Routes.endgameExercisesIntro(lesson.id));
     } else {
       label = l10n.endgameTrain;
       onPressed = () => context.push(
@@ -582,78 +598,98 @@ class _ExercisesCard extends StatelessWidget {
       key: EndgameLessonKeys.exercises,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final (index, exercise) in lesson.exercises.indexed)
-          _ExerciseTile(
-            index: index,
-            exercise: exercise,
-            earned: state.starsOf(exercise.id),
-            isNext: next?.id == exercise.id,
-          ),
+        // A lista só com todos resolvidos (de lá o aluno treina um avulso).
+        if (state.allSolved)
+          for (final (index, exercise) in lesson.exercises.indexed)
+            _ExerciseTile(
+              index: index,
+              exercise: exercise,
+              earned: state.starsOf(exercise.id),
+              isNext: next?.id == exercise.id,
+            ),
         const SizedBox(height: 8),
-        // A nota: as estrelas ganhas sobre o total, e o mínimo.
-        Card(
-          key: EndgameLessonKeys.score,
-          margin: EdgeInsets.zero,
-          color: state.allSolved
-              ? (state.passed ? colors.primaryContainer : colors.errorContainer)
-              : colors.surfaceContainerLow,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (state.allSolved)
+        // Sem nada resolvido, só o botão de começar, no estilo do botão fixo
+        // da tela.
+        if (state.solved == 0 && next != null)
+          FilledButton.icon(
+            key: EndgameLessonKeys.startExercises,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+            ),
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: Text(l10n.endgameExercisesStart),
+            onPressed: () =>
+                context.push(Routes.endgameExercisesIntro(lesson.id)),
+          )
+        else
+          // A nota: as estrelas ganhas sobre o total, e o mínimo.
+          Card(
+            key: EndgameLessonKeys.score,
+            margin: EdgeInsets.zero,
+            color: state.allSolved
+                ? (state.passed
+                      ? colors.primaryContainer
+                      : colors.errorContainer)
+                : colors.surfaceContainerLow,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (state.allSolved)
+                    Text(
+                      state.passed
+                          ? l10n.endgamePassedTitle
+                          : l10n.endgameFailedTitle,
+                      key: state.passed
+                          ? EndgameLessonKeys.passed
+                          : EndgameLessonKeys.failed,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  Text(l10n.endgameScore(state.score, state.maxScore)),
                   Text(
-                    state.passed
-                        ? l10n.endgamePassedTitle
-                        : l10n.endgameFailedTitle,
-                    key: state.passed
-                        ? EndgameLessonKeys.passed
-                        : EndgameLessonKeys.failed,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    l10n.endgameExercisesSolved(
+                      state.solved,
+                      state.exerciseCount,
+                    ),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
-                Text(l10n.endgameScore(state.score, state.maxScore)),
-                Text(
-                  l10n.endgameExercisesSolved(
-                    state.solved,
-                    state.exerciseCount,
-                  ),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (next != null)
-                      FilledButton.icon(
-                        icon: const Icon(Icons.play_arrow_rounded),
-                        label: Text(
-                          state.solved == 0
-                              ? l10n.endgameExercisesStart
-                              : l10n.endgameExercisesContinue,
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (next != null)
+                        FilledButton.icon(
+                          key: EndgameLessonKeys.startExercises,
+                          icon: const Icon(Icons.play_arrow_rounded),
+                          label: Text(
+                            state.solved == 0
+                                ? l10n.endgameExercisesStart
+                                : l10n.endgameExercisesContinue,
+                          ),
+                          // A introdução antes: como pensar e como conta a nota.
+                          onPressed: () => context.push(
+                            Routes.endgameExercisesIntro(lesson.id),
+                          ),
                         ),
-                        onPressed: () => context.push(
-                          Routes.endgameExercise(lesson.id, next.id),
+                      if (state.solved > 0)
+                        OutlinedButton.icon(
+                          key: EndgameLessonKeys.redoButton,
+                          icon: const Icon(Icons.replay),
+                          label: Text(l10n.endgameRedoExercises),
+                          onPressed: cubit.redoExercises,
                         ),
-                      ),
-                    if (state.solved > 0)
-                      OutlinedButton.icon(
-                        key: EndgameLessonKeys.redoButton,
-                        icon: const Icon(Icons.replay),
-                        label: Text(l10n.endgameRedoExercises),
-                        onPressed: cubit.redoExercises,
-                      ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -698,11 +734,11 @@ class _ExerciseTile extends StatelessWidget {
           ),
         ),
         title: Text(l10n.endgameExerciseTitle(index + 1)),
-        subtitle: Text(l10n.endgameStars(exercise.stars)),
+        subtitle: Text(l10n.exercisePoints(exercise.stars)),
         trailing: Semantics(
           label: earned == null
-              ? l10n.endgameStars(exercise.stars)
-              : l10n.endgameEarnedStars(earned!, exercise.stars),
+              ? l10n.exercisePoints(exercise.stars)
+              : l10n.exerciseEarned(earned!, exercise.stars),
           excludeSemantics: true,
           child: StarsRow(
             key: EndgameLessonKeys.exerciseStars(exercise.id),
@@ -750,7 +786,27 @@ class _FinalCardState extends State<_FinalCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PositionBoard(fen: practice.fen, size: 96, radius: 6),
+                // Tocar a miniatura abre o final: ela voa até a preparação.
+                InkWell(
+                  key: EndgameLessonKeys.finalBoard,
+                  borderRadius: BorderRadius.circular(AppShape.small),
+                  onTap: () => context.push(
+                    Routes.setup(
+                      practice.fen,
+                      goal: practice.goal.code,
+                      position: practice.positionId,
+                    ),
+                  ),
+                  child: PositionBoard(
+                    fen: practice.fen,
+                    size: 96,
+                    radius: 6,
+                    heroTag: setupBoardTag(
+                      positionId: practice.positionId,
+                      fen: practice.fen,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

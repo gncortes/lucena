@@ -2,6 +2,7 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
@@ -59,7 +60,8 @@ void main() {
   testWidgets('o enunciado, as estrelas e a dica com a seta', (tester) async {
     await pump(tester, 'e03');
     expect(find.text('Exercise 3 of 3'), findsOneWidget);
-    expect(speech(tester), 'Your move.');
+    // O Viktor só entra quando fala.
+    expect(find.byKey(ExerciseKeys.speech), findsNothing);
     expect(find.byKey(ExerciseKeys.stars), findsOneWidget);
 
     await tester.tap(find.byKey(ExerciseKeys.hintButton));
@@ -85,13 +87,21 @@ void main() {
     // Antes de resolver, o objetivo sob o tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'White to play and win',
+      'White to play',
     );
 
     await move(tester, 'c1', 'c4');
     expect(find.byKey(ExerciseKeys.solved), findsOneWidget);
-    expect(find.text('Solved!'), findsOneWidget);
-    expect(find.text('2 of 3 stars'), findsOneWidget);
+    // Houve erro: sem "Resolvido!".
+    expect(find.text('Solved!'), findsNothing);
+    expect(find.text('2 of 3 points'), findsOneWidget);
+    // Singular quando o total é 1.
+    final l10n = lookupAppLocalizations(const Locale('pt'));
+    expect(l10n.exerciseEarned(1, 1), '1 de 1 ponto');
+    expect(l10n.exerciseEarned(0, 2), '0 de 2 pontos');
+    expect(l10n.exercisePoints(1), '1 ponto');
+    expect(l10n.exerciseHintLast, 'Dica (o exercício deixa de pontuar)');
+    expect(l10n.exerciseHintFree, 'Dica');
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
     // A linha da solução, com figurino (a torre).
     expect(
@@ -101,12 +111,10 @@ void main() {
           .toPlainText(),
       'Solution: 1.♖c4',
     );
-    // Só o elogio; a explicação detalhada vem pelo botão.
-    expect(speech(tester), 'Excellent.');
-    await tester.tap(find.byKey(ExerciseKeys.explainButton));
-    await tester.pumpAndSettle();
+    // Houve erro: a correção do Viktor vem sozinha, sem o botão.
     expect(speech(tester), 'Same bridge.');
     expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
+    expect(find.byKey(ExerciseKeys.locked), findsNothing);
     // Os outros dois ainda estão por resolver.
     expect(find.byKey(ExerciseKeys.nextButton), findsOneWidget);
     expect(find.byKey(ExerciseKeys.hintButton), findsNothing);

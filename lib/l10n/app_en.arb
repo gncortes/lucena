@@ -2164,11 +2164,15 @@
   "@homeEndgamesBody": {
     "description": "One line under the endgame lessons card on the home screen."
   },
+  "homeForYou": "Endgames for you",
+  "@homeForYou": {"description": "Home path: the endgame lessons recommended by the level test."},
+  "homeForYouBody": "Your own endgame study, built from your level test: the lessons you still need, in order.",
+  "@homeForYouBody": {"description": "Home path body for the personalised endgame study."},
   "endgamesTitle": "Endgame lessons",
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
   },
-  "endgamesPassedCount": "{passed} of {total} passed",
+  "endgamesPassedCount": "{passed} of {total} completed",
   "@endgamesPassedCount": {
     "description": "Beside the progress bar of the endgame lessons trail.",
     "placeholders": {
@@ -2240,7 +2244,7 @@
   "@endgameExercisesContinue": {
     "description": "Button that opens the next unsolved exercise."
   },
-  "endgameScore": "{score} of {max} stars",
+  "endgameScore": "{score} of {max} points",
   "@endgameScore": {
     "description": "The score of a lesson: stars earned over the total.",
     "placeholders": {
@@ -2286,7 +2290,7 @@
   "@endgamePassedTitle": {
     "description": "Title of the score card when the minimum was reached."
   },
-  "endgameFailedTitle": "Not enough stars",
+  "endgameFailedTitle": "Minimum score not reached",
   "@endgameFailedTitle": {
     "description": "Title of the score card when the minimum was not reached."
   },
@@ -2390,7 +2394,7 @@
   "@exerciseSolved": {
     "description": "Title of the card after solving an exercise."
   },
-  "exerciseEarned": "{earned} of {stars} stars",
+  "exerciseEarned": "{earned} of {stars, plural, =1{1 point} other{{stars} points}}",
   "@exerciseEarned": {
     "description": "Stars earned after solving an exercise.",
     "placeholders": {
@@ -2410,10 +2414,14 @@
   "@exerciseBack": {
     "description": "Button that goes back to the endgame lesson screen."
   },
-  "exerciseHint": "Hint (costs a star)",
+  "exerciseHint": "Hint (costs a point)",
   "@exerciseHint": {
     "description": "Button that asks for a hint in an exercise."
   },
+  "exerciseHintFree": "Hint",
+  "@exerciseHintFree": {"description": "Hint button when the exercise is already worth nothing: the hint costs nothing."},
+  "exerciseHintLast": "Hint (the exercise stops scoring)",
+  "@exerciseHintLast": {"description": "Hint button when the exercise is worth one point: taking it means the exercise no longer scores."},
   "exerciseMissing": "This exercise does not exist.",
   "@exerciseMissing": {
     "description": "When the exercise in the link does not exist."
@@ -3805,6 +3813,14 @@
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
+  "lessonReviewPart": "Review this stage",
+  "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
+  "lessonPartNext": "Next",
+  "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
+  "lessonPartLearned": "What you learned",
+  "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "lessonCloseSpeech": "Close",
+  "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
   "lessonBackToLesson": "Back to the lesson",
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
@@ -3957,6 +3973,8 @@
   "@endgameTestAlmost": {
     "description": "Final test card subtitle when all exercises were done but the goal was not reached."
   },
+  "endgameTestLessonLeft": "Score reached: finish the lesson",
+  "@endgameTestLessonLeft": {"description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."},
   "graduationDiploma": "Diploma",
   "@graduationDiploma": {
     "description": "Title on the graduation diploma."
@@ -5054,7 +5072,7 @@
   "@exercisesDoneTitle": {
     "description": "Title of the result screen after the last exercise of a lesson."
   },
-  "exercisesDoneNeedMore": "You need at least {min} stars to pass. Redo the exercises to improve.",
+  "exercisesDoneNeedMore": "You need at least {min} points to pass. Redo the exercises to improve.",
   "@exercisesDoneNeedMore": {
     "description": "Result screen: shown when the score is below the minimum.",
     "placeholders": {
@@ -5063,11 +5081,11 @@
       }
     }
   },
-  "exerciseGradePassed": "Passed",
+  "exerciseGradePassed": "Fair",
   "@exerciseGradePassed": {
     "description": "Result screen: name of the minimum grade (enough to pass)."
   },
-  "exerciseGradeGood": "Good",
+  "exerciseGradeGood": "Great",
   "@exerciseGradeGood": {
     "description": "Result screen: name of the good grade."
   },
@@ -5083,8 +5101,46 @@
   "@exerciseGradeYou": {
     "description": "Result screen: marker on the grade the student reached."
   },
+  "exercisesDoneScore": "{score} of {max} possible points",
+  "@exercisesDoneScore": {"description": "Headline score on the exercises-done screen: points earned over the possible total.", "placeholders": {"score": {"type": "int"}, "max": {"type": "int"}}},
+  "exerciseGradePoints": "{min} of {max} points",
+  "@exerciseGradePoints": {"description": "On a grade tier of the exercises-done ladder: the points the tier requires, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
+  "@exercisesDoneDiplomaFor": {"description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).", "placeholders": {"grade": {"type": "String"}, "title": {"type": "String"}}},
+  "exercisesIntroSpeech": "Time to show what you learned. Your first try is what counts: after that it is free practice, and to count again just redo the exercises.",
+  "@exercisesIntroSpeech": {"description": "Viktor's speech on the screen before the exercises of an endgame lesson: think 5 minutes per position, mistakes and hints cost a star, the grade is set once all are solved."},
+  "exercisesIntroChipMinimum": "at least {min} of {max} points",
+  "@exercisesIntroChipMinimum": {"description": "Chip on the exercises intro: the minimum stars to pass, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "exercisesIntroChipThink": "5 minutes per position",
+  "@exercisesIntroChipThink": {"description": "Chip on the exercises intro: the recommended thinking time per position."},
+  "exercisesIntroCountBody": "Ordered from the simplest to the hardest.",
+  "@exercisesIntroCountBody": {"description": "Exercises intro card: the exercises go from the simplest to the hardest."},
+  "exercisesIntroMinTitle": "At least {min} points",
+  "@exercisesIntroMinTitle": {"description": "Exercises intro card title: minimum points to pass.", "placeholders": {"min": {"type": "int"}}},
+  "exercisesIntroMinBody": "Out of {max} possible points, to pass the lesson.",
+  "@exercisesIntroMinBody": {"description": "Exercises intro card body: out of how many possible points.", "placeholders": {"max": {"type": "int"}}},
+  "exercisesIntroThinkBody": "Think about each position before moving: that is how you learn.",
+  "@exercisesIntroThinkBody": {"description": "Exercises intro card body: think about each position before moving."},
+  "exercisePoints": "{count, plural, =1{1 point} other{{count} points}}",
+  "@exercisePoints": {"description": "How many points an exercise is worth right now (the star in the app bar) or a star in the legend.", "placeholders": {"count": {"type": "int"}}},
+  "exercisesIntroStarLegend": "Gold is worth 3 points, silver 2 and bronze 1. Every mistake and every hint takes one point off.",
+  "@exercisesIntroStarLegend": {"description": "On the exercises intro, under the three stars: what gold, silver and bronze are worth, and that mistakes and hints take a point off."},
+  "exerciseLichess": "Analyse on Lichess",
+  "@exerciseLichess": {"description": "Button on a solved-series exercise: open the position in the Lichess analysis board."},
+  "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
+  "@exerciseTurn": {"description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.", "placeholders": {"side": {"type": "String"}}},
+  "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
+  "@exercisesIntroAfter": {"description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."},
+  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",
+  "@exerciseScoreLocked": {"description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."},
+  "exercisesDoneShareText": "I completed the lesson “{title}” in Lucena with {score} of {max} points! {link}",
+  "@exercisesDoneShareText": {"description": "Text shared with the endgame lesson diploma image.", "placeholders": {"title": {"type": "String"}, "score": {"type": "int"}, "max": {"type": "int"}, "link": {"type": "String"}}},
   "endgamesHideDone": "Hide completed lessons",
-  "@endgamesHideDone": {
-    "description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."
-  }
+  "@endgamesHideDone": {"description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."},
+  "exercisesDonePractice": "Practise this endgame",
+  "@exercisesDonePractice": {"description": "Button on the exercises-done screen when passed: go practise the lesson's endgame."},
+  "exercisesDoneFinish": "Finish",
+  "@exercisesDoneFinish": {"description": "Button on the exercises-done screen: close it and go back to the lesson."},
+  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
+  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."}
 }

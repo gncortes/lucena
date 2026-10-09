@@ -63,10 +63,11 @@ void main() {
       expect(find.text('The Lucena position'), findsOneWidget);
       expect(find.textContaining('1 of 2'), findsOneWidget);
       expect(find.text('Start'), findsOneWidget);
-      // O teste final começa recolhido (T51), com o resumo numa linha.
-      expect(find.byKey(EndgameLessonKeys.exercise('e01')), findsNothing);
+      // O teste final: sem nada resolvido, só o resumo (sem os zeros), a
+      // dica e o botão de começar; a lista dos exercícios não aparece (nem
+      // ao tocar).
       expect(find.text('3 exercises'), findsOneWidget);
-      expect(find.text('0/6'), findsOneWidget);
+      expect(find.text('0/6'), findsNothing);
       await tester.ensureVisible(
         find.byKey(EndgameLessonKeys.finalTestSummary),
       );
@@ -74,12 +75,14 @@ void main() {
       await tester.tap(find.byKey(EndgameLessonKeys.finalTestSummary));
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.byKey(EndgameLessonKeys.exercise('e01')),
+        find.byKey(EndgameLessonKeys.startExercises),
         100,
       );
       expect(find.byKey(EndgameLessonKeys.testAdvice), findsOneWidget);
-      expect(find.byKey(EndgameLessonKeys.exercise('e03')), findsOneWidget);
-      expect(find.text('0 of 6 stars'), findsOneWidget);
+      expect(find.byKey(EndgameLessonKeys.exercise('e01')), findsNothing);
+      expect(find.byKey(EndgameLessonKeys.exercise('e03')), findsNothing);
+      expect(find.text('0 of 6 points'), findsNothing);
+      expect(find.byKey(EndgameLessonKeys.score), findsNothing);
       expect(find.text('Start the exercises'), findsOneWidget);
       expect(find.byKey(EndgameLessonKeys.redoButton), findsNothing);
       // O desafio no final fica aberto desde o começo (T51).
@@ -95,11 +98,14 @@ void main() {
     tester,
   ) async {
     await pump(tester, progress: passed);
+    // Com todos resolvidos, a lista dos exercícios aparece.
+    expect(find.byKey(EndgameLessonKeys.exercise('e01')), findsOneWidget);
+    expect(find.byKey(EndgameLessonKeys.startExercises), findsNothing);
     expect(find.text('Passed.'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.lessonDone), findsOneWidget);
     expect(find.text('Review the lesson'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.passed), findsOneWidget);
-    expect(find.text('4 of 6 stars'), findsOneWidget);
+    expect(find.text('4 of 6 points'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.redoButton), findsOneWidget);
     await tester.scrollUntilVisible(
       find.byKey(EndgameLessonKeys.speedrunButton),
@@ -133,7 +139,14 @@ void main() {
     await cubit.redoExercises();
     await tester.pumpAndSettle();
     expect(cubit.state.score, 0);
-    expect(find.text('0 of 6 stars'), findsOneWidget);
+    // Zerado: volta ao estado inicial, só com o botão de começar.
+    expect(find.byKey(EndgameLessonKeys.score), findsNothing);
+    // A lista encurtou e o card ficou fora da janela: conta o que está
+    // montado.
+    expect(
+      find.byKey(EndgameLessonKeys.startExercises, skipOffstage: false),
+      findsOneWidget,
+    );
     expect(find.byKey(EndgameLessonKeys.failed), findsNothing);
   });
 
@@ -161,5 +174,25 @@ void main() {
   testWidgets('aula que não existe', (tester) async {
     await pump(tester, id: 'nothing');
     expect(find.byKey(EndgameLessonKeys.missing), findsOneWidget);
+  });
+
+  testWidgets('nota alcançada sem as etapas: pede para concluir a lição', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      progress: const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            stars: {'e01': 1, 'e02': 2, 'e03': 3},
+          ),
+        },
+      ),
+    );
+    expect(
+      find.text('Score reached: finish the lesson', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(find.text('Almost there: redo them to make it stick'), findsNothing);
   });
 }

@@ -37,7 +37,7 @@ void main() {
   ) async {
     await pump(tester);
     expect(find.text('These are the endgame lessons.'), findsOneWidget);
-    expect(find.text('0 of 2 passed'), findsOneWidget);
+    expect(find.text('0 of 2 completed'), findsOneWidget);
     expect(find.text('Start the first lesson'), findsOneWidget);
     expect(find.byKey(EndgamesKeys.module('rook')), findsOneWidget);
     expect(find.text('Rook endgames'), findsOneWidget);
@@ -64,7 +64,7 @@ void main() {
       ),
     );
     expect(find.text('Good to see you again.'), findsOneWidget);
-    expect(find.text('1 of 2 passed'), findsOneWidget);
+    expect(find.text('1 of 2 completed'), findsOneWidget);
     expect(find.text('Continue: The Philidor defence'), findsOneWidget);
     expect(
       tester

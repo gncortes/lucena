@@ -16,8 +16,9 @@ enum HomePathText {
 /// A tela inicial pelo nível: a ordem dos caminhos, os que vêm marcados, o
 /// texto de cada um e as regras de mexer nela.
 abstract final class HomeSuggestion {
-  /// A sugestão do nível [level]: os cinco caminhos na ordem que faz sentido
-  /// para ele, com os primeiros marcados.
+  /// A sugestão do nível [level]: os caminhos na ordem que faz sentido para
+  /// ele, com os primeiros marcados. Os finais para você vêm logo antes das
+  /// aulas de finais e, quando elas estão marcadas, marcados também.
   static HomeLayout of(RatingLevel level) {
     const learn = HomePath.learn;
     const journey = HomePath.journey;
@@ -35,7 +36,13 @@ abstract final class HomeSuggestion {
       RatingLevel.expert => ([endgames, speedrun, train, journey, learn], 3),
       RatingLevel.master => ([speedrun, endgames, train, journey, learn], 3),
     };
-    return HomeLayout(order: order, visible: order.take(marked).toSet());
+    final visible = order.take(marked).toSet();
+    final at = order.indexOf(endgames);
+    final withForYou = [...order]..insert(at, HomePath.forYou);
+    return HomeLayout(
+      order: withForYou,
+      visible: {...visible, if (visible.contains(endgames)) HomePath.forYou},
+    );
   }
 
   /// O layout da tela: o ajustado pelo jogador ou, sem ajuste (ou sem nada
@@ -105,7 +112,9 @@ abstract final class HomeSuggestion {
           level == RatingLevel.expert || level == RatingLevel.master
               ? HomePathText.challenge
               : HomePathText.standard,
-        HomePath.endgames || HomePath.train => HomePathText.standard,
+        HomePath.forYou ||
+        HomePath.endgames ||
+        HomePath.train => HomePathText.standard,
       };
 
   /// O caminho do cartão "Continuar": o da vez ([current]) se estiver
@@ -117,6 +126,11 @@ abstract final class HomeSuggestion {
     required Set<HomePath> withProgress,
   }) {
     if (layout.visible.contains(current)) return current;
+    // A aula de final aberta também vale para os finais para você.
+    if (current == HomePath.endgames &&
+        layout.visible.contains(HomePath.forYou)) {
+      return HomePath.forYou;
+    }
     for (final path in layout.shown) {
       if (withProgress.contains(path)) return path;
     }

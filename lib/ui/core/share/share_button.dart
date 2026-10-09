@@ -22,13 +22,34 @@ Future<Uint8List?> capturePng(
 }) async {
   final render = boundary.currentContext?.findRenderObject();
   if (render is! RenderRepaintBoundary) return null;
+  return captureBoundaryPng(
+    render,
+    extra: [
+      for (final key in extra)
+        if (key.currentContext?.findRenderObject()
+            case final RenderRepaintBoundary piece)
+          piece,
+    ],
+    pixelRatio: pixelRatio,
+    footer: footer,
+    background: background,
+    footerStyle: footerStyle,
+  );
+}
+
+/// O mesmo que [capturePng], direto de um [RenderRepaintBoundary].
+Future<Uint8List?> captureBoundaryPng(
+  RenderRepaintBoundary render, {
+  List<RenderRepaintBoundary> extra = const [],
+  double pixelRatio = 3,
+  String? footer,
+  Color background = Colors.white,
+  TextStyle? footerStyle,
+}) async {
   var image = await render.toImage(pixelRatio: pixelRatio);
   // Os outros pedaços ([extra]) vão embaixo, com um respiro entre eles.
   final more = [
-    for (final key in extra)
-      if (key.currentContext?.findRenderObject()
-          case final RenderRepaintBoundary piece)
-        await piece.toImage(pixelRatio: pixelRatio),
+    for (final piece in extra) await piece.toImage(pixelRatio: pixelRatio),
   ];
   if (more.isNotEmpty) {
     final stacked = _stacked([image, ...more], gap: 16 * pixelRatio);

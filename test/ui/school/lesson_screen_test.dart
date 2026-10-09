@@ -79,46 +79,38 @@ void main() {
       findsNothing,
     );
 
+    // O primeiro puxão abre a folha; o seguinte rola o texto até o fim.
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
+    await tester.pumpAndSettle();
     await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
     await tester.pumpAndSettle();
     final next = tester.getRect(find.byKey(LessonKeys.nextButton));
     expect(tester.getRect(speech).bottom, lessThan(next.top));
   });
 
-  testWidgets('fala longa: ao rolar, o tabuleiro encolhe mas continua à '
-      'vista, e voltando ao topo ele volta ao tamanho cheio', (tester) async {
+  testWidgets('fala longa: puxando a folha, ela sobe por cima do tabuleiro '
+      'inteiro; puxando de volta, desce e o tabuleiro reaparece', (
+    tester,
+  ) async {
     await pump(tester);
-    final full = tester.getSize(find.byKey(LessonKeys.board));
+    final board = find.byKey(LessonKeys.board);
+    final speech = find.byKey(LessonKeys.speech);
+    final full = tester.getRect(board);
+    // Fechada: a folha começa abaixo do tabuleiro.
+    expect(tester.getRect(speech).top, greaterThan(full.bottom));
 
     await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
     await tester.pumpAndSettle();
-    final small = tester.getSize(find.byKey(LessonKeys.board));
-    expect(small.width, lessThan(full.width));
-    expect(small.width, greaterThanOrEqualTo(full.width / 2));
-    expect(find.byKey(LessonKeys.board).hitTestable(), findsOneWidget);
+    // Aberta: o tabuleiro não encolhe, a folha é que cobre.
+    expect(tester.getRect(board), full);
+    expect(tester.getRect(speech).top, lessThan(full.bottom));
+    // Os botões continuam à vista, por cima da folha.
+    expect(find.byKey(LessonKeys.nextButton).hitTestable(), findsOneWidget);
 
     await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, 3000));
     await tester.pumpAndSettle();
-    expect(tester.getSize(find.byKey(LessonKeys.board)).width, full.width);
-  });
-
-  testWidgets('lendo a fala longa, os botões saem da frente; voltam ao rolar '
-      'para cima e no fim do texto', (tester) async {
-    await pump(tester);
-    final next = find.byKey(LessonKeys.nextButton);
-    expect(next.hitTestable(), findsOneWidget);
-
-    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -100));
-    await tester.pumpAndSettle();
-    expect(next.hitTestable(), findsNothing);
-
-    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, 40));
-    await tester.pumpAndSettle();
-    expect(next.hitTestable(), findsOneWidget);
-
-    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
-    await tester.pumpAndSettle();
-    expect(next.hitTestable(), findsOneWidget);
+    expect(tester.getRect(speech).top, greaterThan(full.bottom));
+    expect(board.hitTestable(), findsOneWidget);
   });
 
   testWidgets('o botão de voltar aparece do segundo passo em diante e volta '

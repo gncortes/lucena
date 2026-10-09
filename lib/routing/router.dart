@@ -77,6 +77,7 @@ import '../ui/endgames/widgets/endgame_lesson_screen.dart';
 import '../ui/endgames/widgets/endgames_screen.dart';
 import '../ui/endgames/widgets/exercise_screen.dart';
 import '../ui/endgames/widgets/exercises_done_screen.dart';
+import '../ui/endgames/widgets/exercises_intro_screen.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
 import '../domain/models/star_challenge.dart';
@@ -484,11 +485,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 school: context.read<LessonRepository>(),
                 schoolProgress: context.read<SchoolProgressRepository>(),
                 settings: context.read<SettingsRepository>(),
-              )..load(_language(context)),
+              )..load(_language(context), showAll: _endgamesFilter(state)),
               child: Builder(
                 builder: (context) => ReloadOnReturn(
-                  onReturn: () =>
-                      context.read<EndgamesCubit>().load(_language(context)),
+                  onReturn: () => context.read<EndgamesCubit>().load(
+                    _language(context),
+                    showAll: _endgamesFilter(state),
+                  ),
                   child: const EndgamesScreen(),
                 ),
               ),
@@ -599,6 +602,21 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           characters: context.read<CharacterRepository>(),
                         )..load(id, _language(context)),
                         child: const EndgameInfoScreen(),
+                      );
+                    },
+                  ),
+                  _route(
+                    path: 'intro',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      return BlocProvider(
+                        create: (_) => EndgameLessonCubit(
+                          lessons: context.read<EndgameLessonRepository>(),
+                          progress: context.read<EndgameProgressRepository>(),
+                          journey: context.read<JourneyRepository>(),
+                          characters: context.read<CharacterRepository>(),
+                        )..load(id, _language(context)),
+                        child: const ExercisesIntroScreen(),
                       );
                     },
                   ),
@@ -998,3 +1016,12 @@ ConclusionCubit _conclusionCubit(BuildContext context) => ConclusionCubit(
   analysis: context.read<AnalysisRepository>(),
   reviews: context.read<GameReviewRepository>(),
 );
+
+/// O filtro pedido na rota das aulas de finais: "Todos" (true), "Para você"
+/// (false) ou nenhum (o gravado).
+bool? _endgamesFilter(GoRouterState state) =>
+    switch (state.uri.queryParameters['filter']) {
+      'all' => true,
+      'forYou' => false,
+      _ => null,
+    };

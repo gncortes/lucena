@@ -6,7 +6,11 @@ enum HomePath {
   /// A Jornada, do Coco ao Stockfish.
   journey,
 
-  /// As aulas de finais.
+  /// Os finais para você: as aulas de finais que o teste de nível
+  /// recomendou, no filtro "Para você".
+  forYou,
+
+  /// As aulas de finais, todas.
   endgames,
 
   /// O speedrun.
@@ -27,7 +31,7 @@ class HomeLayout {
     this.custom = false,
   });
 
-  /// Os cinco caminhos, na ordem da tela.
+  /// Os caminhos, na ordem da tela.
   final List<HomePath> order;
 
   /// Os que aparecem em destaque. Nunca vazio.

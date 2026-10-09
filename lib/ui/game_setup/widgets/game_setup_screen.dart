@@ -166,7 +166,8 @@ class _Header extends StatelessWidget {
         return Column(
           children: [
             const SizedBox(height: 8),
-            // Posição do catálogo: o tabuleiro chega voando do cartão dela.
+            // O tabuleiro chega voando do cartão de onde veio (catálogo ou
+            // aula).
             PositionBoard(
               boardKey: GameSetupKeys.preview,
               fen: state.position.fen,
@@ -174,7 +175,10 @@ class _Header extends StatelessWidget {
               orientation: state.userSide,
               coordinates: true,
               radius: 8,
-              heroTag: positionId == null ? null : catalogBoardTag(positionId),
+              heroTag: setupBoardTag(
+                positionId: positionId,
+                fen: state.position.fen,
+              ),
             ),
             const SizedBox(height: 12),
             Wrap(

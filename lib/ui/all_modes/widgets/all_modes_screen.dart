@@ -57,6 +57,7 @@ class AllModesScreen extends StatelessWidget {
             body: l10n.starChallengesBody,
             route: Routes.starChallenges,
           ),
+          path(HomePath.forYou),
           path(HomePath.endgames),
         ],
       ),

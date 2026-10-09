@@ -138,6 +138,8 @@ void main() {
     final journey = tester.getRect(find.byKey(TourKeys.goal(HomePath.journey)));
     expect(learn.top, lessThan(journey.top));
     // Desmarcar as aulas: o botão deixa de abrir as aulas.
+    await tester.ensureVisible(find.byKey(TourKeys.goal(HomePath.learn)));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(TourKeys.goal(HomePath.learn)));
     await tester.pumpAndSettle();
     expect(find.text('Começar as aulas'), findsNothing);

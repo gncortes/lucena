@@ -189,12 +189,12 @@ class EndgamesRobot {
 
   /// No fim da lição: volta para a aula, com os exercícios.
   Future<void> backToExercises() async {
-    // Na aula em partes, o fim da última parte volta à aula por "voltar à
-    // aula"; na aula inteira, por "exercícios".
+    // Na aula em partes, o fim da última parte volta à aula por "próximo";
+    // na aula inteira, por "exercícios".
     if ($(LessonKeys.exercisesButton).exists) {
       await $(LessonKeys.exercisesButton).tap();
     } else {
-      await $(LessonKeys.backToLessonButton).scrollTo().tap();
+      await $(LessonKeys.nextPartButton).tap();
     }
     await expectLessonScreen();
   }
@@ -205,6 +205,16 @@ class EndgamesRobot {
 
   // Os exercícios.
 
+  /// Começa (ou continua) os exercícios pelo botão da aula: passa pela
+  /// introdução e abre o próximo por resolver.
+  Future<void> startExercises(String lessonId, String exerciseId) async {
+    await _show(EndgameLessonKeys.startExercises).tap();
+    await $(ExercisesIntroKeys.screen).waitUntilVisible();
+    await $(ExercisesIntroKeys.start).tap();
+    await expectExercise(lessonId, exerciseId);
+  }
+
+  /// Abre um exercício pela lista (só existe com todos resolvidos).
   Future<void> openExercise(String lessonId, String exerciseId) async {
     await _show(EndgameLessonKeys.exercise(exerciseId)).tap();
     await expectExercise(lessonId, exerciseId);
@@ -239,7 +249,7 @@ class EndgamesRobot {
   String? get exerciseSpeech =>
       _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
 
-  /// As estrelas ganhas no exercício resolvido ("1 of 2 stars").
+  /// Os pontos ganhos no exercício resolvido ("1 of 2 points").
   String? get earned =>
       $.tester.widget<Text>(find.byKey(ExerciseKeys.earned)).data;
 
@@ -276,11 +286,11 @@ class EndgamesRobot {
     await expectLessonScreen();
   }
 
-  /// Resolve todos os exercícios da aula a partir da lista, pedindo antes
-  /// [hints] dicas em cada um (cada dica custa uma estrela).
+  /// Resolve todos os exercícios da aula pelo botão de começar, pedindo
+  /// antes [hints] dicas em cada um (cada dica custa uma estrela).
   Future<void> solveAll(EndgameLesson lesson, {int hints = 0}) async {
     final exercises = lesson.exercises;
-    await openExercise(lesson.id, exercises.first.id);
+    await startExercises(lesson.id, exercises.first.id);
     for (final (index, exercise) in exercises.indexed) {
       await expectExercise(lesson.id, exercise.id);
       if (hints > 0) await hint();
@@ -320,7 +330,7 @@ class EndgamesRobot {
     await _show(EndgameLessonKeys.failed);
   }
 
-  /// A nota da aula ("11 of 23 stars").
+  /// A nota da aula ("11 of 23 points").
   void expectScore(String text) =>
       expectTextIn(find.byKey(EndgameLessonKeys.score), text);
 
