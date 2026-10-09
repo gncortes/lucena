@@ -4293,26 +4293,6 @@
   "@conclusionReviewTitle": {
     "description": "Conclusion card: summary of the move quality of the player in this game."
   },
-  "conclusionBestLine": "See the best line",
-  "@conclusionBestLine": {
-    "description": "Conclusion card title: the engine best line from the starting position, played move by move on a board."
-  },
-  "conclusionBestLineHint": "How Stockfish plays this position from the start",
-  "@conclusionBestLineHint": {
-    "description": "Subtitle of the best line card."
-  },
-  "conclusionBestLineMove": "Move {move} of {total}",
-  "@conclusionBestLineMove": {
-    "description": "Best line stepper: which move of the line is shown.",
-    "placeholders": {
-      "move": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "conclusionFastest": "Fastest",
   "@conclusionFastest": {
     "description": "Tag on the fastest stage in the speedrun conclusion."

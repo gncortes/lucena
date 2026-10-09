@@ -13,6 +13,9 @@ abstract final class ConclusionKeys {
   static const goal = Key('conclusion.goal');
   static const player = Key('conclusion.player');
   static const opponent = Key('conclusion.opponent');
+
+  /// O brilho em volta do retrato de quem venceu (nunca no empate).
+  static const winnerGlow = Key('conclusion.winnerGlow');
   static const rating = Key('conclusion.rating');
   static const ratingValue = Key('conclusion.rating.value');
   static const ratingDelta = Key('conclusion.rating.delta');
@@ -33,12 +36,6 @@ abstract final class ConclusionKeys {
   static const accuracy = Key('conclusion.review.accuracy');
   static const reviewBoard = Key('conclusion.quickReview.board');
   static const quickReview = Key('conclusion.quickReview');
-  static const bestLine = Key('conclusion.bestLine');
-  static const bestLineToggle = Key('conclusion.bestLine.toggle');
-  static const bestLineBoard = Key('conclusion.bestLine.board');
-  static const bestLineBack = Key('conclusion.bestLine.back');
-  static const bestLineForward = Key('conclusion.bestLine.forward');
-  static const bestLineMove = Key('conclusion.bestLine.move');
 
   /// Quantos lances da qualidade [name] (`best`, `mistake`...).
   static Key quality(String name) => Key('conclusion.review.$name');

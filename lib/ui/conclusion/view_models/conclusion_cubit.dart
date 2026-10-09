@@ -67,8 +67,7 @@ class ConclusionState {
     this.review,
     this.reviewing = false,
     this.reviewDone = 0,
-    this.bestLine = const [],
-    this.bestPly = -1,
+    this.autoReview = false,
   });
 
   final bool ready;
@@ -106,17 +105,14 @@ class ConclusionState {
   /// Quantos lances a análise rápida já avaliou.
   final int reviewDone;
 
-  /// A melhor linha desde a posição de início (UCI) e o lance mostrado
-  /// dela (-1: a posição de início).
-  final List<String> bestLine;
-  final int bestPly;
+  /// Partida curta ([ConclusionRules.isShortGame]): a análise rápida começa
+  /// sozinha ao abrir a tela e aparece no fim dela, sem esperar o toque.
+  final bool autoReview;
 
   ConclusionState copyWith({
     GameReview? review,
     bool? reviewing,
     int? reviewDone,
-    List<String>? bestLine,
-    int? bestPly,
   }) => ConclusionState(
     ready: ready,
     missing: missing,
@@ -132,8 +128,7 @@ class ConclusionState {
     review: review ?? this.review,
     reviewing: reviewing ?? this.reviewing,
     reviewDone: reviewDone ?? this.reviewDone,
-    bestLine: bestLine ?? this.bestLine,
-    bestPly: bestPly ?? this.bestPly,
+    autoReview: autoReview,
   );
 }
 
@@ -169,7 +164,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
   // A conclusão aberta, para o app reabrir nela.
   final ConclusionRepository? _pending;
 
-  // O Stockfish do aparelho: o resumo da revisão e a melhor linha.
+  // O Stockfish do aparelho: o resumo da revisão.
   final AnalysisRepository? _analysis;
   final GameReviewRepository? _reviews;
 
@@ -178,8 +173,9 @@ class ConclusionCubit extends Cubit<ConclusionState> {
   static const reviewBudget = (depth: 14, time: Duration(milliseconds: 1500));
   static const reviewWeight = 1;
 
-  /// O orçamento da melhor linha, desde a posição de início.
-  static const bestLineBudget = (depth: 22, time: Duration(seconds: 3));
+  // A análise rápida está rodando (a automática e a do toque não se
+  // sobrepõem).
+  bool _reviewRunning = false;
 
   /// Monta a conclusão da partida gravada [gameId].
   Future<void> load(int gameId, String language) async {
@@ -272,6 +268,11 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     final position = await _positions.byId(game.positionId);
     final (comment, emotion) = await _comment(opponent, result, language);
     final feedback = await _feedbackOf(game, gameId, facts);
+    // A partida curta analisa sozinha: já abre com a análise andando.
+    final auto =
+        _analysis != null &&
+        game.startFen != null &&
+        ConclusionRules.isShortGame(game);
     if (isClosed) return;
     emit(
       ConclusionState(
@@ -298,34 +299,24 @@ class ConclusionCubit extends Cubit<ConclusionState> {
                 goal: position.goal.code,
                 position: position.id,
               ),
+        autoReview: auto,
+        reviewing: auto,
       ),
     );
-    unawaited(_background(game, gameId));
+    unawaited(_background(gameId));
   }
 
-  // Em segundo plano, sem travar as ações: a melhor linha e o resumo da
-  // revisão (gravado, para a revisão da partida abrir já revisada). Se a
-  // engine falhar, os blocos somem sem aviso.
-  Future<void> _background(Attempt game, int gameId) async {
-    final analysis = _analysis;
-    final start = game.startFen == null ? null : _parse(game.startFen!);
-    if (analysis == null || start == null) return;
-    try {
-      final lines = await analysis.analyse(
-        start,
-        depth: bestLineBudget.depth,
-        time: bestLineBudget.time,
-      );
-      if (isClosed) return;
-      final best = lines.firstOrNull?.moves ?? const <String>[];
-      emit(state.copyWith(bestLine: best));
-    } on Object {
-      // Sem a melhor linha.
-    }
-    // Uma análise já feita (a rápida daqui ou a da revisão) aparece pronta.
+  // Em segundo plano, sem travar as ações: uma análise já feita (a rápida
+  // daqui ou a da revisão) aparece pronta; sem ela, a partida curta faz a
+  // análise rápida sozinha.
+  Future<void> _background(int gameId) async {
     final saved = await _reviews?.load(gameId);
-    if (isClosed || saved == null) return;
-    emit(state.copyWith(review: saved));
+    if (isClosed) return;
+    if (saved != null) {
+      emit(state.copyWith(review: saved, reviewing: false));
+    } else if (state.autoReview) {
+      await quickReview();
+    }
   }
 
   /// "Análise rápida": o Stockfish avalia cada lance da partida e o resumo
@@ -336,12 +327,20 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     final game = state.conclusion?.game;
     final gameId = state.conclusion?.gameId;
     final start = game?.startFen == null ? null : _parse(game!.startFen!);
-    if (analysis == null || game == null || gameId == null || start == null) {
+    if (_reviewRunning || state.review != null) return;
+    final moves = [
+      for (final uci in game?.moves ?? const <String>[]) ?Move.parse(uci),
+    ];
+    if (analysis == null ||
+        game == null ||
+        gameId == null ||
+        start == null ||
+        moves.isEmpty) {
+      // Sem como analisar: a análise automática não fica rodando à toa.
+      if (state.reviewing) emit(state.copyWith(reviewing: false));
       return;
     }
-    if (state.reviewing || state.review != null) return;
-    final moves = [for (final uci in game.moves) ?Move.parse(uci)];
-    if (moves.isEmpty) return;
+    _reviewRunning = true;
     emit(state.copyWith(reviewing: true, reviewDone: 0));
     try {
       final analyses = <List<EngineLine>?>[];
@@ -373,6 +372,8 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     } on Object {
       // A engine falhou: o botão volta, sem aviso.
       if (!isClosed) emit(state.copyWith(reviewing: false));
+    } finally {
+      _reviewRunning = false;
     }
   }
 
@@ -382,17 +383,6 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     } on Exception {
       return null;
     }
-  }
-
-  /// A melhor linha, um lance para a frente ou para trás.
-  void bestForward() {
-    if (state.bestPly + 1 < state.bestLine.length) {
-      emit(state.copyWith(bestPly: state.bestPly + 1));
-    }
-  }
-
-  void bestBack() {
-    if (state.bestPly >= 0) emit(state.copyWith(bestPly: state.bestPly - 1));
   }
 
   /// Uma partida que não se grava (tabuleiro livre, às cegas sem desafio):

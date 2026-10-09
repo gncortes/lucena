@@ -92,7 +92,9 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
             ShareIconButton(
               key: ConclusionKeys.share,
               boundary: _card,
-              extra: [if (state.review != null) _analysis],
+              // A análise só entra pronta: rodando, ela fica fora da imagem
+              // (nada de cartão pela metade).
+              extra: [if (state.review != null && !state.reviewing) _analysis],
               tooltip: l10n.conclusionShare,
               fileName: 'lucena-partida.png',
               footer: 'Lucena · ${l10n.homeTagline}',
@@ -260,6 +262,17 @@ class _Body extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
     ];
+    // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
+    // cartão. Depois de pronta, ela entra na imagem de compartilhar.
+    final quick =
+        state.review != null ||
+            (conclusion.gameId != null &&
+                (conclusion.game?.moves.isNotEmpty ?? false))
+        ? RepaintBoundary(
+            key: analysis,
+            child: _Analysis(state: state, conclusion: conclusion),
+          )
+        : null;
     final sections = <Widget>[
       RepaintBoundary(
         key: card,
@@ -277,15 +290,8 @@ class _Body extends StatelessWidget {
           ),
         ),
       ),
-      // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
-      // cartão. Depois de pronta, ela entra na imagem de compartilhar.
-      if (state.review != null ||
-          (conclusion.gameId != null &&
-              (conclusion.game?.moves.isNotEmpty ?? false)))
-        RepaintBoundary(
-          key: analysis,
-          child: _Analysis(state: state, conclusion: conclusion),
-        ),
+      // Partida longa: a análise rápida logo abaixo do cartão, no toque.
+      if (!state.autoReview) ?quick,
       if (opponent != null && comment != null)
         TeacherSpeech(
           key: ConclusionKeys.comment,
@@ -294,8 +300,6 @@ class _Body extends StatelessWidget {
           text: comment,
           emotion: state.emotion,
         ),
-      if (state.bestLine.isNotEmpty && conclusion.game?.startFen != null)
-        _BestLine(state: state, conclusion: conclusion),
       if (feedback.isNotEmpty)
         ReportPanel(
           report: GameReport(
@@ -306,6 +310,8 @@ class _Body extends StatelessWidget {
           ),
         ),
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
+      // Partida curta: a análise começa sozinha e anda no fim da tela.
+      if (state.autoReview) ?quick,
     ];
     return Stack(
       children: [
@@ -428,7 +434,7 @@ class _Header extends StatelessWidget {
                 OneLine(
                   _title(l10n, conclusion),
                   key: ConclusionKeys.title,
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -438,7 +444,7 @@ class _Header extends StatelessWidget {
                     _reason(l10n, end.reason),
                     key: ConclusionKeys.reason,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
                   ),
@@ -513,25 +519,35 @@ class _Player extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final frame = Container(
+      width: 72,
+      height: 72,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppShape.medium),
+        color: winner ? colors.primary : colors.outlineVariant,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppShape.small),
+        child: avatar,
+      ),
+    );
     return Column(
       children: [
-        Container(
-          width: 72,
-          height: 72,
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppShape.medium),
-            color: winner ? colors.primary : colors.outlineVariant,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: avatar,
-          ),
-        ),
+        // Quem venceu ganha o brilho girando em volta (sem animações, só a
+        // moldura colorida).
+        if (winner && !AppMotion.of(context).disabled)
+          WinnerGlow(
+            key: ConclusionKeys.winnerGlow,
+            color: colors.primary,
+            child: frame,
+          )
+        else
+          frame,
         const SizedBox(height: AppSpacing.xs),
         OneLine(
           name,
-          style: theme.textTheme.titleSmall?.copyWith(
+          style: theme.textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -691,8 +707,9 @@ class _ActionButton extends StatelessWidget {
         return () =>
             context.push(Routes.speedrunAttempt(run.speedrunId, run.attemptId));
       case ConclusionAction.speedruns:
-        if (run == null) return null;
-        return () => context.push(Routes.speedrun(run.speedrunId));
+        // A lista dos speedruns, de onde o jogador veio, para escolher
+        // outro.
+        return () => context.go(Routes.speedruns);
       case _:
         return null;
     }
@@ -746,13 +763,13 @@ class _Mode extends StatelessWidget {
                   speedrun == null
                       ? l10n.conclusionPace
                       : speedrunName(l10n, state.characters, speedrun),
-                  style: theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
                 Text(
                   time == null ? l10n.challengeNoClock : paceLabel(l10n, time),
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -824,7 +841,7 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
               context.l10n.reportRatingLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleSmall,
             ),
           ),
           AnimatedBuilder(
@@ -833,7 +850,6 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
               rating: (before + (after - before) * _counting.value).round(),
               change: ((after - before) * _counting.value).round(),
               up: after >= before,
-              large: true,
               valueKey: ConclusionKeys.ratingValue,
               changeKey: ConclusionKeys.ratingDelta,
             ),
@@ -942,7 +958,7 @@ class _RunState extends State<_Run> {
             Text(
               ended ? l10n.conclusionTotalTime : l10n.conclusionTotalSoFar,
               textAlign: TextAlign.center,
-              style: theme.textTheme.labelLarge?.copyWith(
+              style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -950,7 +966,7 @@ class _RunState extends State<_Run> {
               time(spent),
               key: ConclusionKeys.total,
               textAlign: TextAlign.center,
-              style: theme.textTheme.displaySmall?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
@@ -962,7 +978,7 @@ class _RunState extends State<_Run> {
               '${l10n.conclusionStageTime}: ${time(stageTime)}',
               key: ConclusionKeys.stageTime,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -970,7 +986,7 @@ class _RunState extends State<_Run> {
             Text(
               '${l10n.speedrunBest}: ${time(record)}',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -1139,7 +1155,7 @@ class _StageRow extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Text(
             time,
-            style: theme.textTheme.titleSmall?.copyWith(
+            style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
@@ -1311,8 +1327,11 @@ class _AnalysisTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ink = theme.colorScheme.onSecondaryContainer;
-    return SizedBox(
-      height: _AnalysisRunning.titleHeight,
+    // Altura mínima, não fixa: com letra grande, a linha de baixo quebra.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: _AnalysisRunning.titleHeight,
+      ),
       child: Row(
         children: [
           Icon(Icons.insights_rounded, color: ink),
@@ -1323,7 +1342,7 @@ class _AnalysisTitle extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.conclusionQuickReview,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: ink,
                   ),
@@ -1450,7 +1469,7 @@ class _AnalysisSummary extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   '${counts[quality] ?? 0}',
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: colors.onSurface,
                   ),
@@ -1499,7 +1518,7 @@ class _AnalysisSummary extends StatelessWidget {
                         ? '–'
                         : '${formatAccuracy(value * 100, locale)}%',
                     key: ConclusionKeys.accuracy,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: colors.onPrimary,
                       fontFeatures: const [FontFeature.tabularFigures()],
@@ -1514,7 +1533,7 @@ class _AnalysisSummary extends StatelessWidget {
                   children: [
                     Text(
                       l10n.reviewAccuracy,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: ink,
                       ),
@@ -1533,120 +1552,6 @@ class _AnalysisSummary extends StatelessWidget {
         for (final row in [_shown.take(3), _shown.skip(3)])
           Row(children: [for (final quality in row) tile(quality)]),
       ],
-    );
-  }
-}
-
-/// "Ver a melhor linha": a linha do Stockfish desde a posição de início,
-/// lance a lance, num tabuleiro dentro da própria tela.
-class _BestLine extends StatefulWidget {
-  const _BestLine({required this.state, required this.conclusion});
-
-  final ConclusionState state;
-  final Conclusion conclusion;
-
-  @override
-  State<_BestLine> createState() => _BestLineState();
-}
-
-class _BestLineState extends State<_BestLine> {
-  bool _open = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final state = widget.state;
-    final cubit = context.read<ConclusionCubit>();
-    final line = state.bestLine;
-    final ply = state.bestPly;
-    // A posição depois do lance mostrado e o nome dele (SAN).
-    Position position = Chess.fromSetup(
-      Setup.parseFen(widget.conclusion.game!.startFen!),
-    );
-    Move? last;
-    String? san;
-    for (final uci in line.take(ply + 1)) {
-      final move = Move.parse(uci);
-      if (move == null || !position.isLegal(move)) break;
-      final (next, name) = position.makeSan(move);
-      position = next;
-      last = move;
-      san = name;
-    }
-    // Um Material próprio: o toque na linha do título aparece no cartão.
-    return Material(
-      key: ConclusionKeys.bestLine,
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ListTile(
-            key: ConclusionKeys.bestLineToggle,
-            leading: Icon(Icons.timeline_rounded, color: colors.primary),
-            title: Text(l10n.conclusionBestLine),
-            subtitle: Text(l10n.conclusionBestLineHint),
-            trailing: Icon(
-              _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-            ),
-            onTap: () => setState(() => _open = !_open),
-          ),
-          if (_open)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.insideCard,
-                0,
-                AppSpacing.insideCard,
-                AppSpacing.insideCard,
-              ),
-              child: LayoutBuilder(
-                builder: (context, box) => Column(
-                  children: [
-                    PositionBoard(
-                      key: ConclusionKeys.bestLineBoard,
-                      fen: position.fen,
-                      size: box.maxWidth,
-                      orientation: widget.conclusion.userSide,
-                      lastMove: last,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Row(
-                      children: [
-                        IconButton.outlined(
-                          key: ConclusionKeys.bestLineBack,
-                          tooltip: l10n.reviewPrevious,
-                          onPressed: ply < 0 ? null : cubit.bestBack,
-                          icon: const Icon(Icons.chevron_left_rounded),
-                        ),
-                        Expanded(
-                          child: Text(
-                            ply < 0
-                                ? l10n.reviewStartPosition
-                                : '${l10n.conclusionBestLineMove(ply + 1, line.length)} · $san',
-                            key: ConclusionKeys.bestLineMove,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.titleSmall,
-                          ),
-                        ),
-                        IconButton.filled(
-                          key: ConclusionKeys.bestLineForward,
-                          tooltip: l10n.reviewNext,
-                          onPressed: ply + 1 >= line.length
-                              ? null
-                              : cubit.bestForward,
-                          icon: const Icon(Icons.chevron_right_rounded),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }
