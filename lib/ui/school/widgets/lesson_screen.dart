@@ -758,46 +758,18 @@ class _LessonScreenState extends State<LessonScreen>
             controller: scroll,
             padding: const EdgeInsets.only(bottom: _actionsHeight),
             children: [
-              // O puxador e, no canto, mostrar ou esconder as marcações.
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: colors.outlineVariant,
-                        borderRadius: BorderRadius.circular(AppShape.full),
-                      ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.outlineVariant,
+                      borderRadius: BorderRadius.circular(AppShape.full),
                     ),
                   ),
-                  PositionedDirectional(
-                    end: 4,
-                    child: Builder(
-                      builder: (context) {
-                        final shown = context.select(
-                          (SettingsCubit cubit) =>
-                              cubit.state?.lessonMarks ?? true,
-                        );
-                        final l10n = context.l10n;
-                        return IconButton(
-                          key: LessonKeys.marksToggle,
-                          tooltip: shown
-                              ? l10n.lessonHideMarks
-                              : l10n.lessonShowMarks,
-                          isSelected: shown,
-                          icon: const Icon(Icons.layers_clear_outlined),
-                          selectedIcon: const Icon(Icons.layers_outlined),
-                          onPressed: () => context
-                              .read<SettingsCubit>()
-                              .setLessonMarks(shown: !shown),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                ),
               ),
               // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
               // exercício. No resto, o Viktor já diz o que fazer.
@@ -824,6 +796,29 @@ class _LessonScreenState extends State<LessonScreen>
                     speaks: true,
                     speechContext: SpeechContext.teaching,
                     typed: true,
+                    // Ao lado do som: mostrar ou esconder as marcações.
+                    headerAction: Builder(
+                      builder: (context) {
+                        final shown = context.select(
+                          (SettingsCubit cubit) =>
+                              cubit.state?.lessonMarks ?? true,
+                        );
+                        final l10n = context.l10n;
+                        return IconButton(
+                          key: LessonKeys.marksToggle,
+                          visualDensity: VisualDensity.compact,
+                          tooltip: shown
+                              ? l10n.lessonHideMarks
+                              : l10n.lessonShowMarks,
+                          isSelected: shown,
+                          icon: const Icon(Icons.layers_clear_outlined),
+                          selectedIcon: const Icon(Icons.layers_outlined),
+                          onPressed: () => context
+                              .read<SettingsCubit>()
+                              .setLessonMarks(shown: !shown),
+                        );
+                      },
+                    ),
                   ),
                 ),
             ],

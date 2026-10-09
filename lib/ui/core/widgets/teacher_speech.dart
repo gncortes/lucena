@@ -42,6 +42,7 @@ class TeacherSpeech extends StatelessWidget {
     this.speaks = false,
     this.onLink,
     this.onSpoken,
+    this.headerAction,
     super.key,
   });
 
@@ -54,6 +55,10 @@ class TeacherSpeech extends StatelessWidget {
 
   /// Com a voz falando, cada casa ou lance quando a voz chega nele.
   final ValueChanged<SpeechLink>? onSpoken;
+
+  /// Um botão a mais no cabeçalho, antes dos de voz (ex.: as marcações da
+  /// lição).
+  final Widget? headerAction;
 
   /// A fala. Nula: só o retrato e o nome.
   final String? text;
@@ -112,11 +117,22 @@ class TeacherSpeech extends StatelessWidget {
   Widget _header(BuildContext context) {
     final speech = speechOf(context);
     final text = this.text;
-    if (speech == null || text == null) return _name(context);
+    final action = headerAction;
+    if (speech == null || text == null) {
+      return action == null
+          ? _name(context)
+          : Row(
+              children: [
+                Expanded(child: _name(context)),
+                action,
+              ],
+            );
+    }
     final language = Localizations.localeOf(context).toLanguageTag();
     return Row(
       children: [
         Expanded(child: _name(context)),
+        ?action,
         BlocBuilder<SpeechCubit, SpeechState>(
           bloc: speech,
           buildWhen: (a, b) =>

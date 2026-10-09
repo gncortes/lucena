@@ -3813,7 +3813,7 @@
       }
     }
   },
-  "lessonToFinalTest": "Go to the final test",
+  "lessonToFinalTest": "Take the final test",
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
@@ -3823,6 +3823,10 @@
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
   "lessonPartLearned": "What you learned",
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "lessonAllPartsDone": "All parts complete",
+  "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
+  "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
+  "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
   "lessonCloseSpeech": "Close",
   "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
   "lessonHideMarks": "Hide the marks",
@@ -3859,7 +3863,7 @@
       }
     }
   },
-  "endgameContinueTest": "Continue: final test",
+  "endgameContinueTest": "Take the final test",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
