@@ -49,6 +49,12 @@ mesma aula. Até uns 6 agentes com a tabela do Lichess ao mesmo tempo.
   que a torre tapa, dica que entrega o lance, pt ≠ en): não pular.
 - Posição de prática da lição que repete a estrutura de um exercício derruba o exercício: conferir com
   `check_variety.py` (coluna Lição) e com o olho.
+- Mesmo a reescrita no Fable deixou, em Lucena, 12 falas de demo só com o lance e 6 falas citando lance
+  ilegal (rei indo a casa que a torre domina) ou "a mesma posição" num ply diferente: a 2.ª passada precisa
+  jogar cada lance citado com python-chess, e a aplicação das correções cabe num agente Opus com o texto
+  exato do relatório (Lucena: 20 correções em 4 min).
+- O revisor da 2.ª passada também aponta exercício encostado demais na lição nova (Lucena e16, e15): vai
+  para o Gabriel, não se mexe.
 
 ## Ordem das aulas e andamento
 
@@ -59,8 +65,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | # | id | nota | ideias sem parte | modelo | o que falta (triagem) | andamento |
 |---|---|---|---|---|---|---|
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
-| 1 | rook.lucena | D | 5 | Fable (piloto) | sem demo; peão de torre, zugzwang da torre, Andersson–Åkesson | reescrita; 2.ª passada |
-| 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada |
+| 1 | rook.lucena | D | 5 | Fable (piloto) | sem demo; peão de torre, zugzwang da torre, Andersson–Åkesson | **feita: B**, commitada (lote2) |
+| 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada (lote2) |
 | 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | 1.ª passada |
 | 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | 1.ª passada |
 | 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | |
@@ -98,6 +104,6 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 37 | mates.bishopKnight.full | C | 3 (+1) | Fable | sem demo; canto errado (Kempinski), Delétang do centro, Be4+ | |
 
 Pendências de julgamento para o Gabriel: `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
-`rook.lucena` e16 × parte `zugzwang` (o demo mostra o ply 140, o e16 cobra do ply 138: trocar o e16 de
-posição ou deixar); 23 soluções de exercícios (`ex.*.solution`) dizem "a tabela aceita…", que a regra das
+`rook.lucena` e16 e e15 encostados na lição nova (a parte `zugzwang` mostra 2 dos 3 lances do e16; o e15 é
+quase o `rookPawnDemo`) e e14 com o corte Td7+ não ensinado: trocar os exercícios de posição ou deixar; 23 soluções de exercícios (`ex.*.solution`) dizem "a tabela aceita…", que a regra das
 falas proíbe.
