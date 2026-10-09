@@ -225,8 +225,11 @@ class _LessonScreenState extends State<LessonScreen>
       _setMode(context, target, animate: previous.current != null);
     }
     if (state.step != previous.step) {
-      // Passo novo: o cronômetro já mostra o tempo dele (zero).
-      _elapsed.value = cubit.stepElapsed;
+      // Passo novo de exercício: o cronômetro já mostra o tempo dele (zero).
+      // Saindo para a fala, ele fica parado no tempo final até sumir.
+      if (state.layout == LessonLayoutMode.solving) {
+        _elapsed.value = cubit.stepElapsed;
+      }
       if (_sheet.isAttached) {
         _sheet.animateTo(
           _sheetMin,
