@@ -89,7 +89,7 @@
   "ex.e04": "Brancas jogam e ganham. Atacar o peão de f7 parece óbvio. Cuidado com a vez.",
   "ex.e04.hint": "O rei branco quer estar em g7 com as pretas na vez. Chegue lá por outro caminho.",
   "ex.e04.solution": "Rg8! (Rh8 também ganha). Se ...Re6, Rg7! e agora o zugzwang é das pretas: o rei preto tem que largar f7. Rg7? de imediato perde: depois de ...Re6, é o rei branco que tem que sair de g7, e o peão de f6 cai.",
-  "ex.e05": "Exemplo de Dvoretsky, pela Wikipedia. Brancas jogam e ganham. O avanço com xeque é tentador.",
+  "ex.e05": "Brancas jogam e ganham. O avanço com xeque é tentador.",
   "ex.e05.hint": "Depois de c6+? o rei preto vai para c8 e empata. Procure um triângulo ao redor de d5.",
   "ex.e05.solution": "Re5, Rd4 e Rd5: o triângulo d5, e5, d4 devolve a posição com as pretas na vez. Depois de ...Rc6, Rd4! é o único lance. No primeiro lance Rc4, Rd4 e Re4 também ganham; só c6+? empata.",
   "ex.e06": "Pretas jogam e empatam. Cada lance tem uma só resposta.",

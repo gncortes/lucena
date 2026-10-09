@@ -65,7 +65,7 @@
   "ex.e10": "White to play. A knight's pawn on b2. Get the black king in front of the pawn.",
   "ex.e10.hint": "The same staircase as with the centre pawn: checks that come closer until the black king has to choose between b1 and giving up the pawn.",
   "ex.e10.solution": "Qc4+ (or Qe2+), Kd1, Qb3+ (or Qd3+), Kc1 and Qc3+. Now the black king goes to b1, in front of the pawn, or to d1, and the pawn falls.",
-  "key.start": "The starting position of the lesson, our own: pawn on e2, black king beside it, our king on a8. The tablebase says it wins.",
+  "key.start": "The starting position of the lesson: pawn on e2, black king beside it, our king on a8. White wins.",
   "key.front": "The black king on e1, in front of the pawn: the moment our king gains a move.",
   "key.dang": "The starting position of Danghiangmanh's \"Queen vs Pawn\" study on Lichess: the same technique with the queen coming from h8.",
   "key.block": "White king on d5, queen on c8: the king closes the queen's d-file and it's a draw. Diagram from Wikipedia.",

@@ -32,7 +32,7 @@
   "step.wall.hint": "Bishop to g2, king to d2 and then e3, knight to d3, bishop to e4. Each move takes squares from the black king.",
   "step.wall.done": "See the wall? Bishop on e4, knight on d3, king on e3. The black king cannot come back to the centre. From here it goes to a corner, and you know what to do in each one.",
   "step.corner": "With a light-squared bishop, the black king will run to h8, the wrong corner. The knight stops it: on f7 it covers h8 and h6. From there you have two roads: the W manoeuvre, which you already know, or locking the king behind the a2–g8 diagonal and closing the three triangles down to a8.",
-  "step.play1": "This is the position Wikipedia uses to show Delétang's method. The black king can no longer cross the b1–h7 diagonal. Close the three triangles and mate on h1. The machine defends as well as it can; you have moves to spare.",
+  "step.play1": "This is the position of Delétang's method. The black king can no longer cross the b1–h7 diagonal. Close the three triangles and mate on h1. The machine defends as well as it can; you have moves to spare.",
   "step.t_rhine": "Near the right corner, a knight check looks natural here. Before checking, look at the bishop's safety and the black king's squares. What can go wrong?",
   "step.t_rhine.hint1": "Imagine the check and find the square the black king runs to. What does it attack from there?",
   "step.traps": "Three dangers. First, stalemate: here the check on b6 looks natural, but after Kd8 the black king attacks the bishop; every bishop move stalemates, and losing the bishop is an instant draw. Second, the fifty-move rule: the whole mate takes up to thirty-three moves, so there is no time to wander. Third, the bishop: without it there is no mate.",

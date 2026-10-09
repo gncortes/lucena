@@ -117,7 +117,7 @@
   "ex.e08.solution": "Kf7 (or Kf8), heading for g8 and h8. Going to e7 or d7 lets the white king shut the corner.",
   "ex.e09": "Black to move and draw. Each side has a bishop, of opposite colours, and White has two pawns. Beware of the natural move.",
   "ex.e09.hint": "The corner looks safe, but the g-pawn is not a rook pawn. Keep your king watching f7 and g7.",
-  "ex.e09.solution": "Kf8! Kh8?? loses: 2.Ke6 Kg8 3.Ke7+ Kh8 4.Kf7 and the g-pawn goes through. With the king on f8, the white king cannot reach f7. The position is on Wikipedia, taken from Jesús de la Villa's book.",
+  "ex.e09.solution": "Kf8! Kh8?? loses: 2.Ke6 Kg8 3.Ke7+ Kh8 4.Kf7 and the g-pawn goes through. With the king on f8, the white king cannot reach f7.",
   "ex.e10": "Black to move and draw. The way to the corner has three only-moves.",
   "ex.e10.hint": "The white king threatens to reach g6 or g7 first. Go along the diagonal and count every tempo.",
   "ex.e10.solution": "Ke6! Kg5 Kf7! Kh6 Kg8! Each move was the only one: any detour let the white king reach g7, or the bishop shut the door.",

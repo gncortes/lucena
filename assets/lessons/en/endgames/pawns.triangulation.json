@@ -89,7 +89,7 @@
   "ex.e04": "White to play and win. Attacking the f7-pawn looks obvious. Watch out for the turn.",
   "ex.e04.hint": "The white king wants to be on g7 with Black to move. Get there another way.",
   "ex.e04.solution": "Kg8! (Kh8 also wins). If ...Ke6, Kg7! and now the zugzwang is Black's: the black king has to let go of f7. Kg7? straight away loses: after ...Ke6 it is the white king that must leave g7, and the f6-pawn falls.",
-  "ex.e05": "Dvoretsky's example, via Wikipedia. White to play and win. The advance with check is tempting.",
+  "ex.e05": "White to play and win. The advance with check is tempting.",
   "ex.e05.hint": "After c6+? the black king goes to c8 and draws. Look for a triangle around d5.",
   "ex.e05.solution": "Ke5, Kd4 and Kd5: the triangle d5, e5, d4 gives back the position with Black to move. After ...Kc6, Kd4! is the only move. On the first move Kc4, Kd4 and Ke4 also win; only c6+? draws.",
   "ex.e06": "Black to play and draw. Every move has only one answer.",

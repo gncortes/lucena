@@ -65,7 +65,7 @@
   "ex.e10": "Brancas jogam. Peão de cavalo em b2. Leve o rei preto para a frente do peão.",
   "ex.e10.hint": "A mesma escada do peão central: xeques que se aproximam, até o rei preto ter de escolher entre b1 e largar o peão.",
   "ex.e10.solution": "Dc4+ (ou De2+), Rd1, Db3+ (ou Dd3+), Rc1 e Dc3+. Agora o rei preto vai para b1, na frente do peão, ou vai para d1 e o peão cai.",
-  "key.start": "A posição do começo da aula, própria: peão em e2, rei preto ao lado, nosso rei em a8. A tabela dá vitória.",
+  "key.start": "A posição do começo da aula: peão em e2, rei preto ao lado, nosso rei em a8. As brancas ganham.",
   "key.front": "O rei preto em e1, na frente do peão: o momento em que o nosso rei ganha um lance.",
   "key.dang": "A posição de partida do estudo \"Queen vs Pawn\", de Danghiangmanh, no Lichess: a mesma técnica com a dama vindo de h8.",
   "key.block": "Rei branco em d5, dama em c8: o rei fecha a coluna d da dama e é empate. Diagrama da Wikipedia.",

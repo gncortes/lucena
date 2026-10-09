@@ -93,7 +93,7 @@
   "step.d_trap": "Here is the punishment if Black plays Kb1. It's the same Kb3 idea you saw with the rook pawn.",
   "step.d_trap.m1": "Kc4! The king heads for b3 and lets the pawn promote.",
   "step.d_trap.m2": "c1=Q+. Black promotes, even with check.",
-  "step.d_trap.m3": "Kb3! The king steps out of check and traps the black king on the first rank. Even with a new queen, Black can't escape: the tablebase shows the mate.",
+  "step.d_trap.m3": "Kb3! The king steps out of check and traps the black king on the first rank. Even with a new queen, Black can't escape: it is mate.",
   "step.longSide": "The other side of the coin. Here the pawn is on f2 and the black king on e2, on the long side, towards the centre. The short side is the g-file, next to the h1 corner. If the black king reaches g1 or g2, it's the stalemate draw. Only one White move prevents it: Qa6+. The best defence is to go to e1, in front of the pawn, and from there the queen keeps cutting off the g-file while the white king, already on b2, comes closer. The attacker keeps the king on the far side; the defender runs to the short side.",
   "step.trapMove": "One more trap, now with the black king on d2, on the long side. White has played Qa2. The white king is on e5. Find the move that holds, and then the next one.",
   "step.trapMove.hint": "On d1, the white king would have time to come to d3. Look for a square that keeps the white king away and still protects the pawn.",

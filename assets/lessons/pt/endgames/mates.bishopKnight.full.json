@@ -32,7 +32,7 @@
   "step.wall.hint": "Bispo em g2, rei em d2 e depois e3, cavalo em d3, bispo em e4. Cada lance tira casas do rei preto.",
   "step.wall.done": "Viu a parede? Bispo em e4, cavalo em d3, rei em e3. O rei preto não volta para o centro. Daqui ele vai para um canto, e você sabe o que fazer em cada um.",
   "step.corner": "Com um bispo de casas claras, o rei preto vai correr para h8, o canto errado. Quem impede isso é o cavalo: em f7 ele cobre h8 e h6. Daí para a frente você tem duas estradas: a manobra em W, que já conhece, ou prender o rei atrás da diagonal a2–g8 e fechar os três triângulos até a8.",
-  "step.play1": "Esta é a posição em que a Wikipedia mostra o método de Delétang. O rei preto já não atravessa a diagonal b1–h7. Feche os três triângulos e dê mate em h1. A máquina defende do melhor jeito; você tem lances de sobra.",
+  "step.play1": "Esta é a posição do método de Delétang. O rei preto já não atravessa a diagonal b1–h7. Feche os três triângulos e dê mate em h1. A máquina defende do melhor jeito; você tem lances de sobra.",
   "step.t_rhine": "Perto do canto certo, um xeque de cavalo parece natural aqui. Antes de dar xeque, olhe a segurança do bispo e as casas do rei preto. O que pode dar errado?",
   "step.t_rhine.hint1": "Imagine o xeque e procure a casa para onde o rei preto foge. Quem ele ataca de lá?",
   "step.traps": "Três perigos. Primeiro, o afogamento: aqui o xeque em b6 parece natural, mas depois de Rd8 o rei preto ataca o bispo; todo lance de bispo afoga, e perder o bispo é empate na hora. Segundo, a regra dos cinquenta lances: o mate inteiro leva até trinta e três, então não dá tempo de passear. Terceiro, o bispo: sem ele não existe mate.",

@@ -45,7 +45,7 @@
   "step.t_bpawn": "A knight pawn, and your king is cut off by two files. Black threatens b4. What is the first move?",
   "step.t_bpawn.hint1": "Before giving check, the rook has to be in its place.",
   "step.t_bpawn.hint2": "In this defence the rook's place is always the same: in front of the pawn, on the first rank.",
-  "step.bishop": "Compare it with a bishop pawn, your king cut off by the same two files. Black to move wins. The black king has room on both sides of the pawn to escape the checks, and your rook runs out of squares. This position is in the Lichess practice, under the title of when the frontal defence does not work.",
+  "step.bishop": "Compare it with a bishop pawn, your king cut off by the same two files. Black to move wins. The black king has room on both sides of the pawn to escape the checks, and your rook runs out of squares.",
   "step.knight": "With a knight pawn it is different. On the far side there is only the a-file: the black king has nowhere to hide. That is why the knight pawn draws even with the king cut off by two files, as Chéron already showed in 1923. The order of danger: bishop pawn, then centre pawn, then knight pawn. The rook pawn almost always draws.",
   "step.getFront": "Now you play. Rook in front of the pawn first; checks after.",
   "step.getFront.hint": "Rb1. Then Ra1+ when the king goes to a5, Rb1+ when it goes to b4, and Rc1+ when it goes to c4.",

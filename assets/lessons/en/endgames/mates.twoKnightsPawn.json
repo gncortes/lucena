@@ -19,8 +19,8 @@
   "step.t_help": "White to move. King on f7, knights on f5 and d2, and the black king stuck on h7. The d2 knight is holding the pawn on d3. How does White deliver mate?",
   "step.t_help.hint1": "Imagine the same position without the black pawn. What happens when the black king runs out of squares and nobody is giving check?",
   "step.t_help.hint2": "The d2 knight has a better job than watching the pawn. Let the pawn go: every move it makes is a move the black king does not have to make.",
-  "step.noPawn": "Take the black pawn away and look again. King and two knights cannot force mate against a bare king: when the black king runs out of squares there is almost never a check, and it is stalemate. With the black king on h8 and one of your knights on f6, for example, it would have no move at all. The tablebase agrees: without the pawn this position is a draw. The black pawn changes everything, because it gives Black something to move when the king cannot.",
-  "step.d_help": "Watch the black pawn working for White. This position is on Wikipedia as the shortest example of the idea.",
+  "step.noPawn": "Take the black pawn away and look again. King and two knights cannot force mate against a bare king: when the black king runs out of squares there is almost never a check, and it is stalemate. With the black king on h8 and one of your knights on f6, for example, it would have no move at all. Without the pawn this position is a draw. The black pawn changes everything, because it gives Black something to move when the king cannot.",
+  "step.d_help": "Watch the black pawn working for White.",
   "step.d_help.m1": "Ne4. The d2 knight lets go of the pawn and heads for f6. This and Nf3 are the only winning moves.",
   "step.d_help.m2": "Black pushes the pawn. Kh8 does not save it either.",
   "step.d_help.m3": "Nf6+. The black king only has h8.",
@@ -36,7 +36,7 @@
   "step.t_zz.hint1": "Compare it with the position at the start of the lesson. Which black move takes the black king back there?",
   "step.t_zz.hint2": "Think about whether White can pass the move. A knight that leaves a square and comes back to it always spends an even number of moves.",
   "step.zzWhy": "It is a mutual zugzwang: whoever has the move is worse off. If Black moves, the only move is Kh7, and we get the position from the start: Ne4, d2, Nf6+, Kh8, Ne7 and Ng6 mate. If White moves, it is a draw: White cannot pass the move. A knight cannot lose a tempo, and the white king finds no route that hands the move back to Black without freeing the black king. Troitsky showed that in these endings the move makes all the difference.",
-  "step.d_zzDraw": "Now you are Black. White tries everything with the king; watch how the black king defends. The tablebase confirms every move.",
+  "step.d_zzDraw": "Now you are Black. White tries everything with the king; watch how the black king defends.",
   "step.d_zzDraw.m1": "Kf6. The white king tries another way.",
   "step.d_zzDraw.m2": "Kh7. Kg8 also holds.",
   "step.d_zzDraw.m3": "Kf7, back again.",
@@ -106,10 +106,10 @@
   "step.t_def": "Now you are Black. The pawn is on f5, on the line, and the g2 knight is threatening to go to f4. How do you save the game?",
   "step.t_def.hint1": "If the knight reaches f4, the pawn is stuck on the Troitsky line. Is there a way to prevent it?",
   "step.pastLine": "Black's defence is the other side of Troitsky's rule. Here the pawn is already on d3, past the line. Even blockaded on d2, and with the black king in the corner, it is a draw: the black king is not caught in a net yet, and when the knight lets the pawn go, it reaches d1 too soon. You saw in Troitsky's position that, with the black king already in the net, even a pawn on d3 can lose. So Black is in a double hurry: get the pawn past the line and keep the king out of the net.",
-  "step.fifty": "And there is the fifty-move rule. This position opens a Lichess study: the pawn is on e4, on the line, still free, and only Ne3, which blockades it, keeps the win. But the tablebase says White wins only without the rule: the first pawn move or capture would come after some sixty-seven moves, and the rule ends the game before that. The longest mate in this ending takes more than a hundred moves. In practice it helps a lot to have the pawn stuck well behind the line, or the black king already near the corner.",
+  "step.fifty": "And there is the fifty-move rule. Here the pawn is on e4, on the line, still free, and only Ne3, which blockades it, keeps the win. But White wins only without the rule: the first pawn move or capture would come after some sixty-seven moves, and the rule ends the game before that. The longest mate in this ending takes more than a hundred moves. In practice it helps a lot to have the pawn stuck well behind the line, or the black king already near the corner.",
   "step.defMove": "Black to move. Save the game.",
   "step.defMove.hint": "Do not wait for the knight to reach f4. Use the pawn.",
-  "step.defMove.done": "f4! The pawn crosses the line before the blockade, and the tablebase says draw. It was the only move: after any king move, Nf4 locks the pawn and White wins.",
+  "step.defMove.done": "f4! The pawn crosses the line before the blockade, and it is a draw. It was the only move: after any king move, Nf4 locks the pawn and White wins.",
 
   "step.rules": "Three rules for your games. One: blockade the pawn with a knight on the Troitsky line, or behind it, and never take it. Two: the blockading knight stays put; the king and the other knight drive the black king to the corner. Three: release the blockade only when the mate comes before the promotion, because the pawn's moves are what prevent stalemate. And count your fifty moves.",
   "step.karpov": "Even champions get lost here. In 2000, in the Amber rapid tournament in Monte Carlo, Karpov had a pawn against Topalov's two knights, and the pawn was already past the line. It was a draw, but Karpov went to the wrong corner. This is the position after 74.Ne2: with Black to move, both moves lose, and Karpov resigned.",
@@ -133,7 +133,7 @@
   "ex.e05.solution": "Kb6! leaves the black king only b8. After ...Kb8, Nd4! releases the pawn and heads for c6. For example: ...Ka8, Nc6, e2, Nb5, e1=Q, Nc7 mate. Kb6 and Nd4 were the only winning moves: it is the same idea as Troitsky's position.",
   "ex.e06": "Black to move and draw. The d2 knight wants to go to c4 and lock the pawn on the line. Don't let it.",
   "ex.e06.hint": "The pawn is on the Troitsky line. What happens if it crosses it now?",
-  "ex.e06.solution": "c4! The pawn crosses the line before the blockade, and the tablebase says draw. It was the only move: after any king move, Nc4 locks the pawn and White wins.",
+  "ex.e06.solution": "c4! The pawn crosses the line before the blockade, and it is a draw. It was the only move: after any king move, Nc4 locks the pawn and White wins.",
   "ex.e07": "White to move and win. The pawn on a3 is free and racing to a1. Is there time to mate?",
   "ex.e07.hint": "Do not give check. A king move leaves the black king with no squares.",
   "ex.e07.solution": "Kf7! It was the only winning move. The black king has no squares and only the pawn can move: ...a2. Then Ne5 (Nf6 also works), and after ...a1=Q, Neg6 is mate. The pawn is fast, but the mate is faster.",
@@ -153,5 +153,5 @@
   "key.horwitzKling": "Horwitz and Kling, 1851: the blockading knight lets the pawn go, and the pawn's moves prevent stalemate.",
   "key.karpov": "Topalov–Karpov, Amber rapid, Monte Carlo, 2000, after 74.Ne2: Black to move loses.",
   "history": "According to Lafora, the first composition in which two knights beat a pawn is by Gioachino Greco, in 1620. Chapais analysed three positions in 1780, and Horwitz and Kling published theirs in 1851. The man who cracked the ending was the Russian Alexey Troitsky (1866–1942), one of the greatest study composers in history: he worked on it from the early twentieth century and published his analysis in 1937. Troitsky died of starvation in 1942, in the siege of Leningrad. Decades later, John Nunn checked everything with a tablebase and found Troitsky's analysis astonishingly accurate. In real games the ending is rare. The first master win came in Nice, in 1931, when Adolf Seitz, with the knights, beat Eugene Znosko-Borovsky. And even Karpov stumbled: in 2000, in the Amber rapid games, he lost a drawn position to Topalov.",
-  "practice": "Now the real ending, the way andrew69314's Lichess study sets it: the pawn still on g7, free, and the black king on g8. Lock the pawn up, take the king to the corner and release the blockade at the right moment."
+  "practice": "Now the real ending: the pawn still on g7, free, and the black king on g8. Lock the pawn up, take the king to the corner and release the blockade at the right moment."
 }

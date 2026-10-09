@@ -45,7 +45,7 @@
   "step.t_bpawn": "Peão de cavalo, e o seu rei está cortado por duas colunas. As pretas ameaçam b4. Qual é o primeiro lance?",
   "step.t_bpawn.hint1": "Antes de dar xeque, a torre precisa estar no lugar dela.",
   "step.t_bpawn.hint2": "O lugar da torre nesta defesa é sempre o mesmo: na frente do peão, na primeira fileira.",
-  "step.bishop": "Compare com um peão de bispo, o seu rei cortado pelas mesmas duas colunas. As pretas jogam e ganham. O rei preto tem espaço dos dois lados do peão para fugir dos xeques, e a sua torre fica sem casas. Esta posição está na prática do Lichess, com o título de quando a defesa frontal não funciona.",
+  "step.bishop": "Compare com um peão de bispo, o seu rei cortado pelas mesmas duas colunas. As pretas jogam e ganham. O rei preto tem espaço dos dois lados do peão para fugir dos xeques, e a sua torre fica sem casas.",
   "step.knight": "Com o peão de cavalo é diferente. Do lado de lá só existe a coluna a: o rei preto não tem onde se esconder. Por isso o peão de cavalo empata mesmo com o rei cortado por duas colunas, como Chéron já mostrava em 1923. A ordem do perigo: peão de bispo, depois o central, depois o de cavalo. O de torre quase sempre empata.",
   "step.getFront": "Agora jogue. Torre na frente do peão primeiro; xeques depois.",
   "step.getFront.hint": "Tb1. Depois Ta1+ quando o rei for para a5, Tb1+ quando ele for para b4, e Tc1+ quando ele for para c4.",

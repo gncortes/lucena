@@ -34,7 +34,7 @@
   "step.t_wall": "Brancas jogam. Os dois lados têm um peão de f. O rei preto está longe, em b4, mas quer voltar para defender f7. Como você o mantém longe?",
   "step.t_wall.hint1": "O rei preto precisa atravessar o tabuleiro para chegar à ala do rei. Por qual coluna ele passaria?",
   "step.t_wall.hint2": "Uma coluna inteira pode virar muro se o seu rei andar nela, sempre ao lado do rei preto.",
-  "step.wall": "Rd4! O meu rei para na coluna d e vira muro: c3, c4 e c5 ficam fechadas. Se o rei preto sobe, eu subo junto: d5, d6. Ele fica preso nas colunas a e b, e quando estiver longe o bastante, o meu peão anda e o meu rei vai buscar o peão preto. Re5, que parece mais ativo, não ganha: a tabela de finais aceita só Rd4.",
+  "step.wall": "Rd4! O meu rei para na coluna d e vira muro: c3, c4 e c5 ficam fechadas. Se o rei preto sobe, eu subo junto: d5, d6. Ele fica preso nas colunas a e b, e quando estiver longe o bastante, o meu peão anda e o meu rei vai buscar o peão preto. Re5, que parece mais ativo, não ganha: só Rd4 ganha.",
   "step.d_wall": "Acompanhe o muro subindo e, no fim, a colheita.",
   "step.d_wall.m1": "Rd4. A coluna c fica proibida para o rei preto.",
   "step.d_wall.m2": "Ele tenta subir para contornar.",
@@ -146,12 +146,12 @@
   "ex.e10": "Brancas jogam e ganham. O peão de c7 vai correr, e o rei preto quer ir ao seu peão de a. Um lance resolve as duas coisas.",
   "ex.e10.hint": "O rei preto vai para a ala da dama pela quarta fileira. Feche essa estrada e vá ao peão de c ao mesmo tempo.",
   "ex.e10.solution": "Rf5!, Re5! e Rd4!, todos únicos. O rei branco vai ao peão de c e, a cada passo, fecha e4 e d4 para o rei preto. Ele come o peão de c e o rei preto chega tarde ao peão de a.",
-  "key.stairs": "A escada: Rb3! e o rei branco desce ao lado do preto. Estudo público de sibi.m no Lichess (só a posição; a análise é da tabela).",
+  "key.stairs": "A escada: Rb3! e o rei branco desce ao lado do preto. Estudo público de sibi.m no Lichess (só a posição).",
   "key.wall": "O muro na coluna d: Rd4!. Estudo \"Endgame Shouldering Away\", de DrMkcTheHandsome, no Lichess.",
   "key.across": "O ombro de um lado a outro do tabuleiro: Rf6! até Rf2. Estudo de DrMkcTheHandsome.",
   "key.away": "Para longe do peão: Rg3!. Estudo de DrMkcTheHandsome.",
   "key.race": "O ombro na corrida: Rb5! e Rc6. Estudo de DrMkcTheHandsome.",
-  "key.defend": "O ombro na defesa: Rf5! empata, Rf6? perde. Estudo de Poojakanth (que indicava Rf6; a tabela corrige).",
+  "key.defend": "O ombro na defesa: Rf5! empata, Rf6? perde. Estudo de Poojakanth.",
   "history": "Em inglês a técnica se chama shouldering, dar o ombro: o rei ocupa o caminho do outro e o empurra para longe, sem tocar. É um dos nomes clássicos do final de peões; o manual de finais de Dvoretsky tem uma seção com esse título, ao lado da oposição, da triangulação e da ruptura. Você já viu o ombro de passagem em outras aulas: no peão de torre, com Rg6, e na torre contra peão, quando o rei preto barra o branco. Aqui ele é o tema. Uma curiosidade honesta: ao preparar esta aula conferi vários estudos públicos sobre o ombro na tabela de finais, e alguns indicavam o lance errado (Rc4 em vez de Re2, Rf6 em vez de Rf5, Rf5 em vez de Rf6). O ombro engana até quem escreve sobre ele. Por isso cada lance desta aula passou pela tabela.",
   "practice": "Agora uma partida inteira de rei e peão contra rei. Antes de mexer o peão, coloque o rei no caminho do rei preto."
 }

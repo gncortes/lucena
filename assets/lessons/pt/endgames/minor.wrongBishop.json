@@ -117,7 +117,7 @@
   "ex.e08.solution": "Rf7 (ou Rf8), a caminho de g8 e h8. Ir para e7 ou d7 deixa o rei branco fechar o canto.",
   "ex.e09": "Pretas jogam e empatam. Cada lado tem um bispo, de cores opostas, e as brancas têm dois peões. Cuidado com o lance natural.",
   "ex.e09.hint": "O canto parece seguro, mas o peão de g não é de torre. Mantenha o rei de olho em f7 e g7.",
-  "ex.e09.solution": "Rf8! Rh8?? perde: 2.Re6 Rg8 3.Re7+ Rh8 4.Rf7 e o peão de g passa. Com o rei em f8, o rei branco não chega a f7. A posição está na Wikipedia, tirada do livro de Jesús de la Villa.",
+  "ex.e09.solution": "Rf8! Rh8?? perde: 2.Re6 Rg8 3.Re7+ Rh8 4.Rf7 e o peão de g passa. Com o rei em f8, o rei branco não chega a f7.",
   "ex.e10": "Pretas jogam e empatam. O caminho até o canto tem três lances únicos.",
   "ex.e10.hint": "O rei branco ameaça chegar a g6 ou g7 primeiro. Vá pela diagonal e conte cada tempo.",
   "ex.e10.solution": "Re6! Rg5 Rf7! Rh6 Rg8! Cada lance era o único: qualquer desvio deixava o rei branco chegar a g7, ou o bispo fechar a porta.",

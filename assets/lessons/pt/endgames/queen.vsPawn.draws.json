@@ -93,7 +93,7 @@
   "step.d_trap": "Veja o castigo se as pretas jogarem Rb1. É a mesma ideia de Rb3 que você viu com o peão de torre.",
   "step.d_trap.m1": "Rc4! O rei vai para b3 e deixa o peão coroar.",
   "step.d_trap.m2": "c1=D+. As pretas coroam, e até com xeque.",
-  "step.d_trap.m3": "Rb3! O rei sai do xeque e prende o rei preto na primeira fileira. Mesmo com uma dama nova, as pretas não escapam: a tabela mostra o mate.",
+  "step.d_trap.m3": "Rb3! O rei sai do xeque e prende o rei preto na primeira fileira. Mesmo com uma dama nova, as pretas não escapam: é mate.",
   "step.longSide": "O outro lado da moeda. Aqui o peão está em f2 e o rei preto em e2, do lado longo, perto do centro. O lado curto é o da coluna g, perto do canto h1. Se o rei preto chegar a g1 ou g2, é o empate do afogamento. Só um lance das brancas impede: Da6+. A melhor defesa é ir para e1, na frente do peão, e daí a dama segue cortando a coluna g enquanto o rei branco, que já está em b2, se aproxima. Quem ataca mantém o rei do outro lado; quem defende corre para o lado curto.",
   "step.trapMove": "Mais uma armadilha, agora com o rei preto em d2, do lado longo. As brancas jogaram Da2. O rei branco está em e5. Ache o lance que segura, e depois o seguinte.",
   "step.trapMove.hint": "Em d1, o rei branco teria tempo de vir para d3. Procure uma casa que impeça o rei branco de se aproximar e que ainda defenda o peão.",

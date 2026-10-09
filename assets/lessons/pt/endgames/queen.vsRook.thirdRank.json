@@ -37,7 +37,7 @@
   "step.around": "Contorne com o rei. Entre os dois lances de rei, a dama vai para e7 e tira o rei preto da frente.",
   "step.around.hint": "Rc5, De7 e Rb5.",
   "step.around.done": "A torre foi expulsa da terceira fileira e só sobrou a7 para ela: defesa da segunda fileira, que você já sabe ganhar.",
-  "step.fourth": "Um passo antes: a quarta fileira. O rei preto ainda está a duas fileiras da borda e a torre corta o nosso rei na linha de cima. É a barreira mais fácil de desfazer. A dama dá um xeque e vai para e6, tirando casas do rei preto; depois o nosso rei contorna para atacar a torre. Nunn prefere contornar por d3: em d4, a torre iria para a1, na mesma diagonal do nosso rei, de onde ameaça xeques por dois lados. A tabela diz que os dois caminhos ganham no mesmo tempo; por d3 é mais simples.",
+  "step.fourth": "Um passo antes: a quarta fileira. O rei preto ainda está a duas fileiras da borda e a torre corta o nosso rei na linha de cima. É a barreira mais fácil de desfazer. A dama dá um xeque e vai para e6, tirando casas do rei preto; depois o nosso rei contorna para atacar a torre. Nunn prefere contornar por d3: em d4, a torre iria para a1, na mesma diagonal do nosso rei, de onde ameaça xeques por dois lados. Os dois caminhos ganham no mesmo tempo; por d3 é mais simples.",
   "step.fourthA": "Desfaça a quarta fileira. Xeque em f7, dama em e6, rei por d3 e d4. Quando a torre fugir para c1, a dama vai para e3 e, com a torre de volta em c6, xeque em e7 e rei em d5.",
   "step.fourthA.hint": "Df7+, De6, Rd3, Rd4, De3, De7+ e Rd5.",
   "step.fourthA.done": "Gire o tabuleiro de lado: rei preto na coluna b, torre na coluna c, nosso rei em d5. É a terceira fileira, e você já sabe como quebrar essa barreira.",
