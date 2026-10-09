@@ -44,6 +44,15 @@ Regras para o lote:
    encerra a linha como cumprida e o aluno nunca vê o golpe. Se o golpe é a razão do exercício, comece o
    exercício um lance depois ou troque a posição.
 
+7. **Posição citada é posição explicada** (pedido do Gabriel, 2026-10-09): a fala agora rola numa folha sobre o
+   tabuleiro, então não há motivo para poupar texto. Se uma fala cita uma posição (partida histórica, erro famoso,
+   exceção à regra), ela destrincha: o lance que perde e por quê, a linha que segue, o que empatava ou ganhava e
+   por quê. Ex.: "Kramnik jogou Ta1 e perdeu" pede a linha da derrota e a do empate. Quando der, o passo seguinte
+   mostra a posição (demonstração ou passo de jogar) em vez de pular direto para o próximo assunto.
+8. **Alternativas citadas valem como certas**: se a fala diz que outro lance também funciona, ele entra na lista
+   `accept` do passo de jogar da mesma posição. Passo de pensar sem passo de jogar na mesma posição só aceita o
+   lance da seta: avalie criar o passo de jogar quando a explicação admite mais de uma resposta.
+
 ## O que o revisor de textos confere
 
 - Notação pt R/D/T/B/C, en K/Q/R/B/N; sem "mate em N"; pt e en dizem a mesma coisa.
