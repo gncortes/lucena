@@ -95,6 +95,7 @@ abstract final class EndgameInfoKeys {
   static const history = Key('endgameInfo.history');
   static Key reference(String id) => Key('endgameInfo.reference.$id');
   static Key keyPosition(String id) => Key('endgameInfo.key.$id');
+  static Key keyPositionLink(String id) => Key('endgameInfo.keyLink.$id');
 }
 
 /// Um exercício de uma aula de final.

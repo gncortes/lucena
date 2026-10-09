@@ -63,6 +63,10 @@ catálogo, troque também, no mapa, o tipo dela de `catalog` para `endgame` (o
   suas setas e casas. Todo lance é legal, e o script confere, como nos passos `move`, que nenhum lance do
   lado do aluno (`side`, ou quem joga no FEN) joga fora o `goal` (`win` ou `draw`, como em `move`). No
   JSON gerado o passo sai igual.
+- `ref` (opcional, em qualquer passo e em `keyPositions`): o id da referência de onde a posição vem
+  (partida ou estudo). Com `url` na referência, o app mostra no passo o link "Ver a partida no Lichess" (ou
+  "Ver o estudo"). A mesma partida parada noutro lance: `"ref": "capaLasker1913#80"` (o ply depois do `#`
+  troca o da url; uma referência por partida, não uma por posição). O script confere que o id existe. Ver `licao.md`, regra 4, e "Links" em `pesquisa.md`.
 - `goal`: `win` ou `draw` (defender também se ensina: Philidor, Vancura, o canto certo).
 - `turns`: cada vez do aluno. `teach` é o lance que a aula ensina (UCI); `reply` é a resposta do outro lado (UCI, ou `auto` para a melhor defesa da tabela). Toda vez que não é a última precisa de `reply`.
 - `accept`, a regra dos lances aceitos:
@@ -81,11 +85,13 @@ catálogo, troque também, no mapa, o tipo dela de `catalog` para `endgame` (o
 - `passScore`: o mínimo de estrelas para liberar o passo final. Padrão: 60% do total, arredondado para cima. O script exige entre a metade e o total.
 - `keyPositions`: as posições-base que o botão de informações mostra. `ref` (opcional) aponta a referência do crédito.
 - `practice`: a posição do treino final. `positionId` é o id em `assets/positions/positions.json`, quando o catálogo tem o final (é ele que liga a aula ao speedrun de final); sem ele, o treino abre o `fen` como posição personalizada.
-- `references`: `kind` é `book` (author, title, publisher, year), `study` (author, title, url do Lichess), `game` (white, black, event, year), `tablebase` ou `web` (title, url). `where` é opcional e só entra se foi visto. Ao menos um livro ou estudo.
+- `references`: `kind` é `book` (author, title, publisher, year), `study` (author, title, url do Lichess), `game` (white, black, event, year e `url`: a partida no Lichess parada na posição, formato em "Links" de `pesquisa.md`), `tablebase` ou `web` (title, url). `where` é opcional e só entra se foi visto. Ao menos um livro ou estudo.
 
 ## Uma parte boa
 
-Uma parte ensina uma ideia: pensar sozinho, ver o professor, jogar com ajuda. O script confere (erro, não aviso):
+Uma parte ensina uma ideia: pensar sozinho, ver o professor, jogar com ajuda. A régua do ensino (toda ideia
+cobrada é ensinada, uma ideia por parte, partidas com link, uma coisa por fala) está em `licao.md`. O script
+confere (erro, não aviso):
 
 - de 4 a 6 passos;
 - termina num `move` ou `play`: a prática, em que o aluno joga e o Viktor comenta;

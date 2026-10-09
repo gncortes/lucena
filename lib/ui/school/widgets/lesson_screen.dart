@@ -16,6 +16,7 @@ import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
+import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
@@ -417,6 +418,19 @@ class _LessonScreenState extends State<LessonScreen>
                               avatarSize: 56,
                               bubbleKey: LessonKeys.speech,
                               speaks: true,
+                            ),
+                          ),
+                        if (state.link case final reference?)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                              84,
+                              0,
+                              16,
+                              0,
+                            ),
+                            child: ReferenceLink(
+                              key: LessonKeys.referenceLink,
+                              reference: reference,
                             ),
                           ),
                         // Passo só de conversa: o espaço fica com o símbolo da
@@ -892,6 +906,14 @@ class _LessonScreenState extends State<LessonScreen>
                   speaks: true,
                   speechContext: SpeechContext.teaching,
                   typed: true,
+                ),
+              ),
+            if (state.link case final reference?)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(84, 0, 16, 0),
+                child: ReferenceLink(
+                  key: LessonKeys.referenceLink,
+                  reference: reference,
                 ),
               ),
           ],

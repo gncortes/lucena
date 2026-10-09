@@ -1,3 +1,4 @@
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../endgames/endgame_lesson_repository.dart';
@@ -15,6 +16,10 @@ abstract class LessonSource {
   Future<Lesson?> lesson(String id);
 
   Future<LessonTexts> texts(String language);
+
+  /// As referências da aula [id] (partidas, estudos...), que o `ref` de um
+  /// passo aponta. A escola não tem.
+  Future<List<Reference>> references(String id);
 
   /// A posição da aula no conjunto (1 é a primeira) e quantas há.
   Future<(int, int)> placeOf(String id);
@@ -75,6 +80,9 @@ class SchoolLessonSource implements LessonSource {
 
   @override
   Future<LessonTexts> texts(String language) => _lessons.texts(language);
+
+  @override
+  Future<List<Reference>> references(String id) async => const [];
 
   @override
   Future<(int, int)> placeOf(String id) async {
@@ -146,6 +154,10 @@ class EndgameLessonSource implements LessonSource {
 
   @override
   Future<LessonTexts> texts(String language) => _lessons.texts(language);
+
+  @override
+  Future<List<Reference>> references(String id) async =>
+      (await _lessons.trail()).lesson(id)?.references ?? const [];
 
   @override
   Future<(int, int)> placeOf(String id) async {

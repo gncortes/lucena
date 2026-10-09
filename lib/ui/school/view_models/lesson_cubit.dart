@@ -9,6 +9,7 @@ import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
@@ -81,7 +82,21 @@ class LessonState {
     this.hintsShown = 0,
     this.demoMove = 0,
     this.demoPlaying = true,
+    this.references = const [],
   });
+
+  /// As referências da aula (partidas, estudos...), que o `ref` de um passo
+  /// aponta. Vazia na escola.
+  final List<Reference> references;
+
+  /// O link do passo atual para a partida ou o estudo de onde vem a
+  /// posição. Nulo sem `ref`, sem `url` ou no passo de pensar (o link
+  /// entregaria a resposta; a explicação vem no passo seguinte).
+  Reference? get link {
+    if (current is ThinkStep) return null;
+    final reference = Reference.resolve(references, current?.ref);
+    return reference?.url == null ? null : reference;
+  }
 
   final bool ready;
 
@@ -311,6 +326,7 @@ class LessonState {
     int? hintsShown,
     int? demoMove,
     bool? demoPlaying,
+    List<Reference>? references,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -346,6 +362,7 @@ class LessonState {
     hintsShown: hintsShown ?? this.hintsShown,
     demoMove: demoMove ?? this.demoMove,
     demoPlaying: demoPlaying ?? this.demoPlaying,
+    references: references ?? this.references,
   );
 }
 
@@ -397,6 +414,7 @@ class LessonCubit extends Cubit<LessonState> {
     final characters = await _characters.characters();
     var saved = await _source.checkpoint();
     final (number, count) = await _source.placeOf(lessonId);
+    final references = await _source.references(lessonId);
     if (isClosed) return;
     if (full == null || full.steps.isEmpty) {
       emit(const LessonState(ready: true, missing: true));
@@ -444,6 +462,7 @@ class LessonCubit extends Cubit<LessonState> {
       part: opened,
       partNumber: opened == null ? 0 : full.parts.indexOf(opened) + 1,
       partCount: full.parts.length,
+      references: references,
     );
     if (saved != null && saved.step < lesson.steps.length) {
       emit(_restore(base, saved));
@@ -613,6 +632,7 @@ class LessonCubit extends Cubit<LessonState> {
       part: base.part,
       partNumber: base.partNumber,
       partCount: base.partCount,
+      references: base.references,
       step: base.step,
       reached: base.reached,
       stepStartedAt: base.stepStartedAt,
@@ -975,6 +995,7 @@ class LessonCubit extends Cubit<LessonState> {
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
       // O cronômetro do passo começa ao abrir.
       stepStartedAt: _now(),
+      references: base.references,
     );
   }
 

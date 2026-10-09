@@ -75,6 +75,10 @@ class EndgameLesson {
   int get maxScore =>
       exercises.fold(0, (total, exercise) => total + exercise.stars);
 
+  /// A referência do `ref` de um passo ou de uma posição-base. Nula se [ref]
+  /// é nulo ou não há. Ver [Reference.resolve].
+  Reference? reference(String? ref) => Reference.resolve(references, ref);
+
   Exercise? exercise(String id) {
     for (final exercise in exercises) {
       if (exercise.id == id) return exercise;
@@ -154,6 +158,28 @@ class Reference {
   };
 
   String? get url => fields['url'];
+
+  /// A referência que um `ref` de passo ou de posição-base aponta: `id`, ou
+  /// `id#ply` quando a mesma partida aparece parada noutro lance (o ply troca
+  /// o trecho da [url] depois do `#`). Nula sem [ref] ou sem a referência.
+  static Reference? resolve(List<Reference> references, String? ref) {
+    if (ref == null) return null;
+    final hash = ref.indexOf('#');
+    final id = hash < 0 ? ref : ref.substring(0, hash);
+    final ply = hash < 0 ? null : ref.substring(hash + 1);
+    for (final reference in references) {
+      if (reference.id != id) continue;
+      final url = reference.url;
+      if (ply == null || url == null) return reference;
+      final base = url.split('#').first;
+      return Reference(
+        id: reference.id,
+        kind: reference.kind,
+        fields: {...reference.fields, 'url': '$base#$ply'},
+      );
+    }
+    return null;
+  }
 }
 
 /// O que o aluno já fez numa aula de final.
