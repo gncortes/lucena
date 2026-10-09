@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish an deiner Stelle gegen {opponent}",
   "conclusionBestLineMove": "Zug {move} von {total}",
   "conclusionBestLineDisclaimer": "Stockfish hat schnell gespielt (1 s pro Zug), daher findet es in manchen Stellungen vielleicht nicht die beste Verteidigung oder den Gewinn. Für mehr Tiefe öffne die detaillierte Analyse.",
-  "conclusionHideComment": "Kommentar ausblenden",
   "conclusionRatingHistory": "Wertungsverlauf",
   "conclusionSummary": "Zusammenfassung",
   "conclusionSpeedruns": "Alle Speedruns",

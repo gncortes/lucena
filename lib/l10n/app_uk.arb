@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish на вашому місці проти {opponent}",
   "conclusionBestLineMove": "Хід {move} з {total}",
   "conclusionBestLineDisclaimer": "Stockfish грав швидко (1 с на хід), тож у деяких позиціях він може не знайти найкращий захист чи виграш. Щоб розібратися глибше, відкрийте детальний аналіз.",
-  "conclusionHideComment": "Сховати коментар",
   "conclusionRatingHistory": "Історія рейтингу",
   "conclusionSummary": "Підсумок",
   "conclusionSpeedruns": "Усі спідрани",

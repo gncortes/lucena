@@ -98,15 +98,6 @@ class ReviewSummary extends StatelessWidget {
         key: GameDetailsKeys.reviewProgress,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (state.viktor case final viktor?
-              when state.stories.isNotEmpty) ...[
-            _StoryTeller(
-              viktor: viktor,
-              stories: state.stories,
-              first: state.attempt?.playedAt.millisecond ?? 0,
-            ),
-            const SizedBox(height: 14),
-          ],
           Text(
             l10n.reviewRunning(math.min(done + 1, total), total),
             style: theme.textTheme.titleSmall,
@@ -206,7 +197,22 @@ class ReviewSummary extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       color: colors.surfaceContainerLow,
-      child: Padding(padding: const EdgeInsets.all(14), child: child),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.viktor case final viktor? when state.stories.isNotEmpty)
+              _StoryTeller(
+                viktor: viktor,
+                stories: state.stories,
+                first: state.attempt?.playedAt.millisecond ?? 0,
+                running: state.reviewing,
+              ),
+            child,
+          ],
+        ),
+      ),
     );
   }
 
@@ -281,12 +287,14 @@ class ReviewSummary extends StatelessWidget {
 }
 
 /// Enquanto a revisão roda, o Viktor conta uma história de xadrez, e troca
-/// de história de tempos em tempos.
+/// de história de tempos em tempos. Pronta a revisão, a história do momento
+/// fica até o ✕ no balão (ninguém perde o fim dela).
 class _StoryTeller extends StatefulWidget {
   const _StoryTeller({
     required this.viktor,
     required this.stories,
     required this.first,
+    required this.running,
   });
 
   final Character viktor;
@@ -294,6 +302,9 @@ class _StoryTeller extends StatefulWidget {
 
   /// A primeira história (cada partida começa por uma).
   final int first;
+
+  /// A revisão está rodando (só então a história troca).
+  final bool running;
 
   /// Quanto tempo cada história fica.
   static const every = Duration(seconds: 18);
@@ -304,11 +315,33 @@ class _StoryTeller extends StatefulWidget {
 
 class _StoryTellerState extends State<_StoryTeller> {
   late int _index = widget.first;
-  late final Timer _timer;
+  Timer? _timer;
+
+  /// Já houve revisão rodando nesta tela (abrir uma partida já revisada
+  /// não conta história).
+  late bool _told = widget.running;
+  bool _closed = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.running) _start();
+  }
+
+  @override
+  void didUpdateWidget(_StoryTeller old) {
+    super.didUpdateWidget(old);
+    if (widget.running && !old.running) {
+      _told = true;
+      _closed = false;
+      _start();
+    } else if (!widget.running && old.running) {
+      _timer?.cancel();
+    }
+  }
+
+  void _start() {
+    _timer?.cancel();
     _timer = Timer.periodic(
       _StoryTeller.every,
       (_) => setState(() => _index++),
@@ -317,19 +350,32 @@ class _StoryTellerState extends State<_StoryTeller> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => TeacherSpeech(
-    key: GameDetailsKeys.story,
-    teacher: widget.viktor,
-    text: widget.stories[_index % widget.stories.length],
-    avatarSize: 40,
-    speechContext: SpeechContext.teaching,
-    typed: true,
-  );
+  Widget build(BuildContext context) {
+    if (!_told || _closed) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: TeacherSpeech(
+        key: GameDetailsKeys.story,
+        teacher: widget.viktor,
+        text: widget.stories[_index % widget.stories.length],
+        avatarSize: 40,
+        speechContext: SpeechContext.teaching,
+        typed: true,
+        closeKey: GameDetailsKeys.storyClose,
+        onClose: () async {
+          _timer?.cancel();
+          setState(() => _closed = true);
+          final text = widget.stories[_index % widget.stories.length];
+          await TeacherSpeech.speechOf(context)?.stopIf(text);
+        },
+      ),
+    );
+  }
 }
 
 /// No fim da tela: o que cada símbolo quer dizer e, depois da revisão,

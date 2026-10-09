@@ -4277,10 +4277,6 @@
   "@conclusionBestLineDisclaimer": {
     "description": "Short note under the best line board: it was played fast, so it may not be perfect; points to the detailed analysis button below."
   },
-  "conclusionHideComment": "Hide the comment",
-  "@conclusionHideComment": {
-    "description": "Tooltip of the close button on the opponent's comment card in the conclusion: hides the card and stops the voice."
-  },
   "conclusionRatingHistory": "Rating history",
   "@conclusionRatingHistory": {
     "description": "Link on the conclusion screen to the rating chart."

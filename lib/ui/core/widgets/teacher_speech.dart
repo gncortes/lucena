@@ -43,6 +43,8 @@ class TeacherSpeech extends StatelessWidget {
     this.onLink,
     this.onSpoken,
     this.headerAction,
+    this.onClose,
+    this.closeKey,
     super.key,
   });
 
@@ -59,6 +61,10 @@ class TeacherSpeech extends StatelessWidget {
   /// Um botão a mais no cabeçalho, antes dos de voz (ex.: as marcações da
   /// lição).
   final Widget? headerAction;
+
+  /// Um ✕ no canto do balão, que fecha a fala (ex.: a história da revisão).
+  final VoidCallback? onClose;
+  final Key? closeKey;
 
   /// A fala. Nula: só o retrato e o nome.
   final String? text;
@@ -232,7 +238,7 @@ class TeacherSpeech extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 2),
-          _speech(context),
+          _closable(context),
         ],
       );
     }
@@ -247,7 +253,7 @@ class TeacherSpeech extends StatelessWidget {
             children: [
               _header(context),
               const SizedBox(height: 4),
-              _speech(context),
+              _closable(context),
             ],
           ),
         ),
@@ -267,6 +273,43 @@ class TeacherSpeech extends StatelessWidget {
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
+    );
+  }
+
+  /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
+  Widget _closable(BuildContext context) {
+    final onClose = this.onClose;
+    if (onClose == null || text == null) return _speech(context);
+    final colors = Theme.of(context).colorScheme;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _speech(context),
+        PositionedDirectional(
+          // No ensino, a ponta do balão fica em cima: o ✕ desce com ela.
+          top: (_stacked ? _tail.height : 0) - 20,
+          end: -14,
+          child: IconButton(
+            key: closeKey,
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: onClose,
+            icon: Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.surface, width: 2),
+              ),
+              child: Icon(
+                Icons.close_rounded,
+                size: 16,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

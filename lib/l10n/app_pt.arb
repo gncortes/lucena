@@ -818,7 +818,6 @@
   "conclusionBestLineHint": "O Stockfish no seu lugar contra {opponent}",
   "conclusionBestLineMove": "Lance {move} de {total}",
   "conclusionBestLineDisclaimer": "O Stockfish jogou rápido (1 s por lance), então em algumas posições pode não achar a melhor defesa ou a vitória. Para ir mais fundo, abra a análise detalhada.",
-  "conclusionHideComment": "Esconder a fala",
   "conclusionRatingHistory": "Histórico de rating",
   "conclusionSummary": "Ver o resumo",
   "conclusionSpeedruns": "Ver os speedruns",

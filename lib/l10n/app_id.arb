@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish menggantikanmu melawan {opponent}",
   "conclusionBestLineMove": "Langkah {move} dari {total}",
   "conclusionBestLineDisclaimer": "Stockfish bermain cepat (1 detik per langkah), jadi di beberapa posisi ia bisa melewatkan pertahanan terbaik atau kemenangan. Untuk melihat lebih dalam, buka analisis lengkap.",
-  "conclusionHideComment": "Sembunyikan komentar",
   "conclusionRatingHistory": "Riwayat rating",
   "conclusionSummary": "Lihat ringkasan",
   "conclusionSpeedruns": "Lihat speedrun",

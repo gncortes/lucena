@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "あなたの代わりにStockfishが{opponent}と対局",
   "conclusionBestLineMove": "{total} 手中 {move} 手目",
   "conclusionBestLineDisclaimer": "Stockfishは速く指しました（1手1秒）。そのため局面によっては最善の受けや勝ちを見逃すことがあります。詳しく見るには詳しい分析を開いてください。",
-  "conclusionHideComment": "コメントを隠す",
   "conclusionRatingHistory": "レーティング履歴",
   "conclusionSummary": "まとめを見る",
   "conclusionSpeedruns": "スピードラン一覧",

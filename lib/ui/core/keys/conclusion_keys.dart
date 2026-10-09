@@ -21,8 +21,6 @@ abstract final class ConclusionKeys {
   static const ratingDelta = Key('conclusion.rating.delta');
   static const comment = Key('conclusion.comment');
 
-  /// O ✕ que esconde a fala do adversário (e cala a voz).
-  static const commentClose = Key('conclusion.comment.close');
   static const run = Key('conclusion.run');
   static const stageTime = Key('conclusion.run.stageTime');
   static const total = Key('conclusion.run.total');

@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Senin yerine Stockfish, {opponent} karşısında",
   "conclusionBestLineMove": "{total} hamleden {move}.",
   "conclusionBestLineDisclaimer": "Stockfish hızlı oynadı (hamle başına 1 sn), bu yüzden bazı konumlarda en iyi savunmayı ya da kazancı kaçırabilir. Daha derin bakmak için ayrıntılı analizi aç.",
-  "conclusionHideComment": "Yorumu gizle",
   "conclusionRatingHistory": "Puan geçmişi",
   "conclusionSummary": "Özeti gör",
   "conclusionSpeedruns": "Speedrunları gör",

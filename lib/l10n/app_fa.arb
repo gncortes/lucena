@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish به‌جای شما در برابر {opponent}",
   "conclusionBestLineMove": "حرکت {move} از {total}",
   "conclusionBestLineDisclaimer": "Stockfish سریع بازی کرد (۱ ثانیه برای هر حرکت)، پس در بعضی وضعیت‌ها ممکن است بهترین دفاع یا برد را پیدا نکند. برای بررسی عمیق‌تر، تحلیل کامل را باز کنید.",
-  "conclusionHideComment": "پنهان کردن نظر",
   "conclusionRatingHistory": "تاریخچهٔ ریتینگ",
   "conclusionSummary": "دیدن خلاصه",
   "conclusionSpeedruns": "دیدن اسپیدران‌ها",

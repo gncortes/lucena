@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish op jouw plek tegen {opponent}",
   "conclusionBestLineMove": "Zet {move} van {total}",
   "conclusionBestLineDisclaimer": "Stockfish speelde snel (1 s per zet), dus in sommige stellingen mist het misschien de beste verdediging of de winst. Open de gedetailleerde analyse om dieper te kijken.",
-  "conclusionHideComment": "Opmerking verbergen",
   "conclusionRatingHistory": "Ratinggeschiedenis",
   "conclusionSummary": "Bekijk het overzicht",
   "conclusionSpeedruns": "Bekijk de speedruns",

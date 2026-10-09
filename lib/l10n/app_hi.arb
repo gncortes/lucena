@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "आपकी जगह Stockfish, {opponent} के ख़िलाफ़",
   "conclusionBestLineMove": "चाल {move} / {total}",
   "conclusionBestLineDisclaimer": "Stockfish ने तेज़ी से खेला (हर चाल पर 1 सेकंड), इसलिए कुछ स्थितियों में वह सबसे अच्छा बचाव या जीत चूक सकता है। गहराई से देखने के लिए विस्तृत विश्लेषण खोलें।",
-  "conclusionHideComment": "टिप्पणी छिपाएँ",
   "conclusionRatingHistory": "रेटिंग इतिहास",
   "conclusionSummary": "सारांश देखें",
   "conclusionSpeedruns": "स्पीडरन देखें",

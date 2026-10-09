@@ -30,7 +30,6 @@ import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_share_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
-import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 
 // Uma partida longa: 16 lances (a dama e o rei indo e voltando).
@@ -215,17 +214,13 @@ void main() {
       analysis.hold = null;
       await settle(tester);
       expect(find.byKey(ConclusionKeys.review), findsOneWidget);
-      // "Ver a análise detalhada" logo abaixo da precisão, antes dos
-      // quadradinhos: o único caminho para ela na tela.
+      // "Ver a análise detalhada" abaixo do cartão da precisão, fora dele:
+      // o único caminho para ela na tela.
       final deeper = tester.getTopLeft(find.byKey(ConclusionKeys.reviewDeeper));
       expect(
         deeper.dy,
-        greaterThan(tester.getTopLeft(find.byKey(ConclusionKeys.accuracy)).dy),
-      );
-      expect(
-        deeper.dy,
-        lessThan(
-          tester.getTopLeft(find.byKey(ConclusionKeys.quality('best'))).dy,
+        greaterThanOrEqualTo(
+          tester.getBottomLeft(find.byKey(ConclusionKeys.analysisShared)).dy,
         ),
       );
       expect(find.text('See the detailed analysis'), findsOneWidget);
@@ -339,50 +334,6 @@ void main() {
         ),
         findsOneWidget,
       );
-    });
-  });
-
-  group('fala do adversário', () {
-    testWidgets('fica no alto; o ✕ a esconde e cala a voz', (tester) async {
-      final voice = FakeVoiceRepository();
-      final speech = SpeechCubit(voice);
-      addTearDown(speech.close);
-      await tester.runAsync(speech.load);
-      await open(
-        tester,
-        moves: _longMoves,
-        played: const Duration(minutes: 5),
-        speech: speech,
-      );
-      final comment = cubit.state.comment!;
-      expect(find.byKey(ConclusionKeys.comment), findsOneWidget);
-      // Fora da rolagem: rolar até o fim não a tira da vista.
-      await tester.drag(
-        find.byType(SingleChildScrollView).first,
-        const Offset(0, -3000),
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.getTopLeft(find.byKey(ConclusionKeys.comment)).dy,
-        lessThan(200),
-      );
-
-      await tester.runAsync(
-        () => speech.say(
-          comment,
-          speakerId: cubit.state.opponent!.id,
-          language: 'en',
-        ),
-      );
-      await tester.pump();
-      expect(speech.state.isSpeaking(comment), isTrue);
-
-      await tester.tap(find.byKey(ConclusionKeys.commentClose));
-      await tester.runAsync(pumpEventQueue);
-      await tester.pumpAndSettle();
-      expect(find.byKey(ConclusionKeys.comment), findsNothing);
-      expect(speech.state.speaking, isNull);
-      expect(voice.stops, greaterThan(0));
     });
   });
 

@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "당신 대신 Stockfish가 {opponent}와 대국",
   "conclusionBestLineMove": "{total}수 중 {move}번째",
   "conclusionBestLineDisclaimer": "Stockfish가 빠르게 두었기 때문에(수당 1초) 일부 포지션에서는 최선의 방어나 승리를 놓칠 수 있습니다. 더 깊이 보려면 자세한 분석을 여세요.",
-  "conclusionHideComment": "코멘트 숨기기",
   "conclusionRatingHistory": "레이팅 기록",
   "conclusionSummary": "요약 보기",
   "conclusionSpeedruns": "스피드런 보기",

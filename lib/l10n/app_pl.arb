@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish na twoim miejscu przeciw {opponent}",
   "conclusionBestLineMove": "Ruch {move} z {total}",
   "conclusionBestLineDisclaimer": "Stockfish grał szybko (1 s na ruch), więc w niektórych pozycjach może nie znaleźć najlepszej obrony ani wygranej. Aby przyjrzeć się dokładniej, otwórz szczegółową analizę.",
-  "conclusionHideComment": "Ukryj komentarz",
   "conclusionRatingHistory": "Historia rankingu",
   "conclusionSummary": "Zobacz podsumowanie",
   "conclusionSpeedruns": "Zobacz speedruny",

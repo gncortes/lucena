@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish 代替你对阵 {opponent}",
   "conclusionBestLineMove": "第 {move}/{total} 步",
   "conclusionBestLineDisclaimer": "Stockfish 下得很快（每步 1 秒），所以在某些局面可能找不到最佳防守或胜法。想深入了解，请打开详细分析。",
-  "conclusionHideComment": "隐藏评论",
   "conclusionRatingHistory": "等级分历史",
   "conclusionSummary": "查看总结",
   "conclusionSpeedruns": "查看速通",

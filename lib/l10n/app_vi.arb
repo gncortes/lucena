@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish thay bạn đấu với {opponent}",
   "conclusionBestLineMove": "Nước {move}/{total}",
   "conclusionBestLineDisclaimer": "Stockfish đã chơi nhanh (1 giây mỗi nước), nên ở một số thế cờ có thể bỏ lỡ cách phòng thủ hay nước thắng tốt nhất. Để xem kỹ hơn, hãy mở phần phân tích chi tiết.",
-  "conclusionHideComment": "Ẩn lời bình",
   "conclusionRatingHistory": "Lịch sử rating",
   "conclusionSummary": "Xem tóm tắt",
   "conclusionSpeedruns": "Xem các speedrun",

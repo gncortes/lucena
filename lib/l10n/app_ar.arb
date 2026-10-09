@@ -819,7 +819,6 @@
   "conclusionBestLineHint": "Stockfish مكانك ضد {opponent}",
   "conclusionBestLineMove": "النقلة {move} من {total}",
   "conclusionBestLineDisclaimer": "لعب Stockfish بسرعة (ثانية واحدة لكل نقلة)، لذا قد لا يجد في بعض الأوضاع أفضل دفاع أو الفوز. للتعمق أكثر، افتح التحليل المفصل.",
-  "conclusionHideComment": "إخفاء التعليق",
   "conclusionRatingHistory": "سجل التقييم",
   "conclusionSummary": "عرض الملخص",
   "conclusionSpeedruns": "عرض السباقات",
