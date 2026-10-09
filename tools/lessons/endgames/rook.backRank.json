@@ -211,116 +211,39 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e11",
       "stars": 1,
-      "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
+      "fen": "8/8/8/8/8/6k1/r6p/1R4K1 w - - 0 1",
       "goal": "draw",
-      "origin": "rookPawn",
+      "origin": "hemanth",
       "turns": [
         {
           "teach": "g1h1",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "R7/8/8/8/6p1/1r4k1/8/6K1 w - - 0 1",
-      "goal": "draw",
-      "origin": "profangel",
-      "turns": [
+          "accept": "only",
+          "reply": "a2a3"
+        },
         {
-          "teach": "a8a1",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1",
-      "goal": "draw",
-      "origin": "profangel",
-      "turns": [
-        {
-          "teach": "h8a8",
+          "teach": "b1b3",
           "accept": "hold"
         }
       ]
     },
     {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/8/8/8/6k1/6p1/r7/1R4K1 w - - 0 1",
+      "id": "e15",
+      "stars": 1,
+      "fen": "8/8/8/8/6p1/7k/r7/2R3K1 w - - 0 1",
       "goal": "draw",
-      "origin": "rookPawn",
+      "origin": "own",
       "turns": [
-        {
-          "teach": "b1c1",
-          "accept": "hold",
-          "reply": "g4h3"
-        },
         {
           "teach": "c1b1",
-          "accept": "hold",
-          "reply": "a2g2"
-        },
-        {
-          "teach": "g1h1",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "turns": [
-        {
-          "teach": "b1b8",
-          "accept": "hold",
-          "reply": "g4g3"
-        },
-        {
-          "teach": "b8g8",
-          "accept": "only",
-          "reply": "g3f4"
-        },
-        {
-          "teach": "g8f8",
           "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/8/8/8/8/8/r2kpK2/1R6 w - - 0 1",
-      "goal": "draw",
-      "origin": "rookPawn",
-      "turns": [
-        {
-          "teach": "b1e1",
-          "accept": "only",
-          "reply": "d2d3"
-        },
-        {
-          "teach": "e1b1",
-          "accept": "only",
-          "reply": "d3d2"
-        },
-        {
-          "teach": "b1e1",
-          "accept": "only"
         }
       ]
     },
     {
       "id": "e10",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/8/8/8/5pk1/8/r7/2R3K1 w - - 0 1",
       "goal": "draw",
       "origin": "chessmood",
@@ -337,6 +260,85 @@
         },
         {
           "teach": "c8g8",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 2,
+      "fen": "7R/8/8/8/6p1/5k2/r7/6K1 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h8f8",
+          "accept": "only",
+          "reply": "f3g3"
+        },
+        {
+          "teach": "f8f1",
+          "accept": "only",
+          "reply": "a2g2"
+        },
+        {
+          "teach": "g1h1",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "8/3r4/8/4R3/6pk/8/4K3/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "wiebe",
+      "turns": [
+        {
+          "teach": "e2f2",
+          "accept": "only",
+          "reply": "d7d2"
+        },
+        {
+          "teach": "f2g1",
+          "accept": "only",
+          "reply": "h4h3"
+        },
+        {
+          "teach": "e5e3",
+          "accept": "hold",
+          "reply": "g4g3"
+        },
+        {
+          "teach": "e3e1",
+          "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/8/8/8/1R6/4rk2/4p3/3K4 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1e1",
+          "accept": "only",
+          "reply": "e3c3"
+        },
+        {
+          "teach": "b4b1",
+          "accept": "only",
+          "reply": "c3a3"
+        },
+        {
+          "teach": "b1c1",
+          "accept": "only",
+          "reply": "a3b3"
+        },
+        {
+          "teach": "c1a1",
           "accept": "only"
         }
       ]
@@ -404,6 +406,20 @@
       "title": "Secrets of Rook Endings",
       "publisher": "Gambit Publications",
       "year": 1999
+    },
+    {
+      "id": "hemanth",
+      "kind": "study",
+      "author": "Hemanthsankar",
+      "title": "Back rank defence",
+      "url": "https://lichess.org/study/gfxJ7lIx"
+    },
+    {
+      "id": "wiebe",
+      "kind": "study",
+      "author": "IsaacWiebeSupreme",
+      "title": "Passive Defense with Knight Pawn",
+      "url": "https://lichess.org/study/y4SCg9WL"
     },
     {
       "id": "tablebase",
