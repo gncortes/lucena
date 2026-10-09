@@ -968,5 +968,13 @@
   "schoolKnownBody": "Тест показал, что ты знаешь эти уроки. Повтори их, когда захочешь.",
   "endgamesForYou": "Для тебя",
   "endgamesAll": "Все",
-  "endgamesForYouEmpty": "По тесту ты уже знаешь все эндшпили здесь. Открой все, чтобы потренироваться."
+  "endgamesForYouEmpty": "По тесту ты уже знаешь все эндшпили здесь. Открой все, чтобы потренироваться.",
+  "exerciseSeeResult": "Посмотреть результат",
+  "exercisesDoneTitle": "Упражнения выполнены",
+  "exercisesDoneNeedMore": "Чтобы сдать, нужно хотя бы {min} звёзд. Пройдите упражнения заново, чтобы улучшить результат.",
+  "exerciseGradePassed": "Зачёт",
+  "exerciseGradeGood": "Хорошо",
+  "exerciseGradeExcellent": "Отлично",
+  "exerciseGradePerfect": "Идеально",
+  "exerciseGradeYou": "Вы"
 }

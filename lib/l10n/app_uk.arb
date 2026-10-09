@@ -968,5 +968,13 @@
   "schoolKnownBody": "Тест показав, що ти знаєш ці уроки. Повтори їх, коли захочеш.",
   "endgamesForYou": "Для тебе",
   "endgamesAll": "Усі",
-  "endgamesForYouEmpty": "За тестом ти вже знаєш усі ендшпілі тут. Відкрий усі, щоб потренуватися."
+  "endgamesForYouEmpty": "За тестом ти вже знаєш усі ендшпілі тут. Відкрий усі, щоб потренуватися.",
+  "exerciseSeeResult": "Переглянути результат",
+  "exercisesDoneTitle": "Вправи завершено",
+  "exercisesDoneNeedMore": "Щоб скласти, потрібно щонайменше {min} зірок. Пройдіть вправи ще раз, щоб покращити результат.",
+  "exerciseGradePassed": "Зараховано",
+  "exerciseGradeGood": "Добре",
+  "exerciseGradeExcellent": "Відмінно",
+  "exerciseGradePerfect": "Ідеально",
+  "exerciseGradeYou": "Ви"
 }

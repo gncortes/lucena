@@ -968,5 +968,13 @@
   "schoolKnownBody": "De test liet zien dat je deze lessen beheerst. Bekijk ze wanneer je wilt.",
   "endgamesForYou": "Voor jou",
   "endgamesAll": "Alle",
-  "endgamesForYouEmpty": "Volgens je test beheers je alle eindspelen hier al. Bekijk ze allemaal om te oefenen."
+  "endgamesForYouEmpty": "Volgens je test beheers je alle eindspelen hier al. Bekijk ze allemaal om te oefenen.",
+  "exerciseSeeResult": "Resultaat bekijken",
+  "exercisesDoneTitle": "Oefeningen voltooid",
+  "exercisesDoneNeedMore": "Je hebt minstens {min} sterren nodig om te slagen. Doe de oefeningen opnieuw om te verbeteren.",
+  "exerciseGradePassed": "Geslaagd",
+  "exerciseGradeGood": "Goed",
+  "exerciseGradeExcellent": "Uitstekend",
+  "exerciseGradePerfect": "Perfect",
+  "exerciseGradeYou": "Jij"
 }

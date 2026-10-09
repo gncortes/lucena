@@ -968,5 +968,13 @@
   "schoolKnownBody": "Tes menunjukkan kamu menguasai pelajaran ini. Ulangi kapan pun kamu mau.",
   "endgamesForYou": "Untukmu",
   "endgamesAll": "Semua",
-  "endgamesForYouEmpty": "Dari tesmu, kamu sudah menguasai semua akhir permainan di sini. Lihat semua untuk berlatih."
+  "endgamesForYouEmpty": "Dari tesmu, kamu sudah menguasai semua akhir permainan di sini. Lihat semua untuk berlatih.",
+  "exerciseSeeResult": "Lihat hasil",
+  "exercisesDoneTitle": "Latihan selesai",
+  "exercisesDoneNeedMore": "Kamu butuh minimal {min} bintang untuk lulus. Ulangi latihan untuk meningkatkan.",
+  "exerciseGradePassed": "Lulus",
+  "exerciseGradeGood": "Bagus",
+  "exerciseGradeExcellent": "Sangat baik",
+  "exerciseGradePerfect": "Sempurna",
+  "exerciseGradeYou": "Kamu"
 }

@@ -7,8 +7,37 @@ import '../models/lesson.dart';
 import '../models/speedrun.dart';
 import 'game_rules.dart';
 
+/// A faixa da nota nos exercícios de uma aula, da menor à maior.
+enum ExerciseGrade { below, passed, good, excellent, perfect }
+
 /// As regras das aulas de finais: pontos, nota e o que o passo final abre.
 abstract final class EndgameLessonRules {
+  /// As estrelas que cada faixa pede: o mínimo da aula, depois 75% e 85% do
+  /// total (sempre acima da faixa anterior) e, por fim, todas.
+  static Map<ExerciseGrade, int> gradeStars(EndgameLesson lesson) {
+    final total = lesson.maxScore;
+    int above(int previous, int target) =>
+        min(total, max(previous + 1, target));
+    final passed = min(lesson.passScore, total);
+    final good = above(passed, (3 * total + 3) ~/ 4);
+    final excellent = above(good, (17 * total + 19) ~/ 20);
+    return {
+      ExerciseGrade.passed: passed,
+      ExerciseGrade.good: good,
+      ExerciseGrade.excellent: excellent,
+      ExerciseGrade.perfect: total,
+    };
+  }
+
+  /// A faixa de quem fez [score] estrelas nos exercícios da aula.
+  static ExerciseGrade grade(EndgameLesson lesson, int score) {
+    var grade = ExerciseGrade.below;
+    for (final entry in gradeStars(lesson).entries) {
+      if (score >= entry.value) grade = entry.key;
+    }
+    return grade;
+  }
+
   /// As estrelas que um exercício de [stars] vale depois de [mistakes] erros
   /// e [hints] dicas: acerto de primeira vale tudo; cada erro ou dica tira
   /// uma, até zero.

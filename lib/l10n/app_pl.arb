@@ -968,5 +968,13 @@
   "schoolKnownBody": "Test pokazał, że znasz te lekcje. Wróć do nich, kiedy chcesz.",
   "endgamesForYou": "Dla ciebie",
   "endgamesAll": "Wszystkie",
-  "endgamesForYouEmpty": "Według testu znasz już wszystkie końcówki tutaj. Zobacz wszystkie, by ćwiczyć."
+  "endgamesForYouEmpty": "Według testu znasz już wszystkie końcówki tutaj. Zobacz wszystkie, by ćwiczyć.",
+  "exerciseSeeResult": "Zobacz wynik",
+  "exercisesDoneTitle": "Ćwiczenia ukończone",
+  "exercisesDoneNeedMore": "Potrzebujesz co najmniej {min} gwiazdek, aby zaliczyć. Powtórz ćwiczenia, aby się poprawić.",
+  "exerciseGradePassed": "Zaliczone",
+  "exerciseGradeGood": "Dobrze",
+  "exerciseGradeExcellent": "Doskonale",
+  "exerciseGradePerfect": "Idealnie",
+  "exerciseGradeYou": "Ty"
 }

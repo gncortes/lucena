@@ -968,5 +968,13 @@
   "schoolKnownBody": "テストで、これらのレッスンは身についていると分かりました。いつでも見直せます。",
   "endgamesForYou": "あなた向け",
   "endgamesAll": "すべて",
-  "endgamesForYouEmpty": "テストによると、ここのエンドゲームはすべて身についています。練習するなら「すべて」へ。"
+  "endgamesForYouEmpty": "テストによると、ここのエンドゲームはすべて身についています。練習するなら「すべて」へ。",
+  "exerciseSeeResult": "結果を見る",
+  "exercisesDoneTitle": "練習問題が完了",
+  "exercisesDoneNeedMore": "合格には星が{min}個以上必要です。練習問題をやり直して上達しましょう。",
+  "exerciseGradePassed": "合格",
+  "exerciseGradeGood": "良い",
+  "exerciseGradeExcellent": "優秀",
+  "exerciseGradePerfect": "パーフェクト",
+  "exerciseGradeYou": "あなた"
 }

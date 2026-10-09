@@ -968,5 +968,13 @@
   "schoolKnownBody": "Test bu dersleri bildiğini gösterdi. İstediğin zaman gözden geçir.",
   "endgamesForYou": "Senin için",
   "endgamesAll": "Tümü",
-  "endgamesForYouEmpty": "Testine göre buradaki tüm oyun sonlarını biliyorsun. Pratik için tümüne bak."
+  "endgamesForYouEmpty": "Testine göre buradaki tüm oyun sonlarını biliyorsun. Pratik için tümüne bak.",
+  "exerciseSeeResult": "Sonucu gör",
+  "exercisesDoneTitle": "Alıştırmalar tamamlandı",
+  "exercisesDoneNeedMore": "Geçmek için en az {min} yıldız gerekir. Gelişmek için alıştırmaları yeniden yap.",
+  "exerciseGradePassed": "Geçti",
+  "exerciseGradeGood": "İyi",
+  "exerciseGradeExcellent": "Mükemmel",
+  "exerciseGradePerfect": "Kusursuz",
+  "exerciseGradeYou": "Sen"
 }

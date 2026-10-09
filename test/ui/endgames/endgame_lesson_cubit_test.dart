@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/use_cases/endgame_lesson_rules.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -38,6 +39,28 @@ void main() {
     expect(state.passed, isFalse);
     expect(state.nextExercise!.id, 'e01');
     expect(state.lessonOngoing, isFalse);
+  });
+
+  test('a faixa da nota: abaixo, aprovado, bom e perfeito', () async {
+    Future<EndgameLessonState> withStars(Map<String, int> stars) async {
+      progress.saved = EndgameProgress(
+        lessons: {'rook.lucena': EndgameLessonProgress(stars: stars)},
+      );
+      return (await load('rook.lucena')).state;
+    }
+
+    // Aula de 6 estrelas, mínimo 4: 4, 5, 6 (75% e 85% sobem de uma em uma).
+    expect((await withStars({'e01': 1})).grade, ExerciseGrade.below);
+    final passed = await withStars({'e01': 2, 'e02': 1, 'e03': 1});
+    expect(passed.grade, ExerciseGrade.passed);
+    expect(passed.gradeStars[ExerciseGrade.passed], 4);
+    expect(
+      (await withStars({'e01': 2, 'e02': 2, 'e03': 1})).grade,
+      ExerciseGrade.good,
+    );
+    final perfect = await withStars({'e01': 2, 'e02': 2, 'e03': 2});
+    expect(perfect.grade, ExerciseGrade.perfect);
+    expect(perfect.gradeStars[ExerciseGrade.perfect], 6);
   });
 
   test('final sem speedrun e última da trilha', () async {

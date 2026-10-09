@@ -967,5 +967,13 @@
   "schoolKnownBody": "[Thé téšt šhöwéd ýöû kñöw théšé léššöñš. Ŕévîéw thém whéñévéŕ ýöû lîké. one two three four five six]",
   "endgamesForYou": "[Föŕ ýöû one]",
   "endgamesAll": "[Åll one]",
-  "endgamesForYouEmpty": "[Fŕöm ýöûŕ téšt, ýöû ålŕéådý måštéŕ évéŕý éñdĝåmé héŕé. Šéé åll öf thém tö pŕåçtîšé. one two three four five six seven]"
+  "endgamesForYouEmpty": "[Fŕöm ýöûŕ téšt, ýöû ålŕéådý måštéŕ évéŕý éñdĝåmé héŕé. Šéé åll öf thém tö pŕåçtîšé. one two three four five six seven]",
+  "exerciseSeeResult": "[Šéé ŕéšûlt one]",
+  "exercisesDoneTitle": "[Éxéŕçîšéš çömplété one two]",
+  "exercisesDoneNeedMore": "[Ýöû ñééd åt léåšt {min} štåŕš tö påšš. Ŕédö thé éxéŕçîšéš tö împŕövé. one two three four five six]",
+  "exerciseGradePassed": "[Påššéd one]",
+  "exerciseGradeGood": "[Ĝööd one]",
+  "exerciseGradeExcellent": "[Éxçélléñt one]",
+  "exerciseGradePerfect": "[Péŕféçt one]",
+  "exerciseGradeYou": "[Ýöû one]"
 }

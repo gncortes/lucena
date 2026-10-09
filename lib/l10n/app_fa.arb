@@ -968,5 +968,13 @@
   "schoolKnownBody": "آزمون نشان داد این درس‌ها را بلدی. هر وقت خواستی مرورشان کن.",
   "endgamesForYou": "برای تو",
   "endgamesAll": "همه",
-  "endgamesForYouEmpty": "طبق آزمونت، همهٔ آخربازی‌های اینجا را بلدی. برای تمرین همه را ببین."
+  "endgamesForYouEmpty": "طبق آزمونت، همهٔ آخربازی‌های اینجا را بلدی. برای تمرین همه را ببین.",
+  "exerciseSeeResult": "دیدن نتیجه",
+  "exercisesDoneTitle": "تمرین‌ها تمام شد",
+  "exercisesDoneNeedMore": "برای قبولی دست‌کم {min} ستاره لازم است. برای بهتر شدن تمرین‌ها را دوباره انجام بده.",
+  "exerciseGradePassed": "قبول",
+  "exerciseGradeGood": "خوب",
+  "exerciseGradeExcellent": "عالی",
+  "exerciseGradePerfect": "بی‌نقص",
+  "exerciseGradeYou": "تو"
 }

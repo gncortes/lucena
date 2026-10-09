@@ -76,6 +76,19 @@ class EndgameLessonState {
   int get maxScore => lesson?.maxScore ?? 0;
   int get passScore => lesson?.passScore ?? 0;
 
+  /// A faixa da nota atual e as estrelas que cada faixa pede.
+  ExerciseGrade get grade {
+    final lesson = this.lesson;
+    return lesson == null
+        ? ExerciseGrade.below
+        : EndgameLessonRules.grade(lesson, score);
+  }
+
+  Map<ExerciseGrade, int> get gradeStars {
+    final lesson = this.lesson;
+    return lesson == null ? const {} : EndgameLessonRules.gradeStars(lesson);
+  }
+
   int get solved => progress.stars.length;
   int get exerciseCount => lesson?.exercises.length ?? 0;
 

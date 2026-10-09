@@ -511,12 +511,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   )
                 else
                   FilledButton(
-                    key: ExerciseKeys.backButton,
+                    // O último da série: a tela de resultado, que volta à
+                    // aula.
+                    key: ExerciseKeys.resultButton,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(140, 48),
                     ),
-                    onPressed: () => context.pop(),
-                    child: Text(l10n.exerciseBack),
+                    onPressed: () => context.pushReplacement(
+                      Routes.endgameExercisesDone(lesson.id),
+                    ),
+                    child: Text(l10n.exerciseSeeResult),
                   ),
               ],
             ),

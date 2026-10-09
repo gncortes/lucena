@@ -968,5 +968,13 @@
   "schoolKnownBody": "El test mostró que dominas estas clases. Repásalas cuando quieras.",
   "endgamesForYou": "Para ti",
   "endgamesAll": "Todos",
-  "endgamesForYouEmpty": "Según tu test, ya dominas todos los finales de aquí. Mira todos para practicar."
+  "endgamesForYouEmpty": "Según tu test, ya dominas todos los finales de aquí. Mira todos para practicar.",
+  "exerciseSeeResult": "Ver resultado",
+  "exercisesDoneTitle": "Ejercicios completados",
+  "exercisesDoneNeedMore": "Necesitas al menos {min} estrellas para aprobar. Repite los ejercicios para mejorar.",
+  "exerciseGradePassed": "Aprobado",
+  "exerciseGradeGood": "Bien",
+  "exerciseGradeExcellent": "Excelente",
+  "exerciseGradePerfect": "Perfecto",
+  "exerciseGradeYou": "Tú"
 }

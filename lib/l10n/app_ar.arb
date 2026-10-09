@@ -968,5 +968,13 @@
   "schoolKnownBody": "أظهر الاختبار أنك تتقن هذه الدروس. راجعها متى شئت.",
   "endgamesForYou": "لك",
   "endgamesAll": "الكل",
-  "endgamesForYouEmpty": "بحسب اختبارك، تتقن كل النهايات هنا. اعرضها كلها للتدرّب."
+  "endgamesForYouEmpty": "بحسب اختبارك، تتقن كل النهايات هنا. اعرضها كلها للتدرّب.",
+  "exerciseSeeResult": "عرض النتيجة",
+  "exercisesDoneTitle": "اكتملت التمارين",
+  "exercisesDoneNeedMore": "تحتاج إلى {min} نجوم على الأقل للنجاح. أعد التمارين لتتحسن.",
+  "exerciseGradePassed": "ناجح",
+  "exerciseGradeGood": "جيد",
+  "exerciseGradeExcellent": "ممتاز",
+  "exerciseGradePerfect": "مثالي",
+  "exerciseGradeYou": "أنت"
 }

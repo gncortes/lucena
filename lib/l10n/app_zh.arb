@@ -968,5 +968,13 @@
   "schoolKnownBody": "测试表明你已掌握这些课。随时可以复习。",
   "endgamesForYou": "为你推荐",
   "endgamesAll": "全部",
-  "endgamesForYouEmpty": "根据测试，这里的残局你都已掌握。查看全部来练习。"
+  "endgamesForYouEmpty": "根据测试，这里的残局你都已掌握。查看全部来练习。",
+  "exerciseSeeResult": "查看结果",
+  "exercisesDoneTitle": "练习已完成",
+  "exercisesDoneNeedMore": "至少需要 {min} 颗星才能通过。重做练习来提高吧。",
+  "exerciseGradePassed": "通过",
+  "exerciseGradeGood": "良好",
+  "exerciseGradeExcellent": "优秀",
+  "exerciseGradePerfect": "完美",
+  "exerciseGradeYou": "你"
 }

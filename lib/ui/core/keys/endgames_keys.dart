@@ -22,6 +22,16 @@ abstract final class EndgamesKeys {
   static Key lessonScore(String id) => Key('endgames.lesson.$id.score');
 }
 
+/// O resultado dos exercícios de uma aula de final.
+abstract final class ExercisesDoneKeys {
+  static const screen = Key('exercisesDone.screen');
+  static const score = Key('exercisesDone.score');
+  static const needMore = Key('exercisesDone.needMore');
+  static const back = Key('exercisesDone.back');
+  static Key grade(String name) => Key('exercisesDone.grade.$name');
+  static const current = Key('exercisesDone.current');
+}
+
 /// Uma aula de final: a lição, os exercícios, a nota e o passo final.
 abstract final class EndgameLessonKeys {
   /// T51: a tela da aula com as partes, o teste final e o "Continuar".
@@ -79,8 +89,8 @@ abstract final class ExerciseKeys {
   static const earned = Key('exercise.earned');
   static const solved = Key('exercise.solved');
   static const explainButton = Key('exercise.explain');
+  static const resultButton = Key('exercise.result');
   static const nextButton = Key('exercise.next');
-  static const backButton = Key('exercise.back');
   static const counter = Key('exercise.counter');
 
   /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.

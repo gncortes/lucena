@@ -262,7 +262,7 @@ class EndgamesRobot {
     );
   }
 
-  /// "Próximo exercício" ou, no último, "voltar à aula".
+  /// "Próximo exercício" ou, no último, "ver resultado".
   Future<void> nextExercise() async {
     await $(ExerciseKeys.nextButton).tap();
     await $(ExerciseKeys.board).waitUntilVisible();
@@ -270,7 +270,9 @@ class EndgamesRobot {
   }
 
   Future<void> backFromExercise() async {
-    await $(ExerciseKeys.backButton).tap();
+    // O último exercício leva ao resultado, que volta à aula.
+    await $(ExerciseKeys.resultButton).tap();
+    await $(ExercisesDoneKeys.back).tap();
     await expectLessonScreen();
   }
 

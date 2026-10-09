@@ -197,6 +197,9 @@ abstract final class Routes {
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
 
+  /// O resultado dos exercícios da aula, depois do último.
+  static String endgameExercisesDone(String id) => '/endgames/$id/done';
+
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 

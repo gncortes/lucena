@@ -968,5 +968,13 @@
   "schoolKnownBody": "Der Test hat gezeigt, dass du diese Lektionen kannst. Sieh sie dir an, wann du willst.",
   "endgamesForYou": "Für dich",
   "endgamesAll": "Alle",
-  "endgamesForYouEmpty": "Laut deinem Test beherrschst du alle Endspiele hier. Sieh dir alle zum Üben an."
+  "endgamesForYouEmpty": "Laut deinem Test beherrschst du alle Endspiele hier. Sieh dir alle zum Üben an.",
+  "exerciseSeeResult": "Ergebnis ansehen",
+  "exercisesDoneTitle": "Übungen abgeschlossen",
+  "exercisesDoneNeedMore": "Du brauchst mindestens {min} Sterne zum Bestehen. Wiederhole die Übungen, um dich zu verbessern.",
+  "exerciseGradePassed": "Bestanden",
+  "exerciseGradeGood": "Gut",
+  "exerciseGradeExcellent": "Ausgezeichnet",
+  "exerciseGradePerfect": "Perfekt",
+  "exerciseGradeYou": "Du"
 }

@@ -968,5 +968,13 @@
   "schoolKnownBody": "टेस्ट ने दिखाया कि ये पाठ तुम्हें आते हैं। जब चाहो दोहरा लो।",
   "endgamesForYou": "तुम्हारे लिए",
   "endgamesAll": "सभी",
-  "endgamesForYouEmpty": "तुम्हारे टेस्ट के हिसाब से यहाँ के सारे एंडगेम तुम्हें आते हैं। अभ्यास के लिए सभी देखो।"
+  "endgamesForYouEmpty": "तुम्हारे टेस्ट के हिसाब से यहाँ के सारे एंडगेम तुम्हें आते हैं। अभ्यास के लिए सभी देखो।",
+  "exerciseSeeResult": "परिणाम देखें",
+  "exercisesDoneTitle": "अभ्यास पूरे हुए",
+  "exercisesDoneNeedMore": "पास होने के लिए कम से कम {min} सितारे चाहिए। सुधारने के लिए अभ्यास दोबारा करें।",
+  "exerciseGradePassed": "पास",
+  "exerciseGradeGood": "अच्छा",
+  "exerciseGradeExcellent": "उत्कृष्ट",
+  "exerciseGradePerfect": "परफेक्ट",
+  "exerciseGradeYou": "आप"
 }

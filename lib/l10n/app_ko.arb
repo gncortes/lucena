@@ -968,5 +968,13 @@
   "schoolKnownBody": "테스트 결과 이 수업들은 이미 알고 있어요. 원할 때 다시 볼 수 있어요.",
   "endgamesForYou": "추천",
   "endgamesAll": "전체",
-  "endgamesForYouEmpty": "테스트 결과 여기 엔드게임은 모두 알고 있어요. 연습하려면 전체를 보세요."
+  "endgamesForYouEmpty": "테스트 결과 여기 엔드게임은 모두 알고 있어요. 연습하려면 전체를 보세요.",
+  "exerciseSeeResult": "결과 보기",
+  "exercisesDoneTitle": "연습 문제 완료",
+  "exercisesDoneNeedMore": "통과하려면 별이 최소 {min}개 필요해. 연습 문제를 다시 풀어 실력을 키워 봐.",
+  "exerciseGradePassed": "통과",
+  "exerciseGradeGood": "좋음",
+  "exerciseGradeExcellent": "우수",
+  "exerciseGradePerfect": "완벽",
+  "exerciseGradeYou": "나"
 }

@@ -5045,5 +5045,42 @@
   "endgamesForYouEmpty": "From your test, you already master every endgame here. See all of them to practise.",
   "@endgamesForYouEmpty": {
     "description": "Endgames trail, 'For you' filter with nothing left in the roadmap."
+  },
+  "exerciseSeeResult": "See result",
+  "@exerciseSeeResult": {
+    "description": "Button after the last exercise of a series: opens the result screen."
+  },
+  "exercisesDoneTitle": "Exercises complete",
+  "@exercisesDoneTitle": {
+    "description": "Title of the result screen after the last exercise of a lesson."
+  },
+  "exercisesDoneNeedMore": "You need at least {min} stars to pass. Redo the exercises to improve.",
+  "@exercisesDoneNeedMore": {
+    "description": "Result screen: shown when the score is below the minimum.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseGradePassed": "Passed",
+  "@exerciseGradePassed": {
+    "description": "Result screen: name of the minimum grade (enough to pass)."
+  },
+  "exerciseGradeGood": "Good",
+  "@exerciseGradeGood": {
+    "description": "Result screen: name of the good grade."
+  },
+  "exerciseGradeExcellent": "Excellent",
+  "@exerciseGradeExcellent": {
+    "description": "Result screen: name of the excellent grade."
+  },
+  "exerciseGradePerfect": "Perfect",
+  "@exerciseGradePerfect": {
+    "description": "Result screen: name of the top grade (all stars)."
+  },
+  "exerciseGradeYou": "You",
+  "@exerciseGradeYou": {
+    "description": "Result screen: marker on the grade the student reached."
   }
 }

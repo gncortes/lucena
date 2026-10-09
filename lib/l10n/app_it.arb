@@ -968,5 +968,13 @@
   "schoolKnownBody": "Il test ha mostrato che conosci queste lezioni. Rivedile quando vuoi.",
   "endgamesForYou": "Per te",
   "endgamesAll": "Tutti",
-  "endgamesForYouEmpty": "Dal tuo test, padroneggi già tutti i finali qui. Guardali tutti per allenarti."
+  "endgamesForYouEmpty": "Dal tuo test, padroneggi già tutti i finali qui. Guardali tutti per allenarti.",
+  "exerciseSeeResult": "Vedi il risultato",
+  "exercisesDoneTitle": "Esercizi completati",
+  "exercisesDoneNeedMore": "Ti servono almeno {min} stelle per superare. Rifai gli esercizi per migliorare.",
+  "exerciseGradePassed": "Superato",
+  "exerciseGradeGood": "Buono",
+  "exerciseGradeExcellent": "Eccellente",
+  "exerciseGradePerfect": "Perfetto",
+  "exerciseGradeYou": "Tu"
 }

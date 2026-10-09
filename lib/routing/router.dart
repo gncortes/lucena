@@ -76,6 +76,7 @@ import '../ui/endgames/widgets/endgame_info_screen.dart';
 import '../ui/endgames/widgets/endgame_lesson_screen.dart';
 import '../ui/endgames/widgets/endgames_screen.dart';
 import '../ui/endgames/widgets/exercise_screen.dart';
+import '../ui/endgames/widgets/exercises_done_screen.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
 import '../domain/models/star_challenge.dart';
@@ -598,6 +599,21 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           characters: context.read<CharacterRepository>(),
                         )..load(id, _language(context)),
                         child: const EndgameInfoScreen(),
+                      );
+                    },
+                  ),
+                  _route(
+                    path: 'done',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      return BlocProvider(
+                        create: (_) => EndgameLessonCubit(
+                          lessons: context.read<EndgameLessonRepository>(),
+                          progress: context.read<EndgameProgressRepository>(),
+                          journey: context.read<JourneyRepository>(),
+                          characters: context.read<CharacterRepository>(),
+                        )..load(id, _language(context)),
+                        child: const ExercisesDoneScreen(),
                       );
                     },
                   ),

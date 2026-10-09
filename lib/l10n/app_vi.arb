@@ -968,5 +968,13 @@
   "schoolKnownBody": "Bài kiểm tra cho thấy bạn đã nắm các bài này. Xem lại khi nào bạn muốn.",
   "endgamesForYou": "Cho bạn",
   "endgamesAll": "Tất cả",
-  "endgamesForYouEmpty": "Theo bài kiểm tra, bạn đã nắm mọi thế cờ tàn ở đây. Xem tất cả để luyện tập."
+  "endgamesForYouEmpty": "Theo bài kiểm tra, bạn đã nắm mọi thế cờ tàn ở đây. Xem tất cả để luyện tập.",
+  "exerciseSeeResult": "Xem kết quả",
+  "exercisesDoneTitle": "Đã hoàn thành bài tập",
+  "exercisesDoneNeedMore": "Bạn cần ít nhất {min} sao để đạt. Hãy làm lại bài tập để cải thiện.",
+  "exerciseGradePassed": "Đạt",
+  "exerciseGradeGood": "Tốt",
+  "exerciseGradeExcellent": "Xuất sắc",
+  "exerciseGradePerfect": "Hoàn hảo",
+  "exerciseGradeYou": "Bạn"
 }
