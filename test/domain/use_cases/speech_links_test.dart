@@ -97,4 +97,24 @@ void main() {
     expect(links.map((link) => link.text), ['Te6!', 'De3?', 'a4??', 'Rd1!?']);
     expect(links.every((link) => link.isMove), isTrue);
   });
+
+  test('T60: o número do lance entra no destaque (40.b4, 40...Re5, 41.h6!!), '
+      'e um ano solto não', () {
+    final links = SpeechLinks.find(
+      'Londres, 1913. Capablanca jogou 39.f5?, e depois de 39...gxf5 40.h5 '
+      'o rei voltava com 40...Re6. Só 41.h6!! ganha; 12.O-O também.',
+      SpeechLinks.portuguese,
+    );
+    expect(links.map((link) => link.text), [
+      '39.f5?',
+      '39...gxf5',
+      '40.h5',
+      '40...Re6',
+      '41.h6!!',
+      '12.O-O',
+    ]);
+    final rook = links[3];
+    expect(rook.square, Square.e6);
+    expect(rook.isMove, isTrue);
+  });
 }

@@ -74,7 +74,8 @@ abstract final class SpeechLinks {
     // Isolado: nem letra nem número colado antes ou depois ("be4" dentro de
     // uma palavra não vale).
     final pattern = RegExp(
-      r'(?<![\p{L}\p{N}])(?:(O-O-O|O-O|0-0-0|0-0)|'
+      // O número do lance ("40." ou "40...") faz parte dele (T60).
+      r'(?<![\p{L}\p{N}.])(?:\d{1,3}\.(?:\.\.)?)?(?:(O-O-O|O-O|0-0-0|0-0)|'
       '([$pieces])?([a-h])?([1-8])?(x)?([a-h][1-8])'
       '(?:=([$pieces]))?)'
       // A avaliação do lance (!, ?, !!, ??, !?, ?!) faz parte dele, como
