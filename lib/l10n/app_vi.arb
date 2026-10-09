@@ -986,7 +986,7 @@
   "endgamesHideDone": "Ẩn các bài đã học",
   "exercisesIntroSpeech": "Đến lúc thể hiện những gì bạn đã học. Lần thử đầu tiên được tính: sau đó là luyện tập tự do, muốn tính lại thì làm lại các bài tập.",
   "exercisesIntroChipMinimum": "ít nhất {min} trên {max} điểm",
-  "exercisesIntroChipThink": "5 phút mỗi thế cờ",
+  "exercisesIntroChipThink": "Không giới hạn thời gian",
   "exercisesIntroCountBody": "Theo thứ tự, từ dễ đến khó.",
   "exercisesIntroMinTitle": "Ít nhất {min} điểm",
   "exercisesIntroMinBody": "Trên {max} điểm tối đa, để qua bài học.",

@@ -21,10 +21,11 @@ import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
+import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
-import 'exercise_layout.dart';
+import '../../core/board/exercise_layout.dart';
 import 'lesson_part_widgets.dart';
 import 'lesson_finished.dart';
 import 'star_shape.dart';
@@ -68,7 +69,7 @@ class _LessonScreenState extends State<LessonScreen>
 
   // A altura do enunciado no passo aberto: só cresce dentro do passo, para
   // o tabuleiro não pular quando a fala muda de tamanho no meio dele.
-  final _header = _HeaderMemo();
+  final _header = HeaderMemo();
 
   ChessboardController? _board;
 
@@ -1025,7 +1026,7 @@ class _LessonScreenState extends State<LessonScreen>
             )
           else
             const Spacer(),
-          StepTimer(elapsed: _elapsed),
+          StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
         ],
       ),
     );
@@ -1190,7 +1191,7 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
     required this.sheetRoom,
   }) : super(relayout: Listenable.merge([mode, sheet]));
 
-  final _HeaderMemo header;
+  final HeaderMemo header;
   final double centerY;
   final Animation<double> mode;
   final DraggableScrollableController sheet;
@@ -1200,24 +1201,36 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
     final t = mode.value;
-    var header = 0.0;
-    if (hasChild(_Slot.prompt)) {
-      // Enunciado comprido demais rola, para o tabuleiro não sumir.
-      header = this.header.hold(
-        layoutChild(
-          _Slot.prompt,
-          BoxConstraints(maxWidth: size.width, maxHeight: size.height * 0.4),
-        ).height,
-      );
-      // Sai deslizando um pouco para cima enquanto esmaece.
-      positionChild(_Slot.prompt, Offset(0, -t * 24));
+    final hasPrompt = hasChild(_Slot.prompt);
+    var top = header.held;
+    var measured = false;
+    if (hasPrompt && top == null) {
+      // Passo novo: o enunciado medido (comprido demais, rola).
+      top = layoutChild(
+        _Slot.prompt,
+        BoxConstraints(maxWidth: size.width, maxHeight: size.height * 0.4),
+      ).height;
+      header.hold(top);
+      measured = true;
     }
     final solving = ExerciseLayout.solvingRect(
       size,
-      header: header,
+      header: top ?? 0,
       footer: footer,
       centerY: centerY,
     );
+    if (hasPrompt && !measured) {
+      // Enunciado já medido: cresce até o topo do tabuleiro, que não sai do
+      // lugar (fala maior rola).
+      layoutChild(
+        _Slot.prompt,
+        BoxConstraints(
+          maxWidth: size.width,
+          maxHeight: max(top!, solving.top - ExerciseLayout.gutter),
+        ),
+      );
+    }
+    if (hasPrompt) positionChild(_Slot.prompt, Offset(0, -t * 24));
     final explaining = ExerciseLayout.explainingRect(
       size,
       sheetRoom: sheetRoom,
@@ -1250,20 +1263,4 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
       old.sheet != sheet ||
       old.footer != footer ||
       old.sheetRoom != sheetRoom;
-}
-
-/// A maior altura do enunciado no passo [stepKey]: passo novo, recomeça.
-class _HeaderMemo {
-  String? stepKey;
-  String? _heldFor;
-  double _height = 0;
-
-  /// A altura a usar, dada a medida [measured] agora.
-  double hold(double measured) {
-    if (_heldFor != stepKey) {
-      _heldFor = stepKey;
-      _height = 0;
-    }
-    return _height = max(_height, measured);
-  }
 }

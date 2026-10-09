@@ -986,7 +986,7 @@
   "endgamesHideDone": "완료한 수업 숨기기",
   "exercisesIntroSpeech": "배운 것을 보여 줄 시간이에요. 첫 시도만 점수에 반영돼요. 그다음은 자유 연습이고, 다시 반영하려면 연습 문제를 다시 풀면 됩니다.",
   "exercisesIntroChipMinimum": "{max}점 중 최소 {min}점",
-  "exercisesIntroChipThink": "포지션당 5분",
+  "exercisesIntroChipThink": "시간 제한 없음",
   "exercisesIntroCountBody": "쉬운 것부터 어려운 것 순서입니다.",
   "exercisesIntroMinTitle": "최소 {min}점",
   "exercisesIntroMinBody": "레슨을 통과하려면 {max}점 만점 중 필요한 점수입니다.",

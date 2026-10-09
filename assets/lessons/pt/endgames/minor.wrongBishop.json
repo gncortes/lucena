@@ -98,7 +98,7 @@
   "key.rightBishop": "A mesma posição com o bispo das escuras: as brancas ganham. Posição da aula.",
   "key.aPawn": "O espelho no peão de a: a8 é clara, o bispo das escuras é o errado. Empate (Wikipedia, Fortress).",
   "key.cutoff": "Fechar a porta: Bc4! toma g8 antes que o rei preto entre. Posição da aula.",
-  "key.mednis": "Posição de Mednis (via Wikipedia): na frente do peão não basta. Brancas na vez ganham com Rg8!; pretas na vez empatam com Rh7!.",
+  "key.mednis": "Posição de Mednis (via Wikipedia): na frente do peão não basta. Brancas na vez ganham com Rg8! Pretas na vez empatam com Rh7!",
   "key.fischerTaimanov": "Fischer–Taimanov, Vancouver 1971: 81...Cd3! empatava, porque o final sem o cavalo é o do bispo errado. Taimanov jogou Re4?? e perdeu.",
   "history": "A ideia é velha. A Wikipedia aponta um estudo de Greco, de 1623, em que as pretas dão o bispo para deixar as brancas com um peão de torre e o bispo da cor errada. Os manuais tratam o final entre as fortalezas elementares: Dvoretsky tem uma seção chamada \"Bishop and Rook Pawn\", e Müller e Lamprecht, uma chamada \"Wrong Rook's Pawn\". Grandes jogadores já ganharam e perderam por ele. Em Vancouver, 1971, Taimanov tinha um cavalo contra o bispo e o peão de h de Fischer; bastava oferecer o cavalo e correr para o canto, mas ele jogou Re4?? e perdeu. Em Baguio, 1978, Korchnoi chegou contra Karpov a um final com o bispo das escuras e o peão de a, o bispo errado, e a partida terminou empatada por afogamento no lance 124. A tabela de finais confirma cada posição desta aula.",
   "practice": "Agora contra a máquina, de brancas. É a posição da parte do fechar a porta: ache o lance que toma g8 e leve o peão até o fim.",

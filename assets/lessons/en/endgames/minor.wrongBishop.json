@@ -98,7 +98,7 @@
   "key.rightBishop": "The same position with the dark-squared bishop: White wins. Lesson position.",
   "key.aPawn": "The mirror on the a-pawn: a8 is light, so the dark-squared bishop is the wrong one. A draw (Wikipedia, Fortress).",
   "key.cutoff": "Shutting the door: Bc4! takes g8 before the black king gets in. Lesson position.",
-  "key.mednis": "Mednis's position (via Wikipedia): in front of the pawn is not enough. White to move wins with Kg8!; Black to move draws with Kh7!.",
+  "key.mednis": "Mednis's position (via Wikipedia): in front of the pawn is not enough. White to move wins with Kg8! Black to move draws with Kh7!",
   "key.fischerTaimanov": "Fischer–Taimanov, Vancouver 1971: 81...Nd3! would have drawn, because without the knight the ending is the wrong bishop. Taimanov played Ke4?? and lost.",
   "history": "The idea is old. Wikipedia points to a study by Greco, from 1623, in which Black gives up the bishop to leave White with a rook pawn and the wrong-coloured bishop. The manuals file this ending among the elementary fortresses: Dvoretsky has a section called \"Bishop and Rook Pawn\", and Müller and Lamprecht one called \"Wrong Rook's Pawn\". Great players have won and lost by it. In Vancouver, 1971, Taimanov had a knight against Fischer's bishop and h-pawn; offering the knight and running to the corner was enough, but he played Ke4?? and lost. In Baguio, 1978, Korchnoi reached against Karpov an ending with the dark-squared bishop and the a-pawn, the wrong bishop, and the game ended in stalemate on move 124. The tablebase confirms every position in this lesson.",
   "practice": "Now against the machine, with White. It is the position from the part on shutting the door: find the move that takes g8 and bring the pawn all the way.",

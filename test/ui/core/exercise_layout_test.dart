@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/school/widgets/exercise_layout.dart';
+import 'package:lucena/ui/core/board/exercise_layout.dart';
 
 /// T60: a geometria do modo exercício, em contas puras.
 void main() {

@@ -986,7 +986,7 @@
   "endgamesHideDone": "پنهان کردن درس‌های تمام‌شده",
   "exercisesIntroSpeech": "وقت نشان دادن آموخته‌هاست. تلاش اول حساب می‌شود: پس از آن تمرین آزاد است و برای حساب شدن دوباره، تمرین‌ها را از نو انجام دهید.",
   "exercisesIntroChipMinimum": "دست‌کم {min} از {max} امتیاز",
-  "exercisesIntroChipThink": "۵ دقیقه برای هر وضعیت",
+  "exercisesIntroChipThink": "بدون محدودیت زمانی",
   "exercisesIntroCountBody": "به ترتیب، از ساده‌ترین تا سخت‌ترین.",
   "exercisesIntroMinTitle": "دست‌کم {min} امتیاز",
   "exercisesIntroMinBody": "از {max} امتیاز ممکن، برای قبولی در درس.",

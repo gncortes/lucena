@@ -980,7 +980,7 @@
   "exercisesDoneDiplomaFor": "{grade, select, perfect{[föŕ çömplétîñĝ thé léššöñ “{title}” wîth åñ éxçéptîöñål péŕföŕmåñçé. one two three four five six]} excellent{[föŕ çömplétîñĝ thé léššöñ “{title}” wîth éxçélléñçé. one two three four five]} good{[föŕ çömplétîñĝ thé léššöñ “{title}” wîth å véŕý ĝööd péŕföŕmåñçé. one two three four five six]} other{[föŕ méétîñĝ thé ŕéqûîŕéméñtš tö çömplété thé léššöñ “{title}”. one two three four five six]}}",
   "exercisesIntroSpeech": "[Tîmé tö šhöw whåt ýöû léåŕñéd. Ýöûŕ fîŕšt tŕý îš whåt çöûñtš: åftéŕ thåt ît îš fŕéé pŕåçtîçé, åñd tö çöûñt åĝåîñ jûšt ŕédö thé éxéŕçîšéš. one two three four five six seven eight nine ten one two]",
   "exercisesIntroChipMinimum": "[åt léåšt {min} öf {max} pöîñtš one two three]",
-  "exercisesIntroChipThink": "[5 mîñûtéš péŕ pöšîtîöñ one two three]",
+  "exercisesIntroChipThink": "[Ñö tîmé lîmît one two]",
   "exercisesIntroCountBody": "[Öŕdéŕéd fŕöm thé šîmpléšt tö thé håŕdéšt. one two three four]",
   "exercisesIntroMinTitle": "[Åt léåšt {min} pöîñtš one two three]",
   "exercisesIntroMinBody": "[Öût öf {max} pöššîblé pöîñtš, tö påšš thé léššöñ. one two three four five]",

@@ -986,7 +986,7 @@
   "endgamesHideDone": "完了したレッスンを隠す",
   "exercisesIntroSpeech": "学んだことを見せるときです。評価されるのは最初の挑戦だけ。その後は自由練習で、もう一度評価したいときは練習問題をやり直しましょう。",
   "exercisesIntroChipMinimum": "{max}点中{min}点以上",
-  "exercisesIntroChipThink": "1局面につき5分",
+  "exercisesIntroChipThink": "時間制限なし",
   "exercisesIntroCountBody": "やさしい順から難しい順に並んでいます。",
   "exercisesIntroMinTitle": "{min}点以上",
   "exercisesIntroMinBody": "レッスン合格には{max}点満点中この点数が必要です。",

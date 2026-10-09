@@ -986,7 +986,7 @@
   "endgamesHideDone": "Сховати пройдені уроки",
   "exercisesIntroSpeech": "Час показати, чого ви навчилися. Зараховується перша спроба: далі — вільне тренування, а щоб знову зараховувалось, перерозв'яжіть завдання.",
   "exercisesIntroChipMinimum": "щонайменше {min} з {max} очок",
-  "exercisesIntroChipThink": "5 хвилин на позицію",
+  "exercisesIntroChipThink": "Без обмеження часу",
   "exercisesIntroCountBody": "По черзі, від простого до складного.",
   "exercisesIntroMinTitle": "Щонайменше {min} очок",
   "exercisesIntroMinBody": "З {max} можливих, щоб скласти урок.",

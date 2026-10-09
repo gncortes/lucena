@@ -54,3 +54,22 @@ abstract final class ExerciseLayout {
     return Rect.fromLTWH((area.width - size) / 2, gutter, size, size);
   }
 }
+
+/// A altura do enunciado ao abrir o passo ou exercício [stepKey]: o
+/// tabuleiro se posiciona por ela e não sai mais do lugar dentro dele. Uma
+/// fala maior depois (dica, correção) cresce para o espaço livre acima do
+/// tabuleiro e rola se não couber. Recomeça no próximo passo.
+class HeaderMemo {
+  String? stepKey;
+  String? _heldFor;
+  double _height = 0;
+
+  /// A altura guardada para o passo aberto; nula se ele acabou de abrir.
+  double? get held => _heldFor == stepKey ? _height : null;
+
+  /// Guarda a altura medida ao abrir o passo.
+  void hold(double measured) {
+    _heldFor = stepKey;
+    _height = measured;
+  }
+}

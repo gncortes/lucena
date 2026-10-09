@@ -986,7 +986,7 @@
   "endgamesHideDone": "Ukryj ukończone lekcje",
   "exercisesIntroSpeech": "Czas pokazać, czego się nauczyłeś. Liczy się pierwsza próba: potem to trening dowolny, a żeby znów się liczyło, powtórz ćwiczenia.",
   "exercisesIntroChipMinimum": "co najmniej {min} z {max} punktów",
-  "exercisesIntroChipThink": "5 minut na pozycję",
+  "exercisesIntroChipThink": "Bez limitu czasu",
   "exercisesIntroCountBody": "Po kolei, od najprostszego do najtrudniejszego.",
   "exercisesIntroMinTitle": "Co najmniej {min} punktów",
   "exercisesIntroMinBody": "Z {max} możliwych punktów, aby zaliczyć lekcję.",

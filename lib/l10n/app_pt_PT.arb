@@ -986,7 +986,7 @@
   "endgamesHideDone": "Ocultar aulas já feitas",
   "exercisesIntroSpeech": "Hora de mostrar o que aprendeu. Conta a primeira tentativa: depois é treino livre e, para contar de novo, basta refazer os exercícios.",
   "exercisesIntroChipMinimum": "mínimo {min} de {max} pontos",
-  "exercisesIntroChipThink": "5 minutos por posição",
+  "exercisesIntroChipThink": "Sem limite de tempo",
   "exercisesIntroCountBody": "Por ordem, do mais simples ao mais difícil.",
   "exercisesIntroMinTitle": "Mínimo de {min} pontos",
   "exercisesIntroMinBody": "De {max} pontos possíveis, para passar na aula.",

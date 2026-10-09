@@ -986,7 +986,7 @@
   "endgamesHideDone": "Abgeschlossene Lektionen ausblenden",
   "exercisesIntroSpeech": "Zeit zu zeigen, was du gelernt hast. Es zählt der erste Versuch: Danach ist es freies Üben, und damit es wieder zählt, machst du die Aufgaben neu.",
   "exercisesIntroChipMinimum": "mindestens {min} von {max} Punkten",
-  "exercisesIntroChipThink": "5 Minuten pro Stellung",
+  "exercisesIntroChipThink": "Ohne Zeitlimit",
   "exercisesIntroCountBody": "Der Reihe nach, von leicht bis schwer.",
   "exercisesIntroMinTitle": "Mindestens {min} Punkte",
   "exercisesIntroMinBody": "Von {max} möglichen Punkten, um die Lektion zu bestehen.",

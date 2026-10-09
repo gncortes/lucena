@@ -87,4 +87,14 @@ void main() {
     // Peça que não está no tabuleiro.
     expect(arrow('Dd5'), isNull);
   });
+
+  test('T60: a avaliação do lance (!, ?, !!, ??, !?, ?!) fica no destaque, '
+      'e um peão avaliado é lance', () {
+    final links = SpeechLinks.find(
+      'Agora Te6! A torre protege. Cuidado com De3? Depois a4?? ou Rd1!?.',
+      SpeechLinks.portuguese,
+    );
+    expect(links.map((link) => link.text), ['Te6!', 'De3?', 'a4??', 'Rd1!?']);
+    expect(links.every((link) => link.isMove), isTrue);
+  });
 }

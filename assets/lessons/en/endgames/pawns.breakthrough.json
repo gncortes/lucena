@@ -16,7 +16,7 @@
   "step.t_classic": "White to move. Three pawns against three, face to face, and both kings far away. No pawn is passed, and the black king can't help. Can White get a pawn to the eighth rank?",
   "step.t_classic.hint1": "One pawn alone can't get past three. But if you give away one or two pawns, the black pawns must capture and step out of the way.",
   "step.t_classic.hint2": "Start with the middle pawn. What does Black do if it advances and threatens to take on a7 or c7?",
-  "step.classicWhy": "The move is b6! It threatens bxa7 or bxc7 and queening, so Black has to capture. If he takes with the a-pawn, I play c6!: after bxc6, the a5-pawn walks freely to a8. If he takes with the c-pawn, I play a6!: after bxa6, the c5-pawn gets through. If he doesn't take, my b6-pawn takes on a7 or c7 and queens. Only b6 wins here. Starting with a6 or c6 achieves nothing, and neither does waiting with the king.",
+  "step.classicWhy": "The move is b6! It threatens bxa7 or bxc7 and queening, so Black has to capture. If he takes with the a-pawn, I play c6! After bxc6, the a5-pawn walks freely to a8. If he takes with the c-pawn, I play a6! After bxa6, the c5-pawn gets through. If he doesn't take, my b6-pawn takes on a7 or c7 and queens. Only b6 wins here. Starting with a6 or c6 achieves nothing, and neither does waiting with the king.",
   "step.d_classic": "Black took with the a-pawn. Watch the second sacrifice.",
   "step.d_classic.m1": "c6! Another pawn given away, on purpose. It threatens cxb7.",
   "step.d_classic.m2": "Black takes. Notice: the b7-pawn has left, and it was the one guarding a6.",

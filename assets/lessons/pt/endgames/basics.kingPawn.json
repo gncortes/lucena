@@ -33,7 +33,7 @@
   "step.finish": "Agora jogue até coroar. O rei preto está perto do peão; o meu está longe. Traga o rei antes de empurrar o peão.",
   "ex.e13": "Brancas jogam e ganham. O peão de cavalo está na sexta, e o rei preto se escondeu no canto. Cuidado com o lance que parece o mais forte.",
   "ex.e13.hint": "Antes de cada lance, conte as casas do rei preto. Se ele ficar sem nenhuma e não estiver em xeque, é afogamento.",
-  "ex.e13.solution": "Rc6! e, depois de ...Rb8, b7!; depois de ...Ra7, Rc7 e o peão coroa. Rc7?? parece prender o rei preto, mas afoga: ele não tem casa e não está em xeque. b7+? entrega o peão: ...Rxb7. Com o peão de cavalo e o rei preto no canto, conte sempre as casas dele.",
+  "ex.e13.solution": "Rc6! e, depois de ...Rb8, b7! Depois de ...Ra7, Rc7 e o peão coroa. Rc7?? parece prender o rei preto, mas afoga: ele não tem casa e não está em xeque. b7+? entrega o peão: ...Rxb7. Com o peão de cavalo e o rei preto no canto, conte sempre as casas dele.",
   "ex.e14": "Brancas jogam e empatam. O rei preto está ao lado do peão, e o seu ainda está atrás. Posição da Enciclopédia de Finais (Matanović, 1982), com as cores trocadas, como a Wikipedia a mostra.",
   "ex.e14.hint": "O seu rei quer ficar na frente do peão, não ao lado. E quando o peão avançar, recue em linha reta.",
   "ex.e14.solution": "Rd2!, na frente do peão. Depois de ...d3, Rd1!, recuando na mesma coluna; depois de ...Re3, Re1!, de frente para o rei preto; depois de ...d2+, Rd1. Agora o rei preto ou abandona o peão ou vai a d3, e aí você está afogado. Re1? ou Rd1? no primeiro lance perdem: o rei preto toma a frente com ...Re3 ou ...Rd3. Rc1? no segundo lance também perde.",
@@ -49,11 +49,11 @@
   "practice": "Agora o final de verdade: rei em d2, peão em g2, e o rei preto dentro do quadrado. Primeiro o rei, depois o peão. Escolha o ritmo e vá.",
   "ex.e15": "Brancas jogam e ganham. O seu rei foi longe demais, e o rei preto está perto do peão. Qual é o caminho de volta?",
   "ex.e15.hint": "Primeiro: o peão corre sozinho, ou o rei preto está no quadrado? Depois conte os lances do seu rei até a frente do peão. A diagonal anda tão rápido quanto a reta.",
-  "ex.e15.solution": "Re6!, Rd5! e Rc4!: pela diagonal o rei branco chega a c4, na frente do peão, antes do rei preto, e daí o peão anda protegido. b4? ou b3? não servem: o rei preto está no quadrado e pega o peão. Re7? ou Rf6? parecem voltar, mas não chegam mais perto de c4, e o rei preto ganha o tempo de que precisa.",
+  "ex.e15.solution": "Re6!, Rd5! e Rc4! Pela diagonal o rei branco chega a c4, na frente do peão, antes do rei preto, e daí o peão anda protegido. b4? ou b3? não servem: o rei preto está no quadrado e pega o peão. Re7? ou Rf6? parecem voltar, mas não chegam mais perto de c4, e o rei preto ganha o tempo de que precisa.",
   "ex.e16": "Brancas jogam e ganham. O peão está na sexta, mas o rei preto vem chegando e o seu está longe. Calcule a corrida até o fim.",
   "ex.e16.hint": "O rei branco precisa chegar ao lado do peão antes que o rei preto pare na frente dele. E o peão só vai à sétima quando não der xeque.",
-  "ex.e16.solution": "Rb5! e Rc6!: o único caminho que chega a tempo; Ra5? ou Rb4? ficam um lance atrás, e d7? de cara só empata: ...Re7 pega o peão. Depois de ...Rd8, d7!, sem xeque; depois de ...Re7, Rc7 e o peão coroa. d7+? um lance antes, com o rei preto em e8, empata: ...Rd8, e o rei preto fica na frente do peão.",
+  "ex.e16.solution": "Rb5! e Rc6! O único caminho que chega a tempo; Ra5? ou Rb4? ficam um lance atrás, e d7? de cara só empata: ...Re7 pega o peão. Depois de ...Rd8, d7!, sem xeque; depois de ...Re7, Rc7 e o peão coroa. d7+? um lance antes, com o rei preto em e8, empata: ...Rd8, e o rei preto fica na frente do peão.",
   "ex.e17": "Pretas jogam e empatam. O rei branco vem ajudar o peão de cavalo, e o seu rei está longe. Só um caminho salva, e o fim guarda mais uma armadilha.",
   "ex.e17.hint": "Corra pela diagonal rumo às casas na frente do peão. Lá no fim, lembre: com o peão de cavalo, o canto pode ser o melhor lugar, por causa do afogamento.",
-  "ex.e17.solution": "Re5!, Rd6!, Rc7! e Rb7!: pela diagonal o rei preto chega na frente do peão a tempo; Rf5? ou Re4? chegam um lance tarde. Depois de b6, Rb8!, e, depois de Ra6, Ra8!. Agora, se b7+, Rb8, e o rei branco só protege o peão com Rb6, que afoga. Rc8? no último lance perde: Ra7 e o peão coroa."
+  "ex.e17.solution": "Re5!, Rd6!, Rc7! e Rb7! Pela diagonal o rei preto chega na frente do peão a tempo; Rf5? ou Re4? chegam um lance tarde. Depois de b6, Rb8!, e, depois de Ra6, Ra8! Agora, se b7+, Rb8, e o rei branco só protege o peão com Rb6, que afoga. Rc8? no último lance perde: Ra7 e o peão coroa."
 }

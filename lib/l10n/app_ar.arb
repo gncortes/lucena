@@ -986,7 +986,7 @@
   "endgamesHideDone": "إخفاء الدروس المكتملة",
   "exercisesIntroSpeech": "حان وقت إظهار ما تعلّمته. تُحتسب المحاولة الأولى: بعدها تدريب حر، ولتُحتسب من جديد أعد التمارين.",
   "exercisesIntroChipMinimum": "{min} نقاط على الأقل من {max}",
-  "exercisesIntroChipThink": "5 دقائق لكل وضعية",
+  "exercisesIntroChipThink": "بلا حد زمني",
   "exercisesIntroCountBody": "بالترتيب، من الأسهل إلى الأصعب.",
   "exercisesIntroMinTitle": "{min} نقاط على الأقل",
   "exercisesIntroMinBody": "من {max} نقطة ممكنة، لاجتياز الدرس.",

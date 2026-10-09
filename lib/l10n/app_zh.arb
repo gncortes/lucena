@@ -986,7 +986,7 @@
   "endgamesHideDone": "隐藏已完成的课程",
   "exercisesIntroSpeech": "是时候展示你学到的了。只计第一次尝试：之后是自由练习，想重新计分就重做练习。",
   "exercisesIntroChipMinimum": "至少 {min}/{max} 分",
-  "exercisesIntroChipThink": "每个局面 5 分钟",
+  "exercisesIntroChipThink": "不限时间",
   "exercisesIntroCountBody": "按顺序，从简单到困难。",
   "exercisesIntroMinTitle": "至少 {min} 分",
   "exercisesIntroMinBody": "满分 {max} 分，达到即可通过本课。",

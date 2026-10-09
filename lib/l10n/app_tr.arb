@@ -986,7 +986,7 @@
   "endgamesHideDone": "Tamamlanan dersleri gizle",
   "exercisesIntroSpeech": "Öğrendiklerini gösterme zamanı. İlk deneme sayılır: sonrası serbest çalışmadır; yeniden sayılması için alıştırmaları baştan yap.",
   "exercisesIntroChipMinimum": "en az {min}/{max} puan",
-  "exercisesIntroChipThink": "konum başına 5 dakika",
+  "exercisesIntroChipThink": "Süre sınırı yok",
   "exercisesIntroCountBody": "Kolaydan zora doğru sıralı.",
   "exercisesIntroMinTitle": "En az {min} puan",
   "exercisesIntroMinBody": "Dersi geçmek için olası {max} puandan.",

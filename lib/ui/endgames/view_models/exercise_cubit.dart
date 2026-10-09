@@ -12,6 +12,8 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
+import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/step_clock.dart';
 import '../../school/view_models/lesson_cubit.dart';
 import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/haptic_event.dart';
@@ -27,6 +29,17 @@ enum ExercisePhase {
 
   /// Resolvido: a solução e as estrelas ganhas.
   done,
+}
+
+/// Como a tela se organiza (T60), como na lição.
+enum ExerciseLayoutMode {
+  /// O aluno resolve: o enunciado curto em cima, o tabuleiro no centro e a
+  /// dica com o cronômetro embaixo.
+  solving,
+
+  /// Resolvido: o tabuleiro no alto e, embaixo, as estrelas, a solução e a
+  /// fala do Viktor.
+  explaining,
 }
 
 class ExerciseState {
@@ -53,9 +66,18 @@ class ExerciseState {
     this.number = 0,
     this.count = 0,
     this.nextExercise,
+    this.startedAt,
   });
 
   final bool ready;
+
+  /// Quando o exercício abriu: o cronômetro conta daqui.
+  final DateTime? startedAt;
+
+  /// Resolvendo até a resposta; resolvido, o professor fala.
+  ExerciseLayoutMode get layout => phase == ExercisePhase.done
+      ? ExerciseLayoutMode.explaining
+      : ExerciseLayoutMode.solving;
 
   /// A aula ou o exercício pedido não existem.
   final bool missing;
@@ -162,6 +184,7 @@ class ExerciseState {
     number: number,
     count: count,
     nextExercise: nextExercise,
+    startedAt: startedAt,
   );
 }
 
@@ -175,8 +198,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._characters,
     this._sounds,
     this._haptics,
+    this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
   }) : super(const ExerciseState());
+
+  final Now _now;
+
+  /// O cronômetro do exercício: quanto tempo passou desde que ele abriu (a
+  /// tela lê a cada instante e o congela na resposta).
+  Duration get elapsed {
+    final startedAt = state.startedAt;
+    if (startedAt == null) return Duration.zero;
+    return StepClock.elapsed(startedAt: startedAt, now: _now());
+  }
 
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
@@ -224,6 +258,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         )
         .firstOrNull
         ?.id;
+    final saved = each.exercise;
+    final resumed = saved != null && saved.exerciseId == exerciseId;
     var opened = ExerciseState(
       ready: true,
       lesson: lesson,
@@ -240,9 +276,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       locked: lesson.exercises.every(
         (other) => each.stars.containsKey(other.id),
       ),
+      // Voltando ao exercício, o cronômetro continua de onde estava.
+      startedAt: (resumed ? saved.startedAt : null) ?? _now(),
     );
-    final saved = each.exercise;
-    if (saved != null && saved.exerciseId == exerciseId) {
+    if (resumed) {
       opened = opened.copyWith(
         fen: saved.fen,
         turn: saved.turn,
@@ -424,6 +461,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
                 mistakes: state.mistakes,
                 hints: state.hints,
                 open: open,
+                startedAt: state.startedAt,
               ),
             ),
       ),

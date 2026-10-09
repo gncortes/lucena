@@ -986,7 +986,7 @@
   "endgamesHideDone": "पूरे हुए पाठ छिपाएँ",
   "exercisesIntroSpeech": "सीखा हुआ दिखाने का समय है। पहली कोशिश गिनी जाती है: उसके बाद मुक्त अभ्यास है, और फिर से गिनने के लिए अभ्यास दोबारा करें।",
   "exercisesIntroChipMinimum": "{max} में से कम से कम {min} अंक",
-  "exercisesIntroChipThink": "हर स्थिति पर 5 मिनट",
+  "exercisesIntroChipThink": "कोई समय-सीमा नहीं",
   "exercisesIntroCountBody": "क्रम से, सबसे आसान से सबसे कठिन तक।",
   "exercisesIntroMinTitle": "कम से कम {min} अंक",
   "exercisesIntroMinBody": "पाठ पास करने के लिए {max} संभावित अंकों में से।",

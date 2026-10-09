@@ -52,7 +52,7 @@ void main() {
       find.text('Out of 6 possible points, to pass the lesson.'),
       findsOneWidget,
     );
-    expect(find.text('5 minutes per position'), findsOneWidget);
+    expect(find.text('No time limit'), findsOneWidget);
     // A legenda das estrelas.
     expect(find.text('3 points', skipOffstage: false), findsOneWidget);
     expect(find.text('1 point', skipOffstage: false), findsOneWidget);

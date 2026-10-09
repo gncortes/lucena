@@ -986,7 +986,7 @@
   "endgamesHideDone": "Voltooide lessen verbergen",
   "exercisesIntroSpeech": "Tijd om te laten zien wat je hebt geleerd. De eerste poging telt: daarna is het vrij oefenen, en om weer te tellen doe je de oefeningen opnieuw.",
   "exercisesIntroChipMinimum": "minstens {min} van {max} punten",
-  "exercisesIntroChipThink": "5 minuten per stelling",
+  "exercisesIntroChipThink": "Geen tijdslimiet",
   "exercisesIntroCountBody": "Op volgorde, van makkelijk naar moeilijk.",
   "exercisesIntroMinTitle": "Minstens {min} punten",
   "exercisesIntroMinBody": "Van de {max} mogelijke punten, om de les te halen.",

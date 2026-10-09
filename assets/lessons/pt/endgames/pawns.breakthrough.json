@@ -16,7 +16,7 @@
   "step.t_classic": "Brancas jogam. Três peões contra três, frente a frente, e os dois reis longe. Nenhum peão é passado, e o rei preto não pode ajudar. Dá para fazer um peão branco chegar à oitava fileira?",
   "step.t_classic.hint1": "Um peão sozinho não passa por três. Mas, se você der um ou dois peões, os peões pretos têm de tomar e saem do caminho.",
   "step.t_classic.hint2": "Comece pelo peão do meio. O que as pretas fazem se ele avança e ameaça tomar em a7 ou em c7?",
-  "step.classicWhy": "O lance é b6! Ele ameaça bxa7 ou bxc7 e coroar, então as pretas têm de tomar. Se tomam com o peão de a, eu jogo c6!: depois de bxc6, o peão de a5 anda livre até a8. Se tomam com o peão de c, jogo a6!: depois de bxa6, quem passa é o peão de c5. Se não tomam, o meu peão de b6 toma em a7 ou c7 e coroa. Aqui só b6 ganha. Começar por a6 ou c6 não dá nada, e esperar com o rei também não.",
+  "step.classicWhy": "O lance é b6! Ele ameaça bxa7 ou bxc7 e coroar, então as pretas têm de tomar. Se tomam com o peão de a, eu jogo c6! Depois de bxc6, o peão de a5 anda livre até a8. Se tomam com o peão de c, jogo a6! Depois de bxa6, quem passa é o peão de c5. Se não tomam, o meu peão de b6 toma em a7 ou c7 e coroa. Aqui só b6 ganha. Começar por a6 ou c6 não dá nada, e esperar com o rei também não.",
   "step.d_classic": "As pretas tomaram com o peão de a. Veja o segundo sacrifício.",
   "step.d_classic.m1": "c6! Mais um peão dado, de propósito. Ele ameaça cxb7.",
   "step.d_classic.m2": "As pretas tomam. Repare: o peão de b7 saiu, e era ele que vigiava a6.",

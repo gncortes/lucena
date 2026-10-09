@@ -77,7 +77,9 @@ abstract final class SpeechLinks {
       r'(?<![\p{L}\p{N}])(?:(O-O-O|O-O|0-0-0|0-0)|'
       '([$pieces])?([a-h])?([1-8])?(x)?([a-h][1-8])'
       '(?:=([$pieces]))?)'
-      r'([+#])?(?![\p{L}\p{N}])',
+      // A avaliação do lance (!, ?, !!, ??, !?, ?!) faz parte dele, como
+      // nos livros: "Te6!" se destaca inteiro.
+      r'([+#])?([?!]{1,2})?(?![\p{L}\p{N}])',
       unicode: true,
     );
     final links = <SpeechLink>[];
@@ -108,7 +110,8 @@ abstract final class SpeechLinks {
           rank != null ||
           capture ||
           promotion ||
-          check;
+          check ||
+          match.group(9) != null;
       // "a2a4" sem peça é um lance em coordenadas; a coluna e a fileira de
       // saída só valem num lance.
       links.add(

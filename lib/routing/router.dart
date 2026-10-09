@@ -642,6 +642,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
+                          now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
                           lessons: context.read<EndgameLessonRepository>(),

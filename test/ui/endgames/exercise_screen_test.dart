@@ -94,7 +94,13 @@ void main() {
     expect(find.byKey(ExerciseKeys.solved), findsOneWidget);
     // Houve erro: sem "Resolvido!".
     expect(find.text('Solved!'), findsNothing);
-    expect(find.text('2 of 3 points'), findsOneWidget);
+    // Com a correção do Viktor na tela, a estrela grande e os pontos saem
+    // (T60): os pontos ficam na estrela da barra de cima.
+    expect(find.byKey(ExerciseKeys.earned), findsNothing);
+    expect(
+      tester.getSemantics(find.byKey(ExerciseKeys.stars)).label,
+      '2 of 3 points',
+    );
     // Singular quando o total é 1.
     final l10n = lookupAppLocalizations(const Locale('pt'));
     expect(l10n.exerciseEarned(1, 1), '1 de 1 ponto');
@@ -123,5 +129,55 @@ void main() {
   testWidgets('exercício que não existe', (tester) async {
     await pump(tester, 'e99');
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
+  });
+
+  testWidgets('T60: resolvendo, o Viktor com a vez em cima, o tabuleiro no '
+      'centro da tela e o cronômetro no canto inferior direito; resolvido, o '
+      'tabuleiro sobe e o resultado entra embaixo', (tester) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(400, 900);
+    addTearDown(tester.view.reset);
+    await pump(tester, 'e03');
+    final board = tester.getRect(find.byKey(ExerciseKeys.board));
+    final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
+    expect(board.center.dx, closeTo(200, 1));
+    expect(board.top, greaterThanOrEqualTo(goal.bottom));
+    // No centro da tela, se não cobre o enunciado.
+    if (board.top > goal.bottom + 20) {
+      expect(board.center.dy, closeTo(450, 2));
+    }
+    final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
+    expect(timer.right, closeTo(400 - 16, 1));
+    expect(timer.top, greaterThan(board.bottom));
+    expect(find.byKey(ExerciseKeys.scroll), findsNothing);
+
+    await move(tester, 'c1', 'c4');
+    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
+    expect(raised.top, lessThan(board.top));
+    expect(find.byKey(ExerciseKeys.timer), findsNothing);
+    expect(find.byKey(ExerciseKeys.goal), findsNothing);
+    expect(
+      tester.getRect(find.byKey(ExerciseKeys.earned)).top,
+      greaterThan(raised.bottom),
+    );
+  });
+
+  testWidgets('T60: a dica traz uma fala comprida e o tabuleiro não sai do '
+      'lugar', (tester) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(400, 900);
+    addTearDown(tester.view.reset);
+    await pump(tester, 'e03');
+    final before = tester.getRect(find.byKey(ExerciseKeys.board));
+    await tester.tap(find.byKey(ExerciseKeys.hintButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExerciseKeys.speech), findsOneWidget);
+    expect(tester.getRect(find.byKey(ExerciseKeys.board)), before);
+    expect(
+      tester.getRect(find.byKey(ExerciseKeys.speech)).bottom,
+      lessThanOrEqualTo(before.top),
+    );
   });
 }

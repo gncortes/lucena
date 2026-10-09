@@ -986,7 +986,7 @@
   "endgamesHideDone": "Скрыть пройденные уроки",
   "exercisesIntroSpeech": "Пора показать, чему вы научились. Считается первая попытка: дальше — свободная тренировка, а чтобы снова засчитывалось, перерешайте задания.",
   "exercisesIntroChipMinimum": "не меньше {min} из {max} очков",
-  "exercisesIntroChipThink": "5 минут на позицию",
+  "exercisesIntroChipThink": "Без ограничения времени",
   "exercisesIntroCountBody": "По порядку, от простого к сложному.",
   "exercisesIntroMinTitle": "Не меньше {min} очков",
   "exercisesIntroMinBody": "Из {max} возможных, чтобы сдать урок.",

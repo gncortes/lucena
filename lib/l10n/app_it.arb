@@ -986,7 +986,7 @@
   "endgamesHideDone": "Nascondi le lezioni completate",
   "exercisesIntroSpeech": "È il momento di mostrare cosa hai imparato. Conta il primo tentativo: dopo è allenamento libero e, per farlo contare di nuovo, rifai gli esercizi.",
   "exercisesIntroChipMinimum": "almeno {min} punti su {max}",
-  "exercisesIntroChipThink": "5 minuti per posizione",
+  "exercisesIntroChipThink": "Senza limite di tempo",
   "exercisesIntroCountBody": "In ordine, dal più semplice al più difficile.",
   "exercisesIntroMinTitle": "Almeno {min} punti",
   "exercisesIntroMinBody": "Su {max} punti possibili, per superare la lezione.",

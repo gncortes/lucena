@@ -288,8 +288,10 @@ class EndgamesRobot {
       _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
 
   /// Os pontos ganhos no exercício resolvido ("1 of 2 points").
+  /// Lido da estrela da barra de cima: com a explicação do Viktor na tela,
+  /// a estrela grande some (T60).
   String? get earned =>
-      $.tester.widget<Text>(find.byKey(ExerciseKeys.earned)).data;
+      $.tester.getSemantics(find.byKey(ExerciseKeys.stars)).label;
 
   /// A seta da dica no tabuleiro do exercício.
   void expectHintArrow(String uci) {

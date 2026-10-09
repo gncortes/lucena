@@ -154,3 +154,12 @@ Vitória que só existe sem a regra dos 50 lances (a tabela responde `cursed-win
 - O teste `test/data/repositories/endgames/endgame_lessons_content_test.dart` confere no CI cada aula gerada: FEN, lances, falas nos dois idiomas.
 
 O formato acima é o contrato: para mudar um campo, muda aqui, no script e no app juntos.
+
+## Avaliação dos lances nas falas (T60)
+
+Os símbolos `!`, `?`, `!!`, `??`, `!?` e `?!` ficam colados no lance e o app os destaca junto com ele.
+Como nos livros, o símbolo fecha a frase do lance e a próxima começa com maiúscula:
+"Agora Te6! A torre protege o peão por trás." Nunca "Te6!:", "De3?;" nem "Rd4!." no fim.
+Vírgula depois do símbolo só em lista ou aposto curto ("a4?, c5? e Ra4? empatam").
+O teste `endgame_lessons_content_test.dart` reprova a fala que cola o símbolo em `:`, `;` ou `.`.
+

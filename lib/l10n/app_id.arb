@@ -986,7 +986,7 @@
   "endgamesHideDone": "Sembunyikan pelajaran selesai",
   "exercisesIntroSpeech": "Saatnya menunjukkan yang sudah kamu pelajari. Percobaan pertama yang dihitung: sesudahnya latihan bebas, dan agar dihitung lagi, ulangi latihannya.",
   "exercisesIntroChipMinimum": "minimal {min} dari {max} poin",
-  "exercisesIntroChipThink": "5 menit per posisi",
+  "exercisesIntroChipThink": "Tanpa batas waktu",
   "exercisesIntroCountBody": "Berurutan, dari yang termudah hingga tersulit.",
   "exercisesIntroMinTitle": "Minimal {min} poin",
   "exercisesIntroMinBody": "Dari {max} poin yang mungkin, untuk lulus pelajaran.",

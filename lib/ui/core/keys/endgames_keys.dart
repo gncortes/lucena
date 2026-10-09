@@ -118,6 +118,9 @@ abstract final class ExerciseKeys {
   static const nextButton = Key('exercise.next');
   static const counter = Key('exercise.counter');
 
+  /// O cronômetro do exercício (T60).
+  static const timer = Key('exercise.timer');
+
   /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.
   static const goal = Key('exercise.goal');
   static const solution = Key('exercise.solution');
