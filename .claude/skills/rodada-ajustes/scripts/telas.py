@@ -19,12 +19,17 @@ Linha de comando:
     python3 -I telas.py compor saida.png a.png b.png ...    # lado a lado
     python3 -I telas.py gif entrada.mp4 [saida.gif]         # vídeo -> GIF
 
-Transição (animação, tela que entra, folha que sobe): grave e envie em GIF,
-que mostra o movimento melhor que um print:
+Transição (animação, tela que entra, folha que sobe): grave e envie em MP4
+(o GIF não abre no celular do Gabriel):
 
-    gravar("R3-folha-sobe")   # começa a gravar (mp4)
+    gravar("R3-folha-sobe")   # gravador do emulador
     tap_text("Ver explicação", then=2)
-    parar()                   # para, puxa o vídeo e gera R3-folha-sobe.gif
+    parar()                   # gera R3-folha-sobe.mp4
+    tira("R3-folha-sobe.mp4") # quadros lado a lado, para conferir
+
+No tabuleiro, prefira arrastar a peça (`adb shell input swipe x1 y1 x2 y2
+450`) a dois toques: depois de um lance errado a peça fica selecionada e o
+toque seguinte só desmarca.
 
 As coordenadas de rolagem supõem o AVD `Lucena_Patrol` (1344 x 2992).
 """
@@ -70,37 +75,49 @@ def shot(name: str, wait: float = 0.8):
     log("●", name)
 
 
-_gravando: tuple[subprocess.Popen, str] | None = None
+_gravando: Path | None = None
 
 
 def gravar(name: str):
-    """Começa a gravar a tela (mp4 no aparelho). Termine com [parar]."""
+    """Começa a gravar a tela pelo gravador do emulador (ritmo constante:
+    pega também o fim parado, que o screenrecord do Android perde).
+    Termine com [parar]."""
     global _gravando
-    adb("shell", "rm", "-f", f"/sdcard/rec-{name}.mp4", check=False)
-    proc = subprocess.Popen(["adb", "-s", SERIAL, "shell", "screenrecord",
-                             "--size", "720x1604", "--bit-rate", "8000000",
-                             f"/sdcard/rec-{name}.mp4"])
-    _gravando = (proc, name)
-    time.sleep(1.0)
+    webm = (OUT / f"{name}.webm").resolve()  # o emulador precisa do caminho absoluto
+    webm.unlink(missing_ok=True)
+    adb("emu", "screenrecord", "start", "--fps", "30", str(webm))
+    _gravando = webm
+    time.sleep(1.2)
     log("▶", name)
 
 
-def parar(fps: int = 15, largura: int = 360) -> Path:
-    """Para a gravação, traz o mp4 para OUT e gera o GIF ao lado."""
+def parar(espera: float = 2.0) -> Path:
+    """Para a gravação e gera `<nome>.mp4` (H.264, 540 px, abre no celular
+    do Gabriel; o GIF não abre lá)."""
     global _gravando
     assert _gravando, "parar() sem gravar()"
-    proc, name = _gravando
-    _gravando = None
-    time.sleep(0.6)
-    adb("shell", "pkill", "-INT", "screenrecord", check=False)
-    proc.wait(timeout=15)
-    time.sleep(1.0)
-    mp4 = OUT / f"{name}.mp4"
-    adb("pull", f"/sdcard/rec-{name}.mp4", str(mp4))
-    adb("shell", "rm", "-f", f"/sdcard/rec-{name}.mp4", check=False)
-    out = gif(mp4, fps=fps, largura=largura)
-    log("■", out.name)
-    return out
+    webm, _gravando = _gravando, None
+    time.sleep(espera)
+    adb("emu", "screenrecord", "stop")
+    time.sleep(2.0)
+    mp4 = webm.with_suffix(".mp4")
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(webm), "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p", "-vf", "scale=540:-2", "-movflags", "+faststart",
+                    str(mp4)], check=True)
+    log("■", mp4.name)
+    return mp4
+
+
+def tira(mp4: Path | str, quadros: int = 8, largura: int = 200) -> Path:
+    """Os [quadros] do vídeo lado a lado num PNG, para conferir com Read."""
+    mp4 = Path(mp4)
+    dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                "-of", "csv=p=0", str(mp4)], capture_output=True, text=True).stdout)
+    saida = mp4.with_name(mp4.stem + "-tira.png")
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(mp4), "-vf",
+                    f"fps={quadros / max(dur, 0.1)},scale={largura}:-1,tile={quadros}x1:padding=4:color=white",
+                    "-frames:v", "1", str(saida)], check=True)
+    return saida
 
 
 def gif(mp4: Path | str, saida: Path | str | None = None, fps: int = 15,
