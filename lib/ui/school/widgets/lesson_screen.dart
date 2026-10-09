@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:go_router/go_router.dart';
@@ -68,6 +69,24 @@ class _LessonScreenState extends State<LessonScreen>
   final _sheet = DraggableScrollableController();
   double _sheetMin = 0.3;
 
+  // O tamanho da folha, para o "x". A folha avisa até durante a montagem da
+  // tela (quando o passo troca e o tamanho dela é refeito): o aviso passa
+  // para depois do quadro.
+  final _sheetSize = ValueNotifier<double?>(null);
+
+  void _onSheetChanged() {
+    void update() {
+      if (mounted && _sheet.isAttached) _sheetSize.value = _sheet.size;
+    }
+
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => update());
+    } else {
+      update();
+    }
+  }
+
   // A fala cabe na folha fechada: ela não abre (sem o vaivém do "x").
   bool _speechFits = false;
 
@@ -90,6 +109,7 @@ class _LessonScreenState extends State<LessonScreen>
   @override
   void initState() {
     super.initState();
+    _sheet.addListener(_onSheetChanged);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
   }
 
@@ -153,7 +173,9 @@ class _LessonScreenState extends State<LessonScreen>
   void dispose() {
     _ticker?.cancel();
     _board?.dispose();
+    _sheet.removeListener(_onSheetChanged);
     _sheet.dispose();
+    _sheetSize.dispose();
     _shake.dispose();
     _landing.dispose();
     _flash.dispose();
@@ -432,12 +454,10 @@ class _LessonScreenState extends State<LessonScreen>
                                   ),
                                   // Folha cobrindo o tabuleiro: um "x" com respiro
                                   // acima dela, para descer de uma vez.
-                                  ListenableBuilder(
-                                    listenable: _sheet,
-                                    builder: (context, _) {
-                                      final open = _sheet.isAttached
-                                          ? _sheet.size
-                                          : minSheet;
+                                  ValueListenableBuilder(
+                                    valueListenable: _sheetSize,
+                                    builder: (context, size, _) {
+                                      final open = size ?? minSheet;
                                       final covering = open > minSheet + 0.03;
                                       final top =
                                           box.maxHeight * (1 - open) - 68;
