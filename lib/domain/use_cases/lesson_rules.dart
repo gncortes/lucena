@@ -23,6 +23,19 @@ enum PlayResult {
 
 /// As regras dos passos das aulas, em cima do `dartchess`.
 abstract final class LessonRules {
+  /// A fala já diz quem joga ("Brancas jogam", "Você joga de pretas",
+  /// "White to move"...): o enunciado do passo de pensar não repete (T60).
+  /// As falas das aulas são em português e inglês.
+  static bool saysWhoMoves(String text) => _whoMoves.hasMatch(text);
+
+  static final _whoMoves = RegExp(
+    r'(brancas|pretas)\s+jog|jog\w*\s+(as|com as|de|das)\s+(brancas|pretas)|'
+    r'vez\s+das\s+(brancas|pretas)|'
+    r'(white|black)\s+(to\s+(move|play)|plays|moves|is to move)|'
+    r"play(s|ing)?\s+(as\s+|with\s+)?(white|black)|(white|black)'s\s+(move|turn)",
+    caseSensitive: false,
+  );
+
   /// O tabuleiro das estrelas: só as peças do aluno, sem reis do outro lado
   /// e sem peão (o peão se aprende com o rei em jogo, num [MoveStep]).
   static Board starsBoard(String fen) => Board.parseFen(fen.split(' ').first);

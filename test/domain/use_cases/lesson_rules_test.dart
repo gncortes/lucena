@@ -26,4 +26,22 @@ void main() {
     expect(LessonRules.endsLine(step, 1, 'c4c5'), isTrue);
     expect(LessonRules.endsLine(step, 1, 'c4c6'), isTrue);
   });
+
+  test('T60: reconhece a fala que já diz quem joga, em português e inglês', () {
+    for (final text in [
+      'Brancas jogam. Três peões contra três.',
+      'Você joga de pretas e defende.',
+      'Jogam as brancas.',
+      'White to move. What is the plan?',
+      'You play Black here.',
+    ]) {
+      expect(LessonRules.saysWhoMoves(text), isTrue, reason: text);
+    }
+    for (final text in [
+      'Torre preta atacando o seu peão pelo lado.',
+      'The black rook attacks your pawn from the side.',
+    ]) {
+      expect(LessonRules.saysWhoMoves(text), isFalse, reason: text);
+    }
+  });
 }

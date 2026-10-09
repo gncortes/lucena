@@ -658,9 +658,12 @@ class _LessonScreenState extends State<LessonScreen>
   ) {
     if (step is ThinkStep && state.hintsShown == 0) {
       final l10n = context.l10n;
+      final speech = state.speech;
+      // A fala que já diz quem joga vai sozinha.
+      if (speech != null && LessonRules.saysWhoMoves(speech)) return speech;
       return [
         l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
-        state.speech ?? l10n.lessonThinkAsk(step.ask.name),
+        speech ?? l10n.lessonThinkAsk(step.ask.name),
       ].join(' ');
     }
     return state.speech;
