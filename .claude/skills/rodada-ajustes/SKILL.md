@@ -25,6 +25,7 @@ O Gabriel acompanha pelo celular e manda pedidos em sequência, muitas vezes ant
 5. **Emuladores só pelo `scripts/emuladores.sh`**, com `DONO=<nome da pasta do scratchpad>`.
    - O 5554 é do Gabriel: nunca entra na conta.
    - Se houver emulador de outra sessão, não subo nenhum: implemento e commito, e os prints esperam.
+   - **Este projeto nunca é a prioridade do PC.** Com outro projeto rodando em paralelo (o emulador da Cogna, Chrome pesado, build de outro app), abro menos emuladores. Se a memória apertar no meio da rodada, fecho os meus (`aliviar`), até zero se for preciso, e capturo em fila no que sobrar.
    - No fim da rodada, ou quando ele pedir, rodo `emuladores.sh descer`.
 6. **Pedido ambíguo** (qual tela, qual fala, qual botão): perguntar só sobre aquele item, numa linha, e seguir com os outros.
    - Na dúvida entre duas telas, perguntar antes de mexer. Em 2026-10-09 mexi na fala errada e tive que desfazer.
@@ -67,7 +68,11 @@ O Gabriel acompanha pelo celular e manda pedidos em sequência, muitas vezes ant
    - Rodar `flutter build apk --release` no worktree da rodada, em segundo plano, e conferir `✓ Built` na saída. O build pode falhar em silêncio e deixar o APK velho.
    - Um build só por vez; os itens prontos enquanto ele roda vão no próximo.
 2. **Emuladores** (`scripts/emuladores.sh`, rodando `DONO=<id> emuladores.sh ...`):
-   - `estado` mostra quantos cabem: deixa ~12 GB livres, no máximo 6, e 4 se o emulador da Cogna estiver aberto.
+   - `estado` mostra quantos cabem. A conta deixa sempre folga para o PC não travar:
+     - 12 GB livres, ou 18 GB com outro emulador ou com o Chrome passando de 6 GB;
+     - no máximo 6 cópias, ou 3 com outro emulador aberto;
+     - metade disso com a CPU acima de 70%.
+   - Rodar `estado` antes de cada `subir`, nunca subir acima do que ele diz e rodar `aliviar` antes de cada lote de prints.
    - `subir N` liga N emuladores, com N = itens esperando print, até o que cabe.
    - `instalar <apk>` usa `install -r`, que mantém os dados.
    - Os emuladores ficam ligados durante a rodada, porque subir de novo custa minutos.
