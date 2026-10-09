@@ -500,119 +500,90 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e17",
       "stars": 1,
-      "fen": "8/8/8/pP6/Pk6/8/8/K7 w - - 0 1",
+      "fen": "8/8/8/pP2k3/P4p2/5K2/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b5b6",
-          "accept": [
-            "a1a2",
-            "a1b1",
-            "a1b2",
-            "b5b6"
-          ],
-          "reply": "b4c5"
-        },
-        {
-          "teach": "b6b7",
-          "accept": [
-            "b6b7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/8/pPk5/P7/8/3K4/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c6b7",
-          "accept": [
-            "c6b7",
-            "c6d6",
-            "c6d7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/3k4/8/1pP3p1/1P6/5K2/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "origin": "studyWilliam",
       "line": [
         {
           "teach": "f3g4",
           "accept": [
-            "f3e3",
-            "f3e4",
+            "f3e2",
+            "f3f2",
+            "f3g2",
             "f3g4"
           ],
-          "reply": "d7e6"
+          "reply": "e5e6"
         },
         {
-          "teach": "g4g5",
+          "teach": "g4f4",
           "accept": [
-            "g4g5"
+            "g4f3",
+            "g4f4",
+            "g4h3",
+            "g4h4"
           ]
         }
       ]
     },
     {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+      "id": "e12",
+      "stars": 1,
+      "fen": "8/2p5/5k2/6pP/6P1/8/8/7K w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "studyChessInstitute",
       "line": [
         {
-          "teach": "e3d4",
+          "teach": "h1g2",
           "accept": [
-            "e3d2",
-            "e3d3",
-            "e3d4",
-            "e3e2",
-            "e3e4",
-            "e3f2",
-            "e3f3",
-            "e3f4"
+            "h1g1",
+            "h1g2",
+            "h1h2"
           ],
-          "reply": "c6b7"
+          "reply": "f6e5"
         },
         {
-          "teach": "d4d5",
+          "teach": "g2f3",
           "accept": [
-            "d4c3",
-            "d4d3",
-            "d4d5",
-            "d4e3",
-            "d4e4",
-            "d4e5"
+            "g2f1",
+            "g2f2",
+            "g2f3",
+            "g2g1",
+            "g2g3",
+            "g2h1",
+            "g2h2",
+            "g2h3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/8/8/1pPk4/1P1p4/5K2/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "studyWilliam",
+      "line": [
+        {
+          "teach": "d5e5",
+          "accept": [
+            "d5e5"
           ],
-          "reply": "b7c7"
+          "reply": "c5c6"
         },
         {
-          "teach": "c5c6",
+          "teach": "e5d6",
           "accept": [
-            "c5c6",
-            "d5d4",
-            "d5e4",
-            "d5e5",
-            "d5e6"
+            "e5d6",
+            "e5e6"
           ]
         }
       ]
     },
     {
       "id": "e08",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/8/Pk6/1P5p/4p3/8/6K1/8 w - - 0 1",
       "goal": "win",
       "origin": "studyChessInstitute",
@@ -634,32 +605,30 @@
       ]
     },
     {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/4k3/8/1pP4p/1P6/8/8/3K4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "id": "e14",
+      "stars": 2,
+      "fen": "8/8/8/1p2kPp1/6P1/4K3/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "studyMatt",
       "line": [
         {
-          "teach": "d1e2",
+          "teach": "e5d5",
           "accept": [
-            "d1d2",
-            "d1e1",
-            "d1e2"
+            "e5d5"
           ],
-          "reply": "e7e6"
+          "reply": "e3d3"
         },
         {
-          "teach": "e2f3",
+          "teach": "d5e5",
           "accept": [
-            "e2d1",
-            "e2d2",
-            "e2d3",
-            "e2e1",
-            "e2e3",
-            "e2f1",
-            "e2f2",
-            "e2f3"
+            "d5e5"
+          ],
+          "reply": "d3c3"
+        },
+        {
+          "teach": "e5d5",
+          "accept": [
+            "e5d5"
           ]
         }
       ]
@@ -685,9 +654,119 @@
           ]
         }
       ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/7p/8/5Pk1/6P1/5K2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyChessforall",
+      "line": [
+        {
+          "teach": "f2e2",
+          "accept": [
+            "f2e2"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "e2e3",
+          "accept": [
+            "e2e3"
+          ],
+          "reply": "g4g3"
+        },
+        {
+          "teach": "f4f5",
+          "accept": [
+            "f4f5"
+          ],
+          "reply": "h5h4"
+        },
+        {
+          "teach": "f5f6",
+          "accept": [
+            "f5f6"
+          ],
+          "reply": "h4h3"
+        },
+        {
+          "teach": "f6f7",
+          "accept": [
+            "f6f7"
+          ],
+          "reply": "h3h2"
+        },
+        {
+          "teach": "f7f8q",
+          "accept": [
+            "f7f8q"
+          ],
+          "reply": "h2h1q"
+        },
+        {
+          "teach": "f8g7",
+          "accept": [
+            "f8d6",
+            "f8f4",
+            "f8g7",
+            "f8g8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/6kP/5pP1/8/1p2pK2/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyChessforall",
+      "line": [
+        {
+          "teach": "f4f5",
+          "accept": [
+            "f4f5"
+          ],
+          "reply": "b4b3"
+        },
+        {
+          "teach": "f5e6",
+          "accept": [
+            "f5e6"
+          ],
+          "reply": "b3b2"
+        },
+        {
+          "teach": "h7h8q",
+          "accept": [
+            "h7h8q"
+          ],
+          "reply": "g7h8"
+        },
+        {
+          "teach": "e6f7",
+          "accept": [
+            "e6f7"
+          ],
+          "reply": "b2b1q"
+        },
+        {
+          "teach": "g6g7",
+          "accept": [
+            "g6g7"
+          ],
+          "reply": "h8h7"
+        },
+        {
+          "teach": "g7g8q",
+          "accept": [
+            "g7g8q"
+          ]
+        }
+      ]
     }
   ],
-  "passScore": 9,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "tied",
@@ -710,11 +789,6 @@
     {
       "id": "noTarget",
       "fen": "8/8/8/3k4/1Pp5/2P5/3K4/8 w - - 0 1"
-    },
-    {
-      "id": "dedrle",
-      "fen": "8/2k5/8/8/Pp6/1P6/6K1/8 b - - 0 1",
-      "ref": "studyIsaac"
     }
   ],
   "practice": {
@@ -763,6 +837,27 @@
       "url": "https://lichess.org/study/FZJX7Vgp"
     },
     {
+      "id": "studyMatt",
+      "kind": "study",
+      "author": "matt_giocopiano",
+      "title": "protected passed pawns",
+      "url": "https://lichess.org/study/irQ4Kfg5"
+    },
+    {
+      "id": "studyChessforall",
+      "kind": "study",
+      "author": "Chessforall321",
+      "title": "A Protected Passed Pawn",
+      "url": "https://lichess.org/study/OksaggdI"
+    },
+    {
+      "id": "studyWilliam",
+      "kind": "study",
+      "author": "William2020",
+      "title": "PEON PASADO PROTEGIDO",
+      "url": "https://lichess.org/study/VKpH7Sw3"
+    },
+    {
       "id": "wikiPawn",
       "kind": "web",
       "title": "Wikipedia: Pawn (chess), \"Passed pawn\"",
@@ -781,5 +876,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 14
+  "maxScore": 17
 }

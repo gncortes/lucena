@@ -415,64 +415,25 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e09",
       "stars": 1,
-      "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
+      "fen": "8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "wikiReti",
       "turns": [
         {
-          "teach": "h8g7",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c6c7",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/8/2K2P1k/8/8/p7/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c6d7",
+          "teach": "h5g6",
           "accept": "hold",
-          "reply": "a3a2"
+          "reply": "a6b6"
         },
         {
-          "teach": "f6f7",
+          "teach": "g6g7",
           "accept": "hold",
-          "reply": "h6g7"
+          "reply": "h6h5"
         },
         {
-          "teach": "d7e7",
+          "teach": "g7f6",
           "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/8/8/pK6/8/2k2P2/8 w - - 0 1",
-      "goal": "win",
-      "origin": "yatesMarshall",
-      "turns": [
-        {
-          "teach": "f2f4",
-          "accept": "win"
         }
       ]
     },
@@ -495,31 +456,41 @@
       ]
     },
     {
-      "id": "e09",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1",
+      "fen": "3K4/7p/3k4/P7/8/8/8/8 w - - 0 1",
       "goal": "draw",
-      "origin": "wikiReti",
+      "origin": "jcaselas",
       "turns": [
         {
-          "teach": "h5g6",
+          "teach": "d8c8",
           "accept": "hold",
-          "reply": "a6b6"
+          "reply": "d6c6"
         },
         {
-          "teach": "g6g7",
+          "teach": "c8b8",
           "accept": "hold",
-          "reply": "h6h5"
+          "reply": "c6b5"
         },
         {
-          "teach": "g7f6",
+          "teach": "b8b7",
+          "accept": "hold",
+          "reply": "b5a5"
+        },
+        {
+          "teach": "b7c6",
+          "accept": "hold",
+          "reply": "h7h5"
+        },
+        {
+          "teach": "c6d5",
           "accept": "hold"
         }
       ]
     },
     {
       "id": "e10",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/8/6K1/ppp5/7k/1P6/1P6/8 w - - 0 1",
       "goal": "draw",
       "origin": "laskerTarrasch",
@@ -536,6 +507,49 @@
         },
         {
           "teach": "e4d5",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 3,
+      "fen": "5K2/k7/4P1p1/8/8/8/4b3/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "tenakel",
+      "turns": [
+        {
+          "teach": "f8e7",
+          "accept": "hold",
+          "reply": "g6g5"
+        },
+        {
+          "teach": "e7d6",
+          "accept": "hold",
+          "reply": "g5g4"
+        },
+        {
+          "teach": "e6e7",
+          "accept": "hold",
+          "reply": "e2b5"
+        },
+        {
+          "teach": "d6c5",
+          "accept": "hold",
+          "reply": "b5d7"
+        },
+        {
+          "teach": "c5d4",
+          "accept": "hold",
+          "reply": "g4g3"
+        },
+        {
+          "teach": "d4e3",
+          "accept": "hold",
+          "reply": "g3g2"
+        },
+        {
+          "teach": "e3f2",
           "accept": "hold"
         }
       ]
@@ -567,6 +581,59 @@
           "accept": "hold"
         }
       ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "K7/2P5/b4k1p/3P4/6P1/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "tenakel",
+      "turns": [
+        {
+          "teach": "d5d6",
+          "accept": "hold",
+          "reply": "f6e6"
+        },
+        {
+          "teach": "d6d7",
+          "accept": "hold",
+          "reply": "e6d7"
+        },
+        {
+          "teach": "a8a7",
+          "accept": "hold",
+          "reply": "a6c8"
+        },
+        {
+          "teach": "a7b8",
+          "accept": "hold",
+          "reply": "c8a6"
+        },
+        {
+          "teach": "b8a7",
+          "accept": "hold",
+          "reply": "d7c7"
+        },
+        {
+          "teach": "a7a6",
+          "accept": "hold",
+          "reply": "c7d6"
+        },
+        {
+          "teach": "a6b5",
+          "accept": "hold",
+          "reply": "d6e5"
+        },
+        {
+          "teach": "b5c4",
+          "accept": "hold",
+          "reply": "e5f4"
+        },
+        {
+          "teach": "c4d3",
+          "accept": "hold"
+        }
+      ]
     }
   ],
   "passScore": 10,
@@ -577,24 +644,9 @@
       "ref": "wikiReti"
     },
     {
-      "id": "reti1928",
-      "fen": "8/6p1/k1P2p1p/7K/8/8/8/8 w - - 0 1",
-      "ref": "wikiReti"
-    },
-    {
-      "id": "laskerTarrasch",
-      "fen": "8/8/6K1/ppp5/7k/1P6/1P6/8 w - - 0 1",
-      "ref": "laskerTarrasch"
-    },
-    {
       "id": "yatesMarshall",
       "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
       "ref": "yatesMarshall"
-    },
-    {
-      "id": "sarychev",
-      "fen": "8/1pPK3b/8/8/8/5k2/8/8 w - - 0 1",
-      "ref": "drfiskeson"
     }
   ],
   "practice": {
@@ -674,6 +726,27 @@
       "black": "Siegbert Tarrasch",
       "event": "São Petersburgo",
       "year": 1914
+    },
+    {
+      "id": "jcaselas",
+      "kind": "study",
+      "author": "JCaselas",
+      "title": "Prokes-Studies",
+      "url": "https://lichess.org/study/0LkYXajC"
+    },
+    {
+      "id": "suvkos",
+      "kind": "study",
+      "author": "suvkos",
+      "title": "The Reti Idea",
+      "url": "https://lichess.org/study/TLBUTcye"
+    },
+    {
+      "id": "tenakel",
+      "kind": "study",
+      "author": "Tenakel",
+      "title": "Reti-Studies",
+      "url": "https://lichess.org/study/pgf3RcVp"
     },
     {
       "id": "tablebase",

@@ -74,7 +74,7 @@ src = {
   ]},
  ],
  'exercises': [],
- 'passScore': 10,
+ 'passScore': 11,
  'keyPositions': [
    {'id': 'keys', 'fen': KEYS, 'ref': 'audax'},
    {'id': 'lock', 'fen': LOCK},
@@ -90,18 +90,21 @@ src = {
    {'id': 'wikiKpk', 'kind': 'web', 'title': 'Wikipedia: King and pawn versus king endgame', 'url': 'https://en.wikipedia.org/wiki/King_and_pawn_versus_king_endgame'},
    {'id': 'pannoNajdorf', 'kind': 'game', 'white': 'Oscar Panno', 'black': 'Miguel Najdorf', 'event': 'Seniors-Juniors, Buenos Aires', 'year': 1968},
    {'id': 'barczaFischer', 'kind': 'game', 'white': 'Gedeon Barcza', 'black': 'Bobby Fischer', 'event': 'Zurique', 'year': 1959},
+   {'id': 'dfgordon', 'kind': 'study', 'author': 'dfgordon', 'title': 'The Rook Pawn', 'url': 'https://lichess.org/study/W02TqSN3'},
+   {'id': 'kingof64', 'kind': 'study', 'author': 'Kingof64-Squares', 'title': 'Rook pawn', 'url': 'https://lichess.org/study/uXPBvt6C'},
+   {'id': 'moravec', 'kind': 'study', 'author': 'sashaslamp', 'title': 'Moravec, Československý šach, 1952', 'url': 'https://lichess.org/study/L6v2z9bo'},
+   {'id': 'grigoriev', 'kind': 'study', 'author': 'humoresque', 'title': 'Grigoriev, Nikolai', 'url': 'https://lichess.org/study/0iaDBwxT'},
    {'id': 'tablebase', 'kind': 'tablebase', 'title': 'Lichess tablebase (Syzygy)', 'url': 'https://tablebase.lichess.ovh'},
  ],
 }
 EX = [
- ('e01', 1, '3k4/K7/8/8/8/8/P7/8 w', 'win', 'own', 'Kb7', ['win']),
- ('e02', 1, 'K7/2k5/8/P7/8/8/8/8 b', 'draw', 'own', 'Kc8', ['hold']),
- ('e03', 1, '2k5/8/PK6/8/8/8/8/8 w', 'win', 'wikiKpk', 'a7', ['win']),
- ('e06', 2, '8/7K/5k2/7P/8/8/8/8 b', 'draw', 'audax', 'Kf7', ['hold']),
- ('e07', 2, '8/8/7K/4k3/7P/8/8/8 b', 'draw', 'own', 'Kf6 h5 Kf7 Kh7 Kf8', ['hold'] * 3),
- ('e09', 3, '8/K7/8/8/3k4/P7/8/8 w', 'win', 'audax', 'Kb6 Kd5 a4 Kd6 a5 Kd7 Kb7', ['win'] * 4),
- ('e10', 3, '8/8/8/8/8/8/1k5P/6K1 b', 'draw', 'jonz', 'Kc3 h4 Kd4 Kg2 Ke5', ['hold'] * 3),
- ('e11', 3, '8/3k4/8/4K3/8/8/7P/8 w', 'win', 'own', 'Kf6 Ke8 Kg7', ['win'] * 2),
+ ('e10', 1, '8/8/8/8/8/8/1k5P/6K1 b', 'draw', 'jonz', 'Kc3 h4 Kd4 Kg2 Ke5', ['hold'] * 3),
+ ('e12', 2, '8/5K1p/8/8/1k5P/8/8/8 b', 'draw', 'dfgordon', 'Kc5 Kg7 h5 Kg6 Kd6 Kxh5 Ke7 Kg6 Kf8', ['hold'] * 5),
+ ('e13', 2, '8/7k/6p1/6K1/5P1P/8/8/8 w', 'win', 'kingof64', 'h5 gxh5 Kxh5 Kg7 Kg5 Kf7 Kf5', ['win'] * 4),
+ ('e15', 3, '2k5/8/8/7p/8/8/6P1/5K2 w', 'win', 'moravec', 'Kf2 h4 Kg1 h3 g3 Kd7 Kh2', ['win'] * 4),
+ ('e14', 3, '8/p7/P7/4K3/8/4k3/8/8 b', 'draw', 'dfgordon', 'Kf3 Kd6 Kf4 Kc7 Ke5 Kb7 Kd6 Kxa7 Kc7', ['hold'] * 5),
+ ('e16', 3, '8/3K4/7p/p7/5k2/P6P/8/8 w', 'draw', 'grigoriev', 'a4 Kg3 Ke6 Kxh3 Kf5 h5 Kf4 h4 Kf3 Kh2 Kf2 h3 Kf1', ['hold'] * 7),
+ ('e17', 3, '4k3/2p5/1p1p4/1P1K4/8/8/7P/8 w', 'win', 'grigoriev', 'Ke6 Kf8 Kf6 Kg8 Kg6 Kf8 h3 Kg8 h4 Kf8 h5 Kg8 h6 Kh8 h7 d5 Kf5', ['win'] * 9),
 ]
 for id_, st, fen, goal, origin, sans, acc in EX:
     m = move(id_, F(fen), goal, sans, acc)

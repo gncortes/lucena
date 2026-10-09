@@ -517,140 +517,8 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "3k4/K7/8/8/8/8/P7/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a7b7",
-          "accept": [
-            "a7b7",
-            "a7b8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "K7/2k5/8/P7/8/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "c7c8",
-          "accept": [
-            "c7c6",
-            "c7c8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "2k5/8/PK6/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
-      "line": [
-        {
-          "teach": "a6a7",
-          "accept": [
-            "a6a7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/7K/5k2/7P/8/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "audax",
-      "line": [
-        {
-          "teach": "f6f7",
-          "accept": [
-            "f6f7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/8/7K/4k3/7P/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e5f6",
-          "accept": [
-            "e5f5",
-            "e5f6"
-          ],
-          "reply": "h4h5"
-        },
-        {
-          "teach": "f6f7",
-          "accept": [
-            "f6f7"
-          ],
-          "reply": "h6h7"
-        },
-        {
-          "teach": "f7f8",
-          "accept": [
-            "f7f6",
-            "f7f8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/K7/8/8/3k4/P7/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "audax",
-      "line": [
-        {
-          "teach": "a7b6",
-          "accept": [
-            "a7b6"
-          ],
-          "reply": "d4d5"
-        },
-        {
-          "teach": "a3a4",
-          "accept": [
-            "a3a4",
-            "b6b5"
-          ],
-          "reply": "d5d6"
-        },
-        {
-          "teach": "a4a5",
-          "accept": [
-            "a4a5",
-            "b6b7"
-          ],
-          "reply": "d6d7"
-        },
-        {
-          "teach": "b6b7",
-          "accept": [
-            "a5a6",
-            "b6b7"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e10",
-      "stars": 3,
+      "stars": 1,
       "fen": "8/8/8/8/8/8/1k5P/6K1 b - - 0 1",
       "goal": "draw",
       "origin": "jonz",
@@ -680,29 +548,297 @@
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/3k4/8/4K3/8/8/7P/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
+      "id": "e12",
+      "stars": 2,
+      "fen": "8/5K1p/8/8/1k5P/8/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "dfgordon",
       "line": [
         {
-          "teach": "e5f6",
+          "teach": "b4c5",
           "accept": [
-            "e5f6"
+            "b4c5"
           ],
-          "reply": "d7e8"
+          "reply": "f7g7"
         },
         {
-          "teach": "f6g7",
+          "teach": "h7h5",
           "accept": [
-            "f6g7"
+            "h7h5"
+          ],
+          "reply": "g7g6"
+        },
+        {
+          "teach": "c5d6",
+          "accept": [
+            "c5d6"
+          ],
+          "reply": "g6h5"
+        },
+        {
+          "teach": "d6e7",
+          "accept": [
+            "d6e7"
+          ],
+          "reply": "h5g6"
+        },
+        {
+          "teach": "e7f8",
+          "accept": [
+            "e7f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/7k/6p1/6K1/5P1P/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "kingof64",
+      "line": [
+        {
+          "teach": "h4h5",
+          "accept": [
+            "g5f6",
+            "h4h5"
+          ],
+          "reply": "g6h5"
+        },
+        {
+          "teach": "g5h5",
+          "accept": [
+            "g5h5"
+          ],
+          "reply": "h7g7"
+        },
+        {
+          "teach": "h5g5",
+          "accept": [
+            "h5g5"
+          ],
+          "reply": "g7f7"
+        },
+        {
+          "teach": "g5f5",
+          "accept": [
+            "g5f5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "2k5/8/8/7p/8/8/6P1/5K2 w - - 0 1",
+      "goal": "win",
+      "origin": "moravec",
+      "line": [
+        {
+          "teach": "f1f2",
+          "accept": [
+            "f1f2"
+          ],
+          "reply": "h5h4"
+        },
+        {
+          "teach": "f2g1",
+          "accept": [
+            "f2g1"
+          ],
+          "reply": "h4h3"
+        },
+        {
+          "teach": "g2g3",
+          "accept": [
+            "g2g3"
+          ],
+          "reply": "c8d7"
+        },
+        {
+          "teach": "g1h2",
+          "accept": [
+            "g1h2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "8/p7/P7/4K3/8/4k3/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "dfgordon",
+      "line": [
+        {
+          "teach": "e3f3",
+          "accept": [
+            "e3f3"
+          ],
+          "reply": "e5d6"
+        },
+        {
+          "teach": "f3f4",
+          "accept": [
+            "f3e4",
+            "f3f4"
+          ],
+          "reply": "d6c7"
+        },
+        {
+          "teach": "f4e5",
+          "accept": [
+            "f4e5"
+          ],
+          "reply": "c7b7"
+        },
+        {
+          "teach": "e5d6",
+          "accept": [
+            "e5d6"
+          ],
+          "reply": "b7a7"
+        },
+        {
+          "teach": "d6c7",
+          "accept": [
+            "d6c7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/3K4/7p/p7/5k2/P6P/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "grigoriev",
+      "line": [
+        {
+          "teach": "a3a4",
+          "accept": [
+            "a3a4"
+          ],
+          "reply": "f4g3"
+        },
+        {
+          "teach": "d7e6",
+          "accept": [
+            "d7e6"
+          ],
+          "reply": "g3h3"
+        },
+        {
+          "teach": "e6f5",
+          "accept": [
+            "e6f5"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "f5f4",
+          "accept": [
+            "f5f4"
+          ],
+          "reply": "h5h4"
+        },
+        {
+          "teach": "f4f3",
+          "accept": [
+            "f4f3"
+          ],
+          "reply": "h3h2"
+        },
+        {
+          "teach": "f3f2",
+          "accept": [
+            "f3f2"
+          ],
+          "reply": "h4h3"
+        },
+        {
+          "teach": "f2f1",
+          "accept": [
+            "f2f1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 3,
+      "fen": "4k3/2p5/1p1p4/1P1K4/8/8/7P/8 w - - 0 1",
+      "goal": "win",
+      "origin": "grigoriev",
+      "line": [
+        {
+          "teach": "d5e6",
+          "accept": [
+            "d5e6"
+          ],
+          "reply": "e8f8"
+        },
+        {
+          "teach": "e6f6",
+          "accept": [
+            "e6f6"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "f6g6",
+          "accept": [
+            "f6g6"
+          ],
+          "reply": "g8f8"
+        },
+        {
+          "teach": "h2h3",
+          "accept": [
+            "g6f6",
+            "h2h3"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "h3h4",
+          "accept": [
+            "h3h4"
+          ],
+          "reply": "g8f8"
+        },
+        {
+          "teach": "h4h5",
+          "accept": [
+            "g6f6",
+            "h4h5"
+          ],
+          "reply": "f8g8"
+        },
+        {
+          "teach": "h5h6",
+          "accept": [
+            "h5h6"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "h6h7",
+          "accept": [
+            "h6h7"
+          ],
+          "reply": "d6d5"
+        },
+        {
+          "teach": "g6f5",
+          "accept": [
+            "g6f5"
           ]
         }
       ]
     }
   ],
-  "passScore": 10,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "keys",
@@ -777,11 +913,39 @@
       "year": 1959
     },
     {
+      "id": "dfgordon",
+      "kind": "study",
+      "author": "dfgordon",
+      "title": "The Rook Pawn",
+      "url": "https://lichess.org/study/W02TqSN3"
+    },
+    {
+      "id": "kingof64",
+      "kind": "study",
+      "author": "Kingof64-Squares",
+      "title": "Rook pawn",
+      "url": "https://lichess.org/study/uXPBvt6C"
+    },
+    {
+      "id": "moravec",
+      "kind": "study",
+      "author": "sashaslamp",
+      "title": "Moravec, Československý šach, 1952",
+      "url": "https://lichess.org/study/L6v2z9bo"
+    },
+    {
+      "id": "grigoriev",
+      "kind": "study",
+      "author": "humoresque",
+      "title": "Grigoriev, Nikolai",
+      "url": "https://lichess.org/study/0iaDBwxT"
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 16
+  "maxScore": 17
 }

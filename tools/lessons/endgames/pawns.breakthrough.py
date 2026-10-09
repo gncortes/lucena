@@ -177,21 +177,37 @@ parts = [
     ]},
 ]
 
+# Exercícios (T58): um por ideia, do mais fácil para o mais difícil. Todos com
+# até 7 peças, julgados pela tabela. Ids cortados (e02–e07, e09) não voltam.
 exercises = [
+    # 2 contra 1: desviar o vigia (estudo de BenPesoa, rei preto em d8).
     exercise('e01', 1, F('3k4/p7/P7/1P6/8/8/8/7K w'), 'win', 'b6',
              ['win'], origin='studyPesoa'),
-    exercise('e02', 1, F('8/1pp5/1p6/P1P5/8/5k2/8/7K w'), 'win', 'c6',
-             ['win']),
-    exercise('e03', 1, F('8/pp6/1p6/P1P5/8/8/5k2/7K w'), 'win', 'a6',
-             ['win']),
-    exercise('e06', 2, F('7k/4pp2/4p3/3P1P2/8/8/8/7K w'), 'win',
-             'f6 exf6 d6', ['win', 'win']),
-    exercise('e07', 2, F('8/p1p5/1P6/1PP5/8/1k6/8/1K6 b'), 'draw',
-             'axb6 cxb6 cxb6', ['hold', 'hold']),
+    # Ordem: fixar primeiro (b5!), para o peão novo nascer em b6, não em b5.
+    exercise('e11', 2, F('8/8/1p6/6k1/1PP5/8/8/7K w'), 'win',
+             'b5 Kf4 c5 bxc5 b6', ['win', 'win', 'win'],
+             origin='studyReinhold'),
+    # Não tome: g6! (hxg7? perde para Rf7).
+    exercise('e12', 2, F('8/p3k1pp/7P/4K1P1/8/8/8/8 w'), 'win',
+             'g6 gxh6 gxh7', ['win', 'win'], origin='studyWastl'),
+    # Rei perto: não romper, trazer o rei.
     exercise('e08', 2, F('2k5/1pp5/8/PPP5/8/8/8/6K1 w'), 'win', 'Kf2',
              ['win']),
+    # Rei preso ao peão passado de a6: romper na outra ala (c5! e4!).
+    exercise('e13', 3, F('8/2p5/P1kp4/8/2P5/4P3/3K4/8 w'), 'win',
+             'c5 dxc5 e4 Kb6 e5', ['win', 'win', 'win'],
+             origin='studyReinhold'),
+    # Defesa: ...a6! antes de b6, e o rei vai a c8 e b8.
     exercise('e10', 3, F('8/p1pk4/8/PPP5/8/8/8/6K1 b'), 'draw',
              'a6 bxa6 Kc8 c6 Kb8', ['hold', 'hold', 'hold']),
+    # Estilo de estudo: g5! (não gxh5), depois f4 e f5 com xeque no fim.
+    exercise('e14', 3, F('5K1k/8/6p1/7p/6P1/8/5P2/8 w'), 'win',
+             'g5 h4 f4 h3 f5', ['win', 'win', 'win'],
+             origin='studyReinhold'),
+    # Primeiro o rei na frente do peão de c (Rb3! Rc2! Rd1!), depois f5.
+    exercise('e15', 3, F('8/8/1kp3p1/8/K4P1P/8/8/8 w'), 'win',
+             'Kb3 c5 Kc2 c4 Kd1 Kc5 f5 gxf5 h5',
+             ['win', 'win', 'win', 'win', 'win'], origin='studyDarkSharky'),
 ]
 
 src = {
@@ -200,7 +216,7 @@ src = {
     'skills': ['pawns.breakthrough'],
     'parts': parts,
     'exercises': exercises,
-    'passScore': 8,
+    'passScore': 12,
     'keyPositions': [
         {'id': 'classic', 'fen': CLASSIC, 'ref': 'studyBotez'},
         {'id': 'afterAxb6', 'fen': AFTER_AXB6},
@@ -232,6 +248,15 @@ src = {
         {'id': 'studyDarkSkull', 'kind': 'study', 'author': 'DarkSkull',
          'title': 'pawn breakthroughs',
          'url': 'https://lichess.org/study/cvuGdHYK'},
+        {'id': 'studyReinhold', 'kind': 'study', 'author': 'Reinhold53',
+         'title': 'Durchbruch Schlüsselfelder',
+         'url': 'https://lichess.org/study/PBs6ES3h'},
+        {'id': 'studyWastl', 'kind': 'study', 'author': 'Wastl2002',
+         'title': 'AT Durchbruch',
+         'url': 'https://lichess.org/study/8B1x0YzU'},
+        {'id': 'studyDarkSharky', 'kind': 'study', 'author': 'Dark-Sharky',
+         'title': 'Pawn Breaks',
+         'url': 'https://lichess.org/study/pRq9j9df'},
         {'id': 'wikiPassed', 'kind': 'web',
          'title': 'Wikipedia: Passed pawn',
          'url': 'https://en.wikipedia.org/wiki/Passed_pawn'},

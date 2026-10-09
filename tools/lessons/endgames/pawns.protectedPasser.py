@@ -69,7 +69,6 @@ CORNER_B = F('8/8/pP1k4/P7/8/2K5/8/8 b')     # pretas defendem o canto
 NO_TARGET = F('8/8/8/3k4/1Pp5/2P5/3K4/8 w')  # base por dentro: nada para comer, empate
 NO_TARGET_B = F('8/8/8/3k4/1Pp5/2P5/3K4/8 b')
 RECAP = F('8/3k4/8/1pP4p/1P6/8/5K2/8 w')     # resumo: jogar até o fim
-DEDRLE = F('8/2k5/8/8/Pp6/1P6/6K1/8 b')      # IsaacWiebeSupreme, cap. "Dedrele Study": só Rd6
 PRACTICE = F('8/4k3/8/1pP3p1/1P6/8/4K3/8 w')
 
 src = {
@@ -123,14 +122,13 @@ src = {
         ]},
     ],
     'exercises': [],
-    'passScore': 9,
+    'passScore': 11,
     'keyPositions': [
         {'id': 'tied', 'fen': TIED, 'ref': 'wikiPawn'},
         {'id': 'convert', 'fen': CONVERT},
         {'id': 'base', 'fen': BASE},
         {'id': 'corner', 'fen': CORNER, 'ref': 'studyIsaac'},
         {'id': 'noTarget', 'fen': NO_TARGET},
-        {'id': 'dedrle', 'fen': DEDRLE, 'ref': 'studyIsaac'},
     ],
     'practice': {'fen': PRACTICE, 'goal': 'win', 'positionId': None},
     'references': [
@@ -147,6 +145,12 @@ src = {
          'title': 'Protected Passed Pawn 1', 'url': 'https://lichess.org/study/d1sMYYB6'},
         {'id': 'studyYeongyong', 'kind': 'study', 'author': 'yeongyong',
          'title': 'Protected Passed Pawn', 'url': 'https://lichess.org/study/FZJX7Vgp'},
+        {'id': 'studyMatt', 'kind': 'study', 'author': 'matt_giocopiano',
+         'title': 'protected passed pawns', 'url': 'https://lichess.org/study/irQ4Kfg5'},
+        {'id': 'studyChessforall', 'kind': 'study', 'author': 'Chessforall321',
+         'title': 'A Protected Passed Pawn', 'url': 'https://lichess.org/study/OksaggdI'},
+        {'id': 'studyWilliam', 'kind': 'study', 'author': 'William2020',
+         'title': 'PEON PASADO PROTEGIDO', 'url': 'https://lichess.org/study/VKpH7Sw3'},
         {'id': 'wikiPawn', 'kind': 'web', 'title': 'Wikipedia: Pawn (chess), "Passed pawn"',
          'url': 'https://en.wikipedia.org/wiki/Pawn_(chess)#Passed_pawn'},
         {'id': 'wikiPassed', 'kind': 'web', 'title': 'Wikipedia: Passed pawn, "Protected passed pawn"',
@@ -158,13 +162,22 @@ src = {
 
 # (id, estrelas, fen, objetivo, origem, lances do aluno e respostas, regra por vez)
 EX = [
-    ('e01', 1, '8/8/8/pP6/Pk6/8/8/K7 w', 'win', 'own', 'b6 Kc5 b7', ['win'] * 2),
-    ('e02', 1, '8/8/pPk5/P7/8/3K4/8/8 b', 'draw', 'own', 'Kb7', ['hold']),
-    ('e03', 1, '8/3k4/8/1pP3p1/1P6/5K2/8/8 w', 'win', 'own', 'Kg4 Ke6 Kxg5', ['win'] * 2),
-    ('e04', 2, '8/8/2k5/1pP5/1P6/4K3/8/8 w', 'win', 'own', 'Kd4 Kb7 Kd5 Kc7 c6', ['win'] * 3),
-    ('e08', 3, '8/8/Pk6/1P5p/4p3/8/6K1/8 w', 'win', 'studyChessInstitute', 'Kg3 Kc7 Kf4', ['only', 'win']),
-    ('e09', 3, '8/4k3/8/1pP4p/1P6/8/8/3K4 w', 'win', 'own', 'Ke2 Ke6 Kf3', ['win'] * 2),
+    # O rei livre come o passado do outro lado (b6? empata); o rei preto não pode defender f4 e ficar no quadrado.
+    ('e17', 1, '8/8/8/pP2k3/P4p2/5K2/8/8 w', 'win', 'studyWilliam', 'Kg4 Ke6 Kxf4', ['win'] * 2),
+    # Peão de torre protegido longe do canto ganha: o rei vai a c7 (h6? perde).
+    ('e12', 1, '8/2p5/5k2/6pP/6P1/8/8/7K w', 'win', 'studyChessInstitute', 'Kg2 Ke5 Kf3', ['win'] * 2),
+    # O outro lado também tem passado: só Re5 segura d4 e fica no quadrado de c5.
+    ('e13', 2, '8/8/8/1pPk4/1P1p4/5K2/8/8 b', 'draw', 'studyWilliam', 'Ke5 c6 Kd6', ['only', 'hold']),
+    ('e08', 2, '8/8/Pk6/1P5p/4p3/8/6K1/8 w', 'win', 'studyChessInstitute', 'Kg3 Kc7 Kf4', ['only', 'win']),
+    # Passado distante perto (b5): o defensor acompanha o rei e segura, lance único a lance único.
+    ('e14', 2, '8/8/8/1p2kPp1/6P1/4K3/8/8 b', 'draw', 'studyMatt', 'Kd5 Kd3 Ke5 Kc3 Kd5', ['only'] * 3),
     ('e10', 3, '8/2k5/8/8/Pp6/1P6/6K1/8 b', 'draw', 'studyIsaac', 'Kd6 Kf3 Kd5', ['only', 'only']),
+    # O rei preto come a base, mas Re2! deixa o rei branco no lugar certo para a corrida de damas.
+    ('e15', 3, '8/8/7p/8/5Pk1/6P1/5K2/8 w', 'win', 'studyChessforall',
+     'Ke2 h5 Ke3 Kxg3 f5 h4 f6 h3 f7 h2 f8=Q h1=Q Qg7+', ['only', 'only', 'only', 'only', 'only', 'win', 'win']),
+    # Rf5! e Re6!: o rei vai ao mate em vez de correr atrás do peão de b.
+    ('e16', 3, '8/6kP/5pP1/8/1p2pK2/8/8/8 w', 'win', 'studyChessforall',
+     'Kf5 b3 Ke6 b2 h8=Q+ Kxh8 Kf7 b1=Q g7+ Kh7 g8=Q+', ['only'] * 6),
 ]
 for id_, st, fen, goal, origin, sans, acc in EX:
     src['exercises'].append({'id': id_, 'stars': st, 'fen': F(fen), 'goal': goal,
