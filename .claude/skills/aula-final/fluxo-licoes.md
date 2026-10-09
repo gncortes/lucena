@@ -76,7 +76,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada (lote2) |
 | 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | **feita: B**, commitada (lote2); ciclo todo sem Fable |
 | 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | **feita: B**, commitada (lote2); ciclo todo sem Fable; e17 pendente |
-| 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | |
+| 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | **feita: B**, commitada (lote2); Carlsen–So 2017, Euwe–Whitaker 1928; e13 (crédito Capablanca ex. 28) pendente |
 | 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | |
 | 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | |
 | 8 | rookPawns.vsPawn | D | 4 (+2) | Fable | sem demo; escada do rei, afogamento, xeque que não ganha tempo; Saavedra, Kamsky–Bacrot | |
@@ -110,7 +110,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk | |
 | 37 | mates.bishopKnight.full | C | 3 (+1) | Fable | sem demo; canto errado (Kempinski), Delétang do centro, Be4+ | |
 
-Pendências de julgamento para o Gabriel: `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
+Pendências de julgamento para o Gabriel: `pawns.distantOpposition` e13 é o exemplo 28 de Capablanca deslocado uma coluna e a solução credita um estudo do Lichess (texto pt/en pronto no LICAO): trocar o crédito ou deixar; `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
 `rook.lucena` e16 e e15 encostados na lição nova (a parte `zugzwang` mostra 2 dos 3 lances do e16; o e15 é
 quase o `rookPawnDemo`) e e14 com o corte Td7+ não ensinado: trocar os exercícios de posição ou deixar; 23 soluções de exercícios (`ex.*.solution`) dizem "a tabela aceita…", que a regra das
 falas proíbe; `pawns.keySquares` e17 é o tema de `pawns.correspondingSquares` (a aula seguinte): mover o e17
