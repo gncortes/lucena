@@ -37,6 +37,9 @@ import chess
 import chess.engine
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tools' / 'lessons'))
+import check_variety  # noqa: E402  (variedade dos exercícios)
+
 SRC = ROOT / 'tools' / 'lessons' / 'endgames'
 OUT = ROOT / 'assets' / 'lessons' / 'endgames'
 TRAIL = SRC / 'trail.json'
@@ -536,8 +539,22 @@ def build(source, oracle):
         exercises.append(out)
 
     count = len(exercises)
-    if not 8 <= count <= 12:
-        problems.append(f'exercícios: {count}, e a aula pede de 8 a 12')
+    if count < check_variety.MIN_EXERCISES:
+        problems.append(f'exercícios: {count}; a aula pede ao menos '
+                        f'{check_variety.MIN_EXERCISES}, um por ideia '
+                        'distinta')
+    # Variedade: duplicata exata (só os reis, o espelho ou as cores mudam) é
+    # erro; o resto é aviso no relatório, para julgar no dossiê.
+    variety = check_variety.analyse(
+        {**source, 'exercises': exercises},
+        json.loads((TEXTS / 'pt' / 'endgames' / f'{lesson_id}.json').read_text())
+        if (TEXTS / 'pt' / 'endgames' / f'{lesson_id}.json').exists() else {})
+    for group in variety['exact_groups']:
+        problems.append('exercícios iguais (só os reis, o espelho ou as cores '
+                        f"mudam): {', '.join(group)}")
+    for warning in check_variety.warnings_of(variety):
+        if not warning.startswith('duplicata exata'):
+            report.append(f'Variedade: {warning}')
     max_score = sum(e.get('stars') or 0 for e in exercises)
     pass_score = source.get('passScore')
     if not isinstance(pass_score, int) or not (

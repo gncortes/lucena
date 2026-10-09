@@ -756,30 +756,6 @@
       ]
     },
     {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/3K4/8/7k/5pp1/8/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d7e6",
-          "accept": [
-            "d7e6"
-          ],
-          "reply": "h5h4"
-        },
-        {
-          "teach": "e6e5",
-          "accept": [
-            "e6d5",
-            "e6e5",
-            "e6f5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e11",
       "stars": 3,
       "fen": "8/8/8/1K5k/5pp1/8/8/R7 w - - 0 1",
@@ -809,7 +785,7 @@
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "sixth",
@@ -921,5 +897,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 21
+  "maxScore": 18
 }

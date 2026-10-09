@@ -123,7 +123,7 @@ src = {
         ]},
     ],
     'exercises': [],
-    'passScore': 12,
+    'passScore': 9,
     'keyPositions': [
         {'id': 'tied', 'fen': TIED, 'ref': 'wikiPawn'},
         {'id': 'convert', 'fen': CONVERT},
@@ -162,9 +162,6 @@ EX = [
     ('e02', 1, '8/8/pPk5/P7/8/3K4/8/8 b', 'draw', 'own', 'Kb7', ['hold']),
     ('e03', 1, '8/3k4/8/1pP3p1/1P6/5K2/8/8 w', 'win', 'own', 'Kg4 Ke6 Kxg5', ['win'] * 2),
     ('e04', 2, '8/8/2k5/1pP5/1P6/4K3/8/8 w', 'win', 'own', 'Kd4 Kb7 Kd5 Kc7 c6', ['win'] * 3),
-    ('e05', 2, '8/8/4k3/1p6/1Pp4P/8/4K3/8 b', 'win', 'own', 'Kf5 Kd2 Kg4', ['win'] * 2),
-    ('e06', 2, '8/8/8/5Pp1/6Pk/8/8/K7 w', 'win', 'own', 'f6 Kxg4 f7', ['win'] * 2),
-    ('e07', 2, '8/2k5/8/1pPK4/1P6/8/8/8 w', 'win', 'own', 'c6 Kc8 Kc5 Kc7 Kxb5', ['win'] * 3),
     ('e08', 3, '8/8/Pk6/1P5p/4p3/8/6K1/8 w', 'win', 'studyChessInstitute', 'Kg3 Kc7 Kf4', ['only', 'win']),
     ('e09', 3, '8/4k3/8/1pP4p/1P6/8/8/3K4 w', 'win', 'own', 'Ke2 Ke6 Kf3', ['win'] * 2),
     ('e10', 3, '8/2k5/8/8/Pp6/1P6/6K1/8 b', 'draw', 'studyIsaac', 'Kd6 Kf3 Kd5', ['only', 'only']),

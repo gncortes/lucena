@@ -140,11 +140,7 @@ src = {
     ],
     'exercises': [
         ex('e01', 1, F('8/5p2/4k1p1/8/P7/2K3P1/8/8 w'), 'a5', ['win']),
-        ex('e02', 1, F('8/p5k1/1p6/5p2/1P6/6KP/8/8 w'), 'b5', ['only']),
-        ex('e03', 1, F('8/8/4k3/1pP4p/1P6/3K4/8/8 w'), 'Ke4', ['win']),
         ex('e04', 2, F('8/5k2/6p1/1p4P1/2K1P3/8/8/8 w'), 'Kxb5 Ke7 Kc5',
-           ['only', 'win']),
-        ex('e05', 2, F('8/5p2/2k3p1/8/P1K5/6P1/8/8 w'), 'Kd4 Kd6 a5',
            ['only', 'win']),
         ex('e06', 2, F('8/8/8/1pPk3p/1P6/3K4/8/8 w'), 'Ke2 Ke5 Kf3',
            ['win', 'win']),
@@ -157,7 +153,7 @@ src = {
         ex('e10', 3, F('8/5p2/3k2p1/8/P7/3K2P1/8/8 w'), 'Ke4 f6 a5 Kc5 a6',
            ['win', 'win', 'win']),
     ],
-    'passScore': 12,
+    'passScore': 9,
     'keyPositions': [
         {'id': 'decoy', 'fen': DECOY},
         {'id': 'down', 'fen': DOWN, 'ref': 'studyFabian'},

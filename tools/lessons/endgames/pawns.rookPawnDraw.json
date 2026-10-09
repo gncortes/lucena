@@ -496,52 +496,6 @@
       ]
     },
     {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/6k1/8/8/8/K7/P7/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "g7f7",
-          "accept": "hold",
-          "reply": "a3b4"
-        },
-        {
-          "teach": "f7e7",
-          "accept": "hold",
-          "reply": "b4b5"
-        },
-        {
-          "teach": "e7d7",
-          "accept": "hold",
-          "reply": "b5b6"
-        },
-        {
-          "teach": "d7c8",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/2k5/8/3K4/8/8/7P/8 w - - 0 1",
-      "goal": "win",
-      "origin": "audax",
-      "turns": [
-        {
-          "teach": "d5e6",
-          "accept": "win",
-          "reply": "c7d8"
-        },
-        {
-          "teach": "e6f7",
-          "accept": "win"
-        }
-      ]
-    },
-    {
       "id": "e06",
       "stars": 2,
       "fen": "8/7K/5k2/7P/8/8/8/8 b - - 0 1",
@@ -573,24 +527,6 @@
         },
         {
           "teach": "f7f8",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "2k5/8/1K6/P7/8/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "c8b8",
-          "accept": "hold",
-          "reply": "a5a6"
-        },
-        {
-          "teach": "b8a8",
           "accept": "hold"
         }
       ]
@@ -665,7 +601,7 @@
       ]
     }
   ],
-  "passScore": 14,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "keys",

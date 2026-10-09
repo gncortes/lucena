@@ -41,6 +41,26 @@ void main() {
     expect(state.lessonOngoing, isFalse);
   });
 
+  test(
+    'ao abrir, estrela e exercício aberto de id cortado são apagados',
+    () async {
+      progress.saved = EndgameProgress(
+        lessons: {
+          'rook.lucena': const EndgameLessonProgress(
+            stars: {'e01': 1, 'e09': 3},
+            exercise: ExerciseCheckpoint(exerciseId: 'e09'),
+          ),
+        },
+      );
+      final state = (await load('rook.lucena')).state;
+      expect(state.score, 1);
+      expect(state.solved, 1);
+      expect(state.nextExercise!.id, 'e02');
+      expect(progress.saved.of('rook.lucena').stars, {'e01': 1});
+      expect(progress.saved.of('rook.lucena').exercise, isNull);
+    },
+  );
+
   test('a faixa da nota: abaixo, aprovado, bom e perfeito', () async {
     Future<EndgameLessonState> withStars(Map<String, int> stars) async {
       progress.saved = EndgameProgress(

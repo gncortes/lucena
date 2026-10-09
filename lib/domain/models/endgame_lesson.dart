@@ -187,8 +187,19 @@ class EndgameLessonProgress {
   /// O exercício aberto quando o app fechou.
   final ExerciseCheckpoint? exercise;
 
-  /// A nota: as estrelas ganhas somadas.
-  int get score => stars.values.fold(0, (total, each) => total + each);
+  /// A nota: as estrelas ganhas nos exercícios que a aula tem hoje. A
+  /// estrela de um exercício que saiu da aula fica gravada, mas não conta.
+  int scoreOf(EndgameLesson lesson) {
+    var total = 0;
+    for (final exercise in lesson.exercises) {
+      total += stars[exercise.id] ?? 0;
+    }
+    return total;
+  }
+
+  /// Quantos exercícios da aula já foram resolvidos.
+  int solvedOf(EndgameLesson lesson) =>
+      lesson.exercises.where((e) => stars.containsKey(e.id)).length;
 
   EndgameLessonProgress copyWith({
     bool? lessonDone,

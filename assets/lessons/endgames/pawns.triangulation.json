@@ -466,21 +466,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/4k3/p1P5/P3K3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e5d5",
-          "accept": [
-            "e5d5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "8/3k4/1p1P4/1P1K4/8/8/8/8 w - - 0 1",
@@ -588,55 +573,6 @@
           "teach": "b8b7",
           "accept": [
             "b8b7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "5k2/8/5P1p/4K2P/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e5f4",
-          "accept": [
-            "e5d4",
-            "e5d5",
-            "e5d6",
-            "e5e4",
-            "e5e6",
-            "e5f4",
-            "e5f5"
-          ],
-          "reply": "f8e8"
-        },
-        {
-          "teach": "f4e4",
-          "accept": [
-            "f4e4",
-            "f4e5",
-            "f4f5",
-            "f4g4"
-          ],
-          "reply": "e8f8"
-        },
-        {
-          "teach": "e4e5",
-          "accept": [
-            "e4d4",
-            "e4d5",
-            "e4e5",
-            "e4f4",
-            "e4f5"
-          ],
-          "reply": "f8f7"
-        },
-        {
-          "teach": "e5f5",
-          "accept": [
-            "e5f5"
           ]
         }
       ]
@@ -807,7 +743,7 @@
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 11,
   "keyPositions": [
     {
       "id": "zugzwang",
@@ -902,5 +838,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 17
 }

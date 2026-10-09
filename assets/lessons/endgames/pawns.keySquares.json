@@ -292,22 +292,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/6k1/8/8/5K2/6P1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "f4g5",
-          "accept": [
-            "f4f5",
-            "f4g5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "3k4/8/8/2KP4/8/8/8/8 w - - 0 1",
@@ -371,56 +355,6 @@
           "teach": "d4c5",
           "accept": [
             "d4c5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/2k5/8/3K4/3P4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "strategically",
-      "line": [
-        {
-          "teach": "d5e6",
-          "accept": [
-            "d5c5",
-            "d5e5",
-            "d5e6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "7k/8/6K1/6P1/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
-      "line": [
-        {
-          "teach": "g6f7",
-          "accept": [
-            "g6f6",
-            "g6f7",
-            "g6h6"
-          ],
-          "reply": "h8h7"
-        },
-        {
-          "teach": "g5g6",
-          "accept": [
-            "f7f6",
-            "g5g6"
-          ],
-          "reply": "h7h8"
-        },
-        {
-          "teach": "g6g7",
-          "accept": [
-            "f7f6",
-            "g6g7"
           ]
         }
       ]
@@ -507,37 +441,6 @@
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/8/3k4/8/8/1KP5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b2b3",
-          "accept": [
-            "b2b3"
-          ],
-          "reply": "d5c5"
-        },
-        {
-          "teach": "b3c3",
-          "accept": [
-            "b3c3"
-          ],
-          "reply": "c5d5"
-        },
-        {
-          "teach": "c3b4",
-          "accept": [
-            "c3b3",
-            "c3b4",
-            "c3d3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e12",
       "stars": 3,
       "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
@@ -576,7 +479,7 @@
       ]
     }
   ],
-  "passScore": 15,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "count",
@@ -671,5 +574,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 24
+  "maxScore": 16
 }

@@ -36,6 +36,7 @@ REFERENCES = [
 write({
     'id': 'queen.vsRook.philidor',
     'module': 'queen',
+    'skills': ['queen.vsRook'],
     'parts': [
         {'id': 'philidor', 'steps': [
             think('t_philidor', B, 5, 2, marks=['a7', 'a8', 'c7']),
@@ -87,10 +88,7 @@ write({
         exercise('e02', 1, after(B, 'Rb2'), 'Qe5+ Ka8 Qxb2'),
         exercise('e03', 1, after(B, 'Re7'), 'Qb4+'),
         exercise('e04', 1, after(B, 'Kc8'), 'Qa6'),
-        exercise('e05', 2, G, 'Qd5+ Kh7 Qh1+ Kg8 Qh5',
-                 accept={1: ['Qd5+', 'Qe5']}, origin='bxms'),
         exercise('e06', 2, after(B, 'Rh7'), 'Qe5+ Ka7 Qa1+ Kb8 Qb1+'),
-        exercise('e07', 2, after(B, 'Rf7'), 'Qb4+ Ka7 Qa3+ Kb8 Qb3+'),
         exercise('e08', 2, '1k6/2r5/Q1K5/8/8/8/8/8 w - - 0 1', 'Kd6',
                  accept='win', origin='wikipedia'),
         exercise('e09', 3, after(B, 'Rb3'),
@@ -98,7 +96,7 @@ write({
         exercise('e10', 3, after(B, 'Rb1'),
                  'Qe5+ Ka7 Qd4+ Ka8 Qh8+ Ka7 Qh7+', origin='calmodee'),
     ],
-    'passScore': 11,
+    'passScore': 9,
     'keyPositions': [
         {'id': 'black', 'fen': B, 'ref': 'wikipedia'},
         {'id': 'white', 'fen': W, 'ref': 'wikipedia'},

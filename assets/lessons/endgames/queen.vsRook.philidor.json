@@ -519,42 +519,6 @@
       ]
     },
     {
-      "id": "e05",
-      "stars": 2,
-      "fen": "6k1/6r1/5K2/7Q/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "bxms",
-      "line": [
-        {
-          "teach": "h5d5",
-          "accept": [
-            "h5d5",
-            "h5e5"
-          ],
-          "reply": "g8h7"
-        },
-        {
-          "teach": "d5h1",
-          "accept": [
-            "d5d3",
-            "d5d4",
-            "d5e4",
-            "d5e5",
-            "d5f5",
-            "d5h1"
-          ],
-          "reply": "h7g8"
-        },
-        {
-          "teach": "h1h5",
-          "accept": [
-            "h1a8",
-            "h1h5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e06",
       "stars": 2,
       "fen": "1k6/7r/2K5/Q7/8/8/8/8 w - - 0 1",
@@ -579,40 +543,6 @@
           "teach": "a1b1",
           "accept": [
             "a1b1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "1k6/5r2/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a5b4",
-          "accept": [
-            "a5b4",
-            "a5d8",
-            "a5e5"
-          ],
-          "reply": "b8a7"
-        },
-        {
-          "teach": "b4a3",
-          "accept": [
-            "b4a3",
-            "b4a4",
-            "b4d4"
-          ],
-          "reply": "a7b8"
-        },
-        {
-          "teach": "a3b3",
-          "accept": [
-            "a3b2",
-            "a3b3"
           ]
         }
       ]
@@ -718,7 +648,7 @@
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "black",
@@ -789,5 +719,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 18
+  "maxScore": 14
 }

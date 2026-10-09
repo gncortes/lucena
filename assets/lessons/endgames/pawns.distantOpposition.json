@@ -286,21 +286,6 @@
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "5k2/8/8/8/4KP2/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "f8e8",
-          "accept": [
-            "f8e8"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 1,
       "fen": "8/8/4k3/8/8/5PK1/8/8 w - - 0 1",
@@ -311,30 +296,6 @@
           "teach": "g3g4",
           "accept": [
             "g3g4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "2k5/5K2/8/8/8/2P5/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "f7e6",
-          "accept": [
-            "f7e6"
-          ],
-          "reply": "c8d8"
-        },
-        {
-          "teach": "e6d6",
-          "accept": [
-            "e6d5",
-            "e6d6",
-            "e6e5"
           ]
         }
       ]
@@ -395,28 +356,6 @@
           "teach": "f6e6",
           "accept": [
             "f6e6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "4k3/8/8/8/8/8/1P6/5K2 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "f1e2",
-          "accept": [
-            "f1e2"
-          ],
-          "reply": "e8d7"
-        },
-        {
-          "teach": "e2d3",
-          "accept": [
-            "e2d3"
           ]
         }
       ]
@@ -553,7 +492,7 @@
       ]
     }
   ],
-  "passScore": 15,
+  "passScore": 12,
   "keyPositions": [
     {
       "id": "lesson",
@@ -625,5 +564,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 24
+  "maxScore": 19
 }

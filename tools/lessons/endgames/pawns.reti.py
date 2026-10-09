@@ -124,13 +124,9 @@ write({
     'exercises': [
         exercise('e01', 1, RETI, 'Kg7', accept='hold', goal='draw',
                  origin='wikiReti'),
-        exercise('e02', 1, KH7, 'Kg6', accept='hold', goal='draw'),
         exercise('e03', 1, CLOSE_A5, 'c7', accept='win', goal='win'),
-        exercise('e04', 1, G5, 'Kg7', accept='hold', goal='draw'),
         exercise('e05', 2, after(MIRROR, 'Kb7 a4 Kc6 a3'),
                  'Kd7 a2 f7 Kg7 Ke7', accept='hold', goal='draw'),
-        exercise('e06', 2, SWAP, 'Kg2 h5 Kf3 h6 Ke3',
-                 accept='hold', goal='draw'),
         exercise('e07', 2, MARSHALL_WRONG, 'f4', accept='win', goal='win',
                  origin='yatesMarshall'),
         exercise('e08', 2, A7, 'h4 Kf6 Kb8', accept='win', goal='win'),
@@ -141,7 +137,7 @@ write({
         exercise('e11', 3, SARYCHEV, 'Kc8 b5 Kd7 b4 Kd6 Bf5 Ke5',
                  accept='hold', goal='draw', origin='drfiskeson'),
     ],
-    'passScore': 12,
+    'passScore': 10,
     'keyPositions': [
         {'id': 'reti', 'fen': RETI, 'ref': 'wikiReti'},
         {'id': 'reti1928', 'fen': RETI1928, 'ref': 'wikiReti'},

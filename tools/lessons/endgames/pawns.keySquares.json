@@ -241,19 +241,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/6k1/8/8/5K2/6P1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f4g5",
-          "accept": "win"
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "3k4/8/8/2KP4/8/8/8/8 w - - 0 1",
@@ -306,42 +293,6 @@
       "turns": [
         {
           "teach": "d4c5",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/2k5/8/3K4/3P4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "strategically",
-      "turns": [
-        {
-          "teach": "d5e6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "7k/8/6K1/6P1/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiKpk",
-      "turns": [
-        {
-          "teach": "g6f7",
-          "accept": "win",
-          "reply": "h8h7"
-        },
-        {
-          "teach": "g5g6",
-          "accept": "win",
-          "reply": "h7h8"
-        },
-        {
-          "teach": "g6g7",
           "accept": "win"
         }
       ]
@@ -408,29 +359,6 @@
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "8/8/8/3k4/8/8/1KP5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "b2b3",
-          "accept": "win",
-          "reply": "d5c5"
-        },
-        {
-          "teach": "b3c3",
-          "accept": "win",
-          "reply": "c5d5"
-        },
-        {
-          "teach": "c3b4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
       "id": "e12",
       "stars": 3,
       "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
@@ -459,7 +387,7 @@
       ]
     }
   ],
-  "passScore": 15,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "count",

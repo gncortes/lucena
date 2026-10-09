@@ -535,23 +535,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/P7/8/8/4k3/8/7p/K7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "a7a8q",
-          "accept": [
-            "a1a2",
-            "a1b2",
-            "a7a8q"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "8/p7/8/8/2k1K3/8/7P/8 w - - 0 1",
@@ -595,28 +578,6 @@
           "teach": "d2e2",
           "accept": [
             "d2e2"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "8/7p/8/2K1k3/8/8/P7/8 b - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h7h5",
-          "accept": [
-            "h7h5"
-          ],
-          "reply": "a2a4"
-        },
-        {
-          "teach": "h5h4",
-          "accept": [
-            "h5h4"
           ]
         }
       ]
@@ -778,7 +739,7 @@
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "race",
@@ -881,5 +842,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 17
+  "maxScore": 14
 }

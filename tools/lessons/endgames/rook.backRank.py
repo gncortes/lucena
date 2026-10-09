@@ -46,6 +46,7 @@ REFERENCES = [
 write({
     'id': 'rook.backRank',
     'module': 'rook',
+    'skills': ['rook.backRank'],
     'parts': [
         {'id': 'wait', 'steps': [
             think('t_knight', KN, 5, 1),
@@ -77,8 +78,6 @@ write({
     'exercises': [
         exercise('e01', 1, TRICK, 'Kh1', accept='only', goal='draw',
                  origin='rookPawn'),
-        exercise('e02', 1, ACTIVE, 'Rb8', accept='hold', goal='draw',
-                 origin='rookPawn'),
         exercise('e03', 1, after(KNIGHT5, 'Ra8 Rb3'), 'Ra1', accept='only',
                  goal='draw', origin='profangel'),
         exercise('e04', 1, KNIGHT5, 'Ra8', accept='hold', goal='draw',
@@ -89,18 +88,13 @@ write({
         exercise('e06', 2, ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+',
                  accept={1: 'hold', 2: 'only', 3: 'hold'}, goal='draw',
                  origin='rookPawn'),
-        exercise('e07', 2, TRICKB, 'Ka1 Ra2+ Kb1',
-                 accept='only', goal='draw'),
-        exercise('e08', 2, KNIGHT5, 'Ra8 Rb3 Ra1',
-                 accept={1: 'hold', 2: 'only'}, goal='draw',
-                 origin='profangel'),
         exercise('e09', 3, SEVENTH, 'Re1 Kd3 Rb1 Kd2 Re1', accept='only',
                  goal='draw', origin='rookPawn'),
         exercise('e10', 3, EARLY, 'Rc3 f3 Rc8 Kg3 Rg8+',
                  accept={1: 'hold', 2: 'hold', 3: 'only'}, goal='draw',
                  origin='chessmood'),
     ],
-    'passScore': 11,
+    'passScore': 8,
     'keyPositions': [
         {'id': 'knight', 'fen': KN, 'ref': 'rookPawn'},
         {'id': 'trick', 'fen': TRICK, 'ref': 'rookPawn'},

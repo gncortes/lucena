@@ -463,32 +463,6 @@
       ]
     },
     {
-      "id": "e05",
-      "stars": 2,
-      "fen": "6k1/6r1/5K2/7Q/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "bxms",
-      "turns": [
-        {
-          "teach": "h5d5",
-          "accept": [
-            "h5d5",
-            "h5e5"
-          ],
-          "reply": "g8h7"
-        },
-        {
-          "teach": "d5h1",
-          "accept": "best",
-          "reply": "h7g8"
-        },
-        {
-          "teach": "h1h5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
       "id": "e06",
       "stars": 2,
       "fen": "1k6/7r/2K5/Q7/8/8/8/8 w - - 0 1",
@@ -507,29 +481,6 @@
         },
         {
           "teach": "a1b1",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "1k6/5r2/2K5/Q7/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a5b4",
-          "accept": "best",
-          "reply": "b8a7"
-        },
-        {
-          "teach": "b4a3",
-          "accept": "best",
-          "reply": "a7b8"
-        },
-        {
-          "teach": "a3b3",
           "accept": "best"
         }
       ]
@@ -604,7 +555,7 @@
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "black",

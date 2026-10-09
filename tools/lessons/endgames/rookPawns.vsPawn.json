@@ -457,32 +457,9 @@
           "accept": "only"
         }
       ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/5K2/8/8/3p1k2/8/8/R7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f7e6",
-          "accept": "only",
-          "reply": "f4e4"
-        },
-        {
-          "teach": "e6d6",
-          "accept": "win",
-          "reply": "e4e3"
-        },
-        {
-          "teach": "d6c5",
-          "accept": "win"
-        }
-      ]
     }
   ],
-  "passScore": 12,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "cut",

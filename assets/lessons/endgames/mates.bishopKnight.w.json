@@ -441,25 +441,6 @@
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "6k1/5N2/5K2/8/8/3B4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "d3f5",
-          "accept": [
-            "d3b1",
-            "d3c2",
-            "d3e4",
-            "d3f5",
-            "d3g6"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 1,
       "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
@@ -571,32 +552,6 @@
       ]
     },
     {
-      "id": "e09",
-      "stars": 2,
-      "fen": "8/8/3B4/8/4N3/5K2/8/7k w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e4f2",
-          "accept": [
-            "d6a3",
-            "d6b4",
-            "d6b8",
-            "d6c5",
-            "d6c7",
-            "d6e5",
-            "d6e7",
-            "d6f4",
-            "d6f8",
-            "d6g3",
-            "e4f2",
-            "e4g3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e10",
       "stars": 3,
       "fen": "4k3/3N3B/5K2/8/8/8/8/8 w - - 0 1",
@@ -691,7 +646,7 @@
       ]
     }
   ],
-  "passScore": 14,
+  "passScore": 12,
   "keyPositions": [
     {
       "id": "wStart",
@@ -775,5 +730,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 23
+  "maxScore": 20
 }

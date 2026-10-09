@@ -468,22 +468,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/7K/k1P5/7p/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h7g6",
-          "accept": [
-            "h7g6",
-            "h7g7"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
@@ -494,21 +478,6 @@
           "teach": "c6c7",
           "accept": [
             "c6c7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "7K/8/k1P5/6p1/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h8g7",
-          "accept": [
-            "h8g7"
           ]
         }
       ]
@@ -540,36 +509,6 @@
           "accept": [
             "d7e7",
             "d7e8"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/8/8/7P/K1p5/8/7k b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h1g2",
-          "accept": [
-            "h1g2"
-          ],
-          "reply": "h4h5"
-        },
-        {
-          "teach": "g2f3",
-          "accept": [
-            "g2f3"
-          ],
-          "reply": "h5h6"
-        },
-        {
-          "teach": "f3e3",
-          "accept": [
-            "f3e2",
-            "f3e3"
           ]
         }
       ]
@@ -710,7 +649,7 @@
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "reti",
@@ -823,5 +762,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 16
 }

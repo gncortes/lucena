@@ -330,19 +330,6 @@
       ]
     },
     {
-      "id": "e03",
-      "stars": 1,
-      "fen": "6k1/5N2/5K2/8/8/3B4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d3f5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 1,
       "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
@@ -418,19 +405,6 @@
       ]
     },
     {
-      "id": "e09",
-      "stars": 2,
-      "fen": "8/8/3B4/8/4N3/5K2/8/7k w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e4f2",
-          "accept": "best"
-        }
-      ]
-    },
-    {
       "id": "e10",
       "stars": 3,
       "fen": "4k3/3N3B/5K2/8/8/8/8/8 w - - 0 1",
@@ -500,7 +474,7 @@
       ]
     }
   ],
-  "passScore": 14,
+  "passScore": 12,
   "keyPositions": [
     {
       "id": "wStart",

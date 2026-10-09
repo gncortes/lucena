@@ -55,7 +55,28 @@ abstract final class EndgameLessonRules {
   static bool passed(EndgameLesson lesson, EndgameLessonProgress progress) =>
       progress.lessonDone &&
       allSolved(lesson, progress) &&
-      progress.score >= lesson.passScore;
+      progress.scoreOf(lesson) >= lesson.passScore;
+
+  /// O progresso sem o que aponta para exercício que a aula não tem mais
+  /// (estrela ou exercício aberto de um id cortado). O mesmo objeto se não
+  /// há nada a tirar.
+  static EndgameLessonProgress prune(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+  ) {
+    final ids = {for (final exercise in lesson.exercises) exercise.id};
+    final orphanStars = progress.stars.keys.any((id) => !ids.contains(id));
+    final open = progress.exercise?.exerciseId;
+    final orphanOpen = open != null && !ids.contains(open);
+    if (!orphanStars && !orphanOpen) return progress;
+    return progress.copyWith(
+      stars: {
+        for (final MapEntry(:key, :value) in progress.stars.entries)
+          if (ids.contains(key)) key: value,
+      },
+      clearExercise: orphanOpen,
+    );
+  }
 
   /// O speedrun do final da aula: o de modalidade "final" na mesma posição
   /// do treino. Nulo se o final não tem speedrun.

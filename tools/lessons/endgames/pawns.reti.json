@@ -428,19 +428,6 @@
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/7K/k1P5/7p/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "h7g6",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
       "id": "e03",
       "stars": 1,
       "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
@@ -450,19 +437,6 @@
         {
           "teach": "c6c7",
           "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "7K/8/k1P5/6p1/8/8/8/8 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "h8g7",
-          "accept": "hold"
         }
       ]
     },
@@ -485,29 +459,6 @@
         },
         {
           "teach": "d7e7",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/8/8/7P/K1p5/8/7k b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "h1g2",
-          "accept": "hold",
-          "reply": "h4h5"
-        },
-        {
-          "teach": "g2f3",
-          "accept": "hold",
-          "reply": "h5h6"
-        },
-        {
-          "teach": "f3e3",
           "accept": "hold"
         }
       ]
@@ -618,7 +569,7 @@
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "reti",

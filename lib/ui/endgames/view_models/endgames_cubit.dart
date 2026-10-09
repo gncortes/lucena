@@ -102,8 +102,11 @@ class EndgamesState {
   }
 
   /// A nota de uma aula, sobre o total de estrelas.
-  (int, int) score(String lessonId) =>
-      (progress.of(lessonId).score, trail.lesson(lessonId)?.maxScore ?? 0);
+  (int, int) score(String lessonId) {
+    final lesson = trail.lesson(lessonId);
+    if (lesson == null) return (0, 0);
+    return (progress.of(lessonId).scoreOf(lesson), lesson.maxScore);
+  }
 }
 
 /// A trilha das aulas de finais: os módulos e as aulas, com o que já foi

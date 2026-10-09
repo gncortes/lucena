@@ -13,7 +13,6 @@
   "part.defense.summary": "Quem defende e joga primeiro avança o peão do meio. Depois, retoma com o peão certo.",
   "part.finish.title": "Resumo",
   "part.finish.summary": "Três regras para a partida, o golpe mais uma vez e uma partida contra a máquina.",
-
   "step.t_classic": "Brancas jogam. Três peões contra três, frente a frente, e os dois reis longe. Nenhum peão é passado, e o rei preto não pode ajudar. Dá para fazer um peão branco chegar à oitava fileira?",
   "step.t_classic.hint1": "Um peão sozinho não passa por três. Mas, se você der um ou dois peões, os peões pretos têm de tomar e saem do caminho.",
   "step.t_classic.hint2": "Comece pelo peão do meio. O que as pretas fazem se ele avança e ameaça tomar em a7 ou em c7?",
@@ -30,7 +29,6 @@
   "step.classicMove": "Sua vez. As pretas tomaram com o peão de c. Brancas jogam e ganham.",
   "step.classicMove.hint": "A coluna c está livre na frente do seu peão de c5. Quem vigia c6? Desvie esse peão.",
   "step.classicMove.done": "Isso. a6 desviou o peão de b7, e o peão de c foi direto. Só esse caminho ganhava.",
-
   "step.t_count": "Mesma ideia, mas agora o rei preto está em e8, mais perto. As brancas já jogaram b6 e as pretas tomaram com o peão de a. A ruptura ainda funciona? Conte antes de jogar.",
   "step.t_count.hint1": "Jogue a ruptura na cabeça até o fim: c6, bxc6, a6. Agora é a vez das pretas. Aonde o rei precisa chegar para parar o peão de a6?",
   "step.t_count.hint2": "O peão de a6 coroa em dois lances. O rei preto precisa chegar a b7 antes. Conte os lances do rei de e8 até lá, lembrando que c7 está ocupada pelo peão preto.",
@@ -39,7 +37,6 @@
   "step.countMove": "De volta ao rei em e8. Brancas jogam e ganham. Faça a ruptura e leve o peão até a sétima.",
   "step.countMove.hint": "Você já contou: o rei de e8 chega tarde. Desvie o peão de b7 e corra com o peão de a.",
   "step.countMove.done": "Isso. O rei preto foi a d7, mas o peão já está em a7 e coroa no próximo lance.",
-
   "step.t_side": "Brancas jogam. Outros peões: brancos em c5 e e5, pretos em d7, e7 e d6. O rei preto está em h8. Existe uma ruptura aqui. Com que peão?",
   "step.t_side.hint1": "Teste os dois avanços, c6 e e6. Depois de cada um, um peão preto toma. Que peão branco fica livre na coluna?",
   "step.t_side.hint2": "Um dos avanços deixa o peão de e5 ainda travado pelo peão de e7. O outro solta um peão numa coluna longe do rei preto.",
@@ -55,7 +52,6 @@
   "step.sideMove": "De volta ao rei em h8. Brancas jogam e ganham.",
   "step.sideMove.hint": "Avance o peão que obriga o peão de d7 a tomar e solta o peão da coluna longe do rei.",
   "step.sideMove.done": "Isso. e6 tirou o peão de d7 do caminho, e o peão de c foi sozinho até c7. O rei preto nem chegou perto.",
-
   "step.t_wiki": "Brancas jogam. Agora é na ala do rei, e o rei preto está em g3, encostado nos peões brancos. Ele ameaça ir a g4 e atacar os peões. O que as brancas jogam?",
   "step.t_wiki.hint1": "Esperar não adianta: o rei preto vai atacar os peões. Procure um lance que crie um peão passado à força.",
   "step.t_wiki.hint2": "É a mesma ideia da primeira parte, com o peão do meio desta ala.",
@@ -71,7 +67,6 @@
   "step.wikiMove": "Sua vez. Aqui as pretas tomaram com o peão de f. Brancas jogam e ganham.",
   "step.wikiMove.hint": "O peão de f5 ficou sem peão preto na frente. Quem vigia f6? Desvie esse peão com o outro sacrifício.",
   "step.wikiMove.done": "Isso. h6 tirou o peão de g7, e o peão de f correu. Os peões pretos que sobraram estão longe da primeira fileira.",
-
   "step.t_defense": "Mesma posição, mas agora as pretas jogam. Você é o defensor. Como impedir a ruptura g6?",
   "step.t_defense.hint1": "Se você deixar g6 acontecer, já viu o que vem. Procure um lance que tire das brancas o sacrifício.",
   "step.t_defense.hint2": "Um dos seus peões pode avançar e encostar nos peões brancos. Dos três avanços, só um funciona.",
@@ -83,14 +78,12 @@
   "step.sameSideMove": "Pretas jogam e empatam.",
   "step.sameSideMove.hint": "O peão branco veio de f5. Retome com o seu peão da coluna f.",
   "step.sameSideMove.done": "Isso. Os peões se trocam, e sobra um peão de cada lado, frente a frente. Nenhum peão branco passa.",
-
   "step.recap": "Três regras para a partida. Primeira: com três peões contra três, frente a frente, o peão do meio se sacrifica primeiro; depois, o vizinho tira o peão que vigia a coluna que ficou livre. Segunda: antes do primeiro sacrifício, conte se o rei adversário pega o peão novo; ele precisa nascer longe desse rei. Terceira: quem defende e joga primeiro avança o peão do meio e encosta nos peões do outro; quando eles tomam, retoma com o peão do mesmo lado.",
   "step.recapMove": "O golpe mais uma vez, antes da partida. As pretas tomaram com o peão de a. Brancas jogam e ganham.",
   "step.recapMove.hint": "O peão de a5 está livre na coluna; só o peão de b7 vigia a6.",
   "step.recapMove.done": "Isso. c6 desviou o peão de b7, e o peão de a5 passou.",
   "step.playIntro": "Agora uma partida contra a máquina. As pretas já tomaram com o peão de a, e o rei preto está em f1, longe. Só um lance ganha. Conte e jogue até a dama.",
   "step.finish": "Brancas jogam e ganham. Boa partida.",
-
   "ex.e01": "Brancas jogam e ganham. Dois peões contra um, e o rei preto em d8.",
   "ex.e01.hint": "O peão de a6 está a duas casas da coroação, mas o peão de a7 está na frente. Tire-o do caminho.",
   "ex.e01.solution": "b6! Se axb6, a7, e o rei de d8 não chega a b7 a tempo. Se as pretas não tomam, por exemplo com Rc8, bxa7 e o peão coroa. Os lances de rei das brancas só empatam.",
@@ -100,12 +93,6 @@
   "ex.e03": "Brancas jogam e ganham. Agora quem tomou foi o peão de c.",
   "ex.e03.hint": "A coluna c ficou livre. Quem vigia c6?",
   "ex.e03.solution": "a6! Depois de bxa6, o peão de c5 corre: c6, c7, c8. Se as pretas tomarem em c5, axb7 e o peão coroa em b8. Só a6 ganha.",
-  "ex.e04": "Brancas jogam e ganham. A ruptura agora é na ala do rei, e as pretas já tomaram com o peão de f.",
-  "ex.e04.hint": "O peão de f5 ficou sem peão preto na frente. Quem vigia f6?",
-  "ex.e04.solution": "h6! Depois de gxh6, f6, e o peão de f corre até f8. Se as pretas não tomarem, hxg7 e o peão coroa em g8. Só h6 ganha.",
-  "ex.e05": "Brancas jogam e ganham. Na ala do rei, as pretas tomaram com o peão de h.",
-  "ex.e05.hint": "Qual peão branco ficou com a coluna livre? Primeiro desvie o vigia, depois corra.",
-  "ex.e05.solution": "f6! e, depois de gxf6, h6: o peão de h corre até h8. A ordem importa: começar com h6 não ganha.",
   "ex.e06": "Brancas jogam e ganham. Peões brancos em d5 e f5; pretos em e7, f7 e e6. O rei preto está em h8.",
   "ex.e06.hint": "Que avanço obriga um peão preto a tomar e solta um peão branco numa coluna longe do rei?",
   "ex.e06.solution": "f6! Depois de exf6, d6, e o peão de d corre até d8, longe do rei de h8. Se as pretas não tomarem, o peão de f6 toma em e7 e coroa. Trocar os peões em e6 só empata.",
@@ -115,13 +102,9 @@
   "ex.e08": "Brancas jogam e ganham. Três peões contra dois, mas o rei preto está em c8, ao lado dos peões.",
   "ex.e08.hint": "Conte antes de sacrificar: depois de uma ruptura, o rei preto pega o peão novo? Se pega, procure outro plano.",
   "ex.e08.solution": "Aqui a ruptura só empata: o rei de c8 pega o peão novo. Com um peão a mais, o plano é trazer o rei. Qualquer lance de rei, como Rf2, ganha; a6, b6 ou c6 agora jogam a vitória fora.",
-  "ex.e09": "Brancas jogam e ganham. O rei preto está em b3, perto dos peões, mas é a vez das brancas.",
-  "ex.e09.hint": "Qual peão branco está com a coluna livre na frente? Quem vigia a casa seguinte dele?",
-  "ex.e09.solution": "a6! Se bxa6, c6 e c7: o rei de b3 está perto, mas não chega a c8 a tempo. Se bxc5, axb7 e o peão coroa em b8. Só a6 ganha; o rei perto não muda a conta, porque o peão de c está a três lances da dama.",
   "ex.e10": "Pretas jogam e empatam. Três peões brancos contra dois, e o rei preto em d7. O que fazer antes que as brancas joguem b6?",
   "ex.e10.hint": "Encoste um peão nos peões brancos para tirar a ruptura, e deixe o rei cuidar do resto.",
   "ex.e10.solution": "...a6! Depois de bxa6, o rei vai a c8 e, depois de c6, a b8, na frente do peão de a. O peão de c7 trava o de c6. Só ...a6 empata, e depois só Rc8 e Rb8 seguram.",
-
   "key.classic": "Três peões contra três, os reis longe: só b6 ganha. A estrutura aparece no estudo \"BREAKTHROUGH\" de alexandra_botez no Lichess, com outros reis.",
   "key.afterAxb6": "Depois de b6 axb6: só c6 ganha.",
   "key.afterCxb6": "Depois de b6 cxb6: só a6 ganha.",

@@ -13,7 +13,6 @@
   "part.defense.summary": "The defender to move pushes the middle pawn. Then he recaptures with the right pawn.",
   "part.finish.title": "Summary",
   "part.finish.summary": "Three rules for your games, the blow once more and a game against the machine.",
-
   "step.t_classic": "White to move. Three pawns against three, face to face, and both kings far away. No pawn is passed, and the black king can't help. Can White get a pawn to the eighth rank?",
   "step.t_classic.hint1": "One pawn alone can't get past three. But if you give away one or two pawns, the black pawns must capture and step out of the way.",
   "step.t_classic.hint2": "Start with the middle pawn. What does Black do if it advances and threatens to take on a7 or c7?",
@@ -30,7 +29,6 @@
   "step.classicMove": "Your turn. Black took with the c-pawn. White to move and win.",
   "step.classicMove.hint": "The c-file is free in front of your c5-pawn. Who guards c6? Deflect that pawn.",
   "step.classicMove.done": "That's it. a6 deflected the b7-pawn, and the c-pawn went straight through. Only that path won.",
-
   "step.t_count": "Same idea, but now the black king is on e8, closer. White has already played b6 and Black took with the a-pawn. Does the breakthrough still work? Count before you play.",
   "step.t_count.hint1": "Play the breakthrough in your head to the end: c6, bxc6, a6. Now it's Black's move. Where must the king get to in order to stop the a6-pawn?",
   "step.t_count.hint2": "The a6-pawn queens in two moves. The black king has to reach b7 first. Count the king's moves from e8, remembering that c7 is taken by a black pawn.",
@@ -39,7 +37,6 @@
   "step.countMove": "Back to the king on e8. White to move and win. Make the breakthrough and take the pawn to the seventh rank.",
   "step.countMove.hint": "You've already counted: the king on e8 arrives late. Deflect the b7-pawn and run with the a-pawn.",
   "step.countMove.done": "That's it. The black king went to d7, but the pawn is already on a7 and queens next move.",
-
   "step.t_side": "White to move. Different pawns: White on c5 and e5, Black on d7, e7 and d6. The black king is on h8. There's a breakthrough here. With which pawn?",
   "step.t_side.hint1": "Try both advances, c6 and e6. After each one, a black pawn captures. Which white pawn is left with a free file?",
   "step.t_side.hint2": "One of the advances leaves the e5-pawn still blocked by the e7-pawn. The other frees a pawn on a file far from the black king.",
@@ -55,7 +52,6 @@
   "step.sideMove": "Back to the king on h8. White to move and win.",
   "step.sideMove.hint": "Advance the pawn that forces the d7-pawn to capture and frees the pawn on the file far from the king.",
   "step.sideMove.done": "That's it. e6 pulled the d7-pawn out of the way, and the c-pawn went alone to c7. The black king never came close.",
-
   "step.t_wiki": "White to move. Now it's on the kingside, and the black king is on g3, right next to the white pawns. It threatens to go to g4 and attack the pawns. What does White play?",
   "step.t_wiki.hint1": "Waiting doesn't help: the black king will attack the pawns. Look for a move that creates a passed pawn by force.",
   "step.t_wiki.hint2": "It's the same idea as in the first part, with the middle pawn of this wing.",
@@ -71,7 +67,6 @@
   "step.wikiMove": "Your turn. Here Black took with the f-pawn. White to move and win.",
   "step.wikiMove.hint": "The f5-pawn has no black pawn in front of it. Who guards f6? Deflect that pawn with the other sacrifice.",
   "step.wikiMove.done": "That's it. h6 removed the g7-pawn, and the f-pawn ran. The black pawns that remain are far from the first rank.",
-
   "step.t_defense": "Same position, but now Black is to move. You are the defender. How do you stop the g6 breakthrough?",
   "step.t_defense.hint1": "If you let g6 happen, you've seen what comes. Look for a move that takes the sacrifice away from White.",
   "step.t_defense.hint2": "One of your pawns can advance and touch the white pawns. Of the three advances, only one works.",
@@ -83,14 +78,12 @@
   "step.sameSideMove": "Black to move and draw.",
   "step.sameSideMove.hint": "The white pawn came from f5. Recapture with your f-file pawn.",
   "step.sameSideMove.done": "That's it. The pawns get exchanged, and one pawn each is left, face to face. No white pawn gets through.",
-
   "step.recap": "Three rules for your games. First: with three pawns against three, face to face, the middle pawn is sacrificed first; then its neighbour removes the pawn that guards the file that became free. Second: before the first sacrifice, count whether the enemy king catches the new pawn; it has to be born far from that king. Third: the defender to move pushes the middle pawn into contact with the other side's pawns; when they capture, recapture with the pawn on the same side.",
   "step.recapMove": "The blow once more, before the game. Black took with the a-pawn. White to move and win.",
   "step.recapMove.hint": "The a5-pawn has a free file; only the b7-pawn guards a6.",
   "step.recapMove.done": "That's it. c6 deflected the b7-pawn, and the a5-pawn got through.",
   "step.playIntro": "Now a game against the machine. Black has already taken with the a-pawn, and the black king is on f1, far away. Only one move wins. Count, and play on until you have a queen.",
   "step.finish": "White to move and win. Good luck.",
-
   "ex.e01": "White to move and win. Two pawns against one, and the black king on d8.",
   "ex.e01.hint": "The a6-pawn is two squares from queening, but the a7-pawn is in the way. Get it out of the way.",
   "ex.e01.solution": "b6! If axb6, a7, and the king on d8 doesn't reach b7 in time. If Black doesn't take, for example with Kc8, bxa7 and the pawn queens. White's king moves only draw.",
@@ -100,12 +93,6 @@
   "ex.e03": "White to move and win. This time the c-pawn did the capturing.",
   "ex.e03.hint": "The c-file is free. Who guards c6?",
   "ex.e03.solution": "a6! After bxa6, the c5-pawn runs: c6, c7, c8. If Black takes on c5 instead, axb7 and the pawn queens on b8. Only a6 wins.",
-  "ex.e04": "White to move and win. The breakthrough is now on the kingside, and Black has already taken with the f-pawn.",
-  "ex.e04.hint": "The f5-pawn has no black pawn in front of it. Who guards f6?",
-  "ex.e04.solution": "h6! After gxh6, f6, and the f-pawn runs to f8. If Black doesn't take, hxg7 and the pawn queens on g8. Only h6 wins.",
-  "ex.e05": "White to move and win. On the kingside, Black took with the h-pawn.",
-  "ex.e05.hint": "Which white pawn has a free file? First deflect the guard, then run.",
-  "ex.e05.solution": "f6! and, after gxf6, h6: the h-pawn runs to h8. The order matters: starting with h6 doesn't win.",
   "ex.e06": "White to move and win. White pawns on d5 and f5; black pawns on e7, f7 and e6. The black king is on h8.",
   "ex.e06.hint": "Which advance forces a black pawn to capture and frees a white pawn on a file far from the king?",
   "ex.e06.solution": "f6! After exf6, d6, and the d-pawn runs to d8, far from the king on h8. If Black doesn't take, the f6-pawn takes on e7 and queens. Exchanging on e6 only draws.",
@@ -115,13 +102,9 @@
   "ex.e08": "White to move and win. Three pawns against two, but the black king is on c8, right next to the pawns.",
   "ex.e08.hint": "Count before you sacrifice: after a breakthrough, does the black king catch the new pawn? If it does, look for another plan.",
   "ex.e08.solution": "Here the breakthrough only draws: the king on c8 catches the new pawn. With an extra pawn, the plan is to bring the king. Any king move, such as Kf2, wins; a6, b6 or c6 right now throw the win away.",
-  "ex.e09": "White to move and win. The black king is on b3, close to the pawns, but it's White's move.",
-  "ex.e09.hint": "Which white pawn has a free file in front of it? Who guards its next square?",
-  "ex.e09.solution": "a6! If bxa6, c6 and c7: the king on b3 is close, but it doesn't reach c8 in time. If bxc5, axb7 and the pawn queens on b8. Only a6 wins; the nearby king doesn't change the count, because the c-pawn is three moves from a queen.",
   "ex.e10": "Black to move and draw. Three white pawns against two, and the black king on d7. What do you do before White plays b6?",
   "ex.e10.hint": "Push a pawn into contact with the white pawns to take the breakthrough away, and let the king handle the rest.",
   "ex.e10.solution": "...a6! After bxa6, the king goes to c8 and, after c6, to b8, in front of the a-pawn. The c7-pawn blocks the c6-pawn. Only ...a6 draws, and after that only Kc8 and Kb8 hold.",
-
   "key.classic": "Three pawns against three, kings far away: only b6 wins. The structure appears in alexandra_botez's Lichess study \"BREAKTHROUGH\", with other king positions.",
   "key.afterAxb6": "After b6 axb6: only c6 wins.",
   "key.afterCxb6": "After b6 cxb6: only a6 wins.",

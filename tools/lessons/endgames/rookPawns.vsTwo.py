@@ -140,8 +140,6 @@ EXERCISES = [
              accept='hold', goal='draw'),
     exercise('e09', 3, '8/8/8/2R1K1k1/8/pp6/8/8 w - - 0 1', 'Kd4+ Kf4 Kc3',
              accept={1: 'only', 2: 'win'}),
-    exercise('e10', 3, '8/3K4/8/7k/5pp1/8/8/R7 w - - 0 1', 'Ke6 Kh4 Ke5',
-             accept={1: 'only', 2: 'win'}),
     exercise('e11', 3, '8/8/8/1K5k/5pp1/8/8/R7 w - - 0 1',
              'Kc4 g3 Kd3 Kg4 Ke2', accept='only'),
 ]
@@ -152,7 +150,7 @@ LESSON = {
     'skills': ['rook.vsTwoPawns'],
     'parts': PARTS,
     'exercises': EXERCISES,
-    'passScore': 13,
+    'passScore': 11,
     'keyPositions': [
         {'id': 'sixth', 'fen': SIXTH, 'ref': 'wikiEndgame'},
         {'id': 'fifth', 'fen': FIFTH},
