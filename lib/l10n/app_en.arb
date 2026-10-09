@@ -2709,6 +2709,10 @@
   "@reviewStartPosition": {
     "description": "Game details: the board shows the position before the first move."
   },
+  "reviewVariation": "Your variation (not part of the game)",
+  "@reviewVariation": {
+    "description": "Game details: the board shows a move of the variation the user played on the board, which is not saved to the game."
+  },
   "reviewFirst": "First move",
   "@reviewFirst": {
     "description": "Game details: tooltip of the button that goes to the starting position."
@@ -4240,9 +4244,42 @@
   "@conclusionMarathonDone": {
     "description": "Conclusion title when the Marathon is completed."
   },
-  "conclusionAnalyze": "Analyze the game",
-  "@conclusionAnalyze": {
-    "description": "Main bottom button of the conclusion: opens the move-by-move review of this game."
+  "conclusionDetailedReview": "See the detailed analysis",
+  "@conclusionDetailedReview": {
+    "description": "Button right under the precision in the finished quick analysis card of the conclusion: opens the full move-by-move review of this game."
+  },
+  "conclusionBestLine": "See the best line",
+  "@conclusionBestLine": {
+    "description": "Conclusion card title: the game played again from the start, Stockfish in the player's place against the same opponent, move by move on a board."
+  },
+  "conclusionBestLineHint": "Stockfish in your place against {opponent}",
+  "@conclusionBestLineHint": {
+    "description": "Subtitle of the best line card. The opponent is the character (or engine) the player faced.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "conclusionBestLineMove": "Move {move} of {total}",
+  "@conclusionBestLineMove": {
+    "description": "Best line stepper: which move of the line is shown.",
+    "placeholders": {
+      "move": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionBestLineDisclaimer": "Stockfish played fast (1 s per move), so in some positions it may miss the best defence or the win. For a deeper look, open the detailed analysis.",
+  "@conclusionBestLineDisclaimer": {
+    "description": "Short note under the best line board: it was played fast, so it may not be perfect; points to the detailed analysis button below."
+  },
+  "conclusionHideComment": "Hide the comment",
+  "@conclusionHideComment": {
+    "description": "Tooltip of the close button on the opponent's comment card in the conclusion: hides the card and stops the voice."
   },
   "conclusionRatingHistory": "Rating history",
   "@conclusionRatingHistory": {

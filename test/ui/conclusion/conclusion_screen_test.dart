@@ -15,6 +15,7 @@ import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../testing/fakes/fake_analysis_repository.dart';
@@ -22,12 +23,14 @@ import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_share_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 
 // Uma partida longa: 16 lances (a dama e o rei indo e voltando).
@@ -69,6 +72,8 @@ void main() {
     List<String> moves = const ['c1g5'],
     Duration played = const Duration(seconds: 20),
     bool disableAnimations = false,
+    SpeechCubit? speech,
+    FakeOpponentRepository? opponent,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
@@ -112,6 +117,7 @@ void main() {
         now: now,
         analysis: analysis,
         reviews: FakeGameReviewRepository(),
+        opponent: opponent,
       );
       await cubit.load(id, 'en');
     });
@@ -131,6 +137,7 @@ void main() {
       TestApp(
         shareRepository: share,
         settingsCubit: settings,
+        speechCubit: speech,
         child: MediaQuery(
           data: MediaQueryData(
             size: size,
@@ -170,7 +177,7 @@ void main() {
       expect(find.byKey(ConclusionKeys.reviewBoard), findsOneWidget);
       // No fim: depois dos atalhos de histórico.
       final links = tester.getTopLeft(
-        find.byKey(ConclusionKeys.action(ConclusionAction.analyze)),
+        find.byKey(ConclusionKeys.action(ConclusionAction.ratingHistory)),
       );
       final quick = tester.getTopLeft(find.byKey(ConclusionKeys.quickReview));
       expect(quick.dy, greaterThan(links.dy));
@@ -181,9 +188,8 @@ void main() {
       expect(find.byKey(ConclusionKeys.review), findsOneWidget);
     });
 
-    testWidgets('partida longa: só no toque, logo abaixo do cartão', (
-      tester,
-    ) async {
+    testWidgets('partida longa: só no toque, e anda ali mesmo, no fim da '
+        'tela', (tester) async {
       await open(tester, moves: _longMoves, played: const Duration(minutes: 5));
 
       expect(cubit.state.reviewing, isFalse);
@@ -191,14 +197,40 @@ void main() {
       expect(find.byKey(ConclusionKeys.reviewBoard), findsNothing);
       expect(find.byKey(ConclusionKeys.review), findsNothing);
       final links = tester.getTopLeft(
-        find.byKey(ConclusionKeys.action(ConclusionAction.analyze)),
+        find.byKey(ConclusionKeys.action(ConclusionAction.ratingHistory)),
       );
       final quick = tester.getTopLeft(find.byKey(ConclusionKeys.quickReview));
-      expect(quick.dy, lessThan(links.dy));
+      expect(quick.dy, greaterThan(links.dy));
 
+      analysis.hold = Completer<void>();
+      await tester.ensureVisible(find.byKey(ConclusionKeys.quickReview));
       await tester.tap(find.byKey(ConclusionKeys.quickReview));
       await settle(tester);
+      // Na própria conclusão, andando, com a fala do adversário à vista.
+      expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.reviewBoard), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.comment), findsOneWidget);
+
+      analysis.hold!.complete();
+      analysis.hold = null;
+      await settle(tester);
       expect(find.byKey(ConclusionKeys.review), findsOneWidget);
+      // "Ver a análise detalhada" logo abaixo da precisão, antes dos
+      // quadradinhos: o único caminho para ela na tela.
+      final deeper = tester.getTopLeft(find.byKey(ConclusionKeys.reviewDeeper));
+      expect(
+        deeper.dy,
+        greaterThan(tester.getTopLeft(find.byKey(ConclusionKeys.accuracy)).dy),
+      );
+      expect(
+        deeper.dy,
+        lessThan(
+          tester.getTopLeft(find.byKey(ConclusionKeys.quality('best'))).dy,
+        ),
+      );
+      expect(find.text('See the detailed analysis'), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.comment), findsOneWidget);
     });
 
     testWidgets('compartilhar com a análise rodando: a imagem sai sem ela; '
@@ -217,6 +249,140 @@ void main() {
       expect(cubit.state.review, isNotNull);
       final done = await sharedHeight(tester);
       expect(done, greaterThan(running));
+      // Pronta, a imagem leva o resumo, mas nunca o botão: ele fica fora
+      // do que é capturado, desenhado sob a precisão.
+      expect(
+        find.descendant(
+          of: find.byKey(ConclusionKeys.analysisShared),
+          matching: find.byKey(ConclusionKeys.accuracy),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(ConclusionKeys.analysisShared),
+          matching: find.byKey(ConclusionKeys.reviewDeeper),
+        ),
+        findsNothing,
+      );
+      await tester.ensureVisible(find.byKey(ConclusionKeys.accuracy));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(ConclusionKeys.reviewDeeper).hitTestable(),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('melhor linha', () {
+    testWidgets('ao abrir, os lances andam sozinhos conforme chegam; embaixo, '
+        'o aviso e a análise detalhada', (tester) async {
+      final opponent = FakeOpponentRepository()..hold();
+      await open(
+        tester,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        opponent: opponent,
+      );
+      // Fechada, nada é jogado.
+      expect(opponent.requests, isEmpty);
+      await tester.ensureVisible(find.byKey(ConclusionKeys.bestLineToggle));
+      await tester.tap(find.byKey(ConclusionKeys.bestLineToggle));
+      await tester.pump();
+      expect(find.byKey(ConclusionKeys.bestLineRunning), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.bestLineDisclaimer), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.bestLineDeeper), findsOneWidget);
+
+      String label() =>
+          tester.widget<Text>(find.byKey(ConclusionKeys.bestLineMove)).data!;
+      // Cada lance que chega aparece no tabuleiro, sem tocar em nada.
+      Future<void> next() async {
+        opponent
+          ..release()
+          ..hold();
+        await tester.runAsync(pumpEventQueue);
+        await tester.pump();
+      }
+
+      await next();
+      expect(label(), startsWith('Move 1 of 1 · '));
+      await next();
+      expect(label(), startsWith('Move 2 of 2 · '));
+      // Rodando, não dá para andar na mão.
+      expect(
+        tester
+            .widget<IconButton>(find.byKey(ConclusionKeys.bestLineBack))
+            .onPressed,
+        isNull,
+      );
+
+      // Até o fim: a barra some e dá para voltar.
+      opponent.release();
+      await tester.runAsync(() async {
+        for (var i = 0; i < 50 && !cubit.state.bestLineDone; i++) {
+          await pumpEventQueue();
+        }
+      });
+      await tester.pumpAndSettle();
+      expect(cubit.state.bestLineDone, isTrue);
+      expect(find.byKey(ConclusionKeys.bestLineRunning), findsNothing);
+      final total = cubit.state.bestLine.length;
+      expect(label(), startsWith('Move $total of $total · '));
+      await tester.tap(find.byKey(ConclusionKeys.bestLineBack));
+      await tester.pump();
+      expect(label(), startsWith('Move ${total - 1} of $total · '));
+      expect(
+        find.text(
+          'Stockfish played fast (1 s per move), so in some positions it may '
+          'miss the best defence or the win. For a deeper look, open the '
+          'detailed analysis.',
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('fala do adversário', () {
+    testWidgets('fica no alto; o ✕ a esconde e cala a voz', (tester) async {
+      final voice = FakeVoiceRepository();
+      final speech = SpeechCubit(voice);
+      addTearDown(speech.close);
+      await tester.runAsync(speech.load);
+      await open(
+        tester,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        speech: speech,
+      );
+      final comment = cubit.state.comment!;
+      expect(find.byKey(ConclusionKeys.comment), findsOneWidget);
+      // Fora da rolagem: rolar até o fim não a tira da vista.
+      await tester.drag(
+        find.byType(SingleChildScrollView).first,
+        const Offset(0, -3000),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        tester.getTopLeft(find.byKey(ConclusionKeys.comment)).dy,
+        lessThan(200),
+      );
+
+      await tester.runAsync(
+        () => speech.say(
+          comment,
+          speakerId: cubit.state.opponent!.id,
+          language: 'en',
+        ),
+      );
+      await tester.pump();
+      expect(speech.state.isSpeaking(comment), isTrue);
+
+      await tester.tap(find.byKey(ConclusionKeys.commentClose));
+      await tester.runAsync(pumpEventQueue);
+      await tester.pumpAndSettle();
+      expect(find.byKey(ConclusionKeys.comment), findsNothing);
+      expect(speech.state.speaking, isNull);
+      expect(voice.stops, greaterThan(0));
     });
   });
 

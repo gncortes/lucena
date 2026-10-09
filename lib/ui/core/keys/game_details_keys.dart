@@ -16,6 +16,10 @@ abstract final class GameDetailsKeys {
   /// O símbolo da qualidade do lance [index] na tabela.
   static Key moveQuality(int index) => Key('gameDetails.move.$index.quality');
 
+  /// A variante feita no tabuleiro, na tabela, e o lance [ply] dela.
+  static const variation = Key('gameDetails.variation');
+  static Key variationMove(int ply) => Key('gameDetails.variation.$ply');
+
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.
   static const reviewButton = Key('gameDetails.review.button');
   static const reviewQuick = Key('gameDetails.review.quick');

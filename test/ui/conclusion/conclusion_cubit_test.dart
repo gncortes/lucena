@@ -19,6 +19,7 @@ import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_conclusion_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
@@ -53,7 +54,9 @@ void main() {
   ConclusionCubit cubit({
     FakeAnalysisRepository? analysis,
     FakeGameReviewRepository? reviews,
+    FakeOpponentRepository? opponent,
   }) => ConclusionCubit(
+    opponent: opponent,
     analysis: analysis,
     reviews: reviews,
     progress: progress,
@@ -136,7 +139,8 @@ void main() {
     // Perdeu: o mesmo desafio de novo, sem pular para o próximo.
     expect(conclusion.next, isNull);
     expect(conclusion.actions.first, ConclusionAction.playAgain);
-    expect(conclusion.actions, contains(ConclusionAction.analyze));
+    // A análise detalhada sai do resumo da análise rápida, não dos atalhos.
+    expect(conclusion.actions, contains(ConclusionAction.ratingHistory));
     expect(state.opponent?.level, 1000);
     expect(state.comment, isNotNull);
     expect(state.replay, contains('challenge='));
@@ -359,6 +363,71 @@ void main() {
       expect(analysis.requests.length, asked);
       await first.close();
       await again.close();
+    });
+  });
+
+  group('melhor linha', () {
+    test('o Stockfish (1 s) no lugar do jogador contra o mesmo adversário '
+        '(o Maia no nível dele), lance a lance', () async {
+      final opponent = FakeOpponentRepository();
+      final id = await play(won: true);
+      final conclusions = cubit(opponent: opponent);
+      await conclusions.load(id, 'en');
+      expect(conclusions.canPlayBestLine, isTrue);
+      final seen = <int>[];
+      final sub = conclusions.stream.listen(
+        (state) => seen.add(state.bestLine.length),
+      );
+
+      await conclusions.playBestLine();
+      final state = conclusions.state;
+      expect(state.bestLineDone, isTrue);
+      expect(state.bestLineRunning, isFalse);
+      expect(state.bestLine, isNotEmpty);
+      // Os lances chegaram um a um, com o tabuleiro no último.
+      expect(seen, containsAllInOrder([1, 2]));
+      expect(state.bestPly, state.bestLine.length - 1);
+      // As brancas (o jogador) com o Stockfish; as pretas com o Maia 1000.
+      expect(opponent.kinds.first, OpponentKind.stockfish);
+      expect(opponent.levels.first, isNull);
+      if (opponent.kinds.length > 1) {
+        expect(opponent.kinds[1], OpponentKind.maia);
+        expect(opponent.levels[1], 1000);
+      }
+      for (final (index, kind) in opponent.kinds.indexed) {
+        expect(kind, index.isEven ? OpponentKind.stockfish : OpponentKind.maia);
+      }
+      expect(opponent.thinkTimes.toSet(), {ConclusionCubit.bestLineThink});
+      expect(ConclusionCubit.bestLineThink, const Duration(seconds: 1));
+      // Pronta, dá para voltar e avançar.
+      conclusions.bestBack();
+      expect(conclusions.state.bestPly, state.bestLine.length - 2);
+      conclusions.bestForward();
+      expect(conclusions.state.bestPly, state.bestLine.length - 1);
+      await sub.cancel();
+      await conclusions.close();
+    });
+
+    test('contra o Stockfish: o Stockfish dos dois lados', () async {
+      final opponent = FakeOpponentRepository();
+      final id = await play(won: true);
+      progress.attempts[id - 1] = progress.attempts[id - 1].copyWith(
+        opponent: OpponentKind.stockfish,
+        opponentLevel: null,
+      );
+      final conclusions = cubit(opponent: opponent);
+      await conclusions.load(id, 'en');
+      await conclusions.playBestLine();
+      expect(opponent.kinds.toSet(), {OpponentKind.stockfish});
+      await conclusions.close();
+    });
+
+    test('sem quem jogar, nada a mostrar', () async {
+      final id = await play(won: true);
+      final conclusions = cubit();
+      await conclusions.load(id, 'en');
+      expect(conclusions.canPlayBestLine, isFalse);
+      await conclusions.close();
     });
   });
 }

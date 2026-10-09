@@ -496,7 +496,8 @@ class _AccuracyBox extends StatelessWidget {
 /// O tabuleiro da revisão: a posição do lance mostrado, a anotação dele na
 /// casa de destino e, com a engine ligada, a seta do melhor lance; sem a
 /// engine, depois de um erro, a seta do lance que era melhor. Ao lado, a
-/// barra de avaliação.
+/// barra de avaliação. Como num tabuleiro de análise, dá para jogar a partir
+/// da posição mostrada: os lances viram uma variante.
 class ReviewBoard extends StatefulWidget {
   const ReviewBoard({
     required this.state,
@@ -524,19 +525,28 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final position = state.shownPosition!;
     return GameData(
       fen: position.fen,
-      playerSide: PlayerSide.none,
+      playerSide: position.isGameOver ? PlayerSide.none : PlayerSide.both,
       sideToMove: position.turn,
-      validMoves: const {},
+      validMoves: GameRules.legalMoves(position),
       lastMove: state.shownMove,
+      kingSquareInCheck: GameRules.checkedKing(position),
     );
   }
 
   @override
   void didUpdateWidget(ReviewBoard old) {
     super.didUpdateWidget(old);
-    if (old.state.shownIndex != widget.state.shownIndex) {
-      final forward = widget.state.shownIndex == old.state.shownIndex + 1;
-      _controller.updatePosition(_game(widget.state), animate: forward);
+    final before = old.state.shownPosition;
+    final after = widget.state.shownPosition;
+    if (!identical(before, after)) {
+      // Só anima o lance seguinte (na partida ou na variante); os saltos
+      // trocam a posição de uma vez.
+      final forward = identical(widget.state.shownBefore, before);
+      _controller.updatePosition(
+        _game(widget.state),
+        animate: forward,
+        resetPremove: true,
+      );
     }
   }
 
@@ -614,6 +624,8 @@ class _ReviewBoardState extends State<ReviewBoard> {
             ),
             annotations: annotations,
             shapes: shapes,
+            onMove: (move, {viaDragAndDrop}) =>
+                context.read<GameDetailsCubit>().play(move),
           ),
         ],
       ),
@@ -749,7 +761,30 @@ class MoveExplanation extends StatelessWidget {
     Widget? subtitle;
     Widget? trailing;
     Widget? leading;
-    if (index < 0) {
+    if (state.variationPly case final ply?) {
+      // Um lance da variante: sem anotação, com a avaliação da engine.
+      final move = state.variation[ply];
+      final before = state.shownBefore!;
+      final number = before.turn == Side.white
+          ? '${before.fullmoves}.'
+          : '${before.fullmoves}...';
+      leading = Icon(Icons.call_split, color: colors.onSurfaceVariant);
+      title = SanText('$number ${move.san}', style: theme.textTheme.titleSmall);
+      subtitle = Text(
+        l10n.reviewVariation,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
+      );
+      if (state.shownScore case final score?) {
+        trailing = Text(
+          formatScore(score, locale),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      }
+    } else if (index < 0) {
       title = Text(l10n.reviewStartPosition, style: theme.textTheme.titleSmall);
     } else {
       final move = state.moves[index];
@@ -1108,7 +1143,7 @@ class EngineLinesPanel extends StatelessWidget {
             ...children,
             const SizedBox(height: 4),
             Text(
-              'Stockfish · ${l10n.reviewDepth(state.engineDepths[state.shownIndex] ?? GameDetailsCubit.engineDepths.first)}',
+              'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),

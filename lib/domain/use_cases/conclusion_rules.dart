@@ -84,7 +84,6 @@ abstract final class ConclusionRules {
     };
     return [
       ...main,
-      if (recorded) ConclusionAction.analyze,
       // O histórico (rating e partidas, na mesma tela): pelo rating, quando
       // a partida contou; senão, pelas partidas.
       if (rated)

@@ -72,6 +72,10 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   final _card = GlobalKey();
   final _analysis = GlobalKey();
 
+  // "Ver a análise detalhada": desenhado sob a precisão, mas fora da imagem
+  // de compartilhar (segue o lugar reservado para ele no cartão).
+  final _deeper = LayerLink();
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -116,6 +120,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                   conclusion: conclusion,
                   card: _card,
                   analysis: _analysis,
+                  deeper: _deeper,
                 ),
                 if (widget.fresh && conclusion.achievements.isNotEmpty)
                   AchievementToasts(
@@ -201,6 +206,7 @@ class _Body extends StatelessWidget {
     required this.conclusion,
     required this.card,
     required this.analysis,
+    required this.deeper,
   });
 
   final ConclusionState state;
@@ -209,6 +215,9 @@ class _Body extends StatelessWidget {
 
   /// O cartão da análise rápida (entra na imagem depois de pronta).
   final GlobalKey analysis;
+
+  /// O lugar do botão da análise detalhada no cartão da análise.
+  final LayerLink deeper;
 
   @override
   Widget build(BuildContext context) {
@@ -268,9 +277,44 @@ class _Body extends StatelessWidget {
         state.review != null ||
             (conclusion.gameId != null &&
                 (conclusion.game?.moves.isNotEmpty ?? false))
-        ? RepaintBoundary(
-            key: analysis,
-            child: _Analysis(state: state, conclusion: conclusion),
+        ? LayoutBuilder(
+            builder: (context, box) => Stack(
+              children: [
+                KeyedSubtree(
+                  key: ConclusionKeys.analysisShared,
+                  child: RepaintBoundary(
+                    key: analysis,
+                    child: _Analysis(
+                      state: state,
+                      conclusion: conclusion,
+                      deeper: deeper,
+                    ),
+                  ),
+                ),
+                // O botão fica por cima, fora do RepaintBoundary: a imagem
+                // de compartilhar nunca mostra botão. O seguidor é filho
+                // direto da pilha (nada no meio que recuse o toque fora da
+                // própria caixa).
+                if (state.review != null)
+                  if (conclusion.gameId case final gameId?)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: CompositedTransformFollower(
+                        link: deeper,
+                        showWhenUnlinked: false,
+                        // Da largura do lugar reservado (o cartão menos as
+                        // margens de dentro).
+                        child: SizedBox(
+                          width:
+                              box.maxWidth -
+                              2 * (AppSpacing.insideCard + AppSpacing.xs),
+                          child: DetailedReviewButton(gameId: gameId),
+                        ),
+                      ),
+                    ),
+              ],
+            ),
           )
         : null;
     final sections = <Widget>[
@@ -290,16 +334,6 @@ class _Body extends StatelessWidget {
           ),
         ),
       ),
-      // Partida longa: a análise rápida logo abaixo do cartão, no toque.
-      if (!state.autoReview) ?quick,
-      if (opponent != null && comment != null)
-        TeacherSpeech(
-          key: ConclusionKeys.comment,
-          speechContext: SpeechContext.game,
-          teacher: opponent,
-          text: comment,
-          emotion: state.emotion,
-        ),
       if (feedback.isNotEmpty)
         ReportPanel(
           report: GameReport(
@@ -309,14 +343,27 @@ class _Body extends StatelessWidget {
             characters: state.characters,
           ),
         ),
+      // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
+      // de compartilhar.
+      if (context.read<ConclusionCubit>().canPlayBestLine)
+        _BestLine(state: state, conclusion: conclusion),
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
-      // Partida curta: a análise começa sozinha e anda no fim da tela.
-      if (state.autoReview) ?quick,
+      // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
+      // curta, no toque na longa.
+      ?quick,
     ];
     return Stack(
       children: [
         Column(
           children: [
+            // A fala do adversário, fixa no alto: não some nem é cortada
+            // enquanto ele fala e a análise anda. O ✕ a esconde.
+            if (opponent != null && comment != null)
+              _OpponentSpeech(
+                opponent: opponent,
+                comment: comment,
+                emotion: state.emotion,
+              ),
             Expanded(
               // Rolagem simples, não lista preguiçosa: todos os blocos ficam
               // montados, e compartilhar acha o cartão e a análise mesmo com
@@ -360,11 +407,72 @@ class _Body extends StatelessWidget {
   }
 }
 
-const _links = {
-  ConclusionAction.analyze,
-  ConclusionAction.ratingHistory,
-  ConclusionAction.gamesHistory,
-};
+/// A fala do adversário no alto da tela, com o ✕ que a esconde (e cala a
+/// voz, se ele estiver falando) só nesta tela.
+class _OpponentSpeech extends StatefulWidget {
+  const _OpponentSpeech({
+    required this.opponent,
+    required this.comment,
+    required this.emotion,
+  });
+
+  final Character opponent;
+  final String comment;
+  final Emotion emotion;
+
+  @override
+  State<_OpponentSpeech> createState() => _OpponentSpeechState();
+}
+
+class _OpponentSpeechState extends State<_OpponentSpeech> {
+  bool _hidden = false;
+
+  Future<void> _hide() async {
+    setState(() => _hidden = true);
+    await TeacherSpeech.speechOf(context)?.stopIf(widget.comment);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final motion = AppMotion.of(context);
+    final child = _content(context);
+    // Sem animações, some na hora (o AnimatedSize sem duração reclama).
+    if (motion.disabled) return child;
+    return AnimatedSize(
+      duration: motion.component,
+      curve: AppMotion.move,
+      alignment: Alignment.topCenter,
+      child: child,
+    );
+  }
+
+  Widget _content(BuildContext context) => _hidden
+      ? const SizedBox(width: double.infinity)
+      : Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screen,
+            AppSpacing.sm,
+            AppSpacing.screen,
+            AppSpacing.sm,
+          ),
+          child: TeacherSpeech(
+            key: ConclusionKeys.comment,
+            speechContext: SpeechContext.game,
+            teacher: widget.opponent,
+            text: widget.comment,
+            emotion: widget.emotion,
+            headerAction: IconButton(
+              key: ConclusionKeys.commentClose,
+              visualDensity: VisualDensity.compact,
+              tooltip: context.l10n.conclusionHideComment,
+              icon: const Icon(Icons.close_rounded),
+              onPressed: _hide,
+            ),
+          ),
+        );
+}
+
+const _links = {ConclusionAction.ratingHistory, ConclusionAction.gamesHistory};
 
 /// O resultado sobre a posição final desfocada e, embaixo, os dois jogadores
 /// com o "VS" da entrada da partida.
@@ -1186,18 +1294,15 @@ class _Links extends StatelessWidget {
             ListTile(
               key: ConclusionKeys.action(action),
               leading: Icon(switch (action) {
-                ConclusionAction.analyze => Icons.insights_rounded,
                 ConclusionAction.ratingHistory => Icons.show_chart_rounded,
                 _ => Icons.history_rounded,
               }),
               title: Text(switch (action) {
-                ConclusionAction.analyze => l10n.conclusionAnalyze,
                 ConclusionAction.ratingHistory => l10n.conclusionRatingHistory,
                 _ => l10n.statsGamesTitle,
               }),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => context.push(switch (action) {
-                ConclusionAction.analyze => Routes.game(conclusion.gameId!),
                 ConclusionAction.ratingHistory => Routes.ratingAt(
                   game: conclusion.gameId,
                 ),
@@ -1245,10 +1350,15 @@ class _ReviewBoard extends StatelessWidget {
 /// a precisão num anel e os lances do jogador em quadradinhos. O cartão
 /// muda de altura suavemente e o conteúdo troca com um esmaecer.
 class _Analysis extends StatelessWidget {
-  const _Analysis({required this.state, required this.conclusion});
+  const _Analysis({
+    required this.state,
+    required this.conclusion,
+    required this.deeper,
+  });
 
   final ConclusionState state;
   final Conclusion conclusion;
+  final LayerLink deeper;
 
   @override
   Widget build(BuildContext context) {
@@ -1260,6 +1370,7 @@ class _Analysis extends StatelessWidget {
       if (review != null) {
         return _AnalysisSummary(
           key: const ValueKey('summary'),
+          deeper: deeper,
           review: review,
           conclusion: conclusion,
         );
@@ -1420,11 +1531,13 @@ class _AnalysisSummary extends StatelessWidget {
   const _AnalysisSummary({
     required this.review,
     required this.conclusion,
+    required this.deeper,
     super.key,
   });
 
   final GameReview review;
   final Conclusion conclusion;
+  final LayerLink deeper;
 
   /// As qualidades da grade, das boas para as ruins (três por linha).
   static const _shown = [
@@ -1548,10 +1661,172 @@ class _AnalysisSummary extends StatelessWidget {
             ],
           ),
         ),
+        // Logo abaixo da precisão, o lugar do botão da análise detalhada:
+        // ele é desenhado por cima, fora da imagem de compartilhar.
+        if (conclusion.gameId != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+            child: CompositedTransformTarget(
+              link: deeper,
+              child: const SizedBox(height: DetailedReviewButton.height),
+            ),
+          ),
+        ],
         const SizedBox(height: AppSpacing.sm),
         for (final row in [_shown.take(3), _shown.skip(3)])
           Row(children: [for (final quality in row) tile(quality)]),
       ],
+    );
+  }
+}
+
+/// "Ver a melhor linha": a partida de novo desde a posição de início, com o
+/// Stockfish no lugar do jogador contra o mesmo adversário. Ao abrir, os
+/// lances andam sozinhos no tabuleiro conforme chegam; pronta, dá para
+/// voltar e avançar. Embaixo, o aviso de que foi rápido e o caminho para a
+/// análise detalhada.
+class _BestLine extends StatefulWidget {
+  const _BestLine({required this.state, required this.conclusion});
+
+  final ConclusionState state;
+  final Conclusion conclusion;
+
+  @override
+  State<_BestLine> createState() => _BestLineState();
+}
+
+class _BestLineState extends State<_BestLine> {
+  bool _open = false;
+
+  void _toggle() {
+    setState(() => _open = !_open);
+    // A primeira vez que abre, a linha começa a ser jogada.
+    if (_open) context.read<ConclusionCubit>().playBestLine();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final state = widget.state;
+    final cubit = context.read<ConclusionCubit>();
+    final line = state.bestLine;
+    final ply = state.bestPly;
+    final running = state.bestLineRunning;
+    final game = widget.conclusion.game!;
+    // A posição depois do lance mostrado e o nome dele (SAN).
+    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
+    Move? last;
+    String? san;
+    for (final uci in line.take(ply + 1)) {
+      final move = Move.parse(uci);
+      if (move == null || !position.isLegal(move)) break;
+      final (next, name) = position.makeSan(move);
+      position = next;
+      last = move;
+      san = name;
+    }
+    final opponentName =
+        state.opponent?.name ??
+        game.opponent.label(l10n, level: game.opponentLevel);
+    final gameId = widget.conclusion.gameId;
+    // Um Material próprio: o toque na linha do título aparece no cartão.
+    return Material(
+      key: ConclusionKeys.bestLine,
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            key: ConclusionKeys.bestLineToggle,
+            leading: Icon(Icons.timeline_rounded, color: colors.primary),
+            title: Text(l10n.conclusionBestLine),
+            subtitle: Text(l10n.conclusionBestLineHint(opponentName)),
+            trailing: Icon(
+              _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+            ),
+            onTap: _toggle,
+          ),
+          if (_open)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.insideCard,
+                0,
+                AppSpacing.insideCard,
+                AppSpacing.insideCard,
+              ),
+              child: LayoutBuilder(
+                builder: (context, box) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    PositionBoard(
+                      key: ConclusionKeys.bestLineBoard,
+                      fen: position.fen,
+                      size: box.maxWidth,
+                      orientation: widget.conclusion.userSide,
+                      lastMove: last,
+                    ),
+                    if (running) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      const LinearProgressIndicator(
+                        key: ConclusionKeys.bestLineRunning,
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        IconButton.outlined(
+                          key: ConclusionKeys.bestLineBack,
+                          tooltip: l10n.reviewPrevious,
+                          onPressed: running || ply < 0 ? null : cubit.bestBack,
+                          icon: const Icon(Icons.chevron_left_rounded),
+                        ),
+                        Expanded(
+                          child: Text(
+                            ply < 0 || san == null
+                                ? l10n.reviewStartPosition
+                                : '${l10n.conclusionBestLineMove(ply + 1, line.length)} · $san',
+                            key: ConclusionKeys.bestLineMove,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelLarge,
+                          ),
+                        ),
+                        IconButton.filled(
+                          key: ConclusionKeys.bestLineForward,
+                          tooltip: l10n.reviewNext,
+                          onPressed: running || ply + 1 >= line.length
+                              ? null
+                              : cubit.bestForward,
+                          icon: const Icon(Icons.chevron_right_rounded),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    // Foi rápido: o aviso e o caminho para ir mais fundo.
+                    Text(
+                      l10n.conclusionBestLineDisclaimer,
+                      key: ConclusionKeys.bestLineDisclaimer,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    if (gameId != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      DetailedReviewButton(
+                        gameId: gameId,
+                        buttonKey: ConclusionKeys.bestLineDeeper,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -1583,5 +1858,29 @@ Widget? _outcome(
     mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,
     color: ChangeColors.of(context, up: fulfilled),
     title: fulfilled ? l10n.resultFulfilled : l10n.resultNotFulfilled,
+  );
+}
+
+/// "Ver a análise detalhada": a revisão completa da partida [gameId].
+class DetailedReviewButton extends StatelessWidget {
+  const DetailedReviewButton({
+    required this.gameId,
+    this.buttonKey = ConclusionKeys.reviewDeeper,
+    super.key,
+  });
+
+  final int gameId;
+  final Key buttonKey;
+
+  /// A altura, já com a área de toque.
+  static const height = 48.0;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+    key: buttonKey,
+    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(height)),
+    onPressed: () => context.push(Routes.game(gameId)),
+    icon: const Icon(Icons.insights_rounded),
+    label: OneLine(context.l10n.conclusionDetailedReview),
   );
 }

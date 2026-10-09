@@ -77,7 +77,6 @@ void main() {
         [
           ConclusionAction.playAgain,
           ConclusionAction.newGame,
-          ConclusionAction.analyze,
           // Um atalho só para o histórico (rating e partidas na mesma tela).
           ConclusionAction.ratingHistory,
         ],
@@ -131,7 +130,7 @@ void main() {
           ConclusionKind.speedrunEnd,
           recorded: true,
         ).where((action) => !action.name.contains('History')),
-        [ConclusionAction.speedruns, ConclusionAction.analyze],
+        [ConclusionAction.speedruns],
       );
       expect(
         ConclusionRules.actionsFor(
