@@ -409,7 +409,7 @@ class _LessonScreenState extends State<LessonScreen>
                                           ),
                                     ),
                                   ),
-                                  // Folha cobrindo o tabuleiro: um "x" logo
+                                  // Folha cobrindo o tabuleiro: um "x" com respiro
                                   // acima dela, para descer de uma vez.
                                   ListenableBuilder(
                                     listenable: _sheet,
@@ -419,7 +419,7 @@ class _LessonScreenState extends State<LessonScreen>
                                           : minSheet;
                                       final covering = open > minSheet + 0.03;
                                       final top =
-                                          box.maxHeight * (1 - open) - 56;
+                                          box.maxHeight * (1 - open) - 68;
                                       return Positioned(
                                         top: max(0.0, top),
                                         right: 12,
