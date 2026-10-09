@@ -735,6 +735,8 @@
   "lessonDemoBack": "पिछली चाल",
   "lessonDemoForward": "अगली चाल",
   "lessonDemoReplay": "दोहराएँ",
+  "lessonDemoPause": "रोकें",
+  "lessonDemoPlay": "जारी रखें",
   "lessonPartDone": "भाग {part} पूरा",
   "lessonNextPart": "भाग {part} पर जाएँ",
   "lessonToFinalTest": "अंतिम परीक्षा पर जाएँ",

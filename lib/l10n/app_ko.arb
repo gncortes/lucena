@@ -735,6 +735,8 @@
   "lessonDemoBack": "이전 수",
   "lessonDemoForward": "다음 수",
   "lessonDemoReplay": "다시 보기",
+  "lessonDemoPause": "일시정지",
+  "lessonDemoPlay": "계속",
   "lessonPartDone": "파트 {part} 완료",
   "lessonNextPart": "파트 {part}로",
   "lessonToFinalTest": "최종 테스트로",

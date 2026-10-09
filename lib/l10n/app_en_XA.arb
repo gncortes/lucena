@@ -734,6 +734,8 @@
   "lessonDemoBack": "[Pŕévîöûš mövé one two]",
   "lessonDemoForward": "[Ñéxt mövé one]",
   "lessonDemoReplay": "[Ŕéplåý one]",
+  "lessonDemoPause": "[Påûšé one]",
+  "lessonDemoPlay": "[Plåý one]",
   "lessonPartDone": "[Påŕt {part} çömplété one two]",
   "lessonNextPart": "[Ĝö tö påŕt {part} one two]",
   "lessonToFinalTest": "[Ĝö tö thé fîñål téšt one two]",

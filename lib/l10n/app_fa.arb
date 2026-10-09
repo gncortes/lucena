@@ -735,6 +735,8 @@
   "lessonDemoBack": "حرکت قبلی",
   "lessonDemoForward": "حرکت بعدی",
   "lessonDemoReplay": "تکرار",
+  "lessonDemoPause": "مکث",
+  "lessonDemoPlay": "ادامه",
   "lessonPartDone": "بخش {part} تمام شد",
   "lessonNextPart": "رفتن به بخش {part}",
   "lessonToFinalTest": "رفتن به آزمون پایانی",

@@ -3791,6 +3791,10 @@
   "@lessonDemoReplay": {
     "description": "Tooltip: replay the demonstration from the start."
   },
+  "lessonDemoPause": "Pause",
+  "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
+  "lessonDemoPlay": "Play",
+  "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
   "lessonPartDone": "Part {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",

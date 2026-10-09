@@ -735,6 +735,8 @@
   "lessonDemoBack": "Langkah sebelumnya",
   "lessonDemoForward": "Langkah berikutnya",
   "lessonDemoReplay": "Ulangi",
+  "lessonDemoPause": "Jeda",
+  "lessonDemoPlay": "Lanjutkan",
   "lessonPartDone": "Bagian {part} selesai",
   "lessonNextPart": "Ke bagian {part}",
   "lessonToFinalTest": "Ke tes akhir",

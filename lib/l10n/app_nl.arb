@@ -735,6 +735,8 @@
   "lessonDemoBack": "Vorige zet",
   "lessonDemoForward": "Volgende zet",
   "lessonDemoReplay": "Opnieuw",
+  "lessonDemoPause": "Pauzeren",
+  "lessonDemoPlay": "Doorgaan",
   "lessonPartDone": "Deel {part} voltooid",
   "lessonNextPart": "Naar deel {part}",
   "lessonToFinalTest": "Naar de eindtoets",

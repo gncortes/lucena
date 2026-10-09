@@ -260,6 +260,15 @@ void main() {
     },
   );
 
+  test('demonstração: pausar e retomar', () async {
+    final cubit = await atDemo();
+    expect(cubit.state.demoPlaying, isTrue);
+    cubit.demoTogglePause();
+    expect(cubit.state.demoPlaying, isFalse);
+    cubit.demoTogglePause();
+    expect(cubit.state.demoPlaying, isTrue);
+  });
+
   test('fim da parte: grava a parte e oferece a próxima', () async {
     final cubit = await atDemo();
     await cubit.demoForward();

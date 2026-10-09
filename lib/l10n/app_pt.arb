@@ -734,6 +734,8 @@
   "lessonDemoBack": "Lance anterior",
   "lessonDemoForward": "Próximo lance",
   "lessonDemoReplay": "Repetir",
+  "lessonDemoPause": "Pausar",
+  "lessonDemoPlay": "Continuar",
   "lessonPartDone": "Etapa {part} concluída",
   "lessonNextPart": "Ir para a etapa {part}",
   "lessonToFinalTest": "Ir para o teste final",

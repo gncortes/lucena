@@ -735,6 +735,8 @@
   "lessonDemoBack": "上一步",
   "lessonDemoForward": "下一步",
   "lessonDemoReplay": "重播",
+  "lessonDemoPause": "暂停",
+  "lessonDemoPlay": "继续",
   "lessonPartDone": "第 {part} 部分完成",
   "lessonNextPart": "前往第 {part} 部分",
   "lessonToFinalTest": "前往期末测试",

@@ -735,6 +735,8 @@
   "lessonDemoBack": "Önceki hamle",
   "lessonDemoForward": "Sonraki hamle",
   "lessonDemoReplay": "Tekrar",
+  "lessonDemoPause": "Duraklat",
+  "lessonDemoPlay": "Devam et",
   "lessonPartDone": "Bölüm {part} tamamlandı",
   "lessonNextPart": "Bölüm {part}'e geç",
   "lessonToFinalTest": "Final testine geç",

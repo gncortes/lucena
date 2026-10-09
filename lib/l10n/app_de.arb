@@ -735,6 +735,8 @@
   "lessonDemoBack": "Vorheriger Zug",
   "lessonDemoForward": "Nächster Zug",
   "lessonDemoReplay": "Wiederholen",
+  "lessonDemoPause": "Pause",
+  "lessonDemoPlay": "Fortsetzen",
   "lessonPartDone": "Teil {part} geschafft",
   "lessonNextPart": "Weiter zu Teil {part}",
   "lessonToFinalTest": "Zum Abschlusstest",

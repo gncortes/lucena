@@ -735,6 +735,8 @@
   "lessonDemoBack": "النقلة السابقة",
   "lessonDemoForward": "النقلة التالية",
   "lessonDemoReplay": "إعادة",
+  "lessonDemoPause": "إيقاف مؤقت",
+  "lessonDemoPlay": "متابعة",
   "lessonPartDone": "اكتمل الجزء {part}",
   "lessonNextPart": "الانتقال إلى الجزء {part}",
   "lessonToFinalTest": "الانتقال إلى الاختبار النهائي",

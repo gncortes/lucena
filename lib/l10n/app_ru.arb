@@ -735,6 +735,8 @@
   "lessonDemoBack": "Предыдущий ход",
   "lessonDemoForward": "Следующий ход",
   "lessonDemoReplay": "Повторить",
+  "lessonDemoPause": "Пауза",
+  "lessonDemoPlay": "Продолжить",
   "lessonPartDone": "Часть {part} пройдена",
   "lessonNextPart": "К части {part}",
   "lessonToFinalTest": "К итоговому тесту",

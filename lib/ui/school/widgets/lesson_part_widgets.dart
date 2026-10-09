@@ -133,6 +133,13 @@ class DemoControls extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            // Voltar ao passo anterior da lição, como nos outros passos.
+            button(
+              LessonKeys.backButton,
+              Icons.arrow_back,
+              l10n.lessonPrevious,
+              state.step == 0 ? null : cubit.back,
+            ),
             button(
               LessonKeys.demoReplay,
               Icons.replay,
@@ -144,6 +151,14 @@ class DemoControls extends StatelessWidget {
               Icons.skip_previous_rounded,
               l10n.lessonDemoBack,
               state.demoMove == 0 ? null : cubit.demoBack,
+            ),
+            button(
+              LessonKeys.demoPause,
+              state.demoPlaying
+                  ? Icons.pause_rounded
+                  : Icons.play_arrow_rounded,
+              state.demoPlaying ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
+              cubit.demoTogglePause,
             ),
             button(
               LessonKeys.demoForward,

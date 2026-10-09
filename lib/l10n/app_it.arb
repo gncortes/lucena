@@ -735,6 +735,8 @@
   "lessonDemoBack": "Mossa precedente",
   "lessonDemoForward": "Mossa successiva",
   "lessonDemoReplay": "Ripeti",
+  "lessonDemoPause": "Pausa",
+  "lessonDemoPlay": "Riprendi",
   "lessonPartDone": "Parte {part} completata",
   "lessonNextPart": "Vai alla parte {part}",
   "lessonToFinalTest": "Vai al test finale",

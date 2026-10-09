@@ -735,6 +735,8 @@
   "lessonDemoBack": "Попередній хід",
   "lessonDemoForward": "Наступний хід",
   "lessonDemoReplay": "Повторити",
+  "lessonDemoPause": "Пауза",
+  "lessonDemoPlay": "Продовжити",
   "lessonPartDone": "Частину {part} пройдено",
   "lessonNextPart": "До частини {part}",
   "lessonToFinalTest": "До підсумкового тесту",

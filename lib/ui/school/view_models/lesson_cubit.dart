@@ -641,6 +641,12 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
+  /// Pausa a demonstração (ela para de andar sozinha) ou a retoma.
+  void demoTogglePause() {
+    if (state.current is! DemoStep) return;
+    emit(state.copyWith(demoPlaying: !state.demoPlaying));
+  }
+
   /// Repete a demonstração do começo.
   Future<void> demoReplay() async {
     final step = state.current;

@@ -735,6 +735,8 @@
   "lessonDemoBack": "前の手",
   "lessonDemoForward": "次の手",
   "lessonDemoReplay": "もう一度",
+  "lessonDemoPause": "一時停止",
+  "lessonDemoPlay": "再開",
   "lessonPartDone": "パート{part}完了",
   "lessonNextPart": "パート{part}へ",
   "lessonToFinalTest": "最終テストへ",

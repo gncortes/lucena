@@ -735,6 +735,8 @@
   "lessonDemoBack": "Nước trước",
   "lessonDemoForward": "Nước tiếp",
   "lessonDemoReplay": "Xem lại",
+  "lessonDemoPause": "Tạm dừng",
+  "lessonDemoPlay": "Tiếp tục",
   "lessonPartDone": "Hoàn thành phần {part}",
   "lessonNextPart": "Sang phần {part}",
   "lessonToFinalTest": "Sang bài kiểm tra cuối",
