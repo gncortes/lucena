@@ -17,6 +17,14 @@ Linha de comando:
     SERIAL=emulator-5560 python3 -I telas.py rotulos        # rótulos da tela
     SERIAL=emulator-5560 python3 -I telas.py print nome     # um print agora
     python3 -I telas.py compor saida.png a.png b.png ...    # lado a lado
+    python3 -I telas.py gif entrada.mp4 [saida.gif]         # vídeo -> GIF
+
+Transição (animação, tela que entra, folha que sobe): grave e envie em GIF,
+que mostra o movimento melhor que um print:
+
+    gravar("R3-folha-sobe")   # começa a gravar (mp4)
+    tap_text("Ver explicação", then=2)
+    parar()                   # para, puxa o vídeo e gera R3-folha-sobe.gif
 
 As coordenadas de rolagem supõem o AVD `Lucena_Patrol` (1344 x 2992).
 """
@@ -60,6 +68,50 @@ def shot(name: str, wait: float = 0.8):
     time.sleep(wait)
     screen().save(OUT / f"{name}.png")
     log("●", name)
+
+
+_gravando: tuple[subprocess.Popen, str] | None = None
+
+
+def gravar(name: str):
+    """Começa a gravar a tela (mp4 no aparelho). Termine com [parar]."""
+    global _gravando
+    adb("shell", "rm", "-f", f"/sdcard/rec-{name}.mp4", check=False)
+    proc = subprocess.Popen(["adb", "-s", SERIAL, "shell", "screenrecord",
+                             "--size", "720x1604", "--bit-rate", "8000000",
+                             f"/sdcard/rec-{name}.mp4"])
+    _gravando = (proc, name)
+    time.sleep(1.0)
+    log("▶", name)
+
+
+def parar(fps: int = 15, largura: int = 360) -> Path:
+    """Para a gravação, traz o mp4 para OUT e gera o GIF ao lado."""
+    global _gravando
+    assert _gravando, "parar() sem gravar()"
+    proc, name = _gravando
+    _gravando = None
+    time.sleep(0.6)
+    adb("shell", "pkill", "-INT", "screenrecord", check=False)
+    proc.wait(timeout=15)
+    time.sleep(1.0)
+    mp4 = OUT / f"{name}.mp4"
+    adb("pull", f"/sdcard/rec-{name}.mp4", str(mp4))
+    adb("shell", "rm", "-f", f"/sdcard/rec-{name}.mp4", check=False)
+    out = gif(mp4, fps=fps, largura=largura)
+    log("■", out.name)
+    return out
+
+
+def gif(mp4: Path | str, saida: Path | str | None = None, fps: int = 15,
+        largura: int = 360) -> Path:
+    """Converte o vídeo em GIF (paleta própria, ~0,3–0,6 MB por 3 s)."""
+    mp4 = Path(mp4)
+    saida = Path(saida) if saida else mp4.with_suffix(".gif")
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(mp4), "-vf",
+                    f"fps={fps},scale={largura}:-1:flags=lanczos,split[a][b];"
+                    "[a]palettegen[p];[b][p]paletteuse", str(saida)], check=True)
+    return saida
 
 
 def tap(x, y, then=1.0):
@@ -495,5 +547,7 @@ if __name__ == "__main__":
         shot(sys.argv[2], wait=0)
     elif cmd == "compor":
         compor(sys.argv[2], *sys.argv[3:])
+    elif cmd == "gif":
+        print(gif(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None))
     else:
         print(__doc__)

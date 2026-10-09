@@ -84,6 +84,7 @@ O Gabriel acompanha pelo celular e manda pedidos em sequência, muitas vezes ant
 4. **Conferir e enviar:**
    - Abrir o composto de cada item (uma leitura de imagem) e confirmar que mostra o pedido.
    - Enviar **um SendUserFile por item, assim que ficar pronto**, sem esperar os outros. A legenda leva o id, o que mudou e o cenário de cada tela.
+   - **Item com transição** (animação, layout que troca, folha que sobe): mandar também o GIF (`gravar`/`parar` do `telas.py`). Pedido do Gabriel em 2026-10-09: GIF é o que ele prefere para validar movimento.
    - Marcar `enviado` no quadro.
 
 ## Depois de um /compact
