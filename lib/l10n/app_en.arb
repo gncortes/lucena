@@ -3855,7 +3855,7 @@
   "@endgamePartStart": {
     "description": "Button on the recommended lesson part card: start this part."
   },
-  "lessonThinkSkip": "See explanation now",
+  "lessonThinkSkip": "See explanation",
   "@lessonThinkSkip": {
     "description": "Button during the think step: stop waiting and see the teacher's explanation right away."
   },

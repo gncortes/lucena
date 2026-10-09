@@ -742,7 +742,7 @@
   "endgameContinueTest": "続ける：最終テスト",
   "homeEndgamePart": "パート {part}/{parts}",
   "endgamePartStart": "始める",
-  "lessonThinkSkip": "今すぐ解説を見る",
+  "lessonThinkSkip": "解説を見る",
   "settingsThinkTime": "レッスンの考える時間",
   "settingsThinkTimeHint": "先生が解説する前に、重要な局面を自分で考える時間。いつでもスキップできます。",
   "endgameChallengeTitle": "この終盤に挑戦しよう",

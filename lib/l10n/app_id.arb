@@ -742,7 +742,7 @@
   "endgameContinueTest": "Lanjut: tes akhir",
   "homeEndgamePart": "Bagian {part} dari {parts}",
   "endgamePartStart": "Mulai",
-  "lessonThinkSkip": "Lihat penjelasan sekarang",
+  "lessonThinkSkip": "Lihat penjelasan",
   "settingsThinkTime": "Waktu berpikir di pelajaran",
   "settingsThinkTimeHint": "Berapa lama kamu mempelajari tiap posisi kunci sendiri sebelum guru menjelaskan. Selalu bisa dilewati.",
   "endgameChallengeTitle": "Tantang dirimu di akhir permainan ini",

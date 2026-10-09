@@ -742,7 +742,7 @@
   "endgameContinueTest": "Devam: final testi",
   "homeEndgamePart": "Bölüm {part}/{parts}",
   "endgamePartStart": "Başla",
-  "lessonThinkSkip": "Açıklamayı şimdi gör",
+  "lessonThinkSkip": "Açıklamayı gör",
   "settingsThinkTime": "Derslerde düşünme süresi",
   "settingsThinkTimeHint": "Öğretmen açıklamadan önce her kilit pozisyonu ne kadar süre tek başına incelediğin. Her zaman geçebilirsin.",
   "endgameChallengeTitle": "Bu oyun sonunda kendini dene",

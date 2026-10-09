@@ -742,7 +742,7 @@
   "endgameContinueTest": "계속: 최종 테스트",
   "homeEndgamePart": "파트 {part}/{parts}",
   "endgamePartStart": "시작",
-  "lessonThinkSkip": "지금 설명 보기",
+  "lessonThinkSkip": "설명 보기",
   "settingsThinkTime": "수업에서 생각할 시간",
   "settingsThinkTimeHint": "선생님이 설명하기 전에 핵심 국면을 혼자 연구하는 시간. 언제든 건너뛸 수 있어.",
   "endgameChallengeTitle": "이 엔드게임에 도전해 봐",

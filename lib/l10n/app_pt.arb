@@ -741,7 +741,7 @@
   "endgameContinueTest": "Continuar: teste final",
   "homeEndgamePart": "Etapa {part} de {parts}",
   "endgamePartStart": "Começar",
-  "lessonThinkSkip": "Ver explicação agora",
+  "lessonThinkSkip": "Ver explicação",
   "settingsThinkTime": "Tempo para pensar nas aulas",
   "settingsThinkTimeHint": "Quanto tempo você estuda cada posição sozinho antes de o professor explicar. O recomendado usa o que cada posição pede (5 min nas principais). Dá sempre para pular.",
   "endgameChallengeTitle": "Desafie-se neste final",

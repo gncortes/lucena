@@ -742,7 +742,7 @@
   "endgameContinueTest": "Continua: test finale",
   "homeEndgamePart": "Parte {part} di {parts}",
   "endgamePartStart": "Inizia",
-  "lessonThinkSkip": "Vedi la spiegazione ora",
+  "lessonThinkSkip": "Vedi la spiegazione",
   "settingsThinkTime": "Tempo per pensare nelle lezioni",
   "settingsThinkTimeHint": "Quanto tempo studi da solo ogni posizione chiave prima che l'insegnante spieghi. Puoi sempre saltare.",
   "endgameChallengeTitle": "Mettiti alla prova in questo finale",

@@ -742,7 +742,7 @@
   "endgameContinueTest": "متابعة: الاختبار النهائي",
   "homeEndgamePart": "الجزء {part} من {parts}",
   "endgamePartStart": "ابدأ",
-  "lessonThinkSkip": "عرض الشرح الآن",
+  "lessonThinkSkip": "عرض الشرح",
   "settingsThinkTime": "وقت التفكير في الدروس",
   "settingsThinkTimeHint": "المدة التي تدرس فيها كل وضع أساسي بنفسك قبل أن يشرح المعلم. يمكنك التخطي دائمًا.",
   "endgameChallengeTitle": "تحدَّ نفسك في هذه النهاية",

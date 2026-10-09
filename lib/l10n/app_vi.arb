@@ -742,7 +742,7 @@
   "endgameContinueTest": "Tiếp tục: bài kiểm tra cuối",
   "homeEndgamePart": "Phần {part}/{parts}",
   "endgamePartStart": "Bắt đầu",
-  "lessonThinkSkip": "Xem giải thích ngay",
+  "lessonThinkSkip": "Xem giải thích",
   "settingsThinkTime": "Thời gian suy nghĩ trong bài học",
   "settingsThinkTimeHint": "Thời gian bạn tự nghiên cứu mỗi thế cờ then chốt trước khi thầy giải thích. Luôn có thể bỏ qua.",
   "endgameChallengeTitle": "Thử thách bản thân với tàn cuộc này",

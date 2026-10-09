@@ -742,7 +742,7 @@
   "endgameContinueTest": "继续：期末测试",
   "homeEndgamePart": "第 {part}/{parts} 部分",
   "endgamePartStart": "开始",
-  "lessonThinkSkip": "立即查看讲解",
+  "lessonThinkSkip": "查看讲解",
   "settingsThinkTime": "课程中的思考时间",
   "settingsThinkTimeHint": "老师讲解前你独自研究每个关键局面的时间。随时可以跳过。",
   "endgameChallengeTitle": "挑战这个残局",

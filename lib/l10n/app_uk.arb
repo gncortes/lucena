@@ -742,7 +742,7 @@
   "endgameContinueTest": "Далі: підсумковий тест",
   "homeEndgamePart": "Частина {part} з {parts}",
   "endgamePartStart": "Почати",
-  "lessonThinkSkip": "Пояснення зараз",
+  "lessonThinkSkip": "Пояснення",
   "settingsThinkTime": "Час на роздуми в уроках",
   "settingsThinkTimeHint": "Скільки часу ви самі вивчаєте ключову позицію до пояснення вчителя. Пропустити можна завжди.",
   "endgameChallengeTitle": "Випробуйте себе в цьому ендшпілі",

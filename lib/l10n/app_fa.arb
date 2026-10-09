@@ -742,7 +742,7 @@
   "endgameContinueTest": "ادامه: آزمون پایانی",
   "homeEndgamePart": "بخش {part} از {parts}",
   "endgamePartStart": "شروع",
-  "lessonThinkSkip": "دیدن توضیح همین حالا",
+  "lessonThinkSkip": "دیدن توضیح",
   "settingsThinkTime": "زمان فکر کردن در درس‌ها",
   "settingsThinkTimeHint": "چه مدت هر وضعیت کلیدی را پیش از توضیح استاد خودت بررسی می‌کنی. همیشه می‌توانی رد شوی.",
   "endgameChallengeTitle": "خودت را در این آخربازی محک بزن",

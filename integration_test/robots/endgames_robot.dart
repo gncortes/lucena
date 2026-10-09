@@ -118,7 +118,7 @@ class EndgamesRobot {
         case ThinkStep():
           // O tempo de pensar (o das preferências, até 5 minutos) passa no
           // relógio dos cenários; se o relógio da tela não andar, "ver
-          // explicação agora" encerra.
+          // explicação" encerra.
           e2eNow.advance(const Duration(minutes: 5));
           await $.pump(const Duration(seconds: 1));
           await _skipThink();
@@ -174,7 +174,7 @@ class EndgamesRobot {
     await $.pumpAndSettle();
   }
 
-  /// No passo de pensar (T51), "ver explicação agora" encerra o tempo e o
+  /// No passo de pensar (T51), "ver explicação" encerra o tempo e o
   /// "continuar" aparece.
   Future<void> _skipThink() async {
     if ($(LessonKeys.thinkSkip).exists) {
