@@ -85,9 +85,10 @@ void main() {
       );
       for (final position in lesson.keyPositions) {
         if (position.ref case final ref?) {
+          // `id` ou `id#ply` (a mesma partida parada noutro lance).
           expect(
-            lesson.references.any((r) => r.id == ref),
-            isTrue,
+            lesson.reference(ref),
+            isNotNull,
             reason: '${lesson.id}.key.${position.id}',
           );
         }

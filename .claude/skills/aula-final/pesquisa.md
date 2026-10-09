@@ -66,3 +66,23 @@ A lista que vai para `references`, com o campo "como consultei" de cada uma.
 ## Dúvidas e divergências
 O que as fontes dizem de diferente entre si ou da tabela, e o que ficou sem resposta.
 ```
+
+## Links (T61)
+
+Toda posição que vem de partida ou de estudo publicado leva o aluno à fonte no Lichess, pelo `ref` do
+passo (e `keyPositions.ref`) apontando uma referência com `url`:
+
+- **Partida jogada** (`kind: game`, com `white`, `black`, `event`, `year` e `url`): o link é o tabuleiro
+  de análise do Lichess com a partida inteira, parado na posição da aula:
+  `https://lichess.org/analysis/pgn/<lances em SAN, separados por _>#<ply>` (ply = meio-lances desde o
+  início; `#20` é a posição depois do 10.º lance das pretas). O PGN precisa vir de fonte aberta que você
+  abriu (artigo da Wikipedia, estudo público do Lichess pela API `https://lichess.org/api/study/<id>.pgn`,
+  arquivo PGN público) e ser conferido com python-chess: a posição depois do ply citado é o FEN do passo.
+  O explorador de mestres do Lichess (`explorer.lichess.ovh`) exige autenticação; não conte com ele.
+- **Estudo** (`kind: study`): a URL do capítulo, `https://lichess.org/study/<id>/<capítulo>`, como aparece
+  na página.
+- **Posição sem partida** (própria ou de livro): sem link, ou, se ajudar, a análise do Lichess a partir do
+  FEN, `https://lichess.org/analysis/standard/<FEN com _ no lugar de espaço>` (`kind: web`).
+
+Nunca cite partida de memória: jogadores, evento, ano e lances vêm da fonte aberta, e a referência diz
+qual. Se as fontes abertas não têm a partida, a aula diz "posição que aparece nos manuais" e fica sem link.

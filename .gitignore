@@ -70,3 +70,4 @@ test/goldens/failures/
 
 # Planos, tarefas e pesquisas: só na máquina de quem desenvolve (fora do repositório público).
 docs/
+scratchpad/

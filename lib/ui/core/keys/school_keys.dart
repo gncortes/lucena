@@ -33,6 +33,9 @@ abstract final class LessonKeys {
   static const lichessInvite = Key('lesson.lichessInvite');
   static const lichessButton = Key('lesson.lichessButton');
 
+  /// O link do passo para a partida ou o estudo de onde vem a posição.
+  static const referenceLink = Key('lesson.referenceLink');
+
   /// O confete do fim da aula.
   static const celebration = Key('lesson.celebration');
 

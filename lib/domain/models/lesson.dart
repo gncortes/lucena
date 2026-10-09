@@ -117,7 +117,7 @@ class LessonPart {
 /// Um passo da aula. O Viktor fala em todos; o que muda é o que o aluno faz
 /// no tabuleiro.
 sealed class LessonStep {
-  const LessonStep({required this.id, required this.fen});
+  const LessonStep({required this.id, required this.fen, this.ref});
 
   /// Único dentro da aula; as falas são procuradas por `<aula>.<passo>`.
   final String id;
@@ -125,6 +125,11 @@ sealed class LessonStep {
   /// A posição do tabuleiro no passo. Nula: o passo é só conversa, sem
   /// tabuleiro.
   final String? fen;
+
+  /// O id de uma referência da aula (`EndgameLesson.references`) de onde vem
+  /// a posição: a partida ou o estudo que a tela abre no Lichess. Nulo nas
+  /// aulas da escola.
+  final String? ref;
 
   /// O lado do aluno, que fica embaixo: o lado que joga no FEN.
   Side get side =>
@@ -137,6 +142,7 @@ class TalkStep extends LessonStep {
   const TalkStep({
     required super.id,
     super.fen,
+    super.ref,
     this.arrows = const [],
     this.marks = const [],
     this.view,
@@ -162,6 +168,7 @@ class StarsStep extends LessonStep {
   const StarsStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.stars,
   });
 
@@ -179,6 +186,7 @@ class TapStep extends LessonStep {
   const TapStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.targets,
     this.coordinates = true,
   });
@@ -197,6 +205,7 @@ class MoveStep extends LessonStep {
   const MoveStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.line,
   });
 
@@ -223,6 +232,7 @@ class PlayStep extends LessonStep {
   const PlayStep({
     required super.id,
     required String super.fen,
+    super.ref,
     this.goal = PlayGoal.mate,
     this.opponent = const OpponentRef(kind: OpponentKind.stockfish),
   });
@@ -243,6 +253,7 @@ class ThinkStep extends LessonStep {
   const ThinkStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.minutes,
     this.hints = 1,
     this.ask = ThinkAsk.plan,
@@ -298,6 +309,7 @@ class DemoStep extends LessonStep {
   const DemoStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.line,
     this.view,
   });

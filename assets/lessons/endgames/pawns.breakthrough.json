@@ -62,15 +62,10 @@
               "uci": "g8f7"
             },
             {
-              "uci": "a6a7"
-            },
-            {
-              "uci": "f7e7"
-            },
-            {
-              "uci": "a7a8q",
+              "uci": "a6a7",
               "marks": [
-                "a8"
+                "a8",
+                "b7"
               ]
             }
           ]
@@ -141,32 +136,43 @@
           "id": "square",
           "fen": "4k3/1pp5/1p6/P1P5/8/8/8/6K1 w - - 0 1",
           "arrows": [
-            "a6a8"
+            "a6a8",
+            "e8d8",
+            "d8c8",
+            "c8b7"
           ],
           "marks": [
             "a6",
-            "b6",
-            "c6",
-            "a7",
-            "b7",
-            "c7",
-            "a8",
-            "b8",
-            "c8"
+            "b7"
           ]
         },
         {
           "type": "talk",
           "id": "tooClose",
-          "fen": "3k4/1pp5/1p6/P1P5/8/8/8/6K1 w - - 0 1",
+          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
           "arrows": [
-            "d8c7"
+            "g1f2",
+            "f2e3",
+            "e3d4"
           ],
           "marks": [
-            "c8",
-            "c7",
-            "d8"
+            "d8",
+            "c8"
           ]
+        },
+        {
+          "type": "talk",
+          "id": "capaCount",
+          "fen": "8/7p/p5p1/3k2P1/3p1P1P/3K4/P7/8 w - - 0 1",
+          "arrows": [
+            "f4f5",
+            "h4h5",
+            "d5e6"
+          ],
+          "marks": [
+            "a3"
+          ],
+          "ref": "capaLasker1913"
         },
         {
           "type": "move",
@@ -192,6 +198,76 @@
               "teach": "a6a7",
               "accept": [
                 "a6a7"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "order",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_order",
+          "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "b6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "orderWhy",
+          "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1",
+          "arrows": [
+            "b4b5",
+            "c4c5"
+          ],
+          "marks": [
+            "b6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "orderWrong",
+          "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1",
+          "arrows": [
+            "c4c5",
+            "b6c5",
+            "b4b5"
+          ],
+          "marks": [
+            "b8",
+            "c1"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "orderMove",
+          "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "b4b5",
+              "accept": [
+                "b4b5"
+              ],
+              "reply": "g5f4"
+            },
+            {
+              "teach": "c4c5",
+              "accept": [
+                "c4c5"
+              ],
+              "reply": "b6c5"
+            },
+            {
+              "teach": "b5b6",
+              "accept": [
+                "b5b6"
               ]
             }
           ]
@@ -254,15 +330,62 @@
               "uci": "a8b7"
             },
             {
-              "uci": "e6e7"
-            },
-            {
-              "uci": "b7c8"
-            },
-            {
-              "uci": "e7e8q",
+              "uci": "e6e7",
               "marks": [
-                "e8"
+                "e8",
+                "d7"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "twoPassers",
+          "fen": "k7/8/P4p2/8/4PP2/8/8/7K w - - 0 1",
+          "arrows": [
+            "e4e5",
+            "f4f5"
+          ],
+          "marks": [
+            "a6",
+            "a8"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_twoPassers",
+          "fen": "k7/8/P4p2/8/4PP2/8/8/7K w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "e4e5",
+              "arrows": [
+                "e4e5"
+              ],
+              "marks": [
+                "f6"
+              ]
+            },
+            {
+              "uci": "f6e5"
+            },
+            {
+              "uci": "f4f5",
+              "arrows": [
+                "f5f8"
+              ],
+              "marks": [
+                "a6"
+              ]
+            },
+            {
+              "uci": "a8a7"
+            },
+            {
+              "uci": "f5f6",
+              "marks": [
+                "f8",
+                "a6"
               ]
             }
           ]
@@ -301,99 +424,178 @@
       ]
     },
     {
-      "id": "kingside",
+      "id": "pushPast",
       "steps": [
         {
           "type": "think",
-          "id": "t_wiki",
-          "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 w - - 0 1",
-          "minutes": 5,
+          "id": "t_push",
+          "fen": "8/7p/p7/4kpPP/3p4/3K4/P7/8 w - - 0 1",
+          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
-            "g4"
-          ]
+            "g6",
+            "h6"
+          ],
+          "ref": "capaLasker1913#80"
         },
         {
           "type": "talk",
-          "id": "wikiWhy",
-          "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 w - - 0 1",
+          "id": "pushWhy",
+          "fen": "8/7p/p7/4kpPP/3p4/3K4/P7/8 w - - 0 1",
           "arrows": [
-            "g3g4",
+            "h5h6",
             "g5g6"
           ],
           "marks": [
-            "f5",
-            "h5"
-          ]
+            "f6",
+            "h7"
+          ],
+          "ref": "capaLasker1913#80"
         },
         {
           "type": "demo",
-          "id": "d_wiki",
-          "fen": "8/5pp1/6p1/5P1P/8/6k1/8/6K1 w - - 0 1",
+          "id": "d_push",
+          "fen": "8/pp1k4/P7/1P6/8/8/8/7K w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "uci": "f5f6",
+              "uci": "b5b6",
               "arrows": [
-                "f5f6"
-              ]
-            },
-            {
-              "uci": "g7f6"
-            },
-            {
-              "uci": "h5h6",
-              "arrows": [
-                "h6h8"
-              ]
-            },
-            {
-              "uci": "g3f4"
-            },
-            {
-              "uci": "h6h7"
-            },
-            {
-              "uci": "f4g5"
-            },
-            {
-              "uci": "h7h8q",
+                "b5b6"
+              ],
               "marks": [
-                "h8"
+                "b7"
+              ]
+            },
+            {
+              "uci": "a7b6"
+            },
+            {
+              "uci": "a6a7",
+              "arrows": [
+                "a6a8"
+              ]
+            },
+            {
+              "uci": "d7c6"
+            },
+            {
+              "uci": "a7a8q",
+              "marks": [
+                "a8"
               ]
             }
           ]
         },
         {
           "type": "move",
-          "id": "wikiMove",
-          "fen": "8/6pp/6p1/5P1P/8/6k1/8/6K1 w - - 0 1",
+          "id": "pushMove",
+          "fen": "8/k1pp4/3P4/2P5/8/8/8/7K w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "teach": "h5h6",
+              "teach": "c5c6",
               "accept": [
-                "h5h6"
+                "c5c6"
               ],
-              "reply": "g7h6"
+              "reply": "d7c6"
             },
             {
-              "teach": "f5f6",
+              "teach": "d6d7",
               "accept": [
-                "f5f6"
+                "d6d7"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kingFirst",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_kingFirst",
+          "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "f4f5"
+          ],
+          "marks": [
+            "c6",
+            "a1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "kingFirstWhy",
+          "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1",
+          "arrows": [
+            "f4f5",
+            "a1b2"
+          ],
+          "marks": [
+            "f5",
+            "c6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "kingFirstPath",
+          "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1",
+          "arrows": [
+            "a1b2",
+            "b2c2",
+            "c2d1"
+          ],
+          "marks": [
+            "d1",
+            "c3"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "kingFirstMove",
+          "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "a1b2",
+              "accept": [
+                "a1b1",
+                "a1b2"
               ],
-              "reply": "g3f4"
+              "reply": "c6c5"
             },
             {
-              "teach": "f6f7",
+              "teach": "b2c2",
               "accept": [
-                "f6f7",
-                "g1f1",
-                "g1f2",
-                "g1g2",
-                "g1h1",
-                "g1h2"
+                "b2c1",
+                "b2c2"
+              ],
+              "reply": "c5c4"
+            },
+            {
+              "teach": "c2d1",
+              "accept": [
+                "c2d1"
+              ],
+              "reply": "b6c5"
+            },
+            {
+              "teach": "f4f5",
+              "accept": [
+                "f4f5"
+              ],
+              "reply": "g6f5"
+            },
+            {
+              "teach": "h4h5",
+              "accept": [
+                "h4h5"
               ]
             }
           ]
@@ -453,34 +655,45 @@
         },
         {
           "type": "talk",
-          "id": "sameSide",
-          "fen": "8/5p1p/6P1/6PP/8/6k1/8/6K1 b - - 0 1",
+          "id": "defenseKing",
+          "fen": "8/pp1k4/8/PPP5/8/8/8/6K1 b - - 0 1",
           "side": "black",
           "arrows": [
-            "f7g6"
+            "a7a6",
+            "d7c6"
           ],
           "marks": [
-            "h5"
+            "a6",
+            "c5"
           ]
         },
         {
           "type": "move",
-          "id": "sameSideMove",
-          "fen": "8/5p1p/6P1/6PP/8/6k1/8/6K1 b - - 0 1",
+          "id": "defenseKingMove",
+          "fen": "8/pp1k4/8/PPP5/8/8/8/6K1 b - - 0 1",
           "goal": "draw",
           "side": "black",
           "line": [
             {
-              "teach": "f7g6",
+              "teach": "a7a6",
               "accept": [
-                "f7g6"
+                "a7a6"
               ],
-              "reply": "h5g6"
+              "reply": "b5b6"
             },
             {
-              "teach": "h7g6",
+              "teach": "d7c6",
               "accept": [
-                "h7g6"
+                "d7c6"
+              ],
+              "reply": "g1f2"
+            },
+            {
+              "teach": "c6c5",
+              "accept": [
+                "c6b5",
+                "c6c5",
+                "c6d5"
               ]
             }
           ]
@@ -496,6 +709,15 @@
           "fen": "6k1/ppp5/8/PPP5/8/8/8/6K1 w - - 0 1",
           "arrows": [
             "b5b6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recapDefense",
+          "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "g7g6"
           ]
         },
         {
@@ -757,8 +979,7 @@
   "keyPositions": [
     {
       "id": "classic",
-      "fen": "6k1/ppp5/8/PPP5/8/8/8/6K1 w - - 0 1",
-      "ref": "studyBotez"
+      "fen": "6k1/ppp5/8/PPP5/8/8/8/6K1 w - - 0 1"
     },
     {
       "id": "afterAxb6",
@@ -773,13 +994,21 @@
       "fen": "4k3/1pp5/1p6/P1P5/8/8/8/6K1 w - - 0 1"
     },
     {
+      "id": "capa",
+      "fen": "8/7p/p7/4kpPP/3p4/3K4/P7/8 w - - 0 1",
+      "ref": "capaLasker1913#80"
+    },
+    {
+      "id": "order",
+      "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1"
+    },
+    {
       "id": "side",
       "fen": "7k/3pp3/3p4/2P1P3/8/8/8/7K w - - 0 1"
     },
     {
-      "id": "wiki",
-      "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 w - - 0 1",
-      "ref": "wikiPassed"
+      "id": "kingFirst",
+      "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1"
     },
     {
       "id": "wikiDefense",
@@ -810,6 +1039,29 @@
       "publisher": "Russell Enterprises",
       "year": 2025,
       "where": "cap. 1, seção \"Breakthrough\", p. 48 (sumário da amostra da editora)"
+    },
+    {
+      "id": "capaLasker1913",
+      "kind": "game",
+      "white": "José Raúl Capablanca",
+      "black": "Edward Lasker",
+      "event": "partida amistosa, Londres",
+      "year": 1913,
+      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_Nc6_Bb5_a6_Ba4_Nf6_O-O_Be7_Re1_b5_Bb3_d6_c3_O-O_d4_Bg4_Be3_Nxe4_Bd5_Qd7_dxe5_Ng5_Bxg5_Bxg5_Nxg5_Bxd1_e6_fxe6_Bxe6+_Qxe6_Nxe6_Rae8_Nd2_Rf6_Raxd1_Rfxe6_Kf1_Ne5_Re3_Kf7_Rde1_d5_b4_Ng4_Rxe6_Rxe6_Rxe6_Kxe6_h3_Nf6_f3_Nd7_Ke2_Kd6_Nb3_c5_bxc5+_Nxc5_Nxc5_Kxc5_Kd3_b4_f4_bxc3_Kxc3_d4+_Kd3_Kd5_g4_g6_h4_Kc5_g5_Kd5_f5_gxf5_h5_Ke5_h6#76"
+    },
+    {
+      "id": "studySalgado",
+      "kind": "study",
+      "author": "SalgadoChess",
+      "title": "Finales de Peones: Rupturas",
+      "url": "https://lichess.org/study/Mc6kbNae/MrDiUsYy"
+    },
+    {
+      "id": "studyKirill",
+      "kind": "study",
+      "author": "Kirill",
+      "title": "Capablanca, Jose Raul-Lasker, Edward",
+      "url": "https://lichess.org/study/VsvnZu6D/DRuNByaO"
     },
     {
       "id": "studyBotez",

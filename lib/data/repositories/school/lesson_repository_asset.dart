@@ -100,10 +100,12 @@ class AssetLessonRepository implements LessonRepository {
   static LessonStep? _step(Map<String, dynamic> json) {
     final id = json['id'] as String;
     final fen = json['fen'] as String?;
+    final ref = json['ref'] as String?;
     return switch (json['type']) {
       'talk' => TalkStep(
         id: id,
         fen: fen,
+        ref: ref,
         arrows: [
           for (final arrow in json['arrows'] as List? ?? const [])
             if (arrow is String && arrow.length == 4)
@@ -122,6 +124,7 @@ class AssetLessonRepository implements LessonRepository {
       'think' when fen != null => ThinkStep(
         id: id,
         fen: fen,
+        ref: ref,
         minutes: json['minutes'] as int? ?? 5,
         hints: json['hints'] as int? ?? 1,
         ask: ThinkAsk.fromCode(json['ask'] as String?),
@@ -132,6 +135,7 @@ class AssetLessonRepository implements LessonRepository {
       'demo' when fen != null => DemoStep(
         id: id,
         fen: fen,
+        ref: ref,
         view: _side(json['side']),
         line: [
           for (final move
@@ -146,11 +150,13 @@ class AssetLessonRepository implements LessonRepository {
       'stars' when fen != null => StarsStep(
         id: id,
         fen: fen,
+        ref: ref,
         stars: [for (final star in json['stars'] as List) star as String],
       ),
       'tap' when fen != null => TapStep(
         id: id,
         fen: fen,
+        ref: ref,
         targets: [
           for (final target in json['targets'] as List) target as String,
         ],
@@ -159,11 +165,13 @@ class AssetLessonRepository implements LessonRepository {
       'move' when fen != null => MoveStep(
         id: id,
         fen: fen,
+        ref: ref,
         line: parseLine(json['line'] as List),
       ),
       'play' when fen != null => PlayStep(
         id: id,
         fen: fen,
+        ref: ref,
         goal: PlayGoal.fromCode(json['goal'] as String?),
         opponent:
             OpponentRef.tryParse(json['opponent'] as String?) ??

@@ -10,6 +10,7 @@ import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
@@ -74,7 +75,21 @@ class LessonState {
     this.demoMove = 0,
     this.demoPlaying = true,
     this.thinkMinutes = 0,
+    this.references = const [],
   });
+
+  /// As referências da aula (partidas, estudos...), que o `ref` de um passo
+  /// aponta. Vazia na escola.
+  final List<Reference> references;
+
+  /// O link do passo atual para a partida ou o estudo de onde vem a
+  /// posição. Nulo sem `ref`, sem `url` ou, no passo de pensar, enquanto o
+  /// aluno ainda pensa (o link entregaria a resposta).
+  Reference? get link {
+    if (thinking) return null;
+    final reference = Reference.resolve(references, current?.ref);
+    return reference?.url == null ? null : reference;
+  }
 
   /// O tempo de pensar escolhido nas preferências, em minutos; 0: o
   /// recomendado por cada posição.
@@ -308,6 +323,7 @@ class LessonState {
     int? demoMove,
     bool? demoPlaying,
     int? thinkMinutes,
+    List<Reference>? references,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -345,6 +361,7 @@ class LessonState {
     demoMove: demoMove ?? this.demoMove,
     demoPlaying: demoPlaying ?? this.demoPlaying,
     thinkMinutes: thinkMinutes ?? this.thinkMinutes,
+    references: references ?? this.references,
   );
 }
 
@@ -401,6 +418,7 @@ class LessonCubit extends Cubit<LessonState> {
     var saved = await _source.checkpoint();
     final (number, count) = await _source.placeOf(lessonId);
     final thinkMinutes = (await _settings?.load())?.thinkMinutes ?? 0;
+    final references = await _source.references(lessonId);
     if (isClosed) return;
     if (full == null || full.steps.isEmpty) {
       emit(const LessonState(ready: true, missing: true));
@@ -449,6 +467,7 @@ class LessonCubit extends Cubit<LessonState> {
       partNumber: opened == null ? 0 : full.parts.indexOf(opened) + 1,
       partCount: full.parts.length,
       thinkMinutes: thinkMinutes,
+      references: references,
     );
     if (saved != null && saved.step < lesson.steps.length) {
       emit(_restore(base, saved));
@@ -679,6 +698,7 @@ class LessonCubit extends Cubit<LessonState> {
       partNumber: base.partNumber,
       partCount: base.partCount,
       thinkMinutes: base.thinkMinutes,
+      references: base.references,
       step: base.step,
       reached: base.reached,
       fen: position?.fen ?? step.fen,
@@ -1046,6 +1066,7 @@ class LessonCubit extends Cubit<LessonState> {
                 : Duration(minutes: base.thinkMinutes))
           : null,
       thinkMinutes: base.thinkMinutes,
+      references: base.references,
     );
   }
 

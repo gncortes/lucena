@@ -2378,6 +2378,18 @@
       }
     }
   },
+  "referenceLinkGame": "View the game on Lichess",
+  "@referenceLinkGame": {
+    "description": "Link under the coach's words (and under a key position) that opens, in the browser, the game the position comes from, on Lichess."
+  },
+  "referenceLinkStudy": "View the study",
+  "@referenceLinkStudy": {
+    "description": "Link that opens, in the browser, the Lichess study the position comes from."
+  },
+  "referenceLinkWeb": "View on Lichess",
+  "@referenceLinkWeb": {
+    "description": "Link that opens, in the browser, the web page the position comes from (on Lichess)."
+  },
   "exerciseTitle": "Exercise {number} of {count}",
   "@exerciseTitle": {
     "description": "Under the lesson title on the exercise screen.",

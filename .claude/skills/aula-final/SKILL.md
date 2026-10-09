@@ -7,7 +7,7 @@ description: Cria uma aula avançada de final com o Viktor (pesquisa com referê
 
 A Escola do Viktor (T28–T31) ensina o iniciante. Estas aulas são o passo seguinte: cerca de 55 finais que todo jogador precisa dominar, ensinados a fundo, do começo até as posições-chave, no modelo dos livros do Yusupov: lição, exercícios com estrelas, nota mínima para seguir.
 
-Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` é a primeira do catálogo que ainda não tem `docs/aulas/<id>.md`.
+Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` é a primeira do catálogo que ainda não tem `docs/aulas/<id>.md`. **`licao <id>`** refaz só a lição de uma aula já feita (os exercícios ficam): siga `fluxo-licoes.md`, que tem os quatro passos, o pedido de cada agente, o modelo por passo e a ordem das aulas.
 
 ## O que uma aula tem
 
@@ -23,6 +23,7 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
 |---|---|
 | `docs/aulas/<id>.md` | Dossiê da pesquisa (modelo em `pesquisa.md`) |
 | `docs/aulas/AUDITORIA-<data>.md` | Relatório do revisor de um lote (`revisao.md`) |
+| `docs/aulas/LICAO-<id>.md` | Nota e plano de reescrita da lição, pelo agente `revisor-licoes` (`licao.md`) |
 | `tools/lessons/endgames/<id>.json` | Fonte da aula, escrita à mão (`formato.md`) |
 | `assets/lessons/pt/endgames/<id>.json` e `en/…` | Falas do Viktor, nos dois idiomas |
 | `assets/lessons/endgames/<id>.json` | Gerado pelo script. Não editar à mão |
@@ -36,7 +37,9 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
    - a explicação: `talk` com setas e casas para o porquê, e `demo` para a técnica, em que o Viktor joga os dois lados e explica cada lance. Passo `move` que só mostraria a técnica vira `demo`;
    - a prática que fecha a parte: um `move` (ou `play`) em que o aluno repete a técnica com a máquina respondendo.
 
-   Ordem das partes que funciona: a posição-chave pronta e o porquê dela; a técnica; como chegar à posição-chave de mais longe; as defesas e armadilhas do outro lado (afogamento, canto errado, regra dos 50 lances); por fim, uma parte de resumo com duas ou três regras para a partida, fechando num `play`. Depois das partes vem o teste final (os exercícios do passo 4). Registre no dossiê a divisão escolhida e o motivo.
+   A régua da lição está em `licao.md`: toda ideia que um exercício cobra tem uma parte que a ensina; uma
+   ideia por parte; variante que importa vira `demo` ou `move`, não frase dentro de um `talk`; posição de
+   partida ou estudo tem `ref` no passo e a fala diz de quem é. Ordem das partes que funciona: a posição-chave pronta e o porquê dela; a técnica; como chegar à posição-chave de mais longe; as defesas e armadilhas do outro lado (afogamento, canto errado, regra dos 50 lances); por fim, uma parte de resumo com duas ou três regras para a partida, fechando num `play`. Depois das partes vem o teste final (os exercícios do passo 4). Registre no dossiê a divisão escolhida e o motivo.
 4. **Exercícios**: antes de escrever, liste no dossiê as **ideias** que o tema tem (a tabela "ideia → posição → por que é diferente" de `pesquisa.md`) e escolha **uma posição por ideia**. Sem cota: se o tema tem cinco ideias, a aula tem cinco exercícios. Mudar só a casa dos reis, espelhar ou trocar as cores **não** é posição nova, e posição que a lição já mostrou não vira exercício. Régua das estrelas em `formato.md`: 1★ aplica a técnica numa posição que a lição não mostrou; 2★ pede uma decisão (dois planos, uma exceção, uma conta); 3★ é composição no estilo de estudo, com solução única e lances que surpreendem, para gastar uns 5 minutos pensando. Posições ricas vêm de estudos (Lichess, compositores clássicos), diagramas da Wikipedia e dos manuais, sempre com o crédito em `origin`; posição própria só quando traz uma ideia que as fontes não cobrem. Depois de gerar, rode `python3 tools/lessons/check_variety.py <id>`: duplicata exata o `build_aula.py` reprova; "mesma família" e "repete a lição" só passam com a justificativa no dossiê.
 5. **Falas** em pt e en, na voz do Viktor: paciente, direto, cita os mestres e a história do final quando ajuda. Leia duas ou três aulas de `assets/lessons/pt/lessons.json` para pegar o tom. Nunca "mate em N lances". Todo texto é escrito do zero: nada copiado ou traduzido de livro, vídeo ou estudo.
 6. **Conferir e gerar**:
@@ -46,7 +49,7 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
    ```
    O script confere as partes, FEN, lances (inclusive os de `demo`), objetivo de cada posição, estrelas, nota mínima, referências e falas, e calcula os lances aceitos pela tabela de finais do Lichess (Stockfish acima de 7 peças). Corrija a aula até sair sem problemas. Nunca contorne um problema trocando a regra de aceitos por uma lista só para o script passar: se a tabela discorda da aula, a aula está errada.
 7. **Releia como aluno**: confira no relatório do script a divisão em partes e o tempo de cada uma (uma parte muito mais longa que as outras pede para ser dividida), se cada explicação de solução bate com os lances aceitos e se a dica não entrega a resposta.
-8. **Revisão por agentes** (`revisao.md`): antes da PR, um revisor de xadrez e régua (Fable) e um de textos pt/en conferem a aula a partir do dossiê, não da conversa. Quem escreveu não revisa a própria aula. Correção mecânica o revisor faz; cortar ou trocar exercício e mudar estrelas vai para o relatório `docs/aulas/AUDITORIA-<data>.md`, e o Gabriel decide. Num lote, a lista de erros já vistos em `revisao.md` é a conferência de quem escreve.
+8. **Revisão por agentes** (`revisao.md`): antes da PR, o `revisor-licoes` (nota da lição e plano, `licao.md`), um revisor de xadrez e régua (Fable) e um de textos pt/en conferem a aula a partir do dossiê, não da conversa. Quem escreveu não revisa a própria aula. Correção mecânica o revisor faz; cortar ou trocar exercício e mudar estrelas vai para o relatório `docs/aulas/AUDITORIA-<data>.md`, e o Gabriel decide. Num lote, a lista de erros já vistos em `revisao.md` é a conferência de quem escreve.
 9. **Fechar**: commit `Aula <id>: <nome do final>` e PR. Na descrição: o final, a lista de exercícios com as estrelas, as fontes usadas e o que foi julgado pelo Stockfish em vez da tabela. Enquanto o app não lê estas aulas (ver "O que falta no app" em `formato.md`), a PR é só de conteúdo: sem vídeo e sem versão de QA.
 
 ## Regras que não mudam
