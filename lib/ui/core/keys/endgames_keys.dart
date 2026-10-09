@@ -10,6 +10,7 @@ abstract final class EndgamesKeys {
   static const filter = Key('endgames.filter');
   static const forYou = Key('endgames.filter.forYou');
   static const all = Key('endgames.filter.all');
+  static const hideDone = Key('endgames.hideDone');
   static const forYouEmpty = Key('endgames.forYouEmpty');
   static Key badge(String lessonId) => Key('endgames.badge.$lessonId');
 

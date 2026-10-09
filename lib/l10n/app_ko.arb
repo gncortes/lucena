@@ -976,5 +976,6 @@
   "exerciseGradeGood": "좋음",
   "exerciseGradeExcellent": "우수",
   "exerciseGradePerfect": "완벽",
-  "exerciseGradeYou": "나"
+  "exerciseGradeYou": "나",
+  "endgamesHideDone": "완료한 수업 숨기기"
 }

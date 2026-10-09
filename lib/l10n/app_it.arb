@@ -976,5 +976,6 @@
   "exerciseGradeGood": "Buono",
   "exerciseGradeExcellent": "Eccellente",
   "exerciseGradePerfect": "Perfetto",
-  "exerciseGradeYou": "Tu"
+  "exerciseGradeYou": "Tu",
+  "endgamesHideDone": "Nascondi le lezioni completate"
 }

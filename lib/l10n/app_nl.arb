@@ -976,5 +976,6 @@
   "exerciseGradeGood": "Goed",
   "exerciseGradeExcellent": "Uitstekend",
   "exerciseGradePerfect": "Perfect",
-  "exerciseGradeYou": "Jij"
+  "exerciseGradeYou": "Jij",
+  "endgamesHideDone": "Voltooide lessen verbergen"
 }

@@ -976,5 +976,6 @@
   "exerciseGradeGood": "خوب",
   "exerciseGradeExcellent": "عالی",
   "exerciseGradePerfect": "بی‌نقص",
-  "exerciseGradeYou": "تو"
+  "exerciseGradeYou": "تو",
+  "endgamesHideDone": "پنهان کردن درس‌های تمام‌شده"
 }

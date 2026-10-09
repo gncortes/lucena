@@ -5082,5 +5082,9 @@
   "exerciseGradeYou": "You",
   "@exerciseGradeYou": {
     "description": "Result screen: marker on the grade the student reached."
+  },
+  "endgamesHideDone": "Hide completed lessons",
+  "@endgamesHideDone": {
+    "description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."
   }
 }

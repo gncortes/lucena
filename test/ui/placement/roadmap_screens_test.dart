@@ -197,6 +197,51 @@ void main() {
       expect(state.badge('rook.lucena'), EndgameBadge.mastered);
     });
 
+    test('aula concluída segue em "Para você"; esconder fica gravado', () async {
+      final settings = FakeSettingsRepository(const AppSettings());
+      EndgamesCubit cubit() {
+        final cubit = EndgamesCubit(
+          lessons: FakeEndgameLessonRepository(),
+          progress: FakeEndgameProgressRepository(
+            const EndgameProgress(
+              lessons: {
+                'rook.lucena': EndgameLessonProgress(
+                  lessonDone: true,
+                  stars: {'e01': 2, 'e02': 2, 'e03': 2},
+                ),
+              },
+            ),
+          ),
+          characters: FakeCharacterRepository(),
+          placement: FakePlacementRepository(
+            skills: skills,
+            saveResultValue: result(const {
+              'rook.lucena': NodeStatus(NodeState.gap, confirmed: true),
+            }),
+          ),
+          school: FakeLessonRepository(),
+          schoolProgress: FakeSchoolProgressRepository(),
+          settings: settings,
+        );
+        addTearDown(cubit.close);
+        return cubit;
+      }
+
+      final first = cubit();
+      await first.load('en');
+      expect(first.state.doneLessons.map((lesson) => lesson.id), [
+        'rook.lucena',
+      ]);
+      expect(first.state.hideDone, isFalse);
+      await first.setHideDone(true);
+      expect(first.state.hideDone, isTrue);
+      expect(settings.settings.endgamesHideDone, isTrue);
+
+      final again = cubit();
+      await again.load('en');
+      expect(again.state.hideDone, isTrue);
+    });
+
     test('"Para você" e "Todos": sem teste, sempre todos; a escolha fica '
         'gravada', () async {
       final settings = FakeSettingsRepository(const AppSettings());

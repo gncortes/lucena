@@ -976,5 +976,6 @@
   "exerciseGradeGood": "Bagus",
   "exerciseGradeExcellent": "Sangat baik",
   "exerciseGradePerfect": "Sempurna",
-  "exerciseGradeYou": "Kamu"
+  "exerciseGradeYou": "Kamu",
+  "endgamesHideDone": "Sembunyikan pelajaran selesai"
 }

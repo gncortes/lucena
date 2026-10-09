@@ -976,5 +976,6 @@
   "exerciseGradeGood": "جيد",
   "exerciseGradeExcellent": "ممتاز",
   "exerciseGradePerfect": "مثالي",
-  "exerciseGradeYou": "أنت"
+  "exerciseGradeYou": "أنت",
+  "endgamesHideDone": "إخفاء الدروس المكتملة"
 }

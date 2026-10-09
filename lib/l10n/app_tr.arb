@@ -976,5 +976,6 @@
   "exerciseGradeGood": "İyi",
   "exerciseGradeExcellent": "Mükemmel",
   "exerciseGradePerfect": "Kusursuz",
-  "exerciseGradeYou": "Sen"
+  "exerciseGradeYou": "Sen",
+  "endgamesHideDone": "Tamamlanan dersleri gizle"
 }
