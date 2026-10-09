@@ -60,6 +60,7 @@ void main() {
     'rook.lucena.demo': 'Watch.',
     'rook.lucena.demo.m1': 'The rook builds the bridge.',
     'rook.lucena.demo.m2': 'Black checks.',
+    'coach.thinkRight': ['Correct!'],
   });
   final trail = EndgameTrail(
     modules: [
@@ -155,6 +156,24 @@ void main() {
       expect(cubit.state.current?.id, 'demo');
     },
   );
+
+  test('pensar: o lance certo segue no tabuleiro, com "correto"', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c4')!);
+    expect(cubit.state.current?.id, 'demo');
+    // A demonstração já começa depois do lance do aluno, sem refazê-lo.
+    expect(cubit.state.demoMove, 1);
+    expect(cubit.state.lastMove, Move.parse('c1c4'));
+    expect(cubit.state.speech, startsWith('Correct!'));
+  });
+
+  test('pensar: lance diferente abre a explicação do começo', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c2')!);
+    expect(cubit.state.current?.id, 'demo');
+    expect(cubit.state.demoMove, 0);
+    expect(cubit.state.speech, isNot(startsWith('Correct!')));
+  });
 
   test('pensar: pular vai direto à explicação', () async {
     final cubit = await open();

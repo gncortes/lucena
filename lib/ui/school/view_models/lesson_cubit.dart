@@ -619,7 +619,46 @@ class LessonCubit extends Cubit<LessonState> {
     // Uma pausa para o aluno ver o próprio lance antes da explicação.
     await Future<void>.delayed(replyDelay);
     if (isClosed || state.step != stepIndex) return;
+    final nextIndex = stepIndex + 1;
+    if (nextIndex < state.stepCount &&
+        _guessed(state.lesson!.steps[nextIndex], move.uci)) {
+      _explainGuessed(nextIndex, played.position.fen, move);
+      await _save();
+      return;
+    }
     await _explain();
+  }
+
+  /// O lance [uci] é o que o passo [next] (a explicação) mostra primeiro.
+  static bool _guessed(LessonStep next, String uci) => switch (next) {
+    TalkStep(:final arrows) when arrows.isNotEmpty =>
+      '${arrows.first.$1}${arrows.first.$2}' == uci,
+    DemoStep(:final line) when line.isNotEmpty => line.first.uci == uci,
+    MoveStep(:final line) when line.isNotEmpty => line.first.accept.contains(
+      uci,
+    ),
+    _ => false,
+  };
+
+  /// Acertou o lance pensando: a explicação abre com o tabuleiro onde o
+  /// aluno deixou (sem voltar e refazer o lance) e com um "correto" antes da
+  /// fala. Num passo de jogar, ele ainda joga: só ganha o aviso.
+  void _explainGuessed(int index, String fen, Move move) {
+    final step = state.lesson!.steps[index];
+    var opened = _open(state, index);
+    if (step is TalkStep) {
+      opened = opened.copyWith(fen: fen, lastMove: move);
+    } else if (step is DemoStep) {
+      opened = _demoAt(opened, step, 1);
+    }
+    final right = _pick('coach.thinkRight') ?? _pick('coach.praise');
+    final speech = opened.speech;
+    emit(
+      opened.copyWith(
+        speech: [?right, ?speech].join(' '),
+        emotion: Emotion.happy,
+      ),
+    );
   }
 
   // --- demonstração (T51) -------------------------------------------------
