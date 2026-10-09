@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/placement.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
@@ -497,6 +498,11 @@ class _Roadmap extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final steps = state.roadmap!.steps.take(3).toList();
+    // Aula que ainda não existe não tem título nos textos: vale o nome
+    // traduzido do final, com "em breve".
+    String titleOf(RoadmapStep step) => step.soon
+        ? skillName(l10n, step.node)
+        : state.titles[step.lessonId] ?? step.lessonId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -540,12 +546,12 @@ class _Roadmap extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.titles[step.lessonId] ?? step.lessonId,
+                            titleOf(step),
                             style: theme.textTheme.titleSmall,
                           ),
                           // O nó só quando o título da aula não diz o mesmo.
                           if (skillName(l10n, step.node) case final skill
-                              when skill != state.titles[step.lessonId])
+                              when skill != titleOf(step))
                             Text(
                               skill,
                               style: theme.textTheme.bodySmall?.copyWith(
