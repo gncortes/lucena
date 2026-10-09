@@ -82,6 +82,7 @@ void main() {
       await tester.pumpAndSettle();
     }
     expect(find.byKey(PlacementKeys.result), findsOneWidget);
+    expect(find.byKey(PlacementKeys.resultHeader), findsOneWidget);
     expect(find.byKey(PlacementKeys.level), findsOneWidget);
 
     await tester.tap(find.byKey(PlacementKeys.useLevel));

@@ -512,7 +512,7 @@ class LessonCubit extends Cubit<LessonState> {
       case PlayStep step:
         await _playOut(step, move);
       case ThinkStep():
-        _playFree(move);
+        await _playThink(move);
       case TalkStep() || TapStep() || DemoStep() || null:
         return;
     }
@@ -561,6 +561,10 @@ class LessonCubit extends Cubit<LessonState> {
   /// Pular o tempo de pensar e ir direto à explicação.
   Future<void> skipThink() async {
     if (!state.thinking) return;
+    await _explain();
+  }
+
+  Future<void> _explain() async {
     final nextStep = state.step + 1;
     if (nextStep < state.stepCount) {
       emit(_open(state, nextStep));
@@ -592,15 +596,30 @@ class LessonCubit extends Cubit<LessonState> {
     emit(state.copyWith(fen: step.fen, clearLastMove: true));
   }
 
-  // No passo de pensar, o aluno testa ideias mexendo as peças dos dois
-  // lados, sem certo nem errado.
-  void _playFree(Move move) {
+  // No passo de pensar, o aluno joga a ideia dele: o lance já responde à
+  // pergunta, então o relógio some e a explicação vem logo, sem esperar o
+  // tempo. Depois do tempo (ou com o relógio já parado) ele ainda testa
+  // ideias à vontade, sem certo nem errado.
+  Future<void> _playThink(Move move) async {
     final position = _position();
     if (position == null) return;
     final played = GameRules.play(position, move);
     if (played == null) return;
+    final explainNow = state.thinking;
+    final stepIndex = state.step;
     unawaited(_sounds?.move(played.san));
-    emit(state.copyWith(fen: played.position.fen, lastMove: move));
+    emit(
+      state.copyWith(
+        fen: played.position.fen,
+        lastMove: move,
+        clearThinkLeft: explainNow,
+      ),
+    );
+    if (!explainNow) return;
+    // Uma pausa para o aluno ver o próprio lance antes da explicação.
+    await Future<void>.delayed(replyDelay);
+    if (isClosed || state.step != stepIndex) return;
+    await _explain();
   }
 
   // --- demonstração (T51) -------------------------------------------------

@@ -43,15 +43,19 @@ class PlacementScreen extends StatelessWidget {
     final state = context.watch<PlacementCubit>().state;
     return Scaffold(
       key: PlacementKeys.screen,
-      appBar: AppBar(
-        title: state.view == PlacementView.question
-            ? Text(
-                l10n.placementQuestionOf(state.number),
-                key: PlacementKeys.counter,
-              )
-            : Text(l10n.placementTitle),
-      ),
+      // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
+      appBar: state.view == PlacementView.result
+          ? null
+          : AppBar(
+              title: state.view == PlacementView.question
+                  ? Text(
+                      l10n.placementQuestionOf(state.number),
+                      key: PlacementKeys.counter,
+                    )
+                  : Text(l10n.placementTitle),
+            ),
       body: SafeArea(
+        top: state.view != PlacementView.result,
         child: AnimatedSwitcher(
           duration: AppMotion.of(context).component,
           switchInCurve: AppMotion.enter,

@@ -22,6 +22,7 @@ abstract final class PlacementKeys {
 
   /// No resultado.
   static const result = Key('placement.result');
+  static const resultHeader = Key('placement.resultHeader');
   static const level = Key('placement.level');
   static const ruler = Key('placement.ruler');
   static Key levelChoice(RatingLevel level) =>

@@ -47,36 +47,49 @@ class _PlacementResultViewState extends State<PlacementResultView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.screen,
-              top: AppSpacing.sm,
-              right: AppSpacing.screen,
-              bottom: AppSpacing.lg,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _LevelCard(result: result, shown: chosen),
-                if (levels.length > 1) ...[
-                  const SizedBox(height: AppSpacing.betweenCards),
-                  _TwoLevels(
-                    levels: levels,
-                    chosen: chosen,
-                    onChoose: (level) => setState(() => _chosen = level),
+          // Cabeçalho grande que recolhe ao rolar: o título ganha destaque
+          // sobre a faixa e some do caminho do mapa e do roteiro.
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar.large(
+                key: PlacementKeys.resultHeader,
+                pinned: true,
+                title: Text(l10n.placementTitle),
+              ),
+              SliverPadding(
+                padding: scrollPadding(
+                  context,
+                  left: AppSpacing.screen,
+                  top: AppSpacing.sm,
+                  right: AppSpacing.screen,
+                  bottom: AppSpacing.lg,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _LevelCard(result: result, shown: chosen),
+                      if (levels.length > 1) ...[
+                        const SizedBox(height: AppSpacing.betweenCards),
+                        _TwoLevels(
+                          levels: levels,
+                          chosen: chosen,
+                          onChoose: (level) => setState(() => _chosen = level),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.xl),
+                      _SkillMapSection(state: widget.state),
+                      if (widget.state.roadmap?.steps.isNotEmpty ?? false) ...[
+                        const SizedBox(height: AppSpacing.xl),
+                        _Roadmap(state: widget.state),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      _Sources(text: l10n.placementSources),
+                    ],
                   ),
-                ],
-                const SizedBox(height: AppSpacing.xl),
-                _SkillMapSection(state: widget.state),
-                if (widget.state.roadmap?.steps.isNotEmpty ?? false) ...[
-                  const SizedBox(height: AppSpacing.xl),
-                  _Roadmap(state: widget.state),
-                ],
-                const SizedBox(height: AppSpacing.lg),
-                _Sources(text: l10n.placementSources),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
         _Actions(
