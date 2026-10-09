@@ -48,6 +48,7 @@ class ExerciseState {
     this.speech,
     this.emotion = Emotion.calm,
     this.earned,
+    this.explained = false,
     this.number = 0,
     this.count = 0,
     this.nextExercise,
@@ -85,6 +86,9 @@ class ExerciseState {
   /// As estrelas ganhas, quando resolvido.
   final int? earned;
 
+  /// O aluno abriu a explicação detalhada da solução.
+  final bool explained;
+
   /// O número do exercício na aula (1 é o primeiro) e quantos há.
   final int number;
   final int count;
@@ -93,6 +97,15 @@ class ExerciseState {
   final String? nextExercise;
 
   bool get interactive => phase == ExercisePhase.active;
+
+  /// A explicação detalhada da solução, quando a aula tem.
+  String? get explanation => lesson == null || exercise == null
+      ? null
+      : texts.say('${lesson!.id}.ex.${exercise!.id}.solution');
+
+  /// Resolvido, com explicação a pedir: o botão "Ver explicação".
+  bool get canExplain =>
+      phase == ExercisePhase.done && !explained && explanation != null;
 
   /// O lado do aluno: o que joga no FEN do exercício.
   Side get side => exercise?.step.side ?? Side.white;
@@ -119,6 +132,7 @@ class ExerciseState {
     String? speech,
     Emotion? emotion,
     int? earned,
+    bool? explained,
   }) => ExerciseState(
     ready: ready,
     missing: missing,
@@ -137,6 +151,7 @@ class ExerciseState {
     speech: speech ?? this.speech,
     emotion: emotion ?? this.emotion,
     earned: earned ?? this.earned,
+    explained: explained ?? this.explained,
     number: number,
     count: count,
     nextExercise: nextExercise,
@@ -321,6 +336,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _save();
   }
 
+  /// "Ver explicação": a fala detalhada da solução, depois de resolver.
+  void showExplanation() {
+    final text = state.explanation;
+    if (!state.canExplain || text == null) return;
+    emit(
+      state.copyWith(
+        speech: text,
+        explained: true,
+        emotion: Emotion.focused,
+      ),
+    );
+  }
+
   /// Sair pelo voltar: o exercício fica guardado onde parou.
   Future<void> leave() async {
     if (state.phase == ExercisePhase.done) return;
@@ -357,9 +385,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         clearWrongMove: true,
         phase: ExercisePhase.done,
         earned: earned,
-        speech:
-            state.texts.say('${lesson.id}.ex.${exercise.id}.solution') ??
-            _pick('coach.praise'),
+        // Só o elogio: a explicação detalhada vem a pedido, para não
+        // empurrar o tabuleiro.
+        speech: _pick('coach.praise') ?? state.explanation,
         emotion: earned == exercise.stars ? Emotion.happy : Emotion.calm,
       ),
     );

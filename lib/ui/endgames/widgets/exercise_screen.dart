@@ -472,32 +472,54 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: ExerciseKeys.solved,
         color: Colors.transparent,
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: Text(
-                l10n.exerciseSolved,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+            // A explicação detalhada só a pedido: sem ela, o elogio curto
+            // não empurra o tabuleiro.
+            if (state.canExplain)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  key: ExerciseKeys.explainButton,
+                  onPressed: cubit.showExplanation,
+                  icon: const Icon(Icons.forum_outlined),
+                  label: Text(l10n.lessonSeeExplanation),
                 ),
               ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.exerciseSolved,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (next != null)
+                  FilledButton(
+                    key: ExerciseKeys.nextButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(140, 48),
+                    ),
+                    onPressed: () => context.pushReplacement(
+                      Routes.endgameExercise(lesson.id, next),
+                    ),
+                    child: Text(l10n.exerciseNext),
+                  )
+                else
+                  FilledButton(
+                    key: ExerciseKeys.backButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(140, 48),
+                    ),
+                    onPressed: () => context.pop(),
+                    child: Text(l10n.exerciseBack),
+                  ),
+              ],
             ),
-            if (next != null)
-              FilledButton(
-                key: ExerciseKeys.nextButton,
-                style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
-                onPressed: () => context.pushReplacement(
-                  Routes.endgameExercise(lesson.id, next),
-                ),
-                child: Text(l10n.exerciseNext),
-              )
-            else
-              FilledButton(
-                key: ExerciseKeys.backButton,
-                style: FilledButton.styleFrom(minimumSize: const Size(140, 48)),
-                onPressed: () => context.pop(),
-                child: Text(l10n.exerciseBack),
-              ),
           ],
         ),
       );

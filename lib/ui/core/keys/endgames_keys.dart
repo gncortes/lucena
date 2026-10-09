@@ -78,6 +78,7 @@ abstract final class ExerciseKeys {
   static const stars = Key('exercise.stars');
   static const earned = Key('exercise.earned');
   static const solved = Key('exercise.solved');
+  static const explainButton = Key('exercise.explain');
   static const nextButton = Key('exercise.next');
   static const backButton = Key('exercise.back');
   static const counter = Key('exercise.counter');

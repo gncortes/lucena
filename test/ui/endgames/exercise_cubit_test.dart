@@ -53,7 +53,8 @@ void main() {
   });
 
   test(
-    'acerto de primeira vale todas as estrelas e mostra a solução',
+    'acerto de primeira vale todas as estrelas; só o elogio, e a solução '
+    'detalhada vem a pedido',
     () async {
       final exercise = cubit();
       await exercise.load('rook.lucena', 'e03', 'en');
@@ -61,12 +62,18 @@ void main() {
       final state = exercise.state;
       expect(state.phase, ExercisePhase.done);
       expect(state.earned, 3);
-      expect(state.speech, 'Same bridge.');
+      expect(state.speech, 'Excellent.');
+      expect(state.canExplain, isTrue);
       expect(state.emotion, Emotion.happy);
       expect(progress.saved.of('rook.lucena').stars, {'e03': 3});
       expect(progress.saved.of('rook.lucena').exercise, isNull);
       // Os outros ainda estão por resolver: o próximo é o primeiro deles.
       expect(state.nextExercise, 'e01');
+
+      exercise.showExplanation();
+      expect(exercise.state.speech, 'Same bridge.');
+      expect(exercise.state.explained, isTrue);
+      expect(exercise.state.canExplain, isFalse);
     },
   );
 

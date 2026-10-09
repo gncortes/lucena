@@ -101,7 +101,12 @@ void main() {
           .toPlainText(),
       'Solution: 1.♖c4',
     );
+    // Só o elogio; a explicação detalhada vem pelo botão.
+    expect(speech(tester), 'Excellent.');
+    await tester.tap(find.byKey(ExerciseKeys.explainButton));
+    await tester.pumpAndSettle();
     expect(speech(tester), 'Same bridge.');
+    expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
     // Os outros dois ainda estão por resolver.
     expect(find.byKey(ExerciseKeys.nextButton), findsOneWidget);
     expect(find.byKey(ExerciseKeys.hintButton), findsNothing);
