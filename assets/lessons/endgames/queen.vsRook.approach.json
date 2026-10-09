@@ -480,61 +480,23 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "fen": "1k6/8/2Q5/2K5/8/8/8/3r4 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "parker",
       "line": [
         {
-          "teach": "d5f5",
+          "teach": "c6e4",
           "accept": [
-            "d5f5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "3k4/4r3/1K6/5Q2/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
+            "c6e4"
+          ],
+          "reply": "d1d7"
+        },
         {
-          "teach": "b6c5",
+          "teach": "c5c6",
           "accept": [
-            "b6c5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "1k6/1r6/3K4/4Q3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "unto",
-      "line": [
-        {
-          "teach": "d6c6",
-          "accept": [
-            "d6c6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "line": [
-        {
-          "teach": "h7g7",
-          "accept": [
-            "h7g7"
+            "c5c6"
           ]
         }
       ]
@@ -556,187 +518,171 @@
       ]
     },
     {
-      "id": "e06",
+      "id": "e13",
       "stars": 2,
-      "fen": "4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1",
+      "fen": "2k5/8/8/1QK5/8/8/8/4r3 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "line": [
         {
-          "teach": "e8d8",
+          "teach": "b5c4",
           "accept": [
-            "e8d8"
+            "b5c4"
           ],
-          "reply": "g7h7"
+          "reply": "c8c7"
         },
         {
-          "teach": "d8d4",
+          "teach": "c4f4",
           "accept": [
-            "d8d4"
+            "c4f4",
+            "c5d5"
+          ],
+          "reply": "c7c8"
+        },
+        {
+          "teach": "f4g4",
+          "accept": [
+            "c5d6",
+            "f4g4"
+          ],
+          "reply": "c8d8"
+        },
+        {
+          "teach": "g4h4",
+          "accept": [
+            "c5d6",
+            "g4h4"
           ]
         }
       ]
     },
     {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/k7/1r6/2K5/3Q4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "vince",
-      "line": [
-        {
-          "teach": "d4e3",
-          "accept": [
-            "d4d5",
-            "d4e3",
-            "d4f4"
-          ],
-          "reply": "a7a6"
-        },
-        {
-          "teach": "e3d3",
-          "accept": [
-            "e3d3"
-          ],
-          "reply": "a6a7"
-        },
-        {
-          "teach": "d3d4",
-          "accept": [
-            "d3d4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/8/7Q/8/4K1k1/8/6r1/8 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "line": [
-        {
-          "teach": "h6g6",
-          "accept": [
-            "h6g6"
-          ],
-          "reply": "g4h3"
-        },
-        {
-          "teach": "g6h5",
-          "accept": [
-            "g6h5"
-          ],
-          "reply": "h3g3"
-        },
-        {
-          "teach": "e4e3",
-          "accept": [
-            "e4e3"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 2,
-      "fen": "8/8/8/8/7Q/8/4K1k1/r7 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "line": [
-        {
-          "teach": "h4e4",
-          "accept": [
-            "h4e4",
-            "h4g5"
-          ],
-          "reply": "g2h3"
-        },
-        {
-          "teach": "e4h7",
-          "accept": [
-            "e2f2",
-            "e4h7"
-          ],
-          "reply": "h3g3"
-        },
-        {
-          "teach": "h7g7",
-          "accept": [
-            "h7g7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e10",
+      "id": "e14",
       "stars": 3,
-      "fen": "8/1kr5/8/1K2Q3/8/8/8/8 w - - 0 1",
+      "fen": "8/4k3/8/2K5/8/3Q4/8/4r3 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "line": [
         {
-          "teach": "e5e8",
+          "teach": "c5d5",
           "accept": [
-            "e5e4",
-            "e5e8",
-            "e5f5"
+            "c5d5"
           ],
-          "reply": "b7a7"
+          "reply": "e7f7"
         },
         {
-          "teach": "e8e4",
+          "teach": "d3f3",
           "accept": [
-            "e8e4"
+            "d3f3"
           ],
-          "reply": "c7b7"
+          "reply": "f7e7"
         },
         {
-          "teach": "b5c6",
+          "teach": "f3g4",
           "accept": [
-            "b5c6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "2Q5/r4k2/3K4/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "line": [
-        {
-          "teach": "c8c4",
-          "accept": [
-            "c8c4"
+            "f3f4",
+            "f3g4"
           ],
-          "reply": "f7f8"
+          "reply": "e7f7"
+        },
+        {
+          "teach": "g4f4",
+          "accept": [
+            "d5d6",
+            "g4f4"
+          ],
+          "reply": "f7e8"
+        },
+        {
+          "teach": "d5d6",
+          "accept": [
+            "d5d6"
+          ],
+          "reply": "e1d1"
         },
         {
           "teach": "d6e6",
           "accept": [
             "d6e6"
           ],
-          "reply": "a7f7"
+          "reply": "d1e1"
         },
         {
-          "teach": "c4c5",
+          "teach": "e6f6",
           "accept": [
-            "c4c5"
+            "e6f6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/5r2/3k4/1Q4K1/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "hannes",
+      "line": [
+        {
+          "teach": "b4b5",
+          "accept": [
+            "b4b5"
           ],
-          "reply": "f8g8"
+          "reply": "d5d6"
         },
         {
-          "teach": "c5d5",
+          "teach": "g4g5",
           "accept": [
-            "c5d5"
+            "g4g5"
+          ],
+          "reply": "f6e6"
+        },
+        {
+          "teach": "g5f5",
+          "accept": [
+            "g5f5"
+          ],
+          "reply": "e6e7"
+        },
+        {
+          "teach": "b5b6",
+          "accept": [
+            "b5a6",
+            "b5b6"
+          ],
+          "reply": "d6d7"
+        },
+        {
+          "teach": "f5f6",
+          "accept": [
+            "f5f6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/5Q2/k6r/2K5/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "parker",
+      "line": [
+        {
+          "teach": "f7f8",
+          "accept": [
+            "f7f8"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "c5c6",
+          "accept": [
+            "c5c6"
           ]
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "second",
@@ -752,11 +698,6 @@
       "id": "ladder",
       "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
       "ref": "belle"
-    },
-    {
-      "id": "berger",
-      "fen": "8/rk6/8/1KQ5/8/8/8/8 w - - 0 1",
-      "ref": "wikipedia"
     }
   ],
   "practice": {
@@ -807,6 +748,14 @@
       "url": "https://lichess.org/study/zfcueYR4"
     },
     {
+      "id": "hannes",
+      "kind": "game",
+      "white": "Hannes Stefánsson",
+      "black": "Karsten Müller",
+      "event": "Partida comentada por Nunn (via Wikipedia)",
+      "year": 1992
+    },
+    {
       "id": "parker",
       "kind": "study",
       "author": "ColinParker",
@@ -828,5 +777,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 20
+  "maxScore": 14
 }

@@ -571,45 +571,14 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "8/8/2K5/8/8/1Q6/p7/1k6 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "b1a1",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/8/8/8/4K3/8/p2Q4/1k6 w - - 0 1",
+      "fen": "7K/8/Q7/8/8/6k1/5p2/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "tonyro",
       "turns": [
         {
-          "teach": "e4d3",
-          "accept": "best",
-          "reply": "a2a1q"
-        },
-        {
-          "teach": "d2c2",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "8/8/8/8/2K5/1Q6/2p5/k7 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "b3c3",
+          "teach": "a6f1",
           "accept": "win"
         }
       ]
@@ -633,88 +602,21 @@
       ]
     },
     {
-      "id": "e05",
+      "id": "e13",
       "stars": 2,
-      "fen": "8/8/8/8/8/8/2pk2K1/7Q w - - 0 1",
-      "goal": "win",
-      "origin": "mario",
-      "turns": [
-        {
-          "teach": "h1h6",
-          "accept": "win",
-          "reply": "d2d1"
-        },
-        {
-          "teach": "h6d6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "8/8/8/5K2/8/8/3Q1pk1/8 b - - 0 1",
+      "fen": "8/8/8/8/8/1K1Q4/2p5/k7 b - - 0 1",
       "goal": "draw",
       "origin": "own",
       "turns": [
         {
-          "teach": "g2h1",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "6Q1/8/8/2K5/8/8/pk6/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "g8g2",
-          "accept": "win",
-          "reply": "b2b1"
-        },
-        {
-          "teach": "c5c4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "6Q1/8/8/7K/8/3k4/2p5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "g8g5",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/8/8/5K2/8/8/Q1pk4/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d2c3",
-          "accept": "hold",
-          "reply": "a2a1"
-        },
-        {
-          "teach": "c3d2",
+          "teach": "c2c1n",
           "accept": "hold"
         }
       ]
     },
     {
       "id": "e10",
-      "stars": 3,
+      "stars": 2,
       "fen": "6Q1/8/8/4K3/8/8/4kp2/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
@@ -736,30 +638,81 @@
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "1Q6/8/8/8/8/8/6kp/3K4 w - - 0 1",
+      "id": "e14",
+      "stars": 2,
+      "fen": "2Q5/7p/8/1K6/8/8/5p2/6k1 w - - 0 1",
       "goal": "win",
-      "origin": "mario",
+      "origin": "wikipedia",
       "turns": [
         {
-          "teach": "b8b2",
+          "teach": "c8g4",
           "accept": "win",
-          "reply": "g2g1"
+          "reply": "g1h2"
         },
         {
-          "teach": "d1e1",
+          "teach": "g4f3",
           "accept": "win",
-          "reply": "h2h1q"
+          "reply": "h2g1"
         },
         {
-          "teach": "b2f2",
+          "teach": "f3g3",
+          "accept": "win",
+          "reply": "g1h1"
+        },
+        {
+          "teach": "g3f2",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/8/8/6K1/6Q1/2k5/p7/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "g4e2",
+          "accept": "win",
+          "reply": "c3b3"
+        },
+        {
+          "teach": "e2e5",
+          "accept": "win",
+          "reply": "b3c2"
+        },
+        {
+          "teach": "e5a1",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/1Q6/7K/8/8/4k3/2p5/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b7g2",
+          "accept": "win",
+          "reply": "e3d3"
+        },
+        {
+          "teach": "g2g5",
+          "accept": "win",
+          "reply": "d3c3"
+        },
+        {
+          "teach": "g5c1",
           "accept": "win"
         }
       ]
     }
   ],
-  "passScore": 14,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "rookDraw",
@@ -836,6 +789,13 @@
       "author": "Danghiangmanh",
       "title": "Queen vs Pawn",
       "url": "https://lichess.org/study/4JKLMbtH"
+    },
+    {
+      "id": "tonyro",
+      "kind": "study",
+      "author": "TonyRo",
+      "title": "Queen vs. Rook or Bishop Pawns",
+      "url": "https://lichess.org/study/kkoVo7Fy"
     },
     {
       "id": "tablebase",

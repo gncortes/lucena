@@ -40,7 +40,7 @@
   "ex.e12.solution": "Rf7! The rook takes g7 and h7, and your king already covers g6 and g5: the black king only has h5, facing your king, and Rh7# closes the h-file. Rh8+? lets the black king out to g7, where he still attacks the rook, and Rg8 leaves h7 free: both win, but much more slowly.",
   "ex.e13": "White to move and win. The rook is attacked. Is running away the only way?",
   "ex.e13.hint": "The rook is on a great square: it cuts the d-file and the fifth rank. Ask yourself whether you can keep it there.",
-  "ex.e13.solution": "Kc4! Your king defends the rook, which keeps the black king locked in the corner from e6 to h8, and gets closer too. Running with the rook along the fifth rank (Rg5, Ra5) or to d4 also wins, but wastes a move: your king stays far away. After ...Kf6, Kc5 keeps going. Kc3?? or Kb4?? let the rook be taken.",
+  "ex.e13.solution": "Kc4! Your king defends the rook, which keeps the black king locked in the corner from e6 to h8, and gets closer too. Running with the rook along the fifth rank (Rg5, Ra5) or to d4 also wins, but costs two more moves: your king stays far away. After ...Kf6, Kc5 keeps going. Kc3?? or Kb4?? let the rook be taken.",
   "ex.e14": "White to move and mate. The move that looks natural only draws.",
   "ex.e14.hint": "Before bringing your king closer, count the squares the black king will have. Zero squares without check is a draw.",
   "ex.e14.solution": "Kg6! The black king only has g8. After ...Kg8, Rf1! (quiet, no check) leaves him only h8, and Rf8# closes the eighth rank with your king a knight's jump away. Kh6?? is stalemate: the king on h8 has no move and is not in check. Rg7?? and Rg8+?? give the rook away.",

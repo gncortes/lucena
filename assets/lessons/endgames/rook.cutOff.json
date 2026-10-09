@@ -545,85 +545,8 @@
   ],
   "exercises": [
     {
-      "id": "e01",
-      "stars": 1,
-      "fen": "2r5/8/5k2/3P4/3K4/8/8/7R w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h1e1",
-          "accept": [
-            "h1e1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "3r4/8/6k1/8/3P4/3K4/8/7R w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h1f1",
-          "accept": [
-            "h1f1"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e1f1",
-          "accept": [
-            "e1f1"
-          ],
-          "reply": "f7g7"
-        },
-        {
-          "teach": "f1f4",
-          "accept": [
-            "f1f3",
-            "f1f4",
-            "f1f5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "8/4K2r/2k1P3/8/8/8/8/3R4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "e7f8",
-          "accept": [
-            "e7f8"
-          ],
-          "reply": "h7h8"
-        },
-        {
-          "teach": "f8g7",
-          "accept": [
-            "f8f7",
-            "f8g7"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e05",
-      "stars": 2,
+      "stars": 1,
       "fen": "2r5/8/1R6/4k3/2P5/2K5/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -644,66 +567,8 @@
       ]
     },
     {
-      "id": "e06",
-      "stars": 2,
-      "fen": "3r4/8/4k3/4p3/1K6/8/8/4R3 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "b4c4",
-          "accept": [
-            "b4c3",
-            "b4c4"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "1r6/8/7R/3k4/1P6/1K6/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "harryRank",
-      "line": [
-        {
-          "teach": "b3a4",
-          "accept": [
-            "b3a4",
-            "h6a6"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "3r4/8/8/6k1/3P4/3K4/8/5R2 w - - 0 1",
-      "goal": "win",
-      "origin": "five",
-      "line": [
-        {
-          "teach": "d3c4",
-          "accept": [
-            "d3c4"
-          ],
-          "reply": "d8c8"
-        },
-        {
-          "teach": "c4b5",
-          "accept": [
-            "c4b3",
-            "c4b4",
-            "c4b5",
-            "c4d3",
-            "c4d5"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e09",
-      "stars": 3,
+      "stars": 2,
       "fen": "7r/8/8/2k5/8/4K3/5P2/3R4 w - - 0 1",
       "goal": "win",
       "origin": "capablanca",
@@ -725,45 +590,115 @@
       ]
     },
     {
-      "id": "e10",
-      "stars": 3,
-      "fen": "4r3/8/8/1k6/4P3/4K3/8/R7 w - - 0 1",
+      "id": "e07",
+      "stars": 2,
+      "fen": "1r6/8/7R/3k4/1P6/1K6/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "harryRank",
       "line": [
         {
-          "teach": "a1c1",
+          "teach": "b3a4",
           "accept": [
-            "a1c1"
+            "b3a4",
+            "h6a6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "stars": 2,
+      "fen": "8/2R5/8/2P2k2/r7/3K4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "peinWard",
+      "line": [
+        {
+          "teach": "c7e7",
+          "accept": [
+            "c7c6",
+            "c7e7"
           ],
-          "reply": "b5b6"
+          "reply": "f5f6"
         },
         {
-          "teach": "e3f4",
+          "teach": "e7e2",
           "accept": [
-            "e3f4"
+            "e7e1",
+            "e7e2",
+            "e7e8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "stars": 3,
+      "fen": "K7/P3k3/8/8/8/2R5/8/1r6 w - - 0 1",
+      "goal": "win",
+      "origin": "wikiRookPawn",
+      "line": [
+        {
+          "teach": "c3c8",
+          "accept": [
+            "c3c8"
           ],
-          "reply": "e8f8"
+          "reply": "e7d6"
         },
         {
-          "teach": "f4g5",
+          "teach": "c8b8",
           "accept": [
-            "f4g5"
+            "c8b8"
           ],
-          "reply": "f8e8"
+          "reply": "b1a1"
         },
         {
-          "teach": "g5f5",
+          "teach": "a8b7",
           "accept": [
-            "c1e1",
-            "g5f4",
-            "g5f5"
+            "a8b7"
+          ],
+          "reply": "a1b1"
+        },
+        {
+          "teach": "b7c8",
+          "accept": [
+            "b7a6",
+            "b7a8",
+            "b7c8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "stars": 3,
+      "fen": "1r6/8/4P3/7k/8/4RK2/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "uhlmannGulko",
+      "line": [
+        {
+          "teach": "e6e7",
+          "accept": [
+            "e6e7"
+          ],
+          "reply": "b8e8"
+        },
+        {
+          "teach": "e3e6",
+          "accept": [
+            "e3e6"
+          ],
+          "reply": "h5g5"
+        },
+        {
+          "teach": "f3e4",
+          "accept": [
+            "f3e4"
           ]
         }
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "cut",
@@ -865,11 +800,34 @@
       "where": "Sumário do trecho gratuito da editora: \"Cutting the King Off\" nos capítulos 8 e 9"
     },
     {
+      "id": "deemiranda",
+      "kind": "study",
+      "author": "deemiranda29",
+      "title": "Rook endgame studies Vol. 2: Rook and Pawn vs. Rook",
+      "url": "https://lichess.org/study/yuOYmVsQ"
+    },
+    {
+      "id": "uhlmannGulko",
+      "kind": "game",
+      "white": "Uhlmann",
+      "black": "Gulko",
+      "event": "Niksic",
+      "year": 1978
+    },
+    {
+      "id": "peinWard",
+      "kind": "game",
+      "white": "Malcolm Pein",
+      "black": "Chris Ward",
+      "event": "British Championship",
+      "year": 1997
+    },
+    {
       "id": "tablebase",
       "kind": "tablebase",
       "title": "Lichess tablebase (Syzygy)",
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 19
+  "maxScore": 13
 }

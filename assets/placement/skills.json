@@ -631,7 +631,7 @@
       "lessons": [
         {
           "id": "pawns.minedSquares",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -646,7 +646,7 @@
       "lessons": [
         {
           "id": "pawns.spareTempi",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -661,7 +661,7 @@
       "lessons": [
         {
           "id": "pawns.correspondingSquares",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false
@@ -729,7 +729,7 @@
       "lessons": [
         {
           "id": "queen.vsRookPawn",
-          "kind": "catalog"
+          "kind": "endgame"
         }
       ],
       "midgameTactic": false

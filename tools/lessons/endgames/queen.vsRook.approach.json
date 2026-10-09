@@ -377,53 +377,19 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "2k5/4r3/1K6/3Q4/8/8/8/8 w - - 0 1",
+      "fen": "1k6/8/2Q5/2K5/8/8/8/3r4 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "parker",
       "turns": [
         {
-          "teach": "d5f5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "3k4/4r3/1K6/5Q2/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
+          "teach": "c6e4",
+          "accept": "best",
+          "reply": "d1d7"
+        },
         {
-          "teach": "b6c5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "1k6/1r6/3K4/4Q3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "unto",
-      "turns": [
-        {
-          "teach": "d6c6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "turns": [
-        {
-          "teach": "h7g7",
+          "teach": "c5c6",
           "accept": "best"
         }
       ]
@@ -445,149 +411,129 @@
       ]
     },
     {
-      "id": "e06",
+      "id": "e13",
       "stars": 2,
-      "fen": "4Q3/5rk1/8/6K1/8/8/8/8 w - - 0 1",
+      "fen": "2k5/8/8/1QK5/8/8/8/4r3 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "turns": [
         {
-          "teach": "e8d8",
+          "teach": "b5c4",
           "accept": "best",
-          "reply": "g7h7"
+          "reply": "c8c7"
         },
         {
-          "teach": "d8d4",
+          "teach": "c4f4",
+          "accept": "best",
+          "reply": "c7c8"
+        },
+        {
+          "teach": "f4g4",
+          "accept": "best",
+          "reply": "c8d8"
+        },
+        {
+          "teach": "g4h4",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/k7/1r6/2K5/3Q4/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "vince",
-      "turns": [
-        {
-          "teach": "d4e3",
-          "accept": [
-            "d4e3",
-            "d4f4",
-            "d4d5"
-          ],
-          "reply": "a7a6"
-        },
-        {
-          "teach": "e3d3",
-          "accept": "best",
-          "reply": "a6a7"
-        },
-        {
-          "teach": "d3d4",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/8/7Q/8/4K1k1/8/6r1/8 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "turns": [
-        {
-          "teach": "h6g6",
-          "accept": "best",
-          "reply": "g4h3"
-        },
-        {
-          "teach": "g6h5",
-          "accept": "best",
-          "reply": "h3g3"
-        },
-        {
-          "teach": "e4e3",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 2,
-      "fen": "8/8/8/8/7Q/8/4K1k1/r7 w - - 0 1",
-      "goal": "win",
-      "origin": "belle",
-      "turns": [
-        {
-          "teach": "h4e4",
-          "accept": "best",
-          "reply": "g2h3"
-        },
-        {
-          "teach": "e4h7",
-          "accept": "best",
-          "reply": "h3g3"
-        },
-        {
-          "teach": "h7g7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e10",
+      "id": "e14",
       "stars": 3,
-      "fen": "8/1kr5/8/1K2Q3/8/8/8/8 w - - 0 1",
+      "fen": "8/4k3/8/2K5/8/3Q4/8/4r3 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "turns": [
         {
-          "teach": "e5e8",
+          "teach": "c5d5",
           "accept": "best",
-          "reply": "b7a7"
+          "reply": "e7f7"
         },
         {
-          "teach": "e8e4",
+          "teach": "d3f3",
           "accept": "best",
-          "reply": "c7b7"
+          "reply": "f7e7"
         },
         {
-          "teach": "b5c6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "2Q5/r4k2/3K4/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "c8c4",
+          "teach": "f3g4",
           "accept": "best",
-          "reply": "f7f8"
+          "reply": "e7f7"
+        },
+        {
+          "teach": "g4f4",
+          "accept": "best",
+          "reply": "f7e8"
+        },
+        {
+          "teach": "d5d6",
+          "accept": "best",
+          "reply": "e1d1"
         },
         {
           "teach": "d6e6",
           "accept": "best",
-          "reply": "a7f7"
+          "reply": "d1e1"
         },
         {
-          "teach": "c4c5",
+          "teach": "e6f6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 3,
+      "fen": "8/8/5r2/3k4/1Q4K1/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "hannes",
+      "turns": [
+        {
+          "teach": "b4b5",
           "accept": "best",
-          "reply": "f8g8"
+          "reply": "d5d6"
         },
         {
-          "teach": "c5d5",
+          "teach": "g4g5",
+          "accept": "best",
+          "reply": "f6e6"
+        },
+        {
+          "teach": "g5f5",
+          "accept": "best",
+          "reply": "e6e7"
+        },
+        {
+          "teach": "b5b6",
+          "accept": "best",
+          "reply": "d6d7"
+        },
+        {
+          "teach": "f5f6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/5Q2/k6r/2K5/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "parker",
+      "turns": [
+        {
+          "teach": "f7f8",
+          "accept": "best",
+          "reply": "h6h5"
+        },
+        {
+          "teach": "c5c6",
           "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "second",
@@ -603,11 +549,6 @@
       "id": "ladder",
       "fen": "8/7Q/8/4K1k1/8/6r1/8/8 w - - 0 1",
       "ref": "belle"
-    },
-    {
-      "id": "berger",
-      "fen": "8/rk6/8/1KQ5/8/8/8/8 w - - 0 1",
-      "ref": "wikipedia"
     }
   ],
   "practice": {
@@ -656,6 +597,14 @@
       "author": "Coach_Vince",
       "title": "Queen versus Rook endgame",
       "url": "https://lichess.org/study/zfcueYR4"
+    },
+    {
+      "id": "hannes",
+      "kind": "game",
+      "white": "Hannes Stefánsson",
+      "black": "Karsten Müller",
+      "event": "Partida comentada por Nunn (via Wikipedia)",
+      "year": 1992
     },
     {
       "id": "parker",

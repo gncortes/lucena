@@ -20,6 +20,9 @@ CARLSEN = '8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1'  # só Rg3
 LONG = '5R2/8/8/8/8/5p2/5k1K/5r2 w - - 0 1'  # a torre precisa do lado longo
 WAIT8 = '8/8/8/8/4p3/8/R1rk2K1/8 w - - 0 1'  # esperar na primeira fileira
 S1 = 'R7/8/8/8/4p3/5k2/1r6/4K3 w - - 0 1'
+KARSTEDT = '5R2/8/8/8/4p3/4k3/7r/4K3 w - - 0 1'  # Karstedt 1897, espelhada
+LATEST = '4R3/8/8/8/8/4p3/4k1K1/4r3 w - - 0 1'   # o último momento do flanco
+TARR_D = 'r2K4/3P1k2/8/8/8/8/8/4R3 w - - 0 1'    # Tarrasch 1906: o aluno ataca
 
 REFERENCES = [
     {'id': 'rookPawn', 'kind': 'web',
@@ -40,6 +43,9 @@ REFERENCES = [
     {'id': 'noseknows', 'kind': 'study', 'author': 'NoseKnowsAll',
      'title': 'Intermediate Endgames You Must Know!',
      'url': 'https://lichess.org/study/UsqmCsgC'},
+    {'id': 'gotham', 'kind': 'study', 'author': 'GothamMath',
+     'title': 'Short-Side Defence',
+     'url': 'https://lichess.org/study/F1UmnASX'},
     {'id': 'practice2', 'kind': 'study', 'author': 'Lichess',
      'title': 'Lichess Practice: Intermediate Rook Endings',
      'url': 'https://lichess.org/study/heQDnvq7'},
@@ -54,6 +60,7 @@ REFERENCES = [
 write({
     'id': 'rook.shortSide',
     'module': 'rook',
+    'skills': ['rook.shortSide'],
     'parts': [
         {'id': 'short', 'steps': [
             think('t_behind', BEHIND, 5, 1, ask='line'),
@@ -87,34 +94,26 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, BEHIND, 'Re8', accept='only', goal='draw',
+        exercise('e08', 1, LONG, 'Ra8 Re1 Ra2+', accept='hold', goal='draw',
                  origin='profangel'),
-        exercise('e02', 1, after(BEHIND, 'Re8 Ke3'), 'Kf1', accept='hold',
-                 goal='draw', origin='profangel'),
-        exercise('e03', 1, after(FP, 'Rf8 Kf3'), 'Kg1', accept='only',
-                 goal='draw', origin='rookPawn'),
-        exercise('e04', 1, TARR, 'Ra1+', accept='only', goal='draw',
-                 origin='rookPawn'),
-        exercise('e05', 2, S1, 'Rf8+ Ke3 Kf1',
-                 accept={1: 'hold', 2: 'only'}, goal='draw', origin='yuri61'),
-        exercise('e06', 2,
-                 after(TARR, 'Ra1+ Kd2 Ra2+ Kd3 Ra3+ Kd4 Ra4+ Kc3'),
-                 'Ra3+ Kb2 Re3', accept='only', goal='draw',
-                 origin='rookPawn'),
-        exercise('e07', 2, CARLSEN, 'Kg3', accept='only', goal='draw',
-                 origin='noseknows'),
-        exercise('e08', 2, LONG, 'Ra8 Re1 Ra2+', accept='hold', goal='draw',
-                 origin='profangel'),
-        exercise('e09', 3, WAIT8, 'Ra1 e3 Kf3 e2 Kf2 Rb2 Re1 Kd3 Ra1',
-                 accept={1: 'hold', 2: 'hold', 3: 'only', 4: 'only',
-                         5: 'only'},
-                 goal='draw', origin='yuri61'),
+        exercise('e11', 2, KARSTEDT, 'Kf1 Rh1+ Kg2', accept='only',
+                 goal='draw', origin='karstedt'),
+        exercise('e12', 2, LATEST, 'Ra8 Kd2 Ra2+',
+                 accept={1: 'only', 2: 'hold'}, goal='draw',
+                 origin='karstedt'),
+        exercise('e13', 2, TARR_D, 'Kc7 Ra7+ Kc8 Ra8+ Kb7 Rd8 Kc7',
+                 accept={1: 'only', 2: 'win', 3: 'win', 4: 'win'},
+                 goal='win', origin='rookPawn'),
         exercise('e10', 3, after(S1, 'Rf8+ Ke3 Kf1 Rb1+ Kg2 Ke2'),
                  'Rf2+ Kd3 Ra2 e3 Ra3+ Kd2 Ra2+',
                  accept={1: 'hold', 2: 'only', 3: 'only', 4: 'hold'},
                  goal='draw', origin='yuri61'),
+        exercise('e09', 3, WAIT8, 'Ra1 e3 Kf3 e2 Kf2 Rb2 Re1 Kd3 Ra1',
+                 accept={1: 'hold', 2: 'hold', 3: 'only', 4: 'only',
+                         5: 'only'},
+                 goal='draw', origin='yuri61'),
     ],
-    'passScore': 11,
+    'passScore': 8,
     'keyPositions': [
         {'id': 'behind', 'fen': BEHIND, 'ref': 'profangel'},
         {'id': 'tarrasch', 'fen': TARR, 'ref': 'rookPawn'},

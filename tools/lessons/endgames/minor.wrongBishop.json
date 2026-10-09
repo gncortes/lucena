@@ -521,110 +521,19 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e12",
       "stars": 1,
-      "fen": "1k6/8/1K6/P7/8/8/8/4B3 b - - 0 1",
+      "fen": "8/8/8/8/p7/k7/b2K4/8 w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "olaffo",
       "turns": [
         {
-          "teach": "b8a8",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e02",
-      "stars": 1,
-      "fen": "2k5/8/2K5/8/8/P7/8/2B5 w - - 0 1",
-      "goal": "win",
-      "origin": "ibmm",
-      "turns": [
-        {
-          "teach": "c1f4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "3k4/8/8/8/5K1P/3B4/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d8e7",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 2,
-      "fen": "k7/8/PK6/8/8/8/2B5/8 w - - 0 1",
-      "goal": "win",
-      "origin": "studier",
-      "turns": [
-        {
-          "teach": "c2e4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "5K2/5B2/7k/7P/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikiWrongRookPawn",
-      "turns": [
-        {
-          "teach": "f8g8",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "4k3/8/8/8/2B1K2P/8/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e8f8",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "8/4k3/8/8/2B1K2P/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e4f5",
-          "accept": "win",
-          "reply": "e7f8"
+          "teach": "d2c2",
+          "accept": "hold",
+          "reply": "a2b3"
         },
         {
-          "teach": "f5g6",
-          "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "4k3/8/8/5K1P/7P/8/8/3B4 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e8f7",
+          "teach": "c2b1",
           "accept": "hold"
         }
       ]
@@ -643,48 +552,107 @@
       ]
     },
     {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/3k4/5K1P/3B4/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "own",
+      "id": "e13",
+      "stars": 2,
+      "fen": "8/4K3/8/6k1/6B1/7P/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "olaffo",
       "turns": [
         {
-          "teach": "d5e6",
-          "accept": "hold",
-          "reply": "f4g5"
-        },
-        {
-          "teach": "e6f7",
-          "accept": "hold",
+          "teach": "e7f7",
+          "accept": "win",
           "reply": "g5h6"
         },
         {
           "teach": "f7g8",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 2,
+      "fen": "k7/8/PpK5/8/P7/4B3/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "turns": [
+        {
+          "teach": "a8b8",
+          "accept": "hold",
+          "reply": "e3b6"
+        },
+        {
+          "teach": "b8a8",
           "accept": "hold"
         }
       ]
     },
     {
-      "id": "e11",
-      "stars": 3,
-      "fen": "5k2/5b2/8/8/4B1PP/5K2/8/8 b - - 0 1",
+      "id": "e15",
+      "stars": 2,
+      "fen": "8/8/1p2k3/3b4/P7/8/8/6KB w - - 0 1",
       "goal": "draw",
-      "origin": "studier",
+      "origin": "perdomod",
       "turns": [
         {
-          "teach": "f7h5",
+          "teach": "a4a5",
           "accept": "hold",
-          "reply": "g4h5"
+          "reply": "b6a5"
         },
         {
-          "teach": "f8g7",
+          "teach": "g1f2",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "1K6/4b3/7p/P7/k7/8/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "turns": [
+        {
+          "teach": "a5a6",
+          "accept": "hold",
+          "reply": "e7c5"
+        },
+        {
+          "teach": "b8c7",
+          "accept": "hold",
+          "reply": "h6h5"
+        },
+        {
+          "teach": "c7c6",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 3,
+      "fen": "3B1b2/6pp/8/8/8/8/2k5/1N5K w - - 0 1",
+      "goal": "draw",
+      "origin": "perdomod",
+      "turns": [
+        {
+          "teach": "b1d2",
+          "accept": "hold",
+          "reply": "c2d2"
+        },
+        {
+          "teach": "d8g5",
+          "accept": "hold",
+          "reply": "d2d1"
+        },
+        {
+          "teach": "g5h6",
           "accept": "hold"
         }
       ]
     }
   ],
-  "passScore": 13,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "corner",
@@ -793,6 +761,20 @@
       "black": "Anatoly Karpov",
       "event": "Campeonato mundial, Baguio (partida 5)",
       "year": 1978
+    },
+    {
+      "id": "olaffo",
+      "kind": "study",
+      "author": "Olaffo",
+      "title": "Wrong Bishop: A",
+      "url": "https://lichess.org/study/nUe9N3D2"
+    },
+    {
+      "id": "perdomod",
+      "kind": "study",
+      "author": "perdomod",
+      "title": "Wrong Bishop: A",
+      "url": "https://lichess.org/study/SxoBxSv7"
     },
     {
       "id": "tablebase",

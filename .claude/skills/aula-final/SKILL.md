@@ -22,6 +22,7 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
 | Arquivo | O que é |
 |---|---|
 | `docs/aulas/<id>.md` | Dossiê da pesquisa (modelo em `pesquisa.md`) |
+| `docs/aulas/AUDITORIA-<data>.md` | Relatório do revisor de um lote (`revisao.md`) |
 | `tools/lessons/endgames/<id>.json` | Fonte da aula, escrita à mão (`formato.md`) |
 | `assets/lessons/pt/endgames/<id>.json` e `en/…` | Falas do Viktor, nos dois idiomas |
 | `assets/lessons/endgames/<id>.json` | Gerado pelo script. Não editar à mão |
@@ -29,7 +30,7 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
 ## Passo a passo
 
 1. **Branch** `tarefa/aula-<nome-curto>` a partir da `main` atualizada (ou da branch da PR aberta, se houver). Confira antes `git status -sb`: outra sessão pode estar no mesmo diretório; nesse caso use um `git worktree`.
-2. **Spike de pesquisa**: siga `pesquisa.md` e escreva o dossiê. As três frentes (livros, estudos do Lichess, história) são independentes e podem ir em subagentes em paralelo. Se o tema não couber numa aula ou as fontes divergirem da tabela de finais, pare e relate.
+2. **Spike de pesquisa**: siga `pesquisa.md` e escreva o dossiê. As três frentes (livros, estudos do Lichess, história) são independentes e podem ir em subagentes em paralelo. Modelo por tarefa e regras para lotes de aulas em `revisao.md` (um agente por aula, brief em arquivo, até 8 a 10 ao mesmo tempo, nada de git nos agentes). Se o tema não couber numa aula ou as fontes divergirem da tabela de finais, pare e relate.
 3. **Roteiro em partes**: a partir do dossiê, escreva a lição na fonte em `parts` (regras em `formato.md`, "Uma parte boa"). Cada posição-chave abre uma parte:
    - `think` primeiro: o aluno estuda a posição sozinho (5 minutos na posição-chave; 1 ou 3 numa posição de passagem), com 1 a 3 dicas para depois do tempo, da mais vaga à mais clara;
    - a explicação: `talk` com setas e casas para o porquê, e `demo` para a técnica, em que o Viktor joga os dois lados e explica cada lance. Passo `move` que só mostraria a técnica vira `demo`;
@@ -45,7 +46,8 @@ Uma aula por sessão. `$ARGUMENTS` é o id da aula em `catalogo.md`; `próxima` 
    ```
    O script confere as partes, FEN, lances (inclusive os de `demo`), objetivo de cada posição, estrelas, nota mínima, referências e falas, e calcula os lances aceitos pela tabela de finais do Lichess (Stockfish acima de 7 peças). Corrija a aula até sair sem problemas. Nunca contorne um problema trocando a regra de aceitos por uma lista só para o script passar: se a tabela discorda da aula, a aula está errada.
 7. **Releia como aluno**: confira no relatório do script a divisão em partes e o tempo de cada uma (uma parte muito mais longa que as outras pede para ser dividida), se cada explicação de solução bate com os lances aceitos e se a dica não entrega a resposta.
-8. **Fechar**: commit `Aula <id>: <nome do final>` e PR. Na descrição: o final, a lista de exercícios com as estrelas, as fontes usadas e o que foi julgado pelo Stockfish em vez da tabela. Enquanto o app não lê estas aulas (ver "O que falta no app" em `formato.md`), a PR é só de conteúdo: sem vídeo e sem versão de QA.
+8. **Revisão por agentes** (`revisao.md`): antes da PR, um revisor de xadrez e régua (Fable) e um de textos pt/en conferem a aula a partir do dossiê, não da conversa. Quem escreveu não revisa a própria aula. Correção mecânica o revisor faz; cortar ou trocar exercício e mudar estrelas vai para o relatório `docs/aulas/AUDITORIA-<data>.md`, e o Gabriel decide. Num lote, a lista de erros já vistos em `revisao.md` é a conferência de quem escreve.
+9. **Fechar**: commit `Aula <id>: <nome do final>` e PR. Na descrição: o final, a lista de exercícios com as estrelas, as fontes usadas e o que foi julgado pelo Stockfish em vez da tabela. Enquanto o app não lê estas aulas (ver "O que falta no app" em `formato.md`), a PR é só de conteúdo: sem vídeo e sem versão de QA.
 
 ## Regras que não mudam
 

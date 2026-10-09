@@ -208,187 +208,92 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e15",
       "stars": 1,
-      "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
+      "fen": "8/8/8/8/3kp1R1/8/7r/4K3 w - - 0 1",
       "goal": "draw",
       "origin": "practice",
       "turns": [
         {
-          "teach": "b1b3",
+          "teach": "g4g3",
           "accept": "hold"
         }
       ]
     },
     {
-      "id": "e02",
-      "stars": 1,
-      "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a3a8",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e03",
-      "stars": 1,
-      "fen": "R7/8/8/8/8/4pk2/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "a8f8",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e04",
-      "stars": 1,
-      "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
-      "goal": "draw",
-      "origin": "yuri61",
-      "turns": [
-        {
-          "teach": "g8g3",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "id": "e05",
+      "id": "e12",
       "stars": 2,
-      "fen": "8/8/8/8/3k4/4p3/4K3/8 w - - 0 1",
+      "fen": "8/8/8/8/3pk3/R7/8/3K3r w - - 0 1",
       "goal": "draw",
-      "origin": "own",
+      "origin": "audax6",
       "turns": [
         {
-          "teach": "e2e1",
-          "accept": "only"
+          "teach": "d1d2",
+          "accept": "hold"
         }
       ]
     },
     {
-      "id": "e06",
+      "id": "e11",
       "stars": 2,
-      "fen": "8/8/8/8/4pk2/R7/7r/4K3 w - - 0 1",
+      "fen": "8/8/8/5R2/3kp3/8/r7/4K3 w - - 0 1",
       "goal": "draw",
       "origin": "wikipedia",
       "turns": [
         {
-          "teach": "a3b3",
+          "teach": "f5b5",
           "accept": "hold",
-          "reply": "e4e3"
+          "reply": "d4e3"
         },
         {
-          "teach": "b3b8",
-          "accept": "hold",
-          "reply": "f4f3"
-        },
-        {
-          "teach": "b8f8",
-          "accept": "only"
+          "teach": "b5b3",
+          "accept": "hold"
         }
       ]
     },
     {
-      "id": "e07",
-      "stars": 2,
-      "fen": "4R3/8/8/8/8/3kp3/7r/4K3 w - - 0 1",
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/8/8/8/2pk4/8/7r/3KR3 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "turns": [
         {
-          "teach": "e8d8",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e08",
-      "stars": 2,
-      "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
-      "goal": "draw",
-      "origin": "ehenkes",
-      "turns": [
-        {
-          "teach": "g8d8",
-          "accept": "hold",
-          "reply": "a5d5"
-        },
-        {
-          "teach": "d8d5",
-          "accept": "hold",
-          "reply": "d4d5"
-        },
-        {
-          "teach": "d1e2",
-          "accept": "hold",
-          "reply": "d5d4"
-        },
-        {
-          "teach": "e2e1",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e09",
-      "stars": 3,
-      "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
-      "goal": "draw",
-      "origin": "noseknows",
-      "turns": [
-        {
-          "teach": "e1e2",
-          "accept": "hold",
-          "reply": "h1h2"
-        },
-        {
-          "teach": "e2e1",
-          "accept": "hold",
-          "reply": "e4e3"
-        },
-        {
-          "teach": "a3a8",
-          "accept": "hold",
-          "reply": "f4f3"
-        },
-        {
-          "teach": "a8f8",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e10",
-      "stars": 3,
-      "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "practice2",
-      "turns": [
-        {
-          "teach": "f4f7",
-          "accept": "hold",
-          "reply": "d4d3"
-        },
-        {
-          "teach": "f7e7",
+          "teach": "d1c1",
           "accept": "only",
-          "reply": "h2h1"
+          "reply": "d4c3"
         },
         {
-          "teach": "e1f2",
+          "teach": "e1e3",
           "accept": "only"
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "stars": 3,
+      "fen": "8/8/8/8/1kp5/1r6/4K3/4R3 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e2d2",
+          "accept": "only",
+          "reply": "b3b2"
+        },
+        {
+          "teach": "d2c1",
+          "accept": "only",
+          "reply": "b2h2"
+        },
+        {
+          "teach": "e1e3",
+          "accept": "hold"
         }
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 7,
   "keyPositions": [
     {
       "id": "classic",
@@ -484,6 +389,13 @@
       "title": "Secrets of Rook Endings",
       "publisher": "Gambit Publications",
       "year": 1999
+    },
+    {
+      "id": "audax6",
+      "kind": "study",
+      "author": "Audax6",
+      "title": "14 The Philidor Position (Third Rank Defense)",
+      "url": "https://lichess.org/study/AvGk7RWH"
     },
     {
       "id": "tablebase",

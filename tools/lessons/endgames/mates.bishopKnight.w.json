@@ -299,12 +299,17 @@
   ],
   "exercises": [
     {
-      "id": "e01",
+      "id": "e13",
       "stars": 1,
-      "fen": "k7/8/NK6/8/8/8/8/5B2 w - - 0 1",
+      "fen": "8/k1K5/3N4/8/8/8/8/5B2 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
+        {
+          "teach": "d6c8",
+          "accept": "best",
+          "reply": "a7a8"
+        },
         {
           "teach": "f1g2",
           "accept": "only"
@@ -312,169 +317,132 @@
       ]
     },
     {
-      "id": "e02",
+      "id": "e14",
       "stars": 1,
-      "fen": "1k6/3B4/1K6/2N5/8/8/8/8 w - - 0 1",
+      "fen": "8/8/8/8/8/1BK5/8/k2N4 w - - 0 1",
+      "goal": "win",
+      "origin": "ushenina",
+      "turns": [
+        {
+          "teach": "d1e3",
+          "accept": "best",
+          "reply": "a1b1"
+        },
+        {
+          "teach": "e3c2",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 2,
+      "fen": "kN6/8/BK6/8/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "turns": [
         {
-          "teach": "c5a6",
+          "teach": "b6c7",
           "accept": "best",
-          "reply": "auto"
+          "reply": "a8a7"
         },
         {
-          "teach": "d7c6",
+          "teach": "a6c8",
+          "accept": "best",
+          "reply": "a7a8"
+        },
+        {
+          "teach": "c8b7",
+          "accept": "best",
+          "reply": "a8a7"
+        },
+        {
+          "teach": "b8c6",
           "accept": "only"
         }
       ]
     },
     {
-      "id": "e04",
-      "stars": 1,
-      "fen": "7k/8/5K2/4N3/8/3B4/8/8 w - - 0 1",
+      "id": "e17",
+      "stars": 2,
+      "fen": "8/B3N3/3K1k2/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "karttunen",
+      "turns": [
+        {
+          "teach": "a7e3",
+          "accept": "best",
+          "reply": "f6f7"
+        },
+        {
+          "teach": "e3d4",
+          "accept": "best",
+          "reply": "f7e8"
+        },
+        {
+          "teach": "d6e6",
+          "accept": "best"
+        }
+      ]
+    },
+    {
+      "id": "e18",
+      "stars": 3,
+      "fen": "8/2kN4/4K3/8/2B5/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "wikipedia",
       "turns": [
         {
-          "teach": "e5f7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e05",
-      "stars": 2,
-      "fen": "4k3/5N1B/5K2/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "f7e5",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e06",
-      "stars": 2,
-      "fen": "k7/8/1K6/2N5/8/8/8/3B4 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d1g4",
+          "teach": "c4b5",
           "accept": "best",
-          "reply": "auto"
+          "reply": "c7d8"
         },
         {
-          "teach": "c5a6",
+          "teach": "d7f6",
           "accept": "best",
-          "reply": "auto"
+          "reply": "d8c7"
         },
         {
-          "teach": "g4f3",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "id": "e07",
-      "stars": 2,
-      "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "wikipedia",
-      "turns": [
-        {
-          "teach": "e8b5",
+          "teach": "f6d5",
           "accept": "best"
         }
       ]
     },
     {
-      "id": "e08",
-      "stars": 2,
-      "fen": "8/1k1N3B/4K3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "h7d3",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e10",
+      "id": "e19",
       "stars": 3,
-      "fen": "4k3/3N3B/5K2/8/8/8/8/8 w - - 0 1",
+      "fen": "8/7k/5KN1/5B2/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "own",
+      "origin": "ushenina",
       "turns": [
         {
-          "teach": "f6e6",
+          "teach": "f5e6",
           "accept": "best",
-          "reply": "auto"
+          "reply": "h7h6"
         },
         {
-          "teach": "e6d6",
+          "teach": "e6g8",
           "accept": "best",
-          "reply": "d8e8"
+          "reply": "h6h5"
         },
         {
-          "teach": "h7g6",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e11",
-      "stars": 3,
-      "fen": "7k/8/5K2/8/4B3/3N4/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "d3e5",
+          "teach": "g6e5",
           "accept": "best",
-          "reply": "auto"
+          "reply": "h5h4"
         },
         {
-          "teach": "e5f7",
+          "teach": "f6f5",
           "accept": "best",
-          "reply": "auto"
+          "reply": "h4g3"
         },
         {
-          "teach": "e4h7",
-          "accept": "best"
-        }
-      ]
-    },
-    {
-      "id": "e12",
-      "stars": 3,
-      "fen": "1k6/2N5/2K5/8/8/4B3/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "turns": [
-        {
-          "teach": "e3c5",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c5a7",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c7d5",
+          "teach": "e5g4",
           "accept": "best"
         }
       ]
     }
   ],
-  "passScore": 12,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "wStart",
@@ -550,6 +518,14 @@
       "black": "Vitezslav Rasik",
       "event": "European Club Cup, Rethymnon",
       "year": 2003
+    },
+    {
+      "id": "ushenina",
+      "kind": "game",
+      "white": "Anna Ushenina",
+      "black": "Olga Girya",
+      "event": "FIDE Women's Grand Prix, Genebra",
+      "year": 2013
     },
     {
       "id": "tablebase",

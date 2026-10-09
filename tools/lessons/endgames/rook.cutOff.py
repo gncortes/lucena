@@ -1,7 +1,7 @@
 """Gera `rook.cutOff.json` (a fonte da aula) a partir dos lances em SAN.
 Rodar: `tools/.cache/venv/bin/python tools/lessons/endgames/rook.cutOff.py`
-e depois o `build_aula.py rook.cutOff`. O aluno joga de brancas, quase sempre
-para ganhar; o e06 é o único exercício de defesa."""
+e depois o `build_aula.py rook.cutOff`. O aluno joga de brancas, sempre
+para ganhar."""
 import sys
 from pathlib import Path
 
@@ -29,6 +29,13 @@ CAPA = '8/8/8/2k5/8/4K3/3R1P1r/8 w - - 0 1'      # Wikipedia / zJlWLhtS
 CAPA2 = after(CAPA, 'Rd1 Rh8')                  # só f4 ganha
 FINISH = '2r5/8/6k1/8/2P5/2K5/8/4R3 w - - 0 1'
 IMPERFECT = '1r6/8/7R/3k4/1P6/1K6/8/8 w - - 0 1'  # xuMvndqe
+# Pein-Ward, British Championship 1997 (Wikipedia), com as cores trocadas.
+PEIN = '8/2R5/8/2P2k2/r7/3K4/8/8 w - - 0 1'
+# Peão de torre, rei cortado por quatro colunas (Emms via Wikipedia), depois
+# de 1.Tc3 Re7.
+EMMS = after('K7/P4k2/8/8/8/4R3/8/1r6 w - - 0 1', 'Rc3 Ke7')
+# Uhlmann-Gulko, Niksic 1978 (estudo yuOYmVsQ), com as cores trocadas.
+GULKO = '1r6/8/4P3/7k/8/4RK2/8/8 w - - 0 1'
 
 REFERENCES = [
     {'id': 'wikiRookPawn', 'kind': 'web',
@@ -59,6 +66,13 @@ REFERENCES = [
      'title': "Dvoretsky's Endgame Manual (5th edition, revised by Karsten Müller)",
      'publisher': 'Russell Enterprises', 'year': 2020,
      'where': 'Sumário do trecho gratuito da editora: "Cutting the King Off" nos capítulos 8 e 9'},
+    {'id': 'deemiranda', 'kind': 'study', 'author': 'deemiranda29',
+     'title': 'Rook endgame studies Vol. 2: Rook and Pawn vs. Rook',
+     'url': 'https://lichess.org/study/yuOYmVsQ'},
+    {'id': 'uhlmannGulko', 'kind': 'game', 'white': 'Uhlmann',
+     'black': 'Gulko', 'event': 'Niksic', 'year': 1978},
+    {'id': 'peinWard', 'kind': 'game', 'white': 'Malcolm Pein',
+     'black': 'Chris Ward', 'event': 'British Championship', 'year': 1997},
     {'id': 'tablebase', 'kind': 'tablebase',
      'title': 'Lichess tablebase (Syzygy)',
      'url': 'https://tablebase.lichess.ovh'},
@@ -119,25 +133,19 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e01', 1, '2r5/8/5k2/3P4/3K4/8/8/7R w - - 0 1', 'Re1',
-                 accept='win'),
-        exercise('e02', 1, '3r4/8/6k1/8/3P4/3K4/8/7R w - - 0 1', 'Rf1',
-                 accept='win'),
-        exercise('e03', 1, '3K4/3P1k2/8/8/8/8/2r5/4R3 w - - 0 1',
-                 'Rf1+ Kg7 Rf4', accept={1: 'only', 2: 'best'}),
-        exercise('e04', 2, SIDE, 'Kf8 Rh8+ Kg7', accept={1: 'only', 2: 'best'}),
-        exercise('e05', 2, '2r5/8/1R6/4k3/2P5/2K5/8/8 w - - 0 1',
+        exercise('e05', 1, '2r5/8/1R6/4k3/2P5/2K5/8/8 w - - 0 1',
                  'Kb4 Kd4 Rd6+', accept='win'),
-        exercise('e06', 2, DEFEND, 'Kc4', accept='hold', goal='draw'),
-        exercise('e07', 2, IMPERFECT, 'Ka4', accept='win', origin='harryRank'),
-        exercise('e08', 2, FIVE, 'Kc4 Rc8+ Kb5', accept={1: 'only', 2: 'win'},
-                 origin='five'),
-        exercise('e09', 3, CAPA2, 'f4 Re8+ Kf3', accept='win',
+        exercise('e09', 2, CAPA2, 'f4 Re8+ Kf3', accept='win',
                  origin='capablanca'),
-        exercise('e10', 3, KEY2, 'Rc1 Kb6 Kf4 Rf8+ Kg5 Re8 Kf5',
-                 accept={1: 'win', 2: 'only', 3: 'only', 4: 'win'}),
+        exercise('e07', 2, IMPERFECT, 'Ka4', accept='win', origin='harryRank'),
+        exercise('e11', 2, PEIN, 'Re7 Kf6 Re2', accept='win',
+                 origin='peinWard'),
+        exercise('e12', 3, EMMS, 'Rc8 Kd6 Rb8 Ra1 Kb7 Rb1+ Kc8',
+                 accept='win', origin='wikiRookPawn'),
+        exercise('e13', 3, GULKO, 'e7 Re8 Re6 Kg5 Ke4', accept='win',
+                 origin='uhlmannGulko'),
     ],
-    'passScore': 12,
+    'passScore': 8,
     'keyPositions': [
         {'id': 'cut', 'fen': KEY1},
         {'id': 'count', 'fen': KEY2},

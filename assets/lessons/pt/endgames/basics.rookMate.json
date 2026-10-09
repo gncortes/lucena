@@ -40,7 +40,7 @@
   "ex.e12.solution": "Tf7! A torre toma g7 e h7, e o seu rei já cobre g6 e g5: o rei preto só tem h5, de frente para o seu rei, e Th7# fecha a coluna h. Th8+? solta o rei preto para g7, onde ele ainda ataca a torre, e Tg8 deixa h7 livre: os dois ganham, mas bem mais devagar.",
   "ex.e13": "Brancas jogam e ganham. A torre está atacada. Fugir é a única saída?",
   "ex.e13.hint": "A torre está num ótimo lugar: corta a coluna d e a quinta fileira. Pergunte-se se dá para mantê-la ali.",
-  "ex.e13.solution": "Rc4! O seu rei defende a torre, que continua prendendo o rei preto no canto de e6 a h8, e ainda chega mais perto. Fugir com a torre pela quinta fileira (Tg5, Ta5) ou para d4 também ganha, mas joga fora um tempo: o seu rei continua longe. Depois de ...Rf6, Rc5 segue o caminho. Rc3?? ou Rb4?? deixam a torre ser tomada.",
+  "ex.e13.solution": "Rc4! O seu rei defende a torre, que continua prendendo o rei preto no canto de e6 a h8, e ainda chega mais perto. Fugir com a torre pela quinta fileira (Tg5, Ta5) ou para d4 também ganha, mas custa dois lances a mais: o seu rei continua longe. Depois de ...Rf6, Rc5 segue o caminho. Rc3?? ou Rb4?? deixam a torre ser tomada.",
   "ex.e14": "Brancas jogam e dão mate. O lance que parece natural empata.",
   "ex.e14.hint": "Antes de aproximar o rei, conte as casas que o rei preto vai ter. Zero casas sem xeque é empate.",
   "ex.e14.solution": "Rg6! O rei preto só tem g8. Depois de ...Rg8, Tf1! (calmo, sem xeque) deixa a ele só h8, e Tf8# fecha a oitava fileira com o seu rei a um salto de cavalo. Rh6?? afoga: o rei em h8 não tem nenhum lance e não está em xeque. Tg7?? e Tg8+?? entregam a torre.",
