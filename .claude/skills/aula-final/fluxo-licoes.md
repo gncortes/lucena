@@ -67,8 +67,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
 | 1 | rook.lucena | D | 5 | Fable (piloto) | sem demo; peão de torre, zugzwang da torre, Andersson–Åkesson | **feita: B**, commitada (lote2) |
 | 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada (lote2) |
-| 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | 1.ª passada |
-| 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | 1.ª passada |
+| 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | 1.ª passada C (Opus); reescrita (Opus) |
+| 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | 1.ª passada D (Opus); reescrita (Opus) |
 | 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | |
 | 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | |
 | 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | |
@@ -106,4 +106,5 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 Pendências de julgamento para o Gabriel: `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
 `rook.lucena` e16 e e15 encostados na lição nova (a parte `zugzwang` mostra 2 dos 3 lances do e16; o e15 é
 quase o `rookPawnDemo`) e e14 com o corte Td7+ não ensinado: trocar os exercícios de posição ou deixar; 23 soluções de exercícios (`ex.*.solution`) dizem "a tabela aceita…", que a regra das
-falas proíbe.
+falas proíbe; `pawns.keySquares` e17 é o tema de `pawns.correspondingSquares` (a aula seguinte): mover o e17
+para lá (a aula fica com 6 exercícios, 13★, mínimo 8) ou aceitar uma lição acima de 45 min.

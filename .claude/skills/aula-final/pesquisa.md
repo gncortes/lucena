@@ -77,7 +77,8 @@ passo (e `keyPositions.ref`) apontando uma referência com `url`:
   `https://lichess.org/analysis/pgn/<lances em SAN, separados por _>#<ply>` (ply = meio-lances desde o
   início; `#20` é a posição depois do 10.º lance das pretas). O PGN precisa vir de fonte aberta que você
   abriu (artigo da Wikipedia, estudo público do Lichess pela API `https://lichess.org/api/study/<id>.pgn`,
-  arquivo PGN público) e ser conferido com python-chess: a posição depois do ply citado é o FEN do passo.
+  arquivo PGN público como o do PGN Mentor, `pgnmentor.com/players/<Sobrenome>.zip`, ou a página da partida no
+  chessgames.com: os lances de uma partida são fato, e uma referência `web` diz de onde vieram) e ser conferido com python-chess: a posição depois do ply citado é o FEN do passo.
   O explorador de mestres do Lichess (`explorer.lichess.ovh`) exige autenticação; não conte com ele.
 - **Estudo** (`kind: study`): a URL do capítulo, `https://lichess.org/study/<id>/<capítulo>`, como aparece
   na página.
