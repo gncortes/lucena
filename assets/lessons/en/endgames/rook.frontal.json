@@ -10,7 +10,7 @@
   "part.king.title": "Where the king stands",
   "part.king.summary": "Your king off the pawn's rank, and close enough that the black rook cannot cut it off for good.",
   "part.recap.title": "Summary",
-  "part.recap.summary": "The rules of the frontal defence and a game against the machine.",
+  "part.recap.summary": "The rules of the frontal defence and a practical test.",
   "step.t_front": "The black king is on h5, next to its pawn, and the black rook on f7 cuts your king off: it cannot cross to the f-file. You defend with White. How do you hold this pawn?",
   "step.t_front.hint1": "Your rook is far from the pawn, on the first rank. That distance is a weapon.",
   "step.t_front.hint2": "Checks do not have to come from the side. They can come from the front, along the h-file and the g-file.",
@@ -63,7 +63,7 @@
   "step.quick": "One last one before the machine. The rook is in the wrong place.",
   "step.quick.hint": "Rg1, in front of the pawn. Then the checks, and Rxg5 if the king abandons the pawn.",
   "step.quick.done": "Rook in front, checks, and the pawn fell. A draw.",
-  "step.finish": "Now against the machine. Rook in front of the pawn, checks from the front, and the trade when the pawn ending is a draw.",
+  "step.finish": "Now the practical test. Rook in front of the pawn, checks from the front, and the trade when the pawn ending is a draw.",
   "ex.e11": "White to play and draw. Your rook is far away on the eighth rank, and the black rook cuts your king off along the f-file. Only one move holds.",
   "ex.e11.hint": "A check from behind does not scare this king. Where does the rook hold a knight pawn?",
   "ex.e11.solution": "Ra1! The rook goes back to the first rank, in front of the pawn, and from there the checks never end: Kg4 Rg1+, Kh4 Rh1+. Rh8+? loses: the black king hides and the pawn moves. Position from emanuelrigelnuma's study on Lichess.",
@@ -88,5 +88,5 @@
   "key.rank": "King on the pawn's rank: only Kd4; otherwise Rc4 cuts the king off. From Yuri61's study on Lichess, colours reversed.",
   "key.capa": "The rook far from the pawn, but in time: only Re1+ and checks. Position by Capablanca, from Wikipedia, colours reversed.",
   "history": "The frontal defence is one of the classical ways to defend rook and pawn against rook when the king is cut off from the pawn. Wikipedia credits Mednis (1998) with the rule of three and the order of danger by file, and Emms (2008) with the two positions in this lesson: with a knight pawn the defence holds; with a bishop pawn, it depends on who is to move. Before that, Chéron (1923) had shown that a knight pawn does not win with the king cut off by two files, and Capablanca showed the other side: if the rook does not reach the first rank before the pawn, the checks come too late. The tablebase confirms all of these positions.",
-  "practice": "Against the machine: a knight pawn, your king cut off by one file. Rook in front of the pawn, checks from the front and the trade at the right moment. The goal is a draw."
+  "practice": "Practical test: a knight pawn, your king cut off by one file. Rook in front of the pawn, checks from the front and the trade at the right moment. The goal is a draw."
 }

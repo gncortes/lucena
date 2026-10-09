@@ -28,7 +28,7 @@
   "step.t_classic.hint1": "Look at the rank your rook is on. Which squares does it deny the black king?",
   "step.t_bishop": "Now a bishop's pawn, with the pieces scattered. Black threatens to bring the king in. Which move sets up the defence?",
   "step.t_bishop.hint1": "The recipe does not depend on the pawn: find the rank the black king cannot cross.",
-  "step.finish": "Now against the machine, from the start: take the third rank, wait for the pawn to advance and give the checks from behind.",
+  "step.finish": "Now the practical test, from the start: take the third rank, wait for the pawn to advance and give the checks from behind.",
   "ex.e15": "White to move and draw. The black king is ready to step onto your third rank, and your rook attacks the pawn. What is the move?",
   "ex.e15.hint": "The pawn is protected. What stops the black king from advancing in the Philidor position? Your rook is one move away from it.",
   "ex.e15.solution": "Rg3: the rook takes the third rank and it is the Philidor position. Going to the far end of the file (Rg5, Rg6, Rg7, Rg8) also holds, but the third rank is the simple way. King moves lose: the black king walks into d3. Rxe4+?? gives the rook away, because the black king protects the pawn. In Lichess Practice, chapter \"Avoiding the Philidor\", this position appears with the other side to move: the attacker moves first and wins.",
@@ -49,5 +49,5 @@
   "key.bishop": "With a bishop's pawn the defence is the same: Rg3. From Yuri61's Lichess study, with colours reversed.",
   "key.advanced": "The third rank no longer works: rook to the far end and then behind the pawn. The \"Advanced Philidor\" chapter of the Lichess practice, with colours reversed.",
   "history": "François-André Philidor published this defence in 1777, in the second edition of his Analysis of the Game of Chess, and believed it was the only way to draw this endgame. For more than a century the manuals repeated his analysis, including a variation in which he gave the game up as lost if the rook left the third rank early. In 1897 Max Karstedt showed that there were other defences, and today the tablebases confirm it: in that variation of Philidor's the position was still a draw. The third-rank defence, however, remains the simplest of all, and it is the first one every player should know by heart.",
-  "practice": "Now against the machine: you have only the rook, it has the rook and the pawn. Take the third rank, wait for the pawn to advance and check from behind. The goal is to draw."
+  "practice": "Now the practical test: you have only the rook, it has the rook and the pawn. Take the third rank, wait for the pawn to advance and check from behind. The goal is to draw."
 }

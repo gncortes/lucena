@@ -12,7 +12,7 @@
   "part.resource.title": "Ameaças de mate",
   "part.resource.summary": "Quando os peões já chegaram, a torre ainda empata ameaçando o rei preto na borda.",
   "part.recap.title": "Resumo",
-  "part.recap.summary": "Três regras e o final contra a máquina.",
+  "part.recap.summary": "Três regras e o teste prático do final.",
   "step.t_sixth": "Os peões pretos já estão na sexta fileira deles, e nenhum rei está perto. A torre branca joga. Ela consegue parar os dois?",
   "step.t_sixth.hint1": "Tente cada lance da torre e veja o que o peão do lado faz em resposta.",
   "step.t_sixth.hint2": "Se a torre vai para a frente de um peão, o outro anda. Se ela ataca os dois, um deles avança, protegido pelo outro.",
@@ -89,7 +89,7 @@
   "step.recapMove": "Uma última vez, do outro lado do tabuleiro: os peões estão na quinta e a torre joga.",
   "step.recapMove.hint": "Th4, na fileira dos peões. Depois de Rb7, Txc4.",
   "step.recapMove.done": "Isso. Ataque de lado e o peão que sobra fica sozinho.",
-  "step.finish": "Agora contra a máquina, na posição com o seu rei em c4. Conte as casas, não deixe a torre sair da primeira fileira cedo demais e ganhe.",
+  "step.finish": "Agora o teste prático, na posição com o seu rei em c4. Conte as casas, não deixe a torre sair da primeira fileira cedo demais e ganhe.",
   "ex.e06": "Pretas jogam e ganham. Da partida Parligras contra Gopal, Gibraltar 2012. Os peões estão bem avançados, e a torre branca está atrás deles. Peão ou rei?",
   "ex.e06.hint": "Com a torre atrás dos peões, quem precisa ajudar primeiro é o rei.",
   "ex.e06.solution": "Ra2! O rei vai para a frente do peão de a e protege b3 e b2. Agora o peão de b anda com escolta, e o rei branco chega tarde. Foi o que Gopal jogou. Se a2 em vez disso, as brancas trazem o rei a tempo e é empate: a2 é o peão que já não precisa andar.",
@@ -121,5 +121,5 @@
   "key.escort": "Rg6! e o rei se esconde em h7. Da prática do Lichess, \"Rook versus Two Pawns\".",
   "key.resource": "Tc1! e as ameaças de mate empatam. Da prática do Lichess, \"A Tricky Resource\".",
   "history": "Este final não tem um descobridor famoso nem um nome próprio, mas tem duas regras práticas que passam de livro em livro. Max Euwe e Walter Meiden, em The Road to Chess Mastery, escreveram que dois peões ligados na sexta valem uma torre. Reuben Fine e Pal Benko, em Basic Chess Endings, juntaram o rei à conta: com o rei da torre longe, dois peões ganham; com ele perto, ganha a torre. Jesús de la Villa organiza o tema pelos reis: nenhum participa, só o da defesa, ou os dois. Ele aparece também em partidas de grandes mestres. Em Shabalov contra Friedel, Peabody 2007, os xeques da torre levaram o rei dos peões para a frente deles e atrasaram tudo. Em Shankland contra Maghsoodloo, Praga 2022, Shankland escondeu o rei em a7 antes de empurrar, como você viu nesta aula. A tabela de finais confirma as regras, e mostra também onde elas falham por um só tempo.",
-  "practice": "Agora contra a máquina: torre contra dois peões na sexta, com o seu rei perto. Conte as casas e ganhe."
+  "practice": "Agora o teste prático: torre contra dois peões na sexta, com o seu rei perto. Conte as casas e ganhe."
 }

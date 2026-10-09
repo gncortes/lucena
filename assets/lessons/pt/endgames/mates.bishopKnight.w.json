@@ -8,7 +8,7 @@
   "part.detours.title": "Fugas e o mate",
   "part.detours.summary": "O castigo para a volta ao canto errado, a armadilha de Rhine e o mate final.",
   "part.wRules.title": "Regras e prática",
-  "part.wRules.summary": "O alerta de afogamento, três regras e o W inteiro contra a máquina.",
+  "part.wRules.summary": "O alerta de afogamento, três regras e o teste prático do W inteiro.",
   "step.t_corner": "O rei preto já está na borda, em h8. Antes de qualquer lance: em que canto este mate pode acontecer, e qual peça vai tirar as casas escuras da oitava fileira?",
   "step.t_corner.hint1": "Compare a cor da casa h8 com a cor das casas do seu bispo. O mate só existe no canto da cor do bispo.",
   "step.corner": "Este é o mate que mais envergonha os mestres. De la Villa conta que alguns voltaram para casa de cabeça baixa por não saber dar esse mate. Olhe a posição: o rei preto já está na borda, encolhido em h8. Parece quase acabado, mas h8 é uma casa escura, e o seu bispo só anda nas claras. Esse é o canto errado. O mate só existe no canto da cor do bispo: a8 ou h1. A nossa viagem é levar o rei de h8 até a8, pela oitava fileira. Lembre: as casas e os lances destacados na minha fala, como h8, são tocáveis; toque e eu mostro no tabuleiro.",

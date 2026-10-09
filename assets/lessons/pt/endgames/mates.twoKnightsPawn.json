@@ -14,7 +14,7 @@
   "part.defense.title": "A defesa das pretas",
   "part.defense.summary": "Passar o peão da linha antes do bloqueio, e a regra dos cinquenta lances.",
   "part.summary.title": "Resumo",
-  "part.summary.summary": "Três regras para a partida e o mate inteiro contra a máquina.",
+  "part.summary.summary": "Três regras para a partida e o teste prático do mate inteiro.",
   "step.t_help": "Brancas jogam. Rei em f7, cavalos em f5 e d2, e o rei preto preso em h7. O cavalo de d2 segura o peão em d3. Como as brancas dão mate?",
   "step.t_help.hint1": "Imagine a mesma posição sem o peão preto. O que acontece quando o rei preto fica sem casas e ninguém dá xeque?",
   "step.t_help.hint2": "O cavalo de d2 tem um trabalho melhor do que vigiar o peão. Deixe o peão andar: cada lance dele é um lance que o rei preto não precisa fazer.",

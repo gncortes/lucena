@@ -112,5 +112,5 @@
   "key.exception": "The exception: with White to move, h7 wins even with the black king on f8.",
   "key.barczaFischer": "Barcza–Fischer, Zurich 1959. Kd2 and Kc1 draw; the draw was agreed in this position.",
   "history": "The rook pawn is the worst pawn to have and the best one to face. Endgame manuals treat it on its own: Wikipedia, quoting Jeremy Silman, sums it up in the two key squares next to the corner. Two great players were saved or lost by it. In Zurich, 1959, the young Fischer won Barcza's last pawn and was left with an extra rook pawn; Barcza's king was two moves from c1, and the draw was agreed on the spot. In Buenos Aires, 1968, Najdorf reached the same ending with Black, but with White to move: Panno ran his king to g7 and Najdorf resigned two moves later. The difference was a single tempo.",
-  "practice": "Now against the machine. You are the black king in the Panno–Najdorf position, but with the move. Run to f8 and hold the draw."
+  "practice": "Now the practical test. You are the black king in the Panno–Najdorf position, but with the move. Run to f8 and hold the draw."
 }

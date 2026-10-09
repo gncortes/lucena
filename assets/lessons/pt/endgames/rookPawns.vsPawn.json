@@ -10,7 +10,7 @@
   "part.knightTrap.title": "A promoção a cavalo",
   "part.knightTrap.summary": "O recurso que salva o peão, e como não cair nele.",
   "part.saavedraEnd.title": "Saavedra e resumo",
-  "part.saavedraEnd.summary": "Quando o peão vence a torre, as três regras e o final contra a máquina.",
+  "part.saavedraEnd.summary": "Quando o peão vence a torre, as três regras e o teste prático do final.",
   "step.t_cut": "O peão corre para a promoção e o seu rei está longe. Como a torre pode ganhar o tempo que falta para o rei chegar?",
   "step.t_cut.hint1": "Procure uma fileira em que a torre fique entre o rei preto e o caminho do peão.",
   "step.intro": "Torre contra peão parece fácil: uma torre vale muito mais que um peão. Mas o peão anda sozinho, e a torre precisa do rei para ganhar. Por isso este final é uma corrida: se o seu rei chega a tempo, a torre ganha; se chega tarde, o peão vira dama ou custa a torre, e é empate. Antes de mexer, faça três perguntas. Dá para cortar o rei preto com a torre? Quantos lances o meu rei leva até o peão? E o rei preto está na frente ou atrás do peão? Aqui o rei preto ainda está longe da casa d1, e a torre pode separar ele do peão.",
@@ -49,7 +49,7 @@
   "step.t_saavedra.hint1": "Cuidado com o afogamento depois da promoção. Nem toda promoção precisa ser dama.",
   "step.saavedra": "Uma curiosidade para fechar. Em geral, peão contra torre é o peão lutando pelo empate. Mas existe a posição de Saavedra, de 1895, em que o peão ganha. Depois de c7 e uma série de xeques, as pretas armam um afogamento: se o peão virar dama, a torre se oferece e não sobra lance. Saavedra achou a resposta: promover a torre. Sem afogamento, e com ameaça de mate. A promoção a cavalo que você viu hoje é parente dessa ideia: às vezes a peça menor vale mais.",
   "step.recap": "Três regras. Um: antes de tudo, corte o rei com a torre, ou ponha a torre atrás do peão. Dois: conte os tempos; o seu rei vai em diagonal, e se o rei preto fechar o caminho, use o ombro ou dê a volta pela frente do peão. Três: cuidado com o cavalo; não leve o rei para uma casa onde a promoção dá xeque.",
-  "step.finish": "Agora jogue você, contra a máquina. Corte o rei preto ou ponha a torre atrás do peão, conte os tempos e cuidado com o cavalo.",
+  "step.finish": "Agora jogue você, na prática. Corte o rei preto ou ponha a torre atrás do peão, conte os tempos e cuidado com o cavalo.",
   "ex.e11": "Pretas jogam e ganham. Desta vez a torre é sua, e o peão branco ainda está em g2. O rei branco quer chegar perto dele. Não deixe.",
   "ex.e11.hint": "A torre também corta por coluna. Qual coluna separa o rei branco do peão?",
   "ex.e11.solution": "Tf7+. O xeque tira o rei branco da coluna f, e a torre fica nela como um muro. A defesa mais teimosa é ir para a coluna e, e dali ele não volta para perto do peão; na coluna g, junto do peão, ele perde ainda mais depressa. O peão fica sozinho, o seu rei desce com calma e a torre ganha o peão. Qualquer outro lance deixa o rei branco encostar no peão a tempo, e é empate. Posição do estudo \"Rook versus Pawn\", de Kyrylo27, no Lichess.",
@@ -77,5 +77,5 @@
   "key.knight": "A defesa do cavalo: e1=C+ empata, e1=D perde. Do estudo \"Rook versus Pawn\", de Kyrylo27, no Lichess.",
   "key.saavedra": "A posição de Saavedra (1895): o peão ganha da torre promovendo a torre. Como aparece na Wikipedia.",
   "history": "Torre contra peão é dos finais mais antigos que os manuais estudam, e o mais famoso dos casos é uma exceção. Em 1875, numa partida entre Fenton e Potter, surgiu uma posição de torre contra peão que acabou em empate. Vinte anos depois, em 1895, G. E. Barbier publicou uma versão dela no jornal Weekly Citizen, de Glasgow, como empate. Fernando Saavedra, um padre espanhol que vivia na cidade, mostrou que as brancas ganhavam promovendo o peão a torre, e não a dama, para escapar do afogamento. Lasker deu à posição a forma que se conhece hoje. Fora as exceções, a regra prática é a desta aula: com o rei longe, a torre empata contra um peão avançado; com o rei perto, ela ganha. A tabela de finais decide cada caso, e muitas vezes por um único tempo.",
-  "practice": "Agora contra a máquina: torre contra peão, e o seu rei está longe. Conte os tempos, ande em diagonal e não dê chance ao cavalo. O objetivo é ganhar."
+  "practice": "Agora o teste prático: torre contra peão, e o seu rei está longe. Conte os tempos, ande em diagonal e não dê chance ao cavalo. O objetivo é ganhar."
 }

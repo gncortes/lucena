@@ -8,7 +8,7 @@
   "part.detours.title": "Escapes and the mate",
   "part.detours.summary": "The punishment for running back to the wrong corner, Rhine's trap and the final mate.",
   "part.wRules.title": "Rules and practice",
-  "part.wRules.summary": "The stalemate alarm, three rules and the whole W against the machine.",
+  "part.wRules.summary": "The stalemate alarm, three rules and the practical test of the whole W.",
   "step.t_corner": "The black king is already on the edge, on h8. Before any move: in which corner can this mate happen, and which piece will take the dark squares of the eighth rank?",
   "step.t_corner.hint1": "Compare the colour of h8 with the colour of your bishop's squares. The mate only exists in the corner of the bishop's colour.",
   "step.corner": "This is the mate that embarrasses masters the most. De la Villa tells of players who went home with their heads down for not knowing it. Look at the position: the black king is already on the edge, huddled in h8. It looks almost over, but h8 is a dark square and your bishop only walks on light ones. That is the wrong corner. The mate only exists in the corner of the bishop's colour: a8 or h1. Our journey is to take the king from h8 to a8, along the eighth rank. Remember: the squares and moves highlighted in what I say, like h8, can be tapped; tap one and I will show it on the board.",

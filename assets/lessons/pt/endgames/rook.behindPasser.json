@@ -8,7 +8,7 @@
   "part.theirs.title": "Atrás do peão adversário",
   "part.theirs.summary": "Na defesa, a torre também vai para trás do peão; na frente dele, ela fica presa.",
   "part.rules.title": "Resumo",
-  "part.rules.summary": "A regra de Tarrasch, a exceção que custou uma partida a Kramnik e o treino contra a máquina.",
+  "part.rules.summary": "A regra de Tarrasch, a exceção que custou uma partida a Kramnik e o teste prático.",
   "step.t_behind": "Você joga de brancas e tem um peão passado na coluna a. Repare onde está cada torre. As pretas conseguem segurar este peão? E qual é o seu plano para ganhar?",
   "step.t_behind.hint1": "Compare as duas torres. Quantas casas cada uma tem na coluna a, e quantas vai ter se o peão avançar?",
   "step.t_behind.hint2": "A torre preta não pode sair da frente do peão. Então quem vai ajudar o peão é o seu rei, e as pretas têm só o rei para defender o peão e a ala do rei ao mesmo tempo.",
@@ -50,7 +50,7 @@
   "step.tarrasch": "Siegbert Tarrasch, um dos grandes mestres alemães do começo do século XX, escreveu no livro do torneio de São Petersburgo de 1914 que as torres ficam atrás dos peões passados: atrás do seu para apoiar o avanço, atrás do adversário para atrapalhar. A razão é a que você viu: a torre atrás ganha espaço a cada passo do peão, a torre na frente perde.",
   "step.except": "Mas é uma regra, não uma lei. Contam que o próprio Tarrasch dizia: ponha sempre a torre atrás do peão, menos quando isso estiver errado. Esta posição é de Kramnik contra Beliavsky, de 1993. Kramnik jogou Ta1, atrás do próprio peão, e perdeu. Ali, a4, Tc1 ou levar a torre até b6, b7 ou b8 empatavam. A regra aponta o caminho; o cálculo confirma.",
   "step.recap": "Três regras para levar para a partida. Um: com um peão passado, a torre vai para trás dele. Dois: contra o peão passado do adversário, a torre também vai para trás dele; bloquear com a torre é a defesa passiva. Três: chegar atrás do peão é uma corrida; antes de ir, confira se a torre adversária não chega primeiro com um xeque.",
-  "step.finish": "Agora contra a máquina, da posição do começo da aula. Mantenha a torre atrás do peão, leve o rei para a frente e ganhe.",
+  "step.finish": "Agora o teste prático, da posição do começo da aula. Mantenha a torre atrás do peão, leve o rei para a frente e ganhe.",
   "ex.e05": "Brancas jogam e ganham. A torre preta está na frente do peão. Como aproveitar isso?",
   "ex.e05.hint": "O rei branco quer chegar a b7. O que o impede agora?",
   "ex.e05.solution": "Tb2+! O xeque tira o rei preto da coluna b. Depois de Ra6, Rc7! e o rei branco chega a b7: a torre preta, na frente do peão, não consegue vigiar a8 e dar xeques ao mesmo tempo. Cuidado com Rc6, que parece igual e só empata. Ideia do estudo de SHREKDAVID no Lichess.",
@@ -81,5 +81,5 @@
   "key.race": "A corrida para chegar atrás do peão: só Tc2 ganha. Do estudo de Audax6 no Lichess.",
   "key.exception": "Kramnik contra Beliavsky, 1993, como na Wikipedia: Ta1, atrás do peão, perdeu. Uma exceção à regra.",
   "history": "Siegbert Tarrasch (1862–1934), um dos jogadores mais fortes da virada do século XX, foi também o grande professor do xadrez da sua época: na Alemanha o chamavam de Praeceptor Germaniae, o professor da Alemanha. No livro do torneio de São Petersburgo de 1914, comentando uma partida de Marshall contra Lasker, ele escreveu que as torres ficam atrás dos peões passados, e repetiu a ideia anos depois no livro O jogo de xadrez. Ela virou a regra de Tarrasch. Um exemplo famoso é a 34ª partida do match de 1927 entre Alekhine e Capablanca, em que a torre de Alekhine ficou atrás do peão a e as brancas ganharam. As exceções também são conhecidas: Short contra Yusupov, 1984, e Kramnik contra Beliavsky, 1993, são casos em que a torre atrás do peão foi o lance errado.",
-  "practice": "Agora contra a máquina: a torre atrás do peão, a torre preta na frente dele. Leve o rei para a frente e ganhe."
+  "practice": "Agora o teste prático: a torre atrás do peão, a torre preta na frente dele. Leve o rei para a frente e ganhe."
 }

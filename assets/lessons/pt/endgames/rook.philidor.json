@@ -28,7 +28,7 @@
   "step.t_classic.hint1": "Olhe a fileira em que está a sua torre. Quais casas ela proíbe ao rei preto?",
   "step.t_bishop": "Agora um peão de bispo, com as peças espalhadas. As pretas ameaçam entrar com o rei. Qual é o lance que arma a defesa?",
   "step.t_bishop.hint1": "A receita não depende do peão: procure a fileira que o rei preto não pode atravessar.",
-  "step.finish": "Agora contra a máquina, do começo: tome a terceira fileira, espere o peão avançar e dê os xeques por trás.",
+  "step.finish": "Agora o teste prático, do começo: tome a terceira fileira, espere o peão avançar e dê os xeques por trás.",
   "ex.e15": "Brancas jogam e empatam. O rei preto está pronto para pisar na sua terceira fileira, e a sua torre ataca o peão. Qual é o lance?",
   "ex.e15.hint": "O peão está protegido. O que impede o rei preto de avançar na posição de Philidor? A sua torre está a um lance disso.",
   "ex.e15.solution": "Tg3: a torre toma a terceira fileira e é a posição de Philidor. Ir para o fundo da coluna (Tg5, Tg6, Tg7, Tg8) também segura, mas a terceira fileira é o caminho simples. Os lances de rei perdem: o rei preto entra em d3. Txe4+?? entrega a torre, porque o rei preto protege o peão. Na prática do Lichess, capítulo \"Avoiding the Philidor\", esta posição aparece com a vez do outro lado: quem ataca joga primeiro e ganha.",
@@ -49,5 +49,5 @@
   "key.bishop": "Com peão de bispo a defesa é a mesma: Tg3. Do estudo de Yuri61 no Lichess, com as cores trocadas.",
   "key.advanced": "A terceira fileira já não serve: torre para o fundo e depois para trás do peão. Capítulo \"Advanced Philidor\" da prática do Lichess, com as cores trocadas.",
   "history": "François-André Philidor publicou esta defesa em 1777, na segunda edição da sua Análise do jogo de xadrez, e achava que ela era o único jeito de empatar este final. Durante mais de um século os manuais repetiram a análise dele, inclusive uma variante em que ele dava o final por perdido se a torre saísse cedo da terceira fileira. Em 1897, Max Karstedt mostrou que havia outras defesas, e hoje as tabelas de finais confirmam: naquela variante de Philidor a posição continuava empatada. A defesa da terceira fileira, porém, segue sendo a mais simples de todas, e é a primeira que qualquer jogador deve saber de cor.",
-  "practice": "Agora contra a máquina: você tem só a torre, ela tem a torre e o peão. Tome a terceira fileira, espere o peão avançar e dê os xeques por trás. O objetivo é empatar."
+  "practice": "Agora o teste prático: você tem só a torre, ela tem a torre e o peão. Tome a terceira fileira, espere o peão avançar e dê os xeques por trás. O objetivo é empatar."
 }

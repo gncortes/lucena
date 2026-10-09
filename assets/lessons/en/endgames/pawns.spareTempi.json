@@ -98,5 +98,5 @@
   "key.pass": "The trébuchet with the h2-pawn: h3 or h4 passes the move and wins.",
   "key.drmkc": "From DrMkcTheHandsome's study: c3!, and c4 only when the king reaches e5.",
   "history": "Zugzwang is a German word meaning the compulsion to move. It already appeared in a German chess magazine in 1858, and in 1896 Friedrich Amelung also used Tempozwang, the compulsion to spend a tempo. In pawn endings the idea got a name of its own: the reserve tempo, a pawn move kept back to pass the move. In 1986 Klaus Bischoff resigned against John Nunn in a position where White's a-pawn was still on its starting square: moving one square or two, as needed, it put Black in zugzwang. Max Euwe and David Hooper, in their 1959 guide to endings, already showed a position where a single tempo decided: whoever had the move won. Mark Dvoretsky gave the theme a whole section in the pawn-endings chapter of his manual.",
-  "practice": "Now the two-tempo ending for real, against the computer. c3 first, the king forward, and c4 at the right moment. Pick the time control and go."
+  "practice": "Now the two-tempo ending for real, as a practical test. c3 first, the king forward, and c4 at the right moment. Pick the time control and go."
 }
