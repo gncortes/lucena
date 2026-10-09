@@ -744,6 +744,8 @@
   "lessonPartNext": "İleri",
   "lessonPartLearned": "Öğrendiklerin",
   "lessonCloseSpeech": "Kapat",
+  "lessonHideMarks": "İşaretleri gizle",
+  "lessonShowMarks": "İşaretleri göster",
   "lessonBackToLesson": "Derse dön",
   "endgamePartMinutes": "{minutes} dk",
   "endgameFinalTest": "Final testi",

@@ -54,6 +54,9 @@ abstract class AppSettings with _$AppSettings {
 
     /// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
     @Default(false) bool endgamesHideDone,
+
+    /// Nas aulas, as marcações do professor no tabuleiro (setas e casas).
+    @Default(true) bool lessonMarks,
   }) = _AppSettings;
 
   /// As escolhas do tempo de pensar nas aulas, em minutos; 0 é o

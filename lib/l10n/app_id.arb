@@ -744,6 +744,8 @@
   "lessonPartNext": "Berikutnya",
   "lessonPartLearned": "Yang kamu pelajari",
   "lessonCloseSpeech": "Tutup",
+  "lessonHideMarks": "Sembunyikan tanda",
+  "lessonShowMarks": "Tampilkan tanda",
   "lessonBackToLesson": "Kembali ke pelajaran",
   "endgamePartMinutes": "{minutes} mnt",
   "endgameFinalTest": "Tes akhir",

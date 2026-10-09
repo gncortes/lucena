@@ -744,6 +744,8 @@
   "lessonPartNext": "Volgende",
   "lessonPartLearned": "Wat je hebt geleerd",
   "lessonCloseSpeech": "Sluiten",
+  "lessonHideMarks": "Markeringen verbergen",
+  "lessonShowMarks": "Markeringen tonen",
   "lessonBackToLesson": "Terug naar de les",
   "endgamePartMinutes": "{minutes} min",
   "endgameFinalTest": "Eindtoets",

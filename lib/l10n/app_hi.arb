@@ -744,6 +744,8 @@
   "lessonPartNext": "अगला",
   "lessonPartLearned": "आपने क्या सीखा",
   "lessonCloseSpeech": "बंद करें",
+  "lessonHideMarks": "निशान छिपाएँ",
+  "lessonShowMarks": "निशान दिखाएँ",
   "lessonBackToLesson": "पाठ पर लौटें",
   "endgamePartMinutes": "{minutes} मिनट",
   "endgameFinalTest": "अंतिम परीक्षा",

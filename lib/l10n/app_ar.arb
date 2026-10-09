@@ -744,6 +744,8 @@
   "lessonPartNext": "التالي",
   "lessonPartLearned": "ما تعلّمته",
   "lessonCloseSpeech": "إغلاق",
+  "lessonHideMarks": "إخفاء العلامات",
+  "lessonShowMarks": "إظهار العلامات",
   "lessonBackToLesson": "العودة إلى الدرس",
   "endgamePartMinutes": "{minutes} د",
   "endgameFinalTest": "الاختبار النهائي",

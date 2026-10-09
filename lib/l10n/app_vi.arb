@@ -744,6 +744,8 @@
   "lessonPartNext": "Tiếp",
   "lessonPartLearned": "Bạn đã học được gì",
   "lessonCloseSpeech": "Đóng",
+  "lessonHideMarks": "Ẩn đánh dấu",
+  "lessonShowMarks": "Hiện đánh dấu",
   "lessonBackToLesson": "Về bài học",
   "endgamePartMinutes": "{minutes} phút",
   "endgameFinalTest": "Bài kiểm tra cuối",

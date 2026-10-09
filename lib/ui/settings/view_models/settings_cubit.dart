@@ -49,6 +49,11 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(board: board));
   }
 
+  /// Mostra ou esconde as marcações do professor no tabuleiro das aulas.
+  Future<void> setLessonMarks({required bool shown}) {
+    return _update((state ?? const AppSettings()).copyWith(lessonMarks: shown));
+  }
+
   /// Troca as preferências do relógio.
   Future<void> setClock(ClockSettings clock) {
     return _update((state ?? const AppSettings()).copyWith(clock: clock));

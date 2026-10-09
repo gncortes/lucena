@@ -744,6 +744,8 @@
   "lessonPartNext": "Dalej",
   "lessonPartLearned": "Czego się nauczyłeś",
   "lessonCloseSpeech": "Zamknij",
+  "lessonHideMarks": "Ukryj oznaczenia",
+  "lessonShowMarks": "Pokaż oznaczenia",
   "lessonBackToLesson": "Wróć do lekcji",
   "endgamePartMinutes": "{minutes} min",
   "endgameFinalTest": "Test końcowy",

@@ -3825,6 +3825,10 @@
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
   "lessonCloseSpeech": "Close",
   "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
+  "lessonHideMarks": "Hide the marks",
+  "@lessonHideMarks": {"description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."},
+  "lessonShowMarks": "Show the marks",
+  "@lessonShowMarks": {"description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."},
   "lessonBackToLesson": "Back to the lesson",
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."

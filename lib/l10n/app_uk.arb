@@ -744,6 +744,8 @@
   "lessonPartNext": "Далі",
   "lessonPartLearned": "Що ви дізналися",
   "lessonCloseSpeech": "Закрити",
+  "lessonHideMarks": "Сховати позначки",
+  "lessonShowMarks": "Показати позначки",
   "lessonBackToLesson": "Повернутися до уроку",
   "endgamePartMinutes": "{minutes} хв",
   "endgameFinalTest": "Підсумковий тест",

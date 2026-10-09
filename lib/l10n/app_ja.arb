@@ -744,6 +744,8 @@
   "lessonPartNext": "次へ",
   "lessonPartLearned": "学んだこと",
   "lessonCloseSpeech": "閉じる",
+  "lessonHideMarks": "マークを隠す",
+  "lessonShowMarks": "マークを表示",
   "lessonBackToLesson": "レッスンに戻る",
   "endgamePartMinutes": "{minutes}分",
   "endgameFinalTest": "最終テスト",

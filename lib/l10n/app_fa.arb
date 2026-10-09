@@ -744,6 +744,8 @@
   "lessonPartNext": "بعدی",
   "lessonPartLearned": "آنچه آموختید",
   "lessonCloseSpeech": "بستن",
+  "lessonHideMarks": "پنهان کردن نشانه‌ها",
+  "lessonShowMarks": "نمایش نشانه‌ها",
   "lessonBackToLesson": "بازگشت به درس",
   "endgamePartMinutes": "{minutes} دقیقه",
   "endgameFinalTest": "آزمون پایانی",

@@ -744,6 +744,8 @@
   "lessonPartNext": "Дальше",
   "lessonPartLearned": "Что вы узнали",
   "lessonCloseSpeech": "Закрыть",
+  "lessonHideMarks": "Скрыть пометки",
+  "lessonShowMarks": "Показать пометки",
   "lessonBackToLesson": "Вернуться к уроку",
   "endgamePartMinutes": "{minutes} мин",
   "endgameFinalTest": "Итоговый тест",

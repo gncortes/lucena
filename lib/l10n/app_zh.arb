@@ -744,6 +744,8 @@
   "lessonPartNext": "下一步",
   "lessonPartLearned": "你学到了什么",
   "lessonCloseSpeech": "关闭",
+  "lessonHideMarks": "隐藏标记",
+  "lessonShowMarks": "显示标记",
   "lessonBackToLesson": "返回课程",
   "endgamePartMinutes": "{minutes} 分钟",
   "endgameFinalTest": "期末测试",

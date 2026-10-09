@@ -744,6 +744,8 @@
   "lessonPartNext": "다음",
   "lessonPartLearned": "배운 내용",
   "lessonCloseSpeech": "닫기",
+  "lessonHideMarks": "표시 숨기기",
+  "lessonShowMarks": "표시 보기",
   "lessonBackToLesson": "수업으로 돌아가기",
   "endgamePartMinutes": "{minutes}분",
   "endgameFinalTest": "최종 테스트",

@@ -27,7 +27,7 @@ void main() {
     'The rook moves in straight lines, as far as it likes.',
   ).join(' ');
 
-  Future<void> pump(
+  Future<SettingsCubit> pump(
     WidgetTester tester, {
     String? intro,
     Size size = const Size(400, 800),
@@ -63,6 +63,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return settings;
   }
 
   testWidgets('a fala longa fica inteira no balão e a tela rola até o fim '
@@ -111,6 +112,19 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getRect(speech).top, greaterThan(full.bottom));
     expect(board.hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('marcações: o botão na folha esconde e mostra, e grava', (
+    tester,
+  ) async {
+    final settings = await pump(tester);
+    expect(settings.state!.lessonMarks, isTrue);
+    await tester.tap(find.byKey(LessonKeys.marksToggle));
+    await tester.pumpAndSettle();
+    expect(settings.state!.lessonMarks, isFalse);
+    await tester.tap(find.byKey(LessonKeys.marksToggle));
+    await tester.pumpAndSettle();
+    expect(settings.state!.lessonMarks, isTrue);
   });
 
   testWidgets('fala curta: a folha não abre e o x não aparece', (tester) async {

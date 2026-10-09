@@ -72,6 +72,7 @@ abstract final class LessonKeys {
   static const nextPartButton = Key('lesson.part.next');
   static const reviewPartButton = Key('lesson.part.review');
   static const closeSheet = Key('lesson.sheet.close');
+  static const marksToggle = Key('lesson.marks');
   static const partSummary = Key('lesson.part.summary');
   static const retryButton = Key('lesson.retry');
   static const finished = Key('lesson.finished');

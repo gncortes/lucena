@@ -743,6 +743,8 @@
   "lessonPartNext": "[Ñéxt one]",
   "lessonPartLearned": "[Whåt ýöû léåŕñéd one two]",
   "lessonCloseSpeech": "[Çlöšé one]",
+  "lessonHideMarks": "[Hîdé thé måŕkš one two]",
+  "lessonShowMarks": "[Šhöw thé måŕkš one two]",
   "lessonBackToLesson": "[Båçk tö thé léššöñ one two]",
   "endgamePartMinutes": "[{minutes} mîñ one two]",
   "endgameFinalTest": "[Fîñål téšt one]",
