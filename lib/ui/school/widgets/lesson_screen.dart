@@ -343,67 +343,87 @@ class _LessonScreenState extends State<LessonScreen>
                         ThinkClock(state: state),
                       if (hasBoard) ...[
                         // Com tabuleiro: ele fica fixo no alto, sempre à
-                        // vista (T51); só a fala rola embaixo dele. Em tela
-                        // baixa o tabuleiro cede, não a fala (umas 4 linhas
-                        // dela ficam sempre à vista).
-                        const SizedBox(height: 8),
-                        _boardArea(
-                          context,
-                          state,
-                          boardSettings,
-                          board,
-                          size: max(
-                            min(
-                              constraints.maxWidth - 16,
-                              constraints.maxHeight - _speechRoom,
-                            ),
-                            120.0,
-                          ),
-                        ),
+                        // vista (T51), e só a fala rola embaixo dele. Em
+                        // tela baixa o tabuleiro cede, não a fala (umas 4
+                        // linhas dela ficam sempre à vista). Fala longa: ao
+                        // rolar, o tabuleiro encolhe para a fala ganhar
+                        // espaço, em vez de ficar espremida na janela.
                         Expanded(
-                          child: SingleChildScrollView(
+                          child: CustomScrollView(
                             key: LessonKeys.scroll,
-                            padding: const EdgeInsets.only(
-                              bottom: _actionsHeight,
-                            ),
-                            child: Column(
-                              children: [
-                                // A faixa da tarefa só no passo de tocar: lá a
-                                // casa pedida é o exercício. No resto, o
-                                // Viktor já diz o que fazer.
-                                if (step is TapStep)
-                                  _guide(context, state, step),
-                                if (viktor != null)
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      16,
-                                      8,
-                                      16,
-                                      0,
+                            slivers: [
+                              SliverPersistentHeader(
+                                pinned: true,
+                                delegate: _BoardHeader(
+                                  maxBoard: max(
+                                    min(
+                                      constraints.maxWidth - 16,
+                                      constraints.maxHeight - _speechRoom,
                                     ),
-                                    child: TeacherSpeech(
-                                      teacher: viktor,
-                                      text: _speechText(context, state),
-                                      emotion: state.emotion,
-                                      avatarSize: 56,
-                                      bubbleKey: LessonKeys.speech,
-                                      onLink: (link) => _flash.toggle(
-                                        link,
-                                        fen: state.fen ?? state.current?.fen,
-                                        color: theme.colorScheme.primary,
-                                      ),
-                                      onSpoken: (link) => _flash.show(
-                                        link,
-                                        fen: state.fen ?? state.current?.fen,
-                                        color: theme.colorScheme.primary,
-                                      ),
-                                      speaks: true,
-                                      speechContext: SpeechContext.teaching,
-                                      typed: true,
-                                    ),
+                                    120.0,
                                   ),
-                              ],
-                            ),
+                                  background: theme.scaffoldBackgroundColor,
+                                  builder: (size) => _boardArea(
+                                    context,
+                                    state,
+                                    boardSettings,
+                                    board,
+                                    size: size,
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: _actionsHeight,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      // A faixa da tarefa só no passo de
+                                      // tocar: lá a casa pedida é o
+                                      // exercício. No resto, o Viktor já diz
+                                      // o que fazer.
+                                      if (step is TapStep)
+                                        _guide(context, state, step),
+                                      if (viktor != null)
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            16,
+                                            8,
+                                            16,
+                                            0,
+                                          ),
+                                          child: TeacherSpeech(
+                                            teacher: viktor,
+                                            text: _speechText(context, state),
+                                            emotion: state.emotion,
+                                            avatarSize: 56,
+                                            bubbleKey: LessonKeys.speech,
+                                            onLink: (link) => _flash.toggle(
+                                              link,
+                                              fen:
+                                                  state.fen ??
+                                                  state.current?.fen,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                            onSpoken: (link) => _flash.show(
+                                              link,
+                                              fen:
+                                                  state.fen ??
+                                                  state.current?.fen,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                            speaks: true,
+                                            speechContext:
+                                                SpeechContext.teaching,
+                                            typed: true,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ] else ...[
@@ -917,4 +937,47 @@ class _ThinkTimeChooser extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O tabuleiro fixo no alto da aula: do tamanho cheio ao rolar menos, e até
+/// a metade quando a fala é rolada (o tabuleiro continua à vista).
+class _BoardHeader extends SliverPersistentHeaderDelegate {
+  const _BoardHeader({
+    required this.maxBoard,
+    required this.background,
+    required this.builder,
+  });
+
+  final double maxBoard;
+  final Color background;
+  final Widget Function(double size) builder;
+
+  static const _top = 8.0;
+
+  double get _minBoard => max(maxBoard / 2, min(maxBoard, 120.0));
+
+  @override
+  double get maxExtent => maxBoard + _top;
+
+  @override
+  double get minExtent => _minBoard + _top;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => ColoredBox(
+    color: background,
+    child: Padding(
+      padding: const EdgeInsets.only(top: _top),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: builder(max(_minBoard, maxBoard - shrinkOffset)),
+      ),
+    ),
+  );
+
+  @override
+  bool shouldRebuild(_BoardHeader oldDelegate) => true;
 }

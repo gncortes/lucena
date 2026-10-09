@@ -85,6 +85,23 @@ void main() {
     expect(tester.getRect(speech).bottom, lessThan(next.top));
   });
 
+  testWidgets('fala longa: ao rolar, o tabuleiro encolhe mas continua à '
+      'vista, e voltando ao topo ele volta ao tamanho cheio', (tester) async {
+    await pump(tester);
+    final full = tester.getSize(find.byKey(LessonKeys.board));
+
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -3000));
+    await tester.pumpAndSettle();
+    final small = tester.getSize(find.byKey(LessonKeys.board));
+    expect(small.width, lessThan(full.width));
+    expect(small.width, greaterThanOrEqualTo(full.width / 2));
+    expect(find.byKey(LessonKeys.board).hitTestable(), findsOneWidget);
+
+    await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, 3000));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byKey(LessonKeys.board)).width, full.width);
+  });
+
   testWidgets('o botão de voltar aparece do segundo passo em diante e volta '
       'um passo', (tester) async {
     await pump(tester);
