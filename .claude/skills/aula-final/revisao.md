@@ -12,8 +12,12 @@ não repetir.
 | Pesquisa e exercícios de um tema com composição (ruptura, triangulação, casas conjugadas, dois cavalos) | Fable | precisa achar e julgar estudos; o 3★ depende disso |
 | Pesquisa e exercícios dos outros temas | Opus | na T58 todas as 32 aulas no Opus passaram nos scripts; os erros que ficaram eram de julgamento (ver lista) |
 | Revisor de xadrez e régua (um para o lote) | Fable | compara afirmações das falas com a tabela e julga a régua; é onde os erros caros aparecem |
+| Revisor de lições (`revisor-licoes`, uma aula por vez, depois do revisor de xadrez) | Fable | aprofunda as falas: variantes em lances, qualidade dos lances (!, ?, ??), soluções completas e alternativas aceitas; é o que deixa a aula rica |
 | Revisor de textos pt/en (um para o lote) | Sonnet, com conferência por script | notação, chaves, tom, pt ≠ en, dica que entrega o lance. **Ainda não medido**: na T58 o revisor único foi Fable. Ao usar Sonnet aqui, anote no dossiê quantos erros ele achou e quantos o revisor de xadrez achou depois dele; se escapar erro de xadrez, não é tarefa dele |
 | Cortes mecânicos, regerar `.json`, rodar scripts | Sonnet ou o próprio orquestrador | nada de julgamento |
+
+Ordem da revisão: 1) `revisor-aulas` (exercícios, régua, xadrez); 2) `revisor-licoes` (profundidade das falas da
+lição e das soluções); 3) revisor de textos pt/en.
 
 Regras para o lote:
 
