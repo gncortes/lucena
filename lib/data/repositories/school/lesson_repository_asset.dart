@@ -122,7 +122,6 @@ class AssetLessonRepository implements LessonRepository {
       'think' when fen != null => ThinkStep(
         id: id,
         fen: fen,
-        minutes: json['minutes'] as int? ?? 5,
         hints: json['hints'] as int? ?? 1,
         ask: ThinkAsk.fromCode(json['ask'] as String?),
         arrows: _arrows(json['arrows']),

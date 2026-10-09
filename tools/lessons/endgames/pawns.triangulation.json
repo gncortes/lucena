@@ -13,7 +13,6 @@
           "id": "t_zugzwang",
           "fen": "8/2k5/p1P5/P1K5/8/8/8/8 b - - 0 1",
           "side": "white",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -111,7 +110,6 @@
           "type": "think",
           "id": "t_triangle",
           "fen": "2k5/8/p1P5/P2K4/8/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 3,
           "ask": "plan"
         },
@@ -219,7 +217,6 @@
           "type": "think",
           "id": "t_kasparov",
           "fen": "8/8/8/8/4k2p/5p1P/8/5K2 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -300,7 +297,6 @@
           "type": "think",
           "id": "t_defend",
           "fen": "1k6/8/4p3/4P3/2K5/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },

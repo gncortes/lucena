@@ -32,8 +32,6 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _characterTalkKey = 'characters.talk';
   static const _soundKey = 'sound.enabled';
   static const _vibrationKey = 'haptics.enabled';
-  static const _thinkMinutesKey = 'lessons.thinkMinutes';
-  static const _thinkChosenKey = 'lessons.thinkChosen';
   static const _endgamesAllKey = 'endgames.all';
   static const _endgamesHideDoneKey = 'endgames.hideDone';
   static const _evalBarKey = 'review.evalBar';
@@ -74,18 +72,6 @@ class LocalSettingsRepository implements SettingsRepository {
       vibration:
           await _preferences.getBool(_vibrationKey) ??
           const AppSettings().vibration,
-      thinkMinutes: switch (int.tryParse(
-        await _preferences.getString(_thinkMinutesKey) ?? '',
-      )) {
-        final minutes? when AppSettings.thinkChoices.contains(minutes) =>
-          minutes,
-        _ => const AppSettings().thinkMinutes,
-      },
-      // Quem já tinha um tempo gravado (escolhido nas Configurações) já
-      // escolheu.
-      thinkChosen:
-          await _preferences.getBool(_thinkChosenKey) ??
-          await _preferences.getString(_thinkMinutesKey) != null,
       evalBar:
           await _preferences.getBool(_evalBarKey) ??
           const AppSettings().evalBar,
@@ -175,8 +161,6 @@ class LocalSettingsRepository implements SettingsRepository {
     );
     await _preferences.setBool(_soundKey, value: settings.sound);
     await _preferences.setBool(_vibrationKey, value: settings.vibration);
-    await _preferences.setString(_thinkMinutesKey, '${settings.thinkMinutes}');
-    await _preferences.setBool(_thinkChosenKey, value: settings.thinkChosen);
     await _preferences.setBool(_evalBarKey, value: settings.evalBar);
     await _preferences.setBool(_endgamesAllKey, value: settings.endgamesAll);
     await _preferences.setBool(

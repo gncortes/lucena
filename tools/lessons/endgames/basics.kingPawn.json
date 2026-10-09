@@ -15,7 +15,6 @@
           "type": "think",
           "id": "t_square",
           "fen": "8/8/1k6/8/6P1/8/8/K7 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "line"
         },
@@ -80,7 +79,6 @@
           "type": "think",
           "id": "t_opposition",
           "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan",
           "side": "white"

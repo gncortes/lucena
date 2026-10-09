@@ -3737,31 +3737,9 @@
       }
     }
   },
-  "lessonThinkAnnounce": "{minutes, plural, =1{Think about this position for 1 minute.} other{Think about this position for {minutes} minutes.}}",
-  "@lessonThinkAnnounce": {
-    "description": "Teacher's sentence before a 'think' step question: the student has N minutes to study the position alone.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "lessonThinkLeft": "{time} left to think",
-  "@lessonThinkLeft": {
-    "description": "Screen reader label of the think timer: time left to think.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "lessonGuideThink": "Study the position. You can move both sides' pieces to test ideas.",
   "@lessonGuideThink": {
     "description": "Lesson guide during the think step: study the position, you may move the pieces of both sides."
-  },
-  "lessonGuideThinkDone": "Time's up. Ask for another hint or see the explanation.",
-  "@lessonGuideThinkDone": {
-    "description": "Lesson guide after the think time ends."
   },
   "lessonGuideDemo": "Watch: the teacher plays and explains each move.",
   "@lessonGuideDemo": {
@@ -3778,6 +3756,15 @@
   "lessonSeeExplanation": "See explanation",
   "@lessonSeeExplanation": {
     "description": "Button after the think time: go on to the teacher's explanation."
+  },
+  "lessonStepTimer": "{time} elapsed",
+  "@lessonStepTimer": {
+    "description": "Screen reader label of the lesson step timer, which counts up: the time elapsed since the step opened (m:ss).",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
@@ -3825,15 +3812,6 @@
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
   },
-  "endgamePartMinutes": "{minutes} min",
-  "@endgamePartMinutes": {
-    "description": "Estimated time of a lesson part (or all parts), in minutes.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "endgameFinalTest": "Final test",
   "@endgameFinalTest": {
     "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
@@ -3870,18 +3848,6 @@
   "endgamePartStart": "Start",
   "@endgamePartStart": {
     "description": "Button on the recommended lesson part card: start this part."
-  },
-  "lessonThinkSkip": "See explanation",
-  "@lessonThinkSkip": {
-    "description": "Button during the think step: stop waiting and see the teacher's explanation right away."
-  },
-  "settingsThinkTime": "Thinking time in lessons",
-  "@settingsThinkTime": {
-    "description": "Game settings: how long the student thinks alone about a lesson position before the teacher explains."
-  },
-  "settingsThinkTimeHint": "How long you study each key position on your own before the teacher explains. Recommended uses what each position asks (5 min on the main ones). You can always skip.",
-  "@settingsThinkTimeHint": {
-    "description": "Explanation under the thinking-time setting."
   },
   "endgameChallengeTitle": "Challenge yourself in this endgame",
   "@endgameChallengeTitle": {
@@ -3944,10 +3910,6 @@
         "type": "String"
       }
     }
-  },
-  "settingsThinkRecommended": "Recommended",
-  "@settingsThinkRecommended": {
-    "description": "Thinking-time option: use the time each lesson position recommends (5 minutes on key positions, less on transitional ones)."
   },
   "endgameStagesDone": "{done} of {total} stages",
   "@endgameStagesDone": {
@@ -4332,18 +4294,6 @@
   "ratingPeriodTitle": "Period",
   "@ratingPeriodTitle": {
     "description": "Rating screen: title of the period filter sheet (7 days, 30 days, ...)."
-  },
-  "lessonThinkChooseTitle": "How long do you want to think?",
-  "@lessonThinkChooseTitle": {
-    "description": "Title of the screen shown before the first lesson with a thinking step: how long the student wants to think."
-  },
-  "lessonThinkChooseBody": "Before each explanation, you think about the position on your own. The more time, the better: thinking is how you learn. You can change it later in Settings, and you can always skip.",
-  "@lessonThinkChooseBody": {
-    "description": "Body of the think-time chooser."
-  },
-  "lessonThinkRecommendedHint": "What each position needs: up to 5 min on the key ones",
-  "@lessonThinkRecommendedHint": {
-    "description": "Under \"Recommended\" in the think-time chooser."
   },
   "conclusionTimeSpent": "Time spent",
   "@conclusionTimeSpent": {

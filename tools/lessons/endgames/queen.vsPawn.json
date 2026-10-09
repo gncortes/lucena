@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_start",
           "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -71,7 +70,6 @@
           "type": "think",
           "id": "t_front",
           "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -171,7 +169,6 @@
           "type": "think",
           "id": "t_block",
           "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },

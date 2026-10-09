@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_behind",
           "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "line"
         },
@@ -219,7 +218,6 @@
           "type": "think",
           "id": "t_close",
           "fen": "3r4/1R6/8/8/8/4p3/4k1K1/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },

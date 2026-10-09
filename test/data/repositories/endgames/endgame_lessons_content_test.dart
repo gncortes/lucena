@@ -131,9 +131,8 @@ void main() {
             final position = GameRules.fromFen(fen);
             expect(position, isNotNull, reason: where);
             expect(GameRules.endOf(position!), isNull, reason: where);
-          case ThinkStep(:final fen, :final minutes, :final hints):
+          case ThinkStep(:final fen, :final hints):
             expect(GameRules.fromFen(fen), isNotNull, reason: where);
-            expect({1, 3, 5}, contains(minutes), reason: where);
             expect(hints, inInclusiveRange(1, 3), reason: where);
           case DemoStep(:final fen, :final line):
             // Os lances da demonstração, dos dois lados, todos legais.

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/use_cases/step_clock.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -20,70 +22,48 @@ abstract final class DemoPace {
   static const msPerChar = 65;
 }
 
-/// O tempo de pensar, no topo da tela: o relógio e a barra que esvazia,
-/// como no desafio das estrelas.
-class ThinkClock extends StatelessWidget {
-  const ThinkClock({required this.state, super.key});
+/// O cronômetro do passo (T60): o tempo decorrido desde que o passo abriu,
+/// contando para cima, no canto inferior de fim (à direita; à esquerda em
+/// árabe). Sem limite e sem barra.
+class StepTimer extends StatelessWidget {
+  const StepTimer({required this.elapsed, super.key});
 
-  final LessonState state;
+  /// O tempo decorrido, atualizado pela tela a cada instante.
+  final ValueListenable<Duration> elapsed;
 
   @override
   Widget build(BuildContext context) {
-    final left = state.thinkLeft;
-    if (left == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final total = state.thinkTime.inMilliseconds;
-    final fraction = total == 0 ? 0.0 : left.inMilliseconds / total;
-    final seconds = (left.inMilliseconds / 1000).ceil();
-    final label =
-        '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
-    return Semantics(
-      label: context.l10n.lessonThinkLeft(label),
-      excludeSemantics: true,
-      child: Padding(
-        key: LessonKeys.thinkClock,
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.sm,
-          AppSpacing.lg,
-          0,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.hourglass_bottom_outlined,
-              size: 20,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
+    return ValueListenableBuilder<Duration>(
+      valueListenable: elapsed,
+      builder: (context, value, _) {
+        final label = StepClock.format(value);
+        return Semantics(
+          label: context.l10n.lessonStepTimer(label),
+          liveRegion: false,
+          excludeSemantics: true,
+          child: Row(
+            key: LessonKeys.stepTimer,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.timer_outlined,
+                size: 20,
+                color: colors.onSurfaceVariant,
               ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppShape.small),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(end: fraction),
-                  // A barra anda contínua entre um quarto de segundo e outro.
-                  duration: AppMotion.of(context).state,
-                  curve: AppMotion.linear,
-                  builder: (context, value, _) => LinearProgressIndicator(
-                    value: value,
-                    minHeight: 8,
-                    backgroundColor: colors.surfaceContainerHighest,
-                  ),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

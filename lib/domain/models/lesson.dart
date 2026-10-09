@@ -98,13 +98,13 @@ class LessonPart {
   final String id;
   final List<LessonStep> steps;
 
-  /// O tempo estimado, em minutos: o de pensar, mais meio minuto por
+  /// O tempo estimado, em minutos: uns 3 de pensar, mais meio minuto por
   /// conversa, uns segundos por lance mostrado e um minuto por prática.
   int get minutes {
     var seconds = 0;
     for (final step in steps) {
       seconds += switch (step) {
-        ThinkStep(:final minutes) => minutes * 60,
+        ThinkStep() => ThinkStep.typicalSeconds,
         DemoStep(:final line) => 20 + 10 * line.length,
         MoveStep() || PlayStep() => 60,
         _ => 30,
@@ -236,14 +236,14 @@ class PlayStep extends LessonStep {
   String get fen => super.fen!;
 }
 
-/// Pensar antes da explicação (T51): o aluno estuda a posição sozinho por
-/// [minutes] minutos, mexendo as peças à vontade; depois vêm as dicas, uma a
-/// uma, e "Ver explicação".
+/// Pensar antes da explicação (T51): o aluno estuda a posição sozinho, o
+/// tempo que quiser (um cronômetro conta para cima, T60), mexendo as peças à
+/// vontade; as dicas, uma a uma, e "Ver explicação" ficam à mão desde o
+/// começo.
 class ThinkStep extends LessonStep {
   const ThinkStep({
     required super.id,
     required String super.fen,
-    required this.minutes,
     this.hints = 1,
     this.ask = ThinkAsk.plan,
     this.arrows = const [],
@@ -259,9 +259,9 @@ class ThinkStep extends LessonStep {
   Side get turn =>
       fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
 
-  /// O tempo sugerido pela aula: 1, 3 ou 5 minutos (o app usa o das
-  /// preferências do aluno).
-  final int minutes;
+  /// Quanto um aluno costuma pensar numa posição, para a estimativa de tempo
+  /// da parte ([LessonPart.minutes]).
+  static const typicalSeconds = 180;
 
   /// Quantas dicas o passo tem (`<passo>.hint1`...).
   final int hints;
@@ -276,8 +276,6 @@ class ThinkStep extends LessonStep {
 
   @override
   Side get side => view ?? super.side;
-
-  Duration get time => Duration(minutes: minutes);
 }
 
 /// O que o Viktor pede num passo de pensar.
@@ -447,7 +445,7 @@ class LessonCheckpoint {
     this.moves = const [],
     this.open = true,
     this.part,
-    this.thinkStartedAt,
+    this.stepStartedAt,
     this.hintsShown = 0,
     this.demoMove = 0,
   });
@@ -459,8 +457,9 @@ class LessonCheckpoint {
   /// achada por `Lesson.locate`.
   final String? part;
 
-  /// Quando o aluno começou a pensar no passo `think` em andamento.
-  final DateTime? thinkStartedAt;
+  /// Quando o passo em andamento abriu: o cronômetro do passo (T60) continua
+  /// daqui ao reabrir o app.
+  final DateTime? stepStartedAt;
 
   /// Quantas dicas do passo `think` já apareceram.
   final int hintsShown;
@@ -496,7 +495,7 @@ class LessonCheckpoint {
     moves: moves,
     open: open ?? this.open,
     part: part,
-    thinkStartedAt: thinkStartedAt,
+    stepStartedAt: stepStartedAt,
     hintsShown: hintsShown,
     demoMove: demoMove,
   );
@@ -510,7 +509,7 @@ class LessonCheckpoint {
     'moves': moves,
     'open': open,
     'part': ?part,
-    'thinkStartedAt': ?thinkStartedAt?.toUtc().toIso8601String(),
+    'stepStartedAt': ?stepStartedAt?.toUtc().toIso8601String(),
     if (hintsShown > 0) 'hintsShown': hintsShown,
     if (demoMove > 0) 'demoMove': demoMove,
   };
@@ -535,8 +534,11 @@ class LessonCheckpoint {
       ],
       open: json['open'] as bool? ?? false,
       part: json['part'] as String?,
-      thinkStartedAt: DateTime.tryParse(
-        json['thinkStartedAt'] as String? ?? '',
+      // Checkpoint de antes da T60: só o passo de pensar guardava o começo.
+      stepStartedAt: DateTime.tryParse(
+        json['stepStartedAt'] as String? ??
+            json['thinkStartedAt'] as String? ??
+            '',
       ),
       hintsShown: json['hintsShown'] as int? ?? 0,
       demoMove: json['demoMove'] as int? ?? 0,
@@ -554,7 +556,7 @@ class LessonCheckpoint {
       _sameList(other.moves, moves) &&
       other.open == open &&
       other.part == part &&
-      other.thinkStartedAt == thinkStartedAt &&
+      other.stepStartedAt == stepStartedAt &&
       other.hintsShown == hintsShown &&
       other.demoMove == demoMove;
 
@@ -568,7 +570,7 @@ class LessonCheckpoint {
     Object.hashAll(moves),
     open,
     part,
-    thinkStartedAt,
+    stepStartedAt,
     hintsShown,
     demoMove,
   );

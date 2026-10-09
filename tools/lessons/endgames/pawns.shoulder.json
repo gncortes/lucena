@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_stairs",
           "fen": "8/8/8/1k6/8/8/K4P2/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -132,7 +131,6 @@
           "type": "think",
           "id": "t_wall",
           "fen": "8/5p2/8/8/1k2K3/8/5P2/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -261,7 +259,6 @@
           "type": "think",
           "id": "t_away",
           "fen": "8/5p2/8/8/5K2/5P2/8/7k w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -367,7 +364,6 @@
           "type": "think",
           "id": "t_race",
           "fen": "8/8/5p2/4kP2/K7/8/P7/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -490,7 +486,6 @@
           "type": "think",
           "id": "t_defend",
           "fen": "8/5p2/1p6/1P2K2k/8/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },

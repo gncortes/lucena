@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_cut",
           "fen": "5r2/8/2k5/4P3/4K3/8/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -123,7 +122,6 @@
           "type": "think",
           "id": "t_count",
           "fen": "4r3/8/8/1k6/4P3/4K3/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -244,7 +242,6 @@
           "type": "think",
           "id": "t_rank",
           "fen": "r7/8/8/2R5/1P1k4/1K6/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -358,7 +355,6 @@
           "type": "think",
           "id": "t_checks",
           "fen": "8/4K2r/2k1P3/8/8/8/8/3R4 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "arrows": [

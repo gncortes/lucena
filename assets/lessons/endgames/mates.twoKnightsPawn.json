@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_help",
           "fen": "8/5K1k/8/5N2/8/3p4/3N4/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line",
           "marks": [
@@ -120,7 +119,6 @@
           "type": "think",
           "id": "t_zz",
           "fen": "7k/5K2/8/5N2/8/3p4/3N4/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -241,7 +239,6 @@
           "type": "think",
           "id": "t_line",
           "fen": "7k/3N4/6p1/8/5K2/7N/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -298,7 +295,6 @@
           "type": "think",
           "id": "t_drive",
           "fen": "6k1/8/6p1/4K1N1/4N3/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -422,7 +418,6 @@
           "type": "think",
           "id": "t_release",
           "fen": "8/4K1k1/6p1/6N1/6N1/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line",
           "marks": [
@@ -555,7 +550,6 @@
           "type": "think",
           "id": "t_def",
           "fen": "8/8/k7/5p2/8/1N6/6N1/5K2 b - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan",
           "marks": [

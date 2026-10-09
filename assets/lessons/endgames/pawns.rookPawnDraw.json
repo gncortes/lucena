@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_keys",
           "fen": "4k3/7K/8/8/8/8/7P/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -147,7 +146,6 @@
           "type": "think",
           "id": "t_lock",
           "fen": "7K/4k3/8/7P/8/8/8/8 b - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan"
         },
@@ -231,7 +229,6 @@
           "type": "think",
           "id": "t_panno",
           "fen": "8/1k6/8/8/8/7K/7P/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan"
         },
@@ -358,7 +355,6 @@
           "type": "think",
           "id": "t_shoulder",
           "fen": "8/7K/8/8/4k3/7P/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },

@@ -25,9 +25,11 @@ abstract final class SchoolKeys {
 }
 
 abstract final class LessonKeys {
-  /// Antes da primeira aula com passo de pensar: quanto tempo pensar.
-  static const thinkChooser = Key('lesson.thinkChooser');
-  static Key thinkChoice(int minutes) => Key('lesson.thinkChoice.$minutes');
+  /// T60, modo exercício: a faixa do enunciado em cima, o cronômetro do
+  /// passo e o rodapé das ações.
+  static const prompt = Key('lesson.prompt');
+  static const stepTimer = Key('lesson.step.timer');
+  static const footer = Key('lesson.footer');
 
   /// O convite para jogar no Lichess e o botão que abre o site.
   static const lichessInvite = Key('lesson.lichessInvite');
@@ -58,11 +60,9 @@ abstract final class LessonKeys {
   static const hintButton = Key('lesson.hint');
 
   /// T51: o passo de pensar, a demonstração e o fim de uma parte.
-  static const thinkClock = Key('lesson.think.clock');
   static const appBarTitle = Key('lesson.appBar.title');
   static const place = Key('lesson.appBar.place');
   static const thinkReset = Key('lesson.think.reset');
-  static const thinkSkip = Key('lesson.think.skip');
   static const moreHintButton = Key('lesson.think.moreHint');
   static const demoBack = Key('lesson.demo.back');
   static const demoForward = Key('lesson.demo.forward');

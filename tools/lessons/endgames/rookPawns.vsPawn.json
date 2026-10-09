@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_cut",
           "fen": "8/7K/5k2/8/3p4/8/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "line"
         },
@@ -237,7 +236,6 @@
           "type": "think",
           "id": "t_knight",
           "fen": "8/8/8/8/8/3K4/R3p3/3k4 b - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan",
           "side": "white"
@@ -291,7 +289,6 @@
           "type": "think",
           "id": "t_saavedra",
           "fen": "8/8/1KP5/3r4/8/8/8/k7 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "line"
         },

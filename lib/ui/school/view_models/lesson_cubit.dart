@@ -7,14 +7,13 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
-import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
-import '../../../domain/use_cases/think_timer.dart';
+import '../../../domain/use_cases/step_clock.dart';
 import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/game_sound.dart';
 import '../../../domain/models/haptic_event.dart';
@@ -34,6 +33,16 @@ enum StepPhase {
   /// Num passo de jogar, a posição acabou sem o objetivo (afogamento, empate
   /// ou mate no aluno): o botão tenta de novo.
   failed,
+}
+
+/// Como a tela se organiza (T60).
+enum LessonLayoutMode {
+  /// O aluno resolve: o tabuleiro no centro, o enunciado curto em cima e o
+  /// cronômetro com as ações embaixo.
+  solving,
+
+  /// O professor fala: o tabuleiro no alto e a folha da fala embaixo.
+  explaining,
 }
 
 class LessonState {
@@ -68,23 +77,11 @@ class LessonState {
     this.partNumber = 0,
     this.partCount = 0,
     this.nextPart,
-    this.thinkStartedAt,
-    this.thinkLeft,
+    this.stepStartedAt,
     this.hintsShown = 0,
     this.demoMove = 0,
     this.demoPlaying = true,
-    this.thinkMinutes = 0,
   });
-
-  /// O tempo de pensar escolhido nas preferências, em minutos; 0: o
-  /// recomendado por cada posição.
-  final int thinkMinutes;
-
-  /// O tempo de pensar no passo aberto.
-  Duration get thinkTime => switch (current) {
-    ThinkStep step when thinkMinutes == 0 => step.time,
-    _ => Duration(minutes: thinkMinutes == 0 ? 3 : thinkMinutes),
-  };
 
   final bool ready;
 
@@ -113,8 +110,8 @@ class LessonState {
       (phase == StepPhase.done ||
           reviewing ||
           (current is TalkStep && phase == StepPhase.active) ||
-          // "Ver explicação": só depois do tempo de pensar.
-          (current is ThinkStep && !thinking));
+          // "Ver explicação": quando o aluno quiser (T60).
+          current is ThinkStep);
 
   /// Há passo antes deste para rever.
   bool get canGoBack => step > 0 && phase != StepPhase.waiting && !finished;
@@ -180,10 +177,8 @@ class LessonState {
   /// Com a parte terminada, a próxima recomendada. Nula com todas feitas.
   final String? nextPart;
 
-  /// No passo de pensar: quando o aluno começou e quanto falta. [thinkLeft]
-  /// nulo: o tempo acabou (ou o passo não é de pensar).
-  final DateTime? thinkStartedAt;
-  final Duration? thinkLeft;
+  /// Quando o passo aberto começou: o cronômetro do passo (T60) conta daqui.
+  final DateTime? stepStartedAt;
 
   /// Quantas dicas do passo de pensar já apareceram.
   final int hintsShown;
@@ -192,14 +187,25 @@ class LessonState {
   final int demoMove;
   final bool demoPlaying;
 
-  /// Ainda pensando no passo de pensar: sem dica e sem "Ver explicação".
-  bool get thinking => current is ThinkStep && thinkLeft != null;
-
-  /// No passo de pensar, há mais uma dica para mostrar.
+  /// No passo de pensar, há mais uma dica para mostrar (desde o começo).
   bool get canHint => switch (current) {
-    ThinkStep(:final hints) => !thinking && hintsShown < hints,
+    ThinkStep(:final hints) => hintsShown < hints,
     _ => false,
   };
+
+  /// O passo aberto é de exercício: o aluno age no tabuleiro.
+  bool get exercise => switch (current) {
+    ThinkStep() || MoveStep() || PlayStep() || TapStep() || StarsStep() => true,
+    TalkStep() || DemoStep() || null => false,
+  };
+
+  /// Resolvendo (tabuleiro no centro, cronômetro) enquanto um passo de
+  /// exercício não foi respondido; depois da resposta (cumprido ou falhado),
+  /// e nos passos de conversa e demonstração, o professor fala.
+  LessonLayoutMode get layout =>
+      exercise && (phase == StepPhase.active || phase == StepPhase.waiting)
+      ? LessonLayoutMode.solving
+      : LessonLayoutMode.explaining;
 
   /// As setas do momento: as do passo de pensar depois do tempo, as do
   /// lance da demonstração, ou as de uma fala.
@@ -301,13 +307,10 @@ class LessonState {
     int? partNumber,
     int? partCount,
     String? nextPart,
-    DateTime? thinkStartedAt,
-    Duration? thinkLeft,
-    bool clearThinkLeft = false,
+    DateTime? stepStartedAt,
     int? hintsShown,
     int? demoMove,
     bool? demoPlaying,
-    int? thinkMinutes,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -339,12 +342,10 @@ class LessonState {
     partNumber: partNumber ?? this.partNumber,
     partCount: partCount ?? this.partCount,
     nextPart: nextPart ?? this.nextPart,
-    thinkStartedAt: thinkStartedAt ?? this.thinkStartedAt,
-    thinkLeft: clearThinkLeft ? null : thinkLeft ?? this.thinkLeft,
+    stepStartedAt: stepStartedAt ?? this.stepStartedAt,
     hintsShown: hintsShown ?? this.hintsShown,
     demoMove: demoMove ?? this.demoMove,
     demoPlaying: demoPlaying ?? this.demoPlaying,
-    thinkMinutes: thinkMinutes ?? this.thinkMinutes,
   );
 }
 
@@ -363,16 +364,12 @@ class LessonCubit extends Cubit<LessonState> {
     this._sounds,
     this._haptics,
     this._now = const SystemNow(),
-    this._settings,
     this.replyDelay = const Duration(milliseconds: 450),
   }) : _source = source ?? SchoolLessonSource(lessons!, progress!),
        super(const LessonState());
 
   final LessonSource _source;
   final Now _now;
-
-  // As preferências, para o tempo de pensar; nulas: 3 minutos.
-  final SettingsRepository? _settings;
   final CharacterRepository _characters;
   final OpponentRepository _opponent;
 
@@ -400,7 +397,6 @@ class LessonCubit extends Cubit<LessonState> {
     final characters = await _characters.characters();
     var saved = await _source.checkpoint();
     final (number, count) = await _source.placeOf(lessonId);
-    final thinkMinutes = (await _settings?.load())?.thinkMinutes ?? 0;
     if (isClosed) return;
     if (full == null || full.steps.isEmpty) {
       emit(const LessonState(ready: true, missing: true));
@@ -448,7 +444,6 @@ class LessonCubit extends Cubit<LessonState> {
       part: opened,
       partNumber: opened == null ? 0 : full.parts.indexOf(opened) + 1,
       partCount: full.parts.length,
-      thinkMinutes: thinkMinutes,
     );
     if (saved != null && saved.step < lesson.steps.length) {
       emit(_restore(base, saved));
@@ -518,63 +513,17 @@ class LessonCubit extends Cubit<LessonState> {
     }
   }
 
-  // --- pensar (T51) --------------------------------------------------------
+  // --- pensar (T51, T60) ---------------------------------------------------
 
-  /// O relógio do passo de pensar: a tela chama a cada segundo. No fim do
-  /// tempo, o Viktor faz a pergunta-guia do passo; as dicas vêm a pedido.
-  /// O aluno escolheu agora o tempo de pensar: o passo de pensar recomeça
-  /// com ele (o relógio e a fala "pense por N minutos").
-  void useThinkMinutes(int minutes) {
-    if (isClosed || state.lesson == null) return;
-    final base = state.copyWith(thinkMinutes: minutes);
-    emit(
-      state.current is ThinkStep && state.thinking
-          ? _open(base, state.step)
-          : base,
-    );
+  /// O cronômetro do passo (T60): quanto tempo passou desde que o passo
+  /// aberto começou. A tela lê a cada instante, sem passar pelo estado.
+  Duration get stepElapsed {
+    final startedAt = state.stepStartedAt;
+    if (startedAt == null) return Duration.zero;
+    return StepClock.elapsed(startedAt: startedAt, now: _now());
   }
 
-  Future<void> tick() async {
-    final step = state.current;
-    final startedAt = state.thinkStartedAt;
-    if (step is! ThinkStep || startedAt == null || state.finished) return;
-    if (!state.thinking) return;
-    switch (ThinkTimer.phase(
-      startedAt: startedAt,
-      time: state.thinkTime,
-      now: _now(),
-    )) {
-      case Thinking(:final remaining):
-        emit(state.copyWith(thinkLeft: remaining));
-      case ThinkExpired():
-        emit(
-          state.copyWith(
-            clearThinkLeft: true,
-            speech: state.texts.step(_lessonId, step.id),
-            emotion: Emotion.focused,
-          ),
-        );
-        await _save();
-    }
-  }
-
-  /// Pular o tempo de pensar e ir direto à explicação.
-  Future<void> skipThink() async {
-    if (!state.thinking) return;
-    await _explain();
-  }
-
-  Future<void> _explain() async {
-    final nextStep = state.step + 1;
-    if (nextStep < state.stepCount) {
-      emit(_open(state, nextStep));
-      await _save();
-      return;
-    }
-    await _finish();
-  }
-
-  /// "Mais uma dica", depois do tempo de pensar.
+  /// "Mais uma dica", quando o aluno quiser.
   Future<void> moreHint() async {
     final step = state.current;
     if (step is! ThinkStep || !state.canHint) return;
@@ -596,30 +545,16 @@ class LessonCubit extends Cubit<LessonState> {
     emit(state.copyWith(fen: step.fen, clearLastMove: true));
   }
 
-  // No passo de pensar, o aluno joga a ideia dele: o lance já responde à
-  // pergunta, então o relógio some e a explicação vem logo, sem esperar o
-  // tempo. Depois do tempo (ou com o relógio já parado) ele ainda testa
-  // ideias à vontade, sem certo nem errado.
+  // No passo de pensar, o aluno testa ideias à vontade, pelos dois lados,
+  // sem certo nem errado; "Voltar à posição" desfaz e "Ver explicação"
+  // segue para a explicação.
   Future<void> _playThink(Move move) async {
     final position = _position();
     if (position == null) return;
     final played = GameRules.play(position, move);
     if (played == null) return;
-    final explainNow = state.thinking;
-    final stepIndex = state.step;
     unawaited(_sounds?.move(played.san));
-    emit(
-      state.copyWith(
-        fen: played.position.fen,
-        lastMove: move,
-        clearThinkLeft: explainNow,
-      ),
-    );
-    if (!explainNow) return;
-    // Uma pausa para o aluno ver o próprio lance antes da explicação.
-    await Future<void>.delayed(replyDelay);
-    if (isClosed || state.step != stepIndex) return;
-    await _explain();
+    emit(state.copyWith(fen: played.position.fen, lastMove: move));
   }
 
   // --- demonstração (T51) -------------------------------------------------
@@ -678,9 +613,9 @@ class LessonCubit extends Cubit<LessonState> {
       part: base.part,
       partNumber: base.partNumber,
       partCount: base.partCount,
-      thinkMinutes: base.thinkMinutes,
       step: base.step,
       reached: base.reached,
+      stepStartedAt: base.stepStartedAt,
       fen: position?.fen ?? step.fen,
       lastMove: last,
       demoMove: count,
@@ -1038,14 +973,8 @@ class LessonCubit extends Cubit<LessonState> {
       fen: step.fen,
       speech: base.texts.step(lessonId, step.id),
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
-      // O tempo de pensar começa ao abrir o passo.
-      thinkStartedAt: step is ThinkStep ? _now() : null,
-      thinkLeft: step is ThinkStep
-          ? (base.thinkMinutes == 0
-                ? step.time
-                : Duration(minutes: base.thinkMinutes))
-          : null,
-      thinkMinutes: base.thinkMinutes,
+      // O cronômetro do passo começa ao abrir.
+      stepStartedAt: _now(),
     );
   }
 
@@ -1053,10 +982,12 @@ class LessonCubit extends Cubit<LessonState> {
   LessonState _restore(LessonState base, LessonCheckpoint saved) {
     final opened = _open(base, saved.step);
     final step = opened.current!;
+    // O cronômetro continua de onde estava, mesmo com o app fechado no meio.
     var restored = opened.copyWith(
       collected: saved.collected,
       turn: saved.turn,
       moves: saved.moves,
+      stepStartedAt: saved.stepStartedAt,
     );
     switch (step) {
       case PlayStep():
@@ -1111,20 +1042,9 @@ class LessonCubit extends Cubit<LessonState> {
               : StepPhase.active,
         );
       case ThinkStep():
-        // O tempo conta desde o começo, mesmo com o app fechado no meio.
-        final startedAt = saved.thinkStartedAt ?? _now();
-        final phase = ThinkTimer.phase(
-          startedAt: startedAt,
-          time: opened.thinkTime,
-          now: _now(),
-        );
-        final left = phase is Thinking ? phase.remaining : null;
         final hints = saved.hintsShown;
         restored = restored.copyWith(
           fen: saved.fen,
-          thinkStartedAt: startedAt,
-          thinkLeft: left,
-          clearThinkLeft: left == null,
           hintsShown: hints,
           speech: hints == 0
               ? base.texts.step(base.lesson!.id, step.id)
@@ -1160,7 +1080,7 @@ class LessonCubit extends Cubit<LessonState> {
         turn: state.turn,
         moves: state.moves,
         part: state.part?.id,
-        thinkStartedAt: state.thinkStartedAt,
+        stepStartedAt: state.stepStartedAt,
         hintsShown: state.hintsShown,
         demoMove: state.demoMove,
       ),

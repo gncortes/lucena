@@ -460,7 +460,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     key: ValueKey(id),
                     create: (_) => LessonCubit(
                       now: context.read<Now>(),
-                      settings: context.read<SettingsRepository>(),
                       sounds: context.read<GameSounds>(),
                       haptics: context.read<GameHaptics>(),
                       lessons: context.read<LessonRepository>(),
@@ -576,7 +575,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         key: ValueKey('steps.$id.$part'),
                         create: (_) => LessonCubit(
                           now: context.read<Now>(),
-                          settings: context.read<SettingsRepository>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
                           source: EndgameLessonSource(
