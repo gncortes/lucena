@@ -28,6 +28,10 @@ ideia que nenhuma parte ensinava.
    `pesquisa.md`). Uma aula tem ao menos uma partida real quando o tema aparece na prática de mestres (quase
    todos aparecem); posição própria é para o que as fontes não cobrem. A história ("Sobre este final") cita
    quem achou a posição e em que partida o tema decidiu, cada fato com a fonte.
+   **Lance de partida sempre com o número** (pedido do Gabriel, T60): ao comentar uma partida, o lance jogado
+   e as variantes saem numerados como nos livros: "Capablanca jogou 39.f5?, e depois de 39...gxf5 40.h5...",
+   "41.h6!! ganha", "41.g6? hxg6 42.h6". Nunca "jogou f5" solto. A numeração sai do PGN do `url`.
+   **O nome da partida final é "desafio prático"**: nunca "partida contra a máquina" nas falas.
 5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
    vaga à mais clara e nenhuma dá o lance. As setas e casas mostram o que a fala diz. pt e en dizem o mesmo.

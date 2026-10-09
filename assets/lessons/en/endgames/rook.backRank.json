@@ -29,7 +29,7 @@
   "step.t_knight.hint1": "Think about where the black rook would need to go to threaten mate on the first rank, and how much room it has for that.",
   "step.t_trick": "The black rook has checked on g2. Your king has two squares. Which one draws, and what happens on the other?",
   "step.t_trick.hint1": "After your move, see whether the black king can get in front of the pawn.",
-  "step.finish": "Now against the machine: wait with the rook on the first rank and, when the check comes, go to the corner.",
+  "step.finish": "Now the practical challenge: wait with the rook on the first rank and, when the check comes, go to the corner.",
   "ex.e10": "White to move and draw. A bishop's pawn on the fourth rank, the black king beside it, and your rook on the first rank. Can you wait, as against the knight's pawn?",
   "ex.e10.hint": "Count how many moves the black king needs to enter the third rank, and remember what happens against a bishop's pawn once it does.",
   "ex.e10.solution": "Rc3, and after f3, Rc8; when the king goes to g3, Rg8+. It is the Philidor defence, set up from the first rank. Waiting with the rook on the first rank would lose to the king's advance.",
@@ -53,5 +53,5 @@
   "key.bishop": "With a bishop's pawn the same defence loses: the attacking rook has one more file to go round. From Wikipedia, with colours reversed.",
   "key.seventh": "Pawn on the seventh and king beside it: the rook defends from the first rank with only moves. From Wikipedia (quoting Emms), with colours reversed.",
   "history": "The passive defence has no illustrious name and no date: it is what remains when Philidor's was not set up in time. The manuals treat it as a rule of thumb. Grandmaster Hovhannes Gabuzyan sums it up like this: against pawns on the c, d, e and f files you need to know the Philidor defence; against those on the a, b, g and h files the back rank is enough. Wikipedia, drawing on Averbakh and Kopaev, adds the detail that saves half a point: if the attacking king has not yet reached the sixth rank, there is still time to leave the passive defence with the rook, to the third rank or to the far end, against any pawn.",
-  "practice": "Against the machine: a knight's pawn, your rook on the first rank and the king in front of the pawn. Wait, and on the check go to the corner. The goal is to draw."
+  "practice": "Practical challenge: a knight's pawn, your rook on the first rank and the king in front of the pawn. Wait, and on the check go to the corner. The goal is to draw."
 }

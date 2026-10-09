@@ -8,7 +8,7 @@
   "part.fromStart.title": "From the start to the corner",
   "part.fromStart.summary": "The wall that drives the king to the edge and the knight that keeps it out of the wrong corner.",
   "part.fullRules.title": "Dangers and the whole mate",
-  "part.fullRules.summary": "Stalemate, the fifty-move rule and the whole mate against the machine.",
+  "part.fullRules.summary": "Stalemate, the fifty-move rule and the whole mate in the practical challenge.",
   "step.t_start": "The black king is in the middle of the eighth rank and your pieces are still at home. Before moving, make the plan: which corner must the black king go to, and in what stages?",
   "step.t_start.hint1": "The mate only exists in the corner of the bishop's colour. First the edge, then the right corner, then the net.",
   "step.intro": "You already know the W manoeuvre, and you know how to drive the black king from the middle of the board to the edge. Today we put it all into one plan, from any position: first the edge, then the corner of the bishop's colour, then the mate. And I will show you a second road, which many find easier to remember: Delétang's triangles.",

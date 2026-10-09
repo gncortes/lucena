@@ -8,7 +8,7 @@
   "part.fromStart.title": "Do começo ao canto",
   "part.fromStart.summary": "A parede que leva o rei à borda e o cavalo que o tira do canto errado.",
   "part.fullRules.title": "Perigos e o mate inteiro",
-  "part.fullRules.summary": "Afogamento, a regra dos cinquenta lances e o mate inteiro contra a máquina.",
+  "part.fullRules.summary": "Afogamento, a regra dos cinquenta lances e o mate inteiro no desafio prático.",
   "step.t_start": "O rei preto está no centro da oitava e as suas peças ainda estão em casa. Antes de mexer, faça o plano: para qual canto o rei preto precisa ir, e em que etapas?",
   "step.t_start.hint1": "O mate só existe no canto da cor do bispo. Primeiro a borda, depois o canto certo, por fim a rede.",
   "step.intro": "Você já conhece a manobra em W e já sabe levar o rei preto do meio do tabuleiro até a borda. Hoje vamos juntar tudo num plano só, de qualquer posição: primeiro a borda, depois o canto da cor do bispo, depois o mate. E vou mostrar um segundo caminho, que muitos acham mais fácil de lembrar: os triângulos de Delétang.",

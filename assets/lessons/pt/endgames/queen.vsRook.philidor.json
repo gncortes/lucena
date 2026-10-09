@@ -68,7 +68,7 @@
   "step.squeeze": "Cuidado com o aperto. Aqui a dama foi a a6 e o rei a b6, e a torre dá xeque em c6. Se o rei toma, o rei preto fica afogado; se a dama toma, também. Se o rei foge, os xeques seguem. Empate. Dama colada no rei encurralado cheira a afogamento.",
   "step.false": "Agora o falso Philidor. Parece igual, mas o nosso rei está em a6, não em c6. A torre ganha a casa d7, longe do nosso rei, e c7 fica sem vigia. Ainda ganha, mas leva mais que o dobro dos lances. O rei certo fica em c6, a um salto de cavalo.",
   "step.recap": "Para levar: um, Philidor é rei em c6, dama em a5, rei e torre pretos na borda; com as pretas jogando, a torre cai. Dois, se a vez é nossa, o triângulo e5, a1, a5. Três, torre solta cai com xeques até o garfo, começando em e5, menos com a torre na coluna e.",
-  "step.finish": "Agora contra a máquina, que defende bem. É a posição de Philidor com você jogando: passe a vez, veja para onde a torre foge e ache o garfo. Depois de ganhar a torre, dê o mate de rei e dama.",
+  "step.finish": "Agora o desafio prático, e a máquina defende bem. É a posição de Philidor com você jogando: passe a vez, veja para onde a torre foge e ache o garfo. Depois de ganhar a torre, dê o mate de rei e dama.",
   "ex.e02": "Brancas jogam. A torre fugiu para b2, longe do rei. Ganhe a torre.",
   "ex.e02.hint": "Procure o xeque que, da mesma casa, também olhe para b2.",
   "ex.e02.solution": "De5+ e, para onde o rei for, Dxb2 (Dd8+ também ganha a torre, pela última fileira). Em e5 a dama dá xeque e ataca b2 pela grande diagonal ao mesmo tempo: garfo de um lance só.",
