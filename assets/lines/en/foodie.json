@@ -784,14 +784,14 @@
       "category": "draw",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Stalemate? All that food and nobody eats."
+      "text": "A draw? All that food and nobody eats."
     },
     {
       "id": "foodie.draw.4",
       "category": "draw",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Going back for seconds again? Me too."
+      "text": "Nobody cleaned their plate. Next round, then."
     },
     {
       "id": "foodie.draw.5",
