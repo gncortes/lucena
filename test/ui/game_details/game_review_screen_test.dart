@@ -123,6 +123,10 @@ void main() {
       'acompanha', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    await tester.tap(find.byKey(GameDetailsKeys.last));
+    await tester.pumpAndSettle();
     expect(cubit.state.shownIndex, 2);
 
     await tester.tap(find.byKey(GameDetailsKeys.first));

@@ -130,7 +130,12 @@ void main() {
   testWidgets('tocar num lance mostra a posição depois dele', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
-    // Abre no último lance: o mate.
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    expect(boardFen(tester), cubit.state.start!.fen);
+
+    cubit.last();
+    await tester.pumpAndSettle();
     expect(boardFen(tester), cubit.state.moves.last.position.fen);
 
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));

@@ -127,7 +127,8 @@ class GameDetailsState {
     return null;
   }
 
-  int get shownIndex => selected ?? moves.length - 1;
+  /// A análise abre na posição de início, antes do primeiro lance.
+  int get shownIndex => selected ?? -1;
 
   /// A posição que o tabuleiro mostra e o lance em destaque nela.
   Position? get shownPosition =>
