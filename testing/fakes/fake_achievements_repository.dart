@@ -17,18 +17,25 @@ class FakeAchievementsRepository implements AchievementsRepository {
   ];
 
   final List<Achievement> achievements;
-  final unlockedAt = <String, DateTime>{};
+  final unlockedById = <String, UnlockedAchievement>{};
+
+  /// Os instantes, pelo id.
+  Map<String, DateTime> get unlockedAt => {
+    for (final entry in unlockedById.entries) entry.key: entry.value.at,
+  };
 
   @override
   Future<List<Achievement>> all() async => achievements;
 
   @override
-  Future<Map<String, DateTime>> unlocked() async => {...unlockedAt};
+  Future<Map<String, UnlockedAchievement>> unlocked() async => {
+    ...unlockedById,
+  };
 
   @override
-  Future<void> unlock(Iterable<String> ids, DateTime at) async {
-    for (final id in ids) {
-      unlockedAt.putIfAbsent(id, () => at);
+  Future<void> unlock(Iterable<UnlockedAchievement> achievements) async {
+    for (final achievement in achievements) {
+      unlockedById.putIfAbsent(achievement.id, () => achievement);
     }
   }
 }

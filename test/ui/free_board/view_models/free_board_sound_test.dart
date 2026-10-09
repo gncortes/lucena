@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_sound.dart';
+import 'package:lucena/domain/models/haptic_event.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/sound/game_sounds.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
@@ -19,17 +20,19 @@ void main() {
   late FakeNow now;
   late FakeSettingsRepository settings;
   late FakeSoundRepository sound;
+  late FakeHapticsRepository haptics;
 
   setUp(() {
     now = FakeNow(DateTime.utc(2026, 1, 1, 12));
     settings = FakeSettingsRepository();
     sound = FakeSoundRepository();
+    haptics = FakeHapticsRepository();
   });
 
   FreeBoardCubit build({Position? start, ClockConfig? clock}) {
     final cubit = FreeBoardCubit(
       now: now,
-      haptics: FakeHapticsRepository(),
+      haptics: haptics,
       settings: settings,
       games: FakeOngoingGameRepository(),
       opponent: FakeOpponentRepository(now: now),
@@ -43,6 +46,29 @@ void main() {
   }
 
   Future<void> settle() => Future<void>.delayed(Duration.zero);
+
+  test('cada lance vibra: lance, captura e xeque', () async {
+    final cubit = build();
+    for (final uci in ['e2e4', 'd7d5', 'e4d5', 'd8d5', 'f1b5']) {
+      cubit.play(NormalMove.fromUci(uci));
+    }
+    await settle();
+    expect(haptics.events, [
+      HapticEvent.move,
+      HapticEvent.move,
+      HapticEvent.capture,
+      HapticEvent.capture,
+      HapticEvent.check,
+    ]);
+  });
+
+  test('com a vibração desligada, nenhum lance vibra', () async {
+    settings.settings = const AppSettings(vibration: false);
+    final cubit = build();
+    cubit.play(NormalMove.fromUci('e2e4'));
+    await settle();
+    expect(haptics.events, isEmpty);
+  });
 
   test('cada lance faz o seu som: lance, captura e xeque', () async {
     final cubit = build();

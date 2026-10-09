@@ -5,11 +5,13 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
-import 'package:lucena/ui/free_board/widgets/versus_intro.dart';
+import 'package:lucena/ui/core/widgets/versus_intro.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -133,8 +135,8 @@ void main() {
     expect(games.snapshot, isNull);
   });
 
-  testWidgets('Maratona: perder encerra a tentativa; o painel oferece tentar '
-      'de novo, do começo e com o tempo cheio', (tester) async {
+  testWidgets('Maratona: perder encerra a tentativa; a conclusão oferece '
+      'tentar de novo, do começo e com o tempo cheio', (tester) async {
     final now = FakeNow(DateTime.utc(2026, 10, 4, 12));
     await tester.pumpWidget(
       LucenaApp(
@@ -177,15 +179,18 @@ void main() {
     expect(find.byKey(FreeBoardKeys.marathonBanner), findsNothing);
     expect(game().state.clock!.running, isNotNull);
 
-    // 20 s depois, a etapa é perdida: fim da Maratona, com o painel.
+    // 20 s depois, a etapa é perdida: a conclusão da etapa perdida abre no
+    // lugar da partida.
     now.advance(const Duration(seconds: 20));
     game().resign();
+    await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
-    expect(find.byKey(FreeBoardKeys.marathonLost), findsOneWidget);
-    expect(find.text('End of the Marathon'), findsOneWidget);
+    expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    expect(find.byKey(ConclusionKeys.title), findsOneWidget);
+    expect(find.textContaining('Stopped at stage 1 of'), findsOneWidget);
 
     // Tentar de novo: uma tentativa nova, da primeira etapa, tempo cheio.
-    await tester.tap(find.byKey(FreeBoardKeys.marathonRetry));
+    await tester.tap(find.byKey(ConclusionKeys.action(ConclusionAction.retry)));
     await tester.pumpAndSettle();
     final state = game().state;
     expect(state.mode.speedrunStage, 0);

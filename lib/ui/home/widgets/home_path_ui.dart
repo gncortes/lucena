@@ -12,7 +12,7 @@ import '../../core/l10n/l10n.dart';
 extension HomePathUi on HomePath {
   IconData get icon => switch (this) {
     HomePath.learn => Icons.school_outlined,
-    HomePath.journey => Icons.flag_rounded,
+    HomePath.journey => Icons.hiking_rounded,
     HomePath.endgames => Icons.auto_stories_outlined,
     HomePath.speedrun => Icons.timer_outlined,
     HomePath.train => Icons.grid_view_rounded,

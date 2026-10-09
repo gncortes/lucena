@@ -11,9 +11,11 @@ import '../testing/e2e_dependencies.dart';
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
 import 'robots/character_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_setup_robot.dart';
 import 'robots/home_robot.dart';
+import 'robots/settings_robot.dart';
 
 // Rei e torre contra rei, o rei preto longe: a torre vai e volta em h1 e h2.
 const _rookShuffle = 'k7/8/8/8/8/8/8/4K2R w - - 0 1';
@@ -97,11 +99,13 @@ void main() {
     final character = CharacterRobot($);
     await app.open(systemLocale: _english);
     await HomeRobot($).openSettings();
+    await SettingsRobot($).openGame();
     await $(SettingsKeys.characterTalkSwitch).scrollTo().tap();
     await $.pumpAndSettle();
 
     await app.restart();
     await HomeRobot($).openSettings();
+    await SettingsRobot($).openGame();
     await $(SettingsKeys.characterTalkSwitch).scrollTo();
     expect(
       $.tester
@@ -109,8 +113,7 @@ void main() {
           .value,
       isFalse,
     );
-    await $(BackButton).tap();
-    await $.pumpAndSettle();
+    await SettingsRobot($).backToHome();
 
     await openMagician($);
     await shuffle($, 0);
@@ -242,7 +245,9 @@ void main() {
       await shuffle($, move);
     }
     await $(FreeBoardKeys.drawButton).tap();
-    await character.expectLine('drawAccepted');
-    await $(FreeBoardKeys.endPanel).waitUntilVisible();
+    // Aceito, a partida acaba e a conclusão abre na hora (T51): o
+    // comentário do personagem fica nela.
+    await ConclusionRobot($)
+        .expectEnd(title: 'Draw', reason: 'Draw by agreement');
   });
 }

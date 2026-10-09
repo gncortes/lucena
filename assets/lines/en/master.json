@@ -546,6 +546,27 @@
       "audience": "student"
     },
     {
+      "id": "master.bigDisadvantage.12",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A good teacher also tests the student. Would you take a draw here? Think."
+    },
+    {
+      "id": "master.bigDisadvantage.13",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I propose a truce: a draw, and I pretend I didn't see your technique."
+    },
+    {
+      "id": "master.bigDisadvantage.14",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "In school I said: won positions must be converted. Let's see if you listened."
+    },
+    {
       "id": "master.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -1751,6 +1772,76 @@
       "emotion": "focused",
       "text": "I decline. At school I taught you: a living position is played out.",
       "audience": "student"
+    },
+    {
+      "id": "master.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "You had the mate. Breathe and look again: where is my king?"
+    },
+    {
+      "id": "master.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "In school I said: the mate does not wait. It seems it waited too long."
+    },
+    {
+      "id": "master.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "It slipped away. Now this is a draw, and a good student would see it."
+    },
+    {
+      "id": "master.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "I propose a draw. I believe you will not find that mate again."
+    },
+    {
+      "id": "master.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I have a class soon. Shall we draw so I arrive in time?"
+    },
+    {
+      "id": "master.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I knew it was a draw. You did not accept, wasted my time, but fine."
+    },
+    {
+      "id": "master.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw, as I said. Today's lesson: accept the truth of the position."
+    },
+    {
+      "id": "master.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I warned you. But fighting to the end is also learned."
+    },
+    {
+      "id": "master.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "It was a draw since the mate slipped. Next time, it will not."
+    },
+    {
+      "id": "master.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw. Note it down: mate lost, half a point found."
     }
   ]
 }

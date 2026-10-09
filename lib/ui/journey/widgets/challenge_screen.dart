@@ -14,6 +14,7 @@ import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
@@ -195,7 +196,7 @@ class _Chip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: background ?? colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppShape.full),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

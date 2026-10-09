@@ -3,11 +3,11 @@
   "level": 1400,
   "name": "Percival",
   "tagline": {
-    "pt": "Bronze no Aberto do Bairro e não deixa ninguém esquecer.",
+    "pt": "Nunca perdeu. No máximo, estava ganho.",
     "en": "Bronze at the Neighborhood Open, and he'll never let you forget it."
   },
   "personality": {
-    "pt": "Percival usa óculos, paletó de tweed e uma medalha no peito: bronze no Aberto do Bairro, que ele cita a cada lance. Joga de braços cruzados e desdenha de tudo o que o adversário faz, mesmo quando o lance é bom. Ganhando, fica insuportável de tão satisfeito e oferece autógrafos. Perdendo, culpa a luz, os óculos, o relógio ou o tabuleiro torto, nunca a si mesmo. Adora dizer que foi de propósito e que você não entenderia.",
+    "pt": "Percival usa óculos, paletó de tweed e uma medalha no peito: bronze no Aberto do Bairro, que ele cita a cada lance. Joga de braços cruzados e desdenha de tudo o que o adversário faz, mesmo quando o lance é bom. Ganhando, fica insuportável de tão satisfeito e oferece autógrafos. Perdendo, nega até o fim: jura que estava ganho o tempo todo, que o computador vai provar depois, e culpa a luz, os óculos, o relógio ou o tabuleiro torto, nunca a si mesmo. Adora dizer que foi de propósito e que você não entenderia.",
     "en": "Percival wears glasses, a tweed jacket and a medal on his chest: bronze at the Neighborhood Open, which he mentions every other move. He plays with his arms crossed and sniffs at everything his opponent does, even good moves. When winning, he gets unbearably smug and offers autographs. When losing, he blames the lighting, his glasses, the clock or a crooked board, never himself. He loves claiming it was on purpose and that you wouldn't understand."
   },
   "traits": [
@@ -17,7 +17,7 @@
     "excuse-maker",
     "self-important",
     "medal-obsessed",
-    "comic"
+    "in-denial"
   ],
   "avatar": "assets/characters/snob/avatar.png"
 }

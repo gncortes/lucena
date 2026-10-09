@@ -213,6 +213,27 @@
       "text": "It's not over! I've seen miracles at the park, you know."
     },
     {
+      "id": "grandpa.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Son, in the park we'd call this a draw and stay friends."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Draw with me, and when I'm better I'll accept yours. An old man's word."
+    },
+    {
+      "id": "grandpa.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Respect your elders, kid. Mating an old man is rude. Draw?"
+    },
+    {
       "id": "grandpa.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -855,6 +876,76 @@
       "intensity": 3,
       "emotion": "playful",
       "text": "Declined! Grandpa's still got fire left for this endgame."
+    },
+    {
+      "id": "grandpa.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Oh, kid, you had the mate in hand and dropped it. Just like my grandson."
+    },
+    {
+      "id": "grandpa.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Easy... there is time. I have it, at least. Not sure about you."
+    },
+    {
+      "id": "grandpa.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "In the park this is already a draw, son. Everybody knows."
+    },
+    {
+      "id": "grandpa.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "It got away, huh? Let us draw already, my soap opera is starting."
+    },
+    {
+      "id": "grandpa.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "You will not pull off this mate. Take the old man's draw."
+    },
+    {
+      "id": "grandpa.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I knew it was a draw. You did not take it, I missed my soap, but fine."
+    },
+    {
+      "id": "grandpa.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Did I not say so? Old men do not miss these things. A draw."
+    },
+    {
+      "id": "grandpa.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A draw, as I said way back. Experience, son, experience."
+    },
+    {
+      "id": "grandpa.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "See? You just had to accept. We would have gone for coffee."
+    },
+    {
+      "id": "grandpa.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A draw. I warned you, but the young never listen to the old."
     }
   ]
 }

@@ -21,6 +21,7 @@ import '../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/test_app.dart';
 
 /// A tela de um speedrun de final: a trilha dos adversários e o histórico.
@@ -60,8 +61,12 @@ void main() {
     ),
   );
 
-  Future<void> pump(WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1080, 4800);
+  Future<void> pump(
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+    Size size = const Size(1080, 4800),
+  }) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     await cubit.load(speedrunId: id);
@@ -73,6 +78,7 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
         settingsCubit: settings,
         child: BlocProvider.value(value: cubit, child: const SpeedrunScreen()),
       ),
@@ -173,5 +179,32 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(SpeedrunKeys.start), findsOneWidget);
+  });
+
+  testWidgets('histórico em árabe, com as fontes de verdade: nada estoura', (
+    tester,
+  ) async {
+    await Goldens.loadFonts();
+    await cubit.load(speedrunId: id);
+    final total = cubit.state.selected!.speedrun.stages.length;
+    final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
+    await win(first, 0, 20);
+    now.advance(const Duration(minutes: 5));
+    await cubit.load(speedrunId: id);
+    now.advance(const Duration(minutes: 5));
+    final (_, second) = (await cubit.startWith(SpeedrunPaces.standard))!;
+    for (var stage = 0; stage < total; stage++) {
+      now.advance(const Duration(minutes: 1));
+      await win(second, stage, 10);
+    }
+
+    await pump(
+      tester,
+      locale: const Locale('ar'),
+      size: const Size(1080, 6000),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(SpeedrunKeys.run(1)), findsOneWidget);
   });
 }

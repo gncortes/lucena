@@ -26,6 +26,8 @@ import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/game_sound.dart';
 import 'free_board_state.dart';
 import 'game_reporter.dart';
+import '../../../domain/models/haptic_event.dart';
+import '../../core/sound/game_haptics.dart';
 
 export 'free_board_state.dart';
 export 'game_reporter.dart';
@@ -266,9 +268,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     // A bandeira vale antes do lance: tempo esgotado não joga.
     tick();
     if (!_active || state.end != null) return;
+    final mover = state.position.turn;
     final played = GameRules.play(state.position, move);
     if (played == null) return;
     unawaited(_sounds?.move(played.san));
+    // Só o lance do jogador vibra (no tabuleiro a dois, os dois lados).
+    final player = state.mode.userSide;
+    if (player == null || player == mover) unawaited(_feel.move(played.san));
     final now = _now();
     final turnStartedAt = state.turnStartedAt;
     var next = state.copyWith(
@@ -475,6 +481,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (_recorded || positionId == null || outcome == null) return;
     if (fulfilled == null) return;
     _recorded = true;
+    if (fulfilled) unawaited(_feel.play(HapticEvent.success));
     final mode = state.mode;
     final clock = state.clock;
     final user = mode.userSide ?? Side.white;
@@ -523,6 +530,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       // A partida recomeçou enquanto a conta era feita: o resumo é da outra.
       if (isClosed || state.startedAt != startedAt) return;
       emit(state.copyWith(report: report));
+      if (report.achievements.isNotEmpty) {
+        unawaited(_feel.play(HapticEvent.celebrate));
+      }
     } on Object {
       // Sem o resumo a partida continua valendo: o histórico já foi gravado.
     }
@@ -535,7 +545,13 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     // Os lances se alternam a partir de quem joga na posição inicial.
     final plies = state.ucis.length;
     final sideMoves = state.start.turn == side ? (plies + 1) ~/ 2 : plies ~/ 2;
-    final left = ClockEngine.remaining(clock, side, _now());
+    // Perdeu no tempo: o relógio inteiro foi gasto (o que sobrava na leitura
+    // era só o atraso até a queda ser vista).
+    final flagged =
+        state.end?.reason == GameEndReason.timeout && state.end?.winner != side;
+    final left = flagged
+        ? Duration.zero
+        : ClockEngine.remaining(clock, side, _now());
     final spent = config.initial + config.increment * sideMoves - left;
     return spent.isNegative ? Duration.zero : spent;
   }
@@ -741,12 +757,10 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (!_lowTimeWarned.add(running)) return;
     final playerSide = state.playerSide;
     if (playerSide != null && playerSide != running) return;
-    unawaited(_vibrateIfEnabled());
+    unawaited(_feel.play(HapticEvent.warning));
     unawaited(_sounds?.play(GameSound.lowTime));
   }
 
-  Future<void> _vibrateIfEnabled() async {
-    final settings = await _settings.load();
-    if (settings.clock.lowTimeVibration) await _haptics.lowTime();
-  }
+  // A vibração, respeitando a preferência.
+  late final _feel = GameHaptics(_settings, _haptics);
 }

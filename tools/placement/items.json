@@ -1,0 +1,8162 @@
+{
+ "items": [
+  {
+   "id": "own.rules.rook.1",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peça sozinha no canto",
+   "fen": "8/8/8/8/8/8/8/R7 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "a2",
+    "a3",
+    "a4",
+    "a5",
+    "a6",
+    "a7",
+    "a8",
+    "b1",
+    "c1",
+    "d1",
+    "e1",
+    "f1",
+    "g1",
+    "h1"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em a1"
+  },
+  {
+   "id": "own.rules.rook.2",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peça sozinha no centro",
+   "fen": "8/8/8/8/3R4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "a4",
+    "b4",
+    "c4",
+    "d1",
+    "d2",
+    "d3",
+    "d5",
+    "d6",
+    "d7",
+    "d8",
+    "e4",
+    "f4",
+    "g4",
+    "h4"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.rook.3",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: peça sozinha + 1 bloqueio próprio",
+   "fen": "8/8/2P5/8/8/8/8/2R5 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "a1",
+    "b1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "d1",
+    "e1",
+    "f1",
+    "g1",
+    "h1"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em c1"
+  },
+  {
+   "id": "own.rules.rook.4",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "8/4p3/8/8/1P2R3/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "c4",
+    "d4",
+    "e1",
+    "e2",
+    "e3",
+    "e5",
+    "e6",
+    "e7",
+    "f4",
+    "g4",
+    "h4"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em e4"
+  },
+  {
+   "id": "own.rules.rook.5",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "4B2R/8/8/8/8/7n/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "f8",
+    "g8",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "h7"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em h8"
+  },
+  {
+   "id": "own.rules.rook.6",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + duas capturas e bloqueio",
+   "fen": "8/8/1p6/8/8/8/1R3b2/1N6 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "a2",
+    "b3",
+    "b4",
+    "b5",
+    "b6",
+    "c2",
+    "d2",
+    "e2",
+    "f2"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em b2"
+  },
+  {
+   "id": "own.rules.rook.7",
+   "node": "rules.rook",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + captura e dois bloqueios",
+   "fen": "8/6P1/8/2P3R1/8/8/6p1/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "d5",
+    "e5",
+    "f5",
+    "g2",
+    "g3",
+    "g4",
+    "g6",
+    "h5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em g5"
+  },
+  {
+   "id": "own.rules.bishop.1",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peça sozinha na borda",
+   "fen": "8/8/8/8/8/8/8/2B5 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "a3",
+    "b2",
+    "d2",
+    "e3",
+    "f4",
+    "g5",
+    "h6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em c1"
+  },
+  {
+   "id": "own.rules.bishop.2",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: peça sozinha no centro (quatro diagonais)",
+   "fen": "8/8/8/8/3B4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "a1",
+    "a7",
+    "b2",
+    "b6",
+    "c3",
+    "c5",
+    "e3",
+    "e5",
+    "f2",
+    "f6",
+    "g1",
+    "g7",
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.bishop.3",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: + 1 bloqueio próprio",
+   "fen": "8/8/8/8/8/8/4P3/5B2 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "g2",
+    "h3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em f1"
+  },
+  {
+   "id": "own.rules.bishop.4",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "1r6/8/8/4B3/8/6P1/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "a1",
+    "b2",
+    "b8",
+    "c3",
+    "c7",
+    "d4",
+    "d6",
+    "f4",
+    "f6",
+    "g7",
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em e5"
+  },
+  {
+   "id": "own.rules.bishop.5",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "8/8/8/3n4/8/1B6/P7/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "a4",
+    "c2",
+    "c4",
+    "d1",
+    "d5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em b3"
+  },
+  {
+   "id": "own.rules.bishop.6",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + duas capturas e bloqueio",
+   "fen": "5r1N/6B1/8/4p3/8/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "e5",
+    "f6",
+    "f8",
+    "h6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em g7"
+  },
+  {
+   "id": "own.rules.bishop.7",
+   "node": "rules.bishop",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + captura e dois bloqueios",
+   "fen": "8/8/p7/3P4/2B5/1P6/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "a6",
+    "b5",
+    "d3",
+    "e2",
+    "f1"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em c4"
+  },
+  {
+   "id": "own.rules.queen.1",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: peça sozinha na borda",
+   "fen": "8/8/8/8/8/8/8/3Q4 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a1",
+    "a4",
+    "b1",
+    "b3",
+    "c1",
+    "c2",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "d7",
+    "d8",
+    "e1",
+    "e2",
+    "f1",
+    "f3",
+    "g1",
+    "g4",
+    "h1",
+    "h5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em d1"
+  },
+  {
+   "id": "own.rules.queen.2",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: peça sozinha no centro",
+   "fen": "8/8/8/8/3Q4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a1",
+    "a4",
+    "a7",
+    "b2",
+    "b4",
+    "b6",
+    "c3",
+    "c4",
+    "c5",
+    "d1",
+    "d2",
+    "d3",
+    "d5",
+    "d6",
+    "d7",
+    "d8",
+    "e3",
+    "e4",
+    "e5",
+    "f2",
+    "f4",
+    "f6",
+    "g1",
+    "g4",
+    "g7",
+    "h4",
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.queen.3",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: + 1 bloqueio próprio",
+   "fen": "Q7/8/8/P7/8/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a6",
+    "a7",
+    "b7",
+    "b8",
+    "c6",
+    "c8",
+    "d5",
+    "d8",
+    "e4",
+    "e8",
+    "f3",
+    "f8",
+    "g2",
+    "g8",
+    "h1",
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em a8"
+  },
+  {
+   "id": "own.rules.queen.4",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "8/4p3/8/8/8/4Q3/8/2B5 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a3",
+    "a7",
+    "b3",
+    "b6",
+    "c3",
+    "c5",
+    "d2",
+    "d3",
+    "d4",
+    "e1",
+    "e2",
+    "e4",
+    "e5",
+    "e6",
+    "e7",
+    "f2",
+    "f3",
+    "f4",
+    "g1",
+    "g3",
+    "g5",
+    "h3",
+    "h6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em e3"
+  },
+  {
+   "id": "own.rules.queen.5",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + duas capturas e bloqueio",
+   "fen": "2b5/8/8/5Q1n/8/8/5P2/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a5",
+    "b1",
+    "b5",
+    "c2",
+    "c5",
+    "c8",
+    "d3",
+    "d5",
+    "d7",
+    "e4",
+    "e5",
+    "e6",
+    "f3",
+    "f4",
+    "f6",
+    "f7",
+    "f8",
+    "g4",
+    "g5",
+    "g6",
+    "h3",
+    "h5",
+    "h7"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em f5"
+  },
+  {
+   "id": "own.rules.queen.6",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: + captura e dois bloqueios",
+   "fen": "8/8/1Q1P4/8/1P6/4p3/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a5",
+    "a6",
+    "a7",
+    "b5",
+    "b7",
+    "b8",
+    "c5",
+    "c6",
+    "c7",
+    "d4",
+    "d8",
+    "e3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em b6"
+  },
+  {
+   "id": "own.rules.queen.7",
+   "node": "rules.queen",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: + duas capturas e dois bloqueios",
+   "fen": "8/1b6/6p1/8/4P3/8/6Q1/7N w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a2",
+    "b2",
+    "c2",
+    "d2",
+    "e2",
+    "f1",
+    "f2",
+    "f3",
+    "g1",
+    "g3",
+    "g4",
+    "g5",
+    "g6",
+    "h2",
+    "h3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em g2"
+  },
+  {
+   "id": "own.rules.king.1",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peça sozinha na borda",
+   "fen": "8/8/8/8/8/8/8/4K3 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "d1",
+    "d2",
+    "e2",
+    "f1",
+    "f2"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em e1"
+  },
+  {
+   "id": "own.rules.king.2",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peça sozinha no centro",
+   "fen": "8/8/8/8/3K4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "c3",
+    "c4",
+    "c5",
+    "d3",
+    "d5",
+    "e3",
+    "e4",
+    "e5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.king.3",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: + 1 bloqueio próprio",
+   "fen": "8/8/8/8/8/8/6P1/7K w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "g1",
+    "h2"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em h1"
+  },
+  {
+   "id": "own.rules.king.4",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: + captura (peão sem defesa)",
+   "fen": "8/8/3p4/4K3/8/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "d4",
+    "d5",
+    "d6",
+    "e4",
+    "e6",
+    "f4",
+    "f5",
+    "f6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em e5"
+  },
+  {
+   "id": "own.rules.king.5",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 700,
+   "difficultySource": "hand: casas atacadas pela torre preta (+250)",
+   "fen": "8/8/8/8/r7/2K5/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "b2",
+    "b3",
+    "c2",
+    "d2",
+    "d3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em c3"
+  },
+  {
+   "id": "own.rules.king.6",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 700,
+   "difficultySource": "hand: casas atacadas pelo bispo preto (+250)",
+   "fen": "8/8/4PK2/8/3b4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "e7",
+    "f5",
+    "f7",
+    "g5",
+    "g6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em f6"
+  },
+  {
+   "id": "own.rules.king.7",
+   "node": "rules.king",
+   "type": "squares",
+   "difficulty": 750,
+   "difficultySource": "hand: casas atacadas pelo cavalo e captura",
+   "fen": "8/8/8/2n5/8/p7/1K6/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "a1",
+    "a2",
+    "a3",
+    "b1",
+    "c1",
+    "c2",
+    "c3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em b2"
+  },
+  {
+   "id": "own.rules.knight.1",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: peça sozinha na borda (cavalo: +50)",
+   "fen": "8/8/8/8/8/8/8/1N6 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "a3",
+    "c3",
+    "d2"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em b1"
+  },
+  {
+   "id": "own.rules.knight.2",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: peça sozinha no centro, oito casas",
+   "fen": "8/8/8/8/3N4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "b3",
+    "b5",
+    "c2",
+    "c6",
+    "e2",
+    "e6",
+    "f3",
+    "f5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.knight.3",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: + 1 bloqueio próprio",
+   "fen": "8/8/8/8/8/8/4P3/6N1 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "f3",
+    "h3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em g1"
+  },
+  {
+   "id": "own.rules.knight.4",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: peça sozinha no canto, duas casas",
+   "fen": "7N/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "f7",
+    "g6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em h8"
+  },
+  {
+   "id": "own.rules.knight.5",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: + captura e bloqueio",
+   "fen": "8/5p2/8/4N3/8/3P4/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "c4",
+    "c6",
+    "d7",
+    "f3",
+    "f7",
+    "g4",
+    "g6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em e5"
+  },
+  {
+   "id": "own.rules.knight.6",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: cercado (o cavalo pula)",
+   "fen": "8/8/8/8/2P5/3P1p2/3NP3/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "b1",
+    "b3",
+    "e4",
+    "f1",
+    "f3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em d2"
+  },
+  {
+   "id": "own.rules.knight.7",
+   "node": "rules.knight",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: + duas capturas e bloqueio",
+   "fen": "8/p3p3/2N5/8/1P6/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "a5",
+    "a7",
+    "b8",
+    "d4",
+    "d8",
+    "e5",
+    "e7"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em c6"
+  },
+  {
+   "id": "own.rules.pawn.1",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: peão na casa inicial: um ou dois passos",
+   "fen": "8/8/8/8/8/8/4P3/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "e3",
+    "e4"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em e2"
+  },
+  {
+   "id": "own.rules.pawn.2",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: + captura na diagonal",
+   "fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "d5",
+    "e5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em e4"
+  },
+  {
+   "id": "own.rules.pawn.3",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: bloqueado na segunda casa",
+   "fen": "8/8/8/8/4p3/8/4P3/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "e3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em e2"
+  },
+  {
+   "id": "own.rules.pawn.4",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: bloqueado, só captura",
+   "fen": "8/8/8/8/8/2pNp3/3P4/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "c3",
+    "e3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em d2"
+  },
+  {
+   "id": "own.rules.pawn.5",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: promoção, com captura",
+   "fen": "5r2/4P3/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "e8",
+    "f8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em e7"
+  },
+  {
+   "id": "own.rules.pawn.6",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: peão da borda: captura de um lado só",
+   "fen": "8/8/8/8/8/1p6/P7/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "a3",
+    "a4",
+    "b3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em a2"
+  },
+  {
+   "id": "own.rules.pawn.7",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: bloqueado; captura de um lado",
+   "fen": "8/8/8/2npB3/3P4/8/8/8 w - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "c5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em d4"
+  },
+  {
+   "id": "own.rules.pawn.8",
+   "node": "rules.pawn",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: peão preto (anda para baixo) com captura",
+   "fen": "8/3p4/2P1N3/8/8/8/8/8 b - - 0 1",
+   "prompt": "placementSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "c6",
+    "d5",
+    "d6",
+    "e6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peão preto"
+  },
+  {
+   "id": "own.rules.capture.1",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: dama: quatro alvos, um escondido atrás da própria peça",
+   "fen": "8/3r2n1/8/8/b2Q1P1p/8/1p6/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "queen"
+   },
+   "squares": [
+    "a4",
+    "b2",
+    "d7",
+    "g7"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.queen: a peça da aula em d4, com alvos"
+  },
+  {
+   "id": "own.rules.capture.2",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: torre: dois alvos livres",
+   "fen": "8/2p5/8/8/8/b1R1P2n/8/2q5 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "a3",
+    "c1",
+    "c7"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em c3, com alvos"
+  },
+  {
+   "id": "own.rules.capture.3",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: bispo: alvos nas quatro diagonais",
+   "fen": "8/1r5p/8/5q2/4B3/8/2P3n1/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "bishop"
+   },
+   "squares": [
+    "b7",
+    "f5",
+    "g2"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.bishop: a peça da aula em e4, com alvos"
+  },
+  {
+   "id": "own.rules.capture.4",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: cavalo: alvos em L e um alvo que não é casa de cavalo",
+   "fen": "8/3pq3/6P1/4N3/2b5/5r2/8/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "knight"
+   },
+   "squares": [
+    "c4",
+    "d7",
+    "f3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.knight: a peça da aula em e5, com alvos"
+  },
+  {
+   "id": "own.rules.capture.5",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: peão: só captura na diagonal",
+   "fen": "8/8/8/3prn2/4P3/8/8/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "pawn"
+   },
+   "squares": [
+    "d5",
+    "f5"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn: a peça da aula em e4, com alvos"
+  },
+  {
+   "id": "own.rules.capture.6",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 750,
+   "difficultySource": "hand: rei: não pode capturar peça defendida",
+   "fen": "8/8/2p5/3p4/4Kn2/3Pb3/8/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "king"
+   },
+   "squares": [
+    "e3"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.king: a peça da aula em e4, com alvos"
+  },
+  {
+   "id": "own.rules.capture.7",
+   "node": "rules.capture",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: torre: o alvo atrás do primeiro não vale",
+   "fen": "5n2/8/pr3R1b/8/8/5P2/8/8 w - - 0 1",
+   "prompt": "placementCaptureSquares",
+   "params": {
+    "piece": "rook"
+   },
+   "squares": [
+    "b6",
+    "f8",
+    "h6"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.rook: a peça da aula em f6, com alvos"
+  },
+  {
+   "id": "own.rules.check.1",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 500,
+   "difficultySource": "hand: check: xeque é imediato, mate pede olhar as fugas",
+   "fen": "7k/8/6K1/4B3/8/8/8/6B1 b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "check",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em g1"
+  },
+  {
+   "id": "own.rules.check.2",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 650,
+   "difficultySource": "hand: mate: xeque é imediato, mate pede olhar as fugas",
+   "fen": "7k/7B/6K1/4B3/8/8/8/8 b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "mate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em h7"
+  },
+  {
+   "id": "own.rules.check.3",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 550,
+   "difficultySource": "hand: none: xeque é imediato, mate pede olhar as fugas",
+   "fen": "3k4/8/3K4/8/8/3Q4/8/8 b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "none",
+   "source": "own",
+   "derivedFrom": "mates.queen.alone: Q em d3"
+  },
+  {
+   "id": "own.rules.check.4",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 500,
+   "difficultySource": "hand: check: xeque é imediato, mate pede olhar as fugas",
+   "fen": "k7/8/8/Q7/8/8/8/7K b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "check",
+   "source": "own",
+   "derivedFrom": "basics.queenMate key cornerStalemate: Q em a5"
+  },
+  {
+   "id": "own.rules.check.5",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 650,
+   "difficultySource": "hand: mate: xeque é imediato, mate pede olhar as fugas",
+   "fen": "7k/5B2/6K1/4B3/8/8/8/8 b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "mate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em f7"
+  },
+  {
+   "id": "own.rules.check.6",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 550,
+   "difficultySource": "hand: none: xeque é imediato, mate pede olhar as fugas",
+   "fen": "6k1/5ppp/8/8/4R3/8/8/6K1 b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "none",
+   "source": "own",
+   "derivedFrom": "pieces.check.mate: R em e4"
+  },
+  {
+   "id": "own.rules.check.7",
+   "node": "rules.check",
+   "type": "choice",
+   "difficulty": 500,
+   "difficultySource": "hand: check: xeque é imediato, mate pede olhar as fugas",
+   "fen": "k7/8/8/8/8/8/6Q1/7K b - - 0 1",
+   "prompt": "placementCheckMateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "check",
+    "mate",
+    "none"
+   ],
+   "answer": "check",
+   "source": "own",
+   "derivedFrom": "pieces.stalemate.stalemate: Q em g2"
+  },
+  {
+   "id": "own.rules.stalemate.1",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: mate: distinguir mate de afogamento",
+   "fen": "7k/5B2/6K1/4B3/8/8/8/8 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "mate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em f7"
+  },
+  {
+   "id": "own.rules.stalemate.2",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: none: distinguir mate de afogamento",
+   "fen": "3k4/8/3K4/8/8/8/4Q3/8 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "none",
+   "source": "own",
+   "derivedFrom": "mates.queen.alone: Q em e2"
+  },
+  {
+   "id": "own.rules.stalemate.3",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 750,
+   "difficultySource": "hand: stalemate: distinguir mate de afogamento",
+   "fen": "7k/5B2/4B1K1/8/8/8/8/8 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "stalemate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em f7"
+  },
+  {
+   "id": "own.rules.stalemate.4",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: mate: distinguir mate de afogamento",
+   "fen": "3k3R/8/3K4/8/8/8/8/8 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "mate",
+   "source": "own",
+   "derivedFrom": "basics.rookMate key edgeMate: R em h8"
+  },
+  {
+   "id": "own.rules.stalemate.5",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: none: distinguir mate de afogamento",
+   "fen": "k7/8/8/8/8/8/8/3Q3K b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "none",
+   "source": "own",
+   "derivedFrom": "pieces.stalemate.stalemate: Q em d1"
+  },
+  {
+   "id": "own.rules.stalemate.6",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 750,
+   "difficultySource": "hand: stalemate: distinguir mate de afogamento",
+   "fen": "7k/8/4B1K1/8/8/8/8/5B2 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "stalemate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em f1"
+  },
+  {
+   "id": "own.rules.stalemate.7",
+   "node": "rules.stalemate",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: mate: distinguir mate de afogamento",
+   "fen": "7k/8/4B1K1/8/3B4/8/8/8 b - - 0 1",
+   "prompt": "placementMateStalemateNone",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "mate",
+    "stalemate",
+    "none"
+   ],
+   "answer": "mate",
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em d4"
+  },
+  {
+   "id": "own.rules.outOfCheck.1",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: 1 fuga(s); errar uma conta como erro",
+   "fen": "6kR/5ppp/8/8/8/8/8/6K1 b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.check.mate: R em h8"
+  },
+  {
+   "id": "own.rules.outOfCheck.2",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 750,
+   "difficultySource": "hand: 2 fuga(s); errar uma conta como erro",
+   "fen": "k7/8/2Q5/8/8/8/8/7K b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "a7",
+    "b8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.stalemate.stalemate: Q em c6"
+  },
+  {
+   "id": "own.rules.outOfCheck.3",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: 1 fuga(s); errar uma conta como erro",
+   "fen": "7k/8/6K1/2B1B3/8/8/8/8 b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "g8"
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em c5"
+  },
+  {
+   "id": "own.rules.outOfCheck.4",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 750,
+   "difficultySource": "hand: 2 fuga(s); errar uma conta como erro",
+   "fen": "k7/8/8/8/8/Q7/8/7K b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "b7",
+    "b8"
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.stalemate.stalemate: Q em a3"
+  },
+  {
+   "id": "own.rules.outOfCheck.5",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: 1 fuga(s); errar uma conta como erro",
+   "fen": "7k/8/6K1/4B3/8/6B1/8/8 b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "g8"
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em g3"
+  },
+  {
+   "id": "own.rules.outOfCheck.6",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 750,
+   "difficultySource": "hand: 2 fuga(s); errar uma conta como erro",
+   "fen": "k7/8/8/8/8/5Q2/8/7K b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "a7",
+    "b8"
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate key cornerStalemate: Q em f3"
+  },
+  {
+   "id": "own.rules.outOfCheck.7",
+   "node": "rules.outOfCheck",
+   "type": "squares",
+   "difficulty": 650,
+   "difficultySource": "hand: 1 fuga(s); errar uma conta como erro",
+   "fen": "7k/8/6K1/4B3/8/3B4/8/8 b - - 0 1",
+   "prompt": "placementKingEscape",
+   "params": {
+    "side": "black"
+   },
+   "squares": [
+    "g8"
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops key mateCorner: B em d3"
+  },
+  {
+   "id": "own.rules.castling.1",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 550,
+   "difficultySource": "hand: roque livre (yes)",
+   "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.2",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 600,
+   "difficultySource": "hand: roque grande livre (yes)",
+   "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "queen"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.3",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 600,
+   "difficultySource": "hand: peça própria no caminho (no)",
+   "fen": "r3k2r/8/8/8/8/8/8/R3KB1R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.4",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 800,
+   "difficultySource": "hand: casa de passagem (f1) atacada (no)",
+   "fen": "r3k2r/8/8/8/2b5/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.5",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 800,
+   "difficultySource": "hand: casa de chegada (g1) atacada (no)",
+   "fen": "r3k1rr/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.6",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 950,
+   "difficultySource": "hand: b1 atacada não impede o roque grande (yes)",
+   "fen": "rr2k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "queen"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.7",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: rei em xeque não roca (no)",
+   "fen": "r3k2r/8/8/8/1b6/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.8",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 800,
+   "difficultySource": "hand: casas d1 e c2 atacadas pelo cavalo (no)",
+   "fen": "r3k2r/8/8/8/8/4n3/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "queen"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.castling.9",
+   "node": "rules.castling",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: cavalo ataca só a torre: pode rocar (no)",
+   "fen": "r3k2r/8/8/8/8/7n/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementCanCastle",
+   "params": {
+    "side": "white",
+    "wing": "king"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.castling (nova): rei e torres na casa inicial"
+  },
+  {
+   "id": "own.rules.enPassant.1",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1000,
+   "difficultySource": "hand: peão andou duas casas ao lado (yes)",
+   "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "lastMove": "d7d5",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.2",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: peão andou uma casa só: não vale (no)",
+   "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - - 0 2",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "lastMove": "d6d5",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.3",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1050,
+   "difficultySource": "hand: peão longe, não está ao lado (no)",
+   "fen": "4k3/8/8/4P1p1/8/8/8/4K3 w - - 0 2",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "lastMove": "g7g5",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.4",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1050,
+   "difficultySource": "hand: en passant das pretas (yes)",
+   "fen": "4k3/8/8/8/3pP3/8/8/4K3 b - e3 0 1",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "lastMove": "e2e4",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.5",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1000,
+   "difficultySource": "hand: peão da borda (yes)",
+   "fen": "4k3/8/8/Pp6/8/8/8/4K3 w - b6 0 2",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "lastMove": "b7b5",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.6",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: peão andou uma casa: não vale (no)",
+   "fen": "4k3/8/8/8/3p4/2P5/8/4K3 b - - 0 1",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "lastMove": "c2c3",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.enPassant.7",
+   "node": "rules.enPassant",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: o último lance foi do rei: não vale (no)",
+   "fen": "8/3k1p2/8/4P3/8/8/8/4K3 w - - 1 2",
+   "prompt": "placementCanEnPassant",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "lastMove": "e8d7",
+   "source": "own",
+   "derivedFrom": "pieces.pawn: peões da aula, com o último lance"
+  },
+  {
+   "id": "own.rules.draws.1",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: rei e cavalo não dão mate (yes)",
+   "fen": "8/8/2N2K2/8/8/k7/8/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.2",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 700,
+   "difficultySource": "hand: rei e bispo não dão mate (yes)",
+   "fen": "2k3B1/8/8/8/8/5K2/8/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.3",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 600,
+   "difficultySource": "hand: rei e torre dão mate (no)",
+   "fen": "8/8/R6K/8/8/8/8/5k2 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.4",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 750,
+   "difficultySource": "hand: o peão pode promover (no)",
+   "fen": "k7/8/2P5/8/8/8/2K5/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.5",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: dois cavalos: mate existe se o outro errar (no)",
+   "fen": "8/1K6/8/k7/8/N7/4N3/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.6",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 1250,
+   "difficultySource": "hand: bispos da mesma cor (yes)",
+   "fen": "B3b3/8/4K3/8/3k4/8/8/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.7",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 1300,
+   "difficultySource": "hand: bispos de cores diferentes: mate existe (no)",
+   "fen": "8/B5K1/8/8/8/1k5b/8/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.draws.8",
+   "node": "rules.draws",
+   "type": "choice",
+   "difficulty": 1250,
+   "difficultySource": "hand: bispo contra cavalo: mate existe (no)",
+   "fen": "8/6n1/1k1K4/8/2B5/8/8/8 w - - 0 1",
+   "prompt": "placementInsufficient",
+   "params": {},
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "rules.draws (nova): material sorteado"
+  },
+  {
+   "id": "own.rules.pieceValue.1",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 725,
+   "difficultySource": "hand: captura que ganha 9 ponto(s); Stockfish: melhor por 16.6",
+   "fen": "6k1/5ppp/8/2n1q3/1p6/4Q3/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e3e5"
+   ],
+   "accept": [
+    [
+     "e3e5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.2",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 658,
+   "difficultySource": "hand: captura que ganha 1 ponto(s); Stockfish: melhor por 1.9",
+   "fen": "6k1/5ppp/8/p4R2/1p2b3/8/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f5a5"
+   ],
+   "accept": [
+    [
+     "f5a5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.3",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 725,
+   "difficultySource": "hand: captura que ganha 9 ponto(s); Stockfish: melhor por 8.2",
+   "fen": "6k1/5ppp/3p4/5p2/8/1B3q2/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g2f3"
+   ],
+   "accept": [
+    [
+     "g2f3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.4",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 725,
+   "difficultySource": "hand: captura que ganha 9 ponto(s); Stockfish: melhor por 12.6",
+   "fen": "6k1/5ppp/3p1p2/8/4N3/5q2/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g2f3"
+   ],
+   "accept": [
+    [
+     "g2f3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.5",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 691,
+   "difficultySource": "hand: captura que ganha 5 ponto(s); Stockfish: melhor por 13.3",
+   "fen": "6k1/5ppp/1pr5/2R5/2p5/8/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c5c6"
+   ],
+   "accept": [
+    [
+     "c5c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.6",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 691,
+   "difficultySource": "hand: captura que ganha 5 ponto(s); Stockfish: melhor por 12.3",
+   "fen": "6k1/5ppp/2p5/p7/1B6/2r5/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b4c3"
+   ],
+   "accept": [
+    [
+     "b4c3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.rules.pieceValue.7",
+   "node": "rules.pieceValue",
+   "type": "move",
+   "difficulty": 691,
+   "difficultySource": "hand: captura que ganha 5 ponto(s); Stockfish: melhor por 10.3",
+   "fen": "6k1/5ppp/2N5/8/1r1p4/4p3/5PPP/6K1 w - - 0 1",
+   "prompt": "placementWinMaterial",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c6b4"
+   ],
+   "accept": [
+    [
+     "c6b4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.pieceValue (nova): peças sorteadas"
+  },
+  {
+   "id": "own.notation.squares.1",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "a1"
+   },
+   "squares": [
+    "a1"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.2",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 400,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "h8"
+   },
+   "squares": [
+    "h8"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.3",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 450,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "e4"
+   },
+   "squares": [
+    "e4"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.4",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 500,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "d5"
+   },
+   "squares": [
+    "d5"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.5",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "c6"
+   },
+   "squares": [
+    "c6"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.6",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 550,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "f3"
+   },
+   "squares": [
+    "f3"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.squares.7",
+   "node": "notation.squares",
+   "type": "squares",
+   "difficulty": 600,
+   "difficultySource": "hand: canto 400; centro 450–500; casas sem referência até 600",
+   "fen": "8/8/8/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementTapSquare",
+   "params": {
+    "square": "b7"
+   },
+   "squares": [
+    "b7"
+   ],
+   "source": "own",
+   "derivedFrom": "notation.coordinates: tabuleiro vazio da aula"
+  },
+  {
+   "id": "own.notation.moves.1",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 750,
+   "difficultySource": "hand: lance de cavalo",
+   "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "Nf3",
+    "side": "white"
+   },
+   "moves": [
+    "g1f3"
+   ],
+   "accept": [
+    [
+     "g1f3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "tricks.principles.develop (escola)"
+  },
+  {
+   "id": "own.notation.moves.2",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 800,
+   "difficultySource": "hand: lance das pretas",
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "Nf6",
+    "side": "black"
+   },
+   "moves": [
+    "g8f6"
+   ],
+   "accept": [
+    [
+     "g8f6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "tricks.principles.rules (escola)"
+  },
+  {
+   "id": "own.notation.moves.3",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 800,
+   "difficultySource": "hand: lance de peão das pretas",
+   "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "g6",
+    "side": "black"
+   },
+   "moves": [
+    "g7g6"
+   ],
+   "accept": [
+    [
+     "g7g6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "tricks.defendScholar.guard (escola)"
+  },
+  {
+   "id": "own.notation.moves.4",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 900,
+   "difficultySource": "hand: captura de dama",
+   "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "Qxf6",
+    "side": "white"
+   },
+   "moves": [
+    "f3f6"
+   ],
+   "accept": [
+    [
+     "f3f6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "tricks.defendScholar.chase (escola)"
+  },
+  {
+   "id": "own.notation.moves.5",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 900,
+   "difficultySource": "hand: promoção",
+   "fen": "8/4P1k1/8/8/8/8/8/4K3 w - - 0 1",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "e8=Q",
+    "side": "white"
+   },
+   "moves": [
+    "e7e8q"
+   ],
+   "accept": [
+    [
+     "e7e8q"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn.promote (escola)"
+  },
+  {
+   "id": "own.notation.moves.6",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 900,
+   "difficultySource": "hand: dois cavalos podem ir: desambiguação",
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "Nge7",
+    "side": "black"
+   },
+   "moves": [
+    "g8e7"
+   ],
+   "accept": [
+    [
+     "g8e7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "tricks.principles.rules (escola)"
+  },
+  {
+   "id": "own.notation.moves.7",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 900,
+   "difficultySource": "hand: roque grande",
+   "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "O-O-O",
+    "side": "white"
+   },
+   "moves": [
+    "e1c1"
+   ],
+   "accept": [
+    [
+     "e1c1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rules.castling (escola)"
+  },
+  {
+   "id": "own.notation.moves.8",
+   "node": "notation.moves",
+   "type": "move",
+   "difficulty": 950,
+   "difficultySource": "hand: captura de peão",
+   "fen": "4k3/8/8/3p4/4P3/8/8/4K3 w - - 0 1",
+   "prompt": "placementPlayMove",
+   "params": {
+    "move": "exd5",
+    "side": "white"
+   },
+   "moves": [
+    "e4d5"
+   ],
+   "accept": [
+    [
+     "e4d5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.pawn.take (escola)"
+  },
+  {
+   "id": "own.mate.inOne.1",
+   "node": "mate.inOne",
+   "type": "move",
+   "difficulty": 500,
+   "difficultySource": "hand: mate em um com 1 mate(s) possível(is); 450–600 pela quantidade de peças e de fugas",
+   "fen": "1k6/ppp5/8/8/8/8/8/1K5R w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h1h8"
+   ],
+   "accept": [
+    [
+     "h1h8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.check.mate1 (espelhada)"
+  },
+  {
+   "id": "own.mate.inOne.2",
+   "node": "mate.inOne",
+   "type": "move",
+   "difficulty": 550,
+   "difficultySource": "hand: mate em um com 2 mate(s) possível(is); 450–600 pela quantidade de peças e de fugas",
+   "fen": "7k/8/5NK1/8/8/8/R7/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a2a8"
+   ],
+   "accept": [
+    [
+     "a2a8",
+     "a2h2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.rookKnight.mate (R a1→a2)"
+  },
+  {
+   "id": "own.mate.inOne.3",
+   "node": "mate.inOne",
+   "type": "move",
+   "difficulty": 600,
+   "difficultySource": "hand: mate em um com 1 mate(s) possível(is); 450–600 pela quantidade de peças e de fugas",
+   "fen": "8/7q/8/8/8/1k6/8/K7 b - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "h7h1"
+   ],
+   "accept": [
+    [
+     "h7h1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pieces.check.mate2 (cores trocadas)"
+  },
+  {
+   "id": "own.mate.inOne.4",
+   "node": "mate.inOne",
+   "type": "move",
+   "difficulty": 450,
+   "difficultySource": "hand: mate em um com 1 mate(s) possível(is); 450–600 pela quantidade de peças e de fugas",
+   "fen": "8/8/8/5K1k/8/8/1R6/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b2h2"
+   ],
+   "accept": [
+    [
+     "b2h2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e01 (R a1→b2)"
+  },
+  {
+   "id": "own.mate.twoRooks.1",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 550,
+   "difficultySource": "hand: mate em um de escada",
+   "fen": "k7/6R1/8/8/8/2R5/6K1/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c3c8"
+   ],
+   "accept": [
+    [
+     "c3c8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.2",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 550,
+   "difficultySource": "hand: mate em um de escada",
+   "fen": "7k/R7/8/8/8/6K1/1R6/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b2b8"
+   ],
+   "accept": [
+    [
+     "b2b8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.3",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 550,
+   "difficultySource": "hand: mate em um de escada",
+   "fen": "2k5/5R2/8/8/R7/8/1K6/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a4a8"
+   ],
+   "accept": [
+    [
+     "a4a8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.4",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 700,
+   "difficultySource": "hand: o caminho mais curto (1 de 34 lances)",
+   "fen": "4k3/8/R7/8/8/8/1K1R4/8 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a6a7"
+   ],
+   "accept": [
+    [
+     "a6a7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.5",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 700,
+   "difficultySource": "hand: o caminho mais curto (1 de 36 lances)",
+   "fen": "7k/8/8/5R2/8/6K1/8/2R5 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f5g5"
+   ],
+   "accept": [
+    [
+     "f5g5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.6",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 700,
+   "difficultySource": "hand: o caminho mais curto (1 de 36 lances)",
+   "fen": "2k5/8/7R/8/8/8/4K3/1R6 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h6h7"
+   ],
+   "accept": [
+    [
+     "h6h7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.twoRooks.7",
+   "node": "mate.twoRooks",
+   "type": "move",
+   "difficulty": 700,
+   "difficultySource": "hand: o caminho mais curto (2 de 31 lances)",
+   "fen": "5k2/8/2R5/8/8/8/8/3R2K1 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c6c7"
+   ],
+   "accept": [
+    [
+     "c6c7",
+     "d1d7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.twoRooks (escola): torres e reis sorteados, rei preto na borda"
+  },
+  {
+   "id": "own.mate.queen.1",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 750,
+   "difficultySource": "hand: faixa do nó (750); win: 3 lance(s) certo(s) de 19",
+   "fen": "8/8/8/8/8/3k4/8/4K2Q w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h1c6"
+   ],
+   "accept": [
+    [
+     "h1c6",
+     "h1d5",
+     "h1h4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e09 (k e3→d3)"
+  },
+  {
+   "id": "own.mate.queen.2",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 850,
+   "difficultySource": "hand: faixa do nó (750); win: 1 lance(s) certo(s) de 30 (+100, lance único)",
+   "fen": "4k3/8/6K1/8/8/8/3Q4/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g6f6"
+   ],
+   "accept": [
+    [
+     "g6f6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e05 (Q c2→d2)"
+  },
+  {
+   "id": "own.mate.queen.3",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 600,
+   "difficultySource": "hand: faixa do nó (750); mate em um",
+   "fen": "4k3/8/5K2/8/1Q6/8/8/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b4e7"
+   ],
+   "accept": [
+    [
+     "b4e7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e02 (original)"
+  },
+  {
+   "id": "own.mate.queen.4",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 850,
+   "difficultySource": "hand: faixa do nó (750); win: 1 lance(s) certo(s) de 32 (+100, lance único)",
+   "fen": "8/5K2/8/7k/8/2Q5/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c3g3"
+   ],
+   "accept": [
+    [
+     "c3g3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e06 (Q d3→c3)"
+  },
+  {
+   "id": "own.mate.queen.5",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 600,
+   "difficultySource": "hand: faixa do nó (750); mate em um",
+   "fen": "1q6/8/8/8/8/3k4/8/3K4 b - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "b8b1"
+   ],
+   "accept": [
+    [
+     "b8b1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e01 (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.mate.queen.6",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 750,
+   "difficultySource": "hand: faixa do nó (750); win: 4 lance(s) certo(s) de 20",
+   "fen": "8/8/8/8/8/6k1/8/5QK1 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f1c4"
+   ],
+   "accept": [
+    [
+     "f1c4",
+     "f1f5",
+     "f1f6",
+     "f1f7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e10 (Q e2→f1)"
+  },
+  {
+   "id": "own.mate.queen.7",
+   "node": "mate.queen",
+   "type": "move",
+   "difficulty": 600,
+   "difficultySource": "hand: faixa do nó (750); mate em um",
+   "fen": "k7/2K5/8/8/8/1Q6/8/8 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b3a2"
+   ],
+   "accept": [
+    [
+     "b3a2",
+     "b3a3",
+     "b3a4",
+     "b3b7",
+     "b3b8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.queenMate ex e03 (K c6→c7)"
+  },
+  {
+   "id": "own.mate.rook.1",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 2 lance(s) certo(s) de 22",
+   "fen": "k7/8/3K4/8/8/8/8/7R w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d6c6"
+   ],
+   "accept": [
+    [
+     "d6c6",
+     "d6c7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e02 (K c7→d6)"
+  },
+  {
+   "id": "own.mate.rook.2",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 3 lance(s) certo(s) de 22",
+   "fen": "8/8/8/8/4k3/8/r7/4K3 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "a2h2"
+   ],
+   "accept": [
+    [
+     "a2h2",
+     "e4d3",
+     "e4e3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e09 (cores trocadas)"
+  },
+  {
+   "id": "own.mate.rook.3",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 15 (+100, lance único)",
+   "fen": "2k5/8/R2K4/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a6b6"
+   ],
+   "accept": [
+    [
+     "a6b6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e05 (R a7→a6)"
+  },
+  {
+   "id": "own.mate.rook.4",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 2 lance(s) certo(s) de 22",
+   "fen": "8/8/8/2k5/8/7R/1K6/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b2c3"
+   ],
+   "accept": [
+    [
+     "b2c3",
+     "h3d3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate key box (k b4→c5)"
+  },
+  {
+   "id": "own.mate.rook.5",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 3 lance(s) certo(s) de 22",
+   "fen": "2k5/8/R7/3K4/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a6a7"
+   ],
+   "accept": [
+    [
+     "a6a7",
+     "d5c6",
+     "d5d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e06 (R a7→a6)"
+  },
+  {
+   "id": "own.mate.rook.6",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 2 lance(s) certo(s) de 16",
+   "fen": "8/8/8/8/8/2k2K2/8/5R2 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f3e3"
+   ],
+   "accept": [
+    [
+     "f3e3",
+     "f3e4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate practice (k d4→c3)"
+  },
+  {
+   "id": "own.mate.rook.7",
+   "node": "mate.rook",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: faixa do nó (1150); win: 2 lance(s) certo(s) de 22",
+   "fen": "2k5/8/7R/3K4/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d5c6"
+   ],
+   "accept": [
+    [
+     "d5c6",
+     "d5d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.rookMate ex e04 (k d7→c8)"
+  },
+  {
+   "id": "own.mate.twoBishops.1",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 4 lance(s) certo(s) de 24",
+   "fen": "3k4/6B1/8/3BK3/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d5c6"
+   ],
+   "accept": [
+    [
+     "d5c6",
+     "e5d6",
+     "e5e6",
+     "g7f8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e07 (K d6→e5)"
+  },
+  {
+   "id": "own.mate.twoBishops.2",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 24 (+100, lance único)",
+   "fen": "8/8/8/8/8/3K2B1/6B1/2k5 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d3c3"
+   ],
+   "accept": [
+    [
+     "d3c3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e03 (B f2→g3)"
+  },
+  {
+   "id": "own.mate.twoBishops.3",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 27 (+100, lance único)",
+   "fen": "5k2/2B5/5K2/8/4B3/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e4c6"
+   ],
+   "accept": [
+    [
+     "e4c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e09 (k g8→f8)"
+  },
+  {
+   "id": "own.mate.twoBishops.4",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 24",
+   "fen": "8/8/8/4k3/8/7B/2K2B2/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c2c3"
+   ],
+   "accept": [
+    [
+     "c2c3",
+     "c2d3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops practice (B e1→f2)"
+  },
+  {
+   "id": "own.mate.twoBishops.5",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 23",
+   "fen": "8/8/8/8/2b5/1k6/5b2/K7 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "f2c5"
+   ],
+   "accept": [
+    [
+     "f2c5",
+     "f2e3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e05 (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.mate.twoBishops.6",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 25 (+100, lance único)",
+   "fen": "6k1/2B5/8/4K3/4B3/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e5f6"
+   ],
+   "accept": [
+    [
+     "e5f6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e09 (K f6→e5)"
+  },
+  {
+   "id": "own.mate.twoBishops.7",
+   "node": "mate.twoBishops",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 4 lance(s) certo(s) de 33",
+   "fen": "2K5/8/8/3bbk2/8/8/8/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d5c6"
+   ],
+   "accept": [
+    [
+     "d5c6",
+     "e5d6",
+     "f5e6",
+     "f5f6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.twoBishops ex e08 (cores trocadas)"
+  },
+  {
+   "id": "own.mate.bishopKnight.1",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2050,
+   "difficultySource": "hand: faixa do nó (2050); win: 3 lance(s) certo(s) de 20",
+   "fen": "8/3N4/6B1/8/8/8/1K1k4/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d7c5"
+   ],
+   "accept": [
+    [
+     "d7c5",
+     "d7e5",
+     "d7f8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.full key deletangStart (N e6→d7)"
+  },
+  {
+   "id": "own.mate.bishopKnight.2",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 16 (+100, lance único)",
+   "fen": "2N5/B7/8/8/1k6/8/2K5/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c8d6"
+   ],
+   "accept": [
+    [
+     "c8d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.edge ex e07 (N d7→c8)"
+  },
+  {
+   "id": "own.mate.bishopKnight.3",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 23 (+100, lance único)",
+   "fen": "8/8/K7/3k4/4b3/4n3/8/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d5c5"
+   ],
+   "accept": [
+    [
+     "d5c5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.w practice (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.mate.bishopKnight.4",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 23 (+100, lance único)",
+   "fen": "8/8/8/2NB4/4K3/7k/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e4f4"
+   ],
+   "accept": [
+    [
+     "e4f4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.edge practice (N d6→c5)"
+  },
+  {
+   "id": "own.mate.bishopKnight.5",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 16 (+100, lance único)",
+   "fen": "4k3/5N1B/8/5K2/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f5e6"
+   ],
+   "accept": [
+    [
+     "f5e6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.w ex e05 (K f6→f5)"
+  },
+  {
+   "id": "own.mate.bishopKnight.6",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 24 (+100, lance único)",
+   "fen": "1k6/2N5/8/3K4/8/4B3/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d5c6"
+   ],
+   "accept": [
+    [
+     "d5c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.w ex e12 (K c6→d5)"
+  },
+  {
+   "id": "own.mate.bishopKnight.7",
+   "node": "mate.bishopKnight",
+   "type": "move",
+   "difficulty": 2050,
+   "difficultySource": "hand: faixa do nó (2050); win: 2 lance(s) certo(s) de 22",
+   "fen": "k7/8/1K6/2N5/8/8/2B5/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c2d3"
+   ],
+   "accept": [
+    [
+     "c2d3",
+     "c2f5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "mates.bishopKnight.w key stalemateAlert (B d1→c2)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.1",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (whiteWins)",
+   "fen": "8/8/p7/N7/5K2/7N/8/5k2 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.2",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (draw)",
+   "fen": "k7/8/8/8/5N2/6p1/6N1/K7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.3",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (whiteWins)",
+   "fen": "8/8/4k3/2p4N/2N5/6K1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.4",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (draw)",
+   "fen": "8/2k5/6K1/8/8/3Np3/4N3/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.5",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (whiteWins)",
+   "fen": "8/k2K4/8/8/2p5/2N4N/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.6",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (draw)",
+   "fen": "8/8/7k/1p6/1N6/6N1/8/6K1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.mate.twoKnightsPawn.7",
+   "node": "mate.twoKnightsPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: veredito pela linha de Troitsky (whiteWins)",
+   "fen": "8/8/3p4/K2N2k1/5N2/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (mate.twoKnightsPawn)"
+  },
+  {
+   "id": "own.pawns.square.1",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (no)",
+   "fen": "K7/8/6k1/8/8/1P6/8/8 w - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "white",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.2",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (no)",
+   "fen": "8/8/k7/8/5P2/8/8/K7 w - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "white",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.3",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (no)",
+   "fen": "K7/8/5k2/8/8/8/1P6/8 w - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "white",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.4",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (no)",
+   "fen": "8/8/8/4P3/6k1/8/8/K7 w - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "white",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "no",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.5",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1000,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (yes)",
+   "fen": "7K/8/8/8/3P4/7k/8/8 b - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "black",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.6",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1000,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (yes)",
+   "fen": "K7/8/8/8/8/7k/4P3/8 b - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "black",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.7",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1100,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (yes)",
+   "fen": "8/8/4k3/8/1P6/8/8/7K w - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "white",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.square.8",
+   "node": "pawns.square",
+   "type": "choice",
+   "difficulty": 1000,
+   "difficultySource": "hand: regra do quadrado; com a vez das brancas conta um tempo a menos (+100) (yes)",
+   "fen": "8/8/7k/8/4P3/8/8/K7 b - - 0 1",
+   "prompt": "placementCatchPawn",
+   "params": {
+    "side": "black",
+    "king": "black"
+   },
+   "options": [
+    "yes",
+    "no"
+   ],
+   "answer": "yes",
+   "source": "own",
+   "derivedFrom": "pawns.square (escola): peão e reis sorteados, rei branco longe"
+  },
+  {
+   "id": "own.pawns.opposition.1",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 6 (+100, lance único)",
+   "fen": "8/8/2p5/1k6/8/2K5/8/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "b5c5"
+   ],
+   "accept": [
+    [
+     "b5c5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e05 (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.opposition.2",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 7 (+100, lance único)",
+   "fen": "8/8/4k3/6K1/8/7P/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g5g6"
+   ],
+   "accept": [
+    [
+     "g5g6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e10 (P h4→h3)"
+  },
+  {
+   "id": "own.pawns.opposition.3",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 9 (+100, lance único)",
+   "fen": "3k4/8/8/2K5/4P3/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c5d6"
+   ],
+   "accept": [
+    [
+     "c5d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.keySquares ex e03 (P d5→e4)"
+  },
+  {
+   "id": "own.pawns.opposition.4",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); draw: 1 lance(s) certo(s) de 6 (+100, lance único)",
+   "fen": "8/3k4/8/1PK5/8/8/8/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d7c7"
+   ],
+   "accept": [
+    [
+     "d7c7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn key stalemate (P c6→b5)"
+  },
+  {
+   "id": "own.pawns.opposition.5",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 6 (+100, lance único)",
+   "fen": "8/8/8/p7/1k6/3K4/8/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "b4b3"
+   ],
+   "accept": [
+    [
+     "b4b3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e10 (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.opposition.6",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); win: 1 lance(s) certo(s) de 6 (+100, lance único)",
+   "fen": "8/8/8/4k3/6K1/5P2/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g4g5"
+   ],
+   "accept": [
+    [
+     "g4g5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e05 (k f6→e5)"
+  },
+  {
+   "id": "own.pawns.opposition.7",
+   "node": "pawns.opposition",
+   "type": "move",
+   "difficulty": 1250,
+   "difficultySource": "hand: faixa do nó (1150); draw: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/3k4/8/8/3K4/5P2/8/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d7d6"
+   ],
+   "accept": [
+    [
+     "d7d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition ex e07 (K e3→d4)"
+  },
+  {
+   "id": "own.pawns.keySquares.1",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/8/8/8/PK2k3/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b4c5"
+   ],
+   "accept": [
+    [
+     "b4c5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn key fishbein (K a3→b4)"
+  },
+  {
+   "id": "own.pawns.keySquares.2",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); draw: 2 lance(s) certo(s) de 6",
+   "fen": "8/8/8/8/5k2/5p2/6K1/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g2f1"
+   ],
+   "accept": [
+    [
+     "g2f1",
+     "g2f2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e09 (cores trocadas)"
+  },
+  {
+   "id": "own.pawns.keySquares.3",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 3 lance(s) certo(s) de 5",
+   "fen": "8/8/8/4p3/4k3/8/5K2/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "e4d3"
+   ],
+   "accept": [
+    [
+     "e4d3",
+     "e4d4",
+     "e4f4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.keySquares ex e07 (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.keySquares.4",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 10",
+   "fen": "6k1/8/8/8/8/8/2K3P1/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c2d2"
+   ],
+   "accept": [
+    [
+     "c2d2",
+     "c2d3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn practice (K d2→c2)"
+  },
+  {
+   "id": "own.pawns.keySquares.5",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 6",
+   "fen": "k7/8/8/8/4P3/8/8/3K4 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d1d2"
+   ],
+   "accept": [
+    [
+     "d1d2",
+     "d1e2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.keySquares key count (K e2→d1)"
+  },
+  {
+   "id": "own.pawns.keySquares.6",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 7 (+100, lance único)",
+   "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f5e5"
+   ],
+   "accept": [
+    [
+     "f5e5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e03 (K e4→f5)"
+  },
+  {
+   "id": "own.pawns.keySquares.7",
+   "node": "pawns.keySquares",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); draw: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/8/3k4/8/8/3K4/2P5/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d6d5"
+   ],
+   "accept": [
+    [
+     "d6d5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e07 (P d2→c2)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.1",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); draw: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/8/4k3/1K6/P7/8/8/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "e6d7"
+   ],
+   "accept": [
+    [
+     "e6d7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "basics.kingPawn ex e08 (original)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.2",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 5 (+100, lance único)",
+   "fen": "3k4/8/8/p5p1/P5P1/8/8/3K4 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "d8d7"
+   ],
+   "accept": [
+    [
+     "d8d7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition key capablanca (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.3",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "4k3/8/8/1p5p/1P5P/8/5K2/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f2e2"
+   ],
+   "accept": [
+    [
+     "f2e2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition key capablanca (K e1→f2)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.4",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 5 (+100, lance único)",
+   "fen": "4k3/8/8/1p5p/1P5P/8/8/5K2 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f1e2"
+   ],
+   "accept": [
+    [
+     "f1e2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition key capablanca (K e1→f1)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.5",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/8/4pk2/8/8/3K4/8/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "f6f5"
+   ],
+   "accept": [
+    [
+     "f6f5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition key diagonal (cores trocadas)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.6",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); draw: 1 lance(s) certo(s) de 5 (+100, lance único)",
+   "fen": "6k1/8/8/8/5KP1/8/8/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "g8f8"
+   ],
+   "accept": [
+    [
+     "g8f8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.distantOpposition ex e12 (cores trocadas)"
+  },
+  {
+   "id": "own.pawns.distantOpposition.7",
+   "node": "pawns.distantOpposition",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 7 (+100, lance único)",
+   "fen": "1k6/8/8/3K4/3P4/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d5d6"
+   ],
+   "accept": [
+    [
+     "d5d6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "pawns.keySquares ex e07 (k c7→b8)"
+  },
+  {
+   "id": "own.pawns.kingPawn.1",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (whiteWins)",
+   "fen": "8/8/8/8/8/8/5Pk1/4K3 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.2",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (draw)",
+   "fen": "8/8/3k4/1P6/8/2K5/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.3",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (whiteWins)",
+   "fen": "8/8/8/8/1K6/2P5/5k2/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.4",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (draw)",
+   "fen": "8/3k4/8/8/2P5/8/K7/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.5",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (whiteWins)",
+   "fen": "8/8/8/8/5PK1/8/2k5/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.6",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (draw)",
+   "fen": "8/8/5k2/8/8/3P4/4K3/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.kingPawn.7",
+   "node": "pawns.kingPawn",
+   "type": "choice",
+   "difficulty": 1150,
+   "difficultySource": "hand: rei e peão contra rei: oposição e casas-chave decidem (whiteWins)",
+   "fen": "8/8/8/7K/8/5P2/8/7k b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.kingPawn)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.1",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (whiteWins)",
+   "fen": "8/8/PK6/8/k7/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.2",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (draw)",
+   "fen": "7k/8/8/7P/8/7K/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.3",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (whiteWins)",
+   "fen": "6K1/8/7P/8/6k1/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.4",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (draw)",
+   "fen": "8/4k3/7P/8/6K1/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.5",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (whiteWins)",
+   "fen": "8/8/8/3k4/K7/P7/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.6",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (draw)",
+   "fen": "7k/8/8/7P/6K1/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.rookPawnDraw.7",
+   "node": "pawns.rookPawnDraw",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: peão de torre: o rei que chega ao canto empata (whiteWins)",
+   "fen": "8/8/7P/8/7K/5k2/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.rookPawnDraw)"
+  },
+  {
+   "id": "own.pawns.race.1",
+   "node": "pawns.race",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: corrida: contar os tempos e ver quem promove com xeque (whiteWins)",
+   "fen": "8/8/6pk/2P5/8/K7/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.race)"
+  },
+  {
+   "id": "own.pawns.race.2",
+   "node": "pawns.race",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: corrida: contar os tempos e ver quem promove com xeque (draw)",
+   "fen": "8/8/6kp/8/8/1PK5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.race)"
+  },
+  {
+   "id": "own.pawns.race.3",
+   "node": "pawns.race",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: corrida: contar os tempos e ver quem promove com xeque (blackWins)",
+   "fen": "5k2/8/8/7p/8/1KP5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.race)"
+  },
+  {
+   "id": "own.pawns.race.4",
+   "node": "pawns.race",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: corrida: contar os tempos e ver quem promove com xeque (whiteWins)",
+   "fen": "5k2/8/8/P5p1/8/8/8/1K6 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.race)"
+  },
+  {
+   "id": "own.pawns.reti.1",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 2 lance(s) de 6 empatam",
+   "fen": "8/8/8/8/P7/5p1K/k7/8 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "a2b2"
+   ],
+   "accept": [
+    [
+     "a2b2",
+     "a2b3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (K h8→h7; cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.reti.2",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 2 lance(s) de 6 empatam",
+   "fen": "8/8/8/8/7P/K1p5/8/6k1 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "g1f2"
+   ],
+   "accept": [
+    [
+     "g1f2",
+     "g1g2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (K h8→g8; cores trocadas)"
+  },
+  {
+   "id": "own.pawns.reti.3",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 2 lance(s) de 6 empatam",
+   "fen": "8/7K/k1P5/7p/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h7g6"
+   ],
+   "accept": [
+    [
+     "h7g6",
+     "h7g7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (K h8→h7)"
+  },
+  {
+   "id": "own.pawns.reti.4",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 2 lance(s) de 6 empatam",
+   "fen": "8/8/8/8/P7/5p1K/8/1k6 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "b1b2"
+   ],
+   "accept": [
+    [
+     "b1b2",
+     "b1c2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (K h8→g8; cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.pawns.reti.5",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 2 lance(s) de 6 empatam",
+   "fen": "6K1/8/k1P5/6p1/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g8f7"
+   ],
+   "accept": [
+    [
+     "g8f7",
+     "g8g7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (p h5→g5; K h8→g8)"
+  },
+  {
+   "id": "own.pawns.reti.6",
+   "node": "pawns.reti",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: manobra de Réti: 3 lance(s) de 9 empatam",
+   "fen": "8/6K1/k1P5/7p/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g7f6"
+   ],
+   "accept": [
+    [
+     "g7f6",
+     "g7f7",
+     "g7g6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "posição de Réti (1921), conferida pela tabela (K h8→g7; original)"
+  },
+  {
+   "id": "own.pawns.triangulation.1",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 2 lance(s) de 5",
+   "fen": "1k6/8/1K1p4/3P4/2P5/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b6a6"
+   ],
+   "accept": [
+    [
+     "b6a6",
+     "b6c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.triangulation.2",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 3 lance(s) de 5",
+   "fen": "8/8/1k1p4/3P4/2PK4/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d4d3"
+   ],
+   "accept": [
+    [
+     "d4d3",
+     "d4e3",
+     "d4e4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.triangulation.3",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 1 lance(s) de 6",
+   "fen": "4k3/8/3p1K2/3P4/2P5/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f6e6"
+   ],
+   "accept": [
+    [
+     "f6e6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.triangulation.4",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 1 lance(s) de 5",
+   "fen": "8/8/2K1k3/2p5/2P5/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c6c5"
+   ],
+   "accept": [
+    [
+     "c6c5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.triangulation.5",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 1 lance(s) de 6",
+   "fen": "2k5/8/1K1p4/3P4/2P5/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b6c6"
+   ],
+   "accept": [
+    [
+     "b6c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.triangulation.6",
+   "node": "pawns.triangulation",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); perder um tempo com o rei (triangulação); 1 lance(s) de 7",
+   "fen": "3k4/8/1K1p4/3P4/2P5/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b6c6"
+   ],
+   "accept": [
+    [
+     "b6c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.triangulation), conferido pela tabela"
+  },
+  {
+   "id": "own.pawns.outsidePasser.1",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (whiteWins)",
+   "fen": "8/8/3k2p1/8/P1K3P1/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.outsidePasser.2",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (draw)",
+   "fen": "8/8/2k5/7p/1P5P/2K5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.outsidePasser.3",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (whiteWins)",
+   "fen": "8/8/8/3k3p/P6P/4K3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.outsidePasser.4",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (whiteWins)",
+   "fen": "8/8/5k1p/8/P3K1P1/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.outsidePasser.5",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (whiteWins)",
+   "fen": "8/8/3k3p/8/1P5P/2K5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.outsidePasser.6",
+   "node": "pawns.outsidePasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado distante: o desvio decide (whiteWins)",
+   "fen": "8/8/3k3p/8/P3K1P1/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.outsidePasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.1",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (whiteWins)",
+   "fen": "8/pk6/8/3P4/2PK4/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.2",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (draw)",
+   "fen": "8/8/4k3/p3P3/2P1K3/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.3",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (whiteWins)",
+   "fen": "8/6k1/1p6/4P3/2K2P2/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.4",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (whiteWins)",
+   "fen": "8/6k1/1p6/3P4/2P5/4K3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.5",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (whiteWins)",
+   "fen": "8/8/p4k2/3P4/2P1K3/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.protectedPasser.6",
+   "node": "pawns.protectedPasser",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: peão passado protegido contra passado distante (whiteWins)",
+   "fen": "8/1p6/5k2/3P4/2P5/2K5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (pawns.protectedPasser)"
+  },
+  {
+   "id": "own.pawns.trebuchet.1",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (blackWins)",
+   "fen": "8/8/8/1Kp5/2Pk4/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.2",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (whiteWins)",
+   "fen": "8/8/8/2pK4/1kP5/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.3",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (blackWins)",
+   "fen": "8/8/8/2Kp4/3Pk3/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.4",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (whiteWins)",
+   "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.5",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (blackWins)",
+   "fen": "8/8/8/3Kp3/4Pk2/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.6",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (whiteWins)",
+   "fen": "8/8/8/4pK2/3kP3/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.7",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (blackWins)",
+   "fen": "8/8/8/4Kp2/5Pk1/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.pawns.trebuchet.8",
+   "node": "pawns.trebuchet",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: zugzwang recíproco: quem joga perde (whiteWins)",
+   "fen": "8/8/8/5pK1/4kP2/8/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "busca completa: peões bloqueados e reis encostados"
+  },
+  {
+   "id": "own.queen.vsPawn.1",
+   "node": "queen.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 27 (+100, lance único)",
+   "fen": "7K/8/8/8/8/3Q4/3p4/4k3 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d3e3"
+   ],
+   "accept": [
+    [
+     "d3e3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsPawn ex e03 (original)"
+  },
+  {
+   "id": "own.queen.vsPawn.2",
+   "node": "queen.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 29 (+100, lance único)",
+   "fen": "2Q5/8/8/3K4/8/4p3/3k4/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d5d4"
+   ],
+   "accept": [
+    [
+     "d5d4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsPawn key block (p e2→e3)"
+  },
+  {
+   "id": "own.queen.vsPawn.3",
+   "node": "queen.vsPawn",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 18",
+   "fen": "K7/8/8/8/8/8/5kp1/7Q w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h1h2"
+   ],
+   "accept": [
+    [
+     "h1h2",
+     "h1h4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsPawn ex e05 (original)"
+  },
+  {
+   "id": "own.queen.vsPawn.4",
+   "node": "queen.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 21 (+100, lance único)",
+   "fen": "8/6KQ/8/8/8/8/3p4/2k5 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h7h6"
+   ],
+   "accept": [
+    [
+     "h7h6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsPawn ex e08 (K h8→g7)"
+  },
+  {
+   "id": "own.queen.vsPawn.5",
+   "node": "queen.vsPawn",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 23",
+   "fen": "7K/8/8/8/8/3p4/2k5/Q7 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a1a2"
+   ],
+   "accept": [
+    [
+     "a1a2",
+     "a1a4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsPawn ex e09 (p d2→d3)"
+  },
+  {
+   "id": "own.queen.vsPawnDraws.1",
+   "node": "queen.vsPawnDraws",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: dama contra peão de torre ou de bispo na sétima (whiteWins)",
+   "fen": "8/8/8/4K3/8/8/1Qpk4/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsPawnDraws)"
+  },
+  {
+   "id": "own.queen.vsPawnDraws.2",
+   "node": "queen.vsPawnDraws",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: dama contra peão de torre ou de bispo na sétima (draw)",
+   "fen": "8/8/8/6K1/8/7Q/pk6/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsPawnDraws)"
+  },
+  {
+   "id": "own.queen.vsPawnDraws.3",
+   "node": "queen.vsPawnDraws",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: dama contra peão de torre ou de bispo na sétima (whiteWins)",
+   "fen": "Q7/8/8/8/3K4/8/4kp2/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsPawnDraws)"
+  },
+  {
+   "id": "own.queen.vsPawnDraws.4",
+   "node": "queen.vsPawnDraws",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: dama contra peão de torre ou de bispo na sétima (draw)",
+   "fen": "8/K7/8/8/8/8/2pk4/Q7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsPawnDraws)"
+  },
+  {
+   "id": "own.queen.vsPawnDraws.5",
+   "node": "queen.vsPawnDraws",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: dama contra peão de torre ou de bispo na sétima (whiteWins)",
+   "fen": "8/8/8/3Q4/4K3/8/5p2/4k3 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsPawnDraws)"
+  },
+  {
+   "id": "own.queen.vsRook.1",
+   "node": "queen.vsRook",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 33 (+100, lance único)",
+   "fen": "8/3k4/r4Q2/8/4K3/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f6a6"
+   ],
+   "accept": [
+    [
+     "f6a6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsRook.thirdRank key fourth (r a5→a6)"
+  },
+  {
+   "id": "own.queen.vsRook.2",
+   "node": "queen.vsRook",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); draw: 1 lance(s) certo(s) de 15 (+100, lance único)",
+   "fen": "8/8/8/8/6k1/4q3/5R2/5K2 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f2g2"
+   ],
+   "accept": [
+    [
+     "f2g2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsRook.thirdRank ex e11 (cores trocadas)"
+  },
+  {
+   "id": "own.queen.vsRook.3",
+   "node": "queen.vsRook",
+   "type": "move",
+   "difficulty": 2050,
+   "difficultySource": "hand: faixa do nó (2050); win: 3 lance(s) certo(s) de 24",
+   "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a5d5"
+   ],
+   "accept": [
+    [
+     "a5d5",
+     "a5d8",
+     "a5e5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsRook.philidor ex e01 (original)"
+  },
+  {
+   "id": "own.queen.vsRook.4",
+   "node": "queen.vsRook",
+   "type": "move",
+   "difficulty": 2150,
+   "difficultySource": "hand: faixa do nó (2050); win: 1 lance(s) certo(s) de 26 (+100, lance único)",
+   "fen": "6k1/r7/5K2/7Q/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h5d5"
+   ],
+   "accept": [
+    [
+     "h5d5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsRook.philidor ex e06 (espelhada)"
+  },
+  {
+   "id": "own.queen.vsRook.5",
+   "node": "queen.vsRook",
+   "type": "move",
+   "difficulty": 2050,
+   "difficultySource": "hand: faixa do nó (2050); win: 3 lance(s) certo(s) de 24",
+   "fen": "4k3/2Q5/6r1/4K3/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c7c2"
+   ],
+   "accept": [
+    [
+     "c7c2",
+     "c7c3",
+     "c7c4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "queen.vsRook.thirdRank key third (espelhada)"
+  },
+  {
+   "id": "own.queen.vsRookPawn.1",
+   "node": "queen.vsRookPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: dama contra torre e peão: a fortaleza segura? (draw)",
+   "fen": "1k6/2p5/3r4/8/7K/4Q3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsRookPawn)"
+  },
+  {
+   "id": "own.queen.vsRookPawn.2",
+   "node": "queen.vsRookPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: dama contra torre e peão: a fortaleza segura? (draw)",
+   "fen": "6k1/5p2/6r1/8/7Q/2K5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsRookPawn)"
+  },
+  {
+   "id": "own.queen.vsRookPawn.3",
+   "node": "queen.vsRookPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: dama contra torre e peão: a fortaleza segura? (draw)",
+   "fen": "8/4pk2/3r4/8/6QK/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsRookPawn)"
+  },
+  {
+   "id": "own.queen.vsRookPawn.4",
+   "node": "queen.vsRookPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: dama contra torre e peão: a fortaleza segura? (draw)",
+   "fen": "8/1kp5/3r4/8/8/4QK2/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsRookPawn)"
+  },
+  {
+   "id": "own.queen.vsRookPawn.5",
+   "node": "queen.vsRookPawn",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: dama contra torre e peão: a fortaleza segura? (draw)",
+   "fen": "8/4kp2/4r3/8/8/2K5/8/2Q5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.vsRookPawn)"
+  },
+  {
+   "id": "own.queen.pawnVsQueen.1",
+   "node": "queen.pawnVsQueen",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: dama e peão contra dama (whiteWins)",
+   "fen": "8/8/Q1P5/5q2/3K4/7k/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.pawnVsQueen)"
+  },
+  {
+   "id": "own.queen.pawnVsQueen.2",
+   "node": "queen.pawnVsQueen",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: dama e peão contra dama (draw)",
+   "fen": "1k6/5K2/1P6/8/8/5Q2/8/4q3 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.pawnVsQueen)"
+  },
+  {
+   "id": "own.queen.pawnVsQueen.3",
+   "node": "queen.pawnVsQueen",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: dama e peão contra dama (whiteWins)",
+   "fen": "1K6/8/6P1/1Q6/8/q5k1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.pawnVsQueen)"
+  },
+  {
+   "id": "own.queen.pawnVsQueen.4",
+   "node": "queen.pawnVsQueen",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: dama e peão contra dama (draw)",
+   "fen": "2k5/8/5P2/2q5/8/8/6QK/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.pawnVsQueen)"
+  },
+  {
+   "id": "own.queen.pawnVsQueen.5",
+   "node": "queen.pawnVsQueen",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: dama e peão contra dama (whiteWins)",
+   "fen": "8/6PQ/8/2q3k1/8/8/8/7K w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (queen.pawnVsQueen)"
+  },
+  {
+   "id": "own.rook.vsPawn.1",
+   "node": "rook.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 17 (+100, lance único)",
+   "fen": "r7/8/8/4PK2/8/8/k7/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "a2b3"
+   ],
+   "accept": [
+    [
+     "a2b3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn practice (cores trocadas)"
+  },
+  {
+   "id": "own.rook.vsPawn.2",
+   "node": "rook.vsPawn",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 22",
+   "fen": "8/8/4K3/8/1p6/4k3/8/7R w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e6d5"
+   ],
+   "accept": [
+    [
+     "e6d5",
+     "h1b1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key shoulder (p c4→b4)"
+  },
+  {
+   "id": "own.rook.vsPawn.3",
+   "node": "rook.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 17 (+100, lance único)",
+   "fen": "6K1/8/5k2/8/3p4/8/8/R7 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a1a5"
+   ],
+   "accept": [
+    [
+     "a1a5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn ex e01 (original)"
+  },
+  {
+   "id": "own.rook.vsPawn.4",
+   "node": "rook.vsPawn",
+   "type": "move",
+   "difficulty": 1450,
+   "difficultySource": "hand: faixa do nó (1450); win: 2 lance(s) certo(s) de 22",
+   "fen": "6R1/8/4K3/2p5/8/3k4/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e6d5"
+   ],
+   "accept": [
+    [
+     "e6d5",
+     "e6e5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn ex e04 (K e7→e6)"
+  },
+  {
+   "id": "own.rook.vsPawn.5",
+   "node": "rook.vsPawn",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1450); win: 1 lance(s) certo(s) de 17 (+100, lance único)",
+   "fen": "7r/8/8/4P3/8/2K5/k7/8 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "h8h4"
+   ],
+   "accept": [
+    [
+     "h8h4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key cut (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.rook.saavedra.1",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: Saavedra: 3 lance(s) ganham",
+   "fen": "8/2P5/8/8/1K1r4/8/8/k7 w - - 5 4",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b4b3"
+   ],
+   "accept": [
+    [
+     "b4b3",
+     "b4b5",
+     "b4c3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (lance 4 da linha), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.saavedra.2",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: Saavedra: 1 lance(s) ganham",
+   "fen": "8/2P5/8/8/8/1K1r4/8/k7 w - - 7 5",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b3c2"
+   ],
+   "accept": [
+    [
+     "b3c2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (lance 5 da linha), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.saavedra.3",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: Saavedra: 3 lance(s) ganham; a dama afoga e só a torre ganha",
+   "fen": "8/2P5/8/8/3r4/8/2K5/k7 w - - 9 6",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c2b3"
+   ],
+   "accept": [
+    [
+     "c2b3",
+     "c2c3",
+     "c7c8r"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (lance 6 da linha), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.saavedra.4",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: Saavedra: 3 lance(s) ganham; a dama afoga e só a torre ganha",
+   "fen": "8/5P2/8/8/4r3/8/5K2/7k w - - 9 6",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "f2f3"
+   ],
+   "accept": [
+    [
+     "f2f3",
+     "f2g3",
+     "f7f8r"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (posição final (espelhada)), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.saavedra.5",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: Saavedra: 3 lance(s) ganham; a dama afoga e só a torre ganha",
+   "fen": "K7/2k5/8/3R4/8/8/2p5/8 b - - 9 6",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "c2c1r"
+   ],
+   "accept": [
+    [
+     "c2c1r",
+     "c7b6",
+     "c7c6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (posição final (cores trocadas)), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.saavedra.6",
+   "node": "rook.saavedra",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: Saavedra: 3 lance(s) ganham; a dama afoga e só a torre ganha",
+   "fen": "7K/5k2/8/4R3/8/8/5p2/8 b - - 9 6",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "f2f1r"
+   ],
+   "accept": [
+    [
+     "f2f1r",
+     "f7f6",
+     "f7g6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rookPawns.vsPawn key saavedra (posição final (cores trocadas e espelhada)), conferida pela tabela"
+  },
+  {
+   "id": "own.rook.vsTwoPawns.1",
+   "node": "rook.vsTwoPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: torre contra dois peões ligados (whiteWins)",
+   "fen": "8/8/8/K5p1/4R3/5p2/k7/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vsTwoPawns)"
+  },
+  {
+   "id": "own.rook.vsTwoPawns.2",
+   "node": "rook.vsTwoPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: torre contra dois peões ligados (draw)",
+   "fen": "2K5/8/8/5p2/6p1/R7/5k2/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vsTwoPawns)"
+  },
+  {
+   "id": "own.rook.vsTwoPawns.3",
+   "node": "rook.vsTwoPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: torre contra dois peões ligados (blackWins)",
+   "fen": "2K5/8/2R5/5k2/5p2/6p1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vsTwoPawns)"
+  },
+  {
+   "id": "own.rook.vsTwoPawns.4",
+   "node": "rook.vsTwoPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: torre contra dois peões ligados (whiteWins)",
+   "fen": "8/8/8/2p2K2/3p4/8/k7/6R1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vsTwoPawns)"
+  },
+  {
+   "id": "own.rook.vsTwoPawns.5",
+   "node": "rook.vsTwoPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: torre contra dois peões ligados (draw)",
+   "fen": "8/2K5/5R2/k7/1pp5/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vsTwoPawns)"
+  },
+  {
+   "id": "own.rook.lucena.1",
+   "node": "rook.lucena",
+   "type": "move",
+   "difficulty": 1500,
+   "difficultySource": "hand: faixa do nó (1500); win: 2 lance(s) certo(s) de 18",
+   "fen": "3K4/6k1/3P4/8/8/8/2r5/5R2 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d6d7"
+   ],
+   "accept": [
+    [
+     "d6d7",
+     "f1f4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.lucena key villa5 (P d7→d6)"
+  },
+  {
+   "id": "own.rook.lucena.2",
+   "node": "rook.lucena",
+   "type": "move",
+   "difficulty": 1600,
+   "difficultySource": "hand: faixa do nó (1500); win: 1 lance(s) certo(s) de 20 (+100, lance único)",
+   "fen": "1K1k4/P7/8/8/8/8/r7/2R5 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "c1c7"
+   ],
+   "accept": [
+    [
+     "c1c7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.lucena ex e02 (P b7→a7)"
+  },
+  {
+   "id": "own.rook.lucena.3",
+   "node": "rook.lucena",
+   "type": "move",
+   "difficulty": 1600,
+   "difficultySource": "hand: faixa do nó (1500); draw: 1 lance(s) certo(s) de 19 (+100, lance único)",
+   "fen": "3K4/4P1k1/8/8/8/8/r7/5R2 b - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "a2a8"
+   ],
+   "accept": [
+    [
+     "a2a8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.lucena key shortSide (K e8→d8)"
+  },
+  {
+   "id": "own.rook.lucena.4",
+   "node": "rook.lucena",
+   "type": "move",
+   "difficulty": 1500,
+   "difficultySource": "hand: faixa do nó (1500); win: 2 lance(s) certo(s) de 7",
+   "fen": "8/1P2k3/1K6/8/2R5/8/8/1r6 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b6c6"
+   ],
+   "accept": [
+    [
+     "b6c6",
+     "b6c7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.lucena ex e04 (R d5→c4)"
+  },
+  {
+   "id": "own.rook.lucena.5",
+   "node": "rook.lucena",
+   "type": "move",
+   "difficulty": 1600,
+   "difficultySource": "hand: faixa do nó (1500); win: 1 lance(s) certo(s) de 16 (+100, lance único)",
+   "fen": "4K1k1/4P3/8/8/8/8/r7/5R2 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e8d7"
+   ],
+   "accept": [
+    [
+     "e8d7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.lucena ex e11 (k g7→g8)"
+  },
+  {
+   "id": "own.rook.philidor.1",
+   "node": "rook.philidor",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1550); draw: 2 lance(s) certo(s) de 16",
+   "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d1c1"
+   ],
+   "accept": [
+    [
+     "d1c1",
+     "g8g3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.philidor ex e04 (original)"
+  },
+  {
+   "id": "own.rook.philidor.2",
+   "node": "rook.philidor",
+   "type": "move",
+   "difficulty": 1650,
+   "difficultySource": "hand: faixa do nó (1550); win: 1 lance(s) certo(s) de 15 (+100, lance único)",
+   "fen": "7R/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h8h2"
+   ],
+   "accept": [
+    [
+     "h8h2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.philidor key bishop (R g8→h8)"
+  },
+  {
+   "id": "own.rook.philidor.3",
+   "node": "rook.philidor",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1550); draw: 3 lance(s) certo(s) de 15",
+   "fen": "R7/8/8/8/8/5k2/4p2r/4K3 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a8a3"
+   ],
+   "accept": [
+    [
+     "a8a3",
+     "a8f8",
+     "e1d2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.philidor ex e03 (p e3→e2)"
+  },
+  {
+   "id": "own.rook.philidor.4",
+   "node": "rook.philidor",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1550); draw: 2 lance(s) certo(s) de 5",
+   "fen": "8/8/8/8/8/2k1p3/4K3/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e2e1"
+   ],
+   "accept": [
+    [
+     "e2e1",
+     "e2e3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.philidor ex e05 (k d4→c3)"
+  },
+  {
+   "id": "own.rook.philidor.5",
+   "node": "rook.philidor",
+   "type": "move",
+   "difficulty": 1550,
+   "difficultySource": "hand: faixa do nó (1550); draw: 3 lance(s) certo(s) de 6",
+   "fen": "8/8/8/8/3k4/5p2/4K3/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e2f1"
+   ],
+   "accept": [
+    [
+     "e2f1",
+     "e2f2",
+     "e2f3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.philidor ex e05 (p e3→f3)"
+  },
+  {
+   "id": "own.rook.backRank.1",
+   "node": "rook.backRank",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); win: 1 lance(s) certo(s) de 20 (+100, lance único)",
+   "fen": "8/8/8/8/8/5pk1/1r6/R4K2 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "b2h2"
+   ],
+   "accept": [
+    [
+     "b2h2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.backRank key bishop (K g1→f1)"
+  },
+  {
+   "id": "own.rook.backRank.2",
+   "node": "rook.backRank",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: faixa do nó (1750); win: 2 lance(s) certo(s) de 13",
+   "fen": "8/8/8/8/8/5kp1/rR6/6K1 b - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "a2a1"
+   ],
+   "accept": [
+    [
+     "a2a1",
+     "a2b2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.backRank key knight (R b1→b2)"
+  },
+  {
+   "id": "own.rook.backRank.3",
+   "node": "rook.backRank",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); win: 1 lance(s) certo(s) de 19 (+100, lance único)",
+   "fen": "1k5r/6R1/1KP5/8/8/8/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g7b7"
+   ],
+   "accept": [
+    [
+     "g7b7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.backRank key bishop (cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.rook.backRank.4",
+   "node": "rook.backRank",
+   "type": "move",
+   "difficulty": 1850,
+   "difficultySource": "hand: faixa do nó (1750); win: 1 lance(s) certo(s) de 8 (+100, lance único)",
+   "fen": "8/8/8/8/6k1/6p1/8/rR4K1 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b1a1"
+   ],
+   "accept": [
+    [
+     "b1a1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.backRank ex e05 (r a2→a1)"
+  },
+  {
+   "id": "own.rook.backRank.5",
+   "node": "rook.backRank",
+   "type": "move",
+   "difficulty": 1750,
+   "difficultySource": "hand: faixa do nó (1750); draw: 2 lance(s) certo(s) de 16",
+   "fen": "R7/8/8/8/8/1r4kp/8/6K1 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a8a1"
+   ],
+   "accept": [
+    [
+     "a8a1",
+     "a8g8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.backRank ex e03 (p g4→h3)"
+  },
+  {
+   "id": "own.rook.shortSide.1",
+   "node": "rook.shortSide",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); draw: 1 lance(s) certo(s) de 16 (+100, lance único)",
+   "fen": "8/1R6/8/8/4p3/5k2/r7/4K3 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b7e7"
+   ],
+   "accept": [
+    [
+     "b7e7"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.shortSide ex e01 (R b8→b7)"
+  },
+  {
+   "id": "own.rook.shortSide.2",
+   "node": "rook.shortSide",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); draw: 1 lance(s) certo(s) de 5 (+100, lance único)",
+   "fen": "3r4/1R6/8/8/8/5p2/4k1K1/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g2g3"
+   ],
+   "accept": [
+    [
+     "g2g3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.shortSide key close (p e3→f3)"
+  },
+  {
+   "id": "own.rook.shortSide.3",
+   "node": "rook.shortSide",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); draw: 1 lance(s) certo(s) de 15 (+100, lance único)",
+   "fen": "6R1/8/8/8/4p3/8/4k1K1/1r6 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "g8a8"
+   ],
+   "accept": [
+    [
+     "g8a8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.shortSide ex e10 (R f8→g8)"
+  },
+  {
+   "id": "own.rook.shortSide.4",
+   "node": "rook.shortSide",
+   "type": "move",
+   "difficulty": 1800,
+   "difficultySource": "hand: faixa do nó (1800); draw: 2 lance(s) certo(s) de 19",
+   "fen": "5r2/8/8/8/R7/1k6/4p1K1/8 w - - 0 1",
+   "prompt": "placementMoveDraw",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a4a1"
+   ],
+   "accept": [
+    [
+     "a4a1",
+     "a4e4"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.shortSide ex e06 (k c3→b3)"
+  },
+  {
+   "id": "own.rook.shortSide.5",
+   "node": "rook.shortSide",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); win: 1 lance(s) certo(s) de 15 (+100, lance único)",
+   "fen": "8/1R6/8/8/4p3/5k2/1r6/4K3 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b7b2"
+   ],
+   "accept": [
+    [
+     "b7b2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "rook.shortSide practice (R a8→b7)"
+  },
+  {
+   "id": "own.rook.cutOff.1",
+   "node": "rook.cutOff",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: rei cortado por colunas: ganha ou empata? (whiteWins)",
+   "fen": "8/8/8/8/2KP1k2/7r/8/4R3 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.cutOff)"
+  },
+  {
+   "id": "own.rook.cutOff.2",
+   "node": "rook.cutOff",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: rei cortado por colunas: ganha ou empata? (draw)",
+   "fen": "8/8/k7/1R1P4/1K6/8/8/r7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.cutOff)"
+  },
+  {
+   "id": "own.rook.cutOff.3",
+   "node": "rook.cutOff",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: rei cortado por colunas: ganha ou empata? (whiteWins)",
+   "fen": "8/8/8/8/1K3P2/3r4/2R5/k7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.cutOff)"
+  },
+  {
+   "id": "own.rook.cutOff.4",
+   "node": "rook.cutOff",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: rei cortado por colunas: ganha ou empata? (draw)",
+   "fen": "8/3r4/3k4/4R3/5P2/2K5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.cutOff)"
+  },
+  {
+   "id": "own.rook.cutOff.5",
+   "node": "rook.cutOff",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: rei cortado por colunas: ganha ou empata? (whiteWins)",
+   "fen": "6k1/8/8/2PRK3/1r6/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.cutOff)"
+  },
+  {
+   "id": "own.rook.frontal.1",
+   "node": "rook.frontal",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: defesa frontal: a torre na frente do peão (whiteWins)",
+   "fen": "3r4/3k4/1K6/6R1/3P4/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.frontal)"
+  },
+  {
+   "id": "own.rook.frontal.2",
+   "node": "rook.frontal",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: defesa frontal: a torre na frente do peão (draw)",
+   "fen": "4r3/4k3/1K6/8/4P3/6R1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.frontal)"
+  },
+  {
+   "id": "own.rook.frontal.3",
+   "node": "rook.frontal",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: defesa frontal: a torre na frente do peão (whiteWins)",
+   "fen": "4r3/4k3/8/4PK2/7R/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.frontal)"
+  },
+  {
+   "id": "own.rook.frontal.4",
+   "node": "rook.frontal",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: defesa frontal: a torre na frente do peão (draw)",
+   "fen": "5r2/5k2/8/8/5PR1/6K1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.frontal)"
+  },
+  {
+   "id": "own.rook.frontal.5",
+   "node": "rook.frontal",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: defesa frontal: a torre na frente do peão (whiteWins)",
+   "fen": "4r3/4k3/8/R4K2/4P3/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.frontal)"
+  },
+  {
+   "id": "own.rook.rookPawn.1",
+   "node": "rook.rookPawn",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: peão de torre na sétima com a torre na frente (whiteWins)",
+   "fen": "R7/P7/3k4/8/3K4/r7/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.rookPawn)"
+  },
+  {
+   "id": "own.rook.rookPawn.2",
+   "node": "rook.rookPawn",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: peão de torre na sétima com a torre na frente (draw)",
+   "fen": "R7/Pk6/8/8/8/r7/6K1/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.rookPawn)"
+  },
+  {
+   "id": "own.rook.rookPawn.3",
+   "node": "rook.rookPawn",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: peão de torre na sétima com a torre na frente (whiteWins)",
+   "fen": "R7/P7/8/2k5/8/r7/7K/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.rookPawn)"
+  },
+  {
+   "id": "own.rook.rookPawn.4",
+   "node": "rook.rookPawn",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: peão de torre na sétima com a torre na frente (draw)",
+   "fen": "R7/P3K1k1/8/r7/8/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.rookPawn)"
+  },
+  {
+   "id": "own.rook.rookPawn.5",
+   "node": "rook.rookPawn",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: peão de torre na sétima com a torre na frente (whiteWins)",
+   "fen": "R7/P7/8/r1k5/5K2/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.rookPawn)"
+  },
+  {
+   "id": "own.rook.vancura.1",
+   "node": "rook.vancura",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: Vancura: a torre ataca o peão de lado (whiteWins)",
+   "fen": "R7/8/P5kr/8/8/8/8/3K4 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vancura)"
+  },
+  {
+   "id": "own.rook.vancura.2",
+   "node": "rook.vancura",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: Vancura: a torre ataca o peão de lado (draw)",
+   "fen": "8/R7/P4kr1/8/8/8/8/3K4 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vancura)"
+  },
+  {
+   "id": "own.rook.vancura.3",
+   "node": "rook.vancura",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: Vancura: a torre ataca o peão de lado (whiteWins)",
+   "fen": "R7/8/P4kr1/8/8/5K2/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vancura)"
+  },
+  {
+   "id": "own.rook.vancura.4",
+   "node": "rook.vancura",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: Vancura: a torre ataca o peão de lado (draw)",
+   "fen": "8/R7/P4k1r/8/8/8/8/1K6 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vancura)"
+  },
+  {
+   "id": "own.rook.vancura.5",
+   "node": "rook.vancura",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: Vancura: a torre ataca o peão de lado (whiteWins)",
+   "fen": "8/R7/P4kr1/8/8/8/1K6/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.vancura)"
+  },
+  {
+   "id": "own.rook.behindPasser.1",
+   "node": "rook.behindPasser",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); a torre vai para trás do peão; 1 lance(s) de 16",
+   "fen": "8/8/8/4r3/4P3/8/3R4/4K1k1 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d2e2"
+   ],
+   "accept": [
+    [
+     "d2e2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.behindPasser), conferido pela tabela"
+  },
+  {
+   "id": "own.rook.behindPasser.2",
+   "node": "rook.behindPasser",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); a torre vai para trás do peão; 1 lance(s) de 23",
+   "fen": "1k6/5K2/8/3r4/6P1/8/R7/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a2g2"
+   ],
+   "accept": [
+    [
+     "a2g2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.behindPasser), conferido pela tabela"
+  },
+  {
+   "id": "own.rook.behindPasser.3",
+   "node": "rook.behindPasser",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); a torre vai para trás do peão; 1 lance(s) de 13",
+   "fen": "8/8/8/1P1r4/k1K5/1R6/8/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "b3b1"
+   ],
+   "accept": [
+    [
+     "b3b1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.behindPasser), conferido pela tabela"
+  },
+  {
+   "id": "own.rook.behindPasser.4",
+   "node": "rook.behindPasser",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); a torre vai para trás do peão; 1 lance(s) de 23",
+   "fen": "8/6k1/8/7P/8/1K6/8/4R2r w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "e1h1"
+   ],
+   "accept": [
+    [
+     "e1h1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.behindPasser), conferido pela tabela"
+  },
+  {
+   "id": "own.rook.behindPasser.5",
+   "node": "rook.behindPasser",
+   "type": "move",
+   "difficulty": 1900,
+   "difficultySource": "hand: faixa do nó (1800); a torre vai para trás do peão; 1 lance(s) de 22",
+   "fen": "8/8/5P1r/8/6k1/2K5/3R4/8 w - - 0 1",
+   "prompt": "placementMoveWin",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "d2f2"
+   ],
+   "accept": [
+    [
+     "d2f2"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.behindPasser), conferido pela tabela"
+  },
+  {
+   "id": "own.rook.twoPawns.1",
+   "node": "rook.twoPawns",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre e dois peões (bispo e torre) contra torre (whiteWins)",
+   "fen": "5R2/8/7k/4KP2/7P/2r5/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.twoPawns)"
+  },
+  {
+   "id": "own.rook.twoPawns.2",
+   "node": "rook.twoPawns",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre e dois peões (bispo e torre) contra torre (draw)",
+   "fen": "8/r6k/8/8/5P1P/3R1K2/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.twoPawns)"
+  },
+  {
+   "id": "own.rook.twoPawns.3",
+   "node": "rook.twoPawns",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre e dois peões (bispo e torre) contra torre (whiteWins)",
+   "fen": "3r3k/8/4K3/8/5P1P/8/8/6R1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.twoPawns)"
+  },
+  {
+   "id": "own.rook.twoPawns.4",
+   "node": "rook.twoPawns",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre e dois peões (bispo e torre) contra torre (draw)",
+   "fen": "5k2/8/7K/5P1P/2R5/8/6r1/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.twoPawns)"
+  },
+  {
+   "id": "own.rook.twoPawns.5",
+   "node": "rook.twoPawns",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre e dois peões (bispo e torre) contra torre (whiteWins)",
+   "fen": "4k3/8/1r6/7P/5P2/5K2/8/2R5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rook.twoPawns)"
+  },
+  {
+   "id": "own.minor.wrongBishop.1",
+   "node": "minor.wrongBishop",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: bispo da cor errada com peão de torre (whiteWins)",
+   "fen": "7K/2B5/7k/8/P7/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.wrongBishop)"
+  },
+  {
+   "id": "own.minor.wrongBishop.2",
+   "node": "minor.wrongBishop",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: bispo da cor errada com peão de torre (draw)",
+   "fen": "8/1k6/8/8/P1K5/4B3/8/8 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.wrongBishop)"
+  },
+  {
+   "id": "own.minor.wrongBishop.3",
+   "node": "minor.wrongBishop",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: bispo da cor errada com peão de torre (whiteWins)",
+   "fen": "3k4/7B/8/8/6KP/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.wrongBishop)"
+  },
+  {
+   "id": "own.minor.wrongBishop.4",
+   "node": "minor.wrongBishop",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: bispo da cor errada com peão de torre (draw)",
+   "fen": "8/8/8/4k2P/8/8/B7/4K3 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.wrongBishop)"
+  },
+  {
+   "id": "own.minor.wrongBishop.5",
+   "node": "minor.wrongBishop",
+   "type": "choice",
+   "difficulty": 1450,
+   "difficultySource": "hand: bispo da cor errada com peão de torre (whiteWins)",
+   "fen": "8/K3k3/P7/8/8/8/8/1B6 b - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "black"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.wrongBishop)"
+  },
+  {
+   "id": "own.minor.knightVsPawn.1",
+   "node": "minor.knightVsPawn",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: o cavalo segura o peão? (draw)",
+   "fen": "8/6K1/4N3/8/4p3/6k1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightVsPawn)"
+  },
+  {
+   "id": "own.minor.knightVsPawn.2",
+   "node": "minor.knightVsPawn",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: o cavalo segura o peão? (blackWins)",
+   "fen": "8/6N1/8/3K4/8/1p5k/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightVsPawn)"
+  },
+  {
+   "id": "own.minor.knightVsPawn.3",
+   "node": "minor.knightVsPawn",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: o cavalo segura o peão? (draw)",
+   "fen": "7N/8/8/8/2k3K1/4p3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightVsPawn)"
+  },
+  {
+   "id": "own.minor.knightVsPawn.4",
+   "node": "minor.knightVsPawn",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: o cavalo segura o peão? (blackWins)",
+   "fen": "3N4/8/3K4/8/2k5/8/6p1/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightVsPawn)"
+  },
+  {
+   "id": "own.minor.knightVsPawn.5",
+   "node": "minor.knightVsPawn",
+   "type": "choice",
+   "difficulty": 1500,
+   "difficultySource": "hand: o cavalo segura o peão? (draw)",
+   "fen": "8/8/2K5/8/6p1/1N6/8/3k4 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightVsPawn)"
+  },
+  {
+   "id": "own.minor.bishopVsPawns.1",
+   "node": "minor.bishopVsPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: bispo contra dois peões (draw)",
+   "fen": "2B5/4k3/8/4p3/4p3/8/8/1K6 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins",
+    "whiteWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsPawns)"
+  },
+  {
+   "id": "own.minor.bishopVsPawns.2",
+   "node": "minor.bishopVsPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: bispo contra dois peões (blackWins)",
+   "fen": "7K/8/1B6/8/5p2/2p5/7k/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins",
+    "whiteWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsPawns)"
+  },
+  {
+   "id": "own.minor.bishopVsPawns.3",
+   "node": "minor.bishopVsPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: bispo contra dois peões (draw)",
+   "fen": "8/8/6B1/3p2p1/8/5K2/8/2k5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins",
+    "whiteWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsPawns)"
+  },
+  {
+   "id": "own.minor.bishopVsPawns.4",
+   "node": "minor.bishopVsPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: bispo contra dois peões (blackWins)",
+   "fen": "1K6/8/2B5/8/1p1p4/8/1k6/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins",
+    "whiteWins"
+   ],
+   "answer": "blackWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsPawns)"
+  },
+  {
+   "id": "own.minor.bishopVsPawns.5",
+   "node": "minor.bishopVsPawns",
+   "type": "choice",
+   "difficulty": 1750,
+   "difficultySource": "hand: bispo contra dois peões (draw)",
+   "fen": "k7/7K/8/8/1pp4B/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "draw",
+    "blackWins",
+    "whiteWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsPawns)"
+  },
+  {
+   "id": "own.minor.oppositeBishops.1",
+   "node": "minor.oppositeBishops",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: bispos de cores opostas: dois peões ganham? (whiteWins)",
+   "fen": "8/3K4/3P2P1/k7/8/8/4b3/2B5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.oppositeBishops)"
+  },
+  {
+   "id": "own.minor.oppositeBishops.2",
+   "node": "minor.oppositeBishops",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: bispos de cores opostas: dois peões ganham? (draw)",
+   "fen": "8/1k6/4P3/8/5P2/8/1B6/3b1K2 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.oppositeBishops)"
+  },
+  {
+   "id": "own.minor.oppositeBishops.3",
+   "node": "minor.oppositeBishops",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: bispos de cores opostas: dois peões ganham? (whiteWins)",
+   "fen": "8/1K4k1/4P3/1P6/7b/8/8/3B4 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.oppositeBishops)"
+  },
+  {
+   "id": "own.minor.oppositeBishops.4",
+   "node": "minor.oppositeBishops",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: bispos de cores opostas: dois peões ganham? (draw)",
+   "fen": "4BK2/8/5k2/4b3/1PP5/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.oppositeBishops)"
+  },
+  {
+   "id": "own.minor.oppositeBishops.5",
+   "node": "minor.oppositeBishops",
+   "type": "choice",
+   "difficulty": 1800,
+   "difficultySource": "hand: bispos de cores opostas: dois peões ganham? (whiteWins)",
+   "fen": "1B6/8/8/1P3P2/8/k7/2K5/7b w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.oppositeBishops)"
+  },
+  {
+   "id": "own.minor.centurini.1",
+   "node": "minor.centurini",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra bispo da mesma cor (whiteWins)",
+   "fen": "b7/8/8/2K2P2/8/8/7k/1B6 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.centurini)"
+  },
+  {
+   "id": "own.minor.centurini.2",
+   "node": "minor.centurini",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra bispo da mesma cor (draw)",
+   "fen": "8/3k4/3P4/b2K4/8/8/8/6B1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.centurini)"
+  },
+  {
+   "id": "own.minor.centurini.3",
+   "node": "minor.centurini",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra bispo da mesma cor (whiteWins)",
+   "fen": "7b/2P5/K7/6B1/1k6/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.centurini)"
+  },
+  {
+   "id": "own.minor.centurini.4",
+   "node": "minor.centurini",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra bispo da mesma cor (draw)",
+   "fen": "2k2b2/8/1P6/8/8/8/2K5/B7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.centurini)"
+  },
+  {
+   "id": "own.minor.centurini.5",
+   "node": "minor.centurini",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra bispo da mesma cor (whiteWins)",
+   "fen": "3B4/8/5P2/1k3K2/8/8/7b/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.centurini)"
+  },
+  {
+   "id": "own.minor.knightEndings.1",
+   "node": "minor.knightEndings",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: cavalo e peão contra cavalo (whiteWins)",
+   "fen": "6K1/6P1/3k4/8/8/8/7n/7N w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightEndings)"
+  },
+  {
+   "id": "own.minor.knightEndings.2",
+   "node": "minor.knightEndings",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: cavalo e peão contra cavalo (draw)",
+   "fen": "4k3/8/8/1P6/7n/8/7N/3K4 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightEndings)"
+  },
+  {
+   "id": "own.minor.knightEndings.3",
+   "node": "minor.knightEndings",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: cavalo e peão contra cavalo (whiteWins)",
+   "fen": "8/8/K1P5/5N2/8/3n4/k7/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightEndings)"
+  },
+  {
+   "id": "own.minor.knightEndings.4",
+   "node": "minor.knightEndings",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: cavalo e peão contra cavalo (draw)",
+   "fen": "8/1N6/4k3/1P6/4n3/8/4K3/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightEndings)"
+  },
+  {
+   "id": "own.minor.knightEndings.5",
+   "node": "minor.knightEndings",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: cavalo e peão contra cavalo (whiteWins)",
+   "fen": "7n/8/N4K2/4P3/8/4k3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.knightEndings)"
+  },
+  {
+   "id": "own.minor.bishopVsKnight.1",
+   "node": "minor.bishopVsKnight",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra cavalo (whiteWins)",
+   "fen": "3k4/8/6P1/8/Bn6/5K2/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsKnight)"
+  },
+  {
+   "id": "own.minor.bishopVsKnight.2",
+   "node": "minor.bishopVsKnight",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra cavalo (draw)",
+   "fen": "4B3/8/4K3/8/2P5/8/8/1kn5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsKnight)"
+  },
+  {
+   "id": "own.minor.bishopVsKnight.3",
+   "node": "minor.bishopVsKnight",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra cavalo (whiteWins)",
+   "fen": "6k1/8/8/8/3PB3/8/n1K5/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsKnight)"
+  },
+  {
+   "id": "own.minor.bishopVsKnight.4",
+   "node": "minor.bishopVsKnight",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra cavalo (draw)",
+   "fen": "8/4n2k/8/8/2P5/3K4/6B1/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsKnight)"
+  },
+  {
+   "id": "own.minor.bishopVsKnight.5",
+   "node": "minor.bishopVsKnight",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: bispo e peão contra cavalo (whiteWins)",
+   "fen": "8/7K/8/3P4/1B5n/7k/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (minor.bishopVsKnight)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.1",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre contra bispo: canto certo? (whiteWins)",
+   "fen": "8/8/3K3R/8/k5b1/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.2",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre contra bispo: canto certo? (draw)",
+   "fen": "8/2k5/8/8/1b6/8/5R2/2K5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.3",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2050,
+   "difficultySource": "hand: torre contra bispo: canto certo? (whiteWins)",
+   "fen": "8/8/R7/8/7K/8/8/3b2k1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.4",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: torre contra cavalo (whiteWins)",
+   "fen": "2n5/5R2/8/3K2k1/8/8/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.5",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: torre contra cavalo (draw)",
+   "fen": "8/8/K7/3n4/8/7k/1R6/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.vsMinor.6",
+   "node": "rookMinor.vsMinor",
+   "type": "choice",
+   "difficulty": 2100,
+   "difficultySource": "hand: torre contra cavalo (whiteWins)",
+   "fen": "2R5/8/8/6k1/8/8/3K2n1/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsMinor)"
+  },
+  {
+   "id": "own.rookMinor.exchange.1",
+   "node": "rookMinor.exchange",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: qualidade contra peça e peão: fortaleza? (whiteWins)",
+   "fen": "8/R7/5b2/6p1/8/5k2/8/6K1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.exchange)"
+  },
+  {
+   "id": "own.rookMinor.exchange.2",
+   "node": "rookMinor.exchange",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: qualidade contra peça e peão: fortaleza? (draw)",
+   "fen": "8/7R/8/2b5/1p6/6K1/8/k7 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.exchange)"
+  },
+  {
+   "id": "own.rookMinor.exchange.3",
+   "node": "rookMinor.exchange",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: qualidade contra peça e peão: fortaleza? (whiteWins)",
+   "fen": "8/4R3/K7/8/k2b4/6p1/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.exchange)"
+  },
+  {
+   "id": "own.rookMinor.exchange.4",
+   "node": "rookMinor.exchange",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: qualidade contra peça e peão: fortaleza? (draw)",
+   "fen": "8/R7/2k5/8/1p6/8/8/3K1b2 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.exchange)"
+  },
+  {
+   "id": "own.rookMinor.exchange.5",
+   "node": "rookMinor.exchange",
+   "type": "choice",
+   "difficulty": 2400,
+   "difficultySource": "hand: qualidade contra peça e peão: fortaleza? (whiteWins)",
+   "fen": "5k2/8/2K5/5b2/8/6p1/8/4R3 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw",
+    "blackWins"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.exchange)"
+  },
+  {
+   "id": "own.rookMinor.vsRook.1",
+   "node": "rookMinor.vsRook",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: torre e bispo contra torre (whiteWins)",
+   "fen": "7k/6r1/8/1K1R4/8/4B3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsRook)"
+  },
+  {
+   "id": "own.rookMinor.vsRook.2",
+   "node": "rookMinor.vsRook",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: torre e bispo contra torre (draw)",
+   "fen": "k7/8/7K/8/1R6/3B4/8/6r1 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsRook)"
+  },
+  {
+   "id": "own.rookMinor.vsRook.3",
+   "node": "rookMinor.vsRook",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: torre e bispo contra torre (whiteWins)",
+   "fen": "8/8/8/8/8/2RBk2r/K7/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsRook)"
+  },
+  {
+   "id": "own.rookMinor.vsRook.4",
+   "node": "rookMinor.vsRook",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: torre e bispo contra torre (draw)",
+   "fen": "7R/5r2/8/8/B7/1K2k3/8/8 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "draw",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsRook)"
+  },
+  {
+   "id": "own.rookMinor.vsRook.5",
+   "node": "rookMinor.vsRook",
+   "type": "choice",
+   "difficulty": 2450,
+   "difficultySource": "hand: torre e bispo contra torre (whiteWins)",
+   "fen": "5r2/4k3/8/7R/3K4/8/8/2B5 w - - 0 1",
+   "prompt": "placementResult",
+   "params": {
+    "side": "white"
+   },
+   "options": [
+    "whiteWins",
+    "draw"
+   ],
+   "answer": "whiteWins",
+   "source": "own",
+   "derivedFrom": "sorteio com semente (rookMinor.vsRook)"
+  },
+  {
+   "id": "own.school.minorMates.1",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: caminho mais curto (2 de 29)",
+   "fen": "8/8/3n4/4k3/8/8/6R1/R3K3 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a1a5"
+   ],
+   "accept": [
+    [
+     "a1a5",
+     "g2g5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.twoRooksVsKnight.defender (R h1→g2; k e6→e5)"
+  },
+  {
+   "id": "own.school.minorMates.2",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 950,
+   "difficultySource": "hand: mate em um com peça menor",
+   "fen": "7k/8/6K1/5N2/8/8/8/R7 w - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a1a8"
+   ],
+   "accept": [
+    [
+     "a1a8"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.rookKnight.mate (N f6→f5; original)"
+  },
+  {
+   "id": "own.school.minorMates.3",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: caminho mais curto (1 de 24)",
+   "fen": "r2k3r/8/8/8/4N3/3K4/8/8 b - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "h8h3"
+   ],
+   "accept": [
+    [
+     "h8h3"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.twoRooksVsKnight.defender (n d6→d5; cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.school.minorMates.4",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 950,
+   "difficultySource": "hand: mate em um com peça menor",
+   "fen": "7r/8/8/8/8/k1n5/8/K7 b - - 0 1",
+   "prompt": "placementCheckmate",
+   "params": {
+    "side": "black"
+   },
+   "moves": [
+    "h8h1"
+   ],
+   "accept": [
+    [
+     "h8h1"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.rookKnight.mate (K g6→h6; cores trocadas e espelhada)"
+  },
+  {
+   "id": "own.school.minorMates.5",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: caminho mais curto (1 de 21)",
+   "fen": "8/8/8/3k4/8/8/4B3/R2K4 w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "a1a6"
+   ],
+   "accept": [
+    [
+     "a1a6"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.rookBishop.team (B c1→d2; espelhada)"
+  },
+  {
+   "id": "own.school.minorMates.6",
+   "node": "school.minorMates",
+   "type": "move",
+   "difficulty": 1150,
+   "difficultySource": "hand: caminho mais curto (1 de 22)",
+   "fen": "8/8/8/8/4k3/8/3K4/2B2B1R w - - 0 1",
+   "prompt": "placementBestMove",
+   "params": {
+    "side": "white"
+   },
+   "moves": [
+    "h1h5"
+   ],
+   "accept": [
+    [
+     "h1h5"
+    ]
+   ],
+   "source": "own",
+   "derivedFrom": "minor.rookTwoBishops.team (K e1→d2; k e5→e4)"
+  }
+ ]
+}

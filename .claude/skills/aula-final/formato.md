@@ -6,14 +6,24 @@
 {
   "id": "mates.bishopKnight.w",
   "module": "mates",
-  "steps": [
-    {"type": "talk", "id": "corner", "fen": "…", "arrows": ["b1e4"], "marks": ["a1"]},
-    {"type": "move", "id": "w1", "fen": "…", "goal": "win",
-     "turns": [
-       {"teach": "e5f7", "accept": "best", "reply": "auto"},
-       {"teach": "d3f5", "accept": "best"}
-     ]},
-    {"type": "play", "id": "finish", "fen": "…", "goal": "win"}
+  "skills": ["mate.bishopKnight"],
+  "parts": [
+    {"id": "corner", "steps": [
+      {"type": "think", "id": "t_corner", "fen": "…", "minutes": 5, "hints": 2,
+       "arrows": ["b1e4"], "marks": ["a1"]},
+      {"type": "talk", "id": "corner", "fen": "…", "arrows": ["b1e4"], "marks": ["a1"]},
+      {"type": "demo", "id": "d_w", "fen": "…", "goal": "win",
+       "line": [{"uci": "e5f7", "arrows": ["f7d6"]}, {"uci": "h8g8"}, {"uci": "d3f5", "marks": ["h7"]}]},
+      {"type": "move", "id": "w1", "fen": "…", "goal": "win",
+       "turns": [
+         {"teach": "e5f7", "accept": "best", "reply": "auto"},
+         {"teach": "d3f5", "accept": "best"}
+       ]}
+    ]},
+    {"id": "finish", "steps": [
+      {"type": "talk", "id": "recap", "fen": "…"},
+      {"type": "play", "id": "finish", "fen": "…", "goal": "win"}
+    ]}
   ],
   "exercises": [
     {"id": "e01", "stars": 1, "fen": "…", "goal": "win", "origin": "own",
@@ -31,7 +41,29 @@
 }
 ```
 
-- `steps`: os tipos `talk`, `move` e `play` de `lib/domain/models/lesson.dart`. O aluno é o lado que joga no FEN. Num passo `talk`, `"side": "white"` (ou `"black"`) fixa de que lado o tabuleiro é visto: use quando a posição ilustrada tem o outro lado jogando (o zugzwang das pretas numa aula em que o aluno joga de brancas), para o tabuleiro não virar entre um passo e outro.
+`skills` (obrigatório, T52): os ids dos nós do mapa de habilidades
+(`tools/placement/skills.json`) que a aula ensina. O `build_aula.py` reprova a
+aula sem `skills` ou com um id que não está no mapa; ao fazer uma aula do
+catálogo, troque também, no mapa, o tipo dela de `catalog` para `endgame` (o
+`tools/placement/check_skills.py` confere os dois lados).
+
+- `parts`: a lição em partes curtas (T51). Cada parte é `{"id", "steps": [...]}` e aparece no app com
+  número, título, resumo e tempo estimado. A aula ainda no formato antigo tem `steps` no lugar de `parts`:
+  o script e o app a leem como uma parte só (`main`), e o JSON gerado continua com `steps`. Aula nova ou
+  reescrita usa sempre `parts`.
+- Os passos: `talk`, `move` e `play` de `lib/domain/models/lesson.dart`, mais `think` e `demo` (só no
+  formato em partes). O aluno é o lado que joga no FEN. Num passo `talk`, `"side": "white"` (ou `"black"`) fixa de que lado o tabuleiro é visto: use quando a posição ilustrada tem o outro lado jogando (o zugzwang das pretas numa aula em que o aluno joga de brancas), para o tabuleiro não virar entre um passo e outro.
+- `think`: o aluno estuda a posição sozinho antes de qualquer explicação.
+  `{"type": "think", "id": "t_philidor", "fen": "…", "minutes": 5, "hints": 2, "side": "white"?, "arrows": […]?, "marks": […]?}`.
+  `minutes` é 1, 3 ou 5 (5 para a posição-chave, 1 ou 3 para uma posição de passagem); `hints` é quantas
+  dicas a fala tem (de 1 a 3). O app mostra um timer; quando ele acaba, o Viktor diz a primeira dica, com as
+  setas e casas do passo, e aparecem "Mais uma dica" e "Ver explicação". Durante o tempo o aluno pode mexer
+  as peças à vontade, sem validação. No JSON gerado o passo sai igual.
+- `demo`: o Viktor joga e explica. `{"type": "demo", "id": "d_fork", "fen": "…", "goal": "win", "side": "white"?, "line": [{"uci": "a5e5", "arrows": […]?, "marks": […]?}, {"uci": "b8a7"}, …]}`.
+  O app faz todos os lances da linha, dos dois lados, animados e um de cada vez, cada um com a sua fala e as
+  suas setas e casas. Todo lance é legal, e o script confere, como nos passos `move`, que nenhum lance do
+  lado do aluno (`side`, ou quem joga no FEN) joga fora o `goal` (`win` ou `draw`, como em `move`). No
+  JSON gerado o passo sai igual.
 - `goal`: `win` ou `draw` (defender também se ensina: Philidor, Vancura, o canto certo).
 - `turns`: cada vez do aluno. `teach` é o lance que a aula ensina (UCI); `reply` é a resposta do outro lado (UCI, ou `auto` para a melhor defesa da tabela). Toda vez que não é a última precisa de `reply`.
 - `accept`, a regra dos lances aceitos:
@@ -52,6 +84,21 @@
 - `practice`: a posição do treino final. `positionId` é o id em `assets/positions/positions.json`, quando o catálogo tem o final (é ele que liga a aula ao speedrun de final); sem ele, o treino abre o `fen` como posição personalizada.
 - `references`: `kind` é `book` (author, title, publisher, year), `study` (author, title, url do Lichess), `game` (white, black, event, year), `tablebase` ou `web` (title, url). `where` é opcional e só entra se foi visto. Ao menos um livro ou estudo.
 
+## Uma parte boa
+
+Uma parte ensina uma ideia: pensar sozinho, ver o professor, jogar com ajuda. O script confere (erro, não aviso):
+
+- de 4 a 6 passos;
+- termina num `move` ou `play`: a prática, em que o aluno joga e o Viktor comenta;
+- no máximo um `think`, e, se houver, é o primeiro passo;
+- `minutes` em {1, 3, 5}; `hints` de 1 a 3, com todas as chaves de dica nas falas;
+- lances de `demo` legais e sem jogar fora o objetivo;
+- ids de parte únicos; ids de passo únicos na aula inteira (não só na parte).
+
+O relatório do script mostra a divisão em partes e o tempo estimado de cada uma: os minutos do `think`,
+~30 s por `talk`, ~10 s por lance de `demo` e ~1 min por `move` ou `play`. Depois das partes vem o teste
+final: os exercícios com estrelas e a nota mínima.
+
 ## Estrelas
 
 | Estrelas | O exercício pede |
@@ -69,8 +116,13 @@ Mapa de chave para texto, como em `assets/lessons/pt/lessons.json`. As mesmas ch
 | Chave | Texto |
 |---|---|
 | `title`, `summary` | nome da aula e uma linha sobre ela |
+| `part.<id>.title`, `part.<id>.summary` | título curto da parte e uma linha sobre ela (só no formato em partes) |
 | `step.<id>` | a fala do Viktor no passo |
 | `step.<id>.hint`, `step.<id>.done` | dica no erro e fala no acerto (só passos `move`) |
+| `step.<id>` (think) | a pergunta do Viktor sobre a posição, sem a resposta. Sem o tempo ("você tem 5 minutos"): a frase do tempo vem das traduções do app, com o número como parâmetro |
+| `step.<id>.hint1` … `step.<id>.hint<hints>` (think) | as dicas, da mais vaga à mais clara; nenhuma dá o lance |
+| `step.<id>` (demo) | a introdução, dita antes do primeiro lance |
+| `step.<id>.m1` … `step.<id>.m<N>` (demo) | uma fala por lance da linha (N = número de lances), o porquê daquele lance |
 | `ex.<id>` | enunciado do exercício ("Brancas jogam e ganham. Onde o cavalo precisa chegar?") |
 | `ex.<id>.hint` | dica: aponta a ideia, não o lance |
 | `ex.<id>.solution` | a explicação que aparece depois de resolver |
@@ -80,7 +132,8 @@ Mapa de chave para texto, como em `assets/lessons/pt/lessons.json`. As mesmas ch
 
 ## O que o script confere
 
-FEN válido; lances e respostas legais; lance ensinado entre os aceitos; nenhum lance aceito que jogue fora o objetivo; posição de cada exercício, passo `play` e treino com o veredito da tabela igual ao objetivo; estrelas de 1 a 3; de 8 a 12 exercícios; `passScore` no intervalo; referências com os campos do tipo; origem de cada exercício; todas as chaves de fala em pt e en, sem sobra e sem "mate em N".
+FEN válido; lances e respostas legais; as regras de uma parte boa (acima); lances de `demo` legais e sem
+jogar fora o objetivo; lance ensinado entre os aceitos; nenhum lance aceito que jogue fora o objetivo; posição de cada exercício, passo `play` e treino com o veredito da tabela igual ao objetivo; estrelas de 1 a 3; de 8 a 12 exercícios; `passScore` no intervalo; referências com os campos do tipo; origem de cada exercício; todas as chaves de fala em pt e en, sem sobra e sem "mate em N".
 
 Vitória que só existe sem a regra dos 50 lances (a tabela responde `cursed-win`) não passa como `win`. Em dois cavalos contra peão isso é parte da aula: escolha posições que ganham dentro da regra e conte o resto na fala.
 

@@ -5,6 +5,7 @@ import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../keys/pace_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_shape.dart';
 
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {
@@ -147,7 +148,7 @@ IconData paceIcon(PaceCategory category) => switch (category) {
   PaceCategory.ultraBullet => Icons.rocket_launch_outlined,
   PaceCategory.bullet => Icons.bolt,
   PaceCategory.blitz => Icons.local_fire_department_outlined,
-  _ => Icons.timer_outlined,
+  _ => Icons.av_timer_outlined,
 };
 
 /// Três opções por linha.
@@ -195,14 +196,14 @@ class _Option extends StatelessWidget {
     return Material(
       color: selected ? colors.primaryContainer : colors.surfaceContainerHigh,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
         side: BorderSide(
           color: selected ? colors.primary : Colors.transparent,
           width: 2,
         ),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
         onTap: onTap,
         child: Semantics(
           selected: selected,

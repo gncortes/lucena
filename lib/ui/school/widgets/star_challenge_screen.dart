@@ -18,6 +18,8 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
 import 'star_shape.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
@@ -161,7 +163,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                     child: LinearProgressIndicator(
                       value: 1 - state.elapsedFraction,
                       minHeight: 8,
@@ -189,7 +191,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
+                duration: AppMotion.state,
                 child: Text(
                   star?.name ?? ' ',
                   key: StarChallengeKeys.starName,
@@ -326,7 +328,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                     : TweenAnimationBuilder<double>(
                         key: ValueKey(state.collected),
                         tween: Tween(begin: 0, end: 1),
-                        duration: const Duration(milliseconds: 700),
+                        duration: AppMotion.celebrate,
                         builder: (context, t, child) => Opacity(
                           opacity: 1 - t,
                           child: Transform.translate(
@@ -346,8 +348,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               TweenAnimationBuilder<double>(
                 key: ValueKey(state.collected),
                 tween: Tween(begin: state.collected == 0 ? 1 : 1.5, end: 1),
-                duration: const Duration(milliseconds: 450),
-                curve: Curves.elasticOut,
+                duration: AppMotion.celebrate,
+                curve: AppMotion.bounce,
                 builder: (context, scale, child) =>
                     Transform.scale(scale: scale, child: child),
                 child: Row(

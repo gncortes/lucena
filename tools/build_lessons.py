@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Monta `assets/lessons/course.json`, as aulas da Escola do Viktor.
 
+Atenção: desatualizado. A notação, os primeiros truques e as aulas da T52
+foram escritos direto no JSON; rodar este script apagaria essas aulas. A
+conferência do curso inteiro é a do `tools/lessons/check_school.py`.
+
 O curso é escrito aqui, em Python, e cada posição passa pelo Stockfish antes
 de ir para o JSON:
 

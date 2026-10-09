@@ -393,6 +393,96 @@ void main() {
     );
   });
 
+  test('progresso que dá para medir: níveis vencidos num final e desafios '
+      'de um degrau; as outras sem progresso', () {
+    const queen = Achievement(
+      id: 'q',
+      type: AchievementType.allLevels,
+      subcategory: 'queen',
+    );
+    const rung = Achievement(
+      id: 'r',
+      type: AchievementType.rungCompleted,
+      rungId: '1000',
+    );
+    const beat = Achievement(
+      id: 'b',
+      type: AchievementType.beatLevel,
+      level: 1000,
+    );
+    final f = facts(
+      games: [
+        game(positionId: 'q1', level: 1000),
+        game(positionId: 'q1', level: 1000),
+        game(positionId: 'q1', level: 1400),
+        // Derrota e outro final não contam.
+        game(positionId: 'q1', level: 1600, fulfilled: false),
+        game(positionId: 'r1', level: 1800),
+        game(challengeId: ladder[0].challenges[0].id),
+      ],
+      subcategoryOf: {'q1': 'queen', 'r1': 'rook'},
+    );
+
+    expect(
+      AchievementRules.progress(queen, f),
+      const AchievementProgress(
+        done: 2,
+        total: 9,
+        unit: AchievementProgressUnit.levels,
+      ),
+    );
+    expect(
+      AchievementRules.progress(rung, f),
+      const AchievementProgress(
+        done: 1,
+        total: 2,
+        unit: AchievementProgressUnit.challenges,
+      ),
+    );
+    expect(AchievementRules.progress(rung, f)!.fraction, 0.5);
+    expect(AchievementRules.progress(beat, f), isNull);
+    // Degrau que não existe: sem progresso.
+    expect(
+      AchievementRules.progress(
+        const Achievement(
+          id: 'x',
+          type: AchievementType.rungCompleted,
+          rungId: '9999',
+        ),
+        f,
+      ),
+      isNull,
+    );
+  });
+
+  test('cada conquista num grupo: Jornada, adversários ou speedrun', () {
+    final json = jsonDecode(
+      File('assets/achievements.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final all = [
+      for (final entry
+          in (json['achievements'] as List).cast<Map<String, dynamic>>())
+        Achievement.fromJson(entry)!,
+    ];
+    int count(AchievementCategory category) =>
+        all.where((a) => a.category == category).length;
+
+    // Os nove personagens, o Stockfish e os dois "todos os níveis".
+    expect(count(AchievementCategory.opponents), 12);
+    expect(
+      all.firstWhere((a) => a.id == 'challenge-under-30').category,
+      AchievementCategory.journey,
+    );
+    expect(
+      all.firstWhere((a) => a.id == 'ending-speedrun-under-5min').fromSpeedrun,
+      isTrue,
+    );
+    expect(
+      AchievementCategory.values.map(count).reduce((a, b) => a + b),
+      all.length,
+    );
+  });
+
   test('assets/achievements.json: todas as entradas válidas e ids únicos', () {
     final json = jsonDecode(
       File('assets/achievements.json').readAsStringSync(),

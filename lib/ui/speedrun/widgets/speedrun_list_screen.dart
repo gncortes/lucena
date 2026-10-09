@@ -16,6 +16,10 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/widgets/one_line.dart';
+import '../../../domain/use_cases/speedrun_category.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -28,10 +32,10 @@ class SpeedrunListScreen extends StatelessWidget {
     final state = context.watch<SpeedrunCubit>().state;
     final all = state.all;
     final marathon = state.marathonMode;
-    // Fora da dificuldade escolhida, o final some da lista (os speedruns sem
-    // dificuldade aparecem sempre).
+    // Fora da dificuldade escolhida, o speedrun some da lista (o de
+    // adversário fica na faixa dele; a Jornada completa aparece sempre).
     bool shown(SpeedrunSummary summary) {
-      final category = summary.speedrun.category;
+      final category = SpeedrunCategories.of(summary.speedrun);
       return state.category == null ||
           category == null ||
           category == state.category;
@@ -55,29 +59,20 @@ class SpeedrunListScreen extends StatelessWidget {
             key: SpeedrunKeys.help,
             icon: const Icon(Icons.info_outline),
             tooltip: l10n.speedrunHelp,
-            onPressed: () => _showHelp(context),
+            onPressed: () => _showHelp(context, marathon: marathon),
           ),
         ],
       ),
       body: all == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: scrollPadding(context),
+              // Espaço no fim: o último cartão rola até sair da barra do
+              // sistema.
+              padding: scrollPadding(context, bottom: 48),
               children: [
                 // O modo no alto: cada partida com o seu relógio, ou um
                 // relógio só para todas (a Maratona). Fica gravado.
                 const _ModePicker(),
-                // O que o modo é, em uma frase.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Text(
-                    marathon ? l10n.marathonIntro : l10n.speedrunListIntro,
-                    key: SpeedrunKeys.intro,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
                 // O ritmo do modo, sempre à vista: a categoria e, dentro
                 // dela, o tempo. Cada ritmo tem os seus recordes, e o último
                 // de cada modo fica gravado.
@@ -99,10 +94,10 @@ class SpeedrunListScreen extends StatelessWidget {
                 // A dificuldade dos finais: abre na do nível do jogador; as
                 // outras ficam a um toque.
                 if (state.category != null &&
-                    [
-                      ...all,
-                      ...state.marathons,
-                    ].any((summary) => summary.speedrun.category != null))
+                    [...all, ...state.marathons].any(
+                      (summary) =>
+                          SpeedrunCategories.of(summary.speedrun) != null,
+                    ))
                   const _CategoryPicker(),
                 if (marathon) ...[
                   section(l10n.speedrunEndingSection),
@@ -114,9 +109,10 @@ class SpeedrunListScreen extends StatelessWidget {
                       ),
                 ] else
                   for (final kind in SpeedrunKind.values)
-                    // Modalidade sem speedrun não ganha título.
+                    // Modalidade sem speedrun na dificuldade não ganha título.
                     if (all.any(
-                      (summary) => summary.speedrun.kind == kind,
+                      (summary) =>
+                          summary.speedrun.kind == kind && shown(summary),
                     )) ...[
                       section(switch (kind) {
                         SpeedrunKind.rung => l10n.speedrunRungSection,
@@ -137,7 +133,9 @@ class SpeedrunListScreen extends StatelessWidget {
     );
   }
 
-  void _showHelp(BuildContext context) {
+  /// O ⓘ: o que o modo é e o resto da explicação (antes a frase do modo
+  /// ficava fixa no alto da lista e empurrava os cartões para baixo).
+  void _showHelp(BuildContext context, {required bool marathon}) {
     final theme = Theme.of(context);
     showModalBottomSheet<void>(
       context: context,
@@ -152,6 +150,16 @@ class SpeedrunListScreen extends StatelessWidget {
               Text(
                 context.l10n.speedrunTitle,
                 style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                marathon
+                    ? context.l10n.marathonIntro
+                    : context.l10n.speedrunListIntro,
+                key: SpeedrunKeys.intro,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -230,8 +238,16 @@ class _Card extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    // Sem recorde, o aviso fica embaixo do nome, junto das
+                    // etapas: o nome não disputa espaço com ele.
                     Text(
-                      l10n.speedrunStagesCount(speedrun.stages.length),
+                      best == null
+                          ? '${l10n.speedrunStagesCount(speedrun.stages.length)}'
+                                ' · ${l10n.speedrunNoRecord}'
+                          : l10n.speedrunStagesCount(speedrun.stages.length),
+                      key: best == null
+                          ? SpeedrunKeys.itemBest(speedrun.id)
+                          : null,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -239,24 +255,19 @@ class _Card extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                best == null
-                    ? l10n.speedrunNoRecord
-                    : runTime(context, recordTime(speedrun, best)),
-                key: SpeedrunKeys.itemBest(speedrun.id),
-                style:
-                    (best == null
-                            ? theme.textTheme.bodySmall
-                            : theme.textTheme.titleMedium)
-                        ?.copyWith(
-                          fontWeight: best == null ? null : FontWeight.w800,
-                          color: best == null
-                              ? colors.onSurfaceVariant
-                              : colors.primary,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-              ),
+              // O lado direito é só do melhor tempo, em destaque.
+              if (best != null) ...[
+                const SizedBox(width: 8),
+                Text(
+                  runTime(context, recordTime(speedrun, best)),
+                  key: SpeedrunKeys.itemBest(speedrun.id),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: colors.primary,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -287,11 +298,11 @@ class _CompactPace extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Material(
         color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppShape.large),
         child: ListTile(
           key: SpeedrunKeys.compactPace,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppShape.large),
           ),
           leading: Icon(paceIcon(PaceCategory.of(current))),
           title: Text(l10n.speedrunPaceLine(time)),
@@ -331,7 +342,10 @@ class _CategoryPicker extends StatelessWidget {
           ])
             ButtonSegment(
               value: value,
-              label: Text(label, key: SpeedrunKeys.categoryOption(value.name)),
+              label: OneLine(
+                label,
+                key: SpeedrunKeys.categoryOption(value.name),
+              ),
             ),
         ],
         selected: {?category},
@@ -364,15 +378,15 @@ class _ModePicker extends StatelessWidget {
           ButtonSegment(
             value: false,
             icon: const Icon(Icons.timer_outlined),
-            label: Text(
+            label: OneLine(
               l10n.speedrunModeClassic,
               key: SpeedrunKeys.modeOption('classic'),
             ),
           ),
           ButtonSegment(
             value: true,
-            icon: const Icon(Icons.hourglass_bottom_rounded),
-            label: Text(
+            icon: const Icon(Icons.all_inclusive_rounded),
+            label: OneLine(
               l10n.marathonSection,
               key: SpeedrunKeys.modeOption('marathon'),
             ),
@@ -420,14 +434,29 @@ class _PacePickerState extends State<_PacePicker> {
         children: [
           SegmentedButton<PaceCategory>(
             showSelectedIcon: false,
+            style: SegmentedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+            ),
             segments: [
               for (final category in groups.keys)
+                // Ícone em cima e o rótulo embaixo, numa linha só: lado a
+                // lado, quatro segmentos não cabem e as palavras quebravam.
                 ButtonSegment(
                   value: category,
-                  icon: Icon(paceIcon(category)),
-                  label: Text(
-                    category.label(l10n),
-                    key: SpeedrunKeys.paceCategory(category.name),
+                  tooltip: category.label(l10n),
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(paceIcon(category), size: 20),
+                        const SizedBox(height: 2),
+                        OneLine(
+                          category.label(l10n),
+                          key: SpeedrunKeys.paceCategory(category.name),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             ],
@@ -438,9 +467,12 @@ class _PacePickerState extends State<_PacePicker> {
           const SizedBox(height: 10),
           // Os ritmos da categoria, entrando com um fade quando ela muda.
           AnimatedSwitcher(
-            duration: MediaQuery.disableAnimationsOf(context)
-                ? Duration.zero
-                : const Duration(milliseconds: 200),
+            duration: AppMotion.of(context).state,
+            // Os chips alinhados no começo da linha, como as outras fileiras.
+            layoutBuilder: (current, previous) => Stack(
+              alignment: AlignmentDirectional.topStart,
+              children: [...previous, ?current],
+            ),
             child: Wrap(
               key: ValueKey(_category),
               spacing: 8,
@@ -449,8 +481,7 @@ class _PacePickerState extends State<_PacePicker> {
                 for (final time in groups[_category] ?? const <TimeControl>[])
                   ChoiceChip(
                     key: SpeedrunKeys.paceOption(time.code),
-                    avatar: Icon(paceIcon(_category), size: 18),
-                    // O ícone do ritmo fica no lugar do "visto".
+                    // O ícone da categoria já está no seletor de cima.
                     showCheckmark: false,
                     label: Text(paceShort(l10n, time)),
                     selected: time == widget.current,

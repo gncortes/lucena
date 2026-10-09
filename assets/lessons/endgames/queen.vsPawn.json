@@ -1,213 +1,255 @@
 {
   "id": "queen.vsPawn",
   "module": "queen",
-  "steps": [
+  "skills": [
+    "queen.vsPawn"
+  ],
+  "parts": [
     {
-      "type": "talk",
-      "id": "intro",
-      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
-      "arrows": [
-        "e2e1"
-      ],
-      "marks": [
-        "e1",
-        "a8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "idea",
-      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
-      "arrows": [
-        "a8b7"
-      ],
-      "marks": [
-        "e1",
-        "e2"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "stairs",
-      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
-      "goal": "win",
-      "line": [
+      "id": "start",
+      "steps": [
         {
-          "teach": "g1d4",
-          "accept": [
-            "g1d4",
-            "g1f2"
-          ],
-          "reply": "d2c1"
+          "type": "think",
+          "id": "t_start",
+          "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "d4e3",
-          "accept": [
-            "d4c3",
-            "d4e3"
+          "type": "talk",
+          "id": "intro",
+          "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+          "arrows": [
+            "e2e1"
           ],
-          "reply": "c1d1"
-        },
-        {
-          "teach": "e3d3",
-          "accept": [
-            "e3d3"
+          "marks": [
+            "e1",
+            "a8"
           ]
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "tempo",
-      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
-      "goal": "win",
-      "line": [
+        },
         {
-          "teach": "a8b7",
-          "accept": [
-            "a8a7",
+          "type": "talk",
+          "id": "idea",
+          "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+          "arrows": [
             "a8b7"
           ],
-          "reply": "e1f2"
+          "marks": [
+            "e1",
+            "e2"
+          ]
         },
         {
-          "teach": "d3d2",
-          "accept": [
-            "d3c2",
-            "d3d2",
-            "d3d4",
-            "d3f5"
+          "type": "move",
+          "id": "stairs",
+          "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "g1d4",
+              "accept": [
+                "g1d4",
+                "g1f2"
+              ],
+              "reply": "d2c1"
+            },
+            {
+              "teach": "d4e3",
+              "accept": [
+                "d4c3",
+                "d4e3"
+              ],
+              "reply": "c1d1"
+            },
+            {
+              "teach": "e3d3",
+              "accept": [
+                "e3d3"
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "type": "move",
-      "id": "again",
-      "fen": "8/1K6/8/8/8/8/3Qp3/5k2 w - - 0 1",
-      "goal": "win",
-      "line": [
-        {
-          "teach": "d2f4",
-          "accept": [
-            "d2f4"
-          ],
-          "reply": "f1g1"
-        },
-        {
-          "teach": "f4e3",
-          "accept": [
-            "f4e3",
-            "f4g3"
-          ],
-          "reply": "g1f1"
-        },
-        {
-          "teach": "e3f3",
-          "accept": [
-            "e3f3"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "talk",
       "id": "cycle",
-      "fen": "8/1K6/8/8/8/5Q2/4p3/4k3 w - - 0 1",
-      "arrows": [
-        "b7c6",
-        "c6d5",
-        "d5e4",
-        "e4d3"
-      ],
-      "marks": [
-        "e1"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "quiet",
-      "fen": "8/8/2K5/8/3Q4/8/2k1p3/8 w - - 0 1",
-      "goal": "win",
-      "line": [
+      "steps": [
         {
-          "teach": "d4e3",
-          "accept": [
-            "d4e3"
-          ],
-          "reply": "c2d1"
+          "type": "think",
+          "id": "t_front",
+          "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "e3d3",
-          "accept": [
-            "e3d3"
+          "type": "move",
+          "id": "tempo",
+          "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "a8b7",
+              "accept": [
+                "a8a7",
+                "a8b7"
+              ],
+              "reply": "e1f2"
+            },
+            {
+              "teach": "d3d2",
+              "accept": [
+                "d3c2",
+                "d3d2",
+                "d3d4",
+                "d3f5"
+              ]
+            }
           ]
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "arrive",
-      "fen": "8/8/8/8/4K3/8/4pQ2/3k4 w - - 0 1",
-      "goal": "win",
-      "line": [
+        },
         {
-          "teach": "e4d3",
-          "accept": [
+          "type": "move",
+          "id": "again",
+          "fen": "8/1K6/8/8/8/8/3Qp3/5k2 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "d2f4",
+              "accept": [
+                "d2f4"
+              ],
+              "reply": "f1g1"
+            },
+            {
+              "teach": "f4e3",
+              "accept": [
+                "f4e3",
+                "f4g3"
+              ],
+              "reply": "g1f1"
+            },
+            {
+              "teach": "e3f3",
+              "accept": [
+                "e3f3"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "cycle",
+          "fen": "8/1K6/8/8/8/5Q2/4p3/4k3 w - - 0 1",
+          "arrows": [
+            "b7c6",
+            "c6d5",
+            "d5e4",
             "e4d3"
           ],
-          "reply": "d1c1"
+          "marks": [
+            "e1"
+          ]
         },
         {
-          "teach": "f2e2",
-          "accept": [
-            "d3c3",
-            "f2e2"
+          "type": "move",
+          "id": "quiet",
+          "fen": "8/8/2K5/8/3Q4/8/2k1p3/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "d4e3",
+              "accept": [
+                "d4e3"
+              ],
+              "reply": "c2d1"
+            },
+            {
+              "teach": "e3d3",
+              "accept": [
+                "e3d3"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "arrive",
+          "fen": "8/8/8/8/4K3/8/4pQ2/3k4 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e4d3",
+              "accept": [
+                "e4d3"
+              ],
+              "reply": "d1c1"
+            },
+            {
+              "teach": "f2e2",
+              "accept": [
+                "d3c3",
+                "f2e2"
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "type": "talk",
       "id": "block",
-      "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
-      "arrows": [
-        "c8d8"
-      ],
-      "marks": [
-        "d5",
-        "d2",
-        "e1"
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_block",
+          "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "talk",
+          "id": "block",
+          "fen": "2Q5/8/8/3K4/8/8/3kp3/8 w - - 0 1",
+          "arrows": [
+            "c8d8"
+          ],
+          "marks": [
+            "d5",
+            "d2",
+            "e1"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "others",
+          "fen": "8/8/8/8/8/1Q6/2p5/k6K w - - 0 1",
+          "arrows": [
+            "b3c2"
+          ],
+          "marks": [
+            "a1",
+            "c2"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
+          "arrows": [
+            "a8b7"
+          ],
+          "marks": [
+            "e1"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
+          "goal": "win"
+        }
       ]
-    },
-    {
-      "type": "talk",
-      "id": "others",
-      "fen": "8/8/8/8/8/1Q6/2p5/k6K w - - 0 1",
-      "arrows": [
-        "b3c2"
-      ],
-      "marks": [
-        "a1",
-        "c2"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "recap",
-      "fen": "K7/8/8/8/8/3Q4/4p3/4k3 w - - 0 1",
-      "arrows": [
-        "a8b7"
-      ],
-      "marks": [
-        "e1"
-      ]
-    },
-    {
-      "type": "play",
-      "id": "finish",
-      "fen": "K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1",
-      "goal": "win"
     }
   ],
   "exercises": [

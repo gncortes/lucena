@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from make_source import after, exercise, move, talk, write  # noqa: E402
+from make_source import (after, exercise, move, play, talk, think,  # noqa: E402
+                         write)
 
 LATE = '1R6/8/8/8/4pk2/8/r7/4K3 b - - 0 1'   # Philidor já não dá: pretas jogam
 BEHIND = after(LATE, 'Kf3')                   # só Te8
@@ -53,25 +54,37 @@ REFERENCES = [
 write({
     'id': 'rook.shortSide',
     'module': 'rook',
-    'steps': [
-        talk('intro', LATE, arrows=['f4f3', 'b8b3'], marks=['f3']),
-        move('behindPawn', BEHIND, 'Re8 Ke3 Kf1',
-             accept={1: 'only', 2: 'hold'}, goal='draw'),
-        talk('sides', SIDES, marks=['f1', 'g1', 'h1', 'a1', 'b1', 'c1', 'd1']),
-        move('dance', after(SIDES, 'Ra1+'), 'Kg2 Kd3 Kf2 Ra2+ Ke1 Ke3 Kf1',
-             accept={1: 'only', 2: 'only', 3: 'hold', 4: 'hold'}, goal='draw'),
-        move('fpawn', FP, 'Rf8 Kf3 Kg1 Ra1+ Kh2',
-             accept={1: 'hold', 2: 'only', 3: 'only'}, goal='draw'),
-        talk('blunder', BLUNDER, arrows=['a2a1', 'a1f1'], marks=['e1']),
-        talk('lateral', TARR, arrows=['a7a1'], marks=['g2']),
-        move('checks', TARR,
-             'Ra1+ Kd2 Ra2+ Kd3 Ra3+ Kd4 Ra4+ Kc3 Ra3+ Kb2 Re3',
-             accept='only', goal='draw'),
-        talk('distance', CLOSE, arrows=['b7b2', 'd8d2'], marks=['b7']),
-        talk('carlsen', CARLSEN, arrows=['g2g3'], marks=['g3']),
-        move('king', CARLSEN, 'Kg3 Rd2 Kg2 Kd3+ Kf3 e2 Kf2',
-             accept={1: 'only', 2: 'hold', 3: 'hold', 4: 'hold'}, goal='draw'),
-        talk('recap', SIDES, arrows=['e8e4'], marks=['f1']),
+    'parts': [
+        {'id': 'short', 'steps': [
+            think('t_behind', BEHIND, 5, 1, ask='line'),
+            talk('intro', LATE, arrows=['f4f3', 'b8b3'], marks=['f3']),
+            move('behindPawn', BEHIND, 'Re8 Ke3 Kf1',
+                 accept={1: 'only', 2: 'hold'}, goal='draw'),
+            talk('sides', SIDES,
+                 marks=['f1', 'g1', 'h1', 'a1', 'b1', 'c1', 'd1']),
+            move('dance', after(SIDES, 'Ra1+'), 'Kg2 Kd3 Kf2 Ra2+ Ke1 Ke3 Kf1',
+                 accept={1: 'only', 2: 'only', 3: 'hold', 4: 'hold'},
+                 goal='draw'),
+        ]},
+        {'id': 'lateral', 'steps': [
+            move('fpawn', FP, 'Rf8 Kf3 Kg1 Ra1+ Kh2',
+                 accept={1: 'hold', 2: 'only', 3: 'only'}, goal='draw'),
+            talk('blunder', BLUNDER, arrows=['a2a1', 'a1f1'], marks=['e1']),
+            talk('lateral', TARR, arrows=['a7a1'], marks=['g2']),
+            move('checks', TARR,
+                 'Ra1+ Kd2 Ra2+ Kd3 Ra3+ Kd4 Ra4+ Kc3 Ra3+ Kb2 Re3',
+                 accept='only', goal='draw'),
+        ]},
+        {'id': 'distance', 'steps': [
+            think('t_close', CLOSE, 5, 1),
+            talk('distance', CLOSE, arrows=['b7b2', 'd8d2'], marks=['b7']),
+            talk('carlsen', CARLSEN, arrows=['g2g3'], marks=['g3']),
+            move('king', CARLSEN, 'Kg3 Rd2 Kg2 Kd3+ Kf3 e2 Kf2',
+                 accept={1: 'only', 2: 'hold', 3: 'hold', 4: 'hold'},
+                 goal='draw'),
+            talk('recap', SIDES, arrows=['e8e4'], marks=['f1']),
+            play('finish', S1, goal='draw'),
+        ]},
     ],
     'exercises': [
         exercise('e01', 1, BEHIND, 'Re8', accept='only', goal='draw',

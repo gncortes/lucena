@@ -10,6 +10,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../board/board_settings_ui.dart';
 import '../l10n/l10n.dart';
 import 'goal_style.dart';
+import '../theme/app_shape.dart';
 
 /// Uma posição do catálogo numa lista: miniatura vista pelo lado que joga, o
 /// material, o objetivo e, à direita, o que vier em [trailing].
@@ -56,7 +57,9 @@ class ChallengeTile extends StatelessWidget {
                 settings: StaticChessboardSettings(
                   colorScheme: board.colors.scheme,
                   pieceAssets: board.pieces.assets,
-                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(AppShape.small),
+                  ),
                   animationDuration: Duration.zero,
                 ),
               ),

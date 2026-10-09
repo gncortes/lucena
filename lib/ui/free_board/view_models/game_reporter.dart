@@ -17,13 +17,13 @@ import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/speedrun.dart';
-import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/achievement_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
+import '../../achievements/view_models/achievement_facts_loader.dart';
 
 /// O que uma partida terminada mudou: o rating, as mensagens de evolução e as
 /// conquistas novas.
@@ -33,6 +33,7 @@ class GameReport {
     this.after,
     this.feedback = const [],
     this.achievements = const [],
+    this.unlocked = const {},
     this.characters = const [],
     this.next,
     this.speedrun,
@@ -50,6 +51,10 @@ class GameReport {
 
   /// As conquistas que a partida liberou.
   final List<Achievement> achievements;
+
+  /// As mesmas conquistas como ficaram gravadas (instante e origem), pelo id:
+  /// o aviso abre o detalhe delas.
+  final Map<String, UnlockedAchievement> unlocked;
 
   /// Num desafio da Jornada, o desafio para jogar em seguida.
   final NextChallenge? next;
@@ -129,17 +134,15 @@ class GameReporter {
       drawGoal: drawGoal,
       gameId: gameId,
     );
-    final games = await _progress.allAttempts();
-    final ladder = await _journey.ladder();
-    // Cada ritmo é um speedrun próprio, com os seus recordes.
-    final speedruns = {
-      for (final base in await _journey.speedruns())
-        for (final time in SpeedrunPaces.all)
-          SpeedrunPaces.idFor(base.id, time): SpeedrunPaces.withTime(
-            base,
-            time,
-          ),
-    };
+    final facts = await AchievementFactsLoader(
+      journey: _journey,
+      progress: _progress,
+      speedruns: _speedruns,
+      positions: _positions,
+    ).load();
+    final games = facts.games;
+    final ladder = facts.ladder;
+    final speedruns = facts.speedruns;
     final feedback = [
       ...GameFeedbackRules.afterGame(
         game: game,
@@ -149,41 +152,25 @@ class GameReporter {
       ),
       ...await _speedrunFeedback(game, speedruns),
     ];
-
-    final runs = <SpeedrunRun>[];
-    for (final speedrun in speedruns.values) {
-      for (final attempt in await _speedruns.attempts(speedrun.id)) {
-        runs.add(SpeedrunScore.run(speedrun, attempt));
-      }
-    }
-    // As posições das etapas dos speedruns de final ficam fora do catálogo:
-    // o final delas vem do próprio speedrun.
-    final subcategoryOf = <String, String>{
-      for (final speedrun in speedruns.values)
-        for (final stage in speedrun.stages)
-          stage.position.id: stage.position.subcategory,
-    };
-    for (final id in {for (final game in games) game.positionId}) {
-      if (subcategoryOf.containsKey(id)) continue;
-      final position = await _positions.byId(id);
-      if (position != null) subcategoryOf[id] = position.subcategory;
-    }
-    final facts = AchievementFacts(
-      games: games,
-      ladder: ladder,
-      subcategoryOf: subcategoryOf,
-      runs: runs,
-      speedruns: speedruns,
-    );
     final unlocked = await _achievements.unlocked();
     final earned = AchievementRules.newlyEarned(
       await _achievements.all(),
       facts,
       unlocked.keys.toSet(),
     );
-    if (earned.isNotEmpty) {
-      await _achievements.unlock([for (final a in earned) a.id], _now());
-    }
+    // A origem fica gravada (T51, A6): esta partida e, numa etapa de
+    // speedrun, a tentativa.
+    final at = _now();
+    final recorded = {
+      for (final achievement in earned)
+        achievement.id: UnlockedAchievement(
+          id: achievement.id,
+          at: at,
+          gameId: gameId,
+          speedrunAttemptId: game.speedrunAttemptId,
+        ),
+    };
+    if (recorded.isNotEmpty) await _achievements.unlock(recorded.values);
     final challengeId = game.challengeId;
     final next = challengeId == null
         ? null
@@ -203,6 +190,7 @@ class GameReporter {
           GameFeedback(FeedbackKind.achievement, achievementId: achievement.id),
       ],
       achievements: earned,
+      unlocked: recorded,
       characters: await _characters?.characters() ?? const [],
       speedrun: await _speedrunStep(game, speedruns),
     );

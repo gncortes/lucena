@@ -68,6 +68,10 @@ abstract final class LessonRules {
   static bool endsLine(MoveStep step, int turn, String uci) =>
       turn + 1 >= step.line.length || step.line[turn].accept.first != uci;
 
+  /// Quantos lances o aluno precisa segurar para o empate contar, num passo
+  /// de jogar com objetivo de empatar.
+  static const holdMoves = 20;
+
   /// O resultado de [position] num [PlayStep] de objetivo [goal], com o aluno
   /// jogando de [student]. [lastMove] é o último lance jogado (a promoção
   /// conta no lance em que acontece).
@@ -77,10 +81,23 @@ abstract final class LessonRules {
     required Side student,
     Move? lastMove,
     int repetitions = 1,
+    int studentMoves = 0,
   }) {
     final end = GameRules.endOf(position, repetitions: repetitions);
     if (position.isCheckmate) {
       return position.turn == student ? PlayResult.lost : PlayResult.success;
+    }
+    if (goal == PlayGoal.draw) {
+      // Empatar: qualquer fim empatado vale, e também quando os peões saem
+      // do tabuleiro (só peças, o empate da teoria) ou o aluno segura
+      // [holdMoves] lances sem perder.
+      final pawnless = position.board.pawns.isEmpty;
+      return end != null ||
+              position.isStalemate ||
+              pawnless ||
+              studentMoves >= holdMoves
+          ? PlayResult.success
+          : PlayResult.ongoing;
     }
     if (position.isStalemate) return PlayResult.stalemate;
     if (end != null) return PlayResult.draw;

@@ -43,7 +43,7 @@ class GameDetailsRobot {
     await $.tester.ensureVisible(find.byKey(GameDetailsKeys.reviewSummary));
     await $.pumpAndSettle();
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
-    expect(find.byKey(GameDetailsKeys.reviewButton), findsNothing);
+    // A revisão feita fica no botão, marcada e desligada (T51).
   }
 
   Future<void> _tap(Key key) async {

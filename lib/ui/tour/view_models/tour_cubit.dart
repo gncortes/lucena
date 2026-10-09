@@ -57,7 +57,16 @@ class TourState {
     this.texts = LessonTexts.empty,
     this.goals = const {},
     this.characters = const [],
+    this.byHand = false,
+    this.placed,
   });
+
+  /// No passo do nível: o jogador preferiu escolher a faixa na mão (a lista
+  /// das seis aparece no lugar do cartão do teste).
+  final bool byHand;
+
+  /// O rating que o teste de nível deu, se o jogador o fez e usou.
+  final int? placed;
 
   /// Os personagens, para as demonstrações dos passos.
   final List<Character> characters;
@@ -94,7 +103,10 @@ class TourState {
   final bool finished;
 
   /// O degrau em que a Jornada começa com a faixa marcada.
-  String get startRung => '${MaiaLevels.nearest(level.rating)}';
+  String get startRung => '${MaiaLevels.nearest(rating)}';
+
+  /// O rating que vai para o perfil: o do teste ou o da faixa marcada.
+  int get rating => placed ?? level.rating;
 
   /// Marcou "iniciante" e quer aprender: o tour termina nas aulas do
   /// Viktor.
@@ -103,6 +115,12 @@ class TourState {
 
   /// O que o Viktor diz no passo aberto.
   String? get speech {
+    if (step == TourStep.level && !byHand && placed == null) {
+      return texts.say('tour.level.test') ?? texts.say('tour.level');
+    }
+    if (step == TourStep.goals && placed != null) {
+      return texts.say('tour.goals.placed') ?? texts.say('tour.goals');
+    }
     if (step == TourStep.level) {
       return texts.say(
         level == RatingLevel.beginner ? 'tour.level.beginner' : 'tour.level',
@@ -119,7 +137,11 @@ class TourState {
     bool? finished,
     bool? forward,
     Set<HomePath>? goals,
+    bool? byHand,
+    int? Function()? placed,
   }) => TourState(
+    byHand: byHand ?? this.byHand,
+    placed: placed == null ? this.placed : placed(),
     ready: ready ?? this.ready,
     step: step ?? this.step,
     first: first,
@@ -199,8 +221,33 @@ class TourCubit extends Cubit<TourState> {
 
   /// Marca a faixa: os caminhos voltam à sugestão dela.
   void setLevel(RatingLevel level) => emit(
-    state.copyWith(level: level, goals: HomeSuggestion.of(level).visible),
+    state.copyWith(
+      level: level,
+      goals: HomeSuggestion.of(level).visible,
+      // A faixa escolhida na mão vale mais que a do teste.
+      placed: () => null,
+      byHand: true,
+    ),
   );
+
+  /// "Prefiro escolher minha faixa" (ou, com [byHand] falso, voltar ao
+  /// cartão do teste).
+  void chooseByHand({bool byHand = true}) =>
+      emit(state.copyWith(byHand: byHand));
+
+  /// Voltou do teste com o resultado usado: o perfil já tem o rating dele
+  /// (e a Jornada, o degrau). A faixa fica marcada e o tour segue.
+  Future<void> usePlacement() async {
+    final profile = await _profile.load();
+    emit(
+      state.copyWith(
+        level: profile.level,
+        goals: HomeSuggestion.of(profile.level).visible,
+        placed: () => profile.rating,
+      ),
+    );
+    await next();
+  }
 
   /// Marca ou desmarca um caminho. O último marcado não sai.
   void toggleGoal(HomePath path) {
@@ -239,7 +286,7 @@ class TourCubit extends Cubit<TourState> {
   Future<void> finish() async {
     await _nicknameSaved;
     final profile = await _profile.load();
-    await _profile.save(profile.copyWith(rating: state.level.rating));
+    await _profile.save(profile.copyWith(rating: state.rating));
     // A tela inicial com os caminhos marcados, na ordem do nível.
     await _home?.save(
       HomeSuggestion.withVisible(

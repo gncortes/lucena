@@ -130,6 +130,21 @@ void main() {
             final position = GameRules.fromFen(fen);
             expect(position, isNotNull, reason: where);
             expect(GameRules.endOf(position!), isNull, reason: where);
+          case ThinkStep(:final fen, :final minutes, :final hints):
+            expect(GameRules.fromFen(fen), isNotNull, reason: where);
+            expect({1, 3, 5}, contains(minutes), reason: where);
+            expect(hints, inInclusiveRange(1, 3), reason: where);
+          case DemoStep(:final fen, :final line):
+            // Os lances da demonstração, dos dois lados, todos legais.
+            var position = GameRules.fromFen(fen);
+            expect(position, isNotNull, reason: where);
+            for (final move in line) {
+              position = GameRules.play(
+                position!,
+                Move.parse(move.uci)!,
+              )?.position;
+              expect(position, isNotNull, reason: '$where: ${move.uci}');
+            }
           case StarsStep() || TapStep():
             fail(
               '$where: aula de final não tem passo de estrelas nem de tocar',
@@ -164,12 +179,22 @@ void main() {
           'summary',
           'history',
           'practice',
+          for (final part in lesson.lesson.parts) ...[
+            'part.${part.id}.title',
+            'part.${part.id}.summary',
+          ],
           for (final step in lesson.lesson.steps) ...[
             'step.${step.id}',
             if (step is MoveStep) ...[
               'step.${step.id}.hint',
               'step.${step.id}.done',
             ],
+            if (step is ThinkStep)
+              for (var hint = 1; hint <= step.hints; hint++)
+                'step.${step.id}.hint$hint',
+            if (step is DemoStep)
+              for (var move = 1; move <= step.line.length; move++)
+                'step.${step.id}.m$move',
           ],
           for (final exercise in lesson.exercises) ...[
             'ex.${exercise.id}',

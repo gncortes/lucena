@@ -56,24 +56,40 @@ void main() {
     },
   );
 
-  testWidgets('nada feito: começar a lição, exercícios e o final trancado', (
-    tester,
-  ) async {
-    await pump(tester);
-    expect(find.text('The Lucena position'), findsOneWidget);
-    expect(find.text('Lesson 1 of 2'), findsOneWidget);
-    expect(find.text('Start the lesson'), findsOneWidget);
-    expect(find.byKey(EndgameLessonKeys.exercise('e01')), findsOneWidget);
-    expect(find.byKey(EndgameLessonKeys.exercise('e03')), findsOneWidget);
-    expect(find.text('0 of 6 stars'), findsOneWidget);
-    expect(find.text('Start the exercises'), findsOneWidget);
-    expect(find.byKey(EndgameLessonKeys.redoButton), findsNothing);
-    await tester.scrollUntilVisible(
-      find.byKey(EndgameLessonKeys.finalLocked),
-      200,
-    );
-    expect(find.byKey(EndgameLessonKeys.speedrunButton), findsNothing);
-  });
+  testWidgets(
+    'nada feito: começar a lição, o teste recolhido e o desafio aberto',
+    (tester) async {
+      await pump(tester);
+      expect(find.text('The Lucena position'), findsOneWidget);
+      expect(find.textContaining('1 of 2'), findsOneWidget);
+      expect(find.text('Start'), findsOneWidget);
+      // O teste final começa recolhido (T51), com o resumo numa linha.
+      expect(find.byKey(EndgameLessonKeys.exercise('e01')), findsNothing);
+      expect(find.text('3 exercises'), findsOneWidget);
+      expect(find.text('0/6'), findsOneWidget);
+      await tester.ensureVisible(
+        find.byKey(EndgameLessonKeys.finalTestSummary),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(EndgameLessonKeys.finalTestSummary));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(EndgameLessonKeys.exercise('e01')),
+        100,
+      );
+      expect(find.byKey(EndgameLessonKeys.testAdvice), findsOneWidget);
+      expect(find.byKey(EndgameLessonKeys.exercise('e03')), findsOneWidget);
+      expect(find.text('0 of 6 stars'), findsOneWidget);
+      expect(find.text('Start the exercises'), findsOneWidget);
+      expect(find.byKey(EndgameLessonKeys.redoButton), findsNothing);
+      // O desafio no final fica aberto desde o começo (T51).
+      await tester.scrollUntilVisible(
+        find.byKey(EndgameLessonKeys.trainButton),
+        200,
+      );
+      expect(find.byKey(EndgameLessonKeys.finalStep), findsOneWidget);
+    },
+  );
 
   testWidgets('aprovado: a nota, o speedrun com os ritmos e o treino', (
     tester,

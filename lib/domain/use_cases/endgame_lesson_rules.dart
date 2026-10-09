@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dartchess/dartchess.dart';
 
 import '../models/endgame_lesson.dart';
+import '../models/lesson.dart';
 import '../models/speedrun.dart';
 import 'game_rules.dart';
 
@@ -69,5 +70,52 @@ abstract final class EndgameLessonRules {
       }
     }
     return line;
+  }
+
+  /// A parte recomendada: a primeira ainda não feita. Nula: todas feitas (o
+  /// próximo é o teste final). Nada trava: é só o destaque da tela.
+  static LessonPart? recommendedPart(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+  ) {
+    final done = progress.partsDone(lesson);
+    for (final part in lesson.lesson.sections) {
+      if (!done.contains(part.id)) return part;
+    }
+    return null;
+  }
+
+  /// O progresso com a parte [partId] feita; com todas, a lição inteira.
+  static EndgameLessonProgress completePart(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+    String partId,
+  ) {
+    final done = {...progress.partsDone(lesson), partId};
+    final all = lesson.lesson.sections.every((part) => done.contains(part.id));
+    return progress.copyWith(parts: done, lessonDone: all);
+  }
+
+  /// O checkpoint lido para a aula em partes: um antigo (sem parte, com o
+  /// passo contado na aula inteira) passa para a parte que contém aquele
+  /// passo. Nada do que o aluno fez se perde.
+  static LessonCheckpoint? migrate(
+    EndgameLesson lesson,
+    LessonCheckpoint? checkpoint,
+  ) {
+    if (checkpoint == null || checkpoint.part != null) return checkpoint;
+    final located = lesson.lesson.locate(checkpoint.step);
+    if (located == null) return null;
+    final (part, step) = located;
+    return LessonCheckpoint(
+      lessonId: checkpoint.lessonId,
+      step: step,
+      fen: checkpoint.fen,
+      collected: checkpoint.collected,
+      turn: checkpoint.turn,
+      moves: checkpoint.moves,
+      open: checkpoint.open,
+      part: part.id,
+    );
   }
 }

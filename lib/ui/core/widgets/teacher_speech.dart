@@ -3,29 +3,41 @@ import 'dart:ui' show BoxHeightStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/speech_links.dart';
+import '../../../routing/routes.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
 import 'character_avatar.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_shape.dart';
 
-/// O professor falando com o aluno: o retrato com a emoção e o balão ao lado,
-/// que troca de fala com uma transição suave. Usado no tour e nas aulas.
-///
-/// Com [stacked], o retrato e o nome ficam numa linha e o balão vem embaixo,
-/// na largura toda, com a ponta virada para o retrato: é o arranjo da lição,
-/// em que o Viktor fala muito e fica abaixo do tabuleiro.
+/// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
+enum SpeechContext {
+  /// O professor explica: retrato e nome numa linha e o balão embaixo, na
+  /// largura toda, com a ponta virada para o retrato. Falas longas.
+  teaching,
+
+  /// O adversário reage na partida: retrato e o balão ao lado, como a
+  /// `CharacterBar`. Falas curtas (até 90 caracteres, `check_lines.py`).
+  game,
+}
+
+/// O professor falando com o aluno: o retrato com a emoção e o balão, que
+/// troca de fala com uma transição suave. O desenho vem do [speechContext],
+/// sem valor padrão: quem usa diz se é ensino ou partida.
 class TeacherSpeech extends StatelessWidget {
   const TeacherSpeech({
     required this.teacher,
     required this.text,
+    required this.speechContext,
     this.emotion = Emotion.calm,
     this.avatarSize = 64,
     this.bubbleKey,
-    this.stacked = false,
     this.typed = false,
     this.speaks = false,
     this.onLink,
@@ -50,8 +62,10 @@ class TeacherSpeech extends StatelessWidget {
 
   final Key? bubbleKey;
 
-  /// O balão embaixo do retrato e do nome, em vez de ao lado.
-  final bool stacked;
+  /// Ensino (balão embaixo do retrato) ou partida (balão ao lado).
+  final SpeechContext speechContext;
+
+  bool get _stacked => speechContext == SpeechContext.teaching;
 
   /// A fala aparece aos poucos, como quem fala. Um toque mostra tudo.
   final bool typed;
@@ -111,7 +125,17 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
-            if (!state.availableFor(language)) return const SizedBox.shrink();
+            // Sem voz no idioma, o botão de som continua à vista: o toque
+            // leva aos ajustes de voz, onde se instala uma.
+            if (!state.availableFor(language)) {
+              return IconButton(
+                key: VoiceKeys.speakButton,
+                visualDensity: VisualDensity.compact,
+                tooltip: context.l10n.voiceSection,
+                icon: const Icon(Icons.volume_off_outlined),
+                onPressed: () => context.push(Routes.settingsVoice),
+              );
+            }
             final speaking = state.isSpeaking(text);
             final l10n = context.l10n;
             return Row(
@@ -180,7 +204,7 @@ class TeacherSpeech extends StatelessWidget {
   }
 
   Widget _layout(BuildContext context, Widget avatar) {
-    if (stacked) {
+    if (_stacked) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -221,10 +245,12 @@ class TeacherSpeech extends StatelessWidget {
       context.l10n.teacherName(teacher.name),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.labelLarge?.copyWith(
-        color: theme.colorScheme.primary,
-        fontWeight: FontWeight.w700,
-      ),
+      style:
+          (_stacked ? theme.textTheme.titleMedium : theme.textTheme.labelLarge)
+              ?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
     );
   }
 
@@ -232,11 +258,11 @@ class TeacherSpeech extends StatelessWidget {
   Widget _speech(BuildContext context) {
     final text = this.text;
     return AnimatedSize(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
+      duration: AppMotion.state,
+      curve: AppMotion.enter,
       alignment: AlignmentDirectional.topStart,
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 280),
+        duration: AppMotion.component,
         transitionBuilder: (child, animation) => FadeTransition(
           opacity: animation,
           child: SlideTransition(
@@ -348,13 +374,13 @@ class TeacherSpeech extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: stacked
-            ? BorderRadius.circular(16)
+        borderRadius: _stacked
+            ? BorderRadius.circular(AppShape.large)
             : const BorderRadiusDirectional.only(
-                topEnd: Radius.circular(16),
-                bottomStart: Radius.circular(16),
-                bottomEnd: Radius.circular(16),
-                topStart: Radius.circular(3),
+                topEnd: Radius.circular(AppShape.large),
+                bottomStart: Radius.circular(AppShape.large),
+                bottomEnd: Radius.circular(AppShape.large),
+                topStart: Radius.circular(AppShape.small),
               ),
       ),
       child: Semantics(
@@ -381,7 +407,7 @@ class TeacherSpeech extends StatelessWidget {
         ),
       ),
     );
-    if (!stacked) return bubble;
+    if (!_stacked) return bubble;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -431,11 +457,10 @@ class _RevealOnChangeState extends State<_RevealOnChange> {
     final top = box.localToGlobal(Offset.zero, ancestor: viewport).dy;
     // O começo à vista, com uma folga para a primeira linha: nada a fazer.
     if (top >= 0 && top <= viewport.size.height - 48) return;
-    final disable = MediaQuery.disableAnimationsOf(context);
     Scrollable.ensureVisible(
       context,
-      duration: disable ? Duration.zero : const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
+      duration: AppMotion.of(context).component,
+      curve: AppMotion.enter,
     );
   }
 
@@ -527,10 +552,7 @@ class _TypedTextState extends State<_TypedText>
       // A voz conta onde está: o texto vai até a palavra falada.
       final target = (revealed / _length).clamp(0.0, 1.0);
       if (target > _controller.value) {
-        _controller.animateTo(
-          target,
-          duration: const Duration(milliseconds: 150),
-        );
+        _controller.animateTo(target, duration: AppMotion.tap);
       } else {
         _controller.stop();
       }
@@ -575,7 +597,7 @@ class _TypedTextState extends State<_TypedText>
   @override
   Widget build(BuildContext context) {
     final onTapAt = widget.onTapAt;
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (AppMotion.of(context).disabled) {
       return onTapAt == null
           ? widget.text
           : _LinkTapper(text: widget.text, onTapAt: onTapAt);

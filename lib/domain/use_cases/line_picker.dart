@@ -17,6 +17,7 @@ class LinePicker {
     LineCategory.draw,
     LineCategory.drawAccepted,
     LineCategory.drawDeclined,
+    LineCategory.toldYouDraw,
     LineCategory.ownBlunder,
     LineCategory.opponentBlunder,
     LineCategory.comeback,
@@ -44,8 +45,12 @@ class LinePicker {
   }) {
     final emotion = EmotionRules.of(memory);
     for (final event in events) {
-      if (!priority.contains(event.category) &&
-          memory.movesSinceLine < minMovesBetweenLines) {
+      // O mate que escapou (intensidade 3) fala na hora; só adiá-lo espera
+      // o intervalo de sempre, para não repetir a cada lance.
+      final urgent =
+          priority.contains(event.category) ||
+          (event.category == LineCategory.mateDelayed && event.intensity >= 3);
+      if (!urgent && memory.movesSinceLine < minMovesBetweenLines) {
         continue;
       }
       var ofCategory = [

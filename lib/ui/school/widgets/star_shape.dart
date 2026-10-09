@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_motion.dart';
+
 /// Uma estrela no tabuleiro, que cresce ao aparecer. Com [blinking], pisca
 /// (está para sumir).
 class StarShape extends StatelessWidget {
@@ -14,12 +16,12 @@ class StarShape extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduced = MediaQuery.disableAnimationsOf(context);
+    final reduced = AppMotion.of(context).disabled;
     final star = FittedBox(child: Icon(Icons.star_rounded, color: color));
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.3, end: 1),
-      duration: reduced ? Duration.zero : const Duration(milliseconds: 600),
-      curve: Curves.elasticOut,
+      duration: AppMotion.of(context).celebrate,
+      curve: AppMotion.bounce,
       builder: (context, value, child) =>
           Transform.scale(scale: value, child: child),
       child: blinking && !reduced ? _Blink(child: star) : star,
@@ -39,7 +41,7 @@ class _Blink extends StatefulWidget {
 class _BlinkState extends State<_Blink> with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 220),
+    duration: AppMotion.state,
   )..repeat(reverse: true);
 
   @override

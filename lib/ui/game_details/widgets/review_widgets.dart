@@ -14,6 +14,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -22,6 +23,8 @@ import '../../core/widgets/figurine.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -110,7 +113,7 @@ class ReviewSummary extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppShape.small),
             child: LinearProgressIndicator(
               value: state.reviewProgress,
               minHeight: 8,
@@ -207,17 +210,27 @@ class ReviewSummary extends StatelessWidget {
     );
   }
 
-  /// Os botões das revisões mais pesadas que [above].
+  /// As três revisões: as já feitas (até [above]) marcadas com o ✓ e sem
+  /// toque; as mais pesadas, para fazer. Os nomes numa linha só, que
+  /// encolhe se faltar largura.
   Widget _speedButtons(BuildContext context, int above) {
     final l10n = context.l10n;
     final speeds = [
       (ReviewSpeed.quick, GameDetailsKeys.reviewQuick, l10n.reviewQuick),
       (ReviewSpeed.medium, GameDetailsKeys.reviewButton, l10n.reviewMedium),
       (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
-    ].where((s) => GameDetailsCubit.reviewWeights[s.$1]! > above);
+    ];
     final style = FilledButton.styleFrom(
       minimumSize: const Size.fromHeight(46),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
     );
+    // A próxima a fazer fica em destaque.
+    final next = speeds
+        .firstWhere(
+          (s) => GameDetailsCubit.reviewWeights[s.$1]! > above,
+          orElse: () => speeds.last,
+        )
+        .$1;
     return Row(
       children: [
         for (final (i, (speed, key, label)) in speeds.indexed) ...[
@@ -226,19 +239,29 @@ class ReviewSummary extends StatelessWidget {
             child: () {
               void onPressed() =>
                   context.read<GameDetailsCubit>().review(speed: speed);
-              final enabled = state.moves.isNotEmpty;
-              return speed == ReviewSpeed.medium
+              final done = GameDetailsCubit.reviewWeights[speed]! <= above;
+              final enabled = state.moves.isNotEmpty && !done;
+              if (done) {
+                return OutlinedButton.icon(
+                  key: key,
+                  style: style,
+                  onPressed: null,
+                  icon: const Icon(Icons.check_rounded, size: 18),
+                  label: OneLine(label),
+                );
+              }
+              return speed == next
                   ? FilledButton(
                       key: key,
                       style: style,
                       onPressed: enabled ? onPressed : null,
-                      child: Text(label),
+                      child: OneLine(label),
                     )
                   : FilledButton.tonal(
                       key: key,
                       style: style,
                       onPressed: enabled ? onPressed : null,
-                      child: Text(label),
+                      child: OneLine(label),
                     );
             }(),
           ),
@@ -304,7 +327,7 @@ class _StoryTellerState extends State<_StoryTeller> {
     teacher: widget.viktor,
     text: widget.stories[_index % widget.stories.length],
     avatarSize: 40,
-    stacked: true,
+    speechContext: SpeechContext.teaching,
     typed: true,
   );
 }
@@ -454,7 +477,7 @@ class _AccuracyBox extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: light ? const Color(0xFFF2F2F0) : const Color(0xFF2B2B2B),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Text(
         text,
@@ -585,7 +608,9 @@ class _ReviewBoardState extends State<ReviewBoard> {
             controller: _controller,
             orientation: widget.orientation,
             settings: settings.chessground.copyWith(
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AppShape.small),
+              ),
             ),
             annotations: annotations,
             shapes: shapes,
@@ -645,14 +670,14 @@ class _EvalBar extends StatelessWidget {
     final white = Container(color: const Color(0xFFF2F2F0));
     final black = Container(color: const Color(0xFF3A3A3A));
     return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(AppShape.small),
       child: SizedBox(
         width: width,
         height: height,
         child: TweenAnimationBuilder<double>(
           tween: Tween(end: share),
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOutCubic,
+          duration: AppMotion.component,
+          curve: AppMotion.enter,
           builder: (context, value, _) {
             final whitePart = (height * value).clamp(0.0, height);
             final bar = Column(
@@ -796,7 +821,7 @@ class MoveExplanation extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Row(
         children: [
@@ -1043,7 +1068,7 @@ class EngineLinesPanel extends StatelessWidget {
                     color: line.score.whiteWinPercent >= 50
                         ? const Color(0xFFF2F2F0)
                         : const Color(0xFF2B2B2B),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Text(
                     formatScore(line.score, locale),

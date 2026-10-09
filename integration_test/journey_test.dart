@@ -1,10 +1,12 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/conclusion.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/journey_robot.dart';
@@ -37,6 +39,7 @@ void main() {
     bool won = true,
   }) async {
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await board.openAt(
       _mateInOne,
       opponent: 'maia',
@@ -48,12 +51,12 @@ void main() {
     );
     if (won) {
       await board.move('h1', 'h8');
-      await board.expectGoalResult('Goal achieved!');
+      await conclusion.expectGoal('Goal achieved!');
     } else {
       await board.resign();
-      await board.expectGoalResult('Goal not achieved');
+      await conclusion.expectGoal('Goal not achieved');
     }
-    await board.leave();
+    await conclusion.close();
     await HomeRobot($).expectVisible();
   }
 
@@ -85,6 +88,7 @@ void main() {
     final app = AppRobot($);
     final journey = JourneyRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: _english);
 
     await journey.open();
@@ -92,8 +96,9 @@ void main() {
     await journey.openChallenge('basic.queen.0001');
     await journey.play();
     await board.resign();
-    await board.expectGoalResult('Goal not achieved');
-    await journey.back();
+    await conclusion.expectGoal('Goal not achieved');
+    // Fechar a conclusão volta ao desafio.
+    await conclusion.close();
 
     journey.expectAttempts(1);
     await journey.back();
@@ -103,27 +108,32 @@ void main() {
     await journey.expectLocked('1200');
   });
 
-  patrolTest('fim de um desafio: rating no painel e próximo desafio direto', (
-    $,
-  ) async {
-    final app = AppRobot($);
-    final journey = JourneyRobot($);
-    final board = FreeBoardRobot($);
-    await app.open(systemLocale: _english);
+  patrolTest(
+    'fim de um desafio perdido: rating na conclusão e o mesmo desafio de novo',
+    ($) async {
+      final app = AppRobot($);
+      final journey = JourneyRobot($);
+      final board = FreeBoardRobot($);
+      final conclusion = ConclusionRobot($);
+      await app.open(systemLocale: _english);
 
-    await journey.open();
-    await journey.openRung('1000');
-    await journey.openChallenge('basic.queen.0001');
-    await journey.play();
-    board.expectBoardFullWidth();
-    await board.resign();
-    await board.expectGoalResult('Goal not achieved');
-    await board.expectRatingInEndPanel();
+      await journey.open();
+      await journey.openRung('1000');
+      await journey.openChallenge('basic.queen.0001');
+      await journey.play();
+      board.expectBoardFullWidth();
+      await board.resign();
+      await conclusion.expectGoal('Goal not achieved');
+      await conclusion.expectRatingChanged();
 
-    await board.nextChallenge();
-    expect(board.challengeId, '1000/basic.queen.0002');
-    board.expectBoardFullWidth();
-  });
+      // Perdeu: a conclusão oferece o mesmo desafio de novo, não o próximo
+      // (T51).
+      conclusion.expectNoAction(ConclusionAction.nextChallenge);
+      await conclusion.playAgain();
+      expect(board.challengeId, '1000/basic.queen.0001');
+      board.expectBoardFullWidth();
+    },
+  );
 
   patrolTest('degrau trancado: tocar mostra o que falta', ($) async {
     final app = AppRobot($);

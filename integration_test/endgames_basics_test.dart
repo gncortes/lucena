@@ -17,7 +17,7 @@ void main() {
     final lesson = await endgames.lesson('basics.queenMate');
     await endgames.openFromHome();
     await endgames.openLesson('basics.queenMate');
-    await endgames.expectFinalLocked();
+    await endgames.expectFinalStep();
 
     await endgames.openSteps();
     await endgames.completeSteps(

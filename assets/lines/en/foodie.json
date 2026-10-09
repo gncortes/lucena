@@ -220,6 +220,27 @@
       "text": "As long as there are crumbs on the table, I keep eating."
     },
     {
+      "id": "foodie.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "How about a draw? The pizza's getting cold. We split the last slice."
+    },
+    {
+      "id": "foodie.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Mating is like dough: it needs to rest. Draw today, come back tomorrow."
+    },
+    {
+      "id": "foodie.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "A draw and I'll give you my nonna's sauce recipe. Serious offer."
+    },
+    {
       "id": "foodie.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -862,6 +883,76 @@
       "intensity": 3,
       "emotion": "focused",
       "text": "Low heat, no rush. This ending is still rising."
+    },
+    {
+      "id": "foodie.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "The mate is overcooked. Like a pizza left in the oven."
+    },
+    {
+      "id": "foodie.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "No rush... but pizza gets cold, and so does the mate."
+    },
+    {
+      "id": "foodie.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "It is a draw now, friend. Reheated mate is never good again."
+    },
+    {
+      "id": "foodie.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Burned it? Let us draw and order another one."
+    },
+    {
+      "id": "foodie.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I need to go, the pizzeria closes at eleven. Draw, then?"
+    },
+    {
+      "id": "foodie.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "I knew it was a draw. You did not take it, the pizza went cold, but fine."
+    },
+    {
+      "id": "foodie.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Told you, did I not? A draw. Now have a slice with me."
+    },
+    {
+      "id": "foodie.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A draw, as I predicted. Low heat always gets there."
+    },
+    {
+      "id": "foodie.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "It was a draw since back then. But the company was good."
+    },
+    {
+      "id": "foodie.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw. Nonna would say: if you do not take it out, you lose the pizza."
     }
   ]
 }

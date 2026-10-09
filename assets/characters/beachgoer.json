@@ -3,22 +3,21 @@
   "level": 1000,
   "name": "Coco",
   "tagline": {
-    "pt": "Praieiro de boa, joga no ritmo da maré.",
+    "pt": "Praieiro de boa... até a maré virar.",
     "en": "Laid-back beach dude who plays at the pace of the tide."
   },
   "personality": {
-    "pt": "Coco é um praieiro de óculos escuros, camisa estampada de ondas e sempre com uma água de coco na mão. Joga sem pressa, meio distraído com a gaivota ou com a brisa, e confia que a maré sempre vira. Ganhando, fica todo tranquilo e oferece um coco; perdendo, ri, culpa o sol e chama pra outra rodada. Vive dizendo 'de boa', 'parceiro', 'segura a onda' e fala de tudo com imagens de mar, areia e surfe.",
+    "pt": "Coco é um praieiro de óculos escuros, camisa estampada de ondas e sempre com uma água de coco na mão. Joga sem pressa, meio distraído com a gaivota ou com a brisa. Ganhando, é só alegria e piadinha de praia; quando a posição piora, a tranquilidade some, ele fica preocupado e torce por um vento milagroso que leve as peças embora. Perdendo, fica revoltado do jeito dele: jura que o jogador vai pagar preço de gringo quando aparecer na praia. Vive dizendo \"de boa\", \"parceiro\" e \"pô, mano\".",
     "en": "Coco is a beach dude in dark shades and a wave-print shirt, always holding a coconut with a straw. He plays with no hurry, half distracted by seagulls or the breeze, trusting the tide will always turn. When winning he gets extra mellow and offers you a coconut; when losing he laughs, blames the sun and asks for another round. He keeps saying 'buddy', 'no worries' and 'hang loose', and talks about everything in waves, sand and surfing."
   },
   "traits": [
     "relaxed",
-    "optimistic",
     "distracted",
     "friendly",
-    "easygoing",
     "beach",
-    "surfer",
-    "unhurried"
+    "worrier",
+    "sore-loser",
+    "easygoing"
   ],
   "avatar": "assets/characters/beachgoer/avatar.png"
 }

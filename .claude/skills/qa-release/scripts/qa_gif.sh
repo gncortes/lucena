@@ -3,7 +3,7 @@
 # Ex.:  qa_gif.sh T05 v0.1.1-rc.1 -- patrol test -t integration_test/board_settings_test.dart -d emulator-5554 --dart-define=E2E=true
 #
 # Grava a tela do emulador enquanto o comando roda, converte em GIF e salva em
-# docs/qa/TXX/<rótulo>.gif. O commit e o push do GIF ficam com quem chamou; no fim o
+# qa/TXX/<rótulo>.gif. O commit e o push do GIF ficam com quem chamou; no fim o
 # script imprime a linha de Markdown que vai na seção "Demonstração" do PR.
 set -euo pipefail
 
@@ -15,7 +15,7 @@ shift 3
 MAX_BYTES=$((4 * 1024 * 1024))
 OUT_DIR="build/qa-release"
 MP4="$OUT_DIR/demo.mp4"
-GIF="docs/qa/$TASK/$LABEL.gif"
+GIF="qa/$TASK/$LABEL.gif"
 REMOTE_MP4="/sdcard/qa_gif.mp4"
 mkdir -p "$OUT_DIR" "$(dirname "$GIF")"
 

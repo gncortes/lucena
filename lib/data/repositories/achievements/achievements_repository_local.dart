@@ -32,17 +32,30 @@ class LocalAchievementsRepository implements AchievementsRepository {
   }
 
   @override
-  Future<Map<String, DateTime>> unlocked() async {
+  Future<Map<String, UnlockedAchievement>> unlocked() async {
     final rows = await _database.select(_database.unlockedAchievements).get();
-    return {for (final row in rows) row.achievementId: row.at.toUtc()};
+    return {
+      for (final row in rows)
+        row.achievementId: UnlockedAchievement(
+          id: row.achievementId,
+          at: row.at.toUtc(),
+          gameId: row.gameId,
+          speedrunAttemptId: row.speedrunAttemptId,
+        ),
+    };
   }
 
   @override
-  Future<void> unlock(Iterable<String> ids, DateTime at) async {
+  Future<void> unlock(Iterable<UnlockedAchievement> achievements) async {
     await _database.batch((batch) {
       batch.insertAll(_database.unlockedAchievements, [
-        for (final id in ids)
-          UnlockedAchievementsCompanion.insert(achievementId: id, at: at),
+        for (final achievement in achievements)
+          UnlockedAchievementsCompanion.insert(
+            achievementId: achievement.id,
+            at: achievement.at,
+            gameId: Value(achievement.gameId),
+            speedrunAttemptId: Value(achievement.speedrunAttemptId),
+          ),
       ], mode: InsertMode.insertOrIgnore);
     });
   }

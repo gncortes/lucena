@@ -6,119 +6,119 @@
       "id": "prodigy.gameStart.1",
       "category": "gameStart",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Oba, uma expedição nova! Minha bússola aponta pro seu rei."
+      "emotion": "confident",
+      "text": "Pode começar. Eu deixo, porque sou educada."
     },
     {
       "id": "prodigy.gameStart.2",
       "category": "gameStart",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Caderno aberto, lupa limpinha. Pode vir!"
+      "text": "Não pega leve porque eu sou pequena, tá? Eu não vou pegar."
     },
     {
       "id": "prodigy.gameStart.3",
       "category": "gameStart",
       "intensity": 2,
-      "emotion": "confident",
-      "text": "Já explorei esse final mil vezes. Bora explorar de novo!"
+      "emotion": "calm",
+      "text": "Primeiro eu observo. Depois eu ganho."
     },
     {
       "id": "prodigy.gameStart.4",
       "category": "gameStart",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Hora da aventura! Cada casa é um pedaço do mapa do tesouro."
+      "emotion": "playful",
+      "text": "Chegou no meu tabuleiro, hein? Então joga direitinho."
     },
     {
       "id": "prodigy.gameStart.5",
       "category": "gameStart",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Não pega leve só porque eu sou pequena, tá? Eu não vou pegar."
+      "text": "Já vi gente maior que você chegar achando que levava tudo."
     },
     {
       "id": "prodigy.gameStart.6",
       "category": "gameStart",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Primeiro a gente observa. Depois a gente descobre."
+      "text": "Senta aí. Só não diz depois que descobriu alguma coisa."
     },
     {
       "id": "prodigy.bigAdvantage.1",
       "category": "bigAdvantage",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Achei o caminho! Tá todo marcadinho no meu mapa."
+      "emotion": "confident",
+      "text": "Meu avô lia a mata. Ler tabuleiro é moleza."
     },
     {
       "id": "prodigy.bigAdvantage.2",
       "category": "bigAdvantage",
       "intensity": 2,
-      "emotion": "confident",
-      "text": "Minha bússola só aponta pra um lado: vitória!"
+      "emotion": "happy",
+      "text": "Ih, ficou fácil. Quer desistir agora ou depois?"
     },
     {
       "id": "prodigy.bigAdvantage.3",
       "category": "bigAdvantage",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Essa trilha eu faço de olho fechado."
+      "text": "Calma, eu explico devagar onde foi que você errou."
     },
     {
       "id": "prodigy.bigAdvantage.4",
       "category": "bigAdvantage",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Agora é só não tropeçar. Passo a passo, que nem na trilha."
+      "emotion": "confident",
+      "text": "Essa partida já tem dona. Adivinha quem."
     },
     {
       "id": "prodigy.bigAdvantage.5",
       "category": "bigAdvantage",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Vou anotar no caderno: dia de sorte... e de técnica!"
+      "emotion": "playful",
+      "text": "Tá tudo bem. Até gente grande perde pra mim."
     },
     {
       "id": "prodigy.bigAdvantage.6",
       "category": "bigAdvantage",
       "intensity": 3,
-      "emotion": "confident",
-      "text": "O tesouro já tá quase no bolso do meu macacão!"
+      "emotion": "happy",
+      "text": "Viu? Quem conhece o terreno não se perde."
     },
     {
       "id": "prodigy.better.1",
       "category": "better",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Hmm, minha lupa achou uma pista..."
+      "emotion": "calm",
+      "text": "Hmm. Tá ficando do meu jeito."
     },
     {
       "id": "prodigy.better.2",
       "category": "better",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Acho que achei uma trilha boa aqui!"
+      "emotion": "confident",
+      "text": "Meu rei chegou primeiro. Como sempre."
     },
     {
       "id": "prodigy.better.3",
       "category": "better",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Tô um pouquinho na frente. Mas trilha boa é trilha longa."
+      "emotion": "playful",
+      "text": "Tá sentindo? Não? Vai sentir."
     },
     {
       "id": "prodigy.better.4",
       "category": "better",
       "intensity": 3,
-      "emotion": "confident",
-      "text": "Meu rei tá mais perto do centro. Meio caminho andado!"
+      "emotion": "focused",
+      "text": "Sem pressa. Quem tem paciência ganha."
     },
     {
       "id": "prodigy.better.5",
       "category": "better",
       "intensity": 2,
-      "emotion": "playful",
+      "emotion": "happy",
       "text": "Tá esquentando... tá esquentando..."
     },
     {
@@ -126,461 +126,482 @@
       "category": "equal",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Empatadinho. O mapa ainda tem muita parte em branco."
+      "text": "Igual. Por enquanto, né."
     },
     {
       "id": "prodigy.equal.2",
       "category": "equal",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Deixa eu olhar de pertinho... cada casa importa."
+      "text": "Deixa eu olhar direitinho. Cada casa importa."
     },
     {
       "id": "prodigy.equal.3",
       "category": "equal",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Nós dois na mesma trilha. Quem acha o atalho primeiro?"
+      "text": "Você é bom. Pra um visitante, até que é bom."
     },
     {
       "id": "prodigy.equal.4",
       "category": "equal",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Oposição ou triangulação... qual eu testo hoje?"
+      "text": "Oposição ou triangulação... qual eu uso em você?"
     },
     {
       "id": "prodigy.equal.5",
       "category": "equal",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Equilibrado por enquanto. Mas eu sou ótima em achar coisa escondida!"
+      "text": "Pode empatar o quanto quiser. Eu tenho tempo."
     },
     {
       "id": "prodigy.worse.1",
       "category": "worse",
       "intensity": 1,
-      "emotion": "nervous",
-      "text": "Opa, acho que peguei a trilha errada..."
+      "emotion": "frustrated",
+      "text": "Essa terra tem dono, viu? Pode recuar esse peão."
     },
     {
       "id": "prodigy.worse.2",
       "category": "worse",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Calma, bússola. A gente acha o norte de novo."
+      "emotion": "nervous",
+      "text": "Ué. Isso não era pra estar assim."
     },
     {
       "id": "prodigy.worse.3",
       "category": "worse",
       "intensity": 1,
-      "emotion": "surprised",
-      "text": "Ué, isso não tava no meu mapa!"
+      "emotion": "frustrated",
+      "text": "Hmpf. Não gostei. Não gostei nada."
     },
     {
       "id": "prodigy.worse.4",
       "category": "worse",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Exploradora de verdade não desiste no primeiro barranco."
+      "emotion": "nervous",
+      "text": "Peraí, peraí. Deixa eu pensar direito."
     },
     {
       "id": "prodigy.worse.5",
       "category": "worse",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Hmpf. Tá difícil, mas eu gosto de difícil."
+      "text": "Chegando assim, invadindo tudo? Já vi esse filme."
     },
     {
       "id": "prodigy.bigDisadvantage.1",
       "category": "bigDisadvantage",
       "intensity": 2,
-      "emotion": "sad",
-      "text": "Acho que me perdi na floresta..."
+      "emotion": "frustrated",
+      "text": "De novo isso? Chega, ocupa tudo e acha normal."
     },
     {
       "id": "prodigy.bigDisadvantage.2",
       "category": "bigDisadvantage",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Tudo bem. Até mapa perdido ensina alguma coisa."
+      "emotion": "nervous",
+      "text": "Não. Não, não, não. Isso tá muito errado."
     },
     {
       "id": "prodigy.bigDisadvantage.3",
       "category": "bigDisadvantage",
       "intensity": 3,
-      "emotion": "frustrated",
-      "text": "Minha bússola tá girando sem parar!"
+      "emotion": "sad",
+      "text": "Ai. Tô perdendo pra um visitante. Que vergonha."
     },
     {
       "id": "prodigy.bigDisadvantage.4",
       "category": "bigDisadvantage",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Ainda deve ter um esconderijo por aqui. Vou procurar!"
+      "emotion": "nervous",
+      "text": "Ainda tem saída. Tem que ter. Deixa eu achar."
     },
     {
       "id": "prodigy.bigDisadvantage.5",
       "category": "bigDisadvantage",
       "intensity": 3,
-      "emotion": "nervous",
-      "text": "Socorro, tucano! A trilha acabou!"
+      "emotion": "frustrated",
+      "text": "Você não tá jogando sozinho, não, né? Tá muito certinho."
     },
     {
       "id": "prodigy.bigDisadvantage.6",
       "category": "bigDisadvantage",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Mesmo perdendo, tô aprendendo. Isso vale ouro."
+      "emotion": "sad",
+      "text": "Meu avô ia ficar bravo comigo agora."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empata e eu te mostro a trilha secreta da aldeia. Proposta única."
+    },
+    {
+      "id": "prodigy.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "nervous",
+      "text": "Os mais velhos dizem que quem vence com pressa tropeça. Empate?"
+    },
+    {
+      "id": "prodigy.bigDisadvantage.9",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Que tal dividir? Você fica com a vitória moral, e eu com o empate."
     },
     {
       "id": "prodigy.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 2,
-      "emotion": "surprised",
-      "text": "Achei! Achei! Olha só o que eu achei!"
+      "emotion": "happy",
+      "text": "Já vi esse filme: chega, oferece espelho e leva tudo."
     },
     {
       "id": "prodigy.opponentBlunder.2",
       "category": "opponentBlunder",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Ih, isso vai direto pro meu caderno de descobertas."
+      "emotion": "playful",
+      "text": "Ih. Agora fui eu que levei. Que coisa, né?"
     },
     {
       "id": "prodigy.opponentBlunder.3",
       "category": "opponentBlunder",
       "intensity": 3,
-      "emotion": "playful",
-      "text": "Pegadas de um erro! Vou seguir elas."
+      "emotion": "confident",
+      "text": "Vi de longe. Você nem disfarçou."
     },
     {
       "id": "prodigy.opponentBlunder.4",
       "category": "opponentBlunder",
       "intensity": 2,
-      "emotion": "confident",
-      "text": "Minha lupa viu essa de longe."
+      "emotion": "happy",
+      "text": "Obrigada! Mas eu não troco nada por espelho, tá?"
     },
     {
       "id": "prodigy.opponentBlunder.5",
       "category": "opponentBlunder",
       "intensity": 3,
-      "emotion": "happy",
-      "text": "Uau! Acabou de aparecer um X no mapa do tesouro!"
+      "emotion": "playful",
+      "text": "Hmm, tem certeza? Tá. Problema seu."
     },
     {
       "id": "prodigy.opponentBlunder.6",
       "category": "opponentBlunder",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Hmm, tem certeza? Tudo bem, eu também já fiz isso."
+      "emotion": "confident",
+      "text": "Errou. E eu não perdoo, não."
     },
     {
       "id": "prodigy.ownBlunder.1",
       "category": "ownBlunder",
       "intensity": 2,
-      "emotion": "surprised",
-      "text": "Ops! Tropecei numa raiz."
+      "emotion": "frustrated",
+      "text": "Ai! Não acredito que eu fiz isso."
     },
     {
       "id": "prodigy.ownBlunder.2",
       "category": "ownBlunder",
       "intensity": 3,
-      "emotion": "frustrated",
-      "text": "Aaah! Eu tava segurando a lupa de cabeça pra baixo!"
+      "emotion": "nervous",
+      "text": "Finge que você não viu? Por favor?"
     },
     {
       "id": "prodigy.ownBlunder.3",
       "category": "ownBlunder",
       "intensity": 1,
-      "emotion": "sad",
-      "text": "Essa vai pro caderno, na página do \"nunca mais\"."
+      "emotion": "frustrated",
+      "text": "Eu sabia esse final de cor! De cor!"
     },
     {
       "id": "prodigy.ownBlunder.4",
       "category": "ownBlunder",
       "intensity": 2,
-      "emotion": "nervous",
-      "text": "Hmm... finge que você não viu?"
+      "emotion": "sad",
+      "text": "Ah, não... me distraí. Que raiva."
     },
     {
       "id": "prodigy.ownBlunder.5",
       "category": "ownBlunder",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Errei. Exploradora também se perde. Bora achar o caminho."
+      "emotion": "frustrated",
+      "text": "Esse lance não fui eu. Foi minha mão. Sozinha."
     },
     {
       "id": "prodigy.ownBlunder.6",
       "category": "ownBlunder",
       "intensity": 3,
-      "emotion": "frustrated",
-      "text": "Não acredito! Eu sabia esse final de cor!"
+      "emotion": "nervous",
+      "text": "Tá. Errei. Mas não se anima, não."
     },
     {
       "id": "prodigy.strongMove.1",
       "category": "strongMove",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Uau! Como você achou essa trilha?"
+      "text": "Uau. Esse eu não esperava."
     },
     {
       "id": "prodigy.strongMove.2",
       "category": "strongMove",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Lance lindo! Posso desenhar no meu caderno?"
+      "emotion": "surprised",
+      "text": "Descobriu? Isso aí já tava aí faz tempo, viu?"
     },
     {
       "id": "prodigy.strongMove.3",
-      "category": "strongMove",
-      "intensity": 3,
-      "emotion": "surprised",
-      "text": "Essa nem a minha lupa tinha visto!"
-    },
-    {
-      "id": "prodigy.strongMove.4",
-      "category": "strongMove",
-      "intensity": 2,
-      "emotion": "focused",
-      "text": "Hmm, você também é explorador, né?"
-    },
-    {
-      "id": "prodigy.strongMove.5",
-      "category": "strongMove",
-      "intensity": 1,
-      "emotion": "playful",
-      "text": "Ei, essa descoberta era pra ser minha!"
-    },
-    {
-      "id": "prodigy.strongMove.6",
       "category": "strongMove",
       "intensity": 3,
       "emotion": "nervous",
       "text": "Opa. Agora quem tá em perigo sou eu."
     },
     {
+      "id": "prodigy.strongMove.4",
+      "category": "strongMove",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Bom lance. Quem te ensinou? Fala a verdade."
+    },
+    {
+      "id": "prodigy.strongMove.5",
+      "category": "strongMove",
+      "intensity": 1,
+      "emotion": "frustrated",
+      "text": "Ei, esse lance era meu! Eu ia jogar!"
+    },
+    {
+      "id": "prodigy.strongMove.6",
+      "category": "strongMove",
+      "intensity": 3,
+      "emotion": "focused",
+      "text": "Tá bom. Agora eu vou jogar sério."
+    },
+    {
       "id": "prodigy.comeback.1",
       "category": "comeback",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Achei o caminho de volta! Eu sabia!"
+      "text": "Voltei! Eu sabia que ia voltar!"
     },
     {
       "id": "prodigy.comeback.2",
       "category": "comeback",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Viu? Bússola nunca mente por muito tempo."
+      "text": "Achou que ia levar tudo, né? Não leva, não."
     },
     {
       "id": "prodigy.comeback.3",
       "category": "comeback",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Às vezes o caminho mais longo é o certo."
+      "emotion": "happy",
+      "text": "Resistência, sabe? A gente aprende desde cedo."
     },
     {
       "id": "prodigy.comeback.4",
       "category": "comeback",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Saí da floresta e ainda achei o tesouro!"
+      "text": "Pode guardar a caravela. Hoje não deu."
     },
     {
       "id": "prodigy.comeback.5",
       "category": "comeback",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Isso vai virar capítulo especial no caderno!"
+      "emotion": "confident",
+      "text": "Viu? Quem é pequena também vira o jogo."
     },
     {
       "id": "prodigy.collapse.1",
       "category": "collapse",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Não! O tesouro escorregou da minha mão!"
+      "text": "Não! Tava na minha mão!"
     },
     {
       "id": "prodigy.collapse.2",
       "category": "collapse",
       "intensity": 2,
       "emotion": "sad",
-      "text": "Eu tava tão perto... e deixei a trilha sumir."
+      "text": "Eu tava tão perto... e deixei escapar."
     },
     {
       "id": "prodigy.collapse.3",
       "category": "collapse",
       "intensity": 1,
-      "emotion": "surprised",
-      "text": "Ué, cadê minha vantagem? Tava aqui agora há pouco!"
+      "emotion": "nervous",
+      "text": "Ué, cadê minha vantagem? Tava aqui agorinha!"
     },
     {
       "id": "prodigy.collapse.4",
       "category": "collapse",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Lição anotada: final ganho ainda precisa ser ganho."
+      "emotion": "frustrated",
+      "text": "Final ganho também tem que ser ganho. Hmpf."
     },
     {
       "id": "prodigy.collapse.5",
       "category": "collapse",
       "intensity": 3,
-      "emotion": "nervous",
-      "text": "Meu mapa tinha um buraco bem aí. Bem aí!"
+      "emotion": "frustrated",
+      "text": "Me distraí um segundo e você aproveitou. Típico."
     },
     {
       "id": "prodigy.pieceCaptured.1",
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Achei! Vai pra minha coleção de achados."
+      "text": "Essa é minha agora. Pode deixar que eu cuido."
     },
     {
       "id": "prodigy.pieceCaptured.2",
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Essa peça vai pro bolso do macacão."
+      "text": "Peguei! Você deixou dando sopa."
     },
     {
       "id": "prodigy.pieceCaptured.3",
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Peça capturada! Mais um X no mapa do tesouro."
+      "text": "De volta pra quem é de direito."
     },
     {
       "id": "prodigy.pieceCaptured.4",
       "category": "pieceCaptured",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Obrigada pela peça. Prometo cuidar bem dela."
+      "emotion": "happy",
+      "text": "Obrigada pela peça. Não vou devolver."
     },
     {
       "id": "prodigy.pieceCaptured.5",
       "category": "pieceCaptured",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "No caderno: \"espécie rara capturada\"."
+      "emotion": "playful",
+      "text": "Ih, sumiu uma peça sua. Que estranho, né?"
     },
     {
       "id": "prodigy.pieceLost.1",
       "category": "pieceLost",
       "intensity": 2,
-      "emotion": "sad",
-      "text": "Ah, não! Essa era a minha preferida."
+      "emotion": "frustrated",
+      "text": "Ei, você não tá querendo levar meu ouro também, né?"
     },
     {
       "id": "prodigy.pieceLost.2",
       "category": "pieceLost",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Tudo bem. Exploradora com mochila leve anda mais rápido."
+      "emotion": "frustrated",
+      "text": "Ei! Devolve! Isso é meu!"
     },
     {
       "id": "prodigy.pieceLost.3",
       "category": "pieceLost",
       "intensity": 3,
-      "emotion": "frustrated",
-      "text": "Ei! Devolve! ...Tá, não precisa."
+      "emotion": "sad",
+      "text": "Ah, não. Essa era a minha preferida."
     },
     {
       "id": "prodigy.pieceLost.4",
       "category": "pieceLost",
       "intensity": 2,
-      "emotion": "surprised",
+      "emotion": "nervous",
       "text": "Ué, de onde veio esse ataque?"
     },
     {
       "id": "prodigy.pieceLost.5",
       "category": "pieceLost",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Anotado. Agora preciso de outra trilha."
+      "emotion": "frustrated",
+      "text": "Levou sem pedir. Típico de visitante."
     },
     {
       "id": "prodigy.ownPromotion.1",
       "category": "ownPromotion",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Meu peão chegou no fim da trilha! Virou dama!"
+      "text": "Meu peão chegou! Virou dama!"
     },
     {
       "id": "prodigy.ownPromotion.2",
       "category": "ownPromotion",
       "intensity": 2,
-      "emotion": "playful",
-      "text": "Lagarta virou borboleta! Quer dizer, peão virou dama."
+      "emotion": "confident",
+      "text": "Viu? Quem é pequeno também chega longe."
     },
     {
       "id": "prodigy.ownPromotion.3",
       "category": "ownPromotion",
       "intensity": 1,
-      "emotion": "confident",
-      "text": "Viu? Quem é pequeno também chega longe."
+      "emotion": "happy",
+      "text": "Dama nova! E ninguém tira ela de mim."
     },
     {
       "id": "prodigy.ownPromotion.4",
       "category": "ownPromotion",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Expedição concluída! Coroa encontrada!"
+      "emotion": "playful",
+      "text": "Coroou. Você nem viu ele passar, né?"
     },
     {
       "id": "prodigy.ownPromotion.5",
       "category": "ownPromotion",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Rainha nova no pedaço. Minha bússola adorou."
+      "text": "Andou devagarinho e chegou. Do jeito certo."
     },
     {
       "id": "prodigy.opponentPromotion.1",
       "category": "opponentPromotion",
       "intensity": 2,
-      "emotion": "surprised",
-      "text": "Uau, seu peão andou mais que eu na trilha!"
+      "emotion": "frustrated",
+      "text": "Ei, você não tá querendo levar tudo, né? Até dama?"
     },
     {
       "id": "prodigy.opponentPromotion.2",
       "category": "opponentPromotion",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Uma dama novinha? Hora de achar um esconderijo!"
+      "text": "Uma dama novinha? Ai. Ai, ai."
     },
     {
       "id": "prodigy.opponentPromotion.3",
       "category": "opponentPromotion",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Tudo bem, já vi bicho maior na floresta."
+      "emotion": "frustrated",
+      "text": "Eu devia ter parado esse peão lá atrás!"
     },
     {
       "id": "prodigy.opponentPromotion.4",
       "category": "opponentPromotion",
       "intensity": 2,
-      "emotion": "frustrated",
-      "text": "Eu devia ter parado esse peão lá atrás!"
+      "emotion": "nervous",
+      "text": "Tá bom. Tá bom. Ainda dá. Eu acho."
     },
     {
       "id": "prodigy.opponentPromotion.5",
       "category": "opponentPromotion",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Anotado: nunca deixar peão passado passear sozinho."
+      "emotion": "frustrated",
+      "text": "Esse peão atravessou tudo sem pedir licença."
     },
     {
       "id": "prodigy.opponentLowTime.1",
       "category": "opponentLowTime",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Tic-tac! Seu relógio tá fazendo barulho de crocodilo."
+      "text": "Tic-tac! Seu relógio tá fazendo barulho."
     },
     {
       "id": "prodigy.opponentLowTime.2",
       "category": "opponentLowTime",
       "intensity": 2,
-      "emotion": "happy",
+      "emotion": "playful",
       "text": "Olha o relógio! Vai rápido, vai rápido!"
     },
     {
@@ -588,28 +609,28 @@
       "category": "opponentLowTime",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Pouco tempo e trilha longa... eu correria, se fosse você!"
+      "text": "Pouco tempo e jogo difícil. Eu correria, se fosse você."
     },
     {
       "id": "prodigy.opponentLowTime.4",
       "category": "opponentLowTime",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Respira. Lance simples também chega lá."
+      "text": "Respira. Lance simples também resolve."
     },
     {
       "id": "prodigy.opponentLowTime.5",
       "category": "opponentLowTime",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Seu relógio tá quase caindo da beirada do mapa!"
+      "text": "Seu tempo tá indo embora igual pau-brasil."
     },
     {
       "id": "prodigy.ownLowTime.1",
       "category": "ownLowTime",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Ai, ai! Fiquei olhando pela lupa tempo demais!"
+      "text": "Ai! Fiquei pensando demais!"
     },
     {
       "id": "prodigy.ownLowTime.2",
@@ -622,56 +643,56 @@
       "id": "prodigy.ownLowTime.3",
       "category": "ownLowTime",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Pouco tempo. Bússola, me ajuda!"
+      "emotion": "frustrated",
+      "text": "Quem roubou meu tempo? Foi você, né?"
     },
     {
       "id": "prodigy.ownLowTime.4",
       "category": "ownLowTime",
       "intensity": 2,
-      "emotion": "frustrated",
-      "text": "Gastei tempo anotando no caderno. Que bobeira!"
+      "emotion": "nervous",
+      "text": "Pouco tempo. Pensa rápido, Zuri, pensa rápido!"
     },
     {
       "id": "prodigy.ownLowTime.5",
       "category": "ownLowTime",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Tudo bem. Eu faço esse caminho até correndo."
+      "emotion": "focused",
+      "text": "Tá. Sem pânico. Eu sei o caminho até correndo."
     },
     {
       "id": "prodigy.timeAdvantage.1",
       "category": "timeAdvantage",
       "intensity": 1,
-      "emotion": "playful",
-      "text": "Tenho tempo de sobra pra explorar cada cantinho."
+      "emotion": "calm",
+      "text": "Tenho tempo de sobra. Vou olhar cada cantinho."
     },
     {
       "id": "prodigy.timeAdvantage.2",
       "category": "timeAdvantage",
       "intensity": 2,
-      "emotion": "confident",
-      "text": "Vou passear um pouquinho. Sem pressa nenhuma."
+      "emotion": "playful",
+      "text": "Sem pressa nenhuma. Quem chegou aqui antes fui eu."
     },
     {
       "id": "prodigy.timeAdvantage.3",
       "category": "timeAdvantage",
       "intensity": 3,
-      "emotion": "playful",
-      "text": "Relógio cheio e mapa aberto. E você, como tá?"
+      "emotion": "confident",
+      "text": "Meu relógio tá cheio. E o seu, como tá?"
     },
     {
       "id": "prodigy.timeAdvantage.4",
       "category": "timeAdvantage",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Deixa eu olhar de novo com a lupa... e de novo..."
+      "text": "Deixa eu olhar de novo... e de novo..."
     },
     {
       "id": "prodigy.timeAdvantage.5",
       "category": "timeAdvantage",
       "intensity": 1,
-      "emotion": "happy",
+      "emotion": "playful",
       "text": "Dá até tempo de desenhar o tabuleiro no caderno!"
     },
     {
@@ -679,168 +700,168 @@
       "category": "opponentThinking",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Pode pensar. Vou conferindo minha bússola."
+      "text": "Pode pensar. Eu espero. Eu sou paciente."
     },
     {
       "id": "prodigy.opponentThinking.2",
       "category": "opponentThinking",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Tá caçando o tesouro também? Tá quente ou frio?"
+      "text": "Tá procurando o quê? Ouro? Aqui não tem, não."
     },
     {
       "id": "prodigy.opponentThinking.3",
       "category": "opponentThinking",
       "intensity": 1,
-      "emotion": "happy",
-      "text": "Enquanto isso, vou desenhar um tucano no caderno."
+      "emotion": "playful",
+      "text": "Pensando bastante, hein? Tá com medo de mim?"
     },
     {
       "id": "prodigy.opponentThinking.4",
       "category": "opponentThinking",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Psst... a resposta tá em algum lugar do mapa!"
+      "text": "Psst... a resposta tá em algum lugar do tabuleiro!"
     },
     {
       "id": "prodigy.opponentThinking.5",
       "category": "opponentThinking",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Pensando bastante, hein? Gosto de quem leva a sério."
+      "emotion": "confident",
+      "text": "Pensa, pensa. Eu já sei o que você vai jogar."
     },
     {
       "id": "prodigy.win.1",
       "category": "win",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Tesouro encontrado! Expedição concluída!"
+      "text": "Ganhei! E não precisei de espelho nenhum."
     },
     {
       "id": "prodigy.win.2",
       "category": "win",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Achei! Vou colar essa partida no meu caderno."
+      "emotion": "confident",
+      "text": "Boa partida. Volta quando aprender mais."
     },
     {
       "id": "prodigy.win.3",
       "category": "win",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Boa partida. Você me fez explorar de verdade."
+      "emotion": "happy",
+      "text": "Viu? Pequena, mas conheço esse terreno melhor que ninguém."
     },
     {
       "id": "prodigy.win.4",
       "category": "win",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Mais uma estrelinha no meu mapa!"
+      "text": "Pode ir embora. Mas não leva nada, tá?"
     },
     {
       "id": "prodigy.win.5",
       "category": "win",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Pequena, mas conheço essas trilhas como ninguém!"
+      "text": "Era óbvio. Pra mim, pelo menos."
     },
     {
       "id": "prodigy.win.6",
       "category": "win",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Ganhar é legal. Mas o melhor foi a aventura."
+      "emotion": "happy",
+      "text": "Ganhei! Vou contar pro meu avô!"
     },
     {
       "id": "prodigy.loss.1",
       "category": "loss",
       "intensity": 2,
-      "emotion": "sad",
-      "text": "Ah... dessa vez o tesouro foi seu."
+      "emotion": "frustrated",
+      "text": "Hmpf! Revanche. Agora."
     },
     {
       "id": "prodigy.loss.2",
       "category": "loss",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Parabéns! Vou estudar até achar onde eu errei."
+      "emotion": "sad",
+      "text": "Levou a partida também? Não cansa, né?"
     },
     {
       "id": "prodigy.loss.3",
       "category": "loss",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Hmpf! Revanche! Minha bússola exige revanche!"
+      "text": "Você teve sorte. Muita sorte."
     },
     {
       "id": "prodigy.loss.4",
       "category": "loss",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Você me mostrou uma trilha nova. Obrigada!"
+      "emotion": "sad",
+      "text": "Ai... meu avô vai rir de mim."
     },
     {
       "id": "prodigy.loss.5",
       "category": "loss",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Perder também é descobrir. Só dói um pouquinho."
+      "emotion": "frustrated",
+      "text": "Tá. Ganhou essa. Mas a terra continua sendo minha."
     },
     {
       "id": "prodigy.draw.1",
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Empate! Chegamos juntos no topo da montanha."
+      "text": "Empate. Cada um no seu pedaço, combinado?"
     },
     {
       "id": "prodigy.draw.2",
       "category": "draw",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Ué, ninguém achou o tesouro? Tava bem escondido!"
+      "text": "Ué, ninguém ganhou? Que estranho."
     },
     {
       "id": "prodigy.draw.3",
       "category": "draw",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Tesouro dividido meio a meio, combinado?"
+      "text": "Meio a meio. Mas a minha metade é a melhor."
     },
     {
       "id": "prodigy.draw.4",
       "category": "draw",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Eu tava tão perto! Vou anotar onde a trilha fechou."
+      "text": "Eu tava tão perto! Hmpf."
     },
     {
       "id": "prodigy.draw.5",
       "category": "draw",
       "intensity": 1,
       "emotion": "happy",
-      "text": "Empate também é aventura. Bora de novo?"
+      "text": "Ufa! Salvei. Não levou nada dessa vez."
     },
     {
       "id": "prodigy.drawAccepted.1",
       "category": "drawAccepted",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Tá bom, empate. Às vezes o explorador esperto volta pro acampamento."
+      "text": "Tá bom, empate. Cada um volta pra sua casa."
     },
     {
       "id": "prodigy.drawAccepted.2",
       "category": "drawAccepted",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Aceito! Meu mapa tava cheio de buracos mesmo."
+      "emotion": "nervous",
+      "text": "Aceito! Tava ficando feio pra mim, confesso."
     },
     {
       "id": "prodigy.drawAccepted.3",
       "category": "drawAccepted",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Aceito. E já anotei no caderno: proposta de empate bem gentil."
+      "emotion": "calm",
+      "text": "Aceito. Mas esse acordo eu vou ler direitinho, viu?"
     },
     {
       "id": "prodigy.drawAccepted.4",
@@ -854,56 +875,126 @@
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Sim, sim, sim! Aceito antes que você mude de ideia!"
+      "text": "Sim, sim! Aceito antes que você mude de ideia!"
     },
     {
       "id": "prodigy.drawAccepted.6",
       "category": "drawAccepted",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Empate aceito. Saber recuar também é coisa de quem joga bem."
+      "emotion": "confident",
+      "text": "Aceito. E dessa vez ninguém leva nada de ninguém."
     },
     {
       "id": "prodigy.drawDeclined.1",
       "category": "drawDeclined",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Não, obrigada. Minha bússola ainda aponta pra vitória."
+      "text": "Não, obrigada. Ainda dá pra ganhar."
     },
     {
       "id": "prodigy.drawDeclined.2",
       "category": "drawDeclined",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Empate? Mas eu acabei de achar uma pista nova!"
+      "text": "Empate? Mas eu tô quase ganhando!"
     },
     {
       "id": "prodigy.drawDeclined.3",
       "category": "drawDeclined",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Nem pensar! O tesouro tá logo ali, eu sinto!"
+      "text": "Acordo com você? Sei como isso termina. Recuso."
     },
     {
       "id": "prodigy.drawDeclined.4",
       "category": "drawDeclined",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Minha lupa diz que ainda tem trilha pra explorar. Recuso."
+      "emotion": "playful",
+      "text": "Nem pensar! Você quer metade? Não é seu."
     },
     {
       "id": "prodigy.drawDeclined.5",
       "category": "drawDeclined",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Obrigada, mas expedição boa vai até o fim."
+      "text": "Obrigada, mas eu vou até o fim."
     },
     {
       "id": "prodigy.drawDeclined.6",
       "category": "drawDeclined",
       "intensity": 3,
-      "emotion": "playful",
+      "emotion": "confident",
       "text": "Empate? Eu sou pequena, mas não sou boba!"
+    },
+    {
+      "id": "prodigy.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "O mate tava ali, na sua frente. Precisa da minha lupa?"
+    },
+    {
+      "id": "prodigy.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Os mais velhos dizem: quem não caça na hora, volta sem nada."
+    },
+    {
+      "id": "prodigy.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Escapou. Agora é empate, e você sabe disso."
+    },
+    {
+      "id": "prodigy.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Vamos empatar? Você não vai achar esse mate de novo, eu acho."
+    },
+    {
+      "id": "prodigy.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Eu preciso voltar pra aldeia antes de escurecer. Empate?"
+    },
+    {
+      "id": "prodigy.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Eu sabia que era empate. Você não aceitou, me fez perder tempo, mas beleza."
+    },
+    {
+      "id": "prodigy.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Falei! Empate. Eu observo, lembra?"
+    },
+    {
+      "id": "prodigy.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Empate, igual eu vi lá atrás. Minha avó também ia ver."
+    },
+    {
+      "id": "prodigy.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Tá vendo? A trilha acabava aqui desde aquela hora."
+    },
+    {
+      "id": "prodigy.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Empate. Da próxima vez, escuta quem conhece o terreno."
     }
   ]
 }

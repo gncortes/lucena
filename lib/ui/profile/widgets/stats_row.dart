@@ -4,8 +4,12 @@ import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../view_models/rating_cubit.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/one_line.dart';
 
-/// Os números do progresso em blocos pequenos.
+/// Os números do progresso numa grade de duas colunas, sem buracos e com os
+/// cartões da mesma altura (T51, A5).
 class StatsRow extends StatelessWidget {
   const StatsRow({required this.numbers, super.key});
 
@@ -23,7 +27,7 @@ class StatsRow extends StatelessWidget {
       ),
       (Icons.emoji_events_outlined, '${numbers.stats.wins}', l10n.homeStatWins),
       (
-        Icons.local_fire_department_outlined,
+        Icons.event_repeat_outlined,
         '${numbers.stats.streakDays}',
         l10n.homeStatStreak,
       ),
@@ -38,34 +42,53 @@ class StatsRow extends StatelessWidget {
       if (best != null)
         (Icons.timer_outlined, runTime(context, best), l10n.homeStatBestRun),
     ];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const gap = 8.0;
-        // Quatro números em 2 × 2; cinco, em 3 + 2.
-        final columns = stats.length == 4 ? 2 : 3;
-        final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
-        return Wrap(
-          key: RatingKeys.stats,
-          spacing: gap,
-          runSpacing: gap,
-          children: [
-            for (final (index, (icon, value, label)) in stats.indexed)
-              SizedBox(
-                width: width,
-                child: _Stat(
-                  key: RatingKeys.stat(index),
-                  icon: icon,
-                  value: value,
-                  label: label,
-                ),
-              ),
-          ],
-        );
-      },
+    // Grade de duas colunas, sem buracos: com número ímpar de itens, o
+    // último ocupa a linha inteira. Cada linha estica os cartões à altura do
+    // mais alto, e os rótulos nunca quebram (a letra diminui), então todos
+    // ficam da mesma altura.
+    final rows = [
+      for (var start = 0; start < stats.length; start += 2)
+        [
+          for (
+            var index = start;
+            index < start + 2 && index < stats.length;
+            index++
+          )
+            index,
+        ],
+    ];
+    return Column(
+      key: RatingKeys.stats,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (rowIndex, row) in rows.indexed) ...[
+          if (rowIndex > 0) const SizedBox(height: AppSpacing.sm),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (position, index) in row.indexed) ...[
+                  if (position > 0) const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _Stat(
+                      key: RatingKeys.stat(index),
+                      icon: stats[index].$1,
+                      value: stats[index].$2,
+                      label: stats[index].$3,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
 
+/// Um número: o ícone num círculo, o número grande e o rótulo, cada um numa
+/// linha só.
 class _Stat extends StatelessWidget {
   const _Stat({
     required this.icon,
@@ -83,33 +106,42 @@ class _Stat extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.large),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: colors.primary),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: colors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 20, color: colors.onPrimaryContainer),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OneLine(
                   value,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
-              ),
-            ],
-          ),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colors.onSurfaceVariant,
+                OneLine(
+                  label,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

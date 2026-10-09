@@ -60,14 +60,28 @@ class AssetLessonRepository implements LessonRepository {
     );
   }
 
-  /// Uma aula (`id` e `steps`); passo de tipo desconhecido é ignorado.
-  static Lesson parseLesson(Map<String, dynamic> lesson) => Lesson(
-    id: lesson['id'] as String,
-    steps: [
-      for (final step in (lesson['steps'] as List).cast<Map<String, dynamic>>())
-        ?_step(step),
-    ],
-  );
+  /// Uma aula (`id` e `steps`, ou `parts` com os passos de cada parte);
+  /// passo de tipo desconhecido é ignorado.
+  static Lesson parseLesson(Map<String, dynamic> lesson) {
+    final id = lesson['id'] as String;
+    List<LessonStep> steps(List<dynamic> json) => [
+      for (final step in json.cast<Map<String, dynamic>>()) ?_step(step),
+    ];
+    final parts = lesson['parts'];
+    if (parts is List) {
+      return Lesson.parted(
+        id: id,
+        parts: [
+          for (final part in parts.cast<Map<String, dynamic>>())
+            LessonPart(
+              id: part['id'] as String,
+              steps: steps(part['steps'] as List),
+            ),
+        ],
+      );
+    }
+    return Lesson(id: id, steps: steps(lesson['steps'] as List));
+  }
 
   /// As vezes do aluno de um passo de lance: os aceitos e a resposta. O
   /// lance ensinado (`teach`), quando vem, fica em primeiro entre os aceitos:
@@ -105,6 +119,30 @@ class AssetLessonRepository implements LessonRepository {
           _ => null,
         },
       ),
+      'think' when fen != null => ThinkStep(
+        id: id,
+        fen: fen,
+        minutes: json['minutes'] as int? ?? 5,
+        hints: json['hints'] as int? ?? 1,
+        ask: ThinkAsk.fromCode(json['ask'] as String?),
+        arrows: _arrows(json['arrows']),
+        marks: _marks(json['marks']),
+        view: _side(json['side']),
+      ),
+      'demo' when fen != null => DemoStep(
+        id: id,
+        fen: fen,
+        view: _side(json['side']),
+        line: [
+          for (final move
+              in (json['line'] as List).cast<Map<String, dynamic>>())
+            DemoMove(
+              uci: move['uci'] as String,
+              arrows: _arrows(move['arrows']),
+              marks: _marks(move['marks']),
+            ),
+        ],
+      ),
       'stars' when fen != null => StarsStep(
         id: id,
         fen: fen,
@@ -134,4 +172,21 @@ class AssetLessonRepository implements LessonRepository {
       _ => null,
     };
   }
+
+  static List<(String, String)> _arrows(Object? json) => [
+    for (final arrow in json as List? ?? const [])
+      if (arrow is String && arrow.length == 4)
+        (arrow.substring(0, 2), arrow.substring(2)),
+  ];
+
+  static List<String> _marks(Object? json) => [
+    for (final mark in json as List? ?? const [])
+      if (mark is String) mark,
+  ];
+
+  static Side? _side(Object? json) => switch (json) {
+    'white' => Side.white,
+    'black' => Side.black,
+    _ => null,
+  };
 }

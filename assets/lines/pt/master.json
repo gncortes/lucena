@@ -42,7 +42,7 @@
       "category": "gameStart",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Ajeitei a gravata. Podemos começar."
+      "text": "Ajeitei a gravata. Ajeite a sua. Podemos começar."
     },
     {
       "id": "master.gameStart.7",
@@ -181,7 +181,7 @@
       "category": "bigAdvantage",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Isto já é aula prática, meu caro. Tome notas."
+      "text": "Isto já é aula prática. A matrícula é por minha conta."
     },
     {
       "id": "master.bigAdvantage.5",
@@ -282,7 +282,7 @@
       "category": "better",
       "intensity": 3,
       "emotion": "focused",
-      "text": "Pressão constante. Veremos quem pisca primeiro."
+      "text": "Pressão constante. Quem piscar primeiro perde. Eu não pisco."
     },
     {
       "id": "master.better.6",
@@ -368,7 +368,7 @@
       "category": "equal",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Equilíbrio é respeito mútuo. Gosto disso."
+      "text": "Equilíbrio. Raro e incômodo. Para mim, no caso."
     },
     {
       "id": "master.equal.8",
@@ -419,7 +419,7 @@
       "category": "worse",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Você jogou bem até aqui. Não comemore cedo."
+      "text": "Você jogou bem até aqui. Não se acostume."
     },
     {
       "id": "master.worse.4",
@@ -433,7 +433,7 @@
       "category": "worse",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Interessante. Faz tempo que não me apertam assim."
+      "text": "Faz tempo que não me apertam assim. Não gostei."
     },
     {
       "id": "master.worse.6",
@@ -484,7 +484,7 @@
       "category": "bigDisadvantage",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Você me deixou poucas saídas. Com todo o respeito."
+      "text": "Poucas saídas. Vou reclamar com quem te ensinou."
     },
     {
       "id": "master.bigDisadvantage.4",
@@ -497,8 +497,8 @@
       "id": "master.bigDisadvantage.5",
       "category": "bigDisadvantage",
       "intensity": 1,
-      "emotion": "sad",
-      "text": "Mãos para trás, cabeça erguida. Seguimos jogando."
+      "emotion": "nervous",
+      "text": "Mãos para trás, cabeça erguida. E o coração na mão."
     },
     {
       "id": "master.bigDisadvantage.6",
@@ -546,18 +546,39 @@
       "audience": "student"
     },
     {
+      "id": "master.bigDisadvantage.12",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Um bom professor também testa o aluno. Aceitaria um empate aqui? Pense bem."
+    },
+    {
+      "id": "master.bigDisadvantage.13",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Proponho uma trégua: empate, e eu finjo que não vi a sua técnica."
+    },
+    {
+      "id": "master.bigDisadvantage.14",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "focused",
+      "text": "Na escola eu dizia: ganho se converte. Vamos ver se você ouviu."
+    },
+    {
       "id": "master.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Tem certeza? Bem, não se volta lance no clube."
+      "text": "Tem certeza? Bem, no clube não se volta lance."
     },
     {
       "id": "master.opponentBlunder.2",
       "category": "opponentBlunder",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Ah. Esse lance vai custar caro. Observe."
+      "text": "Interessante. Errado, mas interessante."
     },
     {
       "id": "master.opponentBlunder.3",
@@ -585,7 +606,7 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "surprised",
-      "text": "Meu caro, você esqueceu do meu rei."
+      "text": "Você esqueceu do meu rei. Ele não esqueceu de você."
     },
     {
       "id": "master.opponentBlunder.7",
@@ -642,15 +663,15 @@
       "id": "master.ownBlunder.4",
       "category": "ownBlunder",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Errei. Aproveite. Não vai acontecer de novo."
+      "emotion": "frustrated",
+      "text": "Errei. Aproveite. Isso acontece uma vez por década."
     },
     {
       "id": "master.ownBlunder.5",
       "category": "ownBlunder",
       "intensity": 1,
       "emotion": "nervous",
-      "text": "Ajeito a gravata e finjo que não vi isso."
+      "text": "Ajeito a gravata e finjo que ninguém viu isso."
     },
     {
       "id": "master.ownBlunder.6",
@@ -701,7 +722,7 @@
       "category": "strongMove",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Elegante. Eu mesmo teria jogado isso."
+      "text": "Hm. Esse eu não previ. Vou fingir que previ."
     },
     {
       "id": "master.strongMove.3",
@@ -750,7 +771,7 @@
       "category": "strongMove",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Você calculou isso? Meus parabéns, sinceramente."
+      "text": "Você calculou isso? Ou foi sorte? Não me responda."
     },
     {
       "id": "master.strongMove.10",
@@ -880,8 +901,8 @@
       "id": "master.collapse.5",
       "category": "collapse",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Vamos com calma. A partida ainda não terminou."
+      "emotion": "nervous",
+      "text": "Calma. Ainda não terminou. Digo isso para mim."
     },
     {
       "id": "master.collapse.6",
@@ -946,7 +967,7 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Aceito com prazer. Proteja melhor as próximas."
+      "text": "Aceito com prazer. Proteja melhor as próximas. Ou não."
     },
     {
       "id": "master.pieceCaptured.6",
@@ -990,7 +1011,7 @@
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Isso dói. Mas lamentar não move peça."
+      "text": "Isso dói. E não vou fingir que não dói."
     },
     {
       "id": "master.pieceLost.3",
@@ -1291,7 +1312,7 @@
       "category": "timeAdvantage",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Mais uma volta do rei. Só para conferir a vista."
+      "text": "Mais uma volta do rei. Só para apreciar a vista."
     },
     {
       "id": "master.timeAdvantage.6",
@@ -1500,29 +1521,29 @@
       "id": "master.loss.4",
       "category": "loss",
       "intensity": 3,
-      "emotion": "happy",
-      "text": "Bravo! Essa técnica eu assinaria embaixo."
+      "emotion": "frustrated",
+      "text": "Bravo. Muito bem. Agora me dê licença, vou rever esse final."
     },
     {
       "id": "master.loss.5",
       "category": "loss",
       "intensity": 1,
       "emotion": "frustrated",
-      "text": "Hum. Ajeito a gravata e aceito. Bem jogado."
+      "text": "Hum. Ajeito a gravata e aceito. Sem sorrir, mas aceito."
     },
     {
       "id": "master.loss.6",
       "category": "loss",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "Perder para quem joga bem é um privilégio. Obrigado."
+      "emotion": "sad",
+      "text": "Perdi. Meu primeiro professor não precisa saber disso."
     },
     {
       "id": "master.loss.7",
       "category": "loss",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "O xadrez é maior que nós dois. Hoje ele escolheu você."
+      "emotion": "frustrated",
+      "text": "O xadrez é maior que nós dois. Hoje foi grosseiro comigo."
     },
     {
       "id": "master.loss.8",
@@ -1597,7 +1618,7 @@
       "category": "draw",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Meio ponto. Esperava mais de mim mesmo."
+      "text": "Meio ponto. Esperava mais de mim. Bem mais."
     },
     {
       "id": "master.draw.5",
@@ -1704,7 +1725,7 @@
       "category": "drawDeclined",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Gentil da sua parte. Mas a aula não acabou."
+      "text": "Gentil da sua parte. Mas a aula continua. Cobro por hora."
     },
     {
       "id": "master.drawDeclined.5",
@@ -1751,6 +1772,76 @@
       "emotion": "focused",
       "text": "Recuso. Na escola eu ensinei: posição viva se joga até o fim.",
       "audience": "student"
+    },
+    {
+      "id": "master.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Você tinha o mate. Respire e procure de novo: onde está o meu rei?"
+    },
+    {
+      "id": "master.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Na escola eu dizia: o mate não espera. Parece que esperou demais."
+    },
+    {
+      "id": "master.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Escapou. Agora isto é empate, e um bom aluno saberia reconhecer."
+    },
+    {
+      "id": "master.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Proponho o empate. Você não vai achar esse mate de novo, eu creio."
+    },
+    {
+      "id": "master.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Tenho aula daqui a pouco. Empatamos e eu chego a tempo?"
+    },
+    {
+      "id": "master.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Eu sabia que era empate. Você não aceitou, me fez perder tempo, mas beleza."
+    },
+    {
+      "id": "master.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate, como eu disse. A lição de hoje: aceitar a verdade da posição."
+    },
+    {
+      "id": "master.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Eu avisei. Mas lutar até o fim também se aprende."
+    },
+    {
+      "id": "master.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Era empate desde que o mate escapou. Da próxima vez, ele não escapa."
+    },
+    {
+      "id": "master.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Empate. Anote no caderno: mate perdido, meio ponto achado."
     }
   ]
 }

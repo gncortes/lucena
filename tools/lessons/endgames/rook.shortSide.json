@@ -1,222 +1,262 @@
 {
   "id": "rook.shortSide",
   "module": "rook",
-  "steps": [
+  "skills": [
+    "rook.shortSide"
+  ],
+  "parts": [
     {
-      "type": "talk",
-      "id": "intro",
-      "fen": "1R6/8/8/8/4pk2/8/r7/4K3 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "f4f3",
-        "b8b3"
-      ],
-      "marks": [
-        "f3"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "behindPawn",
-      "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "id": "short",
+      "steps": [
         {
-          "teach": "b8e8",
-          "accept": "only",
-          "reply": "f3e3"
+          "type": "think",
+          "id": "t_behind",
+          "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "line"
         },
         {
-          "teach": "e1f1",
-          "accept": "hold"
+          "type": "talk",
+          "id": "intro",
+          "fen": "1R6/8/8/8/4pk2/8/r7/4K3 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "f4f3",
+            "b8b3"
+          ],
+          "marks": [
+            "f3"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "behindPawn",
+          "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b8e8",
+              "accept": "only",
+              "reply": "f3e3"
+            },
+            {
+              "teach": "e1f1",
+              "accept": "hold"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "sides",
+          "fen": "4R3/8/8/8/4p3/4k3/r7/5K2 b - - 0 1",
+          "side": "white",
+          "marks": [
+            "f1",
+            "g1",
+            "h1",
+            "a1",
+            "b1",
+            "c1",
+            "d1"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "dance",
+          "fen": "4R3/8/8/8/4p3/4k3/8/r4K2 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "f1g2",
+              "accept": "only",
+              "reply": "e3d3"
+            },
+            {
+              "teach": "g2f2",
+              "accept": "only",
+              "reply": "a1a2"
+            },
+            {
+              "teach": "f2e1",
+              "accept": "hold",
+              "reply": "d3e3"
+            },
+            {
+              "teach": "e1f1",
+              "accept": "hold"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
-      "id": "sides",
-      "fen": "4R3/8/8/8/4p3/4k3/r7/5K2 b - - 0 1",
-      "side": "white",
-      "marks": [
-        "f1",
-        "g1",
-        "h1",
-        "a1",
-        "b1",
-        "c1",
-        "d1"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "dance",
-      "fen": "4R3/8/8/8/4p3/4k3/8/r4K2 w - - 0 1",
-      "goal": "draw",
-      "turns": [
-        {
-          "teach": "f1g2",
-          "accept": "only",
-          "reply": "e3d3"
-        },
-        {
-          "teach": "g2f2",
-          "accept": "only",
-          "reply": "a1a2"
-        },
-        {
-          "teach": "f2e1",
-          "accept": "hold",
-          "reply": "d3e3"
-        },
-        {
-          "teach": "e1f1",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "fpawn",
-      "fen": "1R6/8/8/8/5p2/6k1/r7/5K2 w - - 0 1",
-      "goal": "draw",
-      "turns": [
-        {
-          "teach": "b8f8",
-          "accept": "hold",
-          "reply": "g3f3"
-        },
-        {
-          "teach": "f1g1",
-          "accept": "only",
-          "reply": "a2a1"
-        },
-        {
-          "teach": "g1h2",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "blunder",
-      "fen": "5R2/8/8/8/5p2/5k2/r7/4K3 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "a2a1",
-        "a1f1"
-      ],
-      "marks": [
-        "e1"
-      ]
-    },
-    {
-      "type": "talk",
       "id": "lateral",
-      "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
-      "arrows": [
-        "a7a1"
-      ],
-      "marks": [
-        "g2"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "checks",
-      "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "steps": [
         {
-          "teach": "a7a1",
-          "accept": "only",
-          "reply": "e1d2"
+          "type": "move",
+          "id": "fpawn",
+          "fen": "1R6/8/8/8/5p2/6k1/r7/5K2 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b8f8",
+              "accept": "hold",
+              "reply": "g3f3"
+            },
+            {
+              "teach": "f1g1",
+              "accept": "only",
+              "reply": "a2a1"
+            },
+            {
+              "teach": "g1h2",
+              "accept": "only"
+            }
+          ]
         },
         {
-          "teach": "a1a2",
-          "accept": "only",
-          "reply": "d2d3"
+          "type": "talk",
+          "id": "blunder",
+          "fen": "5R2/8/8/8/5p2/5k2/r7/4K3 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "a2a1",
+            "a1f1"
+          ],
+          "marks": [
+            "e1"
+          ]
         },
         {
-          "teach": "a2a3",
-          "accept": "only",
-          "reply": "d3d4"
+          "type": "talk",
+          "id": "lateral",
+          "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
+          "arrows": [
+            "a7a1"
+          ],
+          "marks": [
+            "g2"
+          ]
         },
         {
-          "teach": "a3a4",
-          "accept": "only",
-          "reply": "d4c3"
-        },
-        {
-          "teach": "a4a3",
-          "accept": "only",
-          "reply": "c3b2"
-        },
-        {
-          "teach": "a3e3",
-          "accept": "only"
+          "type": "move",
+          "id": "checks",
+          "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "a7a1",
+              "accept": "only",
+              "reply": "e1d2"
+            },
+            {
+              "teach": "a1a2",
+              "accept": "only",
+              "reply": "d2d3"
+            },
+            {
+              "teach": "a2a3",
+              "accept": "only",
+              "reply": "d3d4"
+            },
+            {
+              "teach": "a3a4",
+              "accept": "only",
+              "reply": "d4c3"
+            },
+            {
+              "teach": "a4a3",
+              "accept": "only",
+              "reply": "c3b2"
+            },
+            {
+              "teach": "a3e3",
+              "accept": "only"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "talk",
       "id": "distance",
-      "fen": "3r4/1R6/8/8/8/4p3/4k1K1/8 w - - 0 1",
-      "arrows": [
-        "b7b2",
-        "d8d2"
-      ],
-      "marks": [
-        "b7"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "carlsen",
-      "fen": "8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1",
-      "arrows": [
-        "g2g3"
-      ],
-      "marks": [
-        "g3"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "king",
-      "fen": "8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1",
-      "goal": "draw",
-      "turns": [
+      "steps": [
         {
-          "teach": "g2g3",
-          "accept": "only",
-          "reply": "d3d2"
+          "type": "think",
+          "id": "t_close",
+          "fen": "3r4/1R6/8/8/8/4p3/4k1K1/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "g3g2",
-          "accept": "hold",
-          "reply": "e2d3"
+          "type": "talk",
+          "id": "distance",
+          "fen": "3r4/1R6/8/8/8/4p3/4k1K1/8 w - - 0 1",
+          "arrows": [
+            "b7b2",
+            "d8d2"
+          ],
+          "marks": [
+            "b7"
+          ]
         },
         {
-          "teach": "g2f3",
-          "accept": "hold",
-          "reply": "e3e2"
+          "type": "talk",
+          "id": "carlsen",
+          "fen": "8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1",
+          "arrows": [
+            "g2g3"
+          ],
+          "marks": [
+            "g3"
+          ]
         },
         {
-          "teach": "f3f2",
-          "accept": "hold"
+          "type": "move",
+          "id": "king",
+          "fen": "8/8/8/8/8/3rp3/4k1K1/R7 w - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "g2g3",
+              "accept": "only",
+              "reply": "d3d2"
+            },
+            {
+              "teach": "g3g2",
+              "accept": "hold",
+              "reply": "e2d3"
+            },
+            {
+              "teach": "g2f3",
+              "accept": "hold",
+              "reply": "e3e2"
+            },
+            {
+              "teach": "f3f2",
+              "accept": "hold"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "4R3/8/8/8/4p3/4k3/r7/5K2 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "e8e4"
+          ],
+          "marks": [
+            "f1"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "R7/8/8/8/4p3/5k2/1r6/4K3 w - - 0 1",
+          "goal": "draw"
         }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "recap",
-      "fen": "4R3/8/8/8/4p3/4k3/r7/5K2 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "e8e4"
-      ],
-      "marks": [
-        "f1"
       ]
     }
   ],

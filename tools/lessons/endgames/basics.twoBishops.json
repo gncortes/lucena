@@ -1,190 +1,224 @@
 {
   "id": "basics.twoBishops",
   "module": "basics",
-  "steps": [
+  "skills": [
+    "mate.twoBishops"
+  ],
+  "parts": [
     {
-      "type": "talk",
-      "id": "wall",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "arrows": [
-        "d5a8",
-        "d5g8",
-        "e5b8",
-        "e5h8"
-      ],
-      "marks": [
-        "c8",
-        "d8",
-        "e8",
-        "f8",
-        "d7",
-        "e7"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "mateCorner",
-      "fen": "7k/8/4B1K1/4B3/8/8/8/8 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "e5h8",
-        "e6g8"
-      ],
-      "marks": [
-        "h8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "mateSide",
-      "fen": "1k6/1B6/1K1B4/8/8/8/8/8 b - - 0 1",
-      "side": "white",
-      "arrows": [
-        "d6b8",
-        "b7a8",
-        "b7c8"
-      ],
-      "marks": [
-        "b8"
-      ]
-    },
-    {
-      "type": "move",
-      "id": "join",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
+      "id": "mates",
+      "steps": [
         {
-          "teach": "e4f5",
-          "accept": "best",
-          "reply": "auto"
+          "type": "think",
+          "id": "t_wall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "f5e6",
-          "accept": "best"
+          "type": "talk",
+          "id": "wall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "arrows": [
+            "d5a8",
+            "d5g8",
+            "e5b8",
+            "e5h8"
+          ],
+          "marks": [
+            "c8",
+            "d8",
+            "e8",
+            "f8",
+            "d7",
+            "e7"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "mateCorner",
+          "fen": "7k/8/4B1K1/4B3/8/8/8/8 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "e5h8",
+            "e6g8"
+          ],
+          "marks": [
+            "h8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "mateSide",
+          "fen": "1k6/1B6/1K1B4/8/8/8/8/8 b - - 0 1",
+          "side": "white",
+          "arrows": [
+            "d6b8",
+            "b7a8",
+            "b7c8"
+          ],
+          "marks": [
+            "b8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "join",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "e4f5",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "f5e6",
+              "accept": "best"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "move",
       "id": "edge",
-      "fen": "3k4/8/4K3/3BB3/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
+      "steps": [
         {
-          "teach": "d5b7",
-          "accept": "best",
-          "reply": "auto"
+          "type": "move",
+          "id": "edge",
+          "fen": "3k4/8/4K3/3BB3/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "d5b7",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "e5c7",
+              "accept": "best"
+            }
+          ]
         },
         {
-          "teach": "e5c7",
-          "accept": "best"
+          "type": "move",
+          "id": "corner",
+          "fen": "5k2/1BB5/4K3/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "e6f6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "b7c6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "c6d7",
+              "accept": "best"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "mate",
+          "fen": "6k1/2BB4/5K2/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "f6g6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "c7d6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "d7e6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "d6e5",
+              "accept": "only"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "waiting",
+          "fen": "7k/2BB4/6K1/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "c7d6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "d7e6",
+              "accept": "best",
+              "reply": "auto"
+            },
+            {
+              "teach": "d6e5",
+              "accept": "only"
+            }
+          ]
         }
       ]
     },
     {
-      "type": "move",
-      "id": "corner",
-      "fen": "5k2/1BB5/4K3/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
+      "id": "finish",
+      "steps": [
         {
-          "teach": "e6f6",
-          "accept": "best",
-          "reply": "auto"
+          "type": "think",
+          "id": "t_stalemate",
+          "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 1,
+          "ask": "plan"
         },
         {
-          "teach": "b7c6",
-          "accept": "best",
-          "reply": "auto"
+          "type": "talk",
+          "id": "stalemate",
+          "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
+          "arrows": [
+            "c6b6"
+          ],
+          "marks": [
+            "b6",
+            "a8"
+          ]
         },
         {
-          "teach": "c6d7",
-          "accept": "best"
+          "type": "talk",
+          "id": "rules",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "marks": [
+            "d5",
+            "e5"
+          ]
+        },
+        {
+          "type": "play",
+          "id": "playWall",
+          "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
+          "goal": "win"
+        },
+        {
+          "type": "play",
+          "id": "playCenter",
+          "fen": "8/8/8/8/3k4/8/8/2BK1B2 w - - 0 1",
+          "goal": "win"
         }
       ]
-    },
-    {
-      "type": "move",
-      "id": "mate",
-      "fen": "6k1/2BB4/5K2/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
-        {
-          "teach": "f6g6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "c7d6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d7e6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d6e5",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "type": "move",
-      "id": "waiting",
-      "fen": "7k/2BB4/6K1/8/8/8/8/8 w - - 0 1",
-      "goal": "win",
-      "turns": [
-        {
-          "teach": "c7d6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d7e6",
-          "accept": "best",
-          "reply": "auto"
-        },
-        {
-          "teach": "d6e5",
-          "accept": "only"
-        }
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "stalemate",
-      "fen": "k7/2B5/2K5/8/2B5/8/8/8 w - - 0 1",
-      "arrows": [
-        "c6b6"
-      ],
-      "marks": [
-        "b6",
-        "a8"
-      ]
-    },
-    {
-      "type": "talk",
-      "id": "rules",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "marks": [
-        "d5",
-        "e5"
-      ]
-    },
-    {
-      "type": "play",
-      "id": "playWall",
-      "fen": "8/3k4/8/3BB3/4K3/8/8/8 w - - 0 1",
-      "goal": "win"
-    },
-    {
-      "type": "play",
-      "id": "playCenter",
-      "fen": "8/8/8/8/3k4/8/8/2BK1B2 w - - 0 1",
-      "goal": "win"
     }
   ],
   "exercises": [

@@ -6,6 +6,7 @@ import '../testing/e2e_dependencies.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 
 import 'robots/app_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/profile_robot.dart';
@@ -57,15 +58,17 @@ void main() {
 
     await speedrun.start();
     await playStage($, 5);
+    // A conclusão da etapa mostra o tempo dela.
+    await ConclusionRobot($).expectStageTime('5.0 s');
     // Tempo no fim da etapa, antes de seguir, não conta.
     await app.advanceTime(const Duration(minutes: 3));
     await speedrun.continueToNextStage();
     await playStage($, 7);
     await speedrun.finishAttempt();
 
-    speedrun.expectStageTime(0, '0:05.0');
-    speedrun.expectStageTime(1, '0:07.0');
-    speedrun.expectTotal('0:12.0');
+    await speedrun.expectStageTime(0, '5.0 s');
+    await speedrun.expectStageTime(1, '7.0 s');
+    await speedrun.expectTotal('12.0 s');
     await speedrun.expectNewRecord(record: true);
     await speedrun.back();
     await speedrun.expectBest('0:12.0');
@@ -84,11 +87,16 @@ void main() {
 
     await runRung($, 4, 6);
     await speedrun.expectNewRecord(record: true);
+    // A diferença para o recorde fica no resumo da tentativa.
+    await speedrun.back();
+    await speedrun.openHistory(0);
     speedrun.expectRecordDifference('-2.0 s vs. record 0:12.0');
     await speedrun.back();
 
     await runRung($, 8, 7);
     await speedrun.expectNewRecord(record: false);
+    await speedrun.back();
+    await speedrun.openHistory(0);
     speedrun.expectRecordDifference('+5.0 s vs. record 0:10.0');
     await speedrun.back();
     await speedrun.expectBest('0:10.0');
@@ -106,14 +114,20 @@ void main() {
     await speedrun.continueToNextStage();
     await playStage($, 3, won: false);
 
+    // A conclusão da etapa perdida leva ao resumo da tentativa, com o tempo
+    // da etapa vencida.
+    await speedrun.openSummary();
+    await speedrun.expectSummaryStageTime(0, '0:04.0');
+    await speedrun.back();
+
     // Tentativa nova, da primeira etapa: o tempo da perdida não conta.
     await speedrun.retry();
     await playStage($, 3);
     await speedrun.continueToNextStage();
     await playStage($, 5);
     await speedrun.finishAttempt();
-    speedrun.expectStageTime(0, '0:03.0');
-    speedrun.expectTotal('0:08.0');
+    await speedrun.expectStageTime(0, '3.0 s');
+    await speedrun.expectTotal('8.0 s');
     await speedrun.expectNewRecord(record: true);
 
     // A perdida fica no histórico, até onde chegou.
@@ -141,9 +155,9 @@ void main() {
     await playStage($, 2);
     await speedrun.finishAttempt();
 
-    speedrun.expectStageTime(0, '0:04.0');
-    speedrun.expectStageTime(1, '0:05.0');
-    speedrun.expectTotal('0:09.0');
+    await speedrun.expectStageTime(0, '4.0 s');
+    await speedrun.expectStageTime(1, '5.0 s');
+    await speedrun.expectTotal('9.0 s');
     await speedrun.expectNewRecord(record: true);
   });
 
@@ -225,8 +239,8 @@ void main() {
     await speedrun.expectItem('$_rungRun@180+0');
   });
 
-  patrolTest('Maratona: as etapas emendam sozinhas, sem tocar em botão, até o '
-      'resumo', ($) async {
+  patrolTest('Maratona: as etapas emendam sozinhas, sem tocar em botão, até a '
+      'conclusão', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     final board = FreeBoardRobot($);
@@ -240,10 +254,13 @@ void main() {
     final (from, to) = E2EJourneyRepository.mate;
     for (var stage = 0; stage < 3; stage++) {
       if (stage > 0) {
-        await speedrun.expectNextMarathonStage();
+        await speedrun.expectNextMarathonStage(stage);
       } else {
         await speedrun.waitVersusGone();
       }
+      // Um pouco de relógio em cada etapa: a conclusão só mostra o tempo
+      // quando há tempo gasto.
+      await app.advanceTime(const Duration(seconds: 2));
       await board.move(from, to);
     }
     await speedrun.expectMarathonSummary();

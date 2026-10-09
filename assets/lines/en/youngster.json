@@ -220,6 +220,27 @@
       "text": "Ok, you're crushing. Respect."
     },
     {
+      "id": "youngster.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Draw? Quick one."
+    },
+    {
+      "id": "youngster.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Hm. Just draw. GG."
+    },
+    {
+      "id": "youngster.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Ugh. Repeat moves, come on."
+    },
+    {
       "id": "youngster.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -869,6 +890,76 @@
       "intensity": 3,
       "emotion": "playful",
       "text": "Declined. This ending is becoming my clip."
+    },
+    {
+      "id": "youngster.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hm. That was mate."
+    },
+    {
+      "id": "youngster.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Lol. Missed it."
+    },
+    {
+      "id": "youngster.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Draw now. GG."
+    },
+    {
+      "id": "youngster.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Ugh. You will not find it."
+    },
+    {
+      "id": "youngster.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Got a tournament. Draw."
+    },
+    {
+      "id": "youngster.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Knew it. Draw. Wasted my time."
+    },
+    {
+      "id": "youngster.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Told you. GG."
+    },
+    {
+      "id": "youngster.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Draw. Obviously."
+    },
+    {
+      "id": "youngster.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hm. Warned you."
+    },
+    {
+      "id": "youngster.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "It was a draw. Fine."
     }
   ]
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/app_accent.dart';
+import 'app_shape.dart';
+import 'app_tokens.dart';
 
 abstract final class AppTheme {
   // De fábrica: claro em azul-marinho, escuro em verde. O laranja do mascote
@@ -156,6 +158,13 @@ abstract final class AppTheme {
         modalBackgroundColor: sheet,
         surfaceTintColor: Colors.transparent,
       ),
+      // Cartões com o raio grande dos tokens (T51, G3).
+      cardTheme: const CardThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppShape.large)),
+        ),
+      ),
+      extensions: const [AppTokens.standard],
       // Uma transição só no app inteiro: a tela nova entra deslizando de leve
       // com fade, numa curva suave.
       pageTransitionsTheme: const PageTransitionsTheme(

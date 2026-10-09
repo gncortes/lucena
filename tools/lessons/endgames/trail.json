@@ -24,7 +24,7 @@
         "pawns.keySquares",
         "pawns.distantOpposition",
         "pawns.triangulation",
-        "pawns.rookPawn",
+        "pawns.rookPawnDraw",
         "pawns.race",
         "pawns.reti",
         "pawns.shoulder",

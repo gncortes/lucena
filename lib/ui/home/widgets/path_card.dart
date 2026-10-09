@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_shape.dart';
+
 /// Um caminho da tela inicial: o que dá para fazer no app, com o nome e uma
 /// linha dizendo o que acontece ali.
 class PathCard extends StatelessWidget {
@@ -22,9 +24,9 @@ class PathCard extends StatelessWidget {
     final colors = theme.colorScheme;
     return Material(
       color: colors.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppShape.large),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppShape.large),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 8, 14),
@@ -35,7 +37,7 @@ class PathCard extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: colors.secondaryContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppShape.medium),
                 ),
                 child: Icon(icon, color: colors.onSecondaryContainer),
               ),

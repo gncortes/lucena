@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from make_source import after, exercise, move, talk, write  # noqa: E402
+from make_source import (after, exercise, move, play, talk, think,  # noqa: E402
+                         write)
 
 KN = '8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1'     # peão de cavalo, defesa passiva
 KNW = after(KN, 'Kg4')                        # a mesma, brancas jogam
@@ -45,23 +46,33 @@ REFERENCES = [
 write({
     'id': 'rook.backRank',
     'module': 'rook',
-    'steps': [
-        talk('intro', KN, arrows=['b1h1'], marks=['g1', 'h1']),
-        move('wait', KNW, 'Rc1 Kh3 Rb1 Rg2+ Kh1 Rh2+ Kg1',
-             accept={1: 'hold', 2: 'hold', 3: 'only', 4: 'only'}, goal='draw'),
-        talk('corner', TRICK, arrows=['g1h1'], marks=['f1', 'h1']),
-        talk('lucena', LUCENA, arrows=['h2g1'], marks=['g1']),
-        talk('room', KN, marks=['h1', 'h2', 'h3']),
-        talk('bishop', BISHOP2, arrows=['h2h1', 'f3f2'],
-             marks=['g1', 'h1']),
-        talk('free', ACTIVE, arrows=['g4g3', 'b1b8']),
-        move('active', ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+',
-             accept={1: 'hold', 2: 'only', 3: 'hold'}, goal='draw'),
-        talk('behind', KNIGHT5, arrows=['h8a8', 'a8a1'], marks=['g8']),
-        move('home', KNIGHT5, 'Ra8 Rb3 Ra1',
-             accept={1: 'hold', 2: 'only'}, goal='draw'),
-        talk('rookPawn', ROOKPAWN, marks=['h1']),
-        talk('recap', KN, arrows=['b1h1']),
+    'parts': [
+        {'id': 'wait', 'steps': [
+            think('t_knight', KN, 5, 1),
+            talk('intro', KN, arrows=['b1h1'], marks=['g1', 'h1']),
+            talk('room', KN, marks=['h1', 'h2', 'h3']),
+            move('wait', KNW, 'Rc1 Kh3 Rb1 Rg2+ Kh1 Rh2+ Kg1',
+                 accept={1: 'hold', 2: 'hold', 3: 'only', 4: 'only'},
+                 goal='draw'),
+        ]},
+        {'id': 'corner', 'steps': [
+            think('t_trick', TRICK, 5, 1, ask='line'),
+            talk('corner', TRICK, arrows=['g1h1'], marks=['f1', 'h1']),
+            talk('lucena', LUCENA, arrows=['h2g1'], marks=['g1']),
+            talk('bishop', BISHOP2, arrows=['h2h1', 'f3f2'],
+                 marks=['g1', 'h1']),
+            talk('free', ACTIVE, arrows=['g4g3', 'b1b8']),
+            move('active', ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+',
+                 accept={1: 'hold', 2: 'only', 3: 'hold'}, goal='draw'),
+        ]},
+        {'id': 'home', 'steps': [
+            talk('behind', KNIGHT5, arrows=['h8a8', 'a8a1'], marks=['g8']),
+            move('home', KNIGHT5, 'Ra8 Rb3 Ra1',
+                 accept={1: 'hold', 2: 'only'}, goal='draw'),
+            talk('rookPawn', ROOKPAWN, marks=['h1']),
+            talk('recap', KN, arrows=['b1h1']),
+            play('finish', KNW, goal='draw'),
+        ]},
     ],
     'exercises': [
         exercise('e01', 1, TRICK, 'Kh1', accept='only', goal='draw',

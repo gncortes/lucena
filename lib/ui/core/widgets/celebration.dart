@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// Uma chuva curta de confete, uma vez, para os grandes momentos (degrau
 /// concluído, formatura, recorde). Não pega toques. Com "remover animações",
 /// não aparece.
@@ -47,7 +49,7 @@ class _CelebrationState extends State<Celebration>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!MediaQuery.disableAnimationsOf(context) && _controller.isDismissed) {
+    if (!AppMotion.of(context).disabled && _controller.isDismissed) {
       _controller.forward();
     }
   }
@@ -60,7 +62,7 @@ class _CelebrationState extends State<Celebration>
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) return const SizedBox.shrink();
+    if (AppMotion.of(context).disabled) return const SizedBox.shrink();
     final colors = Theme.of(context).colorScheme;
     final palette = [
       colors.primary,

@@ -49,5 +49,26 @@ abstract final class SettingsKeys {
 
   static const characterTalkSwitch = Key('settings.characterTalk');
   static const soundSwitch = Key('settings.sound');
+  static const vibrationSwitch = Key('settings.vibration');
   static const tourTile = Key('settings.tour');
+
+  /// Os grupos do menu principal e as telas deles.
+  static const appearanceTile = Key('settings.appearance');
+  static const appearanceScreen = Key('settings.appearance.screen');
+  static const gameTile = Key('settings.game');
+  static const gameScreen = Key('settings.game.screen');
+
+  /// O tempo de pensar nas aulas (T51).
+  static const thinkTimeTile = Key('settings.thinkTime');
+  static Key thinkTimeOption(int minutes) => Key('settings.thinkTime.$minutes');
+  static const soundTile = Key('settings.soundGroup');
+  static const soundScreen = Key('settings.soundGroup.screen');
+
+  /// Sobre o Lucena.
+  static const aboutTile = Key('settings.about');
+  static const aboutScreen = Key('settings.about.screen');
+  static const aboutWebsite = Key('settings.about.website');
+  static const aboutSource = Key('settings.about.source');
+  static const aboutLicenses = Key('settings.about.licenses');
+  static const aboutVersion = Key('settings.about.version');
 }

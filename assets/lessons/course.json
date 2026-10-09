@@ -278,6 +278,88 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "talk",
+              "id": "underpromotion",
+              "fen": "8/k1P5/2K5/8/8/8/8/8 w - - 0 1",
+              "arrows": [
+                "c7c8"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "rook",
+              "fen": "8/k1P5/2K5/8/8/8/8/8 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "c7c8r"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rules.captureProtect",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "capture",
+              "fen": "4k3/8/3n4/8/8/8/8/3RK3 w - - 0 1",
+              "arrows": [
+                "d1d6"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "take",
+              "fen": "6k1/8/r7/8/8/8/8/4KB2 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "f1a6"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "protect",
+              "fen": "4k3/8/4p3/3n4/8/8/8/3RK3 w - - 0 1",
+              "arrows": [
+                "d1d5",
+                "e6d5"
+              ],
+              "marks": [
+                "d5"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "choose",
+              "fen": "4k3/8/4p3/3n4/b7/8/8/3QK3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d1a4"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "defend",
+              "fen": "3rk3/8/8/8/3N4/8/2P1P3/6K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "c2c3",
+                    "e2e3"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -339,6 +421,141 @@
           ]
         },
         {
+          "id": "rules.outOfCheck",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "three",
+              "fen": "4r1k1/8/8/8/8/8/3B4/4K3 w - - 0 1",
+              "arrows": [
+                "e8e1"
+              ],
+              "marks": [
+                "e1"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "run",
+              "fen": "4r1k1/8/8/8/8/8/8/4K3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1d1",
+                    "e1d2",
+                    "e1f1",
+                    "e1f2"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "block",
+              "fen": "6k1/5ppp/8/8/8/3B4/5PPP/4r1K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d3f1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "capture",
+              "fen": "6k1/5ppp/8/8/8/8/5PPP/R3r1K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "a1e1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "none",
+              "fen": "6k1/5ppp/8/8/8/8/5PPP/4r1K1 w - - 0 1",
+              "marks": [
+                "g1"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rules.castling",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "intro",
+              "fen": "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1",
+              "arrows": [
+                "e1g1",
+                "h1f1"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "short",
+              "fen": "4k3/8/8/8/8/8/5PPP/4K2R w K - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1g1",
+                    "e1h1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "long",
+              "fen": "4k3/8/8/8/8/8/PPP5/R3K3 w Q - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1c1",
+                    "e1a1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "rules",
+              "fen": "4k3/8/b7/8/8/8/8/4K2R w K - 0 1",
+              "arrows": [
+                "a6f1"
+              ],
+              "marks": [
+                "f1"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "cannot",
+              "fen": "4k3/8/b7/8/8/8/P7/R3K2R w KQ - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1c1",
+                    "e1a1"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "moved",
+              "fen": "4k3/8/8/8/8/8/8/R3K2R w - - 0 1",
+              "marks": [
+                "e1"
+              ]
+            }
+          ]
+        },
+        {
           "id": "pieces.stalemate",
           "steps": [
             {
@@ -378,6 +595,85 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "talk",
+              "id": "defense",
+              "fen": "k7/P7/1K6/8/8/8/8/8 b - - 0 1",
+              "marks": [
+                "a8"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "save",
+              "fen": "2k5/8/PK6/8/8/8/8/8 b - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "c8b8"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rules.draws",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "insufficient",
+              "fen": "8/8/4k3/8/8/2B5/4K3/8 w - - 0 1"
+            },
+            {
+              "type": "move",
+              "id": "takeLast",
+              "fen": "1n5k/8/8/3pK3/8/8/8/8 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e5d5"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "repetition",
+              "fen": "6k1/6p1/8/8/8/r7/1q3PPP/4Q1K1 w - - 0 1",
+              "arrows": [
+                "e1e8"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "perpetual",
+              "fen": "6k1/6p1/8/8/8/r7/1q3PPP/4Q1K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e1e8"
+                  ],
+                  "reply": "g8h7"
+                },
+                {
+                  "accept": [
+                    "e8h5"
+                  ],
+                  "reply": "h7g8"
+                },
+                {
+                  "accept": [
+                    "h5e8"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "fifty",
+              "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1"
             }
           ]
         }
@@ -691,6 +987,54 @@
       "id": "tricks",
       "lessons": [
         {
+          "id": "rules.pieceValue",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "values",
+              "fen": "8/8/8/8/8/8/8/1PNBRQK1 w - - 0 1"
+            },
+            {
+              "type": "move",
+              "id": "bigger",
+              "fen": "6k1/8/8/3npr2/4P3/8/8/4K3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e4f5"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "trade",
+              "fen": "4k3/8/4p3/3n4/8/8/6B1/4K3 w - - 0 1",
+              "arrows": [
+                "g2d5",
+                "e6d5"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "goodTrade",
+              "fen": "4k3/8/4p3/3r4/8/2N5/8/3QK3 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "c3d5"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "count",
+              "fen": "4k3/8/8/3p4/8/8/8/3QK3 w - - 0 2"
+            }
+          ]
+        },
+        {
           "id": "tricks.scholarsMate",
           "steps": [
             {
@@ -841,6 +1185,78 @@
           ]
         },
         {
+          "id": "tactics.matePatterns",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "intro",
+              "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+              "marks": [
+                "f7",
+                "g7",
+                "h7"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "backRank",
+              "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d1d8"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "smothered",
+              "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "g5f7"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "arabian",
+              "fen": "7k/1R6/5N2/p7/8/8/8/6K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "b7h7"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "supported",
+              "fen": "5rk1/5ppp/8/7Q/8/3B4/8/6K1 w - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "h5h7"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "end",
+              "fen": "6rk/5Npp/8/8/8/8/8/6K1 b - - 0 1",
+              "marks": [
+                "h8"
+              ],
+              "side": "white"
+            }
+          ]
+        },
+        {
           "id": "tricks.principles",
           "steps": [
             {
@@ -948,6 +1364,18 @@
                     "e3d4",
                     "e3e4",
                     "e3f4"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "move",
+              "id": "defend",
+              "fen": "8/4k3/8/8/4K3/4P3/8/8 b - - 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "e7e6"
                   ]
                 }
               ]
@@ -1117,6 +1545,52 @@
     {
       "id": "pawns",
       "lessons": [
+        {
+          "id": "rules.enPassant",
+          "steps": [
+            {
+              "type": "talk",
+              "id": "idea",
+              "fen": "4k3/3p4/8/4P3/8/8/8/4K3 b - - 0 1",
+              "arrows": [
+                "d7d5"
+              ],
+              "side": "white"
+            },
+            {
+              "type": "move",
+              "id": "capture",
+              "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+              "line": [
+                {
+                  "accept": [
+                    "e5d6"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "talk",
+              "id": "now",
+              "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+              "marks": [
+                "d6"
+              ]
+            },
+            {
+              "type": "move",
+              "id": "black",
+              "fen": "4k3/8/8/8/2Pp4/8/8/4K3 b - c3 0 1",
+              "line": [
+                {
+                  "accept": [
+                    "d4c3"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
         {
           "id": "pawns.kingPawn",
           "steps": [

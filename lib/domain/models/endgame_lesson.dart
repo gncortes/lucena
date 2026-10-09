@@ -160,12 +160,26 @@ class Reference {
 class EndgameLessonProgress {
   const EndgameLessonProgress({
     this.lessonDone = false,
+    this.parts = const {},
     this.stars = const {},
     this.exercise,
   });
 
-  /// A lição (os passos) foi concluída.
+  /// A lição inteira (todas as partes) foi concluída. Num progresso gravado
+  /// antes das partes (T51), é o que diz que todas estão feitas.
   final bool lessonDone;
+
+  /// As partes concluídas, pelo id.
+  final Set<String> parts;
+
+  /// As partes de [lesson] já feitas. Lição concluída no formato antigo:
+  /// todas.
+  Set<String> partsDone(EndgameLesson lesson) => lessonDone
+      ? {for (final part in lesson.lesson.sections) part.id}
+      : {
+          for (final part in lesson.lesson.sections)
+            if (parts.contains(part.id)) part.id,
+        };
 
   /// As estrelas ganhas em cada exercício resolvido, pelo id dele.
   final Map<String, int> stars;
@@ -178,17 +192,20 @@ class EndgameLessonProgress {
 
   EndgameLessonProgress copyWith({
     bool? lessonDone,
+    Set<String>? parts,
     Map<String, int>? stars,
     ExerciseCheckpoint? exercise,
     bool clearExercise = false,
   }) => EndgameLessonProgress(
     lessonDone: lessonDone ?? this.lessonDone,
+    parts: parts ?? this.parts,
     stars: stars ?? this.stars,
     exercise: clearExercise ? null : exercise ?? this.exercise,
   );
 
   Map<String, dynamic> toJson() => {
     'lessonDone': lessonDone,
+    'parts': parts.toList()..sort(),
     'stars': stars,
     'exercise': ?exercise?.toJson(),
   };
@@ -197,6 +214,10 @@ class EndgameLessonProgress {
     if (json is! Map<String, dynamic>) return const EndgameLessonProgress();
     return EndgameLessonProgress(
       lessonDone: json['lessonDone'] as bool? ?? false,
+      parts: {
+        for (final part in json['parts'] as List? ?? const [])
+          if (part is String) part,
+      },
       stars: {
         for (final MapEntry(:key, :value)
             in (json['stars'] as Map<String, dynamic>? ?? const {}).entries)

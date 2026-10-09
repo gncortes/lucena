@@ -1,0 +1,693 @@
+{
+  "id": "pawns.protectedPasser",
+  "module": "pawns",
+  "skills": [
+    "pawns.protectedPasser"
+  ],
+  "parts": [
+    {
+      "id": "tied",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_tied",
+          "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+          "minutes": 5,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "c5",
+            "h5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "square",
+          "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+          "arrows": [
+            "b4c5"
+          ],
+          "marks": [
+            "c5",
+            "f5",
+            "f8",
+            "c8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "free",
+          "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+          "arrows": [
+            "e3f4",
+            "f4g3",
+            "g3h4",
+            "h4h5"
+          ],
+          "marks": [
+            "h5",
+            "g6"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_tied",
+          "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "e3f4"
+            },
+            {
+              "uci": "e7f6",
+              "marks": [
+                "g6"
+              ]
+            },
+            {
+              "uci": "f4g3"
+            },
+            {
+              "uci": "f6e5"
+            },
+            {
+              "uci": "g3h4",
+              "arrows": [
+                "h4h5"
+              ]
+            },
+            {
+              "uci": "e5d5"
+            },
+            {
+              "uci": "h4h5",
+              "marks": [
+                "h5"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "tiedMove",
+          "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "e3f4",
+              "accept": "win",
+              "reply": "e7e6"
+            },
+            {
+              "teach": "f4g5",
+              "accept": "win",
+              "reply": "e6d5"
+            },
+            {
+              "teach": "g5h5",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "convert",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_convert",
+          "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "b5",
+            "d5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "convertWhy",
+          "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+          "arrows": [
+            "e3d4",
+            "d4d5"
+          ],
+          "marks": [
+            "b5",
+            "c6"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_convert",
+          "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "e3d4"
+            },
+            {
+              "uci": "c6b7"
+            },
+            {
+              "uci": "d4d5"
+            },
+            {
+              "uci": "b7c7"
+            },
+            {
+              "uci": "c5c6",
+              "arrows": [
+                "d5c5"
+              ]
+            },
+            {
+              "uci": "c7c8"
+            },
+            {
+              "uci": "d5c5"
+            },
+            {
+              "uci": "c8c7"
+            },
+            {
+              "uci": "c5b5",
+              "marks": [
+                "b5"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "convertMove",
+          "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "e3d4",
+              "accept": "win",
+              "reply": "c6d7"
+            },
+            {
+              "teach": "d4d5",
+              "accept": "win",
+              "reply": "d7c7"
+            },
+            {
+              "teach": "c5c6",
+              "accept": "win",
+              "reply": "c7c8"
+            },
+            {
+              "teach": "d5c5",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "base",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_base",
+          "fen": "8/8/8/pP6/Pk6/8/8/7K w - - 0 1",
+          "minutes": 1,
+          "hints": 1,
+          "ask": "line",
+          "marks": [
+            "a4",
+            "b4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "baseWhy",
+          "fen": "8/8/8/pP6/Pk6/8/8/7K w - - 0 1",
+          "arrows": [
+            "b5b8"
+          ],
+          "marks": [
+            "b6",
+            "b8",
+            "e8",
+            "e5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_base",
+          "fen": "8/8/8/pP6/Pk6/8/8/7K w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "b5b6",
+              "arrows": [
+                "b6b8"
+              ]
+            },
+            {
+              "uci": "b4c5"
+            },
+            {
+              "uci": "b6b7"
+            },
+            {
+              "uci": "c5c6"
+            },
+            {
+              "uci": "b7b8q",
+              "marks": [
+                "b8"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "baseMove",
+          "fen": "8/8/8/2pP4/2Pk4/8/8/K7 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "d5d6",
+              "accept": "win",
+              "reply": "d4e5"
+            },
+            {
+              "teach": "d6d7",
+              "accept": "win",
+              "reply": "e5e6"
+            },
+            {
+              "teach": "d7d8q",
+              "accept": "win"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "limits",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_corner",
+          "fen": "8/1k6/pP6/P1K5/8/8/8/8 w - - 0 1",
+          "minutes": 3,
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "a8",
+            "b8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "corner",
+          "fen": "8/1k6/pP6/P1K5/8/8/8/8 w - - 0 1",
+          "marks": [
+            "a8",
+            "c7",
+            "b6"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "cornerMove",
+          "fen": "8/8/pP1k4/P7/8/2K5/8/8 b - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "d6c6",
+              "accept": "hold",
+              "reply": "c3d3"
+            },
+            {
+              "teach": "c6b7",
+              "accept": "hold"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "noTarget",
+          "fen": "8/8/8/3k4/1Pp5/2P5/3K4/8 w - - 0 1",
+          "marks": [
+            "b3",
+            "d3",
+            "c4"
+          ],
+          "arrows": [
+            "d5c4"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "targetMove",
+          "fen": "8/8/8/3k4/1Pp5/2P5/3K4/8 b - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "d5d6",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finish",
+      "steps": [
+        {
+          "type": "talk",
+          "id": "recap",
+          "fen": "8/3k4/8/1pP4p/1P6/8/5K2/8 w - - 0 1",
+          "arrows": [
+            "b4c5",
+            "f2h4"
+          ],
+          "marks": [
+            "h5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "rules",
+          "fen": "8/3k4/8/1pP4p/1P6/8/5K2/8 w - - 0 1",
+          "arrows": [
+            "b4c5"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "recapMove",
+          "fen": "8/3k4/8/1pP4p/1P6/8/5K2/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "f2g3",
+              "accept": "win",
+              "reply": "d7e6"
+            },
+            {
+              "teach": "g3h4",
+              "accept": "win"
+            }
+          ]
+        },
+        {
+          "type": "play",
+          "id": "finish",
+          "fen": "8/3k4/8/1pP4p/1P6/8/5K2/8 w - - 0 1",
+          "goal": "win"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "e01",
+      "stars": 1,
+      "fen": "8/8/8/pP6/Pk6/8/8/K7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "b5b6",
+          "accept": "win",
+          "reply": "b4c5"
+        },
+        {
+          "teach": "b6b7",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e02",
+      "stars": 1,
+      "fen": "8/8/pPk5/P7/8/3K4/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c6b7",
+          "accept": "hold"
+        }
+      ]
+    },
+    {
+      "id": "e03",
+      "stars": 1,
+      "fen": "8/3k4/8/1pP3p1/1P6/5K2/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "f3g4",
+          "accept": "win",
+          "reply": "d7e6"
+        },
+        {
+          "teach": "g4g5",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e04",
+      "stars": 2,
+      "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e3d4",
+          "accept": "win",
+          "reply": "c6b7"
+        },
+        {
+          "teach": "d4d5",
+          "accept": "win",
+          "reply": "b7c7"
+        },
+        {
+          "teach": "c5c6",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e05",
+      "stars": 2,
+      "fen": "8/8/4k3/1p6/1Pp4P/8/4K3/8 b - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "e6f5",
+          "accept": "win",
+          "reply": "e2d2"
+        },
+        {
+          "teach": "f5g4",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e06",
+      "stars": 2,
+      "fen": "8/8/8/5Pp1/6Pk/8/8/K7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "f5f6",
+          "accept": "win",
+          "reply": "h4g4"
+        },
+        {
+          "teach": "f6f7",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 2,
+      "fen": "8/2k5/8/1pPK4/1P6/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "c5c6",
+          "accept": "win",
+          "reply": "c7c8"
+        },
+        {
+          "teach": "d5c5",
+          "accept": "win",
+          "reply": "c8c7"
+        },
+        {
+          "teach": "c5b5",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e08",
+      "stars": 3,
+      "fen": "8/8/Pk6/1P5p/4p3/8/6K1/8 w - - 0 1",
+      "goal": "win",
+      "origin": "studyChessInstitute",
+      "turns": [
+        {
+          "teach": "g2g3",
+          "accept": "only",
+          "reply": "b6c7"
+        },
+        {
+          "teach": "g3f4",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e09",
+      "stars": 3,
+      "fen": "8/4k3/8/1pP4p/1P6/8/8/3K4 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d1e2",
+          "accept": "win",
+          "reply": "e7e6"
+        },
+        {
+          "teach": "e2f3",
+          "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "stars": 3,
+      "fen": "8/2k5/8/8/Pp6/1P6/6K1/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "studyIsaac",
+      "turns": [
+        {
+          "teach": "c7d6",
+          "accept": "only",
+          "reply": "g2f3"
+        },
+        {
+          "teach": "d6d5",
+          "accept": "only"
+        }
+      ]
+    }
+  ],
+  "passScore": 12,
+  "keyPositions": [
+    {
+      "id": "tied",
+      "fen": "8/4k3/8/1pP4p/1P6/4K3/8/8 w - - 0 1",
+      "ref": "wikiPawn"
+    },
+    {
+      "id": "convert",
+      "fen": "8/8/2k5/1pP5/1P6/4K3/8/8 w - - 0 1"
+    },
+    {
+      "id": "base",
+      "fen": "8/8/8/pP6/Pk6/8/8/7K w - - 0 1"
+    },
+    {
+      "id": "corner",
+      "fen": "8/1k6/pP6/P1K5/8/8/8/8 w - - 0 1",
+      "ref": "studyIsaac"
+    },
+    {
+      "id": "noTarget",
+      "fen": "8/8/8/3k4/1Pp5/2P5/3K4/8 w - - 0 1"
+    },
+    {
+      "id": "dedrle",
+      "fen": "8/2k5/8/8/Pp6/1P6/6K1/8 b - - 0 1",
+      "ref": "studyIsaac"
+    }
+  ],
+  "practice": {
+    "fen": "8/4k3/8/1pP3p1/1P6/8/4K3/8 w - - 0 1",
+    "goal": "win",
+    "positionId": null
+  },
+  "references": [
+    {
+      "id": "dvoretsky",
+      "kind": "book",
+      "author": "Mark Dvoretsky (revisão de Karsten Müller e Alex Fishbein)",
+      "title": "Dvoretsky's Endgame Manual, 6ª edição",
+      "publisher": "Russell Enterprises",
+      "year": 2025,
+      "where": "cap. 1, \"The Protected Passed Pawn\", p. 60 (sumário da amostra da editora)"
+    },
+    {
+      "id": "delaVilla",
+      "kind": "book",
+      "author": "Jesús de la Villa",
+      "title": "100 Endgames You Must Know (4ª edição)",
+      "publisher": "New In Chess",
+      "year": 2015,
+      "where": "Ending 89, \"Protected passed pawns\", p. 198 (sumário da amostra da editora)"
+    },
+    {
+      "id": "studyIsaac",
+      "kind": "study",
+      "author": "IsaacWiebeSupreme",
+      "title": "Protected Passers",
+      "url": "https://lichess.org/study/u3JyT8wE"
+    },
+    {
+      "id": "studyChessInstitute",
+      "kind": "study",
+      "author": "Chess_institute",
+      "title": "Protected Passed Pawn 1",
+      "url": "https://lichess.org/study/d1sMYYB6"
+    },
+    {
+      "id": "studyYeongyong",
+      "kind": "study",
+      "author": "yeongyong",
+      "title": "Protected Passed Pawn",
+      "url": "https://lichess.org/study/FZJX7Vgp"
+    },
+    {
+      "id": "wikiPawn",
+      "kind": "web",
+      "title": "Wikipedia: Pawn (chess), \"Passed pawn\"",
+      "url": "https://en.wikipedia.org/wiki/Pawn_(chess)#Passed_pawn"
+    },
+    {
+      "id": "wikiPassed",
+      "kind": "web",
+      "title": "Wikipedia: Passed pawn, \"Protected passed pawn\"",
+      "url": "https://en.wikipedia.org/wiki/Passed_pawn#Protected_passed_pawn"
+    },
+    {
+      "id": "tablebase",
+      "kind": "tablebase",
+      "title": "Lichess tablebase (Syzygy)",
+      "url": "https://tablebase.lichess.ovh"
+    }
+  ]
+}

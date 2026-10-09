@@ -12,6 +12,7 @@ import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_shape.dart';
 
 /// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
 /// próximo desafio, com o tabuleiro em miniatura.
@@ -98,7 +99,7 @@ class WhereCard extends StatelessWidget {
             if (current != null) ...[
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppShape.small),
                 child: AnimatedProgress(
                   value: total == 0 ? 0 : done / total,
                   minHeight: 8,
@@ -199,7 +200,7 @@ class _SchoolCard extends StatelessWidget {
                   LinearProgressIndicator(
                     value: school.total == 0 ? 0 : school.done / school.total,
                     minHeight: 6,
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -239,6 +240,8 @@ class _EndgameCard extends StatelessWidget {
     if (exercise != null) {
       return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
     }
+    final part = endgame.partNumber;
+    if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
     if (step != null) return l10n.lessonStep(step, endgame.stepCount!);
     return l10n.endgameScore(endgame.score, endgame.maxScore);
   }
@@ -248,7 +251,9 @@ class _EndgameCard extends StatelessWidget {
     if (exerciseId != null) {
       return Routes.endgameExercise(endgame.lessonId, exerciseId);
     }
-    if (endgame.lessonOpen) return Routes.endgameLessonSteps(endgame.lessonId);
+    if (endgame.lessonOpen) {
+      return Routes.endgameLessonSteps(endgame.lessonId, part: endgame.partId);
+    }
     return Routes.endgameLesson(endgame.lessonId);
   }
 

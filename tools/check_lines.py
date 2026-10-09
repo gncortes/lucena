@@ -26,6 +26,7 @@ CATEGORIES = [
     "pieceCaptured", "pieceLost", "ownPromotion", "opponentPromotion",
     "opponentLowTime", "ownLowTime", "timeAdvantage", "opponentThinking",
     "win", "loss", "draw", "drawAccepted", "drawDeclined",
+    "mateDelayed", "toldYouDraw",
 ]
 EMOTIONS = {
     "calm", "happy", "confident", "playful", "focused", "surprised",

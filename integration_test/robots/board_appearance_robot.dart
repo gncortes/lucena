@@ -7,6 +7,8 @@ import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'settings_robot.dart';
+
 /// Tela de aparência do tabuleiro (cores, peças, coordenadas).
 class BoardAppearanceRobot {
   const BoardAppearanceRobot(this.$);
@@ -15,6 +17,7 @@ class BoardAppearanceRobot {
 
   /// A partir de Configurações.
   Future<void> open() async {
+    await SettingsRobot($).openAppearance();
     await $(SettingsKeys.boardAppearanceTile).scrollTo().tap();
     await expectVisible();
   }

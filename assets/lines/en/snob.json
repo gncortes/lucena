@@ -213,6 +213,27 @@
       "text": "Has anyone seen my medal? It's my lucky charm."
     },
     {
+      "id": "snob.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "I offer you a draw. An honor: I don't even do that at the club open."
+    },
+    {
+      "id": "snob.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Draw and I'll let you hold the medal. Five seconds. No photos."
+    },
+    {
+      "id": "snob.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Let's be civilized: a draw, and I'll tell everyone you played well."
+    },
+    {
       "id": "snob.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 2,
@@ -862,6 +883,76 @@
       "intensity": 3,
       "emotion": "confident",
       "text": "Declined. I'm better off even with my arms crossed."
+    },
+    {
+      "id": "snob.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Interesting. You had mate and chose to wander. Classic amateur."
+    },
+    {
+      "id": "snob.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Take your time. I have all afternoon. You, apparently, do too."
+    },
+    {
+      "id": "snob.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "This is a draw. Any medalist can see it. I, for one."
+    },
+    {
+      "id": "snob.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Let it slip? Pity. I propose a draw, out of pure generosity."
+    },
+    {
+      "id": "snob.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "You will not deliver this mate. I saw it at the club open."
+    },
+    {
+      "id": "snob.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I knew it was a draw. You did not accept, wasted my time, but fine."
+    },
+    {
+      "id": "snob.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "As I predicted. A draw. Write it down, I always know."
+    },
+    {
+      "id": "snob.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw. I said so, and medalists rarely get it wrong."
+    },
+    {
+      "id": "snob.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "It was a draw since you got lost. I was just polite enough to wait."
+    },
+    {
+      "id": "snob.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "A draw. I will tell the club I held it. With class."
     }
   ]
 }

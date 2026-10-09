@@ -4,10 +4,10 @@ import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
 import 'robots/catalog_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_setup_robot.dart';
 import 'robots/home_robot.dart';
-import 'robots/settings_robot.dart';
 
 // Uma posição do catálogo, jogada a partir de lances que o cenário controla.
 const _positionId = 'basic.queen.0001';
@@ -35,6 +35,7 @@ void main() {
     final app = AppRobot($);
     final board = FreeBoardRobot($);
     final catalog = CatalogRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
     await board.openAt(
       _mateInOne,
@@ -46,8 +47,9 @@ void main() {
 
     await board.move('h1', 'h8');
 
-    await board.expectGoalResult('Goal achieved!');
-    await SettingsRobot($).back();
+    await conclusion.expectEnd(title: 'You won!', reason: 'Checkmate');
+    await conclusion.expectGoal('Goal achieved!');
+    await conclusion.close();
     await openQueenPositions($);
     await catalog.expectFulfilled(_positionId);
 
@@ -58,6 +60,7 @@ void main() {
 
   patrolTest('empatar posição de ganhar: não cumprido', ($) async {
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));
     await board.openAt(
       _stalemateTrap,
@@ -69,12 +72,13 @@ void main() {
 
     await board.move('c5', 'b6');
 
-    await board.expectEnd(reason: 'Stalemate', result: 'Draw');
-    await board.expectGoalResult('Goal not achieved');
+    await conclusion.expectEnd(title: 'Draw', reason: 'Stalemate');
+    await conclusion.expectGoal('Goal not achieved');
   });
 
   patrolTest('empatar posição de defender: cumprido', ($) async {
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));
     // As brancas tomam o último peão: só os reis sobram.
     await board.openAt(
@@ -87,13 +91,13 @@ void main() {
 
     await board.move('e1', 'd2');
 
-    await board.expectEnd(reason: 'Insufficient material', result: 'Draw');
-    await board.expectGoalResult('Goal achieved!');
+    await conclusion.expectEnd(title: 'Draw', reason: 'Insufficient material');
+    await conclusion.expectGoal('Goal achieved!');
   });
 
   patrolTest('o histórico mostra as tentativas em ordem', ($) async {
     final board = FreeBoardRobot($);
-    final settings = SettingsRobot($);
+    final conclusion = ConclusionRobot($);
     final catalog = CatalogRobot($);
     final setup = GameSetupRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));
@@ -105,8 +109,8 @@ void main() {
       position: _positionId,
     );
     await board.move('c5', 'b6');
-    await board.expectGoalResult('Goal not achieved');
-    await settings.back();
+    await conclusion.expectGoal('Goal not achieved');
+    await conclusion.close();
     await HomeRobot($).expectVisible();
     await board.openAt(
       _mateInOne,
@@ -116,8 +120,8 @@ void main() {
       position: _positionId,
     );
     await board.move('h1', 'h8');
-    await board.expectGoalResult('Goal achieved!');
-    await settings.back();
+    await conclusion.expectGoal('Goal achieved!');
+    await conclusion.close();
 
     await openQueenPositions($);
     await catalog.openPosition(_positionId);
@@ -132,6 +136,7 @@ void main() {
     final catalog = CatalogRobot($);
     final setup = GameSetupRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await AppRobot($).open(systemLocale: const Locale('en', 'US'));
     await catalog.open();
     await catalog.openCategory('basic');
@@ -141,9 +146,10 @@ void main() {
     await setup.start();
     await board.move('c1', 'g5');
     await board.resign();
-    await board.expectGoalResult('Goal not achieved');
+    await conclusion.expectEnd(title: 'You lost', reason: 'Resignation');
+    await conclusion.expectGoal('Goal not achieved');
 
-    await board.playAgain();
+    await conclusion.playAgain();
 
     board.expectFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1');
     await board.expectMoves([]);
@@ -156,6 +162,7 @@ void main() {
       'objetivo de empatar fica cumprido', ($) async {
     final app = AppRobot($);
     final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
     await board.openAt(
       _fortress,
@@ -175,7 +182,7 @@ void main() {
     await board.move('h1', 'g1');
     await board.move('g1', 'h1');
 
-    await board.expectEnd(reason: 'Threefold repetition', result: 'Draw');
-    await board.expectGoalResult('Goal achieved!');
+    await conclusion.expectEnd(title: 'Draw', reason: 'Threefold repetition');
+    await conclusion.expectGoal('Goal achieved!');
   });
 }

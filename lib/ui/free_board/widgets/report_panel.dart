@@ -10,6 +10,8 @@ import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_reporter.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Depois da partida: o que o jogador conquistou
 /// ("Primeira vitória contra a Zuri", "Novo recorde").
@@ -167,13 +169,12 @@ class _AchievementCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final achievement = this.achievement;
-    final instant = MediaQuery.disableAnimationsOf(context);
+    final motion = AppMotion.of(context);
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
-      duration: instant
-          ? Duration.zero
-          : Duration(milliseconds: 450 + 150 * order),
-      curve: Curves.easeOutCubic,
+      // Um bloco depois do outro, em cascata.
+      duration: motion.component + motion.stagger * (3 + 3 * order),
+      curve: AppMotion.enter,
       builder: (context, t, child) => Opacity(
         opacity: t,
         child: Transform.translate(
@@ -190,7 +191,7 @@ class _AchievementCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: colors.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppShape.large),
             border: Border.all(color: _gold.withValues(alpha: 0.35)),
           ),
           child: Row(
@@ -207,7 +208,7 @@ class _AchievementCard extends StatelessWidget {
                   ),
                 ),
                 child: Icon(
-                  achievement?.iconData ?? Icons.emoji_events,
+                  achievement?.iconData ?? Icons.military_tech,
                   color: const Color(0xFF5A3C00),
                 ),
               ),

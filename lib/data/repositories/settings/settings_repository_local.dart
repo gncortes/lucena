@@ -31,6 +31,10 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _journeyTimeKey = 'clock.journeyTime';
   static const _characterTalkKey = 'characters.talk';
   static const _soundKey = 'sound.enabled';
+  static const _vibrationKey = 'haptics.enabled';
+  static const _thinkMinutesKey = 'lessons.thinkMinutes';
+  static const _thinkChosenKey = 'lessons.thinkChosen';
+  static const _endgamesAllKey = 'endgames.all';
   static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
@@ -66,9 +70,25 @@ class LocalSettingsRepository implements SettingsRepository {
           await _preferences.getBool(_characterTalkKey) ??
           const AppSettings().characterTalk,
       sound: await _preferences.getBool(_soundKey) ?? const AppSettings().sound,
+      vibration:
+          await _preferences.getBool(_vibrationKey) ??
+          const AppSettings().vibration,
+      thinkMinutes: switch (int.tryParse(
+        await _preferences.getString(_thinkMinutesKey) ?? '',
+      )) {
+        final minutes? when AppSettings.thinkChoices.contains(minutes) =>
+          minutes,
+        _ => const AppSettings().thinkMinutes,
+      },
+      // Quem já tinha um tempo gravado (escolhido nas Configurações) já
+      // escolheu.
+      thinkChosen:
+          await _preferences.getBool(_thinkChosenKey) ??
+          await _preferences.getString(_thinkMinutesKey) != null,
       evalBar:
           await _preferences.getBool(_evalBarKey) ??
           const AppSettings().evalBar,
+      endgamesAll: await _preferences.getBool(_endgamesAllKey) ?? false,
     );
   }
 
@@ -151,7 +171,11 @@ class LocalSettingsRepository implements SettingsRepository {
       value: settings.characterTalk,
     );
     await _preferences.setBool(_soundKey, value: settings.sound);
+    await _preferences.setBool(_vibrationKey, value: settings.vibration);
+    await _preferences.setString(_thinkMinutesKey, '${settings.thinkMinutes}');
+    await _preferences.setBool(_thinkChosenKey, value: settings.thinkChosen);
     await _preferences.setBool(_evalBarKey, value: settings.evalBar);
+    await _preferences.setBool(_endgamesAllKey, value: settings.endgamesAll);
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

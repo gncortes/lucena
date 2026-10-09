@@ -10,6 +10,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
+import '../../core/theme/app_motion.dart';
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de
@@ -91,7 +92,7 @@ class CharacterBar extends StatelessWidget {
             const SizedBox(width: 4),
             Expanded(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
+                duration: AppMotion.state,
                 transitionBuilder: (child, animation) => FadeTransition(
                   opacity: animation,
                   child: ScaleTransition(
@@ -398,7 +399,7 @@ class _TypewriterTextState extends State<TypewriterText>
   @override
   Widget build(BuildContext context) {
     // Com menos movimento pedido ao sistema, o texto já aparece inteiro.
-    final instant = MediaQuery.disableAnimationsOf(context);
+    final instant = AppMotion.of(context).disabled;
     return LayoutBuilder(
       builder: (context, constraints) {
         // Fala longa no espaço do balão: a letra diminui até caber inteira,

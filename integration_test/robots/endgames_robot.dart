@@ -18,6 +18,8 @@ import '../../testing/board_gestures.dart';
 import 'variant.dart';
 import 'home_robot.dart';
 
+import '../../testing/e2e_dependencies.dart';
+
 /// As aulas de finais do Viktor: a trilha, a aula, a lição e os exercícios.
 ///
 /// Os lances vêm das próprias aulas (`assets/lessons/endgames/`): o robô
@@ -45,7 +47,8 @@ class EndgamesRobot {
   }
 
   Future<void> openLesson(String id) async {
-    await $(EndgamesKeys.lesson(id)).scrollTo().tap();
+    // A trilha passou de 30 aulas: rolar mais antes de desistir.
+    await $(EndgamesKeys.lesson(id)).scrollTo(maxScrolls: 80).tap();
     await expectLessonScreen();
   }
 
@@ -62,6 +65,11 @@ class EndgamesRobot {
       await $(EndgameLessonKeys.speech)
           .scrollTo(scrollDirection: AxisDirection.up);
     }
+    // Os exercícios ficam no teste final, que começa recolhido (T51).
+    if (!$(key).exists && !$(EndgameLessonKeys.exercises).exists) {
+      await $(EndgameLessonKeys.finalTestSummary).scrollTo().tap();
+      await $.pumpAndSettle();
+    }
     return $(key).scrollTo();
   }
 
@@ -70,6 +78,20 @@ class EndgamesRobot {
   Future<void> openSteps() async {
     await _show(EndgameLessonKeys.lessonButton).tap();
     await $(LessonKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+    await chooseThinkTime();
+  }
+
+  /// Na primeira aula com passo de pensar, a escolha do tempo vem antes:
+  /// fica no recomendado (as próximas aulas não perguntam mais).
+  Future<void> chooseThinkTime({int minutes = 0}) async {
+    // A escolha aparece depois de a aula carregar: espera um pouco por ela.
+    for (var i = 0; i < 20 && !$(LessonKeys.thinkChooser).exists; i++) {
+      if ($(LessonKeys.nextButton).exists || $(LessonKeys.board).exists) break;
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    if (!$(LessonKeys.thinkChooser).exists) return;
+    await $(LessonKeys.thinkChoice(minutes)).scrollTo().tap();
     await $.pumpAndSettle();
   }
 
@@ -81,7 +103,7 @@ class EndgamesRobot {
     required Map<String, List<String>> play,
   }) async {
     for (final step in lesson.lesson.steps) {
-      await $(LessonKeys.step(lesson.id, step.id)).waitUntilExists();
+      await _stepOrChooser(LessonKeys.step(lesson.id, step.id));
       switch (step) {
         case MoveStep(:final line):
           for (final turn in line) {
@@ -93,19 +115,72 @@ class EndgamesRobot {
             await _move(LessonKeys.board, move);
             await _waitReply();
           }
+        case ThinkStep():
+          // O tempo de pensar (o das preferências, até 5 minutos) passa no
+          // relógio dos cenários; se o relógio da tela não andar, "ver
+          // explicação agora" encerra.
+          e2eNow.advance(const Duration(minutes: 5));
+          await $.pump(const Duration(seconds: 1));
+          await _skipThink();
+        case DemoStep():
+          // Avança na mão até o fim (a demonstração também anda sozinha).
+          while (!$(LessonKeys.nextButton).exists) {
+            if ($(LessonKeys.demoForward).exists) {
+              await $(LessonKeys.demoForward).tap();
+            }
+            await $.pumpAndSettle();
+          }
         case TalkStep() || StarsStep() || TapStep():
           break;
       }
       await $(LessonKeys.nextButton).tap();
       await $.pumpAndSettle();
     }
+    // Fim da aula: a tela de aula concluída ou a da última parte.
+    for (var i = 0; i < 100; i++) {
+      if ($(LessonKeys.finished).exists || $(LessonKeys.partFinished).exists) {
+        return;
+      }
+      await $.pump(const Duration(milliseconds: 100));
+    }
     await $(LessonKeys.finished).waitUntilVisible();
+  }
+
+  /// Espera o passo [step]; se antes dele aparecer a escolha do tempo de
+  /// pensar (a primeira aula com passo de pensar), escolhe o recomendado.
+  Future<void> _stepOrChooser(Key step) async {
+    for (var i = 0; i < 100; i++) {
+      if ($(step).exists) return;
+      if ($(LessonKeys.thinkChooser).exists) {
+        await chooseThinkTime();
+        continue;
+      }
+      // A aula em partes (T51): no fim de cada parte, "ir para a parte
+      // seguinte".
+      if ($(LessonKeys.nextPartButton).exists) {
+        await $(LessonKeys.nextPartButton).scrollTo().tap();
+        await $.pumpAndSettle();
+        continue;
+      }
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    await $(step).waitUntilExists();
   }
 
   /// "Continuar" no passo aberto da lição.
   Future<void> nextStep() async {
+    await _skipThink();
     await $(LessonKeys.nextButton).tap();
     await $.pumpAndSettle();
+  }
+
+  /// No passo de pensar (T51), "ver explicação agora" encerra o tempo e o
+  /// "continuar" aparece.
+  Future<void> _skipThink() async {
+    if ($(LessonKeys.thinkSkip).exists) {
+      await $(LessonKeys.thinkSkip).tap();
+      await $.pumpAndSettle();
+    }
   }
 
   Future<void> expectStep(String lessonId, String stepId) async {
@@ -114,7 +189,13 @@ class EndgamesRobot {
 
   /// No fim da lição: volta para a aula, com os exercícios.
   Future<void> backToExercises() async {
-    await $(LessonKeys.exercisesButton).tap();
+    // Na aula em partes, o fim da última parte volta à aula por "voltar à
+    // aula"; na aula inteira, por "exercícios".
+    if ($(LessonKeys.exercisesButton).exists) {
+      await $(LessonKeys.exercisesButton).tap();
+    } else {
+      await $(LessonKeys.backToLessonButton).scrollTo().tap();
+    }
     await expectLessonScreen();
   }
 
@@ -248,10 +329,6 @@ class EndgamesRobot {
   Future<void> redo() async {
     await _show(EndgameLessonKeys.redoButton).tap();
     await $.pumpAndSettle();
-  }
-
-  Future<void> expectFinalLocked() async {
-    await _show(EndgameLessonKeys.finalLocked);
   }
 
   Future<void> expectFinalStep() async {

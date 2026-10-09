@@ -13,6 +13,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/step_progress.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
+import '../../core/theme/app_motion.dart';
 
 /// O resumo de uma tentativa terminada (concluída ou abandonada): como ela
 /// acabou, o tempo total e, etapa por etapa, o adversário, o tempo e as
@@ -152,7 +153,7 @@ class _Stopped extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(Icons.flag_outlined, size: 32, color: colors.outline),
+            Icon(Icons.stop_circle_outlined, size: 32, color: colors.outline),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -212,14 +213,12 @@ class _Finish extends StatelessWidget {
             // O troféu entra crescendo, para o recorde ter o seu momento.
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.4, end: 1),
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 500),
-              curve: Curves.easeOutBack,
+              duration: AppMotion.of(context).celebrate,
+              curve: AppMotion.pop,
               builder: (context, value, child) =>
                   Transform.scale(scale: value, child: child),
               child: Icon(
-                record ? Icons.emoji_events : Icons.flag_rounded,
+                record ? Icons.leaderboard : Icons.check_circle_rounded,
                 size: 36,
                 color: record
                     ? colors.onPrimaryContainer

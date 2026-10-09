@@ -199,4 +199,59 @@ void main() {
       expect(GameEvents.remember(memory, null), memory);
     });
   });
+
+  group('mate adiado', () {
+    // O jogador tem mate em 3 (do lado do personagem, levar mate).
+    const mateIn3 = Evaluation(mate: -3);
+
+    List<GameEvent> after(Evaluation now, {bool byCharacter = false}) =>
+        GameEvents.afterMove(
+          memory: history([mateIn3.score]),
+          move: MoveFacts(byCharacter: byCharacter),
+          evaluation: now,
+        );
+
+    test('o jogador encurtou o mate: nada a dizer', () {
+      expect(
+        after(const Evaluation(mate: -2)).map((e) => e.category),
+        isNot(contains(LineCategory.mateDelayed)),
+      );
+    });
+
+    test('o mate não encurtou: o personagem debocha da demora', () {
+      expect(
+        after(const Evaluation(mate: -4)).first,
+        const GameEvent(LineCategory.mateDelayed, 2),
+      );
+      expect(
+        after(mateIn3).first,
+        const GameEvent(LineCategory.mateDelayed, 2),
+      );
+    });
+
+    test('o mate escapou: o personagem diz que agora é empate', () {
+      expect(
+        after(const Evaluation(centipawns: -300)).first,
+        const GameEvent(LineCategory.mateDelayed, 3),
+      );
+    });
+
+    test('lance do personagem não conta como mate adiado', () {
+      expect(
+        after(
+          const Evaluation(mate: -5),
+          byCharacter: true,
+        ).map((e) => e.category),
+        isNot(contains(LineCategory.mateDelayed)),
+      );
+    });
+
+    test('teve mate na mão: guardado nas avaliações', () {
+      expect(
+        GameEvents.playerHadMate(history([0, mateIn3.score, -300])),
+        isTrue,
+      );
+      expect(GameEvents.playerHadMate(history([0, -4000])), isFalse);
+    });
+  });
 }

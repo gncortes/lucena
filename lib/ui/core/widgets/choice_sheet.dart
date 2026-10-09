@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+import '../theme/app_shape.dart';
+
 /// Uma opção do painel de escolha.
 class ChoiceSheetOption<T> {
   const ChoiceSheetOption({
@@ -105,7 +108,7 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
                     child: ListTile(
                       key: option.key,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(AppShape.large),
                       ),
                       selected: option.value == _marked,
                       selectedTileColor: colors.secondaryContainer,
@@ -119,14 +122,11 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
                               style: option.descriptionStyle,
                             ),
                       trailing: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
+                        duration: AppMotion.state,
                         transitionBuilder: (child, animation) =>
                             ScaleTransition(scale: animation, child: child),
                         child: option.value == _marked
-                            ? const Icon(
-                                Icons.check_circle,
-                                key: ValueKey('selected'),
-                              )
+                            ? const Icon(Icons.check, key: ValueKey('selected'))
                             : const SizedBox.square(
                                 dimension: 24,
                                 key: ValueKey('empty'),

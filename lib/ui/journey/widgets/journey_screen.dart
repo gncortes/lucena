@@ -14,6 +14,7 @@ import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 import 'trail_widgets.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_shape.dart';
 
 /// A Jornada: o adversário atual em destaque e, embaixo, a trilha dos
 /// personagens, do mais fraco ao mais forte, com o Stockfish no fim, como
@@ -102,7 +103,7 @@ class _Summary extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(Icons.emoji_events, size: 40, color: colors.primary),
+              Icon(Icons.hiking_rounded, size: 40, color: colors.primary),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
@@ -172,7 +173,7 @@ class _Summary extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppShape.small),
               child: AnimatedProgress(
                 value: total == 0 ? 0 : done / total,
                 minHeight: 10,

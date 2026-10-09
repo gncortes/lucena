@@ -22,7 +22,7 @@ void main() {
 
   Future<void> pump(
     WidgetTester tester, {
-    bool stacked = false,
+    SpeechContext speechContext = SpeechContext.game,
     bool typed = false,
     bool noAnimations = false,
   }) => tester.pumpWidget(
@@ -34,7 +34,7 @@ void main() {
             teacher: FakeCharacterRepository.viktor,
             text: long,
             bubbleKey: speech,
-            stacked: stacked,
+            speechContext: speechContext,
             typed: typed,
           ),
         ),
@@ -56,7 +56,7 @@ void main() {
   testWidgets('embaixo: o balão fica abaixo do retrato e usa a largura toda', (
     tester,
   ) async {
-    await pump(tester, stacked: true);
+    await pump(tester, speechContext: SpeechContext.teaching);
     await tester.pumpAndSettle();
     final avatar = tester.getRect(find.byType(CharacterAvatar));
     final text = tester.getRect(find.byKey(speech));
@@ -66,7 +66,7 @@ void main() {
 
   testWidgets('a fala aparece aos poucos e o texto está inteiro desde o '
       'começo', (tester) async {
-    await pump(tester, stacked: true, typed: true);
+    await pump(tester, speechContext: SpeechContext.teaching, typed: true);
     await tester.pump(const Duration(milliseconds: 100));
     // O texto inteiro já está lá (quem lê a tela ouve tudo); só a vista é
     // recortada enquanto a fala anda.
@@ -79,7 +79,7 @@ void main() {
   });
 
   testWidgets('um toque no balão mostra a fala inteira', (tester) async {
-    await pump(tester, stacked: true, typed: true);
+    await pump(tester, speechContext: SpeechContext.teaching, typed: true);
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byType(ClipPath), findsOneWidget);
 
@@ -92,7 +92,12 @@ void main() {
   testWidgets('com as animações desligadas a fala aparece de uma vez', (
     tester,
   ) async {
-    await pump(tester, stacked: true, typed: true, noAnimations: true);
+    await pump(
+      tester,
+      speechContext: SpeechContext.teaching,
+      typed: true,
+      noAnimations: true,
+    );
     await tester.pump();
     expect(shown(tester), long);
     expect(find.byType(ClipPath), findsNothing);
@@ -130,6 +135,7 @@ void main() {
                 ValueListenableBuilder(
                   valueListenable: text,
                   builder: (context, value, _) => TeacherSpeech(
+                    speechContext: SpeechContext.game,
                     teacher: FakeCharacterRepository.viktor,
                     text: value,
                     bubbleKey: speech,
@@ -169,6 +175,7 @@ void main() {
                 ValueListenableBuilder(
                   valueListenable: text,
                   builder: (context, value, _) => TeacherSpeech(
+                    speechContext: SpeechContext.game,
                     teacher: FakeCharacterRepository.viktor,
                     text: value,
                     bubbleKey: speech,
@@ -209,7 +216,7 @@ void main() {
               teacher: FakeCharacterRepository.viktor,
               text: long,
               bubbleKey: speech_,
-              stacked: true,
+              speechContext: SpeechContext.teaching,
               typed: true,
               speaks: true,
             ),
@@ -287,7 +294,7 @@ void main() {
               teacher: FakeCharacterRepository.viktor,
               text: said,
               bubbleKey: speech_,
-              stacked: true,
+              speechContext: SpeechContext.teaching,
               typed: typed,
               speaks: speech != null,
               onLink: (link) => tapped.add(link.text),
@@ -349,7 +356,7 @@ void main() {
               teacher: FakeCharacterRepository.viktor,
               text: said,
               bubbleKey: speech_,
-              stacked: true,
+              speechContext: SpeechContext.teaching,
               typed: true,
               onLink: (link) => tapped.add(link.text),
             ),
@@ -390,7 +397,7 @@ void main() {
               teacher: FakeCharacterRepository.viktor,
               text: said,
               bubbleKey: speech_,
-              stacked: true,
+              speechContext: SpeechContext.teaching,
               typed: true,
               speaks: true,
               onLink: (_) {},

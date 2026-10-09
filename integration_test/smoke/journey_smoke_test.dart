@@ -60,8 +60,7 @@ void main() {
     await HomeRobot($).openSettings();
     await settings.openLanguages();
     await settings.chooseLanguage(AppLanguage.pseudo);
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
 
     await walkThrough($, app);
   });

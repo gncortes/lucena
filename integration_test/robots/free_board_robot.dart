@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,8 +71,6 @@ class FreeBoardRobot {
 
   Future<void> expectVisible() async {
     await $(FreeBoardKeys.screen).waitUntilVisible();
-    // A partida pode terminar logo ao abrir (a máquina dá o mate): o cartão
-    // do resultado fica por cima do tabuleiro.
     await $(FreeBoardKeys.board).waitUntilExists();
   }
 
@@ -175,30 +174,6 @@ class FreeBoardRobot {
     await $.pumpAndSettle();
   }
 
-  /// O resultado do treino no painel do fim.
-  Future<void> expectGoalResult(String text) async {
-    await $(FreeBoardKeys.endGoal).waitUntilVisible();
-    expectText(_text(FreeBoardKeys.endGoal), text);
-  }
-
-  /// No painel do fim, o rating novo com a variação num selo.
-  Future<void> expectRatingInEndPanel() async {
-    await $(FreeBoardKeys.ratingDelta).waitUntilVisible();
-    expect(
-      find.descendant(
-        of: find.byKey(FreeBoardKeys.endPanel),
-        matching: find.byKey(FreeBoardKeys.ratingChange),
-      ),
-      findsOneWidget,
-    );
-  }
-
-  /// "Próximo desafio", no painel do fim de um desafio da Jornada.
-  Future<void> nextChallenge() async {
-    await $(FreeBoardKeys.endNextButton).scrollTo().tap();
-    await $.pumpAndSettle();
-  }
-
   /// O desafio da Jornada da partida aberta.
   String? get challengeId {
     final context = $.tester.element(find.byKey(FreeBoardKeys.board));
@@ -211,12 +186,6 @@ class FreeBoardRobot {
       _board.width,
       $.tester.getSize(find.byKey(FreeBoardKeys.screen)).width,
     );
-  }
-
-  /// "Jogar de novo" (no treino) ou "Nova partida", no painel do fim.
-  Future<void> playAgain() async {
-    await $(FreeBoardKeys.endNewGameButton).tap();
-    await $.pumpAndSettle();
   }
 
   Future<void> flip() async {
@@ -286,8 +255,6 @@ class FreeBoardRobot {
 
   /// A lista de lances, em notação algébrica, com cada lance visível na tela.
   Future<void> expectMoves(List<String> moves) async {
-    // A partida pode ter acabado com o lance: o cartão sai da frente.
-    await closeResult();
     if (moves.isEmpty) {
       await $(FreeBoardKeys.noMoves).waitUntilExists();
       expect(find.byKey(FreeBoardKeys.move(0)), findsNothing);
@@ -326,9 +293,13 @@ class FreeBoardRobot {
     await $(find.text(name)).waitUntilVisible();
   }
 
-  /// A partida continua: ninguém perdeu por tempo nem por outro motivo.
+  /// A partida continua: ninguém perdeu por tempo nem por outro motivo (nem
+  /// o painel do fim da partida de dois, nem o resultado em destaque antes
+  /// da conclusão, nem a conclusão).
   void expectStillPlaying() {
     expect(find.byKey(FreeBoardKeys.endPanel), findsNothing);
+    expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
+    expect(find.byKey(ConclusionKeys.screen), findsNothing);
   }
 
   void expectTurn(String text) {
@@ -338,6 +309,8 @@ class FreeBoardRobot {
     );
   }
 
+  /// O fim da partida de dois (sem máquina), no painel embaixo do
+  /// tabuleiro. Contra a máquina, o fim é a conclusão (`ConclusionRobot`).
   Future<void> expectEnd({
     required String reason,
     required String result,
@@ -345,16 +318,22 @@ class FreeBoardRobot {
     await $(FreeBoardKeys.endPanel).waitUntilVisible();
     expectText(_text(FreeBoardKeys.endReason), reason);
     expectText(_text(FreeBoardKeys.endResult), result);
-    // O cartão do resultado fecha: o tabuleiro, os relógios e os lances
-    // ficam à vista, com o resultado no painel de baixo.
-    await closeResult();
   }
 
-  /// Fecha o cartão do resultado, se estiver aberto.
-  Future<void> closeResult() async {
-    if (find.byKey(FreeBoardKeys.resultClose).evaluate().isEmpty) return;
-    await $(FreeBoardKeys.resultClose).tap();
-    await $.pumpAndSettle();
+  /// Etapa [stage] de um speedrun aberta no tabuleiro e ainda em jogo (a
+  /// anterior foi trocada por ela).
+  Future<void> waitStage(int stage) async {
+    bool ready() {
+      final boards = find.byKey(FreeBoardKeys.board).evaluate();
+      if (boards.length != 1) return false;
+      final state = boards.single.read<FreeBoardCubit>().state;
+      return state.mode.speedrunStage == stage && state.end == null;
+    }
+
+    for (var i = 0; i < 100 && !ready(); i++) {
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    expect(ready(), isTrue, reason: 'a etapa $stage não abriu');
   }
 
   String? _text(Key key) => $.tester.widget<Text>(find.byKey(key)).data;

@@ -7,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/home_cubit.dart';
+import '../../core/theme/app_motion.dart';
 
 /// O jogador no alto da tela inicial: o apelido e a faixa, e o rating em
 /// destaque com a variação da última partida. Tocar abre os detalhes do
@@ -91,10 +92,8 @@ class PlayerCard extends StatelessWidget {
                       // rating novo.
                       TweenAnimationBuilder<double>(
                         tween: Tween(end: rating.toDouble()),
-                        duration: MediaQuery.disableAnimationsOf(context)
-                            ? Duration.zero
-                            : const Duration(milliseconds: 900),
-                        curve: Curves.easeOutCubic,
+                        duration: AppMotion.of(context).celebrate,
+                        curve: AppMotion.enter,
                         builder: (context, value, _) => RatingValue(
                           rating: value.round(),
                           change: state.ratingChange,

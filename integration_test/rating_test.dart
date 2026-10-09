@@ -5,6 +5,7 @@ import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
 import 'robots/app_robot.dart';
+import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/progress_robot.dart';
@@ -42,7 +43,7 @@ void main() {
       await board.resign();
     }
     await ProgressRobot($).expectRatingChanged();
-    await board.leave();
+    await ConclusionRobot($).close();
     await HomeRobot($).expectVisible();
   }
 
@@ -171,8 +172,8 @@ void main() {
     final (from, to) = E2EJourneyRepository.mate;
     await board.move(from, to);
     await progress.expectRatingChanged();
-    // Partida, speedrun e lista: de volta à tela inicial.
-    await board.leave();
+    // Conclusão da etapa, speedrun e lista: de volta à tela inicial.
+    await ConclusionRobot($).close();
     for (var screen = 0; screen < 2; screen++) {
       await speedrun.back();
     }

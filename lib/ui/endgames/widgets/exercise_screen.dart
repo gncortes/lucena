@@ -23,6 +23,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
+import '../../core/theme/app_motion.dart';
 
 /// Um exercício: o Viktor dá o enunciado, o aluno acha os lances no
 /// tabuleiro; no fim, a solução, as estrelas ganhas e o próximo exercício.
@@ -51,7 +52,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   late final _shake = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 380),
+    duration: AppMotion.component,
   );
 
   /// O lance errado fica um instante no tabuleiro, em vermelho.
@@ -201,6 +202,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TeacherSpeech(
+              speechContext: SpeechContext.teaching,
               teacher: viktor,
               text: state.speech,
               emotion: state.emotion,
@@ -406,7 +408,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               children: [
                 Icon(
                   exercise.goal == PositionGoal.win
-                      ? Icons.flag_rounded
+                      ? Icons.emoji_events_outlined
                       : Icons.shield_outlined,
                   size: 20,
                   color: colors.onSurfaceVariant,

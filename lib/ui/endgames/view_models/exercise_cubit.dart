@@ -14,6 +14,8 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../school/view_models/lesson_cubit.dart';
 import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/haptic_event.dart';
+import '../../core/sound/game_haptics.dart';
 
 /// Em que pé está o exercício.
 enum ExercisePhase {
@@ -150,6 +152,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._progress,
     required this._characters,
     this._sounds,
+    this._haptics,
     this.replyDelay = const Duration(milliseconds: 450),
   }) : super(const ExerciseState());
 
@@ -159,6 +162,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
 
   // Os sons do jogo; nulo: o exercício fica mudo.
   final GameSounds? _sounds;
+
+  // A vibração; nula: sem retorno tátil.
+  final GameHaptics? _haptics;
 
   /// A pausa antes da resposta do outro lado.
   final Duration replyDelay;
@@ -247,6 +253,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final played = GameRules.play(position, move);
     if (played == null) return;
     unawaited(_sounds?.move(played.san));
+    unawaited(_haptics?.move(played.san));
     final turn = step.line[state.turn];
     final ends = LessonRules.endsLine(step, state.turn, move.uci);
     if (ends) {
@@ -321,6 +328,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }
 
   Future<void> _solve(String fen, Move move) async {
+    unawaited(_haptics?.play(HapticEvent.success));
     final lesson = state.lesson!;
     final exercise = state.exercise!;
     final earned = EndgameLessonRules.earned(

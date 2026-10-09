@@ -63,7 +63,7 @@ class BoardAppearanceScreen extends StatelessWidget {
                       ),
                       SwitchListTile(
                         key: BoardSettingsKeys.coordinatesSwitch,
-                        secondary: const Icon(Icons.grid_on_outlined),
+                        secondary: const Icon(Icons.abc_rounded),
                         title: Text(l10n.boardCoordinates),
                         value: board.coordinates,
                         onChanged: (value) =>

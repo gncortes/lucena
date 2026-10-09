@@ -8,6 +8,7 @@ import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/maia_debug_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Tela de depuração do Maia (só em build de desenvolvimento e de teste):
 /// avalia uma posição num nível e mostra o que o modelo respondeu e em quanto
@@ -141,7 +142,7 @@ class _Timing extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: theme.colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppShape.medium),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -216,7 +217,7 @@ class _Result extends StatelessWidget {
                 ),
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                     child: LinearProgressIndicator(
                       value: probability,
                       minHeight: 8,

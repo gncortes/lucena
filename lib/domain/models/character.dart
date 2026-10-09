@@ -49,7 +49,15 @@ enum LineCategory {
   drawAccepted,
 
   /// O jogador propôs empate e o personagem recusou.
-  drawDeclined;
+  drawDeclined,
+
+  /// O jogador tinha mate forçado e o adiou ou deixou escapar: o personagem
+  /// debocha e tenta convencê-lo de que aquilo é empate.
+  mateDelayed,
+
+  /// Acabou empatado depois de o jogador ter tido mate na mão: "eu sabia
+  /// que era empate, e você não aceitou".
+  toldYouDraw;
 
   /// A categoria de um código do JSON; desconhecida vira null, para dados
   /// novos não quebrarem versões antigas do app.

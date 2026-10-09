@@ -1,5 +1,7 @@
-/// Avisos por vibração.
+import '../../../domain/models/haptic_event.dart';
+
+/// O retorno tátil do app.
 abstract class HapticsRepository {
-  /// O tempo de quem joga ficou curto.
-  Future<void> lowTime();
+  /// Vibra do jeito de [event].
+  Future<void> play(HapticEvent event);
 }

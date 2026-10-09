@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
+import 'package:lucena/ui/core/keys/rating_keys.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
@@ -215,5 +217,23 @@ void main() {
       nicknameField(tester).controller!.text,
       hasLength(UserProfile.maxNicknameLength),
     );
+  });
+
+  testWidgets('o cartão do rating tem a explicação no ⓘ, não fixa', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+    final l10n = AppLocalizations.of(
+      tester.element(find.byKey(ProfileKeys.ratingCard)),
+    );
+
+    expect(find.text(l10n.profileRatingHint), findsNothing);
+    await tester.ensureVisible(find.byKey(ProfileKeys.ratingHelp));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ProfileKeys.ratingHelp));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.helpText), findsOneWidget);
+    expect(find.text(l10n.profileRatingHint), findsOneWidget);
   });
 }

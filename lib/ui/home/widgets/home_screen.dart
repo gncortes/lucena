@@ -17,6 +17,7 @@ import 'home_path_ui.dart';
 import 'path_card.dart';
 import 'player_card.dart';
 import 'where_card.dart';
+import '../../core/theme/app_motion.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
   CurvedAnimation _stage(double begin, double end) {
     return CurvedAnimation(
       parent: _entrance,
-      curve: Interval(begin, end, curve: Curves.easeOutCubic),
+      curve: Interval(begin, end, curve: AppMotion.enter),
     );
   }
 
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Quem pediu menos movimento ao sistema vê a tela pronta, sem animação.
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (AppMotion.of(context).disabled) {
       _entrance.value = 1;
     } else if (_entrance.isDismissed) {
       _entrance.forward();
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     IconButton(
                       key: HomeKeys.achievementsButton,
-                      icon: const Icon(Icons.emoji_events_outlined),
+                      icon: const Icon(Icons.military_tech_outlined),
                       tooltip: l10n.homeAchievements,
                       onPressed: () => context.go(Routes.achievements),
                     ),
@@ -301,10 +302,8 @@ class _UnlockedCard extends StatelessWidget {
     final cubit = context.read<HomeCubit>();
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.85, end: 1),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 600),
-      curve: Curves.elasticOut,
+      duration: AppMotion.of(context).celebrate,
+      curve: AppMotion.bounce,
       builder: (context, value, child) =>
           Transform.scale(scale: value, child: child),
       child: Card(

@@ -5,7 +5,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from make_source import after, exercise, move, play, talk, write  # noqa: E402
+from make_source import (after, demo, exercise, move, play, talk,  # noqa: E402
+                         think, write)
 
 B = '1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1'  # Philidor, pretas jogam
 W = '1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1'  # Philidor, brancas jogam
@@ -35,26 +36,50 @@ REFERENCES = [
 write({
     'id': 'queen.vsRook.philidor',
     'module': 'queen',
-    'steps': [
-        talk('intro', B, arrows=['a5a8', 'c6c7'], marks=['a7', 'a8', 'c7']),
-        talk('near', B, arrows=['b7a7', 'b7c7', 'b7d7', 'b7b6', 'b7b5', 'b7b4']),
-        move('pin', after(B, 'Kc8'), 'Qa6 Kb8 Qxb7#', accept={2: 'only'}),
-        talk('far', B, marks=['b1', 'b2', 'b3', 'e7', 'f7', 'g7', 'h7']),
-        move('fork', after(B, 'Rg7'), 'Qe5+ Ka7 Qxg7+'),
-        move('efile', after(B, 'Re7'), 'Qb4+ Ka8 Qxe7'),
-        move('ladder', after(B, 'Rh7'), 'Qe5+ Ka8 Qa1+ Kb8 Qb1+ Kc8 Qxh7'),
-        move('rf7', after(B, 'Rf7'), 'Qe5+ Ka7 Qe3+ Ka8 Qe8+ Ka7 Qxf7+'),
-        move('rb1', after(B, 'Rb1'),
-             'Qe5+ Ka7 Qd4+ Ka8 Qh8+ Ka7 Qh7+ Ka6 Qxb1'),
-        talk('white', W, arrows=['a5e5', 'e5a1', 'a1a5']),
-        move('triangle', W, 'Qe5+ Ka8 Qa1+ Kb8 Qa5',
-             accept={1: ['Qe5+', 'Qd5']}),
-        talk('squeeze', '1k6/2r5/QK6/8/8/8/8/8 b - - 0 1', arrows=['c7c6'],
-             marks=['c6']),
-        talk('false', '1k6/1r6/K7/2Q5/8/8/8/8 b - - 0 1', arrows=['b7d7'],
-             marks=['a6', 'c6']),
-        talk('recap', B, arrows=['a5e5'], marks=['c6', 'a5', 'b7', 'b8']),
-        play('finish', W),
+    'parts': [
+        {'id': 'philidor', 'steps': [
+            think('t_philidor', B, 5, 2, marks=['a7', 'a8', 'c7']),
+            talk('intro', B, arrows=['a5a8', 'c6c7'], marks=['a7', 'a8', 'c7']),
+            talk('near', B,
+                 arrows=['b7a7', 'b7c7', 'b7d7', 'b7b6', 'b7b5', 'b7b4']),
+            move('pin', after(B, 'Kc8'), 'Qa6 Kb8 Qxb7#', accept={2: 'only'}),
+        ]},
+        {'id': 'fork', 'steps': [
+            think('t_fork', after(B, 'Rg7'), 3, 2, marks=['b8', 'g7'],
+                  ask='line'),
+            talk('far', B, marks=['b1', 'b2', 'b3', 'e7', 'f7', 'g7', 'h7']),
+            demo('d_fork', after(B, 'Rg7'), 'Qe5+ Ka7 Qxg7+',
+                 notes={1: {'arrows': ['e5b8', 'e5g7']}}),
+            move('efile', after(B, 'Re7'), 'Qb4+ Ka8 Qxe7'),
+        ]},
+        {'id': 'ladder', 'steps': [
+            think('t_ladder', after(B, 'Rh7'), 3, 2, marks=['h7'], ask='line'),
+            demo('d_ladder', after(B, 'Rh7'), 'Qe5+ Ka8 Qa1+ Kb8 Qb1+ Kc8 Qxh7',
+                 notes={1: {'arrows': ['e5b8']}, 3: {'arrows': ['a1a8']},
+                        5: {'arrows': ['b1b8', 'b1h7']}}),
+            demo('d_rf7', after(B, 'Rf7'), 'Qe5+ Ka7 Qe3+ Ka8 Qe8+ Ka7 Qxf7+',
+                 notes={1: {'arrows': ['e5b8']}, 3: {'arrows': ['e3a7']},
+                        5: {'arrows': ['e8a8', 'e8f7']}}),
+            move('rb1', after(B, 'Rb1'),
+                 'Qe5+ Ka7 Qd4+ Ka8 Qh8+ Ka7 Qh7+ Ka6 Qxb1'),
+        ]},
+        {'id': 'triangle', 'steps': [
+            think('t_triangle', W, 5, 2, marks=['a5']),
+            talk('white', W, arrows=['a5e5', 'e5a1', 'a1a5']),
+            demo('d_triangle', W, 'Qe5+ Ka8 Qa1+ Kb8 Qa5',
+                 notes={1: {'arrows': ['e5b8']}, 3: {'arrows': ['a1a8']},
+                        5: {'marks': ['a5']}}),
+            move('triangle', W, 'Qe5+ Ka8 Qa1+ Kb8 Qa5',
+                 accept={1: ['Qe5+', 'Qd5']}),
+        ]},
+        {'id': 'traps', 'steps': [
+            talk('squeeze', '1k6/2r5/QK6/8/8/8/8/8 b - - 0 1', arrows=['c7c6'],
+                 marks=['c6']),
+            talk('false', '1k6/1r6/K7/2Q5/8/8/8/8 b - - 0 1', arrows=['b7d7'],
+                 marks=['a6', 'c6']),
+            talk('recap', B, arrows=['a5e5'], marks=['c6', 'a5', 'b7', 'b8']),
+            play('finish', W),
+        ]},
     ],
     'exercises': [
         exercise('e01', 1, W, 'Qe5+', accept={1: ['Qe5+', 'Qd5']},

@@ -2,13 +2,24 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_shape.dart';
+
 /// O rating partida a partida, num gráfico de linha com a escala ao lado.
 /// Tocar ou arrastar o dedo mostra o rating daquela partida.
 class RatingChart extends StatefulWidget {
-  const RatingChart({required this.ratings, this.height = 200, super.key});
+  const RatingChart({
+    required this.ratings,
+    this.height = 200,
+    this.highlighted,
+    super.key,
+  });
 
   /// Da partida mais antiga para a mais recente.
   final List<double> ratings;
+
+  /// A partida em destaque (o índice em [ratings]): um anel maior e o rating
+  /// dela no balão, enquanto o dedo não marca outra. Nula: nenhuma.
+  final int? highlighted;
   final double height;
 
   @override
@@ -60,6 +71,7 @@ class _RatingChartState extends State<RatingChart> {
                 painter: _Plot(
                   widget.ratings,
                   selected: _selected,
+                  highlighted: widget.highlighted,
                   line: colors.primary,
                   surface: theme.cardTheme.color ?? colors.surfaceContainerLow,
                   grid: colors.outlineVariant,
@@ -91,6 +103,7 @@ class _Plot extends CustomPainter {
   _Plot(
     this.values, {
     required this.selected,
+    required this.highlighted,
     required this.line,
     required this.surface,
     required this.grid,
@@ -101,6 +114,7 @@ class _Plot extends CustomPainter {
 
   final List<double> values;
   final int? selected;
+  final int? highlighted;
   final Color line;
   final Color surface;
   final Color grid;
@@ -194,8 +208,41 @@ class _Plot extends CustomPainter {
     }
     marker(values.length - 1, radius: 5);
 
+    // O rating de uma partida no balão do topo, acima da marca dela.
+    void bubbleAt(int index) {
+      final at = point(index);
+      final text = _text('${values[index].round()}', bubbleText);
+      final width = text.width + 16;
+      final left = (at.dx - width / 2).clamp(0.0, size.width - width);
+      final box = RRect.fromRectAndRadius(
+        Rect.fromLTWH(left, 0, width, text.height + 6),
+        const Radius.circular(AppShape.small),
+      );
+      canvas.drawRRect(box, Paint()..color = bubble);
+      text.paint(canvas, Offset(left + 8, 3));
+    }
+
+    // A partida em destaque: um anel em volta de uma marca maior.
+    final highlighted = this.highlighted;
+    final hasHighlight = highlighted != null && highlighted < values.length;
+    if (hasHighlight) {
+      canvas.drawCircle(
+        point(highlighted),
+        10,
+        Paint()
+          ..color = line
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+      marker(highlighted, radius: 6);
+    }
+
     final selected = this.selected;
-    if (selected == null || selected >= values.length) return;
+    if (selected == null || selected >= values.length) {
+      // Sem o dedo, o balão fica com a partida em destaque.
+      if (hasHighlight) bubbleAt(highlighted);
+      return;
+    }
     // A partida debaixo do dedo: a linha de guia, a marca e o rating dela.
     final at = point(selected);
     canvas.drawLine(
@@ -206,15 +253,7 @@ class _Plot extends CustomPainter {
         ..strokeWidth = 1,
     );
     marker(selected, radius: 6);
-    final text = _text('${values[selected].round()}', bubbleText);
-    final width = text.width + 16;
-    final left = (at.dx - width / 2).clamp(0.0, size.width - width);
-    final box = RRect.fromRectAndRadius(
-      Rect.fromLTWH(left, 0, width, text.height + 6),
-      const Radius.circular(8),
-    );
-    canvas.drawRRect(box, Paint()..color = bubble);
-    text.paint(canvas, Offset(left + 8, 3));
+    bubbleAt(selected);
   }
 
   // O intervalo entre as linhas da grade: redondo, com poucas linhas.
@@ -234,6 +273,7 @@ class _Plot extends CustomPainter {
   bool shouldRepaint(_Plot old) =>
       old.values != values ||
       old.selected != selected ||
+      old.highlighted != highlighted ||
       old.line != line ||
       old.surface != surface ||
       old.grid != grid;

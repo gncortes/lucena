@@ -2,6 +2,17 @@ import 'package:flutter/widgets.dart';
 
 /// A trilha das aulas de finais.
 abstract final class EndgamesKeys {
+  /// O teste de nível (T52): a entrada, o próximo final e os selos.
+  static const placementTest = Key('endgames.placementTest');
+  static const nextEndgame = Key('endgames.nextEndgame');
+
+  /// O filtro "Para você" / "Todos".
+  static const filter = Key('endgames.filter');
+  static const forYou = Key('endgames.filter.forYou');
+  static const all = Key('endgames.filter.all');
+  static const forYouEmpty = Key('endgames.forYouEmpty');
+  static Key badge(String lessonId) => Key('endgames.badge.$lessonId');
+
   static const screen = Key('endgames.screen');
   static const continueButton = Key('endgames.continue');
   static const overview = Key('endgames.overview');
@@ -13,6 +24,16 @@ abstract final class EndgamesKeys {
 
 /// Uma aula de final: a lição, os exercícios, a nota e o passo final.
 abstract final class EndgameLessonKeys {
+  /// T51: a tela da aula com as partes, o teste final e o "Continuar".
+  static const list = Key('endgameLesson.list');
+  static const progressLine = Key('endgameLesson.progressLine');
+  static Key part(String id) => Key('endgameLesson.part.$id');
+  static const finalTest = Key('endgameLesson.finalTest');
+  static const finalTestSummary = Key('endgameLesson.finalTest.summary');
+  static const testAdvice = Key('endgameLesson.finalTest.advice');
+  static const testFeedback = Key('endgameLesson.finalTest.feedback');
+  static const continueButton = Key('endgameLesson.continue');
+
   static const screen = Key('endgameLesson.screen');
   static const missing = Key('endgameLesson.missing');
   static const speech = Key('endgameLesson.speech');
@@ -24,7 +45,6 @@ abstract final class EndgameLessonKeys {
   static const passed = Key('endgameLesson.passed');
   static const failed = Key('endgameLesson.failed');
   static const redoButton = Key('endgameLesson.redo');
-  static const finalLocked = Key('endgameLesson.final.locked');
   static const finalStep = Key('endgameLesson.final');
   static const speedrunButton = Key('endgameLesson.speedrun');
   static const trainButton = Key('endgameLesson.train');

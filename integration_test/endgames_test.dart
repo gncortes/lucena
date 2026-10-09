@@ -29,7 +29,7 @@ void main() {
     final lesson = await endgames.lesson(_lessonId);
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
-    await endgames.expectFinalLocked();
+    await endgames.expectFinalStep();
 
     await endgames.openSteps();
     await endgames.completeSteps(lesson, play: _play);
@@ -82,7 +82,7 @@ void main() {
     await endgames.solveAll(lesson, hints: 1);
     await endgames.expectFailed();
     endgames.expectScore('11 of 23 stars');
-    await endgames.expectFinalLocked();
+    await endgames.expectFinalStep();
 
     await endgames.redo();
     endgames.expectScore('0 of 23 stars');

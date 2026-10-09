@@ -22,6 +22,8 @@ import 'custom_pace_sheet.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -299,7 +301,7 @@ class _OpponentPicker extends StatelessWidget {
               child: ListTile(
                 key: GameSetupKeys.opponent(kind),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppShape.large),
                 ),
                 selected: state.setup.opponent == kind,
                 selectedTileColor: colors.secondaryContainer,
@@ -308,9 +310,9 @@ class _OpponentPicker extends StatelessWidget {
                 title: Text(kind.label(l10n)),
                 subtitle: Text(kind.hint(l10n)),
                 trailing: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.state,
                   child: state.setup.opponent == kind
-                      ? const Icon(Icons.check_circle, key: ValueKey('on'))
+                      ? const Icon(Icons.check, key: ValueKey('on'))
                       : const SizedBox.square(
                           dimension: 24,
                           key: ValueKey('off'),
@@ -320,8 +322,8 @@ class _OpponentPicker extends StatelessWidget {
               ),
             ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
+            duration: AppMotion.state,
+            curve: AppMotion.enter,
             alignment: Alignment.topCenter,
             child: state.setup.opponent == OpponentKind.maia
                 ? _LevelPicker(state: state)
@@ -390,7 +392,7 @@ class _LevelPicker extends StatelessWidget {
                       ),
                       if (level == state.suggestedLevel) ...[
                         const SizedBox(width: 4),
-                        const Icon(Icons.star_rounded, size: 16),
+                        const Icon(Icons.recommend_rounded, size: 16),
                       ],
                     ],
                   ),
@@ -403,7 +405,7 @@ class _LevelPicker extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.star_rounded,
+                Icons.recommend_rounded,
                 size: 16,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -444,7 +446,7 @@ class _ClockSection extends StatelessWidget {
       children: [
         SwitchListTile(
           key: GameSetupKeys.clockSwitch,
-          secondary: const Icon(Icons.timer_outlined),
+          secondary: const Icon(Icons.av_timer_outlined),
           title: Text(l10n.clockUse),
           value: setup.clock,
           onChanged: (value) => cubit.setClock(enabled: value),

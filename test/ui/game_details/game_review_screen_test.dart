@@ -224,6 +224,32 @@ void main() {
     expect(find.byKey(GameDetailsKeys.evalBar), findsNothing);
   });
 
+  testWidgets('revisão rápida feita: ela aparece marcada e sem toque; a '
+      'média e a profunda continuam', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
+
+    final quick = tester.widget<ButtonStyleButton>(
+      find.byKey(GameDetailsKeys.reviewQuick),
+    );
+    expect(quick.onPressed, isNull);
+    expect(
+      find.descendant(
+        of: find.byKey(GameDetailsKeys.reviewQuick),
+        matching: find.byIcon(Icons.check_rounded),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<ButtonStyleButton>(find.byKey(GameDetailsKeys.reviewButton))
+          .onPressed,
+      isNotNull,
+    );
+  });
+
   testWidgets('antes de revisar: as três opções, e a precisão só depois', (
     tester,
   ) async {

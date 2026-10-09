@@ -10,31 +10,28 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/pace.dart';
-import '../../../domain/models/game_mode.dart';
-import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/game_rules.dart';
-import '../../../domain/use_cases/mastery.dart';
-import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/celebration.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
 import '../view_models/talk_cubit.dart';
+import '../../conclusion/view_models/conclusion_cubit.dart';
+import '../../../domain/models/conclusion.dart';
+import '../../../domain/use_cases/conclusion_rules.dart';
 import 'clock_row.dart';
 import 'character_bar.dart';
 import 'clock_sheet.dart';
-import 'versus_intro.dart';
+import '../../core/widgets/versus_intro.dart';
 import 'move_list.dart';
-import 'report_panel.dart';
-import '../../achievements/widgets/achievement_toast.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/opponent/opponent_ui.dart';
 
 class FreeBoardScreen extends StatefulWidget {
   const FreeBoardScreen({super.key});
@@ -54,19 +51,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // os tempos sejam refeitos pelo instante atual.
   late final Timer _clockRefresh;
 
-  // O cartão do resultado, aberto quando a partida termina nesta tela. Fechado,
-  // o resultado fica no painel embaixo do tabuleiro.
-  bool _resultOpen = false;
+  // A partida contra a máquina acabou: o resultado em destaque por um
+  // instante, antes da troca para a tela de conclusão (T51, B4).
+  bool _concluding = false;
 
   // O dedo está no tabuleiro: a tela não rola enquanto isso.
   bool _touchingBoard = false;
 
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
-
-  // Maratona: a etapa foi perdida (ou empatada); o painel pergunta se tenta
-  // de novo ou sai.
-  bool _marathonLost = false;
 
   @override
   void initState() {
@@ -242,24 +235,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             ),
           ),
         child: BlocListener<FreeBoardCubit, FreeBoardState>(
-          // A partida terminou agora: o cartão do resultado abre, como no
-          // chess.com. Partida nova: ele fecha.
-          // Na Maratona não há resultado no meio: a etapa seguinte (ou a
-          // mesma, depois de uma derrota) abre sozinha.
+          // A partida contra a máquina terminou agora: a tela de conclusão
+          // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
+          // fica embaixo do tabuleiro.
           listenWhen: (previous, current) => previous.end != current.end,
           listener: (context, state) {
-            if (state.end != null && state.mode.isMarathon) {
-              // Venceu: a etapa seguinte (ou o resumo, no fim) abre
-              // sozinha. Perdeu, empatou ou o tempo acabou: fim da
-              // Maratona, e o painel pergunta se tenta de novo.
-              if (state.fulfilled ?? false) {
-                unawaited(_newGame(context, cubit, state.mode));
-              } else {
-                setState(() => _marathonLost = true);
-              }
-              return;
-            }
-            setState(() => _resultOpen = state.end != null);
+            if (state.end == null || !state.mode.opponent.isMachine) return;
+            unawaited(_conclude(context, cubit, state));
           },
           child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
             // O tabuleiro só é refeito quando a partida muda, não a cada tique do
@@ -371,13 +353,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 ),
                 IconButton(
                   key: FreeBoardKeys.clockButton,
-                  icon: const Icon(Icons.timer_outlined),
+                  icon: const Icon(Icons.av_timer_outlined),
                   tooltip: context.l10n.freeBoardClock,
                   onPressed: _pickClock,
                 ),
                 IconButton(
                   key: FreeBoardKeys.newGameButton,
-                  icon: const Icon(Icons.restart_alt),
+                  icon: const Icon(Icons.add),
                   tooltip: context.l10n.freeBoardNewGame,
                   onPressed: cubit.newGame,
                 ),
@@ -484,23 +466,41 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                     cubit.play(move),
                               ),
                             ),
-                            // A etapa nova da Maratona: você contra ele, a contagem e só
-                            // então o relógio corre.
-                            if (state.held && character != null)
+                            // Toda partida nova contra a máquina abre com o
+                            // versus (na Maratona, com a contagem); só então
+                            // o relógio corre.
+                            if (state.held)
                               Positioned.fill(
                                 child: VersusIntro(
                                   playerName: nickname.isEmpty
                                       ? context.l10n.profileNicknameDefault
                                       : nickname,
-                                  opponentName: character.name,
+                                  opponentName:
+                                      character?.name ??
+                                      state.mode.opponent.label(
+                                        context.l10n,
+                                        level: state.mode.level,
+                                      ),
                                   opponentRating: talk.isEngine
                                       ? null
                                       : state.mode.level,
-                                  opponentAvatar: CharacterAvatar(
-                                    character: character,
-                                    size: 64,
-                                  ),
-                                  stage: (state.mode.speedrunStage ?? 0) + 1,
+                                  opponentAvatar: character == null
+                                      ? const ColoredBox(
+                                          color: Color(0xFF312E2B),
+                                          child: Icon(
+                                            Icons.smart_toy_outlined,
+                                            color: Colors.white,
+                                            size: 32,
+                                          ),
+                                        )
+                                      : CharacterAvatar(
+                                          character: character,
+                                          size: 64,
+                                        ),
+                                  countdown: state.mode.isMarathon,
+                                  stage: state.mode.isMarathon
+                                      ? (state.mode.speedrunStage ?? 0) + 1
+                                      : null,
                                   playerSide:
                                       state.playerSide ?? state.orientation,
                                   onDone: cubit.release,
@@ -523,45 +523,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           board: boardSettings,
                           talk: talk,
                         ),
-                      // Embaixo do tabuleiro: o fim da partida (com o rating e
-                      // as mensagens).
-                      if (end != null && !_resultOpen)
-                        _end(context, cubit, state, end, card: false),
-                      if (state.report case final report?)
-                        ReportPanel(report: report),
+                      // Embaixo do tabuleiro: o fim da partida de dois.
+                      if (end != null && !state.mode.opponent.isMachine)
+                        _TwoPlayersEnd(end: end, onNewGame: cubit.newGame),
                     ],
                   ),
                 ),
-                if (end != null && _marathonLost)
+                // O resultado em destaque, antes da conclusão.
+                if (end != null && _concluding)
                   Positioned.fill(
-                    child: _ResultOverlay(
-                      // Só os botões decidem: tocar fora não fecha.
-                      onClose: () {},
-                      child: _MarathonLost(
-                        draw: end.winner == null,
-                        stage: (state.mode.speedrunStage ?? 0) + 1,
-                        onRetry: () {
-                          setState(() => _marathonLost = false);
-                          unawaited(_newGame(context, cubit, state.mode));
-                        },
-                        onSummary: () => _marathonSummary(cubit, state.mode),
-                      ),
+                    child: IgnorePointer(
+                      child: _EndFlash(end: end, userSide: state.mode.userSide),
                     ),
-                  ),
-                if (end != null && _resultOpen)
-                  Positioned.fill(
-                    child: _ResultOverlay(
-                      onClose: () => setState(() => _resultOpen = false),
-                      child: _end(context, cubit, state, end, card: true),
-                    ),
-                  ),
-                // A conquista nova avisa por cima de tudo, como um troféu.
-                if (state.report case final report?
-                    when report.achievements.isNotEmpty)
-                  AchievementToasts(
-                    key: ObjectKey(report),
-                    achievements: report.achievements,
-                    characters: report.characters,
                   ),
               ],
             );
@@ -571,200 +544,118 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  Widget _end(
-    BuildContext context,
-    FreeBoardCubit cubit,
-    FreeBoardState state,
-    GameEnd end, {
-    required bool card,
-  }) {
-    final mode = state.mode;
-    final next = state.report?.next;
-    return _End(
-      end: end,
-      userSide: mode.opponent.isMachine ? mode.userSide : null,
-      fulfilled: state.fulfilled,
-      speedrun: mode.isSpeedrun,
-      report: state.report,
-      card: card,
-      onClose: () => setState(() => _resultOpen = false),
-      onNewGame: () => _newGame(context, cubit, mode),
-      onNext: next == null ? null : () => _nextChallenge(context, cubit, next),
-      // Só as partidas de uma posição ficam no histórico; no speedrun o
-      // relógio da tentativa corre: a revisão fica para depois.
-      onReview: mode.positionId == null || mode.isSpeedrun
-          ? null
-          : () => _review(context, cubit),
-    );
-  }
-
   static bool _ultraBullet(FreeBoardState state) {
     final time = state.clock?.config.of(state.mode.userSide ?? Side.white);
     return time != null && PaceCategory.of(time) == PaceCategory.ultraBullet;
   }
 
-  // Depois de perder na Maratona: o resumo da tentativa (que já terminou),
-  // até onde ela chegou.
-  Future<void> _marathonSummary(FreeBoardCubit cubit, GameMode mode) async {
-    await cubit.saved();
-    if (!mounted) return;
-    setState(() => _quitting = true);
-    final step = cubit.state.report?.speedrun;
-    context.go(
-      Routes.speedrunAttempt(
-        step?.speedrunId ?? mode.speedrunId!,
-        step?.attemptId ?? mode.speedrunAttemptId!,
-        game: context.read<Now>()().millisecondsSinceEpoch,
-      ),
-    );
-  }
-
-  // Os detalhes da partida que acabou, para revisá-la com a engine.
-  Future<void> _review(BuildContext context, FreeBoardCubit cubit) async {
-    final id = await cubit.savedGameId();
-    if (id == null || !context.mounted) return;
-    unawaited(context.push(Routes.game(id)));
-  }
-
-  Future<void> _newGame(
+  // A partida acabou: um instante com o resultado em destaque e a tela de
+  // conclusão no lugar desta (voltar dela leva para antes da partida). Na
+  // Maratona, a etapa vencida segue direto para a próxima, sem conclusão.
+  Future<void> _conclude(
     BuildContext context,
     FreeBoardCubit cubit,
-    GameMode mode,
+    FreeBoardState state,
   ) async {
-    if (!mode.isSpeedrun) {
-      cubit.newGame();
-      return;
-    }
-    // No speedrun, o botão segue direto: a próxima etapa (ou a mesma, se foi
-    // perdida) abre no lugar desta; com todas vencidas, o resumo da
-    // tentativa. O passo seguinte sai do histórico: a partida precisa estar
-    // gravada antes.
-    await cubit.saved();
-    if (!context.mounted) return;
+    final pause = AppMotion.of(context).disabled ? Duration.zero : _flashTime;
+    final marathonWin = state.mode.isMarathon && (state.fulfilled ?? false);
+    if (!marathonWin) setState(() => _concluding = true);
+    await Future.wait([cubit.saved(), Future<void>.delayed(pause)]);
+    if (!context.mounted || cubit.state.end == null) return;
     final step = cubit.state.report?.speedrun;
-    final challenge = step?.challenge;
-    if (step == null || challenge == null) {
-      context.go(
-        Routes.speedrunAttempt(
-          step?.speedrunId ?? mode.speedrunId ?? '',
-          step?.attemptId ?? mode.speedrunAttemptId!,
-          game: context.read<Now>()().millisecondsSinceEpoch,
+    final next = step?.challenge;
+    if (marathonWin && step != null && next != null) {
+      setState(() => _quitting = true);
+      context.pushReplacement(
+        Routes.challengeGame(
+          next,
+          speedrunId: step.speedrunId,
+          attemptId: step.attemptId,
+          stage: step.stage,
+          userTime: step.userTime,
         ),
       );
       return;
     }
-    // Perdeu: a tentativa já terminou; "Tentar novamente" é uma nova, da
-    // primeira etapa.
-    final attemptId = step.lost
-        ? await cubit.restartSpeedrun(step.speedrunId)
-        : step.attemptId;
-    if (attemptId == null || !context.mounted) return;
+    final recorded =
+        state.mode.positionId != null &&
+        state.outcome != null &&
+        state.fulfilled != null;
+    final id = recorded ? await cubit.savedGameId() : null;
+    if (!context.mounted) return;
     setState(() => _quitting = true);
+    if (id != null) {
+      context.pushReplacement(Routes.conclusion(id, fresh: true));
+      return;
+    }
+    // Sem gravar (posição personalizada): a conclusão vai pronta.
+    final talk = context.read<TalkCubit>().state;
+    final outcome = state.outcome;
     context.pushReplacement(
-      Routes.challengeGame(
-        challenge,
-        speedrunId: step.speedrunId,
-        attemptId: attemptId,
-        stage: step.stage,
-        userTime: step.userTime,
+      Routes.conclusionNow,
+      extra: ConclusionArgs(
+        conclusion: Conclusion(
+          kind: ConclusionKind.game,
+          result: outcome == null
+              ? ConclusionResult.draw
+              : ConclusionRules.resultOf(outcome),
+          actions: ConclusionRules.actionsFor(
+            ConclusionKind.game,
+            recorded: false,
+          ),
+          end: state.end,
+          userSide: state.mode.userSide,
+          fulfilled: state.fulfilled,
+          finalFen: state.position.fen,
+        ),
+        opponent: talk.character,
+        replay: GoRouterState.of(context).uri.toString(),
       ),
     );
   }
 
-  // Direto para a partida do próximo desafio, no lugar desta.
-  Future<void> _nextChallenge(
-    BuildContext context,
-    FreeBoardCubit cubit,
-    NextChallenge next,
-  ) async {
-    await cubit.saved();
-    if (!context.mounted) return;
-    // O próximo desafio no mesmo ritmo desta partida.
-    final time = cubit.state.clock?.config.white;
-    context.pushReplacement(
-      Routes.challengeGame(next.challenge.copyWith(time: time)),
-    );
-  }
+  /// Quanto o resultado fica em destaque antes da conclusão.
+  static const _flashTime = AppMotion.celebrate;
 }
 
-/// Maratona: perder ou empatar uma etapa encerra a tentativa. Tentar de novo
-/// começa uma nova, da primeira etapa; ou ver o resumo da que acabou.
-class _MarathonLost extends StatelessWidget {
-  const _MarathonLost({
-    required this.draw,
-    required this.stage,
-    required this.onRetry,
-    required this.onSummary,
-  });
+/// O resultado em destaque por um instante, no meio do tabuleiro, quando a
+/// partida contra a máquina acaba.
+class _EndFlash extends StatelessWidget {
+  const _EndFlash({required this.end, this.userSide});
 
-  final bool draw;
-
-  /// A etapa em que a Maratona terminou (a partir de 1).
-  final int stage;
-  final VoidCallback onRetry;
-  final VoidCallback onSummary;
+  final GameEnd end;
+  final Side? userSide;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 560),
-      child: Material(
-        key: FreeBoardKeys.marathonLost,
-        color: colors.surfaceContainerLow,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        elevation: 12,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Icon(
-                  draw ? Icons.handshake_outlined : Icons.flag_outlined,
-                  size: 44,
-                  color: colors.error,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  draw ? l10n.marathonDrawTitle : l10n.marathonLostTitle,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.marathonLostBody(stage),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                FilledButton.icon(
-                  key: FreeBoardKeys.marathonRetry,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                  icon: const Icon(Icons.replay),
-                  label: Text(l10n.speedrunRetry),
-                  onPressed: onRetry,
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton(
-                  key: FreeBoardKeys.marathonSummary,
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                  ),
-                  onPressed: onSummary,
-                  child: Text(l10n.marathonSummary),
-                ),
-              ],
+    final winner = end.winner;
+    final title = winner == null
+        ? l10n.conclusionDraw
+        : winner == userSide
+        ? l10n.resultYouWon
+        : l10n.resultYouLost;
+    return Center(
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.6, end: 1),
+        duration: AppMotion.of(context).screen,
+        curve: AppMotion.pop,
+        builder: (context, scale, child) =>
+            Transform.scale(scale: scale, child: child),
+        child: Container(
+          key: FreeBoardKeys.endFlash,
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+          decoration: BoxDecoration(
+            color: colors.inverseSurface.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(AppShape.large),
+          ),
+          child: Text(
+            title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: colors.onInverseSurface,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ),
@@ -773,126 +664,20 @@ class _MarathonLost extends StatelessWidget {
   }
 }
 
-/// O fundo escuro e o painel do resultado subindo de baixo por cima da
-/// partida. Tocar fora fecha e deixa ver o tabuleiro.
-class _ResultOverlay extends StatelessWidget {
-  const _ResultOverlay({required this.onClose, required this.child});
-
-  final VoidCallback onClose;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final instant = MediaQuery.disableAnimationsOf(context);
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: instant ? Duration.zero : const Duration(milliseconds: 250),
-      builder: (context, t, child) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onClose,
-        child: ColoredBox(
-          color: Colors.black.withValues(alpha: 0.5 * t),
-          child: child,
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: SingleChildScrollView(
-          // Tocar no painel não fecha.
-          child: GestureDetector(onTap: () {}, child: child),
-        ),
-      ),
-    );
-  }
-}
-
-/// O fim da partida: o motivo e o resultado, o objetivo, o rating novo com a
-/// variação (como no chess.com) e os botões de jogar de novo e, num desafio
-/// da Jornada, de ir para o próximo. [card]: o cartão animado que abre por
-/// cima da partida; senão, o painel embaixo do tabuleiro.
-class _End extends StatefulWidget {
-  const _End({
-    required this.end,
-    required this.userSide,
-    required this.fulfilled,
-    required this.speedrun,
-    required this.report,
-    required this.card,
-    required this.onClose,
-    required this.onNewGame,
-    required this.onNext,
-    this.onReview,
-  });
+/// O fim da partida de dois, embaixo do tabuleiro: o motivo, o resultado e
+/// "Nova partida".
+class _TwoPlayersEnd extends StatelessWidget {
+  const _TwoPlayersEnd({required this.end, required this.onNewGame});
 
   final GameEnd end;
-
-  /// O lado do jogador contra a máquina: o título fala "Você venceu". Nulo
-  /// no tabuleiro livre.
-  final Side? userSide;
-
-  /// A partida é uma etapa de speedrun: o botão volta para a tentativa.
-  final bool speedrun;
-
-  /// No treino: o objetivo foi cumprido. Nulo fora do treino.
-  final bool? fulfilled;
-
-  /// O rating e as mensagens; nulo enquanto é calculado ou fora do treino.
-  final GameReport? report;
-  final bool card;
-  final VoidCallback onClose;
   final VoidCallback onNewGame;
-
-  /// Ir para o próximo desafio da Jornada. Nulo quando não há.
-  final VoidCallback? onNext;
-
-  /// Abrir a partida para revisar. Nulo quando não dá (speedrun).
-  final VoidCallback? onReview;
-
-  @override
-  State<_End> createState() => _EndState();
-}
-
-class _EndState extends State<_End> with SingleTickerProviderStateMixin {
-  // A entrada do cartão: ele cresce, o ícone salta e o rating conta até o
-  // valor novo.
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1400),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.card) _controller.forward();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Com menos movimento pedido ao sistema, tudo já aparece no lugar.
-    if (!widget.card || MediaQuery.disableAnimationsOf(context)) {
-      _controller.value = 1;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Animation<double> _interval(double begin, double end, Curve curve) =>
-      CurvedAnimation(
-        parent: _controller,
-        curve: Interval(begin, end, curve: curve),
-      );
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final l10n = context.l10n;
-    final end = widget.end;
+    final onColor = colors.onSecondaryContainer;
     final reason = switch (end.reason) {
       GameEndReason.checkmate => l10n.freeBoardCheckmate,
       GameEndReason.stalemate => l10n.freeBoardStalemate,
@@ -910,365 +695,50 @@ class _EndState extends State<_End> with SingleTickerProviderStateMixin {
       Side.black => l10n.freeBoardBlackWins,
       null => l10n.freeBoardDraw,
     };
-    final again = Text(
-      widget.speedrun
-          // Venceu: a próxima etapa (ou o resumo, no fim). Perdeu: a mesma.
-          ? (widget.fulfilled ?? false)
-                ? l10n.speedrunContinue
-                : l10n.speedrunRetry
-          : widget.fulfilled == null
-          ? l10n.freeBoardNewGame
-          : l10n.resultPlayAgain,
-      textAlign: TextAlign.center,
-    );
-    final onNext = widget.onNext;
-    final buttons = [
-      if (onNext != null)
-        FilledButton.icon(
-          key: FreeBoardKeys.endNextButton,
-          onPressed: onNext,
-          icon: const Icon(Icons.skip_next_rounded),
-          label: Text(l10n.resultNextChallenge, textAlign: TextAlign.center),
-        ),
-      // No treino, a mesma posição com a mesma configuração.
-      if (onNext == null)
-        FilledButton(
-          key: FreeBoardKeys.endNewGameButton,
-          onPressed: widget.onNewGame,
-          child: again,
-        )
-      else
-        OutlinedButton(
-          key: FreeBoardKeys.endNewGameButton,
-          onPressed: widget.onNewGame,
-          child: again,
-        ),
-    ];
-    final onReview = widget.onReview;
-    final review = onReview == null
-        ? null
-        : OutlinedButton.icon(
-            key: FreeBoardKeys.endReviewButton,
-            onPressed: onReview,
-            icon: const Icon(Icons.insights),
-            label: Text(l10n.resultReview, textAlign: TextAlign.center),
-          );
-    final goal = switch (widget.fulfilled) {
-      final done? => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            done ? Icons.check_circle : Icons.cancel_outlined,
-            size: 18,
-            color: ChangeColors.of(context, up: done),
-          ),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              done ? l10n.resultFulfilled : l10n.resultNotFulfilled,
-              key: FreeBoardKeys.endGoal,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: ChangeColors.of(context, up: done),
-              ),
-            ),
-          ),
-        ],
-      ),
-      null => null,
-    };
-    final before = widget.report?.before?.rounded;
-    final after = widget.report?.after?.rounded;
-    Widget? rating(CrossAxisAlignment align, {required bool large}) {
-      if (before == null || after == null) return null;
-      final counting = _interval(0.35, 1, Curves.easeOutCubic);
-      return Semantics(
-        container: true,
-        label: ratingSemantics(context, after, after - before),
-        excludeSemantics: true,
-        child: Column(
-          key: FreeBoardKeys.ratingChange,
-          crossAxisAlignment: align,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              l10n.reportRatingLabel,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            AnimatedBuilder(
-              animation: counting,
-              builder: (context, _) => RatingValue(
-                // O número conta do rating antigo até o novo.
-                rating: (before + (after - before) * counting.value).round(),
-                change: ((after - before) * counting.value).round(),
-                up: after >= before,
-                large: large,
-                valueKey: FreeBoardKeys.ratingValue,
-                changeKey: FreeBoardKeys.ratingDelta,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (!widget.card) {
-      return _panel(
-        theme,
-        end,
-        reason,
-        result,
-        goal,
-        rating,
-        buttons,
-        onReview: widget.onReview,
-      );
-    }
-
-    // O título do ponto de vista do jogador, quando ele joga contra a
-    // máquina; no tabuleiro livre, quem venceu.
-    final userSide = widget.userSide;
-    final won = userSide != null && end.winner == userSide;
-    final lost = userSide != null && end.winner == userSide.opposite;
-    final title = end.winner == null
-        ? l10n.freeBoardDraw
-        : won
-        ? l10n.resultYouWon
-        : lost
-        ? l10n.resultYouLost
-        : result;
-    final accent = won
-        ? ChangeColors.of(context, up: true)
-        : lost
-        ? ChangeColors.of(context, up: false)
-        : colors.onSurfaceVariant;
-    final icon = end.winner == null
-        ? Icons.handshake_rounded
-        : lost
-        ? Icons.flag_rounded
-        : Icons.emoji_events_rounded;
-    final entrance = _interval(0, 0.35, Curves.easeOutCubic);
-    final pop = _interval(0.15, 0.7, Curves.elasticOut);
-    final ratingWidget = rating(CrossAxisAlignment.center, large: true);
-    // Os grandes momentos ganham confete: degrau ou Jornada concluídos e
-    // recorde de speedrun.
-    final party =
-        widget.report?.feedback.any(
-          (item) =>
-              item.kind == FeedbackKind.rungCompleted ||
-              item.kind == FeedbackKind.journeyCompleted ||
-              item.kind == FeedbackKind.newSpeedrunRecord,
-        ) ??
-        false;
-    final panel = SlideTransition(
-      position: Tween(
-        begin: const Offset(0, 1),
-        end: Offset.zero,
-      ).animate(entrance),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Material(
-          key: FreeBoardKeys.endPanel,
-          color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Stack(
-                fit: StackFit.passthrough,
-                children: [
-                  Padding(
-                    key: FreeBoardKeys.resultCard,
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                    child: Column(
-                      children: [
-                        // Só o ícone leva a cor do resultado; o cartão
-                        // fica neutro, como no chess.com.
-                        ScaleTransition(
-                          scale: pop,
-                          child: Icon(icon, size: 44, color: accent),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          title,
-                          key: FreeBoardKeys.resultTitle,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          reason,
-                          key: FreeBoardKeys.endReason,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PositionedDirectional(
-                    top: 4,
-                    end: 4,
-                    child: IconButton(
-                      key: FreeBoardKeys.resultClose,
-                      tooltip: MaterialLocalizations.of(context)
-                          .closeButtonTooltip,
-                      icon: const Icon(Icons.close),
-                      onPressed: widget.onClose,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      result,
-                      key: FreeBoardKeys.endResult,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    if (goal != null) ...[
-                      const SizedBox(height: 6),
-                      Center(child: goal),
-                    ],
-                    if (ratingWidget != null) ...[
-                      const SizedBox(height: 16),
-                      Center(child: ratingWidget),
-                    ],
-                    const SizedBox(height: 20),
-                    // As opções uma embaixo da outra; a principal em cima.
-                    SafeArea(
-                      top: false,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final (index, button) in [
-                            ...buttons,
-                            ?review,
-                          ].indexed) ...[
-                            if (index > 0) const SizedBox(height: 10),
-                            SizedBox(height: 52, child: button),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (!party) return panel;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        panel,
-        const Positioned.fill(
-          child: Celebration(key: FreeBoardKeys.celebration),
-        ),
-      ],
-    );
-  }
-
-  /// O painel embaixo do tabuleiro, depois de fechar o cartão (ou ao reabrir
-  /// uma partida já terminada).
-  Widget _panel(
-    ThemeData theme,
-    GameEnd end,
-    String reason,
-    String result,
-    Widget? goal,
-    Widget? Function(CrossAxisAlignment, {required bool large}) rating,
-    List<Widget> buttons, {
-    VoidCallback? onReview,
-  }) {
-    final colors = theme.colorScheme;
-    final onColor = colors.onSecondaryContainer;
-    final ratingWidget = rating(CrossAxisAlignment.end, large: false);
     return Container(
       key: FreeBoardKeys.endPanel,
       margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
       padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 12),
       decoration: BoxDecoration(
         color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppShape.large),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                end.winner == null ? Icons.handshake_outlined : Icons.flag,
-                color: onColor,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      reason,
-                      key: FreeBoardKeys.endReason,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: onColor,
-                      ),
-                    ),
-                    Text(
-                      result,
-                      key: FreeBoardKeys.endResult,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: onColor,
-                      ),
-                    ),
-                    if (goal != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: goal,
-                      ),
-                  ],
-                ),
-              ),
-              if (ratingWidget != null) ...[
-                const SizedBox(width: 8),
-                ratingWidget,
-              ],
-            ],
+          Icon(
+            end.winner == null
+                ? Icons.handshake_outlined
+                : end.reason == GameEndReason.resign
+                ? Icons.flag
+                : Icons.emoji_events,
+            color: onColor,
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              // Aqui o espaço é pouco: a revisão vai num botão só de ícone.
-              if (onReview != null) ...[
-                IconButton.outlined(
-                  key: FreeBoardKeys.endReviewButton,
-                  onPressed: onReview,
-                  tooltip: context.l10n.resultReview,
-                  icon: const Icon(Icons.insights),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  reason,
+                  key: FreeBoardKeys.endReason,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: onColor,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                Text(
+                  result,
+                  key: FreeBoardKeys.endResult,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: onColor),
+                ),
               ],
-              for (final (index, button) in buttons.reversed.indexed) ...[
-                if (index > 0) const SizedBox(width: 8),
-                Expanded(child: button),
-              ],
-            ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          FilledButton(
+            key: FreeBoardKeys.endNewGameButton,
+            onPressed: onNewGame,
+            child: Text(l10n.freeBoardNewGame),
           ),
         ],
       ),

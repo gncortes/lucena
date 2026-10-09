@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// Opção de uma lista de escolha única (idioma, tema): a escolhida ganha a
 /// marca, que troca com animação.
 class ChoiceTile extends StatelessWidget {
@@ -24,7 +26,7 @@ class ChoiceTile extends StatelessWidget {
       title: Text(label),
       selected: selected,
       trailing: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.state,
         transitionBuilder: (child, animation) =>
             ScaleTransition(scale: animation, child: child),
         child: selected
