@@ -32,7 +32,7 @@ mixin _$AppSettings {
  bool get thinkChosen;/// A barra de avaliação da engine na revisão da partida.
  bool get evalBar;/// Nas aulas de finais, com o teste de nível feito: a trilha inteira
 /// ("Todos") em vez do roteiro ("Para você") (T52).
- bool get endgamesAll;
+ bool get endgamesAll;/// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
  bool get endgamesHideDone;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -292,6 +292,7 @@ class _AppSettings implements AppSettings {
 /// Nas aulas de finais, com o teste de nível feito: a trilha inteira
 /// ("Todos") em vez do roteiro ("Para você") (T52).
 @override@JsonKey() final  bool endgamesAll;
+/// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
 @override@JsonKey() final  bool endgamesHideDone;
 
 /// Create a copy of AppSettings
