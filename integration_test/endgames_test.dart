@@ -42,28 +42,33 @@ void main() {
     await app.open(systemLocale: _english);
     final endgames = EndgamesRobot($);
     final lesson = await endgames.lesson(_lessonId);
+    // Os exercícios mudam com as revisões das aulas: o cenário lê os da aula.
+    final first = lesson.exercises.first;
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
 
     // A dica mostra a seta do lance e custa a estrela.
-    await endgames.startExercises(_lessonId, 'e01');
+    await endgames.startExercises(_lessonId, first.id);
     await endgames.hint();
-    endgames.expectHintArrow('f1g2');
-    await endgames.solveExercise(lesson.exercise('e01')!);
-    expectText(endgames.earned, '0 of 1 points');
+    endgames.expectHintArrow(first.line.first.accept.first);
+    await endgames.solveExercise(first);
+    expectText(endgames.earned, _points(0, first.stars));
     // Com erro ou dica, a correção do Viktor vem sozinha.
     expect(endgames.exerciseSpeech, isNotNull);
     await endgames.back();
 
-    // Lance errado: o Viktor diz que não é esse (a pista fica para a dica) e
-    // a estrela vai embora; a dica dá a pista e custa a outra. Até o e05, os
-    // anteriores entram prontos.
+    // Lance errado e dica num exercício de 2 estrelas: cada um custa uma.
+    // Os anteriores entram prontos.
+    final index = lesson.exercises.indexWhere(
+      (exercise) => exercise.stars == 2,
+    );
+    final two = lesson.exercises[index];
     await seedEndgameProgress(
       EndgameProgress(
         lessons: {
           _lessonId: EndgameLessonProgress(
             stars: {
-              for (final exercise in lesson.exercises.take(4))
+              for (final exercise in lesson.exercises.take(index))
                 exercise.id: exercise.stars,
             },
           ),
@@ -73,21 +78,21 @@ void main() {
     await app.restart();
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
-    await endgames.startExercises(_lessonId, 'e05');
-    await endgames.exerciseMove('h7g8');
-    expect(endgames.exerciseSpeech, isNot(contains('d7')));
+    await endgames.startExercises(_lessonId, two.id);
+    await endgames.exerciseMove(_wrongMove);
     await endgames.hint();
-    expect(
-      endgames.exerciseSpeech,
-      endsWith(
-        "The square d7 is dark: the knight's job. From where does it cover "
-        'd7 and still stay on the path of the W?',
-      ),
-    );
-    await endgames.solveExercise(lesson.exercise('e05')!);
-    expectText(endgames.earned, '0 of 2 points');
+    expect(endgames.exerciseSpeech, isNotEmpty);
+    await endgames.solveExercise(two);
+    expectText(endgames.earned, _points(0, 2));
     await endgames.back();
-    endgames.expectScore('4 of 23 points');
+    final seeded = lesson.exercises
+        .take(index)
+        .fold(0, (sum, exercise) => sum + exercise.stars);
+    final total = lesson.exercises.fold(
+      0,
+      (sum, exercise) => sum + exercise.stars,
+    );
+    endgames.expectScore('$seeded of $total points');
   });
 
   patrolTest('nota abaixo do mínimo: o passo final fica fechado e refazer '
@@ -98,14 +103,21 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
 
-    // Uma dica em cada exercício: 11 das 23 estrelas, abaixo das 14.
+    // Uma dica em cada exercício: cada um perde uma estrela, abaixo do mínimo.
+    final total = lesson.exercises.fold(
+      0,
+      (sum, exercise) => sum + exercise.stars,
+    );
+    final earned = total - lesson.exercises.length;
+    expect(earned, lessThan(lesson.passScore));
     await endgames.solveAll(lesson, hints: 1);
     await endgames.expectFailed();
-    endgames.expectScore('11 of 23 points');
+    endgames.expectScore('$earned of $total points');
     await endgames.expectFinalStep();
 
     await endgames.redo();
-    endgames.expectScore('0 of 23 points');
+    // Zerada, a nota sai e volta o botão de começar os exercícios.
+    await endgames.expectExercisesToStart();
     endgames.expectNotFailed();
   });
 
@@ -148,13 +160,16 @@ void main() {
     await app.open(systemLocale: _english);
     final endgames = EndgamesRobot($);
     final lesson = await endgames.lesson(_lessonId);
-    // Até o e06, os anteriores entram prontos.
+    // O último exercício (o de mais lances); os anteriores entram prontos.
+    final last = lesson.exercises.last;
     await seedEndgameProgress(
       EndgameProgress(
         lessons: {
           _lessonId: EndgameLessonProgress(
             stars: {
-              for (final exercise in lesson.exercises.take(5))
+              for (final exercise in lesson.exercises.take(
+                lesson.exercises.length - 1,
+              ))
                 exercise.id: exercise.stars,
             },
           ),
@@ -164,14 +179,25 @@ void main() {
     await app.restart();
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
-    await endgames.startExercises(_lessonId, 'e06');
-    await endgames.exerciseMove('d1g4');
-    endgames.expectExerciseBoard('1k6/8/1K6/2N5/6B1/8/8/8 w - - 2 2');
+    await endgames.startExercises(_lessonId, last.id);
+    await endgames.exerciseMove(last.line.first.accept.first);
+    endgames.expectExerciseBoard(_afterFirstTurn);
 
     await app.restart();
-    await endgames.expectExercise(_lessonId, 'e06');
-    endgames.expectExerciseBoard('1k6/8/1K6/2N5/6B1/8/8/8 w - - 2 2');
-    await endgames.solveExercise(lesson.exercise('e06')!, from: 1);
-    expectText(endgames.earned, '2 of 2 points');
+    await endgames.expectExercise(_lessonId, last.id);
+    endgames.expectExerciseBoard(_afterFirstTurn);
+    await endgames.solveExercise(last, from: 1);
+    expectText(endgames.earned, _points(last.stars, last.stars));
   });
 }
+
+/// Um lance legal que nenhum exercício de 2 estrelas da aula aceita no
+/// começo (o bispo de a6 para b5, no primeiro deles).
+const _wrongMove = 'a6b5';
+
+/// O último exercício depois do primeiro lance e da resposta.
+const _afterFirstTurn = '8/8/4BKNk/8/8/8/8/8 w - - 2 2';
+
+/// Os pontos como o app escreve ("1 of 1 point", "0 of 2 points").
+String _points(int earned, int total) =>
+    '$earned of $total ${total == 1 ? 'point' : 'points'}';

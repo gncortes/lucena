@@ -22,7 +22,8 @@ void main() {
     await endgames.openInfo();
     app.expectNoClippedText();
     await endgames.back();
-    await endgames.openExercise(_lessonId, 'e01');
+    final lesson = await endgames.lesson(_lessonId);
+    await endgames.startExercises(_lessonId, lesson.exercises.first.id);
     app.expectNoClippedText();
     await endgames.back();
     await endgames.openSteps();
@@ -70,17 +71,19 @@ void main() {
     await app.open(systemLocale: const Locale('en', 'US'));
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
-    await endgames.openExercise(_lessonId, 'e06');
-    await endgames.exerciseMove('d1g4');
+    final first = (await endgames.lesson(_lessonId)).exercises.first;
+    await endgames.startExercises(_lessonId, first.id);
+    await endgames.exerciseMove(first.line.first.accept.first);
 
     await app.sendToBackgroundAndReturn();
-    await endgames.expectExercise(_lessonId, 'e06');
-    endgames.expectExerciseBoard('1k6/8/1K6/2N5/6B1/8/8/8 w - - 2 2');
+    await endgames.expectExercise(_lessonId, first.id);
+    endgames.expectExerciseBoard('k1N5/2K5/8/8/8/8/8/5B2 w - - 2 2');
 
     await endgames.back();
     await endgames.openSteps();
     await endgames.nextStep();
     await app.sendToBackgroundAndReturn();
-    await endgames.expectStep(_lessonId, 'whyWrong');
+    // O passo de pensar e, com "Ver explicação", a explicação dele.
+    await endgames.expectStep(_lessonId, 'corner');
   });
 }

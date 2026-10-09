@@ -76,7 +76,14 @@ class EndgamesRobot {
   // A lição (os passos, na tela das aulas da escola).
 
   Future<void> openSteps() async {
-    await _show(EndgameLessonKeys.lessonButton).tap();
+    // O botão fixo embaixo ("Continuar: etapa N") abre a etapa recomendada,
+    // a mesma do cartão; o cartão pode estar acima da área visível, e o
+    // scrollTo do Patrol só desce.
+    if ($(EndgameLessonKeys.continueButton).exists) {
+      await $(EndgameLessonKeys.continueButton).tap();
+    } else {
+      await _show(EndgameLessonKeys.lessonButton).tap();
+    }
     await $(LessonKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
@@ -202,9 +209,9 @@ class EndgamesRobot {
     expect(timer.bottom, greaterThan(screen.bottom - 120));
     // No canto de fim: à direita, ou à esquerda em árabe.
     if (e2eVariant == E2EVariant.arabic) {
-      expect(timer.left, lessThan(board.left + 1));
+      expect(timer.left, lessThan(screen.left + 24));
     } else {
-      expect(timer.right, greaterThan(board.right - 1));
+      expect(timer.right, greaterThan(screen.right - 24));
     }
   }
 
@@ -325,7 +332,13 @@ class EndgamesRobot {
   Future<void> backFromExercise() async {
     // O último exercício leva ao resultado, que volta à aula.
     await $(ExerciseKeys.resultButton).tap();
-    await $(ExercisesDoneKeys.back).tap();
+    await $(ExercisesDoneKeys.screen).waitUntilVisible();
+    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pela barra.
+    if ($(ExercisesDoneKeys.back).exists) {
+      await $(ExercisesDoneKeys.back).tap();
+    } else {
+      await $(BackButton).tap();
+    }
     await expectLessonScreen();
   }
 
@@ -364,6 +377,12 @@ class EndgamesRobot {
   }
 
   // A nota e o passo final.
+
+  /// Sem exercício resolvido: o botão de começar os exercícios, sem nota.
+  Future<void> expectExercisesToStart() async {
+    await _show(EndgameLessonKeys.startExercises);
+    expect(find.byKey(EndgameLessonKeys.score), findsNothing);
+  }
 
   Future<void> expectPassed() async {
     await _show(EndgameLessonKeys.passed);

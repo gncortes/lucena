@@ -260,17 +260,18 @@ class _LessonScreenState extends State<LessonScreen>
     final previous = _previous;
     _previous = state;
     final cubit = context.read<LessonCubit>();
+    // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
+    // tabuleiro nasce aqui, antes do primeiro tique). Saindo para a fala, ele
+    // fica parado no tempo final até sumir.
+    if (state.layout == LessonLayoutMode.solving) {
+      _elapsed.value = cubit.stepElapsed;
+    }
     final target = _targetOf(state);
     final modeChanged = target != _target;
     if (modeChanged) {
       _setMode(context, target, animate: previous.current != null);
     }
     if (state.step != previous.step) {
-      // Passo novo de exercício: o cronômetro já mostra o tempo dele (zero).
-      // Saindo para a fala, ele fica parado no tempo final até sumir.
-      if (state.layout == LessonLayoutMode.solving) {
-        _elapsed.value = cubit.stepElapsed;
-      }
       if (_sheet.isAttached) {
         _sheet.animateTo(
           _sheetMin,

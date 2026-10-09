@@ -160,6 +160,11 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final previous = _previous;
     _previous = state;
     _setMode(context, state, animate: previous.ready);
+    // Resolvendo: o cronômetro já com o tempo do exercício (ao reabrir o
+    // app, o tabuleiro nasce aqui, antes do primeiro tique).
+    if (state.layout == ExerciseLayoutMode.solving) {
+      _elapsed.value = context.read<ExerciseCubit>().elapsed;
+    }
     if (state.mistakes > previous.mistakes) {
       _shake.forward(from: 0);
       _wrongFlash.forward(from: 0);
