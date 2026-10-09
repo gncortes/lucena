@@ -39,14 +39,14 @@
     {"id": "pawns.breakthrough", "group": "pawns", "band": "advanced", "requires": ["pawns.race"], "lessons": [{"id": "pawns.breakthrough", "kind": "endgame"}]},
     {"id": "pawns.outsidePasser", "group": "pawns", "band": "advanced", "requires": ["pawns.keySquares"], "lessons": [{"id": "pawns.outsidePasser", "kind": "endgame"}]},
     {"id": "pawns.protectedPasser", "group": "pawns", "band": "advanced", "requires": ["pawns.keySquares"], "lessons": [{"id": "pawns.protectedPasser", "kind": "endgame"}]},
-    {"id": "pawns.trebuchet", "group": "pawns", "band": "expert", "requires": ["pawns.triangulation"], "lessons": [{"id": "pawns.minedSquares", "kind": "catalog"}]},
-    {"id": "pawns.spareTempi", "group": "pawns", "band": "expert", "requires": ["pawns.trebuchet"], "lessons": [{"id": "pawns.spareTempi", "kind": "catalog"}]},
-    {"id": "pawns.correspondingSquares", "group": "pawns", "band": "master", "requires": ["pawns.trebuchet"], "lessons": [{"id": "pawns.correspondingSquares", "kind": "catalog"}]},
+    {"id": "pawns.trebuchet", "group": "pawns", "band": "expert", "requires": ["pawns.triangulation"], "lessons": [{"id": "pawns.minedSquares", "kind": "endgame"}]},
+    {"id": "pawns.spareTempi", "group": "pawns", "band": "expert", "requires": ["pawns.trebuchet"], "lessons": [{"id": "pawns.spareTempi", "kind": "endgame"}]},
+    {"id": "pawns.correspondingSquares", "group": "pawns", "band": "master", "requires": ["pawns.trebuchet"], "lessons": [{"id": "pawns.correspondingSquares", "kind": "endgame"}]},
 
     {"id": "queen.vsPawn", "group": "queenRook", "band": "intermediate", "requires": ["mate.queen"], "lessons": [{"id": "queen.vsPawn", "kind": "endgame"}]},
     {"id": "queen.vsPawnDraws", "group": "queenRook", "band": "advanced", "requires": ["queen.vsPawn"], "lessons": [{"id": "queen.vsPawn.draws", "kind": "endgame"}]},
     {"id": "queen.vsRook", "group": "queenRook", "band": "expert", "requires": ["queen.vsPawn"], "lessons": [{"id": "queen.vsRook.philidor", "kind": "endgame"}, {"id": "queen.vsRook.approach", "kind": "endgame"}, {"id": "queen.vsRook.thirdRank", "kind": "endgame"}]},
-    {"id": "queen.vsRookPawn", "group": "queenRook", "band": "master", "requires": ["queen.vsRook"], "lessons": [{"id": "queen.vsRookPawn", "kind": "catalog"}]},
+    {"id": "queen.vsRookPawn", "group": "queenRook", "band": "master", "requires": ["queen.vsRook"], "lessons": [{"id": "queen.vsRookPawn", "kind": "endgame"}]},
     {"id": "queen.pawnVsQueen", "group": "queenRook", "band": "master", "requires": ["queen.vsPawn"], "lessons": [{"id": "queen.pawnVsQueen", "kind": "catalog"}]},
 
     {"id": "rook.vsPawn", "group": "queenRook", "band": "intermediate", "requires": ["mate.rook"], "lessons": [{"id": "rookPawns.vsPawn", "kind": "endgame"}]},

@@ -42,9 +42,9 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | 12 | `pawns.breakthrough` | Ruptura | feita |
 | 13 | `pawns.outsidePasser` | O peão passado distante | feita |
 | 14 | `pawns.protectedPasser` | O peão passado protegido | feita |
-| 15 | `pawns.minedSquares` | Zugzwang recíproco e casas minadas | 5 |
-| 16 | `pawns.spareTempi` | Tempos de reserva | 5 |
-| 17 | `pawns.correspondingSquares` | Casas correspondentes | 5 |
+| 15 | `pawns.minedSquares` | Zugzwang recíproco e casas minadas | feita |
+| 16 | `pawns.spareTempi` | Tempos de reserva | feita |
+| 17 | `pawns.correspondingSquares` | Casas correspondentes | feita |
 
 ## 3 · Finais de dama (`queen`)
 
@@ -55,7 +55,7 @@ A porta de entrada, depois da escola: aprofunda o que as aulas do Viktor apresen
 | 20 | `queen.vsRook.philidor` | Dama contra torre I: a posição de Philidor | feita |
 | 21 | `queen.vsRook.approach` | Dama contra torre II: como chegar a Philidor | feita |
 | 22 | `queen.vsRook.thirdRank` | Dama contra torre III: quebrar a defesa da terceira fileira | feita |
-| 23 | `queen.vsRookPawn` | Dama contra torre e peão: as fortalezas | 5 |
+| 23 | `queen.vsRookPawn` | Dama contra torre e peão: as fortalezas | feita |
 | 24 | `queen.pawnVsQueen` | Dama e peão contra dama | 5 |
 
 ## 4 · Torre contra peões (`rookPawns`)
