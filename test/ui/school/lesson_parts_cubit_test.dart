@@ -42,7 +42,7 @@ void main() {
             id: 'try',
             fen: fen,
             line: [
-              MoveTurn(accept: {'c1c4'}),
+              MoveTurn(accept: {'c1c4', 'c1c5'}),
             ],
           ),
         ],
@@ -164,6 +164,15 @@ void main() {
     // A demonstração já começa depois do lance do aluno, sem refazê-lo.
     expect(cubit.state.demoMove, 1);
     expect(cubit.state.lastMove, Move.parse('c1c4'));
+    expect(cubit.state.speech, startsWith('Correct!'));
+  });
+
+  test('pensar: outro lance aceito também é "correto", sem seguir no '
+      'tabuleiro', () async {
+    final cubit = await open();
+    await cubit.play(Move.parse('c1c5')!);
+    expect(cubit.state.current?.id, 'demo');
+    expect(cubit.state.demoMove, 0);
     expect(cubit.state.speech, startsWith('Correct!'));
   });
 
