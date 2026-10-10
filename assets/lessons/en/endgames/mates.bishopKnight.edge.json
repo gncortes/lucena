@@ -1,6 +1,6 @@
 {
-  "title": "Bishop and knight II: from the middle of the board to the edge",
-  "summary": "Build the wall with all three pieces and push the king to the edge.",
+  "title": "Bishop and knight II: to the edge",
+  "summary": "Trap the black king behind a wall of bishop, knight and king, and push it from the centre to the edge.",
   "part.build.title": "Building the wall",
   "part.build.summary": "Bishop, king and knight cover different squares and, together, take the centre away from the black king.",
   "part.pushing.title": "The king pushes",

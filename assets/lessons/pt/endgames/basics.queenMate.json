@@ -1,6 +1,6 @@
 {
   "title": "Mate de dama em poucos lances",
-  "summary": "Rei e dama contra rei: os dois mates, a caixa, o rei que vem, o lance de espera e o mate sem afogar.",
+  "summary": "Dar mate com rei e dama contra rei em poucos lances, sem afogar o rei preto.",
   "part.box.title": "A caixa",
   "part.box.summary": "A dama a um salto de cavalo, sem xeque, prende o rei preto e encolhe a caixa.",
   "step.t_seirawan": "No capítulo 4 o rei entrou na caixa. Agora: quando a dama deve parar. De novo o exemplo de Seirawan, depois de 1.Df6 Rd5 2.De7 Rd4. A dama prende o rei preto nas colunas de a a d, abaixo da sétima. Qual é o próximo passo?",
@@ -54,7 +54,7 @@
   "part.edge.title": "O mate da borda",
   "part.edge.summary": "O xeque vem de longe; os reis não precisam ficar frente a frente.",
   "part.side.title": "O lado da caixa",
-  "part.side.summary": "Entre dois saltos de cavalo, o que deixa o seu rei do lado de dentro.",
+  "part.side.summary": "Quando há dois saltos de cavalo possíveis para a dama, escolha o que deixa o seu rei do lado de dentro da caixa.",
   "part.king.title": "O rei se aproxima",
   "part.king.summary": "Com o rei preto preso, quem trabalha é o rei, mesmo longe da borda.",
   "part.wait.title": "O lance de espera",
@@ -71,7 +71,7 @@
   "step.supportMove": "Agora noutra borda, a coluna a. O seu rei já está a um salto de cavalo do rei preto. Dê o mate.",
   "step.supportMove.hint": "Procure a casa colada no rei preto que o seu rei protege.",
   "step.supportMove.done": "Mate. A dama em b5 é protegida pelo rei de c6 e tira todas as casas do rei preto. Cuidado com 1.Dc4? Ela também tira todas as casas, mas sem xeque, e é afogamento.",
-  "step.t_nakamura": "No capítulo 1 a dama encostava no rei preto. Agora ela dá o mate de longe. É a partida de Nakamura, de brancas, contra Abarca Gonzalez, num torneio de blitz pela internet, em 2022. Há vários mates nesta posição. Ache um em que a dama não encosta no rei preto.",
+  "step.t_nakamura": "No capítulo 1 a dama encostava no rei preto. Agora ela dá o mate de longe. A posição vem de uma partida de blitz, em que cada jogador tem poucos minutos, jogada pela internet em 2022: Hikaru Nakamura, de brancas, contra Abarca Gonzalez. Olhe as casas que o rei preto ainda tem na borda. Há vários mates nesta posição. Ache um em que a dama não encosta no rei preto.",
   "step.t_nakamura.hint1": "O rei de f7 já tira g8 e g7.",
   "step.t_nakamura.hint2": "Falta um xeque pela coluna h.",
   "step.d_nakamura": "Como Nakamura chegou lá. Ele deu a torre pelo cavalo de Abarca Gonzalez, coroou o peão e e, com a dama nova, levou o rei preto ao canto. Voltamos quatro meios-lances.",
@@ -93,7 +93,7 @@
   "step.d_box.m4": "2...Rb6. Ele se afasta da dama, rumo ao canto de cima, onde ainda há espaço.",
   "step.d_box.m5": "3.Dc4, salto de cavalo de b6. Agora as paredes são a coluna c e a quarta fileira: o rei preto fica nas colunas a e b, acima da quarta.",
   "step.d_box.m6": "3...Rb7. Não há saída: a coluna c e a quarta fileira são da dama, e ele só anda dentro da caixa pequena.",
-  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Numa partida, ele precisa entrar na caixa. É o final de Carlsen contra Anand, no Glitnir Blitz de Reykjavik, em 2006: Carlsen deu a torre pelo peão e de Anand, o seu peão d coroou, e o rei branco ainda tomou o peão h. Um único lance de dama mantém o caminho mais curto. Qual?",
+  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Numa partida, ele precisa entrar na caixa. É o final de Magnus Carlsen contra Viswanathan Anand, no Glitnir Blitz de Reykjavik, em 2006. Carlsen deu a torre pelo peão da coluna e de Anand, o seu peão da coluna d coroou, e o rei branco ainda capturou o peão h. Olhe a caixa do rei preto e a distância do seu rei até ela. Um único lance de dama mantém o caminho mais curto. Qual?",
   "step.t_carlsen.hint1": "O rei preto está em e3. Conte as casas a um salto de cavalo dele que a dama alcança.",
   "step.t_carlsen.hint2": "Em qual delas a parede deixa o rei preto do mesmo lado que o seu rei?",
   "step.t_carlsen.hint3": "O seu rei, em g3, precisa ficar do lado de dentro da caixa, perto do rei preto.",
@@ -121,7 +121,7 @@
   "step.kingMove": "Agora você. A dama em a5 prende o rei preto abaixo da quinta fileira. Faça os lances mais rápidos.",
   "step.kingMove.hint": "A dama sozinha não fecha o outro lado da caixa.",
   "step.kingMove.done": "1.Re3 e depois 2.Rd3 (ou 2.Rd4): o rei virou a parede do outro lado, e o rei preto ficou preso no canto de baixo. No primeiro lance, todo lance de dama custava ao menos dois lances, e os xeques de perto entregavam a dama.",
-  "step.t_ding": "No capítulo 5 o rei trabalhava e a dama esperava parada. Às vezes a dama espera andando. Ding Liren contra Le Quang Liem, 2017: os dois coroaram, as damas foram trocadas, e o peão b de Ding chegou a dama de novo. O rei preto está em g8. Qual é o lance mais rápido?",
+  "step.t_ding": "No capítulo 5 o rei trabalhava e a dama esperava parada. Às vezes a dama espera andando. Huai'an, 2017: Ding Liren, de brancas, contra Le Quang Liem. Os dois coroaram, as damas foram trocadas, e o peão b de Ding chegou a dama de novo. O rei preto está em g8; conte as casas que ele tem. Qual é o lance mais rápido?",
   "step.t_ding.hint1": "Um xeque só empurra o rei para outra casa livre.",
   "step.t_ding.hint2": "Procure um lance sem xeque que deixe ao rei preto uma casa só.",
   "step.wait": "Em volta do rei preto há cinco casas, f8, f7, g7, h7 e h8, e a dama em f6 já tira quatro: sobra h7. A dama precisa se mexer sem perder isso. Um xeque tira algumas casas e devolve outras. O lance bom não ameaça nada: tira tudo menos uma casa, e o rei preto, que é obrigado a jogar, tem de ir para lá. É o lance de espera.",
@@ -143,6 +143,6 @@
   "step.d_andreikin.m5": "70.Rc3. O rei chega e protege b2 e c2, as casas em que a dama pode encostar.",
   "step.d_andreikin.m6": "70...Ra1. Forçado: a1 é a única casa livre, e o rei preto volta ao canto.",
   "step.d_andreikin.m7": "71.Db2, mate, como Nakamura jogou. A dama encosta no rei preto, protegida pelo rei de c3: o mate de apoio, no canto.",
-  "key.carlsenAnand": "Carlsen contra Anand, Glitnir Blitz, Reykjavik, 2006: Dd5!, o salto de cavalo que deixa o rei branco dentro da caixa, e o mate em d1.",
-  "key.dingLe": "Ding Liren contra Le Quang Liem, Huai'an, 2017: De7!, o lance de espera, e as pretas abandonaram depois de Rf6."
+  "key.carlsenAnand": "Carlsen contra Anand, Glitnir Blitz, Reykjavik, 2006: um lance de dama a um salto de cavalo do rei preto deixa o rei branco dentro da caixa, e o mate vem pela primeira fileira.",
+  "key.dingLe": "Ding Liren contra Le Quang Liem, Huai'an, 2017: um lance de espera da dama, e as pretas logo abandonaram."
 }

@@ -1,6 +1,6 @@
 {
-  "title": "Bispo e cavalo II: do meio do tabuleiro até a borda",
-  "summary": "Armar o muro com as três peças e empurrar o rei até a borda.",
+  "title": "Bispo e cavalo II: até a borda",
+  "summary": "Prender o rei preto com bispo, cavalo e rei num muro e empurrá-lo do centro até a borda.",
   "part.build.title": "Montar o muro",
   "part.build.summary": "Bispo, rei e cavalo cobrem casas diferentes e, juntos, tiram o centro do rei preto.",
   "part.pushing.title": "O rei empurra",

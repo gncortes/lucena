@@ -1,6 +1,6 @@
 {
   "title": "Queen mate in a few moves",
-  "summary": "King and queen against king: the two mates, the box, the king that comes, the waiting move and the mate without stalemate.",
+  "summary": "Mate with king and queen against king in a few moves, without stalemating the black king.",
   "part.box.title": "The box",
   "part.box.summary": "The queen a knight's jump away, without check, traps the black king and shrinks the box.",
   "step.t_seirawan": "In chapter 4 the king got into the box. Now: when should the queen stop. Seirawan's example again, after 1.Qf6 Kd5 2.Qe7 Kd4. The queen holds the black king on the a- to d-files, below the seventh. What is the next step?",
@@ -54,7 +54,7 @@
   "part.edge.title": "The edge mate",
   "part.edge.summary": "The check comes from far away; the kings do not need to face each other.",
   "part.side.title": "The side of the box",
-  "part.side.summary": "Between two knight's jumps, the one that leaves your king on the inside.",
+  "part.side.summary": "When the queen has two knight's-jump squares to choose from, pick the one that leaves your king inside the box.",
   "part.king.title": "The king approaches",
   "part.king.summary": "Once the black king is trapped, the king does the work, even far from the edge.",
   "part.wait.title": "The waiting move",
@@ -71,7 +71,7 @@
   "step.supportMove": "Now on another edge, the a-file. Your king is already a knight's jump from the black king. Give mate.",
   "step.supportMove.hint": "Look for the square next to the black king that your king protects.",
   "step.supportMove.done": "Mate. The queen on b5 is protected by the king on c6 and takes every square from the black king. Beware of 1.Qc4? It also takes every square, but without check, and that is stalemate.",
-  "step.t_nakamura": "In chapter 1 the queen sat next to the black king. Now she mates from far away. This is Nakamura, with White, against Abarca Gonzalez, in an online blitz event in 2022. There are several mates here. Find one where the queen does not touch the black king.",
+  "step.t_nakamura": "In chapter 1 the queen sat next to the black king. Now she mates from far away. The position comes from a blitz game, where each player has only a few minutes, played online in 2022: Hikaru Nakamura, with White, against Abarca Gonzalez. Look at the squares the black king still has on the edge. There are several mates here. Find one where the queen does not touch the black king.",
   "step.t_nakamura.hint1": "The king on f7 already takes g8 and g7.",
   "step.t_nakamura.hint2": "What is missing is a check along the h-file.",
   "step.d_nakamura": "How Nakamura got there. He gave his rook for Abarca Gonzalez's knight, promoted the e-pawn and, with the new queen, drove the black king into the corner. We go back four half-moves.",
@@ -93,7 +93,7 @@
   "step.d_box.m4": "2...Kb6. He moves away from the queen, towards the upper corner, where there is still room.",
   "step.d_box.m5": "3.Qc4, a knight's jump from b6. Now the walls are the c-file and the fourth rank: the black king is held on the a- and b-files, above the fourth.",
   "step.d_box.m6": "3...Kb7. There is no way out: the c-file and the fourth rank belong to the queen, and he can only walk inside the small box.",
-  "step.t_carlsen": "In chapter 3 your king stayed still. In a game, it has to get into the box. This is the ending of Carlsen against Anand, at the Glitnir Blitz in Reykjavik, 2006: Carlsen gave his rook for Anand's e-pawn, his d-pawn queened, and the white king also captured the h-pawn. Only one queen move keeps the shortest path. Which one?",
+  "step.t_carlsen": "In chapter 3 your king stayed still. In a game, it has to get into the box. This is the ending of Magnus Carlsen against Viswanathan Anand, at the Glitnir Blitz in Reykjavik, 2006. Carlsen gave his rook for Anand's e-pawn, his own d-pawn queened, and the white king also captured the h-pawn. Look at the black king's box and how far your king is from it. Only one queen move keeps the shortest path. Which one?",
   "step.t_carlsen.hint1": "The black king is on e3. Count the squares a knight's jump from it that the queen can reach.",
   "step.t_carlsen.hint2": "In which of them does the wall leave the black king on the same side as your king?",
   "step.t_carlsen.hint3": "Your king, on g3, has to stay on the inside of the box, close to the black king.",
@@ -121,7 +121,7 @@
   "step.kingMove": "Your turn. The queen on a5 holds the black king below the fifth rank. Play the fastest moves.",
   "step.kingMove.hint": "The queen alone does not close the other side of the box.",
   "step.kingMove.done": "1.Ke3 and then 2.Kd3 (or 2.Kd4): the king became the wall on the other side, and the black king is trapped in the lower corner. On the first move, every queen move cost at least two moves, and the close checks gave the queen away.",
-  "step.t_ding": "In chapter 5 the king worked and the queen waited, standing still. Sometimes the queen waits by moving. Ding Liren against Le Quang Liem, 2017: both sides queened, the queens were traded, and Ding's b-pawn queened again. The black king is on g8. What is the fastest move?",
+  "step.t_ding": "In chapter 5 the king worked and the queen waited, standing still. Sometimes the queen waits by moving. Huai'an, 2017: Ding Liren, with White, against Le Quang Liem. Both sides queened, the queens were traded, and Ding's b-pawn queened again. The black king is on g8; count the squares it has. What is the fastest move?",
   "step.t_ding.hint1": "A check only pushes the king to another free square.",
   "step.t_ding.hint2": "Look for a move without check that leaves the black king a single square.",
   "step.wait": "Around the black king there are five squares, f8, f7, g7, h7 and h8, and the queen on f6 already takes four: h7 is left. The queen has to move without losing that. A check takes some squares and gives others back. The good move threatens nothing: it takes everything but one square, and the black king, who must move, has to go there. It is the waiting move.",
@@ -143,6 +143,6 @@
   "step.d_andreikin.m5": "70.Kc3. The king arrives and protects b2 and c2, the squares where the queen can sit next to the black king.",
   "step.d_andreikin.m6": "70...Ka1. Forced: a1 is the only free square, and the black king goes back to the corner.",
   "step.d_andreikin.m7": "71.Qb2, mate, as Nakamura played. The queen sits next to the black king, protected by the king on c3: the support mate, in the corner.",
-  "key.carlsenAnand": "Carlsen against Anand, Glitnir Blitz, Reykjavik, 2006: Qd5!, the knight's jump that keeps the white king inside the box, and mate on d1.",
-  "key.dingLe": "Ding Liren against Le Quang Liem, Huai'an, 2017: Qe7!, the waiting move, and Black resigned after Kf6."
+  "key.carlsenAnand": "Carlsen against Anand, Glitnir Blitz, Reykjavik, 2006: a queen move a knight's jump from the black king keeps the white king inside the box, and the mate comes along the first rank.",
+  "key.dingLe": "Ding Liren against Le Quang Liem, Huai'an, 2017: a waiting move with the queen, and Black soon resigned."
 }
