@@ -19,17 +19,18 @@ from make_source import (after, demo, exercise, move, play, talk,  # noqa: E402
                          think, write)
 
 KN = '8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1'     # peão de cavalo, defesa passiva
-KNW = after(KN, 'Kg4')                        # a mesma, brancas jogam
+KN_W = KN.replace(' b ', ' w ')               # a mesma, brancas jogam
+KNW = after(KN, 'Kg4')                        # rei preto em g4, brancas jogam
 TRICK = '8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1'  # o truque: xeque em g2
 BISHOP = '8/8/8/8/8/5pk1/1r6/R5K1 b - - 0 1'  # peão de bispo: perde
 ACTIVE = '8/8/8/8/6k1/5p2/r7/1R3K2 w - - 0 1'  # o rei ainda não chegou
 KNIGHT5 = '7R/8/8/8/6p1/5rk1/8/6K1 w - - 0 1'  # por trás não serve
-ROOKPAWN = '8/8/8/8/8/6kp/r7/1R5K b - - 0 1'
 SEVENTH = '8/8/8/8/8/8/r2kpK2/1R6 w - - 0 1'  # peão na sétima
 HOMECHECK = 'R7/8/8/8/1p6/2k5/6r1/1K6 w - - 0 1'  # volta tapada: xeque antes
 KF = '8/1r6/8/R5pk/8/8/8/4K3 w - - 0 1'       # primeiro o rei (só Rf1/Rf2)
 STALE = '6r1/1R6/8/8/8/6k1/7p/7K w - - 0 1'   # afogamento
 RP_MOVE = '8/8/8/8/8/6kp/r7/1R4K1 w - - 0 1'  # peão de torre, rei em g1
+THIRD = '8/8/8/8/3pk3/8/r7/1R1K4 w - - 0 1'   # peão central na quarta: Tb3
 # Partidas (FEN real; PGN do PGN Mentor, conferido com python-chess).
 NAKA_185 = '6k1/R7/7K/6P1/8/8/8/4r3 b - - 7 93'
 PRAGG_143 = '6k1/R7/6K1/6P1/5r2/8/8/8 b - - 0 72'
@@ -109,12 +110,13 @@ write({
     'parts': [
         # 1. Peão de cavalo: esperar na primeira fileira.
         {'id': 'wait', 'steps': [
-            R(think('t_knight', KN, 2), 'rookPawn'),
-            talk('room', KN, arrows=['b1h1'], marks=['h1', 'h2', 'h3']),
+            R(think('t_knight', KN_W, 2), 'rookPawn'),
+            talk('room', KN_W, arrows=['b1c1', 'a2h2'],
+                 marks=['h1', 'h2', 'h3']),
             R(demo('naka', NAKA_185, 'Re6+ g6 Re8', goal='draw',
                    side='black', notes={3: {'marks': ['e8', 'g8']}}),
               'naka#185'),
-            move('wait', KNW, 'Rc1 Kh3 Rb1 g2 Re1',
+            move('wait', KN_W, 'Rc1 Kg4 Rb1 Kh3 Rc1 g2 Re1',
                  accept='hold', goal='draw'),
         ]},
         # 2. O xeque ao lado do rei: para o canto.
@@ -135,8 +137,8 @@ write({
         ]},
         # 3. Peão de torre: o canto e o afogamento.
         {'id': 'rookPawn', 'steps': [
-            think('t_rookPawn', ROOKPAWN, 1),
-            talk('rookPawn', ROOKPAWN, marks=['h1']),
+            think('t_rookPawn', RP_MOVE, 2),
+            talk('rookPawn', RP_MOVE, arrows=['g1h1'], marks=['h1']),
             talk('stalemate', STALE, marks=['h1', 'g1', 'g2']),
             demo('stale', STALE, 'Rg7+ Rxg7', goal='draw',
                  notes={1: {'arrows': ['b7g7']}}),
@@ -164,15 +166,17 @@ write({
             demo('hOne', KNIGHT5, 'Rh1 Ra3 Kf1 Kf3 Ke1 Ra1+ Kd2 Rxh1',
                  goal='draw', side='black',
                  notes={2: {'arrows': ['a3a1']}}),
-            demo('homeCheck', HOMECHECK, 'Rc8+ Kb3 Rc1', goal='draw',
-                 notes={1: {'arrows': ['c8c3']}, 3: {'marks': ['a1']}}),
             move('home', KNIGHT5, 'Ra8 Rb3 Ra1',
                  accept={1: 'hold', 2: 'only'}, goal='draw'),
+            demo('homeCheck', HOMECHECK, 'Rc8+ Kb3 Rc1', goal='draw',
+                 notes={1: {'arrows': ['c8c3']}, 3: {'marks': ['a1']}}),
+            move('homeCheckMove', HOMECHECK, 'Rc8+ Kb3 Rc1', accept='only',
+                 goal='draw'),
         ]},
         # 6. Peão de bispo: a mesma defesa perde.
         {'id': 'bishop', 'steps': [
             think('t_bishop', BISHOP, 2),
-            talk('file', BISHOP, arrows=['b2h2'], marks=['h1', 'h2']),
+            talk('file', BISHOP, arrows=['b2g2', 'g2h2'], marks=['h1']),
             demo('bishopDemo', BISHOP, 'Rg2+ Kf1 Rh2 Kg1 f2+ Kf1 Rh1+',
                  goal='win', side='black',
                  notes={3: {'arrows': ['h2h1']}, 7: {'arrows': ['h1a1']}}),
@@ -185,12 +189,18 @@ write({
         # 7. Sair a tempo.
         {'id': 'active', 'steps': [
             R(think('t_free', ACTIVE, 2, ask='line'), 'rookPawn'),
-            talk('free', ACTIVE, arrows=['g4g3', 'b1b8']),
+            talk('free', ACTIVE, arrows=['b1b8', 'g4g3']),
             demo('activeDemo', ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+ Ke3 Re8+',
                  goal='draw'),
-            talk('thirdRank', ACTIVE, marks=['b3', 'b8']),
             move('active', ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+',
                  accept={1: 'hold', 2: 'only', 3: 'hold'}, goal='draw'),
+            demo('thirdRank', THIRD, 'Rb3 d3 Rb8 Ke3 Re8+ Kf3 Rd8',
+                 goal='draw',
+                 notes={1: {'arrows': ['b1b3'], 'marks': ['c3', 'd3', 'e3']},
+                        3: {'arrows': ['b3b8']}, 5: {'arrows': ['b8e8']},
+                        7: {'arrows': ['d8d3']}}),
+            move('thirdRankMove', THIRD, 'Rb3 d3 Rb8 Ke3 Re8+',
+                 accept={1: 'only', 2: 'hold', 3: 'only'}, goal='draw'),
         ]},
         # 8. Peão na sétima, e o resumo.
         {'id': 'seventh', 'steps': [

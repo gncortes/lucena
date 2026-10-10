@@ -140,18 +140,16 @@
         {
           "type": "think",
           "id": "t_opposition",
-          "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 0 1",
+          "fen": "8/2k5/8/8/1KP5/8/8/8 w - - 0 1",
           "hints": 2,
-          "ask": "plan",
-          "side": "white"
+          "ask": "line"
         },
         {
           "type": "talk",
           "id": "front",
-          "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 0 1",
-          "side": "white",
+          "fen": "8/2k5/8/8/1KP5/8/8/8 w - - 0 1",
           "arrows": [
-            "c5c6"
+            "b4c5"
           ],
           "marks": [
             "c6"
@@ -160,10 +158,15 @@
         {
           "type": "demo",
           "id": "d_opposition",
-          "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 0 1",
+          "fen": "8/2k5/8/8/1KP5/8/8/8 w - - 0 1",
           "goal": "win",
-          "side": "white",
           "line": [
+            {
+              "uci": "b4c5",
+              "marks": [
+                "c6"
+              ]
+            },
             {
               "uci": "c7d7"
             },
@@ -247,9 +250,7 @@
           "ask": "plan",
           "marks": [
             "e3",
-            "e8",
-            "d4",
-            "e4"
+            "e8"
           ]
         },
         {
@@ -527,8 +528,8 @@
           "hints": 3,
           "ask": "plan",
           "marks": [
-            "c6",
-            "b5"
+            "c4",
+            "c8"
           ]
         },
         {
@@ -686,17 +687,58 @@
         },
         {
           "type": "demo",
-          "id": "d_check",
-          "fen": "3k4/2P5/3K4/8/8/8/8/8 b - - 0 1",
+          "id": "d_kramnik",
+          "fen": "3k4/8/3KP3/8/8/8/8/8 w - - 5 128",
           "goal": "draw",
+          "ref": "kamskyKramnik",
           "line": [
             {
-              "uci": "d8c8"
+              "uci": "e6e7"
             },
             {
-              "uci": "d6c6",
+              "uci": "d8e8",
               "marks": [
-                "c8"
+                "e8"
+              ]
+            },
+            {
+              "uci": "d6e6"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "checkMove",
+          "fen": "3k4/8/1KP5/8/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "b6b7",
+              "accept": [
+                "b6b7"
+              ],
+              "reply": "d8e7"
+            },
+            {
+              "teach": "c6c7",
+              "accept": [
+                "b7a6",
+                "b7a7",
+                "b7a8",
+                "b7b6",
+                "b7b8",
+                "b7c7",
+                "b7c8",
+                "c6c7"
+              ],
+              "reply": "e7d7"
+            },
+            {
+              "teach": "c7c8q",
+              "accept": [
+                "b7b8",
+                "c7c8q",
+                "c7c8r"
               ]
             }
           ]
@@ -1115,6 +1157,15 @@
       "event": "Zurique",
       "year": 1959,
       "url": "https://lichess.org/analysis/pgn/Nf3_Nf6_g3_g6_b3_Bg7_Bb2_O-O_Bg2_d6_d4_e5_dxe5_Nfd7_O-O_Nc6_c4_dxe5_Ne1_Nd4_Nc3_c6_Nd3_f5_e3_Ne6_Na4_Qe7_Qc1_Re8_f3_h5_Qe1_Ng5_f4_e4_Bxg7_Qxg7_Ndc5_Nxc5_Nxc5_Nf7_Rd1_b6_Na4_Be6_Qc3_Rad8_Qc2_g5_Rf2_h4_Rxd8_Rxd8_Qb2_Qg6_Bf1_gxf4_exf4_Nh6_Rg2_Kf7_gxh4_Qf6_Qxf6+_Kxf6_Be2_Bf7_Nb2_Rd4_h3_Ng8_Kf1_Ne7_h5_Rd2_Bd1_Rd8_Ke1_c5_Rd2_Rd4_a3_Nc6_Rg2_Nd8_Kf2_Ne6_Ke3_Rd8_Rg3_Rh8_Na4_Bxh5_Bxh5_Rxh5_Nc3_Nxf4_Nxe4+_fxe4_Kxf4_Rh4+_Ke3_Kf5_b4_a5_bxc5_bxc5_a4_Rh7_Kf2_Rb7_h4_Kf4_Rh3_Kg4_Rh1_Kf4_Rh3_Ke5_h5_Kd4_h6_Rh7_Rh1_Kd3_Rh5_e3+_Ke1_Rb7_Rd5+_Kxc4_Rh5_Rh7_Ke2_Kb4_Rh4+_c4_Kxe3_Kb3_Kd2_c3+_Kc1_Rf7_Rd4_Rf6_Rd8_Rf1+_Rd1_Rxd1+_Kxd1_Kb2_h7_c2+_Ke2_c1=Q_h8=Q+_Kb3_Qe8_Qc4+_Kd2_Qd5+_Ke2_Kc2_Qc8+_Kb2_Qb8+_Kc3_Qc8+_Kd4_Qh8+_Kc4_Qc8+_Kb4_Qe8_Qc4+_Kd2_Qd4+_Ke2_Qb2+_Kd3_Qc3+_Ke2_Qc2+_Ke3_Ka3_Qb5_Qxa4_Qxa4+_Kxa4#190"
+    },
+    {
+      "id": "kamskyKramnik",
+      "kind": "game",
+      "white": "Gata Kamsky",
+      "black": "Vladimir Kramnik",
+      "event": "Torneio Amber (às cegas), Nice",
+      "year": 2009,
+      "url": "https://lichess.org/analysis/pgn/Nf3_d5_g3_Nf6_Bg2_c6_O-O_Bg4_d4_e6_c4_Nbd7_Qb3_Qb6_Nc3_Be7_Bf4_O-O_Rfd1_Bf5_c5_Qxb3_axb3_Bc2_Rdc1_Bxb3_Nd2_Bc4_Nxc4_dxc4_Na4_Nd5_Rxc4_b5_cxb6_axb6_Rcc1_Rfc8_Nc3_Rxa1_Rxa1_Nxf4_gxf4_Nf6_Ra6_Bd8_Bf3_Kf8_e3_Nd5_Ne4_Be7_Nd2_c5_Bxd5_exd5_Rxb6_cxd4_exd4_g6_Nf3_f6_Kg2_Kf7_h4_h5_Ng1_Rc2_Kf3_g5_fxg5_fxg5_hxg5_Bxg5_Rb5_Ke6_Rb6+_Kf7_Rd6_Bf6_Ne2_Rxb2_Rxd5_h4_Nf4_Rd2_Ke3_Rd1_Ke4_Ke7_Nd3_Ra1_Rh5_Kf7_d5_Kg7_f3_Ra3_Nf4_Kf7_Rh7+_Kg8_Rb7_Bg5_Ne6_Bf6_f4_h3_Kf5_Bh4_Rg7+_Kh8_Rg6_Ra7_Rg1_Ra5_Ke4_h2_Rh1_Ra2_Nd4_Kg8_d6_Kf7_Nf3_Bf6_Kf5_Rf2_Nxh2_Rd2_Ng4_Rxd6_Rh6_Rd5+_Ne5+_Bxe5_fxe5_Ra5_Rh7+_Kg8_Re7_Ra6_Re6_Ra1_Rf6_Kg7_Ke4_Ra4+_Kd5_Ra5+_Kd4_Ra4+_Kd5_Ra5+_Ke4_Ra4+_Kf5_Ra1_Rb6_Kf7_Rb7+_Ke8_Kf6_Re1_Ke6_Kf8_Rb8+_Kg7_Rd8_Re2_Rd5_Kf8_Rc5_Re1_Rc8+_Kg7_Kd6_Kf7_Rc7+_Ke8_Ke6_Kf8_Rf7+_Ke8_Rh7_Kf8_Rh8+_Kg7_Re8_Re2_Kd7_Rd2+_Ke7_Re2_e6_Ra2_Rc8_Ra7+_Kd6_Ra6+_Kd7_Ra7+_Rc7_Ra8_Ke7_Kg6_Rb7_Kg7_Rd7_Kg6_Rd2_Ra7+_Kf8_Ra8+_Ke7_Ra7+_Kd6_Ra6+_Ke5_Ra5+_Rd5_Ra1_Rd8_Ra5+_Kd6_Ra6+_Ke7_Ra7+_Rd7_Ra8_Rd6_Kg7_Rc6_Ra7+_Ke8_Ra8+_Ke7_Ra7+_Kd8_Kf8_Rc5_Ra8+_Kd7_Ra7+_Kd6_Ra6+_Rc6_Rxc6+_Kxc6_Ke7_Kd5_Ke8_Kd6_Kd8_e7+_Ke8_Ke6#254"
     },
     {
       "id": "tablebase",
