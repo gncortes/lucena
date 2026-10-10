@@ -45,7 +45,7 @@ void main() {
       ),
     ],
   );
-  final texts = LessonTexts.fromJson({
+  final rawTexts = <String, Object>{
     'rook.lucena.think': 'Where should the rook go?',
     'rook.lucena.think.hint1': 'Think about a bridge.',
     'rook.lucena.think.hint2': 'The fourth rank.',
@@ -53,7 +53,8 @@ void main() {
     'rook.lucena.demo.m1': 'The rook builds the bridge.',
     'rook.lucena.demo.m2': 'Black checks.',
     'coach.thinkRight': ['Correct!'],
-  });
+  };
+  final texts = LessonTexts.fromJson(rawTexts);
   final trail = EndgameTrail(
     modules: [
       EndgameModule(
@@ -81,10 +82,18 @@ void main() {
     progress = FakeEndgameProgressRepository();
   });
 
-  Future<LessonCubit> open({String? part}) async {
+  Future<LessonCubit> open({
+    String? part,
+    Map<String, Object> withTexts = const {},
+  }) async {
     final cubit = LessonCubit(
       source: EndgameLessonSource(
-        FakeEndgameLessonRepository(trail: trail, texts: texts),
+        FakeEndgameLessonRepository(
+          trail: trail,
+          texts: withTexts.isEmpty
+              ? texts
+              : LessonTexts.fromJson({...rawTexts, ...withTexts}),
+        ),
         progress,
       ),
       characters: FakeCharacterRepository(),
@@ -148,6 +157,20 @@ void main() {
     expect(cubit.state.current?.id, 'demo');
     expect(cubit.state.demoMove, 0);
     expect(cubit.state.speech, isNot(startsWith('Correct!')));
+  });
+
+  test('pensar: a explicação começa pelo contexto do enunciado, sem a '
+      'pergunta', () async {
+    final cubit = await open(
+      withTexts: {
+        'rook.lucena.think':
+            'White to move. The black king is cut off. '
+            'Where should the rook go?',
+      },
+    );
+    await cubit.next();
+    expect(cubit.state.current?.id, 'demo');
+    expect(cubit.state.speech, 'The black king is cut off. Watch.');
   });
 
   test('cronômetro: zero ao abrir, cresce, e passar de 6 minutos não muda '

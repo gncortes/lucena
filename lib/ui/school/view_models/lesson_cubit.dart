@@ -1067,7 +1067,6 @@ class LessonCubit extends Cubit<LessonState> {
   /// O passo [index] do começo, com a fala de abertura dele.
   LessonState _open(LessonState base, int index) {
     final step = base.lesson!.steps[index];
-    final lessonId = base.lesson!.id;
     return LessonState(
       ready: true,
       lesson: base.lesson,
@@ -1082,12 +1081,27 @@ class LessonCubit extends Cubit<LessonState> {
       step: index,
       reached: index > base.reached ? index : base.reached,
       fen: step.fen,
-      speech: base.texts.step(lessonId, step.id),
+      speech: _speechOf(base, index),
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
       // O cronômetro do passo começa ao abrir.
       stepStartedAt: _now(),
       references: base.references,
     );
+  }
+
+  /// A fala do passo [index]. Logo depois de um passo de pensar, a
+  /// explicação começa pelo contexto que o enunciado dele trazia: o passo
+  /// de pensar só pergunta, curto, para o tabuleiro ficar no centro.
+  String? _speechOf(LessonState base, int index) {
+    final lessonId = base.lesson!.id;
+    final steps = base.lesson!.steps;
+    final speech = base.texts.step(lessonId, steps[index].id);
+    final previous = index == 0 ? null : steps[index - 1];
+    if (previous is! ThinkStep || steps[index] is ThinkStep) return speech;
+    final prompt = base.texts.step(lessonId, previous.id);
+    final context = prompt == null ? '' : LessonRules.thinkContext(prompt);
+    if (context.isEmpty) return speech;
+    return [context, ?speech].join(' ');
   }
 
   /// O passo guardado, com o tabuleiro de quando o app fechou.

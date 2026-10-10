@@ -692,8 +692,8 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   /// A fala do enunciado. No passo de pensar, antes de qualquer dica, o
-  /// Viktor diz quem joga e faz a pergunta da aula (sem tempo: o aluno
-  /// pensa o que quiser).
+  /// Viktor só diz quem joga e pede para pensar, curto (o tabuleiro fica no
+  /// centro); o contexto do passo abre a explicação.
   String? _promptText(
     BuildContext context,
     LessonState state,
@@ -701,12 +701,9 @@ class _LessonScreenState extends State<LessonScreen>
   ) {
     if (step is ThinkStep && state.hintsShown == 0) {
       final l10n = context.l10n;
-      final speech = state.speech;
-      // A fala que já diz quem joga vai sozinha.
-      if (speech != null && LessonRules.saysWhoMoves(speech)) return speech;
       return [
         l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
-        speech ?? l10n.lessonThinkAsk(step.ask.name),
+        l10n.lessonThinkCalm(step.ask.name),
       ].join(' ');
     }
     return state.speech;
