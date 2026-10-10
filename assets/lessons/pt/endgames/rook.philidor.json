@@ -44,7 +44,7 @@
   "part.beyond.title": "Outros peões",
   "part.beyond.summary": "A mesma defesa contra um peão de bispo e as três regras para levar para a partida.",
   "step.t_classic.hint2": "Agora imagine que as pretas só mexem a torre, de um lado para o outro. Você precisa fazer alguma coisa?",
-  "step.intro": "François-André Philidor, o jogador mais forte do século XVIII, analisou esta posição em 1777, e ela tem três peças no lugar. O seu rei em e1, a casa de promoção do peão. A sua torre na terceira fileira, de ponta a ponta. E o rei preto atrás dessa linha: enquanto a torre estiver ali, ele não pisa em e3, f3 nem g3, e sem o rei na frente o peão não passa.",
+  "step.intro": "{{François-André Philidor|francois-andre-philidor}}, o jogador mais forte do século XVIII, analisou esta posição em 1777, e ela tem três peças no lugar. O seu rei em e1, a casa de promoção do peão. A sua torre na terceira fileira, de ponta a ponta. E o rei preto atrás dessa linha: enquanto a torre estiver ali, ele não pisa em e3, f3 nem g3, e sem o rei na frente o peão não passa.",
   "step.d_wait": "Veja como se defende esta posição: esperando. As pretas jogam primeiro.",
   "step.d_wait.m1": "1...Tb2. A torre preta muda de casa procurando uma entrada, mas não ameaça nada: o rei preto continua sem a terceira fileira.",
   "step.d_wait.m2": "2.Tc3. A sua torre também anda, sem sair da terceira fileira: serve qualquer casa em que as peças pretas não a capturem, porque dali ela continua barrando e3, f3 e g3.",

@@ -44,7 +44,7 @@
   "part.beyond.title": "Other pawns",
   "part.beyond.summary": "The same defence against a bishop's pawn and the three rules to take into your games.",
   "step.t_classic.hint2": "Now imagine Black only shuffles the rook back and forth. Do you need to do anything?",
-  "step.intro": "François-André Philidor, the strongest player of the 18th century, analysed this position in 1777, and it has three pieces in place. Your king on e1, the pawn's queening square. Your rook on the third rank, from end to end. And the black king behind that line: as long as the rook is there, it cannot step onto e3, f3 or g3, and without the king in front the pawn does not get through.",
+  "step.intro": "{{François-André Philidor|francois-andre-philidor}}, the strongest player of the 18th century, analysed this position in 1777, and it has three pieces in place. Your king on e1, the pawn's queening square. Your rook on the third rank, from end to end. And the black king behind that line: as long as the rook is there, it cannot step onto e3, f3 or g3, and without the king in front the pawn does not get through.",
   "step.d_wait": "Watch how this position is defended: by waiting. Black moves first.",
   "step.d_wait.m1": "1...Rb2. The black rook changes square looking for a way in, but it threatens nothing: the black king still cannot use the third rank.",
   "step.d_wait.m2": "2.Rc3. Your rook moves too, without leaving the third rank: any square the black pieces cannot capture it on will do, because from there it keeps barring e3, f3 and g3.",

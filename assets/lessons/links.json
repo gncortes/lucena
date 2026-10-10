@@ -1,0 +1,758 @@
+{
+  "abram-gurvich": {
+    "pt": "https://en.wikipedia.org/wiki/Abram_Gurvich",
+    "en": "https://en.wikipedia.org/wiki/Abram_Gurvich"
+  },
+  "adolf-seitz": {
+    "pt": "https://en.wikipedia.org/wiki/Adolf_Seitz",
+    "en": "https://en.wikipedia.org/wiki/Adolf_Seitz"
+  },
+  "aleksandar-matanovic": {
+    "pt": "https://pt.wikipedia.org/wiki/Aleksandar_Matanovi%C4%87",
+    "en": "https://en.wikipedia.org/wiki/Aleksandar_Matanovi%C4%87"
+  },
+  "aleppo": {
+    "pt": "https://pt.wikipedia.org/wiki/Alepo",
+    "en": "https://en.wikipedia.org/wiki/Aleppo"
+  },
+  "alexander-alekhine": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexander_Alekhine",
+    "en": "https://en.wikipedia.org/wiki/Alexander_Alekhine"
+  },
+  "alexander-beliavsky": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexander_Beliavsky",
+    "en": "https://en.wikipedia.org/wiki/Alexander_Beliavsky"
+  },
+  "alexander-grischuk": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexander_Grischuk",
+    "en": "https://en.wikipedia.org/wiki/Alexander_Grischuk"
+  },
+  "alexander-morozevich": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexander_Morozevich",
+    "en": "https://en.wikipedia.org/wiki/Alexander_Morozevich"
+  },
+  "alexandra-kosteniuk": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexandra_Kosteniuk",
+    "en": "https://en.wikipedia.org/wiki/Alexandra_Kosteniuk"
+  },
+  "alexei-shirov": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexei_Shirov",
+    "en": "https://en.wikipedia.org/wiki/Alexei_Shirov"
+  },
+  "alexey-troitsky": {
+    "pt": "https://pt.wikipedia.org/wiki/Alexei_Troitzky",
+    "en": "https://en.wikipedia.org/wiki/Alexey_Troitsky"
+  },
+  "alireza-firouzja": {
+    "pt": "https://pt.wikipedia.org/wiki/Alireza_Firouzja",
+    "en": "https://en.wikipedia.org/wiki/Alireza_Firouzja"
+  },
+  "altensteig": {
+    "pt": "https://pt.wikipedia.org/wiki/Altensteig",
+    "en": "https://en.wikipedia.org/wiki/Altensteig"
+  },
+  "amsterdam": {
+    "pt": "https://pt.wikipedia.org/wiki/Amesterd%C3%A3o",
+    "en": "https://en.wikipedia.org/wiki/Amsterdam"
+  },
+  "anatoly-karpov": {
+    "pt": "https://pt.wikipedia.org/wiki/Anatoly_Karpov",
+    "en": "https://en.wikipedia.org/wiki/Anatoly_Karpov"
+  },
+  "andre-cheron": {
+    "pt": "https://pt.wikipedia.org/wiki/Andr%C3%A9_Ch%C3%A9ron",
+    "en": "https://en.wikipedia.org/wiki/Andr%C3%A9_Ch%C3%A9ron_(chess_player)"
+  },
+  "andrew-soltis": {
+    "pt": "https://pt.wikipedia.org/wiki/Andrew_Soltis",
+    "en": "https://en.wikipedia.org/wiki/Andrew_Soltis"
+  },
+  "anna-ushenina": {
+    "pt": "https://pt.wikipedia.org/wiki/Anna_Ushenina",
+    "en": "https://en.wikipedia.org/wiki/Anna_Ushenina"
+  },
+  "aron-nimzowitsch": {
+    "pt": "https://pt.wikipedia.org/wiki/Aaron_Nimzowitsch",
+    "en": "https://en.wikipedia.org/wiki/Aron_Nimzowitsch"
+  },
+  "bent-larsen": {
+    "pt": "https://pt.wikipedia.org/wiki/Bent_Larsen",
+    "en": "https://en.wikipedia.org/wiki/Bent_Larsen"
+  },
+  "berlin": {
+    "pt": "https://pt.wikipedia.org/wiki/Berlim",
+    "en": "https://en.wikipedia.org/wiki/Berlin"
+  },
+  "bernhard-horwitz": {
+    "pt": "https://pt.wikipedia.org/wiki/Bernhard_Horwitz",
+    "en": "https://en.wikipedia.org/wiki/Bernhard_Horwitz"
+  },
+  "bobby-fischer": {
+    "pt": "https://pt.wikipedia.org/wiki/Bobby_Fischer",
+    "en": "https://en.wikipedia.org/wiki/Bobby_Fischer"
+  },
+  "boris-gelfand": {
+    "pt": "https://pt.wikipedia.org/wiki/Boris_Gelfand",
+    "en": "https://en.wikipedia.org/wiki/Boris_Gelfand"
+  },
+  "boris-gulko": {
+    "pt": "https://pt.wikipedia.org/wiki/Boris_Gulko",
+    "en": "https://en.wikipedia.org/wiki/Boris_Gulko"
+  },
+  "british-championship": {
+    "pt": "https://en.wikipedia.org/wiki/British_Chess_Championship",
+    "en": "https://en.wikipedia.org/wiki/British_Chess_Championship"
+  },
+  "bruce-pandolfini": {
+    "pt": "https://pt.wikipedia.org/wiki/Bruce_Pandolfini",
+    "en": "https://en.wikipedia.org/wiki/Bruce_Pandolfini"
+  },
+  "buenos-aires": {
+    "pt": "https://pt.wikipedia.org/wiki/Buenos_Aires",
+    "en": "https://en.wikipedia.org/wiki/Buenos_Aires"
+  },
+  "bundesliga": {
+    "pt": "https://en.wikipedia.org/wiki/Chess_Bundesliga",
+    "en": "https://en.wikipedia.org/wiki/Chess_Bundesliga"
+  },
+  "candidates": {
+    "pt": "https://pt.wikipedia.org/wiki/Torneio_de_Candidatos",
+    "en": "https://en.wikipedia.org/wiki/Candidates_Tournament"
+  },
+  "cannes": {
+    "pt": "https://pt.wikipedia.org/wiki/Cannes",
+    "en": "https://en.wikipedia.org/wiki/Cannes"
+  },
+  "carl-ahues": {
+    "pt": "https://en.wikipedia.org/wiki/Carl_Ahues",
+    "en": "https://en.wikipedia.org/wiki/Carl_Ahues"
+  },
+  "chris-ward": {
+    "pt": "https://en.wikipedia.org/wiki/Chris_Ward_(chess_player)",
+    "en": "https://en.wikipedia.org/wiki/Chris_Ward_(chess_player)"
+  },
+  "daugavpils": {
+    "pt": "https://pt.wikipedia.org/wiki/Dunaburgo",
+    "en": "https://en.wikipedia.org/wiki/Daugavpils"
+  },
+  "david-hooper": {
+    "pt": "https://pt.wikipedia.org/wiki/David_Vincent_Hooper",
+    "en": "https://en.wikipedia.org/wiki/David_Vincent_Hooper"
+  },
+  "david-howell": {
+    "pt": "https://en.wikipedia.org/wiki/David_Howell_(chess_player)",
+    "en": "https://en.wikipedia.org/wiki/David_Howell_(chess_player)"
+  },
+  "david-smerdon": {
+    "pt": "https://en.wikipedia.org/wiki/David_Smerdon",
+    "en": "https://en.wikipedia.org/wiki/David_Smerdon"
+  },
+  "denver": {
+    "pt": "https://pt.wikipedia.org/wiki/Denver",
+    "en": "https://en.wikipedia.org/wiki/Denver"
+  },
+  "ding-liren": {
+    "pt": "https://pt.wikipedia.org/wiki/Ding_Liren",
+    "en": "https://en.wikipedia.org/wiki/Ding_Liren"
+  },
+  "dmitry-andreikin": {
+    "pt": "https://pt.wikipedia.org/wiki/Dmitri_Andreikin",
+    "en": "https://en.wikipedia.org/wiki/Dmitry_Andreikin"
+  },
+  "dmitry-jakovenko": {
+    "pt": "https://pt.wikipedia.org/wiki/Dmitry_Jakovenko",
+    "en": "https://en.wikipedia.org/wiki/Dmitry_Jakovenko"
+  },
+  "domenico-ponziani": {
+    "pt": "https://pt.wikipedia.org/wiki/Domenico_Lorenzo_Ponziani",
+    "en": "https://en.wikipedia.org/wiki/Domenico_Lorenzo_Ponziani"
+  },
+  "edmar-mednis": {
+    "pt": "https://pt.wikipedia.org/wiki/Edmar_Mednis",
+    "en": "https://en.wikipedia.org/wiki/Edmar_Mednis"
+  },
+  "edward-lasker": {
+    "pt": "https://pt.wikipedia.org/wiki/Edward_Lasker",
+    "en": "https://en.wikipedia.org/wiki/Edward_Lasker"
+  },
+  "emanuel-lasker": {
+    "pt": "https://pt.wikipedia.org/wiki/Emanuel_Lasker",
+    "en": "https://en.wikipedia.org/wiki/Emanuel_Lasker"
+  },
+  "etienne-bacrot": {
+    "pt": "https://pt.wikipedia.org/wiki/%C3%89tienne_Bacrot",
+    "en": "https://en.wikipedia.org/wiki/%C3%89tienne_Bacrot"
+  },
+  "eugene-znosko-borovsky": {
+    "pt": "https://en.wikipedia.org/wiki/Eugene_Znosko-Borovsky",
+    "en": "https://en.wikipedia.org/wiki/Eugene_Znosko-Borovsky"
+  },
+  "evgeny-vladimirov": {
+    "pt": "https://en.wikipedia.org/wiki/Yevgeniy_Vladimirov",
+    "en": "https://en.wikipedia.org/wiki/Yevgeniy_Vladimirov"
+  },
+  "fide-world-cup": {
+    "pt": "https://pt.wikipedia.org/wiki/Copa_do_Mundo_de_Xadrez",
+    "en": "https://en.wikipedia.org/wiki/Chess_World_Cup"
+  },
+  "francois-andre-philidor": {
+    "pt": "https://pt.wikipedia.org/wiki/Fran%C3%A7ois-Andr%C3%A9_Danican_Philidor",
+    "en": "https://en.wikipedia.org/wiki/Fran%C3%A7ois-Andr%C3%A9_Danican_Philidor"
+  },
+  "frank-lamprecht": {
+    "pt": "https://en.wikipedia.org/wiki/Frank_Lamprecht",
+    "en": "https://en.wikipedia.org/wiki/Frank_Lamprecht"
+  },
+  "frank-marshall": {
+    "pt": "https://pt.wikipedia.org/wiki/Frank_Marshall_(enxadrista)",
+    "en": "https://en.wikipedia.org/wiki/Frank_Marshall_(chess_player)"
+  },
+  "frederick-yates": {
+    "pt": "https://pt.wikipedia.org/wiki/Frederick_Yates",
+    "en": "https://en.wikipedia.org/wiki/Fred_Yates_(chess_player)"
+  },
+  "garry-kasparov": {
+    "pt": "https://pt.wikipedia.org/wiki/Garry_Kasparov",
+    "en": "https://en.wikipedia.org/wiki/Garry_Kasparov"
+  },
+  "gata-kamsky": {
+    "pt": "https://pt.wikipedia.org/wiki/Gata_Kamsky",
+    "en": "https://en.wikipedia.org/wiki/Gata_Kamsky"
+  },
+  "gedeon-barcza": {
+    "pt": "https://pt.wikipedia.org/wiki/Gedeon_Barcza",
+    "en": "https://en.wikipedia.org/wiki/Gedeon_Barcza"
+  },
+  "geneva": {
+    "pt": "https://pt.wikipedia.org/wiki/Genebra",
+    "en": "https://en.wikipedia.org/wiki/Geneva"
+  },
+  "giambattista-lolli": {
+    "pt": "https://pt.wikipedia.org/wiki/Giambattista_Lolli",
+    "en": "https://en.wikipedia.org/wiki/Giambattista_Lolli"
+  },
+  "gioachino-greco": {
+    "pt": "https://pt.wikipedia.org/wiki/Gioacchino_Greco",
+    "en": "https://en.wikipedia.org/wiki/Gioachino_Greco"
+  },
+  "glasgow": {
+    "pt": "https://pt.wikipedia.org/wiki/Glasgow",
+    "en": "https://en.wikipedia.org/wiki/Glasgow"
+  },
+  "grand-swiss": {
+    "pt": "https://en.wikipedia.org/wiki/FIDE_Grand_Swiss_Tournament",
+    "en": "https://en.wikipedia.org/wiki/FIDE_Grand_Swiss_Tournament"
+  },
+  "groningen": {
+    "pt": "https://pt.wikipedia.org/wiki/Groninga",
+    "en": "https://en.wikipedia.org/wiki/Groningen"
+  },
+  "hamburg": {
+    "pt": "https://pt.wikipedia.org/wiki/Hamburgo",
+    "en": "https://en.wikipedia.org/wiki/Hamburg"
+  },
+  "hannes-stefansson": {
+    "pt": "https://en.wikipedia.org/wiki/Hannes_Stef%C3%A1nsson",
+    "en": "https://en.wikipedia.org/wiki/Hannes_Stef%C3%A1nsson"
+  },
+  "hikaru-nakamura": {
+    "pt": "https://pt.wikipedia.org/wiki/Hikaru_Nakamura",
+    "en": "https://en.wikipedia.org/wiki/Hikaru_Nakamura"
+  },
+  "horgen": {
+    "pt": "https://pt.wikipedia.org/wiki/Horgen",
+    "en": "https://en.wikipedia.org/wiki/Horgen"
+  },
+  "hove": {
+    "pt": "https://pt.wikipedia.org/wiki/Hove",
+    "en": "https://en.wikipedia.org/wiki/Hove"
+  },
+  "huaian": {
+    "pt": "https://en.wikipedia.org/wiki/Huai'an",
+    "en": "https://en.wikipedia.org/wiki/Huai'an"
+  },
+  "igor-zaitsev": {
+    "pt": "https://en.wikipedia.org/wiki/Igor_Zaitsev",
+    "en": "https://en.wikipedia.org/wiki/Igor_Zaitsev"
+  },
+  "interzonal": {
+    "pt": "https://pt.wikipedia.org/wiki/Torneios_Interzonais",
+    "en": "https://en.wikipedia.org/wiki/Interzonal_chess_tournaments"
+  },
+  "jan-krzysztof-duda": {
+    "pt": "https://pt.wikipedia.org/wiki/Jan-Krzysztof_Duda",
+    "en": "https://en.wikipedia.org/wiki/Jan-Krzysztof_Duda"
+  },
+  "jeremy-silman": {
+    "pt": "https://pt.wikipedia.org/wiki/Jeremy_Silman",
+    "en": "https://en.wikipedia.org/wiki/Jeremy_Silman"
+  },
+  "jesus-de-la-villa": {
+    "pt": "https://en.wikipedia.org/wiki/Jes%C3%BAs_de_la_Villa",
+    "en": "https://en.wikipedia.org/wiki/Jes%C3%BAs_de_la_Villa"
+  },
+  "jesus-nogueiras": {
+    "pt": "https://en.wikipedia.org/wiki/Jes%C3%BAs_Nogueiras",
+    "en": "https://en.wikipedia.org/wiki/Jes%C3%BAs_Nogueiras"
+  },
+  "joel-lautier": {
+    "pt": "https://en.wikipedia.org/wiki/Jo%C3%ABl_Lautier",
+    "en": "https://en.wikipedia.org/wiki/Jo%C3%ABl_Lautier"
+  },
+  "johann-berger": {
+    "pt": "https://pt.wikipedia.org/wiki/Johann_Berger",
+    "en": "https://en.wikipedia.org/wiki/Johann_Berger"
+  },
+  "johannes-zukertort": {
+    "pt": "https://pt.wikipedia.org/wiki/Johannes_Zukertort",
+    "en": "https://en.wikipedia.org/wiki/Johannes_Zukertort"
+  },
+  "john-emms": {
+    "pt": "https://en.wikipedia.org/wiki/John_Emms_(chess_player)",
+    "en": "https://en.wikipedia.org/wiki/John_Emms_(chess_player)"
+  },
+  "john-nunn": {
+    "pt": "https://pt.wikipedia.org/wiki/John_Nunn",
+    "en": "https://en.wikipedia.org/wiki/John_Nunn"
+  },
+  "jose-raul-capablanca": {
+    "pt": "https://pt.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca",
+    "en": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+  },
+  "josef-kling": {
+    "pt": "https://pt.wikipedia.org/wiki/Josef_Kling",
+    "en": "https://en.wikipedia.org/wiki/Josef_Kling"
+  },
+  "judit-polgar": {
+    "pt": "https://pt.wikipedia.org/wiki/Judit_Polg%C3%A1r",
+    "en": "https://en.wikipedia.org/wiki/Judit_Polg%C3%A1r"
+  },
+  "karlsbad": {
+    "pt": "https://pt.wikipedia.org/wiki/Karlovy_Vary",
+    "en": "https://en.wikipedia.org/wiki/Karlovy_Vary"
+  },
+  "karsten-muller": {
+    "pt": "https://en.wikipedia.org/wiki/Karsten_M%C3%BCller",
+    "en": "https://en.wikipedia.org/wiki/Karsten_M%C3%BCller"
+  },
+  "katowice": {
+    "pt": "https://pt.wikipedia.org/wiki/Katowice",
+    "en": "https://en.wikipedia.org/wiki/Katowice"
+  },
+  "keith-arkell": {
+    "pt": "https://pt.wikipedia.org/wiki/Keith_Arkell",
+    "en": "https://en.wikipedia.org/wiki/Keith_Arkell"
+  },
+  "ken-thompson": {
+    "pt": "https://pt.wikipedia.org/wiki/Ken_Thompson",
+    "en": "https://en.wikipedia.org/wiki/Ken_Thompson"
+  },
+  "khanty-mansiysk": {
+    "pt": "https://pt.wikipedia.org/wiki/Khanty-Mansiisk",
+    "en": "https://en.wikipedia.org/wiki/Khanty-Mansiysk"
+  },
+  "klaus-bischoff": {
+    "pt": "https://en.wikipedia.org/wiki/Klaus_Bischoff",
+    "en": "https://en.wikipedia.org/wiki/Klaus_Bischoff"
+  },
+  "krzysztof-zolnierowicz": {
+    "pt": "https://en.wikipedia.org/wiki/Krzysztof_%C5%BBo%C5%82nierowicz",
+    "en": "https://en.wikipedia.org/wiki/Krzysztof_%C5%BBo%C5%82nierowicz"
+  },
+  "las-tunas": {
+    "pt": "https://pt.wikipedia.org/wiki/Las_Tunas",
+    "en": "https://en.wikipedia.org/wiki/Las_Tunas"
+  },
+  "le-quang-liem": {
+    "pt": "https://pt.wikipedia.org/wiki/L%C3%AA_Quang_Li%C3%AAm",
+    "en": "https://en.wikipedia.org/wiki/L%C3%AA_Quang_Li%C3%AAm"
+  },
+  "le-tuan-minh": {
+    "pt": "https://en.wikipedia.org/wiki/L%C3%AA_Tu%E1%BA%A5n_Minh",
+    "en": "https://en.wikipedia.org/wiki/L%C3%AA_Tu%E1%BA%A5n_Minh"
+  },
+  "leon": {
+    "pt": "https://pt.wikipedia.org/wiki/Le%C3%A3o_(Espanha)",
+    "en": "https://en.wikipedia.org/wiki/Le%C3%B3n,_Spain"
+  },
+  "lev-alburt": {
+    "pt": "https://pt.wikipedia.org/wiki/Lev_Alburt",
+    "en": "https://en.wikipedia.org/wiki/Lev_Alburt"
+  },
+  "levon-aronian": {
+    "pt": "https://pt.wikipedia.org/wiki/Levon_Aronian",
+    "en": "https://en.wikipedia.org/wiki/Levon_Aronian"
+  },
+  "linares": {
+    "pt": "https://pt.wikipedia.org/wiki/Torneio_de_Linares",
+    "en": "https://en.wikipedia.org/wiki/Linares_International_Chess_Tournament"
+  },
+  "ljubomir-ljubojevic": {
+    "pt": "https://pt.wikipedia.org/wiki/Ljubomir_Ljubojevi%C4%87",
+    "en": "https://en.wikipedia.org/wiki/Ljubomir_Ljubojevi%C4%87"
+  },
+  "loek-van-wely": {
+    "pt": "https://en.wikipedia.org/wiki/Loek_van_Wely",
+    "en": "https://en.wikipedia.org/wiki/Loek_van_Wely"
+  },
+  "london": {
+    "pt": "https://pt.wikipedia.org/wiki/Londres",
+    "en": "https://en.wikipedia.org/wiki/London"
+  },
+  "lugano": {
+    "pt": "https://pt.wikipedia.org/wiki/Lugano",
+    "en": "https://en.wikipedia.org/wiki/Lugano"
+  },
+  "magnus-carlsen": {
+    "pt": "https://pt.wikipedia.org/wiki/Magnus_Carlsen",
+    "en": "https://en.wikipedia.org/wiki/Magnus_Carlsen"
+  },
+  "malcolm-pein": {
+    "pt": "https://en.wikipedia.org/wiki/Malcolm_Pein",
+    "en": "https://en.wikipedia.org/wiki/Malcolm_Pein"
+  },
+  "malinska": {
+    "pt": "https://en.wikipedia.org/wiki/Malinska",
+    "en": "https://en.wikipedia.org/wiki/Malinska"
+  },
+  "mark-dvoretsky": {
+    "pt": "https://pt.wikipedia.org/wiki/Mark_Dvoretsky",
+    "en": "https://en.wikipedia.org/wiki/Mark_Dvoretsky"
+  },
+  "mark-taimanov": {
+    "pt": "https://pt.wikipedia.org/wiki/Mark_Taimanov",
+    "en": "https://en.wikipedia.org/wiki/Mark_Taimanov"
+  },
+  "max-euwe": {
+    "pt": "https://pt.wikipedia.org/wiki/Max_Euwe",
+    "en": "https://en.wikipedia.org/wiki/Max_Euwe"
+  },
+  "maxim-matlakov": {
+    "pt": "https://en.wikipedia.org/wiki/Maxim_Matlakov",
+    "en": "https://en.wikipedia.org/wiki/Maxim_Matlakov"
+  },
+  "maxime-vachier-lagrave": {
+    "pt": "https://pt.wikipedia.org/wiki/Maxime_Vachier-Lagrave",
+    "en": "https://en.wikipedia.org/wiki/Maxime_Vachier-Lagrave"
+  },
+  "melody-amber": {
+    "pt": "https://en.wikipedia.org/wiki/Amber_chess_tournament",
+    "en": "https://en.wikipedia.org/wiki/Amber_chess_tournament"
+  },
+  "mexico-city": {
+    "pt": "https://pt.wikipedia.org/wiki/Cidade_do_M%C3%A9xico",
+    "en": "https://en.wikipedia.org/wiki/Mexico_City"
+  },
+  "miguel-najdorf": {
+    "pt": "https://pt.wikipedia.org/wiki/Miguel_Najdorf",
+    "en": "https://en.wikipedia.org/wiki/Miguel_Najdorf"
+  },
+  "mika-karttunen": {
+    "pt": "https://en.wikipedia.org/wiki/Mika_Karttunen",
+    "en": "https://en.wikipedia.org/wiki/Mika_Karttunen"
+  },
+  "mikhail-botvinnik": {
+    "pt": "https://pt.wikipedia.org/wiki/Mikhail_Botvinnik",
+    "en": "https://en.wikipedia.org/wiki/Mikhail_Botvinnik"
+  },
+  "mikhail-tal": {
+    "pt": "https://pt.wikipedia.org/wiki/Mikhail_Tal",
+    "en": "https://en.wikipedia.org/wiki/Mikhail_Tal"
+  },
+  "monte-carlo": {
+    "pt": "https://pt.wikipedia.org/wiki/Monte_Carlo",
+    "en": "https://en.wikipedia.org/wiki/Monte_Carlo"
+  },
+  "moscow": {
+    "pt": "https://pt.wikipedia.org/wiki/Moscovo",
+    "en": "https://en.wikipedia.org/wiki/Moscow"
+  },
+  "mtel-masters": {
+    "pt": "https://pt.wikipedia.org/wiki/M-Tel_Masters",
+    "en": "https://en.wikipedia.org/wiki/M-Tel_Masters"
+  },
+  "new-delhi": {
+    "pt": "https://pt.wikipedia.org/wiki/Nova_Deli",
+    "en": "https://en.wikipedia.org/wiki/New_Delhi"
+  },
+  "nice": {
+    "pt": "https://pt.wikipedia.org/wiki/Nice",
+    "en": "https://en.wikipedia.org/wiki/Nice"
+  },
+  "nikolai-grigoriev": {
+    "pt": "https://en.wikipedia.org/wiki/Nikolai_Grigoriev",
+    "en": "https://en.wikipedia.org/wiki/Nikolai_Grigoriev"
+  },
+  "niksic": {
+    "pt": "https://pt.wikipedia.org/wiki/Nik%C5%A1i%C4%87",
+    "en": "https://en.wikipedia.org/wiki/Nik%C5%A1i%C4%87"
+  },
+  "norman-whitaker": {
+    "pt": "https://en.wikipedia.org/wiki/Norman_T._Whitaker",
+    "en": "https://en.wikipedia.org/wiki/Norman_T._Whitaker"
+  },
+  "norway-chess": {
+    "pt": "https://en.wikipedia.org/wiki/Norway_Chess",
+    "en": "https://en.wikipedia.org/wiki/Norway_Chess"
+  },
+  "norwich": {
+    "pt": "https://pt.wikipedia.org/wiki/Norwich",
+    "en": "https://en.wikipedia.org/wiki/Norwich"
+  },
+  "oldrich-duras": {
+    "pt": "https://pt.wikipedia.org/wiki/Old%C5%99ich_Duras",
+    "en": "https://en.wikipedia.org/wiki/Old%C5%99ich_Duras"
+  },
+  "olga-girya": {
+    "pt": "https://pt.wikipedia.org/wiki/Olga_Girya",
+    "en": "https://en.wikipedia.org/wiki/Olga_Girya"
+  },
+  "olympiad-hague-1928": {
+    "pt": "https://pt.wikipedia.org/wiki/Olimp%C3%ADada_de_xadrez_de_1928",
+    "en": "https://en.wikipedia.org/wiki/2nd_Chess_Olympiad"
+  },
+  "oscar-panno": {
+    "pt": "https://pt.wikipedia.org/wiki/Oscar_Panno",
+    "en": "https://en.wikipedia.org/wiki/Oscar_Panno"
+  },
+  "pal-benko": {
+    "pt": "https://pt.wikipedia.org/wiki/Pal_Benko",
+    "en": "https://en.wikipedia.org/wiki/Pal_Benko"
+  },
+  "pamplona": {
+    "pt": "https://pt.wikipedia.org/wiki/Pamplona",
+    "en": "https://en.wikipedia.org/wiki/Pamplona"
+  },
+  "parham-maghsoodloo": {
+    "pt": "https://en.wikipedia.org/wiki/Parham_Maghsoodloo",
+    "en": "https://en.wikipedia.org/wiki/Parham_Maghsoodloo"
+  },
+  "paul-keres": {
+    "pt": "https://pt.wikipedia.org/wiki/Paul_Keres",
+    "en": "https://en.wikipedia.org/wiki/Paul_Keres"
+  },
+  "peter-leko": {
+    "pt": "https://pt.wikipedia.org/wiki/P%C3%A9ter_L%C3%A9k%C3%B3",
+    "en": "https://en.wikipedia.org/wiki/Peter_Leko"
+  },
+  "peter-svidler": {
+    "pt": "https://pt.wikipedia.org/wiki/Peter_Svidler",
+    "en": "https://en.wikipedia.org/wiki/Peter_Svidler"
+  },
+  "philadelphia": {
+    "pt": "https://pt.wikipedia.org/wiki/Filad%C3%A9lfia",
+    "en": "https://en.wikipedia.org/wiki/Philadelphia"
+  },
+  "philipp-stamma": {
+    "pt": "https://pt.wikipedia.org/wiki/Philipp_Stamma",
+    "en": "https://en.wikipedia.org/wiki/Philipp_Stamma"
+  },
+  "portoroz": {
+    "pt": "https://pt.wikipedia.org/wiki/Portoro%C5%BE",
+    "en": "https://en.wikipedia.org/wiki/Portoro%C5%BE"
+  },
+  "praggnanandhaa": {
+    "pt": "https://pt.wikipedia.org/wiki/R_Praggnanandhaa",
+    "en": "https://en.wikipedia.org/wiki/R_Praggnanandhaa"
+  },
+  "prague": {
+    "pt": "https://pt.wikipedia.org/wiki/Praga",
+    "en": "https://en.wikipedia.org/wiki/Prague"
+  },
+  "rafael-vaganian": {
+    "pt": "https://pt.wikipedia.org/wiki/Rafael_Vaganian",
+    "en": "https://en.wikipedia.org/wiki/Rafael_Vaganian"
+  },
+  "ralf-akesson": {
+    "pt": "https://en.wikipedia.org/wiki/Ralf_%C3%85kesson",
+    "en": "https://en.wikipedia.org/wiki/Ralf_%C3%85kesson"
+  },
+  "ray-robson": {
+    "pt": "https://pt.wikipedia.org/wiki/Ray_Robson",
+    "en": "https://en.wikipedia.org/wiki/Ray_Robson"
+  },
+  "rethymnon": {
+    "pt": "https://pt.wikipedia.org/wiki/Retimno",
+    "en": "https://en.wikipedia.org/wiki/Rethymno"
+  },
+  "reuben-fine": {
+    "pt": "https://pt.wikipedia.org/wiki/Reuben_Fine",
+    "en": "https://en.wikipedia.org/wiki/Reuben_Fine"
+  },
+  "reykjavik": {
+    "pt": "https://pt.wikipedia.org/wiki/Reiquiavique",
+    "en": "https://en.wikipedia.org/wiki/Reykjav%C3%ADk"
+  },
+  "richard-reti": {
+    "pt": "https://pt.wikipedia.org/wiki/Richard_R%C3%A9ti",
+    "en": "https://en.wikipedia.org/wiki/Richard_R%C3%A9ti"
+  },
+  "riga": {
+    "pt": "https://pt.wikipedia.org/wiki/Riga",
+    "en": "https://en.wikipedia.org/wiki/Riga"
+  },
+  "robert-kempinski": {
+    "pt": "https://en.wikipedia.org/wiki/Robert_Kempi%C5%84ski",
+    "en": "https://en.wikipedia.org/wiki/Robert_Kempi%C5%84ski"
+  },
+  "robert-zelcic": {
+    "pt": "https://en.wikipedia.org/wiki/Robert_Zel%C4%8Di%C4%87",
+    "en": "https://en.wikipedia.org/wiki/Robert_Zel%C4%8Di%C4%87"
+  },
+  "saint-louis": {
+    "pt": "https://pt.wikipedia.org/wiki/St._Louis_(Missouri)",
+    "en": "https://en.wikipedia.org/wiki/St._Louis"
+  },
+  "saint-petersburg": {
+    "pt": "https://pt.wikipedia.org/wiki/S%C3%A3o_Petersburgo",
+    "en": "https://en.wikipedia.org/wiki/Saint_Petersburg"
+  },
+  "sam-shankland": {
+    "pt": "https://en.wikipedia.org/wiki/Sam_Shankland",
+    "en": "https://en.wikipedia.org/wiki/Sam_Shankland"
+  },
+  "siegbert-tarrasch": {
+    "pt": "https://pt.wikipedia.org/wiki/Siegbert_Tarrasch",
+    "en": "https://en.wikipedia.org/wiki/Siegbert_Tarrasch"
+  },
+  "sinquefield-cup": {
+    "pt": "https://en.wikipedia.org/wiki/Sinquefield_Cup",
+    "en": "https://en.wikipedia.org/wiki/Sinquefield_Cup"
+  },
+  "skelleftea": {
+    "pt": "https://pt.wikipedia.org/wiki/Skellefte%C3%A5",
+    "en": "https://en.wikipedia.org/wiki/Skellefte%C3%A5"
+  },
+  "sofia": {
+    "pt": "https://pt.wikipedia.org/wiki/S%C3%B3fia",
+    "en": "https://en.wikipedia.org/wiki/Sofia"
+  },
+  "soviet-championship": {
+    "pt": "https://pt.wikipedia.org/wiki/Campeonato_de_xadrez_da_Uni%C3%A3o_Sovi%C3%A9tica",
+    "en": "https://en.wikipedia.org/wiki/USSR_Chess_Championship"
+  },
+  "stavanger": {
+    "pt": "https://pt.wikipedia.org/wiki/Stavanger",
+    "en": "https://en.wikipedia.org/wiki/Stavanger"
+  },
+  "tal-memorial": {
+    "pt": "https://en.wikipedia.org/wiki/Tal_Memorial",
+    "en": "https://en.wikipedia.org/wiki/Tal_Memorial"
+  },
+  "tal-shaked": {
+    "pt": "https://en.wikipedia.org/wiki/Tal_Shaked",
+    "en": "https://en.wikipedia.org/wiki/Tal_Shaked"
+  },
+  "tamir-nabaty": {
+    "pt": "https://en.wikipedia.org/wiki/Tamir_Nabaty",
+    "en": "https://en.wikipedia.org/wiki/Tamir_Nabaty"
+  },
+  "tbilisi": {
+    "pt": "https://pt.wikipedia.org/wiki/Tibl%C3%ADssi",
+    "en": "https://en.wikipedia.org/wiki/Tbilisi"
+  },
+  "tigran-petrosian": {
+    "pt": "https://pt.wikipedia.org/wiki/Tigran_Petrosian",
+    "en": "https://en.wikipedia.org/wiki/Tigran_Petrosian"
+  },
+  "tilburg": {
+    "pt": "https://pt.wikipedia.org/wiki/Tilburgo",
+    "en": "https://en.wikipedia.org/wiki/Tilburg"
+  },
+  "ulf-andersson": {
+    "pt": "https://pt.wikipedia.org/wiki/Ulf_Andersson",
+    "en": "https://en.wikipedia.org/wiki/Ulf_Andersson"
+  },
+  "vancouver": {
+    "pt": "https://pt.wikipedia.org/wiki/Vancouver",
+    "en": "https://en.wikipedia.org/wiki/Vancouver"
+  },
+  "varuzhan-akobian": {
+    "pt": "https://en.wikipedia.org/wiki/Varuzhan_Akobian",
+    "en": "https://en.wikipedia.org/wiki/Varuzhan_Akobian"
+  },
+  "vassily-ivanchuk": {
+    "pt": "https://pt.wikipedia.org/wiki/Vasyl_Ivanchuk",
+    "en": "https://en.wikipedia.org/wiki/Vasyl_Ivanchuk"
+  },
+  "veselin-topalov": {
+    "pt": "https://pt.wikipedia.org/wiki/Veselin_Topalov",
+    "en": "https://en.wikipedia.org/wiki/Veselin_Topalov"
+  },
+  "viktor-bologan": {
+    "pt": "https://en.wikipedia.org/wiki/Victor_Bologan",
+    "en": "https://en.wikipedia.org/wiki/Victor_Bologan"
+  },
+  "viswanathan-anand": {
+    "pt": "https://pt.wikipedia.org/wiki/Viswanathan_Anand",
+    "en": "https://en.wikipedia.org/wiki/Viswanathan_Anand"
+  },
+  "vitaly-chekhover": {
+    "pt": "https://en.wikipedia.org/wiki/Vitaly_Chekhover",
+    "en": "https://en.wikipedia.org/wiki/Vitaly_Chekhover"
+  },
+  "vladimir-alatortsev": {
+    "pt": "https://en.wikipedia.org/wiki/Vladimir_Alatortsev",
+    "en": "https://en.wikipedia.org/wiki/Vladimir_Alatortsev"
+  },
+  "vladimir-epishin": {
+    "pt": "https://en.wikipedia.org/wiki/Vladimir_Epishin",
+    "en": "https://en.wikipedia.org/wiki/Vladimir_Epishin"
+  },
+  "vladimir-kramnik": {
+    "pt": "https://pt.wikipedia.org/wiki/Vladimir_Kramnik",
+    "en": "https://en.wikipedia.org/wiki/Vladimir_Kramnik"
+  },
+  "walter-arencibia": {
+    "pt": "https://en.wikipedia.org/wiki/Walter_Arencibia",
+    "en": "https://en.wikipedia.org/wiki/Walter_Arencibia"
+  },
+  "walter-browne": {
+    "pt": "https://pt.wikipedia.org/wiki/Walter_Browne",
+    "en": "https://en.wikipedia.org/wiki/Walter_Browne"
+  },
+  "wesley-so": {
+    "pt": "https://pt.wikipedia.org/wiki/Wesley_So",
+    "en": "https://en.wikipedia.org/wiki/Wesley_So"
+  },
+  "willi-schlage": {
+    "pt": "https://en.wikipedia.org/wiki/Willi_Schlage",
+    "en": "https://en.wikipedia.org/wiki/Willi_Schlage"
+  },
+  "wolfgang-uhlmann": {
+    "pt": "https://pt.wikipedia.org/wiki/Wolfgang_Uhlmann",
+    "en": "https://en.wikipedia.org/wiki/Wolfgang_Uhlmann"
+  },
+  "womens-grand-prix": {
+    "pt": "https://en.wikipedia.org/wiki/FIDE_Women's_Grand_Prix",
+    "en": "https://en.wikipedia.org/wiki/FIDE_Women's_Grand_Prix"
+  },
+  "world-blitz": {
+    "pt": "https://en.wikipedia.org/wiki/World_Blitz_Chess_Championship",
+    "en": "https://en.wikipedia.org/wiki/World_Blitz_Chess_Championship"
+  },
+  "world-junior": {
+    "pt": "https://pt.wikipedia.org/wiki/Campeonato_do_Mundo_de_Xadrez_J%C3%BAnior",
+    "en": "https://en.wikipedia.org/wiki/World_Junior_Chess_Championship"
+  },
+  "yasser-seirawan": {
+    "pt": "https://pt.wikipedia.org/wiki/Yasser_Seirawan",
+    "en": "https://en.wikipedia.org/wiki/Yasser_Seirawan"
+  },
+  "yerevan": {
+    "pt": "https://pt.wikipedia.org/wiki/Erev%C3%A3",
+    "en": "https://en.wikipedia.org/wiki/Yerevan"
+  },
+  "yuri-averbakh": {
+    "pt": "https://pt.wikipedia.org/wiki/Yuri_Averbakh",
+    "en": "https://en.wikipedia.org/wiki/Yuri_Averbakh"
+  },
+  "zagan": {
+    "pt": "https://pt.wikipedia.org/wiki/%C5%BBaga%C5%84",
+    "en": "https://en.wikipedia.org/wiki/%C5%BBaga%C5%84"
+  },
+  "zurich": {
+    "pt": "https://pt.wikipedia.org/wiki/Zurique",
+    "en": "https://en.wikipedia.org/wiki/Zurich"
+  }
+}
