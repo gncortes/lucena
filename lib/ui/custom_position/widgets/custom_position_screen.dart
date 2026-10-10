@@ -15,6 +15,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/position_board.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
@@ -176,27 +177,40 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
           math.min(constraints.maxWidth, 420.0),
           screen.height * 0.42,
         );
+        final editor = Directionality(
+          textDirection: TextDirection.ltr,
+          child: ChessboardEditor(
+            key: CustomPositionKeys.editor,
+            size: size,
+            orientation: Side.white,
+            pieces: _pieces(state),
+            settings: board.chessground,
+            pointerMode: _tool != null || _erasing
+                ? EditorPointerMode.edit
+                : EditorPointerMode.drag,
+            onEditedSquare: _onEditedSquare,
+            onDroppedPiece: (origin, destination, piece) => _edit((pieces) {
+              if (origin != null) pieces.remove(origin);
+              pieces[destination] = piece;
+              return pieces;
+            }),
+            onDiscardedPiece: (square) =>
+                _edit((pieces) => pieces..remove(square)),
+          ),
+        );
+        final position = state.position;
         return Center(
           // O tabuleiro não espelha em idiomas da direita para a esquerda.
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: ChessboardEditor(
-              key: CustomPositionKeys.editor,
-              size: size,
+          // Com a posição jogável, ele voa até o centro da preparação da
+          // partida ao continuar (e volta ao editor ao voltar).
+          // Sem ela, a marca é só desta tela (nada voa), e o Hero continua
+          // na árvore para o editor não perder o estado.
+          child: Hero(
+            tag: position == null ? this : setupBoardTag(fen: position.fen),
+            child: BoardHeroFrame(
+              radius: 0,
               orientation: Side.white,
-              pieces: _pieces(state),
-              settings: board.chessground,
-              pointerMode: _tool != null || _erasing
-                  ? EditorPointerMode.edit
-                  : EditorPointerMode.drag,
-              onEditedSquare: _onEditedSquare,
-              onDroppedPiece: (origin, destination, piece) => _edit((pieces) {
-                if (origin != null) pieces.remove(origin);
-                pieces[destination] = piece;
-                return pieces;
-              }),
-              onDiscardedPiece: (square) =>
-                  _edit((pieces) => pieces..remove(square)),
+              child: editor,
             ),
           ),
         );
