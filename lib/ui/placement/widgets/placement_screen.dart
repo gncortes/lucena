@@ -212,53 +212,84 @@ class _Question extends StatelessWidget {
     final cubit = context.read<PlacementCubit>();
     final item = state.item;
     if (item == null) return const SizedBox.shrink();
-    final prompt = Padding(
-      // Embaixo do tabuleiro, como nos exercícios.
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.screen,
-        AppSpacing.md,
-        AppSpacing.screen,
-        0,
-      ),
-      child: Text(
-        placementPrompt(l10n, item),
-        key: PlacementKeys.prompt,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-    // O tabuleiro no mesmo lugar e do mesmo tamanho em todas as perguntas:
-    // embaixo dele fica reservada a altura do maior bloco (duas linhas de
-    // pergunta, duas linhas de opções e o "Não sei"), e a sobra se divide
-    // em cima.
-    return LayoutBuilder(
-      builder: (context, box) {
-        const reserved = 260.0;
-        final size = math.max(
-          0.0,
-          math.min(box.maxWidth, box.maxHeight - reserved - AppSpacing.md),
-        );
-        final top = math.max(
-          AppSpacing.md,
-          (box.maxHeight - reserved - size) / 2,
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: top),
-            Center(
-              child: _Board(state: state, size: size),
+    // Com duas linhas de opções, o bloco de baixo é alto: a pergunta sobe
+    // para cima do tabuleiro. Com poucas, ela fica embaixo, como nos
+    // exercícios. Nos dois casos o tabuleiro fica no meio da tela.
+    final promptAbove =
+        item.type == PlacementItemType.choice && item.options.length > 2;
+    return CustomMultiChildLayout(
+      delegate: _QuestionLayout(promptAbove: promptAbove),
+      children: [
+        LayoutId(
+          id: _QuestionSlot.prompt,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+            child: Text(
+              placementPrompt(l10n, item),
+              key: PlacementKeys.prompt,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
-            prompt,
-            const Spacer(),
-            _Answers(state: state, cubit: cubit),
-          ],
-        );
-      },
+          ),
+        ),
+        LayoutId(
+          id: _QuestionSlot.board,
+          child: LayoutBuilder(
+            builder: (context, box) => _Board(state: state, size: box.maxWidth),
+          ),
+        ),
+        LayoutId(
+          id: _QuestionSlot.answers,
+          child: _Answers(state: state, cubit: cubit),
+        ),
+      ],
     );
   }
+}
+
+enum _QuestionSlot { prompt, board, answers }
+
+/// O tabuleiro no meio da tela, a pergunta colada nele (em cima ou
+/// embaixo) e as respostas no rodapé. Se não couber no meio, o tabuleiro
+/// desliza (e só então encolhe) para não encostar no resto.
+class _QuestionLayout extends MultiChildLayoutDelegate {
+  _QuestionLayout({required this.promptAbove});
+
+  final bool promptAbove;
+
+  @override
+  void performLayout(Size size) {
+    const gap = AppSpacing.md;
+    final loose = BoxConstraints(maxWidth: size.width);
+    final answers = layoutChild(_QuestionSlot.answers, loose);
+    final prompt = layoutChild(_QuestionSlot.prompt, loose);
+    final free = size.height - answers.height - prompt.height - 3 * gap;
+    final side = math.max(0.0, math.min(size.width, free));
+    layoutChild(_QuestionSlot.board, BoxConstraints.tight(Size(side, side)));
+    final minTop = promptAbove ? gap + prompt.height + gap : gap;
+    final maxTop = promptAbove
+        ? size.height - answers.height - gap - side
+        : size.height - answers.height - gap - prompt.height - gap - side;
+    final top = ((size.height - side) / 2)
+        .clamp(minTop, math.max(minTop, maxTop))
+        .toDouble();
+    final left = (size.width - side) / 2;
+    positionChild(_QuestionSlot.board, Offset(left, top));
+    positionChild(
+      _QuestionSlot.prompt,
+      Offset(0, promptAbove ? top - gap - prompt.height : top + side + gap),
+    );
+    positionChild(
+      _QuestionSlot.answers,
+      Offset(0, size.height - answers.height),
+    );
+  }
+
+  @override
+  bool shouldRelayout(_QuestionLayout oldDelegate) =>
+      oldDelegate.promptAbove != promptAbove;
 }
 
 class _Answers extends StatelessWidget {
