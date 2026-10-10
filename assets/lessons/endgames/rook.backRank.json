@@ -959,35 +959,6 @@
       ]
     },
     {
-      "id": "e12",
-      "stars": 2,
-      "fen": "7R/8/8/8/6p1/5k2/r7/6K1 w - - 0 1",
-      "goal": "draw",
-      "origin": "own",
-      "line": [
-        {
-          "teach": "h8f8",
-          "accept": [
-            "h8f8"
-          ],
-          "reply": "f3g3"
-        },
-        {
-          "teach": "f8f1",
-          "accept": [
-            "f8f1"
-          ],
-          "reply": "a2g2"
-        },
-        {
-          "teach": "g1h1",
-          "accept": [
-            "g1h1"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e14",
       "stars": 3,
       "fen": "8/3r4/8/4R3/6pk/8/4K3/8 w - - 0 1",
@@ -1061,7 +1032,7 @@
       ]
     }
   ],
-  "passScore": 8,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "knight",
@@ -1187,5 +1158,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 12
+  "maxScore": 10
 }

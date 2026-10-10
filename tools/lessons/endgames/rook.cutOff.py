@@ -1,7 +1,7 @@
 """Gera `rook.cutOff.json` (a fonte da aula) a partir dos lances em SAN.
 Rodar: `tools/.cache/venv/bin/python tools/lessons/endgames/rook.cutOff.py`
 e depois o `build_aula.py rook.cutOff`. O aluno joga de brancas, sempre
-para ganhar. Lição refeita na T61 (2026-10-10): oito partes, uma ideia por
+para ganhar. Lição refeita na T61 (2026-10-10): sete partes, uma ideia por
 parte, com Uhlmann-Gulko (Niksic 1978) na parte `behind`."""
 import sys
 from pathlib import Path
@@ -39,24 +39,14 @@ IMP_BLACK = after('5r2/8/8/R7/3k4/5P2/5K2/8 b - - 0 1', 'Rg8')
 BEHIND = '3r4/3P4/8/8/7k/8/8/3RK3 w - - 0 1'
 # Uhlmann-Gulko, Niksic 1978, depois de 57...Rf5? (ply 114).
 GULKO_GAME = '8/8/4r3/5k2/7K/4p3/8/1R6 w - - 1 58'
-# Peão de torre (própria), contando só as colunas do meio (regra dos cinco,
-# Emms): rei preto em g7, cinco colunas, ganha (torre pela coluna d, longe da
-# rota do e12); em d6, duas, empate; no move, rei em f7, quatro, pela coluna h.
-ROOKPAWN = 'K7/P5k1/8/8/8/8/3R4/1r6 w - - 0 1'
-ROOKPAWN_DRAW = 'K7/P7/3k4/8/8/8/7R/1r6 w - - 0 1'
-ROOKPAWN_MOVE = 'K7/P4k2/8/8/8/8/7R/1r6 w - - 0 1'
 # Contagem do resumo (própria): só 1.Te1 e 1.Ta6 ganham; 1.Td1 empata.
 RECAP_COUNT = '2r5/8/8/5k2/2P5/2K5/8/R7 w - - 0 1'
 CHERON = '1r6/8/4k3/8/1P6/1K6/8/3R4 w - - 0 1'   # Wikipedia / mQHeAvFI
 CAPA = '8/8/8/2k5/8/4K3/3R1P1r/8 w - - 0 1'      # Wikipedia / zJlWLhtS
 CAPA2 = after(CAPA, 'Rd1 Rh8')                  # só f4 ganha
 FINISH = '2r5/8/6k1/8/2P5/2K5/8/4R3 w - - 0 1'
-IMPERFECT = '1r6/8/7R/3k4/1P6/1K6/8/8 w - - 0 1'  # xuMvndqe
 # Pein-Ward, British Championship 1997 (Wikipedia), com as cores trocadas.
 PEIN = '8/2R5/8/2P2k2/r7/3K4/8/8 w - - 0 1'
-# Peão de torre, rei cortado por quatro colunas (Emms via Wikipedia), depois
-# de 1.Tc3 Re7.
-EMMS = after('K7/P4k2/8/8/8/4R3/8/1r6 w - - 0 1', 'Rc3 Ke7')
 # Uhlmann-Gulko, Niksic 1978, com as cores trocadas (posição antes de 57...).
 GULKO = '1r6/8/4P3/7k/8/4RK2/8/8 w - - 0 1'
 
@@ -199,18 +189,6 @@ write({
             move('m_behind', BEHIND, 'Rd5 Kg3 Kd2',
                  accept={1: 'only', 2: 'win'}),
         ]},
-        {'id': 'rookPawn', 'steps': [
-            think('t_rookPawn', ROOKPAWN, 2, marks=['b7', 'b8']),
-            talk('rookPawn', ROOKPAWN, arrows=['d2d8', 'd8b8'],
-                 marks=['b7']),
-            demo('d_rookPawnDraw', ROOKPAWN_DRAW, 'Rh8 Kc7',
-                 goal='draw', notes={2: {'arrows': ['d6c7']}}),
-            demo('d_rookPawn', ROOKPAWN, 'Rd8 Kf7 Rb8 Ra1 Kb7',
-                 notes={1: {'arrows': ['d2d8']}, 3: {'arrows': ['d8b8']},
-                        5: {'arrows': ['a8b7']}}),
-            move('m_rookPawn', ROOKPAWN_MOVE, 'Rh8 Ke7 Rb8',
-                 accept={1: 'win', 2: 'win'}),
-        ]},
         {'id': 'recap', 'steps': [
             talk('recap', KEY2, arrows=['a1c1']),
             move('m_recap', RECAP_COUNT, 'Re1 Kf6 Kb4',
@@ -229,15 +207,12 @@ write({
                  'Kb4 Kd4 Rd6+', accept='win'),
         exercise('e09', 2, CAPA2, 'f4 Re8+ Kf3', accept='win',
                  origin='capablanca'),
-        exercise('e07', 2, IMPERFECT, 'Ka4', accept='win', origin='harryRank'),
         exercise('e11', 2, PEIN, 'Re7 Kf6 Re2', accept='win',
                  origin='peinWard'),
-        exercise('e12', 3, EMMS, 'Rc8 Kd6 Rb8 Ra1 Kb7 Rb1+ Kc8',
-                 accept='win', origin='wikiRookPawn'),
         exercise('e13', 3, GULKO, 'e7 Re8 Re6 Kg5 Ke4', accept='win',
                  origin='uhlmannGulko'),
     ],
-    'passScore': 8,
+    'passScore': 5,
     'keyPositions': [
         {'id': 'cut', 'fen': KEY1},
         {'id': 'count', 'fen': KEY2},

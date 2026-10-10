@@ -222,12 +222,26 @@
           "ref": "audax6Race"
         },
         {
+          "type": "talk",
+          "id": "raceCount",
+          "fen": "8/5rk1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
+          "marks": [
+            "f2",
+            "a2"
+          ]
+        },
+        {
           "type": "demo",
           "id": "d_raceError",
-          "fen": "8/5rk1/P6p/8/6P1/2R5/7K/8 b - - 1 1",
+          "fen": "8/5rk1/P1R4p/8/6P1/8/7K/8 w - - 0 1",
           "goal": "draw",
-          "side": "white",
           "line": [
+            {
+              "uci": "c6c3",
+              "arrows": [
+                "c3a3"
+              ]
+            },
             {
               "uci": "f7f2",
               "arrows": [
@@ -515,12 +529,22 @@
           ]
         },
         {
+          "type": "talk",
+          "id": "orderWhy",
+          "fen": "R7/8/P7/8/5kp1/r7/5KP1/8 w - - 0 1",
+          "marks": [
+            "g3"
+          ]
+        },
+        {
           "type": "demo",
           "id": "d_orderError",
-          "fen": "R7/P7/8/8/5kp1/r7/5KP1/8 b - - 0 1",
+          "fen": "R7/8/P7/8/5kp1/r7/5KP1/8 w - - 0 1",
           "goal": "draw",
-          "side": "white",
           "line": [
+            {
+              "uci": "a6a7"
+            },
             {
               "uci": "a3a2",
               "arrows": [

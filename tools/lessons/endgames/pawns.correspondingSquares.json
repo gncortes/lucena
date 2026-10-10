@@ -863,29 +863,6 @@
       ]
     },
     {
-      "id": "e05",
-      "stars": 3,
-      "fen": "8/8/8/4p1p1/8/5P2/6K1/3k4 w - - 0 1",
-      "goal": "draw",
-      "origin": "strategically",
-      "turns": [
-        {
-          "teach": "g2h1",
-          "accept": "hold",
-          "reply": "d1e1"
-        },
-        {
-          "teach": "h1g1",
-          "accept": "hold",
-          "reply": "e1e2"
-        },
-        {
-          "teach": "g1g2",
-          "accept": "hold"
-        }
-      ]
-    },
-    {
       "id": "e06",
       "stars": 3,
       "fen": "8/2k5/1p6/1K6/2P5/P7/8/8 w - - 0 1",
@@ -910,6 +887,49 @@
         {
           "teach": "a7b8",
           "accept": "win"
+        }
+      ]
+    },
+    {
+      "id": "e07",
+      "stars": 3,
+      "fen": "8/6k1/1K3p2/4p1p1/4P1P1/5P2/8/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "wikiKeySquare",
+      "turns": [
+        {
+          "teach": "g7h6",
+          "accept": "hold",
+          "reply": "b6c7"
+        },
+        {
+          "teach": "h6g7",
+          "accept": "hold",
+          "reply": "c7b7"
+        },
+        {
+          "teach": "g7h7",
+          "accept": "hold",
+          "reply": "b7b8"
+        },
+        {
+          "teach": "h7h8",
+          "accept": "hold",
+          "reply": "b8c8"
+        },
+        {
+          "teach": "h8g8",
+          "accept": "hold",
+          "reply": "c8d7"
+        },
+        {
+          "teach": "g8h7",
+          "accept": "hold",
+          "reply": "d7e6"
+        },
+        {
+          "teach": "h7g6",
+          "accept": "hold"
         }
       ]
     }
@@ -957,6 +977,12 @@
       "kind": "web",
       "title": "Wikipedia: Corresponding squares",
       "url": "https://en.wikipedia.org/wiki/Corresponding_squares"
+    },
+    {
+      "id": "wikiKeySquare",
+      "kind": "web",
+      "title": "Wikipedia: Key square",
+      "url": "https://en.wikipedia.org/wiki/Key_square"
     },
     {
       "id": "wikiZugzwang",

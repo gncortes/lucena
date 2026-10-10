@@ -650,44 +650,6 @@
       ]
     },
     {
-      "id": "e11",
-      "stars": 2,
-      "fen": "8/8/8/5p2/5k1p/7P/5K2/8 b - - 0 1",
-      "goal": "win",
-      "origin": "behrens",
-      "turns": [
-        {
-          "teach": "f4e4",
-          "accept": "win",
-          "reply": "f2e2"
-        },
-        {
-          "teach": "f5f4",
-          "accept": "win",
-          "reply": "e2f2"
-        },
-        {
-          "teach": "f4f3",
-          "accept": "win",
-          "reply": "f2f1"
-        },
-        {
-          "teach": "e4f5",
-          "accept": "win",
-          "reply": "f1g1"
-        },
-        {
-          "teach": "f5e5",
-          "accept": "win",
-          "reply": "g1f1"
-        },
-        {
-          "teach": "e5e4",
-          "accept": "win"
-        }
-      ]
-    },
-    {
       "id": "e04",
       "stars": 2,
       "fen": "8/3k1p1K/5P2/8/8/8/8/8 w - - 0 1",
@@ -730,39 +692,6 @@
         {
           "teach": "e2d3",
           "accept": "win"
-        }
-      ]
-    },
-    {
-      "id": "e13",
-      "stars": 2,
-      "fen": "8/8/3p2k1/3P4/2P5/6K1/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "audax",
-      "turns": [
-        {
-          "teach": "g6g7",
-          "accept": "hold",
-          "reply": "g3f3"
-        },
-        {
-          "teach": "g7f7",
-          "accept": "hold",
-          "reply": "f3f4"
-        },
-        {
-          "teach": "f7f6",
-          "accept": "hold",
-          "reply": "f4e4"
-        },
-        {
-          "teach": "f6e7",
-          "accept": "hold",
-          "reply": "e4d4"
-        },
-        {
-          "teach": "e7d7",
-          "accept": "hold"
         }
       ]
     },
@@ -814,7 +743,7 @@
     },
     {
       "id": "e09",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/8/8/1p6/1P6/3P1k2/3K4/8 w - - 0 1",
       "goal": "win",
       "origin": "wikiCorresponding",
@@ -851,7 +780,7 @@
       ]
     }
   ],
-  "passScore": 11,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "zugzwang",

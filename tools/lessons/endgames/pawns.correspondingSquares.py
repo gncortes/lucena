@@ -48,11 +48,13 @@ RUELLE4 = '8/1k6/8/1P6/1P6/2K5/8/8 w - - 0 1'
 # Estudo de Strategically_Endgam no Lichess, capítulo "1-7 B3", depois de
 # 1...Rc7: só Ra6 ganha; o tempo a3–a4 decide a vez.
 STRAT3 = '8/2k5/1p6/1K6/2P5/P7/8/8 w - - 0 1'
-# Estudo de Strategically_Endgam no Lichess, capítulo 4: só Rh1 empata.
-STRAT = '8/8/8/4p1p1/8/5P2/6K1/3k4 w - - 0 1'
 # Estudo de miguel_angel_jodraza no Lichess, capítulo 5: só Rg1 ganha (a
 # oposição distante vale nas colunas f e g; nas colunas d e e os pares somem).
 MIGUEL = '8/6k1/3p4/3P4/2P5/8/8/7K w - - 0 1'
+# Müller e Lamprecht (pela Wikipedia, "Key square"); veio do e17 de
+# pawns.keySquares (2026-10-10): 8 peças, julgada pelo Stockfish; cada lance
+# preto da linha é o único que empata (1...Rh6!!, o par certo).
+MULLER = '8/6k1/1K3p2/4p1p1/4P1P1/5P2/8/8 b - - 0 1'
 # A ideia do e04 numa estrutura uma fileira abaixo (segunda passada,
 # 2026-10-10; a do e04 com outros reis repetia o exercício): perto dos peões
 # o par pula duas colunas; só Rf2/Rf1 ganham, e contra Re6 só Rg1/Rg2/Rg3.
@@ -75,6 +77,8 @@ REFERENCES = [
     {'id': 'wikiCorresponding', 'kind': 'web',
      'title': 'Wikipedia: Corresponding squares',
      'url': 'https://en.wikipedia.org/wiki/Corresponding_squares'},
+    {'id': 'wikiKeySquare', 'kind': 'web', 'title': 'Wikipedia: Key square',
+     'url': 'https://en.wikipedia.org/wiki/Key_square'},
     {'id': 'wikiZugzwang', 'kind': 'web', 'title': 'Wikipedia: Zugzwang',
      'url': 'https://en.wikipedia.org/wiki/Zugzwang'},
     {'id': 'wikiOpposition', 'kind': 'web',
@@ -250,10 +254,11 @@ write({
                  goal='draw', origin='peperde'),
         exercise('e04', 3, MIGUEL, 'Kg1 Kf7 Kf1 Ke7 Kg2', accept='win',
                  origin='miguel'),
-        exercise('e05', 3, STRAT, 'Kh1 Ke1 Kg1 Ke2 Kg2', accept='hold',
-                 goal='draw', origin='strategically'),
         exercise('e06', 3, STRAT3, 'Ka6 Kc6 a4 Kc7 Ka7 Kc6 Kb8', accept='win',
                  origin='strategically'),
+        exercise('e07', 3, MULLER,
+                 'Kh6 Kc7 Kg7 Kb7 Kh7 Kb8 Kh8 Kc8 Kg8 Kd7 Kh7 Ke6 Kg6',
+                 accept='hold', goal='draw', origin='wikiKeySquare'),
     ],
     'passScore': 9,
     'keyPositions': [

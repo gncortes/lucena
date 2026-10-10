@@ -109,7 +109,7 @@ write({
     'parts': [
         # 1. Peão de cavalo: esperar na primeira fileira.
         {'id': 'wait', 'steps': [
-            R(think('t_knight', KN, 3, 2), 'rookPawn'),
+            R(think('t_knight', KN, 2), 'rookPawn'),
             talk('room', KN, arrows=['b1h1'], marks=['h1', 'h2', 'h3']),
             R(demo('naka', NAKA_185, 'Re6+ g6 Re8', goal='draw',
                    side='black', notes={3: {'marks': ['e8', 'g8']}}),
@@ -119,7 +119,7 @@ write({
         ]},
         # 2. O xeque ao lado do rei: para o canto.
         {'id': 'corner', 'steps': [
-            think('t_trick', TRICK, 1, 2, ask='line'),
+            think('t_trick', TRICK, 2, ask='line'),
             talk('corner', TRICK, arrows=['g1h1'], marks=['h1', 'h2']),
             demo('cornerDemo', TRICK, 'Kh1 Rh2+ Kg1', goal='draw',
                  notes={1: {'marks': ['h1']}, 3: {'marks': ['g1']}}),
@@ -135,7 +135,7 @@ write({
         ]},
         # 3. Peão de torre: o canto e o afogamento.
         {'id': 'rookPawn', 'steps': [
-            think('t_rookPawn', ROOKPAWN, 1, 1),
+            think('t_rookPawn', ROOKPAWN, 1),
             talk('rookPawn', ROOKPAWN, marks=['h1']),
             talk('stalemate', STALE, marks=['h1', 'g1', 'g2']),
             demo('stale', STALE, 'Rg7+ Rxg7', goal='draw',
@@ -145,7 +145,7 @@ write({
         ]},
         # 4. Chegar à defesa: primeiro o rei.
         {'id': 'kingFirst', 'steps': [
-            think('t_kingFirst', KF, 3, 2, ask='line'),
+            think('t_kingFirst', KF, 2, ask='line'),
             talk('kingFirst', KF, arrows=['e1f2', 'f2g1'], marks=['g1']),
             demo('raOne', KF, 'Ra1 Rf7 Ke2 Rf5', goal='draw', side='black',
                  notes={2: {'arrows': ['f7f1']}}),
@@ -159,7 +159,7 @@ write({
         ]},
         # 5. Voltar para casa sem tirar o canto do rei.
         {'id': 'home', 'steps': [
-            think('t_home', KNIGHT5, 3, 2),
+            think('t_home', KNIGHT5, 2),
             talk('behind', KNIGHT5, arrows=['h8a8', 'a8a1'], marks=['h1']),
             demo('hOne', KNIGHT5, 'Rh1 Ra3 Kf1 Kf3 Ke1 Ra1+ Kd2 Rxh1',
                  goal='draw', side='black',
@@ -171,7 +171,7 @@ write({
         ]},
         # 6. Peão de bispo: a mesma defesa perde.
         {'id': 'bishop', 'steps': [
-            think('t_bishop', BISHOP, 3, 2),
+            think('t_bishop', BISHOP, 2),
             talk('file', BISHOP, arrows=['b2h2'], marks=['h1', 'h2']),
             demo('bishopDemo', BISHOP, 'Rg2+ Kf1 Rh2 Kg1 f2+ Kf1 Rh1+',
                  goal='win', side='black',
@@ -184,7 +184,7 @@ write({
         ]},
         # 7. Sair a tempo.
         {'id': 'active', 'steps': [
-            R(think('t_free', ACTIVE, 1, 2, ask='line'), 'rookPawn'),
+            R(think('t_free', ACTIVE, 2, ask='line'), 'rookPawn'),
             talk('free', ACTIVE, arrows=['g4g3', 'b1b8']),
             demo('activeDemo', ACTIVE, 'Rb8 Kg3 Rg8+ Kf4 Rf8+ Ke3 Re8+',
                  goal='draw'),
@@ -194,7 +194,7 @@ write({
         ]},
         # 8. Peão na sétima, e o resumo.
         {'id': 'seventh', 'steps': [
-            R(think('t_seventh', SEVENTH, 3, 2, ask='line'), 'rookPawn'),
+            R(think('t_seventh', SEVENTH, 2, ask='line'), 'rookPawn'),
             talk('seventh', SEVENTH, arrows=['b1e1'], marks=['e1']),
             demo('gOne', after(SEVENTH, 'Re1 Kd3'),
                  'Rg1 Ra5 Kf3 Rf5+ Kg4 Rf1', goal='draw', side='black',
@@ -213,15 +213,13 @@ write({
         exercise('e10', 2, EARLY, 'Rc3 f3 Rc8 Kg3 Rg8+',
                  accept={1: 'hold', 2: 'hold', 3: 'only'}, goal='draw',
                  origin='chessmood'),
-        exercise('e12', 2, WRONG, 'Rf8+ Kg3 Rf1 Rg2+ Kh1', accept='only',
-                 goal='draw', origin='own'),
         exercise('e14', 3, APPROACH, 'Kf2 Rd2+ Kg1 Kh3 Re3+ g3 Re1',
                  accept={1: 'only', 2: 'only', 3: 'hold', 4: 'only'},
                  goal='draw', origin='wiebe'),
         exercise('e16', 3, BLOCK7, 'Ke1 Rc3 Rb1 Ra3 Rc1 Rb3 Ra1',
                  accept='only', goal='draw', origin='own'),
     ],
-    'passScore': 8,
+    'passScore': 6,
     'keyPositions': [
         {'id': 'knight', 'fen': KN, 'ref': 'rookPawn'},
         {'id': 'trick', 'fen': TRICK, 'ref': 'rookPawn'},

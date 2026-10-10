@@ -509,36 +509,31 @@
         },
         {
           "type": "demo",
-          "id": "d_blockF",
-          "fen": "8/8/8/8/5p2/8/R2rk2K/8 w - - 0 1",
-          "goal": "draw",
+          "id": "d_trade",
+          "fen": "8/8/8/8/8/4p3/R2rk1K1/8 w - - 0 1",
+          "goal": "win",
+          "side": "black",
           "line": [
             {
-              "uci": "a2a1",
+              "uci": "a2d2"
+            },
+            {
+              "uci": "e2d2"
+            },
+            {
+              "uci": "g2f3"
+            },
+            {
+              "uci": "e3e2"
+            },
+            {
+              "uci": "f3f2",
               "marks": [
-                "f1"
+                "e1"
               ]
             },
             {
-              "uci": "f4f3"
-            },
-            {
-              "uci": "h2g3"
-            },
-            {
-              "uci": "f3f2"
-            },
-            {
-              "uci": "g3g2"
-            },
-            {
-              "uci": "d2c2"
-            },
-            {
-              "uci": "a1f1",
-              "arrows": [
-                "g2f1"
-              ]
+              "uci": "e2e1q"
             }
           ]
         },
@@ -691,30 +686,6 @@
   ],
   "exercises": [
     {
-      "id": "e08",
-      "stars": 1,
-      "fen": "5R2/8/8/8/8/5p2/5k1K/5r2 w - - 0 1",
-      "goal": "draw",
-      "origin": "profangel",
-      "line": [
-        {
-          "teach": "f8a8",
-          "accept": [
-            "f8a8",
-            "f8b8"
-          ],
-          "reply": "f1e1"
-        },
-        {
-          "teach": "a8a2",
-          "accept": [
-            "a8a2",
-            "a8a3"
-          ]
-        }
-      ]
-    },
-    {
       "id": "e11",
       "stars": 2,
       "fen": "5R2/8/8/8/4p3/4k3/7r/4K3 w - - 0 1",
@@ -732,36 +703,6 @@
           "teach": "f1g2",
           "accept": [
             "f1g2"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e12",
-      "stars": 2,
-      "fen": "4R3/8/8/8/8/4p3/4k1K1/4r3 w - - 0 1",
-      "goal": "draw",
-      "origin": "karstedt",
-      "line": [
-        {
-          "teach": "e8a8",
-          "accept": [
-            "e8a8"
-          ],
-          "reply": "e2d2"
-        },
-        {
-          "teach": "a8a2",
-          "accept": [
-            "a8a2",
-            "a8a3",
-            "a8a4",
-            "a8a5",
-            "a8a6",
-            "a8a7",
-            "a8d8",
-            "g2f3",
-            "g2g3"
           ]
         }
       ]
@@ -898,7 +839,7 @@
       ]
     }
   ],
-  "passScore": 8,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "behind",
@@ -1035,5 +976,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 13
+  "maxScore": 10
 }
