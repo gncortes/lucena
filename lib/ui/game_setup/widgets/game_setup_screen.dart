@@ -20,6 +20,7 @@ import '../view_models/game_setup_cubit.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import 'custom_pace_sheet.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
@@ -29,12 +30,24 @@ import '../../core/theme/app_spacing.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
-class GameSetupScreen extends StatelessWidget {
+class GameSetupScreen extends StatefulWidget {
   const GameSetupScreen({super.key});
 
+  @override
+  State<GameSetupScreen> createState() => _GameSetupScreenState();
+}
+
+class _GameSetupScreenState extends State<GameSetupScreen> {
+  // A partida está abrindo: o tabuleiro de cima desliza até o centro dela.
+  bool _launching = false;
+
   // A partida substitui esta tela: voltar dela cai de onde a posição veio.
-  void _start(BuildContext context, GameSetupState state) =>
-      context.pushReplacement(state.gameRoute);
+  // Com o tabuleiro de jogar, a prévia troca de marca antes de a partida
+  // abrir, para voar até o centro dela (às cegas, a tela só aparece).
+  void _start(BuildContext context, GameSetupState state) {
+    if (!state.blindGame) setState(() => _launching = true);
+    context.pushReplacement(state.gameRoute);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +81,7 @@ class GameSetupScreen extends StatelessWidget {
             children: [
               SizedBox(
                 height: boardArea,
-                child: _Header(state: state),
+                child: _Header(state: state, launching: _launching),
               ),
               Expanded(
                 child: BoardOptionsPanel(
@@ -170,9 +183,12 @@ class _ModePicker extends StatelessWidget {
 /// A posição vista pelo lado do jogador, com o objetivo embaixo: o
 /// tabuleiro no centro do espaço dele (T64).
 class _Header extends StatelessWidget {
-  const _Header({required this.state});
+  const _Header({required this.state, required this.launching});
 
   final GameSetupState state;
+
+  /// A partida está abrindo: o tabuleiro voa até o centro dela.
+  final bool launching;
 
   /// O maior tabuleiro da prévia.
   static const maxBoard = 340.0;
@@ -189,7 +205,8 @@ class _Header extends StatelessWidget {
       gap: AppSpacing.md,
       maxBoard: maxBoard,
       reserveBottom: chipsHeight,
-      // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula).
+      // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
+      // ao começar, segue voando até o centro da partida.
       board: LayoutBuilder(
         builder: (context, box) => PositionBoard(
           boardKey: GameSetupKeys.preview,
@@ -198,10 +215,9 @@ class _Header extends StatelessWidget {
           orientation: state.userSide,
           coordinates: true,
           radius: 8,
-          heroTag: setupBoardTag(
-            positionId: positionId,
-            fen: state.position.fen,
-          ),
+          heroTag: launching
+              ? gameBoardTag(state.userSide)
+              : setupBoardTag(positionId: positionId, fen: state.position.fen),
         ),
       ),
       bottom: Wrap(

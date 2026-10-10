@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
@@ -20,15 +22,26 @@ import '../../core/theme/app_spacing.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
-class ChallengeScreen extends StatelessWidget {
+class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({required this.rungId, super.key});
-
-  /// O espaço da linha dos selos (objetivo e ritmo).
-  static const _chipsHeight = 40.0;
 
   /// O adversário (degrau) do desafio: o retrato dele chega voando da tela
   /// de antes.
   final String rungId;
+
+  @override
+  State<ChallengeScreen> createState() => _ChallengeScreenState();
+}
+
+class _ChallengeScreenState extends State<ChallengeScreen> {
+  /// O espaço da linha dos selos (objetivo e ritmo).
+  static const _chipsHeight = 40.0;
+
+  // A partida está abrindo: o tabuleiro grande voa até o centro dela. Na
+  // volta, ele retoma a marca de antes (o voo de volta para o degrau).
+  bool _launching = false;
+
+  String get rungId => widget.rungId;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +71,15 @@ class ChallengeScreen extends StatelessWidget {
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.journeyPlay),
                   onPressed: () async {
-                    if (!await playChallenge(context, challenge)) return;
+                    final played = await playChallenge(
+                      context,
+                      challenge,
+                      onLaunch: () => setState(() => _launching = true),
+                    );
+                    if (mounted && _launching) {
+                      setState(() => _launching = false);
+                    }
+                    if (!played) return;
                     if (!context.mounted) return;
                     final uri = GoRouterState.of(context).pathParameters;
                     await context.read<JourneyCubit>().load(
@@ -89,7 +110,10 @@ class ChallengeScreen extends StatelessWidget {
                     child: CenteredBoardLayout(
                       gap: AppSpacing.md,
                       reserveBottom: _chipsHeight,
-                      board: _BigBoard(challenge: challenge),
+                      board: _BigBoard(
+                        challenge: challenge,
+                        launching: _launching,
+                      ),
                       bottom: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Wrap(
@@ -182,9 +206,12 @@ class ChallengeScreen extends StatelessWidget {
 /// A posição na largura da tela, vista pelo lado que joga. Ela chega voando
 /// do tabuleiro pequeno da tela de antes (a do adversário ou a inicial).
 class _BigBoard extends StatelessWidget {
-  const _BigBoard({required this.challenge});
+  const _BigBoard({required this.challenge, required this.launching});
 
   final Challenge challenge;
+
+  /// A partida está abrindo: o tabuleiro voa até o centro dela.
+  final bool launching;
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +222,14 @@ class _BigBoard extends StatelessWidget {
         size: constraints.maxWidth,
         coordinates: true,
         radius: 0,
-        heroTag: challengeBoardTag(challenge.id),
+        // A partida é vista pelo lado que joga, como este tabuleiro.
+        heroTag: launching
+            ? gameBoardTag(
+                challenge.position.fen.split(' ')[1] == 'b'
+                    ? Side.black
+                    : Side.white,
+              )
+            : challengeBoardTag(challenge.id),
       ),
     );
   }

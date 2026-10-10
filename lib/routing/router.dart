@@ -113,6 +113,7 @@ import '../ui/settings/widgets/about_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
 import '../ui/settings/widgets/theme_screen.dart';
+import '../ui/core/theme/app_motion.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
@@ -230,6 +231,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'board',
+            fade: true,
             builder: (context, state) {
               // Sem parâmetros, a tela continua a partida em andamento (ou
               // começa uma do início). Com parâmetros, começa uma partida nova:
@@ -988,18 +990,48 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
 /// Uma rota com página Material (com a transição do tema). O go_router 18
 /// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
 /// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
+///
+/// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
+/// é a partida, em que o tabuleiro da tela de antes chega voando até o
+/// centro e o resto aparece em volta dele.
 GoRoute _route({
   required String path,
   required GoRouterWidgetBuilder builder,
   GoRouterRedirect? redirect,
   List<RouteBase> routes = const [],
+  bool fade = false,
 }) => GoRoute(
   path: path,
   redirect: redirect,
-  pageBuilder: (context, state) =>
-      MaterialPage<void>(key: state.pageKey, child: builder(context, state)),
+  pageBuilder: (context, state) {
+    if (!fade) {
+      return MaterialPage<void>(
+        key: state.pageKey,
+        child: builder(context, state),
+      );
+    }
+    return gamePage(context, state, builder(context, state));
+  },
   routes: routes,
 );
+
+/// A página da partida: só um fade, com a tela de baixo parada. O tabuleiro
+/// da tela de antes (com a marca de `gameBoardTag`) voa até o centro dela, e
+/// o resto aparece em volta.
+Page<void> gamePage(BuildContext context, GoRouterState state, Widget child) {
+  final duration = AppMotion.of(context).screen;
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: duration,
+    reverseTransitionDuration: duration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
+          opacity: animation.drive(CurveTween(curve: AppMotion.enter)),
+          child: child,
+        ),
+    child: child,
+  );
+}
 
 ConclusionCubit _conclusionCubit(BuildContext context) => ConclusionCubit(
   progress: context.read<ProgressRepository>(),

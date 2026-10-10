@@ -17,6 +17,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
@@ -449,22 +450,27 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     builder: (context, box) => Stack(
                       alignment: Alignment.center,
                       children: [
-                        Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Chessboard(
-                            key: FreeBoardKeys.board,
-                            size: box.maxWidth,
-                            controller: _board,
-                            // No ultra bullet o pré-lance fica sempre ligado:
-                            // sem ele, não dá tempo de jogar no celular.
-                            settings: _ultraBullet(state)
-                                ? boardSettings
-                                      .copyWith(premoves: true)
-                                      .chessground
-                                : boardSettings.chessground,
-                            orientation: state.orientation,
-                            onMove: (move, {viaDragAndDrop}) =>
-                                cubit.play(move),
+                        // No começo da partida, o tabuleiro da tela de
+                        // antes (no alto) desliza e cresce até aqui.
+                        GameBoardHero(
+                          orientation: state.orientation,
+                          child: Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Chessboard(
+                              key: FreeBoardKeys.board,
+                              size: box.maxWidth,
+                              controller: _board,
+                              // No ultra bullet o pré-lance fica sempre ligado:
+                              // sem ele, não dá tempo de jogar no celular.
+                              settings: _ultraBullet(state)
+                                  ? boardSettings
+                                        .copyWith(premoves: true)
+                                        .chessground
+                                  : boardSettings.chessground,
+                              orientation: state.orientation,
+                              onMove: (move, {viaDragAndDrop}) =>
+                                  cubit.play(move),
+                            ),
                           ),
                         ),
                         // Toda partida nova contra a máquina abre com o
