@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/spoken_text.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -67,6 +68,11 @@ class BlindGameScreen extends StatefulWidget {
 }
 
 class _BlindGameScreenState extends State<BlindGameScreen> {
+  // O espaço guardado acima do tabuleiro para o seletor de visão e abaixo
+  // para "Sua vez": o tabuleiro não diminui por causa deles.
+  static const _pickerHeight = 48.0;
+  static const _statusHeight = 30.0;
+
   ChessboardController? _board;
 
   @override
@@ -395,81 +401,105 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
                               : clocks == ClockPosition.sides
                               ? 2
                               : 1;
-                          // O tabuleiro com a largura da tela, sem passar da
-                          // altura que sobra (com o seletor e os relógios).
-                          final size = min(
-                            constraints.maxWidth - 32,
-                            constraints.maxHeight -
-                                100 -
-                                rows * PlayersRow.height,
-                          );
+                          // O tabuleiro (ou o lugar dele, sem tabuleiro) com o
+                          // centro no centro do espaço útil (T64): entre a
+                          // barra do app e o painel de baixo. O seletor e o
+                          // relógio do adversário em cima; o do jogador, "Sua
+                          // vez" e o aviso embaixo, no espaço que sobra.
+                          final above =
+                              rows > 0 && clocks != ClockPosition.bottom;
+                          final below = rows > 0 && clocks != ClockPosition.top;
+                          final reserveTop =
+                              _pickerHeight + (above ? PlayersRow.height : 0.0);
+                          final reserveBottom =
+                              (below ? PlayersRow.height : 0.0) +
+                              (state.started ? _statusHeight : 0.0);
+                          const gutter = 16.0;
+                          final size = BoardCentering(
+                            constraints.biggest,
+                            gutter: gutter,
+                            reserveTop: reserveTop,
+                            reserveBottom: reserveBottom,
+                          ).side;
                           // Com o teclado aberto, a altura some: o tabuleiro
                           // sai até o teclado fechar.
                           if (size < 120) return const SizedBox.shrink();
-                          return Align(
-                            alignment: Alignment.topCenter,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: size,
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: _ViewPicker(state: state),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                if (rows > 0 && clocks != ClockPosition.bottom)
-                                  SizedBox(
-                                    width: size + 24,
-                                    child: _Clocks(
-                                      state: state,
-                                      sides: clocks == ClockPosition.sides
-                                          ? [state.userSide.opposite]
-                                          : [
-                                              state.userSide.opposite,
-                                              state.userSide,
-                                            ],
-                                    ),
-                                  ),
-                                _boardArea(context, state, size: size),
-                                if (rows > 0 && clocks != ClockPosition.top)
-                                  SizedBox(
-                                    width: size + 24,
-                                    child: _Clocks(
-                                      state: state,
-                                      sides: clocks == ClockPosition.sides
-                                          ? [state.userSide]
-                                          : [
-                                              state.userSide.opposite,
-                                              state.userSide,
-                                            ],
-                                    ),
-                                  ),
-                                // "Sua vez" fica à vista (sem tabuleiro, é o
-                                // que orienta), fora da fileira do relógio.
-                                if (state.started) ...[
-                                  const SizedBox(height: 6),
-                                  _Status(state: state),
-                                ],
-                                if (state.offlineMissing)
+                          return CenteredBoardLayout(
+                            key: BlindKeys.boardArea,
+                            gutter: gutter,
+                            reserveTop: reserveTop,
+                            reserveBottom: reserveBottom,
+                            top: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                   SizedBox(
                                     width: size,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        l10n.blindOfflineMissing,
-                                        key: BlindKeys.offlineMissing,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
+                                    child: Align(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      child: _ViewPicker(state: state),
                                     ),
                                   ),
-                              ],
+                                  if (above) const SizedBox(height: 8),
+                                  if (above)
+                                    SizedBox(
+                                      width: size + 24,
+                                      child: _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide.opposite]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            board: _boardArea(context, state, size: size),
+                            bottom: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (below)
+                                    SizedBox(
+                                      width: size + 24,
+                                      child: _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                    ),
+                                  // "Sua vez" fica à vista (sem tabuleiro, é
+                                  // o que orienta), fora da fileira do relógio.
+                                  if (state.started) ...[
+                                    const SizedBox(height: 6),
+                                    _Status(state: state),
+                                  ],
+                                  if (state.offlineMissing)
+                                    SizedBox(
+                                      width: size,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          l10n.blindOfflineMissing,
+                                          key: BlindKeys.offlineMissing,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           );
                         },
