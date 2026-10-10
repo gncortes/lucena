@@ -127,7 +127,7 @@ parts = [
     ]},
     {'id': 'safe', 'steps': [
         think('t_safe', SAFE, 2),
-        talk('safe', SAFE, arrows=['d7e6', 'g4f5'], marks=['e4', 'e5', 'e6']),
+        talk('safe', SAFE, arrows=['g4f5', 'd7e6'], marks=['e4', 'e5', 'e6']),
         demo('d_hang', HANG, 'Kxe6', goal='draw', side='white'),
         move('safe1', SAFE, 'Kf5 Kc5 Be6', accept={2: ['Be6']}),
         move('safe2', SAFE2, 'Ne4'),

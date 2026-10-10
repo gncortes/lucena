@@ -202,7 +202,7 @@ write({
         # 7. Conte as casas: o afogamento e o rei por fora (e04, e16).
         {'id': 'stalemate', 'steps': [
             ref(think('t_stalemate', SILMAN, 2), 'silman'),
-            ref(talk('stalemate', SILMAN, arrows=['c6b6'], marks=['b6', 'a8']),
+            ref(talk('stalemate', SILMAN, marks=['b6', 'a8']),
                 'silman'),
             ref(demo('d_approach', APPROACH13, 'Kd5 Kd8 Kc5 Kc8 Kb6 Kd8',
                      notes={1: {'marks': ['d8']}, 5: {'marks': ['d8']}}),

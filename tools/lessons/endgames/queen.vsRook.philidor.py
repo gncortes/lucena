@@ -159,8 +159,8 @@ write({
         {'id': 'stalemate', 'steps': [
             ref(think('t_stalemate', ARONIAN, 2, marks=['a1', 'b3']),
                 'aronianMvl#154'),
-            ref(talk('stale', ARONIAN, arrows=['e6b3'],
-                     marks=['a2', 'b1', 'b2']), 'aronianMvl#154'),
+            ref(talk('stale', ARONIAN,
+                     marks=['b3', 'a2', 'b1', 'b2']), 'aronianMvl#154'),
             ref(demo('d_check', ARONIAN, 'Qa6+ Ra3 Qxa3#',
                      notes={1: {'arrows': ['a6a1']}, 2: {'marks': ['a3']},
                             3: {'marks': ['a1']}}),
@@ -175,8 +175,8 @@ write({
         {'id': 'squeeze', 'steps': [
             ref(think('t_squeeze', SQUEEZE, 2, marks=['b6', 'd6', 'b5', 'd5']),
                 'wikipedia'),
-            ref(talk('squeeze', SQUEEZE, arrows=['c6b6'],
-                     marks=['a7', 'a8', 'b7', 'c8']),
+            ref(talk('squeeze', SQUEEZE,
+                     marks=['b6', 'a7', 'a8', 'b7', 'c8']),
                 'wikipedia'),
             ref(demo('d_desperado', DRAW, 'Rc6+ Kb5 Rxa6 Kxa6', goal='draw',
                      notes={1: {'arrows': ['c6b6']}, 3: {'arrows': ['c6a6']}}),

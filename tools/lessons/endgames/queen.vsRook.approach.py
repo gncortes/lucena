@@ -125,7 +125,7 @@ write({
         ]},
         {'id': 'stalemate', 'steps': [
             think('t_stalemate', ST, 2),
-            talk('stale', ST, arrows=['c6b6', 'd7d6'], marks=['b8', 'd8']),
+            talk('stale', ST, arrows=['d7d6'], marks=['b6', 'b8', 'd8']),
             demo('d_trap', after(ST, 'Kb6'), 'Rd6+ Qxd6', goal='draw', notes={
                 1: {'arrows': ['d6f6']},
                 2: {'marks': ['b8', 'b7', 'c7', 'd7', 'd8']}}),
