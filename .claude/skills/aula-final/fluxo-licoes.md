@@ -95,7 +95,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 15 | pawns.triangulation | C | 2 | Opus | perder um tempo no caminho; casas correspondentes de longe; Alburt–Kasparov | **feita: A**, commitada (lote2); Alburt–Kasparov 1978 com link, análise Shirov–Grischuk (Wikipedia); `defend` encosta no e13 (espelho), e04/e09/e11 com dúvidas: Gabriel |
 | 16 | pawns.shoulder | C | 3 (+2) | Fable | ombro + quadrado (Réti/Duras/Grigoriev/Mandler); demos; partida | |
 | 17 | pawns.reti | B | 1 | Fable | Réti com peça no caminho (Sarychev); Yates–Marshall com link | |
-| 18 | rook.behindPasser | C | 6 (+2) | Opus | exceções da regra só nos exercícios; falas vazias em `d_walk`; Kramnik–Beliavsky | |
+| 18 | rook.behindPasser | C | 6 (+2) | Opus | exceções da regra só nos exercícios; falas vazias em `d_walk`; Kramnik–Beliavsky | **feita: B**, commitada (lote2); Alekhine–Capablanca 1927, Anand–Kramnik 2007, Kramnik–Beliavsky 1993 com link; Short–Yusupov 1984 (e10) com link no relatório; `d_raceError`/`d_orderError` começam com lance das pretas: Gabriel |
 | 19 | rook.cutOff | C | 2 (+2) | Opus | parte com Uhlmann–Gulko ou Pein–Ward; tempo do peão; exceções no resumo | |
 | 20 | rook.frontal | C | 1 (+2) | Opus | partida real; corte lateral (Th5!) | |
 | 21 | rookPawns.vsTwo | C | 8 | Fable | ritmo bom, mas os oito exercícios cobram o que a lição não ensina | |
@@ -106,8 +106,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 27 | minor.wrongBishop | C | 3 | Fable | transformação da estrutura, rei fechando a porta, peões g+h; Fischer–Taimanov | |
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
-| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
-| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 51e1d11e); Nakamura–Sheehan 2024 |
+| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, e00e8ab9); Gelfand–Svidler 2001, Carlsen–Le Tuan Minh 2024, Svidler–Howell 2010, Aronian–Vachier-Lagrave 2017, Ivanchuk–Lautier 1995 |
 | 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 027f5e86); Stefánsson–Müller 1992 |
 | 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || **feita: B** (lucena-8f, tarefa/T63-licoes-opus); Morozevich–Jakovenko 2006, Browne–Belle 1978; a pedido do Gabriel, demo do e16 e e12/e15/e19 novos |
 | 33 | queen.vsRookPawn | C | 4 | Fable | torre que espera longe, Laza, rei dentro, estudos da 7.ª; Carlsen–Matlakov | |
