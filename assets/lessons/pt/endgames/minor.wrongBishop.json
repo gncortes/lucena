@@ -114,10 +114,10 @@
   "ex.e15": "Brancas jogam e empatam. Trocar os bispos parece seguro, mas o final de peões está perdido. Existe outro caminho.",
   "ex.e15.hint": "Se o peão preto de b virar um peão de a, de que cor é a1? E o bispo preto, anda em que casas?",
   "ex.e15.solution": "1.a5! Se 1...bxa5, o peão preto vira peão de a e o bispo preto é o das claras, o errado para a1. Então 2.Rf2!, e o rei corre para b1 e a1 a tempo. Se 1...Bxh1, 2.axb6 e o bispo preto fica preso a vigiar b7: sem peão preto, é empate. 1.Bxd5+? Rxd5 perde: o rei branco não alcança os peões.",
-  "ex.e16": "Brancas jogam e empatam, com um peão contra bispo e peão. Estudo publicado no Lichess. Três lances únicos seguidos.",
+  "ex.e16": "Brancas jogam e empatam, com um peão contra bispo e peão. Três lances únicos seguidos.",
   "ex.e16.hint": "h1 é clara e o bispo preto anda nas escuras. O seu rei tem de ir para h1, mas o peão de a pode ganhar os tempos de que ele precisa.",
   "ex.e16.solution": "1.a6! (o peão sai do ataque do rei preto) 1...Bc5 2.Rc7! 2...h5 3.Rc6! O rei toma b5 e ameaça 4.Rb7 e 5.a7, então o bispo tem de vigiar a7; depois de 3...Bg1 4.a7 Bxa7 5.Rd5, o rei branco já está no quadrado do peão de h e chega a h1. Cada lance branco era o único: 2.Rb7?, por exemplo, chega um tempo tarde.",
-  "ex.e17": "Brancas jogam e empatam. Bispo e cavalo contra bispo e dois peões, com o rei branco já em h1. Estudo publicado no Lichess.",
+  "ex.e17": "Brancas jogam e empatam. Bispo e cavalo contra bispo e dois peões, com o rei branco já em h1.",
   "ex.e17.hint": "Com o peão de g, o bispo preto é o certo para g1. Faça o peão de g tomar na coluna h, e para isso o seu bispo precisa chegar a h6 com tempo.",
   "ex.e17.solution": "1.Cd2!! Rxd2 2.Bg5+! Rd1 3.Bh6!! O cavalo atrai o rei para d2, para que 2.Bg5 venha com xeque e o bispo chegue a h6 sem perder tempo. Se 3...gxh6, as pretas ficam com dois peões de h e o bispo das escuras, o errado para h1. Se o peão de g avançar, 4.Bxf8; se o bispo sair, 4.Bxg7. Em todos os casos o rei branco segura o canto."
 }
