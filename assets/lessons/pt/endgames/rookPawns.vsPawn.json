@@ -107,7 +107,7 @@
   "step.d_knight.m5": "3...Ce1: volta para o lado do rei. A torre não pode capturá-lo, porque o rei defende.",
   "step.d_knight.m6": "4.Tf1: a torre ataca o cavalo de novo, agora pela fileira.",
   "step.d_knight.m7": "4...Re2: o rei defende o cavalo e sai de perto do rei branco. Torre e rei não conseguem separar os dois: empate.",
-  "step.d_rush": "O rei branco correu com 1.Re3? Agora as pretas jogam.",
+  "step.d_rush": "O rei branco correu para e3, com pressa. Agora as pretas jogam.",
   "step.d_rush.m1": "1...Re1! O rei preto sai da coluna do peão e deixa d1 livre para a promoção.",
   "step.d_rush.m2": "2.Th8: a torre ameaça 3.Th1, mate, e parece decidir.",
   "step.d_rush.m3": "2...d1=C+ O cavalo nasce dando xeque em e3, exatamente a casa para onde o rei correu. O rei branco tem de sair, e o mate em h1 não acontece.",

@@ -107,7 +107,7 @@
   "step.d_knight.m5": "3...Ne1: back to the king's side. The rook cannot capture it, because the king defends it.",
   "step.d_knight.m6": "4.Rf1: the rook attacks the knight again, now along the rank.",
   "step.d_knight.m7": "4...Ke2: the king defends the knight and moves away from the white king. Rook and king cannot separate the two: a draw.",
-  "step.d_rush": "The white king rushed with 1.Ke3? Now Black is to move.",
+  "step.d_rush": "The white king rushed to e3. Now Black is to move.",
   "step.d_rush.m1": "1...Ke1! The black king leaves the pawn's file and frees d1 for the promotion.",
   "step.d_rush.m2": "2.Rh8: the rook threatens 3.Rh1, mate, and seems to decide the game.",
   "step.d_rush.m3": "2...d1=N+ The knight is born giving check on e3, exactly the square the king rushed to. The white king has to move, and the mate on h1 never comes.",
