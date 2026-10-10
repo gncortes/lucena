@@ -104,7 +104,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | **feita: A**, commitada (lote2); Voigt–Lasker 1892, Alekhine–Yates 1910 com link; enunciado do e08 diz "peões travados" (b5/c5 não se travam): Gabriel |
 | 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 928548d2); Nunn–Bischoff 1986 |
 | 24 | pawns.correspondingSquares | B | 1 (+1) | Fable | numeração em demo (um par por fala); triangulação separada; Rösch–Mast | |
-| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 83a3fcff); Alatortsev–Chekhover 1937 |
 | 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 23856405); Petrosian–Fischer 1958, Van Wely–Leko 1996 |
 | 27 | minor.wrongBishop | C | 3 | Fable | transformação da estrutura, rei fechando a porta, peões g+h; Fischer–Taimanov | |
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
