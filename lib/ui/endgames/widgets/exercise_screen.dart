@@ -278,10 +278,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         AnimatedSwitcher(
           duration: AppMotion.of(context).component,
           child: KeyedSubtree(
-            key: ValueKey(state.layout),
-            child: state.layout == ExerciseLayoutMode.solving
-                ? _solvingFooter(context, state)
-                : _actions(context, state),
+            key: ValueKey(state.phase == ExercisePhase.done),
+            child: state.phase == ExercisePhase.done
+                ? _actions(context, state)
+                : _solvingFooter(context, state),
           ),
         ),
       ],
@@ -689,38 +689,23 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ),
                 ),
               ),
-            // A explicação detalhada só a pedido: sem ela, o elogio curto
-            // não empurra o tabuleiro. Com a nota fechada, também a análise
-            // no Lichess.
-            if (state.canExplain || state.locked)
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (state.canExplain)
-                    TextButton.icon(
+            // Uma linha só: "Ver explicação" fixo à esquerda (a pedido, sem
+            // empurrar o tabuleiro) e o próximo passo à direita. Sem
+            // "Resolvido!": a estrela da barra já diz.
+            Row(
+              children: [
+                if (state.canExplain)
+                  Flexible(
+                    child: TextButton.icon(
                       key: ExerciseKeys.explainButton,
                       onPressed: cubit.showExplanation,
                       icon: const Icon(Icons.forum_outlined),
-                      label: Text(l10n.lessonSeeExplanation),
+                      label: OneLine(l10n.lessonSeeExplanation),
                     ),
-                  if (state.locked) _lichessButton(context, state),
-                ],
-              ),
-            Row(
-              children: [
-                // "Resolvido!" só no acerto limpo: com erro ou dica, a correção
-                // do Viktor já diz o que houve.
-                Expanded(
-                  child: state.earned == state.exercise?.stars
-                      ? Text(
-                          l10n.exerciseSolved,
-                          key: ExerciseKeys.solvedLabel,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
+                  ),
+                if (state.locked)
+                  Flexible(child: _lichessButton(context, state)),
+                const Spacer(),
                 if (next != null)
                   FilledButton(
                     key: ExerciseKeys.nextButton,

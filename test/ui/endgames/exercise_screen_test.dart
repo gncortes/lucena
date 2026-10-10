@@ -152,12 +152,23 @@ void main() {
     expect(find.byKey(ExerciseKeys.scroll), findsNothing);
 
     await move(tester, 'c1', 'c4');
-    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
-    expect(raised.top, lessThan(board.top));
+    // Acerto limpo: o tabuleiro não sai do lugar, e embaixo só "Ver
+    // explicação" e o próximo, numa linha.
+    expect(tester.getRect(find.byKey(ExerciseKeys.board)), board);
     expect(find.byKey(ExerciseKeys.timer), findsNothing);
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
+    expect(find.byKey(ExerciseKeys.earned), findsNothing);
+    final explain = tester.getRect(find.byKey(ExerciseKeys.explainButton));
+    final next = tester.getRect(find.byKey(ExerciseKeys.nextButton));
+    expect(explain.center.dy, closeTo(next.center.dy, 1));
+
+    // Com a explicação aberta, o tabuleiro sobe e o resultado entra embaixo.
+    await tester.tap(find.byKey(ExerciseKeys.explainButton));
+    await tester.pumpAndSettle();
+    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
+    expect(raised.top, lessThan(board.top));
     expect(
-      tester.getRect(find.byKey(ExerciseKeys.earned)).top,
+      tester.getRect(find.byKey(ExerciseKeys.solution)).top,
       greaterThan(raised.bottom),
     );
   });

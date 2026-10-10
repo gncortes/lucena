@@ -659,16 +659,18 @@ class _ExercisesCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                  Text(l10n.endgameScore(state.score, state.maxScore)),
-                  Text(
-                    l10n.endgameExercisesSolved(
-                      state.solved,
-                      state.exerciseCount,
+                  // Em andamento, só quantos faltam; os pontos contam no
+                  // fim, com todos resolvidos.
+                  if (state.allSolved)
+                    Text(l10n.endgameScore(state.score, state.maxScore))
+                  else
+                    Text(
+                      l10n.endgameExercisesSolved(
+                        state.solved,
+                        state.exerciseCount,
+                      ),
+                      key: EndgameLessonKeys.testSolved,
                     ),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
