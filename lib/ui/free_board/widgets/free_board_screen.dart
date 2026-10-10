@@ -12,11 +12,11 @@ import '../../../domain/models/game_end.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
@@ -42,9 +42,6 @@ class FreeBoardScreen extends StatefulWidget {
 
 class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
-  // O mínimo que sobra embaixo do tabuleiro (o fim da partida aparece ali).
-  static const _minBottom = 48.0;
-
   late final ChessboardController _board;
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
@@ -54,9 +51,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // A partida contra a máquina acabou: o resultado em destaque por um
   // instante, antes da troca para a tela de conclusão (T51, B4).
   bool _concluding = false;
-
-  // O dedo está no tabuleiro: a tela não rola enquanto isso.
-  bool _touchingBoard = false;
 
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
@@ -378,25 +372,36 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             final nickname = context.select(
               (ProfileCubit cubit) => cubit.state?.nickname ?? '',
             );
-            final clockRows = switch (clocks) {
-              ClockPosition.sides => 2,
-              ClockPosition.top || ClockPosition.bottom => 1,
-            };
-            final fixed = clockRows * ClockRow.height + _minBottom;
-            // O retrato do personagem encolhe para a partida caber na tela
-            // sem rolar, quando dá.
-            final width = constraints.maxWidth;
+            // O tabuleiro na largura toda, com o centro no centro do espaço
+            // útil (T64): entre a barra do app (com a faixa de lances) e o
+            // fim da área segura. O personagem e os relógios ficam em cima e
+            // embaixo, no espaço que sobra de cada lado; sem espaço, o
+            // retrato encolhe e, no limite, o tabuleiro também.
+            final clocksAbove =
+                clocks == ClockPosition.top || clocks == ClockPosition.sides
+                ? ClockRow.height
+                : 0.0;
+            final clocksBelow =
+                clocks == ClockPosition.bottom || clocks == ClockPosition.sides
+                ? ClockRow.height
+                : 0.0;
+            // Só os relógios têm espaço garantido: o personagem fica com o
+            // que sobra (o tabuleiro não diminui por causa dele).
+            final reserveTop = clocksAbove;
+            final centering = BoardCentering(
+              constraints.biggest,
+              gap: 0,
+              reserveTop: reserveTop,
+              reserveBottom: clocksBelow,
+            );
+            // O retrato do personagem fica com o que sobra em cima.
             final avatar = character == null
                 ? 0.0
-                : (constraints.maxHeight -
-                          fixed -
-                          width -
+                : (centering.roomAbove -
+                          clocksAbove -
                           CharacterBar.heightFor(0))
                       .clamp(CharacterBar.minAvatar, CharacterBar.maxAvatar)
                       .toDouble();
-            // O tabuleiro ocupa sempre a largura toda; se não couber tudo, a
-            // tela rola.
-            final boardSize = width;
             const both = [Side.white, Side.black];
             final end = state.end;
             return Stack(
@@ -404,16 +409,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               // mesmo com pouco conteúdo.
               fit: StackFit.expand,
               children: [
-                // A tela inteira rola, como nos apps de xadrez; com o dedo no
-                // tabuleiro, a rolagem para e o lance (ou o arrastar da peça)
-                // fica só com ele.
-                SingleChildScrollView(
+                CenteredBoardLayout(
                   key: FreeBoardKeys.scrollArea,
-                  physics: _touchingBoard
-                      ? const NeverScrollableScrollPhysics()
-                      : null,
-                  padding: scrollPadding(context),
-                  child: Column(
+                  gap: 0,
+                  reserveTop: reserveTop,
+                  reserveBottom: clocksBelow,
+                  top: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (character != null)
@@ -437,78 +439,78 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           board: boardSettings,
                           talk: talk,
                         ),
-                      // O tabuleiro não espelha em idiomas da direita para a esquerda.
-                      Listener(
-                        onPointerDown: (_) =>
-                            setState(() => _touchingBoard = true),
-                        onPointerUp: (_) =>
-                            setState(() => _touchingBoard = false),
-                        onPointerCancel: (_) =>
-                            setState(() => _touchingBoard = false),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: Chessboard(
-                                key: FreeBoardKeys.board,
-                                size: boardSize,
-                                controller: _board,
-                                // No ultra bullet o pré-lance fica sempre ligado:
-                                // sem ele, não dá tempo de jogar no celular.
-                                settings: _ultraBullet(state)
-                                    ? boardSettings
-                                          .copyWith(premoves: true)
-                                          .chessground
-                                    : boardSettings.chessground,
-                                orientation: state.orientation,
-                                onMove: (move, {viaDragAndDrop}) =>
-                                    cubit.play(move),
-                              ),
-                            ),
-                            // Toda partida nova contra a máquina abre com o
-                            // versus (na Maratona, com a contagem); só então
-                            // o relógio corre.
-                            if (state.held)
-                              Positioned.fill(
-                                child: VersusIntro(
-                                  playerName: nickname.isEmpty
-                                      ? context.l10n.profileNicknameDefault
-                                      : nickname,
-                                  opponentName:
-                                      character?.name ??
-                                      state.mode.opponent.label(
-                                        context.l10n,
-                                        level: state.mode.level,
-                                      ),
-                                  opponentRating: talk.isEngine
-                                      ? null
-                                      : state.mode.level,
-                                  opponentAvatar: character == null
-                                      ? const ColoredBox(
-                                          color: Color(0xFF312E2B),
-                                          child: Icon(
-                                            Icons.smart_toy_outlined,
-                                            color: Colors.white,
-                                            size: 32,
-                                          ),
-                                        )
-                                      : CharacterAvatar(
-                                          character: character,
-                                          size: 64,
-                                        ),
-                                  countdown: state.mode.isMarathon,
-                                  stage: state.mode.isMarathon
-                                      ? (state.mode.speedrunStage ?? 0) + 1
-                                      : null,
-                                  playerSide:
-                                      state.playerSide ?? state.orientation,
-                                  onDone: cubit.release,
-                                ),
-                              ),
-                          ],
+                    ],
+                  ),
+                  // O tabuleiro não espelha em idiomas da direita para a
+                  // esquerda.
+                  board: LayoutBuilder(
+                    builder: (context, box) => Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Chessboard(
+                            key: FreeBoardKeys.board,
+                            size: box.maxWidth,
+                            controller: _board,
+                            // No ultra bullet o pré-lance fica sempre ligado:
+                            // sem ele, não dá tempo de jogar no celular.
+                            settings: _ultraBullet(state)
+                                ? boardSettings
+                                      .copyWith(premoves: true)
+                                      .chessground
+                                : boardSettings.chessground,
+                            orientation: state.orientation,
+                            onMove: (move, {viaDragAndDrop}) =>
+                                cubit.play(move),
+                          ),
                         ),
-                      ),
+                        // Toda partida nova contra a máquina abre com o
+                        // versus (na Maratona, com a contagem); só então
+                        // o relógio corre.
+                        if (state.held)
+                          Positioned.fill(
+                            child: VersusIntro(
+                              playerName: nickname.isEmpty
+                                  ? context.l10n.profileNicknameDefault
+                                  : nickname,
+                              opponentName:
+                                  character?.name ??
+                                  state.mode.opponent.label(
+                                    context.l10n,
+                                    level: state.mode.level,
+                                  ),
+                              opponentRating: talk.isEngine
+                                  ? null
+                                  : state.mode.level,
+                              opponentAvatar: character == null
+                                  ? const ColoredBox(
+                                      color: Color(0xFF312E2B),
+                                      child: Icon(
+                                        Icons.smart_toy_outlined,
+                                        color: Colors.white,
+                                        size: 32,
+                                      ),
+                                    )
+                                  : CharacterAvatar(
+                                      character: character,
+                                      size: 64,
+                                    ),
+                              countdown: state.mode.isMarathon,
+                              stage: state.mode.isMarathon
+                                  ? (state.mode.speedrunStage ?? 0) + 1
+                                  : null,
+                              playerSide: state.playerSide ?? state.orientation,
+                              onDone: cubit.release,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  bottom: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                       if (clocks == ClockPosition.sides)
                         ClockRow(
                           sides: [state.orientation],

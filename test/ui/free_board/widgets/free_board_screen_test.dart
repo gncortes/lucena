@@ -1032,11 +1032,10 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('a tela inteira rola, mas arrastar uma peça não rola', (
-      tester,
-    ) async {
-      // Celular baixo: personagem, dois relógios e o tabuleiro não cabem (a
-      // fileira de baixo do tabuleiro fica fora da tela).
+    testWidgets('celular baixo: o tabuleiro no centro do espaço útil, o '
+        'personagem e os relógios encolhem em cima e embaixo, e arrastar '
+        'uma peça joga o lance', (tester) async {
+      // Personagem, dois relógios e o tabuleiro em 360 x 533.
       await pumpScreen(
         tester,
         fen: '2Q5/8/8/8/2K5/8/8/5k2 w - - 0 1',
@@ -1048,23 +1047,22 @@ void main() {
         // 360 x 533 na densidade do teste.
         screen: const Size(945, 1400),
       );
-      // A posição é refeita quando a rolagem trava e destrava: lida de novo
-      // a cada conferência.
-      ScrollPosition scroll() => tester
-          .state<ScrollableState>(
-            find
-                .descendant(
-                  of: find.byKey(FreeBoardKeys.scrollArea),
-                  matching: find.byType(Scrollable),
-                )
-                .first,
-          )
-          .position;
-      expect(scroll().maxScrollExtent, greaterThan(0));
-
-      // Arrastar a dama no tabuleiro joga o lance e não mexe na tela.
-      opponent.hold();
       final board = boardRect(tester);
+      final appBar = tester.getRect(find.byType(AppBar));
+      final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
+      expect(appBar.bottom, area.top);
+      expect(board.center.dy, closeTo((area.top + area.bottom) / 2, 1));
+      expect(
+        tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,
+        lessThanOrEqualTo(board.top + 0.5),
+      );
+      expect(
+        tester.getRect(find.byKey(FreeBoardKeys.clock(Side.white))).top,
+        greaterThanOrEqualTo(board.bottom - 0.5),
+      );
+      expect(tester.takeException(), isNull);
+
+      opponent.hold();
       final gesture = await tester.startGesture(squareCenter(board, 'c8'));
       await tester.pump();
       for (var step = 1; step <= 6; step++) {
@@ -1076,15 +1074,7 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
       expect(cubit.state.moves, ['Qg4']);
-      expect(scroll().pixels, 0);
-
-      // Arrastar fora do tabuleiro (na linha do adversário) rola a tela.
-      await tester.drag(
-        find.byKey(FreeBoardKeys.clock(Side.black)),
-        const Offset(0, -200),
-      );
-      await tester.pumpAndSettle();
-      expect(scroll().pixels, greaterThan(0));
+      expect(boardRect(tester), board);
       opponent.release();
     });
 
