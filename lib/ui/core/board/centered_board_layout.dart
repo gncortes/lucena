@@ -29,7 +29,8 @@ class BoardCentering {
     this.reserveBottom = 0,
     this.minFraction = 0.6,
     this.maxBoard = double.infinity,
-  }) : centerY = centerY ?? max(0.0, area.height - footer) / 2;
+    double aboveInset = 0,
+  }) : centerY = centerY ?? max(0.0, area.height - footer - aboveInset) / 2;
 
   /// A área toda, do fim da barra do app ao fim da área segura.
   final Size area;
@@ -126,6 +127,7 @@ class CenteredBoardLayout extends StatelessWidget {
     this.topAlignment = Alignment.bottomCenter,
     this.bottomAlignment = Alignment.topCenter,
     this.shrinkSides = true,
+    this.aboveInset = 0,
     super.key,
   });
 
@@ -149,6 +151,11 @@ class CenteredBoardLayout extends StatelessWidget {
   /// Se [top] e [bottom] diminuem para caber.
   final bool shrinkSides;
 
+  /// Altura que fica acima da área mas conta como parte da barra do app
+  /// (ex.: a faixa de lances): o centro é medido a partir do topo dela, e
+  /// o tabuleiro sobe metade disso.
+  final double aboveInset;
+
   @override
   Widget build(BuildContext context) {
     Widget? side(Widget? child, Alignment alignment) => child == null
@@ -169,6 +176,7 @@ class CenteredBoardLayout extends StatelessWidget {
       maxBoard: maxBoard,
       topAlignment: topAlignment,
       bottomAlignment: bottomAlignment,
+      aboveInset: aboveInset,
     );
   }
 }
@@ -188,6 +196,7 @@ class _CenteredBoard
     required this.maxBoard,
     required this.topAlignment,
     required this.bottomAlignment,
+    required this.aboveInset,
   });
 
   final Widget? top;
@@ -202,6 +211,7 @@ class _CenteredBoard
   final double maxBoard;
   final Alignment topAlignment;
   final Alignment bottomAlignment;
+  final double aboveInset;
 
   @override
   Iterable<_Slot> get slots => _Slot.values;
@@ -240,7 +250,8 @@ class _RenderCenteredBoard extends RenderBox
         old.minFraction != widget.minFraction ||
         old.maxBoard != widget.maxBoard ||
         old.topAlignment != widget.topAlignment ||
-        old.bottomAlignment != widget.bottomAlignment) {
+        old.bottomAlignment != widget.bottomAlignment ||
+        old.aboveInset != widget.aboveInset) {
       markNeedsLayout();
     }
   }
@@ -279,6 +290,7 @@ class _RenderCenteredBoard extends RenderBox
       reserveBottom: config.reserveBottom,
       minFraction: config.minFraction,
       maxBoard: config.maxBoard,
+      aboveInset: config.aboveInset,
     );
     final rect = geometry.board;
     final board = childForSlot(_Slot.board)!;

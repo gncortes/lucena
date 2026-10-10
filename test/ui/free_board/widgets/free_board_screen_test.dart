@@ -23,6 +23,7 @@ import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
+import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
@@ -1051,7 +1052,11 @@ void main() {
       final appBar = tester.getRect(find.byType(AppBar));
       final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
       expect(appBar.bottom, area.top);
-      expect(board.center.dy, closeTo((area.top + area.bottom) / 2, 1));
+      // O centro conta a partir do topo da faixa de lances, que começa vazia.
+      expect(
+        board.center.dy,
+        closeTo((area.top - MoveList.height + area.bottom) / 2, 1),
+      );
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,
         lessThanOrEqualTo(board.top + 0.5),

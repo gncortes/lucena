@@ -373,8 +373,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               (ProfileCubit cubit) => cubit.state?.nickname ?? '',
             );
             // O tabuleiro na largura toda, com o centro no centro do espaço
-            // útil (T64): entre a barra do app (com a faixa de lances) e o
-            // fim da área segura. O personagem e os relógios ficam em cima e
+            // útil (T64): entre a barra do app (sem contar a faixa de lances,
+            // que começa vazia) e o fim da área segura. O personagem e os relógios ficam em cima e
             // embaixo, no espaço que sobra de cada lado; sem espaço, o
             // retrato encolhe e, no limite, o tabuleiro também.
             final clocksAbove =
@@ -393,6 +393,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               gap: 0,
               reserveTop: reserveTop,
               reserveBottom: clocksBelow,
+              aboveInset: MoveList.height,
             );
             // O retrato do personagem fica com o que sobra em cima.
             final avatar = character == null
@@ -412,6 +413,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 CenteredBoardLayout(
                   key: FreeBoardKeys.scrollArea,
                   gap: 0,
+                  aboveInset: MoveList.height,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
                   top: Column(
