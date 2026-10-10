@@ -4,6 +4,12 @@ import 'package:flutter/widgets.dart';
 abstract final class GameDetailsKeys {
   static const screen = Key('gameDetails.screen');
   static const board = Key('gameDetails.board');
+
+  /// A folha que sobe por cima do tabuleiro, a lista dela (que rola) e o
+  /// "x" que a desce.
+  static const sheet = Key('gameDetails.sheet');
+  static const panel = Key('gameDetails.panel');
+  static const closeSheet = Key('gameDetails.sheet.close');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
   static const notFound = Key('gameDetails.notFound');

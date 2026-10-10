@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -54,9 +55,16 @@ void main() {
     userTime: const TimeControl(initial: Duration(minutes: 5)),
   );
 
-  Future<GameDetailsCubit> pump(WidgetTester tester, int id) async {
-    tester.view.physicalSize = const Size(1080, 4000);
+  Future<GameDetailsCubit> pump(
+    WidgetTester tester,
+    int id, {
+    Size screen = const Size(1080, 4000),
+    double textScale = 1,
+  }) async {
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
     final cubit = GameDetailsCubit(
       id,
@@ -95,6 +103,73 @@ void main() {
     final text = tester.widget<Text>(find.byKey(key));
     return text.data ?? text.textSpan!.toPlainText();
   }
+
+  double sheetTop(WidgetTester tester) =>
+      tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
+
+  testWidgets('a folha: recolhida embaixo do tabuleiro; puxada, sobe por '
+      'cima dele com o x; o x a desce de volta', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final appBar = tester.getRect(find.byType(AppBar));
+    final collapsed = sheetTop(tester);
+    // Recolhida: o tabuleiro inteiro acima dela, no centro do espaço, e os
+    // botões de lance à vista; o x escondido.
+    expect(board.bottom, lessThanOrEqualTo(collapsed));
+    expect(
+      board.center.dy,
+      closeTo((appBar.bottom + collapsed) / 2, AppSpacing.xxl * 2),
+    );
+    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
+
+    // Puxada para cima: cobre o tabuleiro e o x aparece.
+    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -600));
+    await tester.pumpAndSettle();
+    final open = sheetTop(tester);
+    expect(open, lessThan(board.center.dy));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+
+    // O x desce a folha de uma vez.
+    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), closeTo(collapsed, 1));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
+    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+  });
+
+  testWidgets('tela pequena com fonte 1,6: nada estoura, os botões de lance '
+      'ficam à vista e, com a folha aberta, tudo rola até a legenda', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(945, 1680), textScale: 1.6);
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(GameDetailsKeys.board), findsOne);
+    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+    expect(
+      tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
+      lessThanOrEqualTo(sheetTop(tester)),
+    );
+
+    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -400));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+    // Dentro da folha aberta, a tabela inteira chega à vista rolando.
+    final last = find.byKey(GameDetailsKeys.move(game.moves.length - 1));
+    await tester.scrollUntilVisible(
+      last,
+      200,
+      scrollable: find.descendant(
+        of: find.byKey(GameDetailsKeys.panel),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(last.hitTestable(), findsOne);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (
     tester,
