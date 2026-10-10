@@ -141,11 +141,13 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         state.phase == ChallengePhase.running &&
         state.timeLeft <= const Duration(seconds: 10);
     // O tabuleiro no centro do espaço útil (T64), entre a barra do app e o
-    // fim da área segura; o relógio em cima e o resto embaixo, centrado no
-    // espaço que sobra, diminuindo se não couber.
+    // fim da área segura; o relógio logo abaixo da barra do app e o resto
+    // embaixo, centrado no espaço que sobra, diminuindo se não couber.
     return CenteredBoardLayout(
       gutter: AppSpacing.sm,
       reserveTop: 40,
+      // O relógio fica colado na barra do app, como antes, e não no tabuleiro.
+      topAlignment: Alignment.topCenter,
       bottomAlignment: Alignment.center,
       top: Column(
         mainAxisSize: MainAxisSize.min,
