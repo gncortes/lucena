@@ -20,9 +20,13 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     Locale locale = const Locale('en'),
+    Size screen = const Size(1080, 2400),
+    double textScale = 1,
   }) async {
-    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
     cubit = CustomPositionCubit(FakeTrainingRepository());
     addTearDown(cubit.close);
@@ -62,6 +66,30 @@ void main() {
           .widget<FilledButton>(find.byKey(CustomPositionKeys.continueButton))
           .onPressed !=
       null;
+
+  for (final (screen, scale) in [
+    (const Size(1080, 2400), 1.0),
+    (const Size(945, 1680), 1.0),
+    (const Size(945, 1680), 1.6),
+  ]) {
+    testWidgets('T64, $screen × $scale: o tabuleiro no centro do espaço '
+        'entre a barra do app e o painel, com a paleta à vista', (
+      tester,
+    ) async {
+      await pump(tester, screen: screen, textScale: scale);
+      final appBar = tester.getRect(find.byType(AppBar));
+      final panel = tester.getRect(find.byKey(CustomPositionKeys.panel));
+      final editor = tester.getRect(find.byKey(CustomPositionKeys.editor));
+      expect(editor.center.dy, closeTo((appBar.bottom + panel.top) / 2, 1));
+      expect(editor.bottom, lessThanOrEqualTo(panel.top));
+      expect(find.byKey(CustomPositionKeys.moveTool).hitTestable(), findsOne);
+      expect(
+        find.byKey(CustomPositionKeys.continueButton).hitTestable(),
+        findsOne,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('FEN inválido: erro traduzido e não segue', (tester) async {
     await pump(tester, locale: const Locale('pt'));

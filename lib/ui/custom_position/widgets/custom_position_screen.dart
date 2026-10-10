@@ -13,12 +13,14 @@ import '../../../domain/use_cases/position_validation.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Montar uma posição: no editor (tocar na peça da paleta e depois nas casas)
 /// ou colando um FEN. A posição só segue quando é jogável.
@@ -124,58 +126,83 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
           ),
           body: !state.ready
               ? const SizedBox.shrink()
-              : Column(
-                  children: [
-                    // O tabuleiro fica parado no alto: arrastar nele move as
-                    // peças, nunca rola a tela.
-                    _editor(state, board),
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        children: [
-                          _palette(board),
-                          const SizedBox(height: 12),
-                          _turnAndGoal(state),
-                          _fenField(state),
-                        ],
-                      ),
-                    ),
-                    SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: FilledButton(
-                          key: CustomPositionKeys.continueButton,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
+              // O tabuleiro no centro do espaço entre a barra do app e o
+              // painel da paleta e das opções (T64), que rola embaixo dele
+              // com o botão de continuar no pé. Arrastar no tabuleiro move as
+              // peças, nunca rola a tela.
+              : LayoutBuilder(
+                  builder: (context, box) {
+                    final side = math.min(box.maxWidth, _maxBoard);
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: BoardOptionsPanel.boardAreaFor(
+                            box.maxHeight,
+                            boardRoom: side + 2 * AppSpacing.sm,
+                            minPanel: 0.45,
                           ),
-                          onPressed: state.position == null
-                              ? null
-                              : () => context.push(
-                                  Routes.setup(
-                                    state.position!.fen,
-                                    goal: state.goal.code,
-                                  ),
-                                ),
-                          child: Text(l10n.customContinue),
+                          child: CenteredBoardLayout(
+                            maxBoard: _maxBoard,
+                            gutter: AppSpacing.sm,
+                            board: _editor(state, board),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                        Expanded(
+                          child: BoardOptionsPanel(
+                            key: CustomPositionKeys.panel,
+                            footer: SafeArea(
+                              top: false,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  8,
+                                  16,
+                                  16,
+                                ),
+                                child: FilledButton(
+                                  key: CustomPositionKeys.continueButton,
+                                  style: FilledButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(52),
+                                  ),
+                                  onPressed: state.position == null
+                                      ? null
+                                      : () => context.push(
+                                          Routes.setup(
+                                            state.position!.fen,
+                                            goal: state.goal.code,
+                                          ),
+                                        ),
+                                  child: Text(l10n.customContinue),
+                                ),
+                              ),
+                            ),
+                            child: ListView(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              children: [
+                                _palette(board),
+                                const SizedBox(height: 12),
+                                _turnAndGoal(state),
+                                _fenField(state),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
         );
       },
     );
   }
 
+  /// O maior tabuleiro do editor.
+  static const _maxBoard = 420.0;
+
   Widget _editor(CustomPositionState state, BoardSettings board) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screen = MediaQuery.sizeOf(context);
-        final size = math.min(
-          math.min(constraints.maxWidth, 420.0),
-          screen.height * 0.42,
-        );
+        final size = constraints.maxWidth;
         return Center(
           // O tabuleiro não espelha em idiomas da direita para a esquerda.
           child: Directionality(
