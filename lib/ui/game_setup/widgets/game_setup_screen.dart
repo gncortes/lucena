@@ -12,6 +12,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -24,6 +25,7 @@ import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -49,50 +51,83 @@ class GameSetupScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.setupTitle)),
       // A posição já aparece antes de a configuração ser lida: é nela que o
       // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 16),
-              children: [
-                _Header(state: state),
-                if (state.ready) ...[
-                  const _SectionTitle.yourSide(),
-                  _SidePicker(state: state),
-                  const _SectionTitle.opponent(),
-                  _OpponentPicker(state: state),
-                  // Às cegas: só contra a máquina e com voz no idioma.
-                  if (blind) _ModePicker(state: state),
-                  const Divider(height: 24),
-                  _ClockSection(state: state),
-                  if (state.attempts.isNotEmpty) _History(state: state),
-                ],
-              ],
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FilledButton(
-                    key: GameSetupKeys.startButton,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
-                    ),
-                    onPressed: state.canStart
-                        ? () => _start(context, state)
-                        : null,
-                    child: Text(l10n.clockStartGame),
+      // O tabuleiro fica no centro do espaço entre a barra do app e o painel
+      // das opções (T64); as opções rolam dentro do painel, embaixo, com o
+      // botão de começar no pé dele.
+      body: LayoutBuilder(
+        builder: (context, box) {
+          final side = math.min(box.maxWidth - 32, _Header.maxBoard);
+          // O painel fica com o que o tabuleiro e o objetivo não usam, e
+          // pelo menos 40% da altura: em tela baixa ou com fonte grande, o
+          // tabuleiro é que diminui.
+          final boardRoom =
+              side + 2 * (_Header.chipsHeight + AppSpacing.md) + AppSpacing.lg;
+          final panel = math.max(
+            box.maxHeight * 0.4,
+            box.maxHeight - boardRoom,
+          );
+          return Column(
+            children: [
+              Expanded(child: _Header(state: state)),
+              Material(
+                key: GameSetupKeys.panel,
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(AppShape.large),
                   ),
-                ],
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: panel,
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        children: [
+                          if (state.ready) ...[
+                            const _SectionTitle.yourSide(),
+                            _SidePicker(state: state),
+                            const _SectionTitle.opponent(),
+                            _OpponentPicker(state: state),
+                            // Às cegas: só contra a máquina e com voz no idioma.
+                            if (blind) _ModePicker(state: state),
+                            const Divider(height: 24),
+                            _ClockSection(state: state),
+                            if (state.attempts.isNotEmpty)
+                              _History(state: state),
+                          ],
+                        ],
+                      ),
+                    ),
+                    SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            FilledButton(
+                              key: GameSetupKeys.startButton,
+                              style: FilledButton.styleFrom(
+                                minimumSize: const Size.fromHeight(52),
+                              ),
+                              onPressed: state.canStart
+                                  ? () => _start(context, state)
+                                  : null,
+                              child: Text(l10n.clockStartGame),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -150,71 +185,74 @@ class _ModePicker extends StatelessWidget {
   }
 }
 
-/// A posição vista pelo lado do jogador, com o objetivo.
+/// A posição vista pelo lado do jogador, com o objetivo embaixo: o
+/// tabuleiro no centro do espaço dele (T64).
 class _Header extends StatelessWidget {
   const _Header({required this.state});
 
   final GameSetupState state;
 
+  /// O maior tabuleiro da prévia.
+  static const maxBoard = 340.0;
+
+  /// O espaço da linha do objetivo e da vez.
+  static const chipsHeight = 48.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final positionId = state.positionId;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = math.min(constraints.maxWidth - 32, 340.0);
-        return Column(
-          children: [
-            const SizedBox(height: 8),
-            // O tabuleiro chega voando do cartão de onde veio (catálogo ou
-            // aula).
-            PositionBoard(
-              boardKey: GameSetupKeys.preview,
-              fen: state.position.fen,
-              size: size,
-              orientation: state.userSide,
-              coordinates: true,
-              radius: 8,
-              heroTag: setupBoardTag(
-                positionId: positionId,
-                fen: state.position.fen,
+    return CenteredBoardLayout(
+      gutter: AppSpacing.lg,
+      gap: AppSpacing.md,
+      maxBoard: maxBoard,
+      reserveBottom: chipsHeight,
+      // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula).
+      board: LayoutBuilder(
+        builder: (context, box) => PositionBoard(
+          boardKey: GameSetupKeys.preview,
+          fen: state.position.fen,
+          size: box.maxWidth,
+          orientation: state.userSide,
+          coordinates: true,
+          radius: 8,
+          heroTag: setupBoardTag(
+            positionId: positionId,
+            fen: state.position.fen,
+          ),
+        ),
+      ),
+      bottom: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.center,
+        children: [
+          Chip(
+            key: GameSetupKeys.goal,
+            avatar: Icon(
+              GoalStyle.of(context, state.goal).icon,
+              size: 18,
+              color: GoalStyle.of(context, state.goal).onContainer,
+            ),
+            label: Text(
+              goalLabel(l10n, state.goal),
+              style: TextStyle(
+                color: GoalStyle.of(context, state.goal).onContainer,
               ),
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                Chip(
-                  key: GameSetupKeys.goal,
-                  avatar: Icon(
-                    GoalStyle.of(context, state.goal).icon,
-                    size: 18,
-                    color: GoalStyle.of(context, state.goal).onContainer,
-                  ),
-                  label: Text(
-                    goalLabel(l10n, state.goal),
-                    style: TextStyle(
-                      color: GoalStyle.of(context, state.goal).onContainer,
-                    ),
-                  ),
-                  backgroundColor: GoalStyle.of(context, state.goal).container,
-                  side: BorderSide.none,
-                ),
-                Chip(
-                  label: Text(
-                    state.position.turn == Side.white
-                        ? l10n.freeBoardWhiteToMove
-                        : l10n.freeBoardBlackToMove,
-                  ),
-                  side: BorderSide.none,
-                ),
-              ],
+            backgroundColor: GoalStyle.of(context, state.goal).container,
+            side: BorderSide.none,
+          ),
+          Chip(
+            label: Text(
+              state.position.turn == Side.white
+                  ? l10n.freeBoardWhiteToMove
+                  : l10n.freeBoardBlackToMove,
             ),
-          ],
-        );
-      },
+            side: BorderSide.none,
+          ),
+        ],
+      ),
     );
   }
 }
