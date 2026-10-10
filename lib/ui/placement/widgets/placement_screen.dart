@@ -262,7 +262,8 @@ class _QuestionLayout extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
     const gap = AppSpacing.md;
-    final loose = BoxConstraints(maxWidth: size.width);
+    // Largura toda: o texto centraliza e as opções se estendem.
+    final loose = BoxConstraints.tightFor(width: size.width);
     final answers = layoutChild(_QuestionSlot.answers, loose);
     final prompt = layoutChild(_QuestionSlot.prompt, loose);
     final free = size.height - answers.height - prompt.height - 3 * gap;
