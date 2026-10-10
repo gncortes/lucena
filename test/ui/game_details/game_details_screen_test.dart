@@ -139,6 +139,34 @@ void main() {
     expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
   });
 
+  testWidgets('folha rolada até a legenda e fechada pelo x: o conteúdo volta '
+      'ao topo e puxar de novo abre a folha', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final collapsed = sheetTop(tester);
+    final panel = find.byKey(GameDetailsKeys.panel);
+    // Abre e rola até a legenda.
+    await tester.drag(panel, const Offset(0, -600));
+    await tester.pumpAndSettle();
+    await tester.fling(panel, const Offset(0, -1500), 3000);
+    await tester.pumpAndSettle();
+    final scroll = tester.state<ScrollableState>(
+      find.descendant(of: panel, matching: find.byType(Scrollable)),
+    );
+    expect(scroll.position.pixels, greaterThan(0));
+
+    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), closeTo(collapsed, 1));
+    expect(scroll.position.pixels, 0);
+
+    // Puxar o conteúdo (ou a alça) abre de novo, com o x.
+    await tester.drag(panel, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), lessThan(collapsed - 100));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+  });
+
   for (final screen in const [Size(945, 1680), Size(720, 1280)]) {
     testWidgets('tela pequena ($screen) com fonte 1,6: nada estoura, os '
         'botões de lance ficam à vista e, com a folha aberta, tudo rola até a '

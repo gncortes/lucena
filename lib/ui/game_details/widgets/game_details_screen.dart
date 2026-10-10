@@ -160,9 +160,24 @@ class _ReviewBodyState extends State<_ReviewBody> {
   // o aviso passa para depois do quadro.
   final _sheetSize = ValueNotifier<double?>(null);
 
+  // O controle de rolagem do conteúdo (o da folha) e o tamanho recolhido.
+  ScrollController? _scroll;
+  double _minSheet = 0.3;
+
+  /// Recolhida, o conteúdo fica sempre no topo: só assim puxar (pela alça
+  /// ou pelo conteúdo) abre a folha, em vez de rolar o conteúdo escondido.
+  void _scrollToTop() {
+    final scroll = _scroll;
+    if (scroll != null && scroll.hasClients && scroll.offset > 0) {
+      scroll.jumpTo(0);
+    }
+  }
+
   void _onSheetChanged() {
     void update() {
-      if (mounted && _sheet.isAttached) _sheetSize.value = _sheet.size;
+      if (!mounted || !_sheet.isAttached) return;
+      _sheetSize.value = _sheet.size;
+      if (_sheet.size <= _minSheet + 0.005) _scrollToTop();
     }
 
     if (SchedulerBinding.instance.schedulerPhase ==
@@ -233,6 +248,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
         );
         final minSheet = (peek / height).toDouble();
         final boardArea = height - peek;
+        _minSheet = minSheet;
         // Aberta, a folha para na altura do conteúdo, até [_sheetMax].
         final content = _contentHeight;
         final maxSheet = content == null
@@ -271,12 +287,13 @@ class _ReviewBodyState extends State<_ReviewBody> {
                 maxChildSize: opens ? maxSheet : minSheet,
                 snap: opens,
                 snapSizes: opens ? [minSheet, maxSheet] : null,
-                builder: (context, scroll) => _sheetContent(context, scroll, [
-                  MoveExplanation(state: state),
-                  if (state.engine) EngineLinesPanel(state: state),
-                  ...header,
-                  ...footer,
-                ]),
+                builder: (context, scroll) =>
+                    _sheetContent(context, _scroll = scroll, [
+                      MoveExplanation(state: state),
+                      if (state.engine) EngineLinesPanel(state: state),
+                      ...header,
+                      ...footer,
+                    ]),
               ),
             ),
             // Folha cobrindo o tabuleiro: um "x" logo acima dela, para
@@ -299,11 +316,24 @@ class _ReviewBodyState extends State<_ReviewBody> {
                       opacity: covering ? 1 : 0,
                       child: SheetCloseButton(
                         key: GameDetailsKeys.closeSheet,
-                        onPressed: () => _sheet.animateTo(
-                          minSheet,
-                          duration: AppMotion.of(context).component,
-                          curve: AppMotion.enter,
-                        ),
+                        onPressed: () {
+                          // O conteúdo volta ao topo junto com a folha.
+                          final scroll = _scroll;
+                          if (scroll != null &&
+                              scroll.hasClients &&
+                              scroll.offset > 0) {
+                            scroll.animateTo(
+                              0,
+                              duration: AppMotion.of(context).component,
+                              curve: AppMotion.enter,
+                            );
+                          }
+                          _sheet.animateTo(
+                            minSheet,
+                            duration: AppMotion.of(context).component,
+                            curve: AppMotion.enter,
+                          );
+                        },
                       ),
                     ),
                   ),
