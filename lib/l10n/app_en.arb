@@ -3848,7 +3848,7 @@
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
-  "endgameStartLesson": "Start the lesson",
+  "endgameStartLesson": "Start chapter 1",
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
@@ -3938,7 +3938,7 @@
   "@lessonFinishPart": {
     "description": "Button on the last step of a lesson part: finish this part."
   },
-  "endgameModulePlace": "{module} · {number} of {count}",
+  "endgameModulePlace": "{module} · lesson {number} of {count}",
   "@endgameModulePlace": {
     "description": "Endgame lesson screen header: the module name and the lesson's position in it, e.g. 'Basic mates · 1 of 4'.",
     "placeholders": {
@@ -3969,7 +3969,7 @@
   "@endgameLessonInReview": {
     "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
   },
-  "endgameStagesDone": "{done} of {total} chapters",
+  "endgameStagesDone": "{done} of {total} chapters done",
   "@endgameStagesDone": {
     "description": "Endgame lesson screen header: lesson stages done out of the total.",
     "placeholders": {
