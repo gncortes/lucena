@@ -51,7 +51,7 @@ src = {
  'id': 'pawns.rookPawnDraw', 'module': 'pawns', 'skills': ['pawns.rookPawnDraw'],
  'parts': [
   {'id': 'keySquares', 'steps': [
-    think('t_keys', KEYS, 2, ref='audaxKeys', arrows=['e8f8']),
+    think('t_keys', KEYS, 2, ref='audaxKeys'),
     talk('keys', KEYS, ref='audaxKeys', marks=['g7', 'g8'], arrows=['h7g7']),
     demo('d_keys', KEYS, 'win', 'Kg7 Ke7 h4 Ke6 h5 Kf5 h6',
          {0: {'marks': ['g7', 'g8']}, 5: {'arrows': ['f5g5']}, 6: {'marks': ['h6']}}),
@@ -107,7 +107,7 @@ src = {
     talk('barczaErr', BARCZA, ref=BF, marks=['b2', 'c1'], arrows=['e3d3', 'a4b3']),
     move('barczaMove', BARCZA, 'draw', 'Kd2 Kb3 Kc1 a4 Kb1', ['hold'] * 3, ref=BF),
     move('contrastMove', CONTRAST, 'win', 'Kb2 Kd1 a3 Kd2 a2 Kd3 a1=Q', ['win'] * 4, side='black'),
-    talk('recap', KEYS, marks=['g7', 'g8', 'f8']),
+    talk('recap', KEYS, marks=['g7', 'g8', 'f7', 'f8']),
     {'type': 'play', 'id': 'finish', 'fen': FINISH, 'goal': 'win', 'ref': 'dfgordonFinish'},
   ]},
  ],
