@@ -116,7 +116,7 @@ write({
             ref(demo('d_c4', C4_WRONG, 'Kf7 Ke5 Ke7 Kf4 Ke6 Ke4', goal='draw',
                      notes={1: {'marks': ['c4']},
                             3: {'marks': ['e7']}}), 'drmkcPart1'),
-            ref(demo('d_double', DRMKC, 'c3 Kf7 Ke5 Ke7 c4 Kd7 Kf6 Kc7 Kxg6',
+            ref(demo('d_double', DRMKC, 'c3 Kf7 Ke5 Ke7 c4 Kd7 Kf6',
                      notes={1: {'arrows': ['c2c3']},
                             3: {'marks': ['e5']},
                             5: {'arrows': ['c3c4']},
