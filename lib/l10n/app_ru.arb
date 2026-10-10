@@ -768,6 +768,7 @@
   "lessonFinishPart": "Завершить часть",
   "endgameModulePlace": "{module} · {number} из {count}",
   "lessonPartTitle": "Часть {part} · {title}",
+  "endgameLessonInReview": "Урок на доработке: содержание ещё может измениться.",
   "endgameStagesDone": "{done} из {total} этапов",
   "endgameTestPrompt": "Покажите, что вы усвоили",
   "endgameTestLearned": "Вы освоили этот эндшпиль!",

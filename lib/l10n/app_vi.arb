@@ -768,6 +768,7 @@
   "lessonFinishPart": "Hoàn thành phần",
   "endgameModulePlace": "{module} · {number}/{count}",
   "lessonPartTitle": "Phần {part} · {title}",
+  "endgameLessonInReview": "Bài học đang được xem lại: nội dung vẫn có thể thay đổi.",
   "endgameStagesDone": "{done}/{total} chặng",
   "endgameTestPrompt": "Cho thấy bạn đã học được",
   "endgameTestLearned": "Bạn đã học được tàn cuộc này!",

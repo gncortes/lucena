@@ -768,6 +768,7 @@
   "lessonFinishPart": "パートを終える",
   "endgameModulePlace": "{module} · {number}/{count}",
   "lessonPartTitle": "パート{part} · {title}",
+  "endgameLessonInReview": "レッスンは見直し中です。内容が変わる可能性があります。",
   "endgameStagesDone": "{done}/{total} ステージ",
   "endgameTestPrompt": "身についたか確かめよう",
   "endgameTestLearned": "この終盤を身につけた！",

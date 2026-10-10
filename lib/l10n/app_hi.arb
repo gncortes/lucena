@@ -768,6 +768,7 @@
   "lessonFinishPart": "भाग पूरा करें",
   "endgameModulePlace": "{module} · {number}/{count}",
   "lessonPartTitle": "भाग {part} · {title}",
+  "endgameLessonInReview": "पाठ समीक्षा में है: सामग्री अभी बदल सकती है।",
   "endgameStagesDone": "{done}/{total} चरण",
   "endgameTestPrompt": "दिखाएँ कि आपने सीखा",
   "endgameTestLearned": "आपने यह एंडगेम सीख लिया!",

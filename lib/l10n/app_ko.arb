@@ -768,6 +768,7 @@
   "lessonFinishPart": "파트 마치기",
   "endgameModulePlace": "{module} · {number}/{count}",
   "lessonPartTitle": "파트 {part} · {title}",
+  "endgameLessonInReview": "수업 검토 중: 내용이 아직 바뀔 수 있습니다.",
   "endgameStagesDone": "{done}/{total} 단계",
   "endgameTestPrompt": "배운 걸 보여 줘",
   "endgameTestLearned": "이 엔드게임을 익혔어!",

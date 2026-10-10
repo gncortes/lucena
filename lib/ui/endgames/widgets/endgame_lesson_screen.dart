@@ -137,6 +137,10 @@ class _Body extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            if (lesson.inReview) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _InReview(),
+            ],
             if (viktor != null) ...[
               const SizedBox(height: AppSpacing.md),
               TeacherSpeech(
@@ -201,6 +205,44 @@ class _Body extends StatelessWidget {
           child: _ContinueBar(state: state, lesson: lesson),
         ),
       ],
+    );
+  }
+}
+
+/// O aviso de que a aula ainda está em revisão e pode mudar.
+class _InReview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      key: EndgameLessonKeys.inReview,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: colors.secondaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.medium),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.rate_review_outlined,
+            size: 18,
+            color: colors.onSecondaryContainer,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              context.l10n.endgameLessonInReview,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSecondaryContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

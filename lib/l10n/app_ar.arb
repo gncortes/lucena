@@ -768,6 +768,7 @@
   "lessonFinishPart": "إنهاء الجزء",
   "endgameModulePlace": "{module} · {number} من {count}",
   "lessonPartTitle": "الجزء {part} · {title}",
+  "endgameLessonInReview": "الدرس قيد المراجعة: قد يتغير المحتوى.",
   "endgameStagesDone": "{done} من {total} مراحل",
   "endgameTestPrompt": "أظهر أنك تعلّمت",
   "endgameTestLearned": "لقد تعلّمت هذه النهاية!",

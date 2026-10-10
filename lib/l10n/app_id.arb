@@ -768,6 +768,7 @@
   "lessonFinishPart": "Selesaikan bagian",
   "endgameModulePlace": "{module} · {number} dari {count}",
   "lessonPartTitle": "Bagian {part} · {title}",
+  "endgameLessonInReview": "Pelajaran sedang ditinjau: isinya masih bisa berubah.",
   "endgameStagesDone": "{done} dari {total} tahap",
   "endgameTestPrompt": "Tunjukkan bahwa kamu sudah belajar",
   "endgameTestLearned": "Kamu sudah menguasai akhir permainan ini!",

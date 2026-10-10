@@ -768,6 +768,7 @@
   "lessonFinishPart": "完成本部分",
   "endgameModulePlace": "{module} · 第 {number}/{count} 课",
   "lessonPartTitle": "第 {part} 部分 · {title}",
+  "endgameLessonInReview": "课程审核中：内容可能还会变化。",
   "endgameStagesDone": "{done}/{total} 个阶段",
   "endgameTestPrompt": "证明你学会了",
   "endgameTestLearned": "你学会了这个残局！",

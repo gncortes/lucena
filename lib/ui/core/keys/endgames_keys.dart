@@ -52,6 +52,9 @@ abstract final class ExercisesDoneKeys {
 
 /// Uma aula de final: a lição, os exercícios, a nota e o passo final.
 abstract final class EndgameLessonKeys {
+  /// O aviso de aula ainda em revisão (abaixo da nota A).
+  static const inReview = Key('endgameLesson.inReview');
+
   /// Quantos exercícios do teste já foram resolvidos (em andamento).
   static const testSolved = Key('endgameLesson.testSolved');
 

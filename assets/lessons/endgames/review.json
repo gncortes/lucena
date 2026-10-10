@@ -1,0 +1,16 @@
+{
+  "lessons": [
+    "pawns.reti",
+    "minor.wrongBishop",
+    "rookPawns.vsTwo",
+    "pawns.protectedPasser",
+    "pawns.shoulder",
+    "pawns.outsidePasser",
+    "pawns.race",
+    "mates.bishopKnight.edge",
+    "basics.twoBishops",
+    "rook.frontal",
+    "rook.cutOff",
+    "rook.backRank"
+  ]
+}

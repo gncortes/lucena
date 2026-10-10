@@ -768,6 +768,7 @@
   "lessonFinishPart": "Terminer la partie",
   "endgameModulePlace": "{module} · {number} sur {count}",
   "lessonPartTitle": "Partie {part} · {title}",
+  "endgameLessonInReview": "Leçon en cours de révision : le contenu peut encore changer.",
   "endgameStagesDone": "{done} sur {total} étapes",
   "endgameTestPrompt": "Montre que tu as appris",
   "endgameTestLearned": "Tu as appris cette finale !",

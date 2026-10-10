@@ -768,6 +768,7 @@
   "lessonFinishPart": "Bölümü bitir",
   "endgameModulePlace": "{module} · {number}/{count}",
   "lessonPartTitle": "Bölüm {part} · {title}",
+  "endgameLessonInReview": "Ders gözden geçiriliyor: içerik hâlâ değişebilir.",
   "endgameStagesDone": "{done}/{total} aşama",
   "endgameTestPrompt": "Öğrendiğini göster",
   "endgameTestLearned": "Bu oyun sonunu öğrendin!",

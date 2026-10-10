@@ -768,6 +768,7 @@
   "lessonFinishPart": "پایان بخش",
   "endgameModulePlace": "{module} · {number} از {count}",
   "lessonPartTitle": "بخش {part} · {title}",
+  "endgameLessonInReview": "درس در حال بازبینی است: محتوا هنوز ممکن است تغییر کند.",
   "endgameStagesDone": "{done} از {total} مرحله",
   "endgameTestPrompt": "نشان بده که یاد گرفته‌ای",
   "endgameTestLearned": "این آخربازی را یاد گرفتی!",

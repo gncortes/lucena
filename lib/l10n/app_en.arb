@@ -3965,6 +3965,10 @@
       }
     }
   },
+  "endgameLessonInReview": "Lesson under review: the content may still change.",
+  "@endgameLessonInReview": {
+    "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
+  },
   "endgameStagesDone": "{done} of {total} stages",
   "@endgameStagesDone": {
     "description": "Endgame lesson screen header: lesson stages done out of the total.",

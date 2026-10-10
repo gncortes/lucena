@@ -768,6 +768,7 @@
   "lessonFinishPart": "Завершити частину",
   "endgameModulePlace": "{module} · {number} з {count}",
   "lessonPartTitle": "Частина {part} · {title}",
+  "endgameLessonInReview": "Урок на доопрацюванні: зміст ще може змінитися.",
   "endgameStagesDone": "{done} з {total} етапів",
   "endgameTestPrompt": "Покажіть, що ви засвоїли",
   "endgameTestLearned": "Ви опанували цей ендшпіль!",

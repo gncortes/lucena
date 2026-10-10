@@ -767,6 +767,7 @@
   "lessonFinishPart": "[Fîñîšh thé påŕt one two]",
   "endgameModulePlace": "[{module} · {number} öf {count} one two three]",
   "lessonPartTitle": "[Påŕt {part} · {title} one two three]",
+  "endgameLessonInReview": "[Léššöñ ûñdéŕ ŕévîéw: thé çöñtéñt måý štîll çhåñĝé. one two three four five]",
   "endgameStagesDone": "[{done} öf {total} štåĝéš one two three]",
   "endgameTestPrompt": "[Šhöw thåt ýöû léåŕñéd ît one two three]",
   "endgameTestLearned": "[Ýöû léåŕñéd thîš éñdĝåmé! one two three]",

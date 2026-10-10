@@ -36,6 +36,15 @@ void main() {
   final gluedAnnotation = RegExp(r'[a-h1-8O][+#]?[?!]{1,2}[:;.]');
   final mateInN = RegExp(r'mate (em|in) \d+', caseSensitive: false);
 
+  test('as aulas em revisão existem no índice', () {
+    final review = jsonDecode(
+      io.File(AssetEndgameLessonRepository.reviewPath).readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final inReview = (review['lessons'] as List).cast<String>();
+    expect(inReview.toSet().length, inReview.length);
+    expect(ids, containsAll(inReview));
+  });
+
   test('o índice só aponta aulas que existem, sem repetição', () {
     expect(ids.toSet().length, ids.length);
     for (final (index, lesson) in lessons.indexed) {

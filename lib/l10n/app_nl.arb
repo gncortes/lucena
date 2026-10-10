@@ -768,6 +768,7 @@
   "lessonFinishPart": "Deel afronden",
   "endgameModulePlace": "{module} · {number} van {count}",
   "lessonPartTitle": "Deel {part} · {title}",
+  "endgameLessonInReview": "Les in herziening: de inhoud kan nog veranderen.",
   "endgameStagesDone": "{done} van {total} stappen",
   "endgameTestPrompt": "Laat zien dat je het geleerd hebt",
   "endgameTestLearned": "Je hebt dit eindspel geleerd!",
