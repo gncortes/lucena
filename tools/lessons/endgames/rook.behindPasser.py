@@ -21,12 +21,10 @@ SKEWER = 'R7/P4k2/6p1/8/8/6P1/6K1/r7 w - - 0 1'   # e06: só Th8 ganha
 B7 = 'r7/P7/8/4K3/2k5/8/8/R7 w - - 0 1'           # só 1.Rd6: corrida até b7
 SK1 = '1R6/1P2k3/8/8/8/8/6K1/1r6 w - - 0 1'       # só 1.Th8/1.Tg8 (espeto)
 SK3 = '1R6/1P6/4k3/8/8/8/6K1/1r6 w - - 0 1'       # só 1.Te8+
-RACE_ERR = '8/5rk1/P6p/8/6P1/2R5/7K/8 b - - 1 1'  # depois de 1.Tc3? (empata)
 TEMPO = '8/8/8/P1r5/7k/8/K7/3R4 w - - 0 1'        # só 1.Td4+
 TEMPO_M = '8/8/8/5r1P/k7/8/7K/4R3 w - - 0 1'      # espelho: só 1.Te4+
 DEF_ERR = '8/6k1/6p1/8/p1r5/6P1/6K1/R7 b - - 1 1'  # depois de 1.Ta1? (perde)
 ZW = 'R7/8/P7/8/5kp1/r7/5KP1/8 w - - 0 1'         # só 1.g3+; 1.a7? empata
-ZW_ERR = 'R7/P7/8/8/5kp1/r7/5KP1/8 b - - 0 1'     # depois de 1.a7?
 INT = '8/3P4/4K3/8/8/7R/1k6/3r4 w - - 0 1'        # 1.d8=D? empata; 1.Th5 ganha
 INT_M = '8/4P3/3K4/8/8/R7/6k1/4r3 w - - 0 1'      # espelho de INT
 KF = '8/8/7K/7P/4k3/8/2R5/6r1 w - - 0 1'          # só 1.Tc5; 1.Th2? empata
@@ -179,8 +177,10 @@ write({
         ]},
         {'id': 'race', 'steps': [
             ref(think('t_race', RACE, 2, marks=['a2']), 'audax6Race'),
-            demo('d_raceError', RACE_ERR, 'Rf2+ Kg3 Ra2', goal='draw',
-                 notes={1: {'arrows': ['f7f2']}, 3: {'arrows': ['f2a2']}}),
+            talk('raceCount', RACE, marks=['f2', 'a2']),
+            demo('d_raceError', RACE, 'Rc3 Rf2+ Kg3 Ra2', goal='draw',
+                 notes={1: {'arrows': ['c3a3']}, 2: {'arrows': ['f7f2']},
+                        4: {'arrows': ['f2a2']}}),
             ref(move('getFirst', RACE, 'Rc2 Ra7 Ra2 Kf6 Kg3',
                      accept={1: 'only', 2: 'win', 3: 'win'}), 'audax6Race'),
             demo('d_tempo', TEMPO, 'Rd4+ Kg5 Ra4',
@@ -213,8 +213,9 @@ write({
         ]},
         {'id': 'enemyBehind', 'steps': [
             think('t_order', ZW, 2, marks=['a2']),
-            demo('d_orderError', ZW_ERR, 'Ra2+ Kg1 Kg3', goal='draw',
-                 notes={1: {'arrows': ['a3a2']}, 3: {'marks': ['g3']}}),
+            talk('orderWhy', ZW, marks=['g3']),
+            demo('d_orderError', ZW, 'a7 Ra2+ Kg1 Kg3', goal='draw',
+                 notes={2: {'arrows': ['a3a2']}, 4: {'marks': ['g3']}}),
             move('orderMove', ZW, 'g3+ Ke4 a7', accept={1: 'only', 2: 'win'}),
             demo('d_interfere', INT, 'Rh5 Re1+ Kd6 Rd1+ Rd5',
                  notes={1: {'arrows': ['h5d5']}, 5: {'marks': ['d5']}}),

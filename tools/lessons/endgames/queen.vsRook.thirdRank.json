@@ -708,7 +708,7 @@
     },
     {
       "id": "e15",
-      "stars": 2,
+      "stars": 1,
       "fen": "3Q4/2K5/7k/8/5r2/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -744,7 +744,7 @@
     },
     {
       "id": "e19",
-      "stars": 3,
+      "stars": 2,
       "fen": "8/8/8/5K1Q/1r6/8/5k2/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -771,7 +771,7 @@
       ]
     }
   ],
-  "passScore": 8,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "third",

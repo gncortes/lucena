@@ -93,7 +93,7 @@
   "step.t_squeeze": "Na parte 6, a armadilha estava na captura da torre. Esta é de quem tem a dama e quer apertar. Na posição de Philidor com as brancas jogando, em vez do triângulo, a dama foi encostar no rei: depois de 1.Da6? Tc7+, o nosso rei está em xeque. Ele tem quatro casas; três ainda ganham, e uma joga a vitória fora. Qual é a errada, e por quê?",
   "step.t_squeeze.hint1": "Para cada casa do nosso rei, conte depois as casas do rei preto.",
   "step.t_squeeze.hint2": "Quando o rei preto não tem lance, a torre pode se oferecer com xeque. Qual casa deixa o rei preto sem lance?",
-  "step.squeeze": "A errada é 2.Rb6??, que parece fechar o cerco, mas o rei preto fica sem nenhum lance: a8, a7, b7 e c8 são da dama e do nosso rei. Aí a torre se oferece com 2...Tc6+!, e as pretas empatam. Averbakh mostra essa armadilha no seu livro de finais.",
+  "step.squeeze": "A errada é 2.Rb6??, que parece fechar o cerco, mas o rei preto fica sem nenhum lance: a8, a7, b7 e c8 são da dama e do nosso rei. Aí a torre se oferece com 2...Tc6+!, e as pretas empatam. Averbakh mostra essa armadilha no seu livro de finais. A torre também pode alternar os xeques entre uma casa que o rei preto defende e outra em que capturá-la afoga: aí os xeques não acabam nunca.",
   "step.d_desperado": "Esta é a posição depois de 2.Rb6??, com as pretas jogando. Veja a torre se oferecer.",
   "step.d_desperado.m1": "2...Tc6+! A torre dá xeque e se oferece. O rei preto não tem lance: se a torre sumir do tabuleiro, as pretas ficam afogadas.",
   "step.d_desperado.m2": "3.Rb5. O rei sai do xeque, mas a dama em a6 continua na linha da torre.",

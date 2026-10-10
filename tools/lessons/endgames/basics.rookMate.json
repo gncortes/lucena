@@ -441,23 +441,6 @@
               "accept": "best"
             }
           ]
-        },
-        {
-          "type": "move",
-          "id": "quietMove",
-          "fen": "3k4/8/1R2K3/8/8/8/8/8 w - - 0 1",
-          "goal": "win",
-          "turns": [
-            {
-              "teach": "b6c6",
-              "accept": "only",
-              "reply": "d8e8"
-            },
-            {
-              "teach": "c6c8",
-              "accept": "only"
-            }
-          ]
         }
       ]
     },
@@ -610,21 +593,11 @@
         {
           "type": "move",
           "id": "stalemateMove",
-          "fen": "8/8/8/8/8/8/3R4/k2K4 w - - 0 1",
+          "fen": "7k/5K2/8/8/8/8/8/6R1 w - - 0 1",
           "goal": "win",
           "turns": [
             {
-              "teach": "d1c2",
-              "accept": "best",
-              "reply": "a1a2"
-            },
-            {
-              "teach": "d2d3",
-              "accept": "best",
-              "reply": "a2a1"
-            },
-            {
-              "teach": "d3a3",
+              "teach": "g1h1",
               "accept": "only"
             }
           ]
@@ -741,7 +714,7 @@
     },
     {
       "id": "e16",
-      "stars": 3,
+      "stars": 2,
       "fen": "k7/8/7R/8/8/7K/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -811,7 +784,7 @@
       ]
     }
   ],
-  "passScore": 9,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "box",

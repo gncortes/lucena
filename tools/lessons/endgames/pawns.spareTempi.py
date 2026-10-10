@@ -33,6 +33,7 @@ NUNN_A6 = '8/5p2/p1k3p1/2Pp2P1/3K1P2/8/P7/8 w - - 6 41'   # 39...Rc7 40.Rd4 Rc6
 NUNN_MINI = '8/8/2k5/p1Pp4/3K4/8/P7/8 w - - 0 1'    # Nunn sem os peões de f e g
 TIMING = '8/8/7p/3p4/1k1P4/5K2/7P/8 w - - 0 1'      # Rf4!, o peão espera
 EARLY = after(TIMING, 'h4')                          # 1.h4? cedo
+EARLY2 = '8/8/8/3p3p/3P3P/2k1K3/8/8 w - - 0 3'     # 1.h4? Rc3 2.Re3 h5: travaram
 TIMING_B5 = '8/8/7p/1k1p4/3P4/5K2/7P/8 w - - 0 1'
 DEF = '8/8/7p/1k1p4/3P4/8/2K4P/8 w - - 0 1'         # defesa: só 1.Rb3 empata
 DEF_ERR = after(DEF, 'h3')                           # 1.h3? perde
@@ -138,10 +139,8 @@ write({
         {'id': 'timing', 'steps': [
             think('t_timing', TIMING, 2, arrows=['f3f4', 'f4e5'],
                   marks=['h2']),
-            demo('d_early', EARLY, 'Kc3 Ke3 h5 Ke2 Kxd4', side='black',
-                 notes={1: {'arrows': ['c3d4']},
-                        3: {'marks': ['h4', 'h5']},
-                        5: {'marks': ['d4']}}),
+            talk('early', EARLY, side='white', arrows=['b4c3', 'c3d4']),
+            talk('early2', EARLY2, side='white', marks=['d4', 'h4', 'h5']),
             demo('d_timing', TIMING, 'Kf4 Kc4 Ke5 h5 h4 Kc3 Kxd5',
                  notes={1: {'arrows': ['f4e5']},
                         3: {'marks': ['e5']},

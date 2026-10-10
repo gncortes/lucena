@@ -25,7 +25,6 @@ TB = '5r2/1R6/8/8/8/8/4p1K1/4k3 w - - 0 1'   # Tarrasch com a torre em b: perde
 CLOSE = '3r4/1R6/8/8/8/4p3/4k1K1/8 w - - 0 1'  # torre perto demais: perde
 FAR = '3r4/R7/8/8/8/4p3/4k1K1/8 w - - 0 1'   # só Ta2+
 BT = after(FAR, 'Ra2+ Rd2')                   # a torre preta tapou: não trocar
-BLOCKF = '8/8/8/8/5p2/8/R2rk2K/8 w - - 0 1'  # esperar e bloquear em f1
 # Partidas, na orientação real (o aluno joga de pretas, como o mestre).
 ARKELL45 = '6k1/R7/5K2/5P2/6r1/8/8/8 b - - 0 45'    # Ward-Arkell, ply 89
 ARKELL51 = '5R2/7k/5K2/5P2/5r2/8/8/8 b - - 12 51'   # ply 101
@@ -116,14 +115,14 @@ write({
     'skills': ['rook.shortSide'],
     'parts': [
         {'id': 'behind', 'steps': [
-            think('t_behind', BEHIND, 3, 2, ask='plan'),
+            think('t_behind', BEHIND, 2, ask='plan'),
             talk('behind', BEHIND, arrows=['b8e8', 'e8e4']),
             demo('d_late', after(BEHIND, 'Rb3+'),
                  'e3 Rd3 Ra1+ Rd1 Rxd1+ Kxd1 Kf2', goal='win', side='black'),
             move('behindPawn', BEHIND, 'Re8', accept='only', goal='draw'),
         ]},
         {'id': 'short', 'steps': [
-            think('t_short', FP2, 3, 2),
+            think('t_short', FP2, 2),
             talk('sides', FP2, arrows=['f1g1'],
                  marks=['g1', 'h1', 'a1', 'b1', 'c1', 'd1', 'e1']),
             ref(demo('d_arkell1', ARKELL45,
@@ -137,7 +136,7 @@ write({
             move('shortRook', SHORTROOK, 'Kg1', accept='only', goal='draw'),
         ]},
         {'id': 'lateral', 'steps': [
-            think('t_tarrasch', TARR, 3, 2),
+            think('t_tarrasch', TARR, 2),
             ref(talk('lateral', TARR, arrows=['a7a1'], marks=['f1', 'f2']),
                 'rookPawn'),
             demo('d_checks', TARR, 'Ra1+ Kd2 Ra2+ Kd3 Ra3+ Kd4', goal='draw'),
@@ -145,7 +144,7 @@ write({
                  'Ra4+ Kc3 Ra3+ Kb2 Re3', accept='only', goal='draw'),
         ]},
         {'id': 'flank', 'steps': [
-            think('t_karstedt', K5, 3, 3),
+            think('t_karstedt', K5, 3),
             ref(talk('karstedt', K5, arrows=['f8a8'],
                      marks=['a8', 'b8', 'c8', 'd8']), 'karstedt'),
             demo('d_karstedt', K5, 'Ra8 Rd1 Re8 Rd4 Kf1 Kd2 Kf2', goal='draw',
@@ -158,7 +157,7 @@ write({
                  accept={1: 'only', 2: 'hold'}, goal='draw'),
         ]},
         {'id': 'distance', 'steps': [
-            think('t_close', TB, 3, 2),
+            think('t_close', TB, 2),
             talk('distance', TB, arrows=['b7b1'], marks=['c1', 'd1']),
             demo('d_close', TB, 'Rb1+ Kd2 Rb2+ Kd3 Rb3+ Kc2 Re3 Kd2',
                  goal='win', side='black',
@@ -168,16 +167,16 @@ write({
                  accept={1: 'win', 2: ['Kc2'], 3: 'win'}, goal='win'),
         ]},
         {'id': 'block', 'steps': [
-            think('t_block', FAR, 3, 2),
+            think('t_block', FAR, 2),
             talk('block', BT, arrows=['a2d2'], marks=['e1']),
-            demo('d_blockF', BLOCKF, 'Ra1 f3 Kg3 f2 Kg2 Rc2 Rf1', goal='draw',
-                 notes={1: {'marks': ['f1']}, 7: {'arrows': ['g2f1']}}),
+            demo('d_trade', BT, 'Rxd2+ Kxd2 Kf3 e2 Kf2 e1=Q+', goal='win',
+                 side='black', notes={5: {'marks': ['e1']}}),
             move('blockE', BT, 'Ra1 Rd1 Ra2+ Ke1 Kf3 e2 Rxe2+',
                  accept={1: 'hold', 2: 'hold', 3: 'only', 4: 'hold'},
                  goal='draw'),
         ]},
         {'id': 'carlsen', 'steps': [
-            think('t_carlsen', G145, 3, 2, side='black'),
+            think('t_carlsen', G145, 2, side='black'),
             ref(talk('carlsen', G145, arrows=['g7g6', 'a8a7'], side='black'),
                 'aronianCarlsen2006'),
             ref(demo('d_carlsenError', G147, 'Ra8+ Rd8 Ra6 e7', goal='win',
@@ -191,13 +190,8 @@ write({
         ]},
     ],
     'exercises': [
-        exercise('e08', 1, LONG, 'Ra8 Re1 Ra2+', accept='hold', goal='draw',
-                 origin='profangel'),
         exercise('e11', 2, KARSTEDT, 'Kf1 Rh1+ Kg2', accept='only',
                  goal='draw', origin='karstedt'),
-        exercise('e12', 2, LATEST, 'Ra8 Kd2 Ra2+',
-                 accept={1: 'only', 2: 'hold'}, goal='draw',
-                 origin='karstedt'),
         exercise('e13', 2, TARR_D, 'Kc7 Ra7+ Kc8 Ra8+ Kb7 Rd8 Kc7',
                  accept={1: 'only', 2: 'win', 3: 'win', 4: 'win'},
                  goal='win', origin='rookPawn'),
@@ -210,7 +204,7 @@ write({
                          5: 'only'},
                  goal='draw', origin='yuri61'),
     ],
-    'passScore': 8,
+    'passScore': 6,
     'keyPositions': [
         {'id': 'behind', 'fen': BEHIND, 'ref': 'profangel'},
         {'id': 'tarrasch', 'fen': TARR, 'ref': 'rookPawn'},

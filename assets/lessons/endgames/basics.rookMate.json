@@ -469,27 +469,6 @@
               ]
             }
           ]
-        },
-        {
-          "type": "move",
-          "id": "quietMove",
-          "fen": "3k4/8/1R2K3/8/8/8/8/8 w - - 0 1",
-          "goal": "win",
-          "line": [
-            {
-              "teach": "b6c6",
-              "accept": [
-                "b6c6"
-              ],
-              "reply": "d8e8"
-            },
-            {
-              "teach": "c6c8",
-              "accept": [
-                "c6c8"
-              ]
-            }
-          ]
         }
       ]
     },
@@ -672,37 +651,13 @@
         {
           "type": "move",
           "id": "stalemateMove",
-          "fen": "8/8/8/8/8/8/3R4/k2K4 w - - 0 1",
+          "fen": "7k/5K2/8/8/8/8/8/6R1 w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "teach": "d1c2",
+              "teach": "g1h1",
               "accept": [
-                "d1c2"
-              ],
-              "reply": "a1a2"
-            },
-            {
-              "teach": "d2d3",
-              "accept": [
-                "d2d1",
-                "d2d3",
-                "d2d4",
-                "d2d5",
-                "d2d6",
-                "d2d7",
-                "d2d8",
-                "d2e2",
-                "d2f2",
-                "d2g2",
-                "d2h2"
-              ],
-              "reply": "a2a1"
-            },
-            {
-              "teach": "d3a3",
-              "accept": [
-                "d3a3"
+                "g1h1"
               ]
             }
           ]
@@ -854,7 +809,7 @@
     },
     {
       "id": "e16",
-      "stars": 3,
+      "stars": 2,
       "fen": "k7/8/7R/8/8/7K/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -960,7 +915,7 @@
       ]
     }
   ],
-  "passScore": 9,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "box",
@@ -1061,5 +1016,5 @@
       "url": "https://www.pgnmentor.com/players/Nakamura.zip"
     }
   ],
-  "maxScore": 14
+  "maxScore": 13
 }
