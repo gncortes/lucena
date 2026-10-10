@@ -43,7 +43,7 @@ DRAW = '1k6/2r5/QK6/8/8/8/8/8 b - - 0 1'          # depois de 2.Rb6?? (Averbakh)
 # (afogamento), segue a coluna do rei branco com xeque. Tabela: em cada lance
 # das pretas, o xeque da torre é o único que empata.
 IMMUNE = '8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1'
-IMMUNE2 = '6K1/8/8/8/8/4Q3/r7/5k2 b - - 0 1'
+IMMUNE2 = '8/8/8/8/5K2/4Q3/r7/5k2 b - - 0 1'
 
 
 def ref(step, rid):
@@ -121,7 +121,7 @@ write({
         {'id': 'fork', 'steps': [
             ref(think('t_fork', GELFAND, 2, marks=['h5', 'f8'], side='black',
                       ask='line'), 'gelfandSvidler#169'),
-            ref(talk('far', GELFAND, arrows=['c5h5', 'c5f8'], marks=['c5'],
+            ref(talk('far', GELFAND, arrows=['g1c5', 'c5h5', 'c5f8'], marks=['c5'],
                      side='black'), 'gelfandSvidler#169'),
             ref(demo('d_fork', GELFAND, 'Qc5+ Kg4 Qxf8', side='black',
                      notes={1: {'arrows': ['c5h5', 'c5f8']}}),
@@ -131,7 +131,7 @@ write({
         # 3. A escada: Carlsen-Le Tuan Minh.
         {'id': 'ladder', 'steps': [
             ref(think('t_ladder', CARLSEN, 2, marks=['h7']), 'carlsenLe#180'),
-            ref(talk('carlsen', CARLSEN, arrows=['b1h7', 'b1b8'],
+            ref(talk('carlsen', CARLSEN, arrows=['a5e5', 'b1h7', 'b1b8'],
                      marks=['b1']), 'carlsenLe#180'),
             ref(demo('d_ladder', CARLSEN, 'Qb4+ Ka7 Qa3+ Kb8 Qb3+',
                      notes={1: {'arrows': ['b4b8']}, 3: {'arrows': ['a3a7']},
@@ -142,7 +142,7 @@ write({
         {'id': 'triangle', 'steps': [
             ref(think('t_triangle', SVIDLER, 2, marks=['f6', 'g7', 'g8']),
                 'svidlerHowell#206'),
-            ref(talk('white', SVIDLER, marks=['h5']), 'svidlerHowell#206'),
+            ref(talk('white', SVIDLER, arrows=['d3d5'], marks=['h5']), 'svidlerHowell#206'),
             ref(demo('d_triangle', SVIDLER, 'Qd5+ Kh7 Qh1+ Kg8 Qh5',
                      notes={1: {'arrows': ['d5g8']}, 3: {'arrows': ['h1h7']},
                             5: {'marks': ['h5']}}), 'svidlerHowell#206'),
@@ -164,7 +164,7 @@ write({
         {'id': 'stalemate', 'steps': [
             ref(think('t_stalemate', ARONIAN, 2, marks=['a1', 'b3']),
                 'aronianMvl#154'),
-            ref(talk('stale', ARONIAN,
+            ref(talk('stale', ARONIAN, arrows=['e6a6'],
                      marks=['b3', 'a2', 'b1', 'b2']), 'aronianMvl#154'),
             ref(demo('d_check', ARONIAN, 'Qa6+ Ra3 Qxa3#',
                      notes={1: {'arrows': ['a6a1']}, 2: {'marks': ['a3']},
@@ -207,10 +207,10 @@ write({
                         10: {'marks': ['b1', 'b2', 'c2', 'd1', 'd2']}}),
             demo('d_trade', IMMUNE, 'Rc2+ Qxc2+ Kxc2', goal='draw',
                  side='black', notes={2: {'arrows': ['d3c2']}}),
-            move('m_immune', IMMUNE2, 'Rg2+ Kf7 Rf2+ Kg6 Rg2+', accept='hold',
+            move('m_immune', IMMUNE2, 'Rf2+ Kg3 Rg2+ Kh3 Rh2+', accept='hold',
                  goal='draw'),
         ]},
-        # 8. O falso Philidor (Ivanchuk-Lautier), o resumo e o desafio.
+        # 9. O falso Philidor (Ivanchuk-Lautier), o resumo e o desafio.
         {'id': 'falseKing', 'steps': [
             ref(think('t_false', IVANCHUK, 2, marks=['a6', 'c6']),
                 'ivanchukLautier#197'),
