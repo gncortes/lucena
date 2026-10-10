@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/use_cases/wiki_markup.dart';
+import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/teacher_speech.dart';
-import 'wiki_sheet.dart';
 
 /// Um texto de aula fora do balão (a história, o treino final): os nomes
 /// marcados (`{{Andersson|ulf-andersson}}`) com página na Wikipedia ficam
@@ -30,7 +30,7 @@ class _LinkedTextState extends State<LinkedText> {
 
   TapGestureRecognizer _tap(Uri url) {
     final recognizer = TapGestureRecognizer()
-      ..onTap = () => showWikiPage(context, url);
+      ..onTap = () => showExternalPage(context, url);
     _recognizers.add(recognizer);
     return recognizer;
   }

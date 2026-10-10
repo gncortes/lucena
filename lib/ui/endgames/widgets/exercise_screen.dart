@@ -6,7 +6,6 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/endgame_lesson.dart';
@@ -18,6 +17,7 @@ import '../../core/board/exercise_layout.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
@@ -646,10 +646,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Widget _lichessButton(BuildContext context, ExerciseState state) =>
       TextButton.icon(
         key: ExerciseKeys.lichessButton,
-        onPressed: () => launchUrl(
-          GameExport.lichess(state.exercise!.fen),
-          mode: LaunchMode.externalApplication,
-        ),
+        // Dentro do app, na folha da página: a aula fica atrás.
+        onPressed: () =>
+            showExternalPage(context, GameExport.lichess(state.exercise!.fen)),
         icon: const Icon(Icons.open_in_new_rounded),
         label: Text(context.l10n.exerciseLichess),
       );

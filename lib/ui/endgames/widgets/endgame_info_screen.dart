@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -138,7 +138,7 @@ class _ReferenceTile extends StatelessWidget {
       'tablebase' => Icons.table_chart_outlined,
       _ => Icons.link,
     };
-    // Com link, a referência abre no navegador do aparelho.
+    // Com link, a referência abre dentro do app, na folha da página.
     final uri = url == null ? null : Uri.tryParse(url);
     return ListTile(
       key: EndgameInfoKeys.reference(reference.id),
@@ -158,9 +158,7 @@ class _ReferenceTile extends StatelessWidget {
       trailing: uri == null
           ? null
           : Icon(Icons.open_in_new, size: 18, color: colors.primary),
-      onTap: uri == null
-          ? null
-          : () => launchUrl(uri, mode: LaunchMode.externalApplication),
+      onTap: uri == null ? null : () => showExternalPage(context, uri),
     );
   }
 }

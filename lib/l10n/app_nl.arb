@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{Jij bent aan zet: wit speelt} other{Jij bent aan zet: zwart speelt}}",
   "exercisesIntroAfter": "Zodra je ze allemaal hebt opgelost, blijft de lijst in de les open: ga terug naar elke oefening om die te bekijken en de stelling op Lichess te analyseren.",
   "exerciseScoreLocked": "Vrij oefenen: je cijfer verandert niet. Om weer mee te tellen, doe je de oefeningen over vanuit de les.",
-  "wikiTitle": "Wikipedia",
-  "wikiOfflineTitle": "Hiervoor is internet nodig",
-  "wikiOfflineBody": "Maak verbinding met internet om deze pagina te lezen. De les gaat gewoon verder.",
+  "externalPageOfflineTitle": "Hiervoor is internet nodig",
+  "externalPageOfflineBody": "Maak verbinding met internet om deze pagina te lezen. De les gaat gewoon verder.",
   "wikiOpen": "{name} openen op Wikipedia"
 }

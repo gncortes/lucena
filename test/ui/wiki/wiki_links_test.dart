@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/voice.dart';
-import 'package:lucena/ui/core/keys/wiki_keys.dart';
+import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
@@ -98,15 +98,15 @@ void main() {
     final pages = FakeWebPages();
     await pump(tester, links: await wiki(), pages: pages);
     await tapName(tester);
-    expect(find.byKey(WikiKeys.sheet), findsOneWidget);
+    expect(find.byKey(ExternalPageKeys.sheet), findsOneWidget);
     expect(pages.opened, [url]);
-    expect(find.byKey(WikiKeys.page), findsOneWidget);
-    expect(find.byKey(WikiKeys.loading), findsNothing);
-    expect(find.byKey(WikiKeys.offline), findsNothing);
+    expect(find.byKey(ExternalPageKeys.page), findsOneWidget);
+    expect(find.byKey(ExternalPageKeys.loading), findsNothing);
+    expect(find.byKey(ExternalPageKeys.offline), findsNothing);
 
-    await tester.tap(find.byKey(WikiKeys.close));
+    await tester.tap(find.byKey(ExternalPageKeys.close));
     await tester.pumpAndSettle();
-    expect(find.byKey(WikiKeys.sheet), findsNothing);
+    expect(find.byKey(ExternalPageKeys.sheet), findsNothing);
     expect(find.byKey(bubble), findsOneWidget);
   });
 
@@ -114,13 +114,13 @@ void main() {
     final pages = FakeWebPages(online: false);
     await pump(tester, links: await wiki(), pages: pages);
     await tapName(tester);
-    expect(find.byKey(WikiKeys.offline), findsOneWidget);
+    expect(find.byKey(ExternalPageKeys.offline), findsOneWidget);
     expect(find.text('This needs the internet'), findsOneWidget);
-    expect(find.byKey(WikiKeys.page), findsNothing);
+    expect(find.byKey(ExternalPageKeys.page), findsNothing);
 
-    await tester.tap(find.byKey(WikiKeys.close));
+    await tester.tap(find.byKey(ExternalPageKeys.close));
     await tester.pumpAndSettle();
-    expect(find.byKey(WikiKeys.sheet), findsNothing);
+    expect(find.byKey(ExternalPageKeys.sheet), findsNothing);
     expect(find.byKey(bubble), findsOneWidget);
   });
 
@@ -158,8 +158,8 @@ void main() {
     await tester.tapOnText(find.textRange.ofSubstring('Andersson'));
     await tester.pumpAndSettle();
     expect(pages.opened, [url]);
-    await tester.tap(find.byKey(WikiKeys.close));
+    await tester.tap(find.byKey(ExternalPageKeys.close));
     await tester.pumpAndSettle();
-    expect(find.byKey(WikiKeys.sheet), findsNothing);
+    expect(find.byKey(ExternalPageKeys.sheet), findsNothing);
   });
 }

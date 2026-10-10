@@ -2,14 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-/// Desenha uma página da web e conta se ela abriu ou falhou. Nos testes,
-/// um falso de `testing/` (a webview não existe fora do aparelho).
+/// Desenha uma página da web e conta se ela abriu (com o título dela) ou
+/// falhou. Nos testes, um falso de `testing/` (a webview não existe fora do
+/// aparelho).
 abstract class WebPages {
   const WebPages();
 
   Widget page(
     Uri url, {
-    required VoidCallback onLoaded,
+    required ValueChanged<String?> onLoaded,
     required VoidCallback onFailed,
   });
 
@@ -30,7 +31,7 @@ class WebViewPages extends WebPages {
   @override
   Widget page(
     Uri url, {
-    required VoidCallback onLoaded,
+    required ValueChanged<String?> onLoaded,
     required VoidCallback onFailed,
   }) => _WebViewPage(url: url, onLoaded: onLoaded, onFailed: onFailed);
 }
@@ -43,7 +44,7 @@ class _WebViewPage extends StatefulWidget {
   });
 
   final Uri url;
-  final VoidCallback onLoaded;
+  final ValueChanged<String?> onLoaded;
   final VoidCallback onFailed;
 
   @override
@@ -61,8 +62,10 @@ class _WebViewPageState extends State<_WebViewPage> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (_) {
-            if (!_failed && mounted) widget.onLoaded();
+          onPageFinished: (_) async {
+            if (_failed || !mounted) return;
+            final title = await _controller.getTitle();
+            if (!_failed && mounted) widget.onLoaded(title);
           },
           // Sem internet (ou a página não abriu): só o erro da página
           // principal conta; uma imagem que falha não.

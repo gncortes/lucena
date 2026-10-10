@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{轮到你：白方走} other{轮到你：黑方走}}",
   "exercisesIntroAfter": "全部解完后，课程里的列表会保持打开：随时回到任何一道练习复习，并在 Lichess 上分析该局面。",
   "exerciseScoreLocked": "自由练习：成绩不变。要重新计分，请从课程中重做练习。",
-  "wikiTitle": "维基百科",
-  "wikiOfflineTitle": "需要连接互联网",
-  "wikiOfflineBody": "请连接互联网以阅读此页面。课程照常进行。",
+  "externalPageOfflineTitle": "需要连接互联网",
+  "externalPageOfflineBody": "请连接互联网以阅读此页面。课程照常进行。",
   "wikiOpen": "在维基百科上打开{name}"
 }

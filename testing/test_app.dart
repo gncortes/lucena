@@ -11,7 +11,7 @@ import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
-import 'package:lucena/ui/wiki/widgets/web_pages.dart';
+import 'package:lucena/ui/core/widgets/web_pages.dart';
 
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_share_repository.dart';

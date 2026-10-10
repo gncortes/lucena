@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{Đến lượt bạn: trắng đi} other{Đến lượt bạn: đen đi}}",
   "exercisesIntroAfter": "Sau khi giải hết, danh sách vẫn mở trong bài học: quay lại bất kỳ bài tập nào để xem lại và phân tích thế cờ trên Lichess.",
   "exerciseScoreLocked": "Luyện tập tự do: điểm không thay đổi. Để tính lại, hãy làm lại các bài tập từ bài học.",
-  "wikiTitle": "Wikipedia",
-  "wikiOfflineTitle": "Cần có internet",
-  "wikiOfflineBody": "Hãy kết nối internet để đọc trang này. Bài học vẫn tiếp tục bình thường.",
+  "externalPageOfflineTitle": "Cần có internet",
+  "externalPageOfflineBody": "Hãy kết nối internet để đọc trang này. Bài học vẫn tiếp tục bình thường.",
   "wikiOpen": "Mở {name} trên Wikipedia"
 }

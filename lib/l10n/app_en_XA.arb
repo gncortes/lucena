@@ -1013,8 +1013,7 @@
   "exercisesDonePractice": "[Pŕåçtîšé thîš éñdĝåmé one two three]",
   "exercisesDoneFinish": "[Fîñîšh one]",
   "exercisesDoneRetrySpeech": "[Ñöt thîš tîmé, åñd thåt îš fîñé: évéŕý mîštåké šhöwéd ýöû šöméthîñĝ tö löök åt åĝåîñ. Ŕévîéw thé léššöñ îf ýöû ñééd tö, tåké ýöûŕ tîmé öñ éåçh pöšîtîöñ, åñd tŕý åĝåîñ. Ñéxt tîmé thöšé pöîñtš wîll bé ýöûŕš. one two three four five six seven eight nine ten one two three four five six seven]",
-  "wikiTitle": "[Wîkîpédîå one]",
-  "wikiOfflineTitle": "[Thîš ñéédš thé îñtéŕñét one two three]",
-  "wikiOfflineBody": "[Çöññéçt tö thé îñtéŕñét tö ŕéåd thîš påĝé. Thé léššöñ ĝöéš öñ åš ñöŕmål. one two three four five six seven]",
+  "externalPageOfflineTitle": "[Thîš ñéédš thé îñtéŕñét one two three]",
+  "externalPageOfflineBody": "[Çöññéçt tö thé îñtéŕñét tö ŕéåd thîš påĝé. Thé léššöñ ĝöéš öñ åš ñöŕmål. one two three four five six seven]",
   "wikiOpen": "[Öpéñ {name} öñ Wîkîpédîå one two three]"
 }

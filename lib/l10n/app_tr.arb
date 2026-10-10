@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{Sıra sende: beyaz oynar} other{Sıra sende: siyah oynar}}",
   "exercisesIntroAfter": "Hepsini çözdüğünde liste derste açık kalır: herhangi bir alıştırmaya dönüp tekrar bakabilir ve konumu Lichess'te analiz edebilirsin.",
   "exerciseScoreLocked": "Serbest çalışma: not değişmez. Yeniden sayılması için alıştırmaları dersten tekrar yap.",
-  "wikiTitle": "Vikipedi",
-  "wikiOfflineTitle": "Bunun için internet gerekiyor",
-  "wikiOfflineBody": "Bu sayfayı okumak için internete bağlanın. Ders normal şekilde devam ediyor.",
+  "externalPageOfflineTitle": "Bunun için internet gerekiyor",
+  "externalPageOfflineBody": "Bu sayfayı okumak için internete bağlanın. Ders normal şekilde devam ediyor.",
   "wikiOpen": "{name} sayfasını Vikipedi'de aç"
 }

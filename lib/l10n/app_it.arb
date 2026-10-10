@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{Tocca a te: muove il Bianco} other{Tocca a te: muove il Nero}}",
   "exercisesIntroAfter": "Una volta risolti tutti, l'elenco resta aperto nella lezione: torna a qualsiasi esercizio per rivederlo e analizzare la posizione su Lichess.",
   "exerciseScoreLocked": "Allenamento libero: il voto non cambia. Per farlo contare di nuovo, rifai gli esercizi dalla lezione.",
-  "wikiTitle": "Wikipedia",
-  "wikiOfflineTitle": "Questa consultazione richiede Internet",
-  "wikiOfflineBody": "Connettiti a Internet per leggere questa pagina. La lezione continua normalmente.",
+  "externalPageOfflineTitle": "Questa consultazione richiede Internet",
+  "externalPageOfflineBody": "Connettiti a Internet per leggere questa pagina. La lezione continua normalmente.",
   "wikiOpen": "Apri {name} su Wikipedia"
 }

@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{당신 차례: 백 차례} other{당신 차례: 흑 차례}}",
   "exercisesIntroAfter": "모두 풀면 레슨에 목록이 열린 채로 남습니다. 어떤 연습 문제든 돌아가서 다시 보고 Lichess에서 포지션을 분석할 수 있어요.",
   "exerciseScoreLocked": "자유 연습: 점수는 바뀌지 않습니다. 다시 반영하려면 레슨에서 연습 문제를 다시 푸세요.",
-  "wikiTitle": "위키백과",
-  "wikiOfflineTitle": "인터넷 연결이 필요합니다",
-  "wikiOfflineBody": "이 페이지를 읽으려면 인터넷에 연결하세요. 수업은 그대로 계속됩니다.",
+  "externalPageOfflineTitle": "인터넷 연결이 필요합니다",
+  "externalPageOfflineBody": "이 페이지를 읽으려면 인터넷에 연결하세요. 수업은 그대로 계속됩니다.",
   "wikiOpen": "위키백과에서 {name} 열기"
 }

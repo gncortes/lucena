@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{É a sua vez: jogam as brancas} other{É a sua vez: jogam as pretas}}",
   "exercisesIntroAfter": "Depois de resolver todos, a lista fica aberta na aula: volte a qualquer exercício para rever e analisar a posição no Lichess.",
   "exerciseScoreLocked": "Treino livre: a nota não muda. Para contar de novo, refaça os exercícios na aula.",
-  "wikiTitle": "Wikipédia",
-  "wikiOfflineTitle": "Esta consulta precisa de Internet",
-  "wikiOfflineBody": "Ligue-se à Internet para ler esta página. A aula continua normalmente.",
+  "externalPageOfflineTitle": "Esta consulta precisa de Internet",
+  "externalPageOfflineBody": "Ligue-se à Internet para ler esta página. A aula continua normalmente.",
   "wikiOpen": "Abrir {name} na Wikipédia"
 }

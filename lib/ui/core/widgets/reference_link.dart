@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_shape.dart';
+import 'external_page_sheet.dart';
 
 /// Um link discreto para a referência de onde vem uma posição: a partida no
-/// Lichess (parada na posição), o estudo ou a página. Abre no navegador do
-/// aparelho. Sem `url`, não aparece.
+/// Lichess (parada na posição), o estudo ou a página. Abre dentro do app,
+/// na folha da página ([showExternalPage]). Sem `url`, não aparece.
 class ReferenceLink extends StatelessWidget {
   const ReferenceLink({super.key, required this.reference});
 
@@ -30,7 +30,7 @@ class ReferenceLink extends StatelessWidget {
       alignment: AlignmentDirectional.centerStart,
       child: InkWell(
         borderRadius: BorderRadius.circular(AppShape.small),
-        onTap: () => launchUrl(uri, mode: LaunchMode.externalApplication),
+        onTap: () => showExternalPage(context, uri),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(

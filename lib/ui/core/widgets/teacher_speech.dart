@@ -13,10 +13,10 @@ import '../../../routing/routes.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../../wiki/view_models/wiki_links_cubit.dart';
-import '../../wiki/widgets/wiki_sheet.dart';
 import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
 import 'character_avatar.dart';
+import 'external_page_sheet.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 
@@ -468,7 +468,7 @@ class TeacherSpeech extends StatelessWidget {
     bool tapAt(int offset) {
       for (final (mark, url) in pages) {
         if (offset >= mark.start && offset < mark.end) {
-          showWikiPage(context, url);
+          showExternalPage(context, url);
           return true;
         }
       }
@@ -506,7 +506,7 @@ class TeacherSpeech extends StatelessWidget {
             CustomSemanticsAction(
               label: context.l10n.wikiOpen(mark.text),
             ): () =>
-                showWikiPage(context, url),
+                showExternalPage(context, url),
           for (final link in links)
             CustomSemanticsAction(
               label: context.l10n.speechShowOnBoard(link.text),

@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -14,13 +16,19 @@ import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_wiki.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
-  Future<ExerciseCubit> pump(WidgetTester tester, String exercise) async {
+  Future<ExerciseCubit> pump(
+    WidgetTester tester,
+    String exercise, {
+    FakeWebPages? webPages,
+    EndgameProgress progress = const EndgameProgress(),
+  }) async {
     final cubit = ExerciseCubit(
       lessons: FakeEndgameLessonRepository(),
-      progress: FakeEndgameProgressRepository(),
+      progress: FakeEndgameProgressRepository(progress),
       characters: FakeCharacterRepository(),
       replyDelay: Duration.zero,
     );
@@ -35,6 +43,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
+        webPages: webPages,
         child: BlocProvider.value(value: cubit, child: const ExerciseScreen()),
       ),
     );
@@ -183,5 +192,34 @@ void main() {
       tester.getRect(find.byKey(ExerciseKeys.speech)).bottom,
       lessThanOrEqualTo(before.top),
     );
+  });
+
+  testWidgets('treino livre: "Analisar no Lichess" abre a posição dentro do '
+      'app e o X volta ao exercício', (tester) async {
+    final pages = FakeWebPages(title: 'Analysis board • lichess.org');
+    await pump(
+      tester,
+      'e03',
+      webPages: pages,
+      // Todos resolvidos: a nota fechada põe o botão do Lichess na tela.
+      progress: const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            stars: {'e01': 1, 'e02': 2, 'e03': 1},
+          ),
+        },
+      ),
+    );
+    await tester.ensureVisible(find.byKey(ExerciseKeys.lichessButton));
+    await tester.tap(find.byKey(ExerciseKeys.lichessButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExternalPageKeys.sheet), findsOneWidget);
+    expect(pages.opened.single.host, 'lichess.org');
+    expect(find.text('Analysis board • lichess.org'), findsOneWidget);
+
+    await tester.tap(find.byKey(ExternalPageKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExternalPageKeys.sheet), findsNothing);
+    expect(find.byKey(ExerciseKeys.lichessButton), findsOneWidget);
   });
 }

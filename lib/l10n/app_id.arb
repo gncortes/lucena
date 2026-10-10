@@ -1014,8 +1014,7 @@
   "exerciseYourTurn": "{side, select, white{Giliranmu: putih jalan} other{Giliranmu: hitam jalan}}",
   "exercisesIntroAfter": "Setelah semua terpecahkan, daftarnya tetap terbuka di pelajaran: kembali ke latihan mana pun untuk meninjaunya dan menganalisis posisi di Lichess.",
   "exerciseScoreLocked": "Latihan bebas: nilai tidak berubah. Agar dihitung lagi, ulangi latihan dari pelajaran.",
-  "wikiTitle": "Wikipedia",
-  "wikiOfflineTitle": "Ini memerlukan internet",
-  "wikiOfflineBody": "Sambungkan ke internet untuk membaca halaman ini. Pelajaran tetap berjalan seperti biasa.",
+  "externalPageOfflineTitle": "Ini memerlukan internet",
+  "externalPageOfflineBody": "Sambungkan ke internet untuk membaca halaman ini. Pelajaran tetap berjalan seperti biasa.",
   "wikiOpen": "Buka {name} di Wikipedia"
 }
