@@ -97,11 +97,11 @@
   "ex.e16": "Brancas jogam e ganham. Estudo publicado por Chessforall321 no Lichess. O peão de h7 é passado e protegido por g6, mas o peão de b4 das pretas vai coroar. Só um lance ganha, e depois cada lance é único.",
   "ex.e16.hint": "O rei branco não pega o peão de b. Leve o rei para perto do rei preto: com os peões de g e h, há um mate.",
   "ex.e16.solution": "Rf5! b3 Re6! b2 h8=D+! Rxh8 Rf7! b1=D g7+ Rh7 g8=D+ Rh6 e Dg6 é mate. O rei branco ignora o peão de b e vai a f7, onde ajuda o peão de g a coroar com xeque. Rxe4? perde para b3!, e h8=D+? de imediato, Rxh8, também perde: o peão de b coroa primeiro.",
-  "key.tied": "O rei amarrado: as brancas ganham com qualquer lado jogando. Versão reduzida do diagrama de Reuben Fine e Pal Benko mostrado na Wikipedia (sem os peões de a).",
-  "key.convert": "Depois de capturar: rei ao lado do peão, c6 na hora certa, e o rei chega a b5.",
-  "key.base": "O rei preto ataca a base e sai do quadrado: b6 coroa.",
-  "key.corner": "Peão na sexta, ao lado do canto: empate por afogamento. Como no estudo de IsaacWiebeSupreme.",
-  "key.noTarget": "O peão preto de c4 fica defendido e o rei branco não tem alvo: empate.",
-  "history": "O peão passado protegido aparece em todo livro de finais: Dvoretsky dá a ele uma seção no capítulo de finais de peões do seu manual, e Jesús de la Villa o põe entre os cem finais que todo jogador precisa conhecer. A Wikipedia mostra uma posição do livro de Reuben Fine e Pal Benko em que as brancas ganham com qualquer lado jogando: o rei preto não consegue estar nos dois lados ao mesmo tempo, defendendo o próprio peão passado e parando o peão protegido. A versão desta aula, com menos peões, foi conferida na tabela de finais. O caso do peão de torre protegido, que às vezes não ganha, aparece num estudo antigo que o Lichess registra como \"Dedrele Study\" e que está nos exercícios.",
+  "key.tied": "O peão branco protegido prende o rei preto perto dele. O rei branco fica livre para ir ao outro lado e capturar o peão preto. Brancas ganham, jogue quem jogar.",
+  "key.convert": "Depois da captura, o rei branco volta para perto dos seus peões. O peão protegido avança na hora certa e o rei chega ao peão preto que sobrou.",
+  "key.base": "O rei preto foi atacar o peão de trás, o que protege o passado. Só que, para isso, saiu do caminho do peão da frente, que corre e coroa.",
+  "key.corner": "Peão protegido na sexta fileira, colado ao canto: o rei preto fica na frente dele e não há como expulsá-lo sem afogar. Empate.",
+  "key.noTarget": "O rei preto defende o seu peão de perto e o rei branco não tem nada para capturar do outro lado. Sem alvo, o peão protegido não basta: empate.",
+  "history": "Um peão passado protegido é um peão passado defendido por outro peão. O rei adversário não pode capturá-lo e também não pode se afastar dele, porque ele coroaria. Na prática, é como ter um rei a mais: o seu rei fica livre para ir buscar os peões do outro lado do tabuleiro. Por isso ele aparece em todo livro de finais, de Reuben Fine e Pal Benko a Mark Dvoretsky, e Jesús de la Villa o põe entre os cem finais que todo jogador precisa conhecer. Mas ele não ganha sempre: perto do canto, ou quando não há nada para capturar do outro lado, o empate aparece, e esta aula mostra quando.",
   "practice": "Agora o final de verdade: o peão de c5 protegido, o peão preto de g5 sozinho, e o seu rei ainda em e2. Prenda o rei preto com o peão, capture o de g e volte. Escolha o ritmo e vá."
 }

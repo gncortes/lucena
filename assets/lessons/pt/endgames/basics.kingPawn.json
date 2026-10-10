@@ -29,11 +29,11 @@
   "ex.e11": "Pretas jogam e empatam. O lance natural perde.",
   "ex.e11.hint": "Não pense na casa à frente do peão, pense no rei branco. Fique de frente para ele.",
   "ex.e11.solution": "Re6!, a oposição: o rei branco não sobe por d5, e5 nem f5. Rd6? parece natural, mas Rd4! toma a oposição, e o rei branco entra.",
-  "key.square": "A regra do quadrado: do peão de g4 até c8. O rei preto em b6 está fora, e o peão corre.",
-  "key.opposition": "A oposição simples: reis frente a frente, uma casa entre eles. Quem joga cede. Lichess Practice, Opposition.",
-  "key.fishbein": "Exemplo de Alexander Fishbein (pela Wikipedia): o rei preto entra no quadrado, mas Rb4! faz de escudo.",
-  "key.rookPawn": "Peão de torre com o rei no canto: empate, não importa quem joga. O rei branco não avança sem soltar o rei preto (Rb5) ou afogá-lo (Rb6).",
-  "history": "Rei e peão contra rei é o final de peões mais estudado, e o que mais aparece no fim das partidas. A regra do quadrado está em todos os manuais; a Wikipedia a explica com um diagrama tirado de Müller e Lamprecht, e traz deles também a regra de bolso da sétima sem xeque. Alexander Fishbein, no livro King and Pawn Endings, de 1993, mostrou que entrar no quadrado nem sempre basta: o rei do outro lado pode fazer de escudo. Yuri Averbakh ensinava que o rei leva o peão como um pai leva o filho para atravessar a rua: ele vai na frente. A defesa com o rei na frente do peão, recuando em linha reta e ficando de frente para o outro rei, é a da Enciclopédia de Finais de Aleksandar Matanović (1982), também citada pela Wikipedia. E o peão de torre salvou até contra Fischer: em Zurique, 1959, Barcza trocou as damas e ficou com o rei contra o rei e o peão de torre de Fischer. A partida terminou ali, empatada, logo depois de 95...Rxa4: com 96.Rd2 e 97.Rc1, o rei branco chega ao canto a tempo, como diz a Wikipedia; o PGN está num estudo público do Lichess.",
+  "key.square": "A regra do quadrado: o rei preto está fora do quadrado do peão e não o alcança mais. O peão corre sozinho e coroa.",
+  "key.opposition": "Reis frente a frente, com uma casa entre eles: quem tem a vez precisa ceder caminho. Aqui as pretas jogam, e o rei branco avança.",
+  "key.fishbein": "O rei preto parece alcançar o peão, mas o rei branco entra no caminho dele e serve de escudo. O peão coroa.",
+  "key.rookPawn": "Peão de torre e rei preto no canto: empate, jogue quem jogar. O rei branco não consegue tirá-lo de lá sem afogá-lo.",
+  "history": "Rei e peão contra rei é o primeiro final de peões que todo jogador precisa conhecer, porque quase todo final de peões acaba nele. Parece simples, mas não é: com o mesmo peão a mais, uma casa a mais ou a menos para o rei decide se é vitória ou empate, e o peão da coluna da borda, o peão de torre, quase sempre empata. Yuri Averbakh, grande estudioso de finais, dizia que o rei leva o peão como um pai leva o filho para atravessar a rua: indo na frente. E até os melhores dependem disso: em Zurique, em 1959, o húngaro Gedeon Barcza salvou o empate contra Bobby Fischer porque o seu rei chegou a tempo ao canto, na frente do peão de torre.",
   "practice": "Agora o final de verdade: rei em d2, peão em g2, e o rei preto dentro do quadrado. Primeiro o rei, depois o peão. Escolha o ritmo e vá.",
   "ex.e15": "Brancas jogam e ganham. O seu rei foi longe demais, e o rei preto está perto do peão. Qual é o caminho de volta?",
   "ex.e15.hint": "Primeiro: o peão corre sozinho, ou o rei preto está no quadrado? Depois conte os lances do seu rei até a frente do peão. A diagonal anda tão rápido quanto a reta.",
@@ -153,6 +153,6 @@
   "step.cornerMove": "Pretas jogam e empatam. Peão de cavalo, e o rei branco ao lado dele. Qual canto?",
   "step.cornerMove.hint": "Rb8? parece a casa da frente, mas b7! leva o peão à sétima sem xeque, a regra da parte 6.",
   "step.cornerMove.done": "Agora, para continuar protegendo o peão, o rei branco tem de ir a b6, e é afogamento.",
-  "key.matanovic": "Enciclopédia de Finais (Matanović, 1982), vol. 1, n.º 2, com as cores trocadas: na frente do peão, recuo em linha reta, de frente para o rei. Pela Wikipedia.",
-  "key.barcza": "Barcza–Fischer, Zurique 1959, depois de 95...Rxa4: Rd2! e Rc1! levam o rei ao canto."
+  "key.matanovic": "Quem defende fica na frente do peão: recua em linha reta e se coloca de frente para o outro rei. Empate.",
+  "key.barcza": "Barcza contra Fischer, Zurique, 1959: só sobrou o peão de torre de Fischer, e o rei branco corre para o canto a tempo. Empate."
 }

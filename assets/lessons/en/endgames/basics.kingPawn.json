@@ -29,11 +29,11 @@
   "ex.e11": "Black to play and draw. The natural move loses.",
   "ex.e11.hint": "Don't think about the square in front of the pawn; think about the white king. Stand face to face with it.",
   "ex.e11.solution": "Ke6!, the opposition: the white king can't climb through d5, e5 or f5. Kd6? looks natural, but Kd4! takes the opposition and the white king gets through.",
-  "key.square": "The rule of the square: from the g4 pawn to c8. The black king on b6 is outside, and the pawn runs.",
-  "key.opposition": "Simple opposition: kings face to face, one square between them. Whoever moves gives way. Lichess Practice, Opposition.",
-  "key.fishbein": "Alexander Fishbein's example (via Wikipedia): the black king gets into the square, but Kb4! acts as a shield.",
-  "key.rookPawn": "A rook pawn with the king in the corner: a draw, whoever is to move. The white king cannot advance without freeing the black king (Kb5) or stalemating it (Kb6).",
-  "history": "King and pawn against king is the most studied pawn ending, and the one that turns up most often at the end of a game. The rule of the square is in every manual; Wikipedia explains it with a diagram taken from Müller and Lamprecht, and quotes from them the rule of thumb of the seventh rank without check. Alexander Fishbein, in his 1993 book King and Pawn Endings, showed that getting into the square is not always enough: the other king can act as a shield. Yuri Averbakh taught that the king leads the pawn the way a father leads his child across the street: in front. The defence with the king in front of the pawn, stepping straight back and standing face to face with the other king, is the one in Aleksandar Matanović's Encyclopedia of Chess Endings (1982), also quoted by Wikipedia. And the rook pawn has saved even against Fischer: in Zurich, 1959, Barcza traded queens and was left with his king against Fischer's king and rook pawn. The game ended there, drawn, right after 95...Kxa4: with 96.Kd2 and 97.Kc1 the white king reaches the corner in time, as Wikipedia notes; the PGN is in a public Lichess study.",
+  "key.square": "The rule of the square: the black king is outside the pawn's square and can no longer catch it. The pawn runs on its own and promotes.",
+  "key.opposition": "Kings face to face with one square between them: whoever has to move must give way. Here Black is to move, and the white king goes forward.",
+  "key.fishbein": "The black king seems to catch the pawn, but the white king steps into its path and acts as a shield. The pawn promotes.",
+  "key.rookPawn": "Rook pawn with the black king in the corner: a draw, whoever moves. The white king can't drive it out without stalemating it.",
+  "history": "King and pawn against king is the first pawn ending every player needs to know, because almost every pawn ending ends up there. It looks simple, but it isn't: with the same extra pawn, one square more or less for the king decides between a win and a draw, and the edge pawn, the rook pawn, nearly always draws. Yuri Averbakh, a great endgame scholar, used to say the king leads the pawn the way a father walks his child across the street: in front. Even the best depend on it: in Zurich, in 1959, the Hungarian Gedeon Barcza saved a draw against Bobby Fischer because his king reached the corner in time, in front of the rook pawn.",
   "practice": "Now the real ending: king on d2, pawn on g2, and the black king inside the square. King first, then the pawn. Pick your time control and go.",
   "ex.e15": "White to play and win. Your king has gone too far, and the black king is close to the pawn. Which way back?",
   "ex.e15.hint": "First: does the pawn run alone, or is the black king inside the square? Then count your king's moves to the front of the pawn. The diagonal is as fast as the straight line.",
@@ -153,6 +153,6 @@
   "step.cornerMove": "Black to play and draw. A knight pawn, and the white king beside it. Which corner?",
   "step.cornerMove.hint": "Kb8? looks like the square in front, but b7! takes the pawn to the seventh without check, the rule from part 6.",
   "step.cornerMove.done": "Now, to keep protecting the pawn, the white king has to go to b6, and it is stalemate.",
-  "key.matanovic": "Encyclopedia of Chess Endings (Matanović, 1982), vol. 1, no. 2, colours reversed: in front of the pawn, straight back, face to face with the king. Via Wikipedia.",
-  "key.barcza": "Barcza–Fischer, Zurich 1959, after 95...Kxa4: Kd2! and Kc1! take the king to the corner."
+  "key.matanovic": "The defender stays in front of the pawn: step straight back and stand face to face with the other king. Draw.",
+  "key.barcza": "Barcza against Fischer, Zurich, 1959: only Fischer's rook pawn is left, and the white king runs to the corner in time. Draw."
 }
