@@ -57,72 +57,54 @@ class GameSetupScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, box) {
           final side = math.min(box.maxWidth - 32, _Header.maxBoard);
-          // O painel fica com o que o tabuleiro e o objetivo não usam, e
-          // pelo menos 40% da altura: em tela baixa ou com fonte grande, o
-          // tabuleiro é que diminui.
-          final boardRoom =
-              side + 2 * (_Header.chipsHeight + AppSpacing.md) + AppSpacing.lg;
-          final panel = math.max(
-            box.maxHeight * 0.4,
-            box.maxHeight - boardRoom,
+          final boardArea = BoardOptionsPanel.boardAreaFor(
+            box.maxHeight,
+            boardRoom:
+                side +
+                2 * (_Header.chipsHeight + AppSpacing.md) +
+                AppSpacing.lg,
           );
           return Column(
             children: [
-              Expanded(child: _Header(state: state)),
-              Material(
-                key: GameSetupKeys.panel,
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(AppShape.large),
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: panel,
-                      child: ListView(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        children: [
-                          if (state.ready) ...[
-                            const _SectionTitle.yourSide(),
-                            _SidePicker(state: state),
-                            const _SectionTitle.opponent(),
-                            _OpponentPicker(state: state),
-                            // Às cegas: só contra a máquina e com voz no idioma.
-                            if (blind) _ModePicker(state: state),
-                            const Divider(height: 24),
-                            _ClockSection(state: state),
-                            if (state.attempts.isNotEmpty)
-                              _History(state: state),
-                          ],
-                        ],
-                      ),
-                    ),
-                    SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            FilledButton(
-                              key: GameSetupKeys.startButton,
-                              style: FilledButton.styleFrom(
-                                minimumSize: const Size.fromHeight(52),
-                              ),
-                              onPressed: state.canStart
-                                  ? () => _start(context, state)
-                                  : null,
-                              child: Text(l10n.clockStartGame),
-                            ),
-                          ],
+              SizedBox(
+                height: boardArea,
+                child: _Header(state: state),
+              ),
+              Expanded(
+                child: BoardOptionsPanel(
+                  key: GameSetupKeys.panel,
+                  footer: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: FilledButton(
+                        key: GameSetupKeys.startButton,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(52),
                         ),
+                        onPressed: state.canStart
+                            ? () => _start(context, state)
+                            : null,
+                        child: Text(l10n.clockStartGame),
                       ),
                     ),
-                  ],
+                  ),
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    children: [
+                      if (state.ready) ...[
+                        const _SectionTitle.yourSide(),
+                        _SidePicker(state: state),
+                        const _SectionTitle.opponent(),
+                        _OpponentPicker(state: state),
+                        // Às cegas: só contra a máquina e com voz no idioma.
+                        if (blind) _ModePicker(state: state),
+                        const Divider(height: 24),
+                        _ClockSection(state: state),
+                        if (state.attempts.isNotEmpty) _History(state: state),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ],

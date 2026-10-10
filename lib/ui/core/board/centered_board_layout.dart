@@ -1,8 +1,9 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
+import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 
 /// A conta do tabuleiro centralizado na vertical (T64): o centro dele fica
@@ -439,5 +440,46 @@ class _RenderShrinkToFit extends RenderProxyBox {
   @override
   void applyPaintTransform(RenderBox child, Matrix4 transform) {
     if (_scale != 1) transform.multiply(_transform);
+  }
+}
+
+/// O painel das opções embaixo do tabuleiro centralizado (T64), nas telas
+/// que antes eram uma lista com o tabuleiro no alto: cantos de cima
+/// arredondados, a cor de superfície baixa, o conteúdo ([child], uma lista
+/// que rola) e, fixo no pé, o botão de confirmar ([footer]). Fica embaixo da
+/// área do tabuleiro, que tem a altura [boardAreaFor].
+class BoardOptionsPanel extends StatelessWidget {
+  const BoardOptionsPanel({required this.child, this.footer, super.key});
+
+  final Widget child;
+  final Widget? footer;
+
+  /// A altura da área do tabuleiro: o que ele pede ([boardRoom]), sem
+  /// passar de `1 - minPanel` da altura [available] (o painel fica com pelo
+  /// menos [minPanel] dela; em tela baixa ou com fonte grande, o tabuleiro
+  /// é que diminui).
+  static double boardAreaFor(
+    double available, {
+    required double boardRoom,
+    double minPanel = 0.4,
+  }) => max(0.0, min(boardRoom, available * (1 - minPanel)));
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppShape.large),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          Expanded(child: child),
+          ?footer,
+        ],
+      ),
+    );
   }
 }
