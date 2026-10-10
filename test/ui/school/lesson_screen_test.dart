@@ -93,6 +93,39 @@ void main() {
     expect(tester.getRect(speech).bottom, lessThan(next.top));
   });
 
+  testWidgets(
+    'os botões flutuantes não cobrem a fala: a área que rola '
+    'termina acima deles e o fim do texto fica à vista; fala curta não rola',
+    (tester) async {
+      // Uma fala que passa um pouco da folha fechada.
+      final medium = List.filled(
+        7,
+        'The rook moves in straight lines, as far as it likes.',
+      ).join(' ');
+      await pump(tester, intro: medium);
+      final scroll = find.byKey(LessonKeys.scroll);
+      final speech = find.byKey(LessonKeys.speech);
+      final buttons = tester.getRect(find.byKey(LessonKeys.nextButton));
+      // Fechada: nada da fala passa por baixo dos botões.
+      expect(tester.getRect(scroll).bottom, lessThanOrEqualTo(buttons.top));
+
+      for (var i = 0; i < 3; i++) {
+        await tester.drag(scroll, const Offset(0, -3000));
+        await tester.pumpAndSettle();
+      }
+      final end = tester.getRect(speech).bottom;
+      expect(end, lessThan(buttons.top));
+      expect(end, lessThanOrEqualTo(tester.getRect(scroll).bottom));
+
+      // Fala curta: cabe, sem rolagem.
+      await pump(tester, intro: 'Short.');
+      final position = tester.state<ScrollableState>(
+        find.descendant(of: scroll, matching: find.byType(Scrollable)).first,
+      );
+      expect(position.position.maxScrollExtent, 0);
+    },
+  );
+
   testWidgets('fala longa: puxando a folha, ela sobe por cima do tabuleiro '
       'inteiro; puxando de volta, desce e o tabuleiro reaparece', (
     tester,

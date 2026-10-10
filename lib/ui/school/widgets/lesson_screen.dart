@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -118,6 +119,14 @@ class _LessonScreenState extends State<LessonScreen>
     }
   }
 
+  // A altura medida dos botões que flutuam embaixo (com a margem acima
+  // deles). Começa na prevista, até a primeira medida.
+  final _footerHeight = ValueNotifier<double>(_actionsHeight);
+
+  void _onFooterSize(Size size) {
+    if (mounted) _footerHeight.value = size.height;
+  }
+
   // A fala cabe na folha fechada: ela não abre (sem o vaivém do "x").
   bool _speechFits = false;
 
@@ -200,6 +209,7 @@ class _LessonScreenState extends State<LessonScreen>
     _sheet.removeListener(_onSheetChanged);
     _sheet.dispose();
     _sheetSize.dispose();
+    _footerHeight.dispose();
     _shake.dispose();
     _landing.dispose();
     _mode.dispose();
@@ -500,13 +510,18 @@ class _LessonScreenState extends State<LessonScreen>
                     start: 0,
                     end: 0,
                     bottom: 0,
-                    child: AnimatedSwitcher(
-                      duration: AppMotion.of(context).component,
-                      child: KeyedSubtree(
-                        key: ValueKey(state.layout),
-                        child: state.layout == LessonLayoutMode.solving
-                            ? _solvingFooter(context, state)
-                            : _actions(context, state),
+                    // A altura de verdade dos botões (com a margem acima
+                    // deles): a fala termina antes dela.
+                    child: _SizeReporter(
+                      onSize: _onFooterSize,
+                      child: AnimatedSwitcher(
+                        duration: AppMotion.of(context).component,
+                        child: KeyedSubtree(
+                          key: ValueKey(state.layout),
+                          child: state.layout == LessonLayoutMode.solving
+                              ? _solvingFooter(context, state)
+                              : _actions(context, state),
+                        ),
                       ),
                     ),
                   ),
@@ -945,87 +960,97 @@ class _LessonScreenState extends State<LessonScreen>
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppShape.large),
         ),
-        child: NotificationListener<ScrollMetricsNotification>(
-          onNotification: _onSpeechMetrics,
-          child: ListView(
-            key: LessonKeys.scroll,
-            controller: scroll,
-            padding: const EdgeInsets.only(bottom: _actionsHeight),
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colors.outlineVariant,
-                      borderRadius: BorderRadius.circular(AppShape.full),
+        // A área que rola termina no alto dos botões flutuantes: o fim da
+        // fala nunca fica por baixo deles (a folha segue até a borda, por
+        // trás dos botões).
+        child: ValueListenableBuilder(
+          valueListenable: _footerHeight,
+          builder: (context, footer, list) => Padding(
+            padding: EdgeInsets.only(bottom: footer),
+            child: list,
+          ),
+          child: NotificationListener<ScrollMetricsNotification>(
+            onNotification: _onSpeechMetrics,
+            child: ListView(
+              key: LessonKeys.scroll,
+              controller: scroll,
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colors.outlineVariant,
+                        borderRadius: BorderRadius.circular(AppShape.full),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-              // exercício. No resto, o Viktor já diz o que fazer.
-              if (step is TapStep) _guide(context, state, step),
-              if (viktor != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: TeacherSpeech(
-                    teacher: viktor,
-                    text: state.speech,
-                    emotion: state.emotion,
-                    avatarSize: 56,
-                    bubbleKey: LessonKeys.speech,
-                    onLink: (link) => _flash.toggle(
-                      link,
-                      fen: state.fen ?? state.current?.fen,
-                      color: theme.colorScheme.primary,
-                    ),
-                    onSpoken: (link) => _flash.show(
-                      link,
-                      fen: state.fen ?? state.current?.fen,
-                      color: theme.colorScheme.primary,
-                    ),
-                    speaks: true,
-                    speechContext: SpeechContext.teaching,
-                    typed: true,
-                    // Ao lado do som: mostrar ou esconder as marcações.
-                    headerAction: Builder(
-                      builder: (context) {
-                        final shown = context.select(
-                          (SettingsCubit cubit) =>
-                              cubit.state?.lessonMarks ?? true,
-                        );
-                        final l10n = context.l10n;
-                        return IconButton(
-                          key: LessonKeys.marksToggle,
-                          visualDensity: VisualDensity.compact,
-                          tooltip: shown
-                              ? l10n.lessonHideMarks
-                              : l10n.lessonShowMarks,
-                          isSelected: shown,
-                          icon: const Icon(Icons.layers_clear_outlined),
-                          selectedIcon: const Icon(Icons.layers_outlined),
-                          onPressed: () => context
-                              .read<SettingsCubit>()
-                              .setLessonMarks(shown: !shown),
-                        );
-                      },
+                // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
+                // exercício. No resto, o Viktor já diz o que fazer.
+                if (step is TapStep) _guide(context, state, step),
+                if (viktor != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    child: TeacherSpeech(
+                      teacher: viktor,
+                      text: state.speech,
+                      emotion: state.emotion,
+                      avatarSize: 56,
+                      bubbleKey: LessonKeys.speech,
+                      onLink: (link) => _flash.toggle(
+                        link,
+                        fen: state.fen ?? state.current?.fen,
+                        color: theme.colorScheme.primary,
+                      ),
+                      onSpoken: (link) => _flash.show(
+                        link,
+                        fen: state.fen ?? state.current?.fen,
+                        color: theme.colorScheme.primary,
+                      ),
+                      speaks: true,
+                      speechContext: SpeechContext.teaching,
+                      typed: true,
+                      // Ao lado do som: mostrar ou esconder as marcações.
+                      headerAction: Builder(
+                        builder: (context) {
+                          final shown = context.select(
+                            (SettingsCubit cubit) =>
+                                cubit.state?.lessonMarks ?? true,
+                          );
+                          final l10n = context.l10n;
+                          return IconButton(
+                            key: LessonKeys.marksToggle,
+                            visualDensity: VisualDensity.compact,
+                            tooltip: shown
+                                ? l10n.lessonHideMarks
+                                : l10n.lessonShowMarks,
+                            isSelected: shown,
+                            icon: const Icon(Icons.layers_clear_outlined),
+                            selectedIcon: const Icon(Icons.layers_outlined),
+                            onPressed: () => context
+                                .read<SettingsCubit>()
+                                .setLessonMarks(shown: !shown),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-              if (state.link case final reference?)
-                Padding(
-                  // No canto de início, logo abaixo do balão (alinhado à
-                  // borda dele).
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
-                  child: ReferenceLink(
-                    key: LessonKeys.referenceLink,
-                    reference: reference,
+                if (state.link case final reference?)
+                  Padding(
+                    // No canto de início, logo abaixo do balão (alinhado à
+                    // borda dele).
+                    padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
+                    child: ReferenceLink(
+                      key: LessonKeys.referenceLink,
+                      reference: reference,
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1405,4 +1430,38 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
       old.footer != footer ||
       old.sheetRoom != sheetRoom ||
       old.lowered != lowered;
+}
+
+/// Avisa o tamanho do filho depois de cada medida que o muda (fora do
+/// quadro, para quem ouve poder refazer a tela).
+class _SizeReporter extends SingleChildRenderObjectWidget {
+  const _SizeReporter({required this.onSize, super.child});
+
+  final ValueChanged<Size> onSize;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderSizeReporter(onSize);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderSizeReporter renderObject,
+  ) => renderObject.onSize = onSize;
+}
+
+class _RenderSizeReporter extends RenderProxyBox {
+  _RenderSizeReporter(this.onSize);
+
+  ValueChanged<Size> onSize;
+  Size? _reported;
+
+  @override
+  void performLayout() {
+    super.performLayout();
+    if (size == _reported) return;
+    _reported = size;
+    final measured = size;
+    SchedulerBinding.instance.addPostFrameCallback((_) => onSize(measured));
+  }
 }
