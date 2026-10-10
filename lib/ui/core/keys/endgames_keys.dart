@@ -95,6 +95,7 @@ abstract final class EndgameInfoKeys {
   static const history = Key('endgameInfo.history');
   static Key reference(String id) => Key('endgameInfo.reference.$id');
   static Key keyPosition(String id) => Key('endgameInfo.key.$id');
+  static Key keyPositionLink(String id) => Key('endgameInfo.keyLink.$id');
 }
 
 /// Um exercício de uma aula de final.
@@ -117,6 +118,9 @@ abstract final class ExerciseKeys {
   static const lichessButton = Key('exercise.lichess');
   static const nextButton = Key('exercise.next');
   static const counter = Key('exercise.counter');
+
+  /// O cronômetro do exercício (T60).
+  static const timer = Key('exercise.timer');
 
   /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.
   static const goal = Key('exercise.goal');

@@ -2378,6 +2378,18 @@
       }
     }
   },
+  "referenceLinkGame": "View the game on Lichess",
+  "@referenceLinkGame": {
+    "description": "Link under the coach's words (and under a key position) that opens, in the browser, the game the position comes from, on Lichess."
+  },
+  "referenceLinkStudy": "View the study",
+  "@referenceLinkStudy": {
+    "description": "Link that opens, in the browser, the Lichess study the position comes from."
+  },
+  "referenceLinkWeb": "View on Lichess",
+  "@referenceLinkWeb": {
+    "description": "Link that opens, in the browser, the web page the position comes from (on Lichess)."
+  },
   "exerciseTitle": "Exercise {number} of {count}",
   "@exerciseTitle": {
     "description": "Under the lesson title on the exercise screen.",
@@ -2708,6 +2720,10 @@
   "reviewStartPosition": "Starting position",
   "@reviewStartPosition": {
     "description": "Game details: the board shows the position before the first move."
+  },
+  "reviewVariation": "Your variation (not part of the game)",
+  "@reviewVariation": {
+    "description": "Game details: the board shows a move of the variation the user played on the board, which is not saved to the game."
   },
   "reviewFirst": "First move",
   "@reviewFirst": {
@@ -3737,31 +3753,9 @@
       }
     }
   },
-  "lessonThinkAnnounce": "{minutes, plural, =1{Think about this position for 1 minute.} other{Think about this position for {minutes} minutes.}}",
-  "@lessonThinkAnnounce": {
-    "description": "Teacher's sentence before a 'think' step question: the student has N minutes to study the position alone.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "lessonThinkLeft": "{time} left to think",
-  "@lessonThinkLeft": {
-    "description": "Screen reader label of the think timer: time left to think.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "lessonGuideThink": "Study the position. You can move both sides' pieces to test ideas.",
   "@lessonGuideThink": {
     "description": "Lesson guide during the think step: study the position, you may move the pieces of both sides."
-  },
-  "lessonGuideThinkDone": "Time's up. Ask for another hint or see the explanation.",
-  "@lessonGuideThinkDone": {
-    "description": "Lesson guide after the think time ends."
   },
   "lessonGuideDemo": "Watch: the teacher plays and explains each move.",
   "@lessonGuideDemo": {
@@ -3779,6 +3773,15 @@
   "@lessonSeeExplanation": {
     "description": "Button after the think time: go on to the teacher's explanation."
   },
+  "lessonStepTimer": "{time} elapsed",
+  "@lessonStepTimer": {
+    "description": "Screen reader label of the lesson step timer, which counts up: the time elapsed since the step opened (m:ss).",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
     "description": "Tooltip: go back one move in the demonstration."
@@ -3791,6 +3794,10 @@
   "@lessonDemoReplay": {
     "description": "Tooltip: replay the demonstration from the start."
   },
+  "lessonDemoPause": "Pause",
+  "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
+  "lessonDemoPlay": "Play",
+  "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
   "lessonPartDone": "Part {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",
@@ -3809,7 +3816,7 @@
       }
     }
   },
-  "lessonToFinalTest": "Go to the final test",
+  "lessonToFinalTest": "Take the final test",
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
@@ -3819,20 +3826,19 @@
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
   "lessonPartLearned": "What you learned",
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "lessonAllPartsDone": "All parts complete",
+  "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
+  "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
+  "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
   "lessonCloseSpeech": "Close",
   "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
+  "lessonHideMarks": "Hide the marks",
+  "@lessonHideMarks": {"description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."},
+  "lessonShowMarks": "Show the marks",
+  "@lessonShowMarks": {"description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."},
   "lessonBackToLesson": "Back to the lesson",
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
-  },
-  "endgamePartMinutes": "{minutes} min",
-  "@endgamePartMinutes": {
-    "description": "Estimated time of a lesson part (or all parts), in minutes.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "endgameFinalTest": "Final test",
   "@endgameFinalTest": {
@@ -3851,7 +3857,7 @@
       }
     }
   },
-  "endgameContinueTest": "Continue: final test",
+  "endgameContinueTest": "Take the final test",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
@@ -3870,18 +3876,6 @@
   "endgamePartStart": "Start",
   "@endgamePartStart": {
     "description": "Button on the recommended lesson part card: start this part."
-  },
-  "lessonThinkSkip": "See explanation",
-  "@lessonThinkSkip": {
-    "description": "Button during the think step: stop waiting and see the teacher's explanation right away."
-  },
-  "settingsThinkTime": "Thinking time in lessons",
-  "@settingsThinkTime": {
-    "description": "Game settings: how long the student thinks alone about a lesson position before the teacher explains."
-  },
-  "settingsThinkTimeHint": "How long you study each key position on your own before the teacher explains. Recommended uses what each position asks (5 min on the main ones). You can always skip.",
-  "@settingsThinkTimeHint": {
-    "description": "Explanation under the thinking-time setting."
   },
   "endgameChallengeTitle": "Challenge yourself in this endgame",
   "@endgameChallengeTitle": {
@@ -3944,10 +3938,6 @@
         "type": "String"
       }
     }
-  },
-  "settingsThinkRecommended": "Recommended",
-  "@settingsThinkRecommended": {
-    "description": "Thinking-time option: use the time each lesson position recommends (5 minutes on key positions, less on transitional ones)."
   },
   "endgameStagesDone": "{done} of {total} stages",
   "@endgameStagesDone": {
@@ -4228,9 +4218,38 @@
   "@conclusionMarathonDone": {
     "description": "Conclusion title when the Marathon is completed."
   },
-  "conclusionAnalyze": "Analyze the game",
-  "@conclusionAnalyze": {
-    "description": "Main bottom button of the conclusion: opens the move-by-move review of this game."
+  "conclusionDetailedReview": "See the detailed analysis",
+  "@conclusionDetailedReview": {
+    "description": "Button right under the precision in the finished quick analysis card of the conclusion: opens the full move-by-move review of this game."
+  },
+  "conclusionBestLine": "See the best line",
+  "@conclusionBestLine": {
+    "description": "Conclusion card title: the game played again from the start, Stockfish in the player's place against the same opponent, move by move on a board."
+  },
+  "conclusionBestLineHint": "Stockfish in your place against {opponent}",
+  "@conclusionBestLineHint": {
+    "description": "Subtitle of the best line card. The opponent is the character (or engine) the player faced.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "conclusionBestLineMove": "Move {move} of {total}",
+  "@conclusionBestLineMove": {
+    "description": "Best line stepper: which move of the line is shown.",
+    "placeholders": {
+      "move": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionBestLineDisclaimer": "Stockfish played fast (1 s per move), so in some positions it may miss the best defence or the win. For a deeper look, open the detailed analysis.",
+  "@conclusionBestLineDisclaimer": {
+    "description": "Short note under the best line board: it was played fast, so it may not be perfect; points to the detailed analysis button below."
   },
   "conclusionRatingHistory": "Rating history",
   "@conclusionRatingHistory": {
@@ -4281,26 +4300,6 @@
   "@conclusionReviewTitle": {
     "description": "Conclusion card: summary of the move quality of the player in this game."
   },
-  "conclusionBestLine": "See the best line",
-  "@conclusionBestLine": {
-    "description": "Conclusion card title: the engine best line from the starting position, played move by move on a board."
-  },
-  "conclusionBestLineHint": "How Stockfish plays this position from the start",
-  "@conclusionBestLineHint": {
-    "description": "Subtitle of the best line card."
-  },
-  "conclusionBestLineMove": "Move {move} of {total}",
-  "@conclusionBestLineMove": {
-    "description": "Best line stepper: which move of the line is shown.",
-    "placeholders": {
-      "move": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "conclusionFastest": "Fastest",
   "@conclusionFastest": {
     "description": "Tag on the fastest stage in the speedrun conclusion."
@@ -4332,18 +4331,6 @@
   "ratingPeriodTitle": "Period",
   "@ratingPeriodTitle": {
     "description": "Rating screen: title of the period filter sheet (7 days, 30 days, ...)."
-  },
-  "lessonThinkChooseTitle": "How long do you want to think?",
-  "@lessonThinkChooseTitle": {
-    "description": "Title of the screen shown before the first lesson with a thinking step: how long the student wants to think."
-  },
-  "lessonThinkChooseBody": "Before each explanation, you think about the position on your own. The more time, the better: thinking is how you learn. You can change it later in Settings, and you can always skip.",
-  "@lessonThinkChooseBody": {
-    "description": "Body of the think-time chooser."
-  },
-  "lessonThinkRecommendedHint": "What each position needs: up to 5 min on the key ones",
-  "@lessonThinkRecommendedHint": {
-    "description": "Under \"Recommended\" in the think-time chooser."
   },
   "conclusionTimeSpent": "Time spent",
   "@conclusionTimeSpent": {
@@ -5108,11 +5095,11 @@
   "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
   "@exercisesDoneDiplomaFor": {"description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).", "placeholders": {"grade": {"type": "String"}, "title": {"type": "String"}}},
   "exercisesIntroSpeech": "Time to show what you learned. Your first try is what counts: after that it is free practice, and to count again just redo the exercises.",
-  "@exercisesIntroSpeech": {"description": "Viktor's speech on the screen before the exercises of an endgame lesson: think 5 minutes per position, mistakes and hints cost a star, the grade is set once all are solved."},
+  "@exercisesIntroSpeech": {"description": "Viktor's speech on the screen before the exercises of an endgame lesson: mistakes and hints cost a star, the grade is set once all are solved."},
   "exercisesIntroChipMinimum": "at least {min} of {max} points",
   "@exercisesIntroChipMinimum": {"description": "Chip on the exercises intro: the minimum stars to pass, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
-  "exercisesIntroChipThink": "5 minutes per position",
-  "@exercisesIntroChipThink": {"description": "Chip on the exercises intro: the recommended thinking time per position."},
+  "exercisesIntroChipThink": "No time limit",
+  "@exercisesIntroChipThink": {"description": "Exercises intro card title: there is no time limit per position (a timer only counts up)."},
   "exercisesIntroCountBody": "Ordered from the simplest to the hardest.",
   "@exercisesIntroCountBody": {"description": "Exercises intro card: the exercises go from the simplest to the hardest."},
   "exercisesIntroMinTitle": "At least {min} points",

@@ -29,7 +29,7 @@
   "step.t_knight.hint1": "Pense em onde a torre preta precisaria chegar para ameaçar mate na primeira fileira, e quanto espaço ela tem para isso.",
   "step.t_trick": "A torre preta deu xeque em g2. O rei tem duas casas. Qual delas empata, e o que acontece na outra?",
   "step.t_trick.hint1": "Depois do seu lance, veja se o rei preto consegue se colocar na frente do peão.",
-  "step.finish": "Agora contra a máquina: espere com a torre na primeira fileira e, no xeque, vá para o canto.",
+  "step.finish": "Agora o desafio prático: espere com a torre na primeira fileira e, no xeque, vá para o canto.",
   "ex.e10": "Brancas jogam e empatam. Peão de bispo na quarta fileira, rei preto ao lado dele, e a sua torre na primeira fileira. Dá para esperar, como contra o peão de cavalo?",
   "ex.e10.hint": "Conte quantos lances o rei preto precisa para entrar na terceira fileira, e lembre o que acontece contra peão de bispo quando ele entra.",
   "ex.e10.solution": "Tc3, e depois de f3, Tc8; no lance do rei para g3, Tg8+. É a defesa de Philidor, armada a partir da primeira fileira. Ficar esperando com a torre na primeira fileira perdia para o avanço do rei.",
@@ -53,5 +53,5 @@
   "key.bishop": "Com peão de bispo a mesma defesa perde: a torre atacante tem uma coluna a mais para dar a volta. Da Wikipedia, com as cores trocadas.",
   "key.seventh": "Peão na sétima e rei ao lado: a torre defende da primeira fileira com lances únicos. Da Wikipedia (citando Emms), com as cores trocadas.",
   "history": "A defesa passiva não tem um nome ilustre nem uma data: é o que sobra quando a de Philidor não foi armada a tempo. Os manuais tratam essa defesa como regra prática. O grande mestre Hovhannes Gabuzyan resume assim: contra os peões das colunas c, d, e e f é preciso saber a defesa de Philidor; contra os das colunas a, b, g e h, a última fileira basta. A Wikipedia, apoiada em Averbakh e Kopaev, acrescenta o detalhe que salva meio ponto: se o rei atacante ainda não chegou à sexta fileira, ainda dá tempo de sair da defesa passiva com a torre, para a terceira fileira ou para o fundo, contra qualquer peão.",
-  "practice": "Contra a máquina: peão de cavalo, sua torre na primeira fileira e o rei na frente do peão. Espere, e no xeque vá para o canto. O objetivo é empatar."
+  "practice": "Desafio prático: peão de cavalo, sua torre na primeira fileira e o rei na frente do peão. Espere, e no xeque vá para o canto. O objetivo é empatar."
 }

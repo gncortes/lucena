@@ -287,7 +287,7 @@
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "That was a sacrifice. Too deep for you."
+      "text": "A deep move. Calculated. Too deep for you."
     },
     {
       "id": "snob.ownBlunder.4",
@@ -434,7 +434,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Delicious. Want to try protecting the rest?"
+      "text": "Delicious. Want to try protecting what's left?"
     },
     {
       "id": "snob.pieceCaptured.5",

@@ -362,7 +362,8 @@ def check_texts(source, problems):
 
 
 RESERVED_STEP_IDS = {'title', 'summary', 'history', 'practice'}
-THINK_MINUTES = (1, 3, 5)
+# Quanto um aluno costuma pensar num `think`, para a estimativa de tempo.
+THINK_SECONDS = 180
 
 
 def unique(where, ids, problems):
@@ -381,14 +382,15 @@ def check_side(where, step, problems):
 
 
 def check_think(where, step, problems):
-    """Passo `think`: o aluno estuda a posição sozinho por `minutes`, depois
-    vêm as dicas (`hints` falas) com as setas e casas do passo."""
+    """Passo `think`: o aluno estuda a posição sozinho, sem limite de tempo
+    (T60); as dicas (`hints` falas), com as setas e casas do passo, e a
+    explicação ficam à mão desde o começo."""
     board_of(step.get('fen', ''), where, problems)
     check_squares(where, step, problems)
     check_side(where, step, problems)
-    if step.get('minutes') not in THINK_MINUTES:
-        problems.append(f"{where}: minutes {step.get('minutes')!r} (use 1, 3 "
-                        'ou 5)')
+    if 'minutes' in step:
+        problems.append(f'{where}: minutes não existe mais (T60): o aluno '
+                        'pensa o tempo que quiser')
     hints = step.get('hints')
     if not isinstance(hints, int) or isinstance(hints, bool) or not (
             1 <= hints <= 3):
@@ -457,13 +459,13 @@ def check_part(where, part, problems):
 
 
 def estimate_minutes(steps):
-    """Tempo estimado de uma parte: o timer de cada think, ~30 s por fala,
+    """Tempo estimado de uma parte: ~3 min por think, ~30 s por fala,
     ~10 s por lance de demonstração e ~1 min por prática."""
     seconds = 0
     for step in steps:
         kind = step.get('type')
         if kind == 'think':
-            seconds += 60 * (step.get('minutes') or 0)
+            seconds += THINK_SECONDS
         elif kind == 'talk':
             seconds += 30
         elif kind == 'demo':
@@ -477,6 +479,10 @@ def build(source, oracle):
     problems, report = [], []
     lesson_id = source['id']
     reference_ids = check_references(source, problems)
+    for reference in source.get('references', []):
+        if reference.get('kind') == 'game' and not reference.get('url'):
+            report.append(f"Aviso: referência {reference.get('id')} (partida) "
+                          'sem url: a aula não terá o link para o Lichess')
     check_skills(source, problems)
     in_parts = 'parts' in source
 
@@ -499,6 +505,10 @@ def build(source, oracle):
             where = f"{lesson_id}.{step['id']}"
             out = {key: value for key, value in step.items()
                    if key != 'turns'}
+            if (step.get('ref')
+                    and step['ref'].split('#')[0] not in reference_ids):
+                problems.append(f"{where}: referência {step['ref']!r} não "
+                                'existe')
             if step['type'] == 'talk':
                 if step.get('fen'):
                     board_of(step['fen'], where, problems)
@@ -567,7 +577,8 @@ def build(source, oracle):
     for position in source.get('keyPositions', []):
         where = f"{lesson_id}.key.{position['id']}"
         board_of(position['fen'], where, problems)
-        if position.get('ref') and position['ref'] not in reference_ids:
+        if (position.get('ref')
+                and position['ref'].split('#')[0] not in reference_ids):
             problems.append(f"{where}: referência {position['ref']!r} não "
                             'existe')
     if not source.get('keyPositions'):

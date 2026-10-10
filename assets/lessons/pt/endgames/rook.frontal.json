@@ -10,7 +10,7 @@
   "part.king.title": "O lugar do rei",
   "part.king.summary": "O seu rei fora da fileira do peão e perto o bastante para a torre preta não cortá-lo de vez.",
   "part.recap.title": "Resumo",
-  "part.recap.summary": "As regras da defesa frontal e uma partida contra a máquina.",
+  "part.recap.summary": "As regras da defesa frontal e o desafio prático.",
   "step.t_front": "O rei preto está em h5, ao lado do peão, e a torre preta em f7 corta o seu rei: ele não passa para a coluna f. Você defende de brancas. Como segurar este peão?",
   "step.t_front.hint1": "A sua torre está longe do peão, na primeira fileira. Essa distância é uma arma.",
   "step.t_front.hint2": "Os xeques não precisam vir de lado. Podem vir de frente, pela coluna h e pela coluna g.",
@@ -63,7 +63,7 @@
   "step.quick": "Uma última, antes da máquina. A torre está fora do lugar.",
   "step.quick.hint": "Tg1, na frente do peão. Depois os xeques, e Txg5 se o rei abandonar o peão.",
   "step.quick.done": "Torre na frente, xeques, e o peão caiu. Empate.",
-  "step.finish": "Agora contra a máquina. Torre na frente do peão, xeques de frente, e a troca quando o final de peões for empate.",
+  "step.finish": "Agora o desafio prático. Torre na frente do peão, xeques de frente, e a troca quando o final de peões for empate.",
   "ex.e11": "Brancas jogam e empatam. A sua torre está longe, na oitava fileira, e a torre preta corta o seu rei pela coluna f. Só um lance segura.",
   "ex.e11.hint": "Xeque por trás não assusta esse rei. Onde a torre segura o peão de cavalo?",
   "ex.e11.solution": "Ta1! A torre volta para a primeira fileira, na frente do peão, e dali os xeques não acabam: Rg4 Tg1+, Rh4 Th1+. Th8+? perde: o rei preto se esconde e o peão anda. Posição do estudo de emanuelrigelnuma no Lichess.",
@@ -88,5 +88,5 @@
   "key.rank": "Rei na fileira do peão: só Rd4; se não, Tc4 corta o rei. Do estudo de Yuri61 no Lichess, com as cores trocadas.",
   "key.capa": "A torre longe do peão, mas a tempo: só Te1+ e xeques. Posição de Capablanca, da Wikipedia, com as cores trocadas.",
   "history": "A defesa frontal é um dos métodos clássicos de defender torre e peão contra torre quando o rei está cortado do peão. A Wikipedia credita a Mednis (1998) a regra dos três e a ordem de perigo por coluna, e a Emms (2008) as duas posições desta aula: com peão de cavalo a defesa segura; com peão de bispo, depende de quem joga. Antes disso, Chéron (1923) já mostrava que o peão de cavalo não ganha com o rei cortado por duas colunas, e Capablanca mostrou o outro lado: se a torre não chega à primeira fileira antes do peão, os xeques chegam tarde. A tabela de finais confirma todas essas posições.",
-  "practice": "Contra a máquina: peão de cavalo, o seu rei cortado por uma coluna. Torre na frente do peão, xeques de frente e a troca na hora certa. O objetivo é empatar."
+  "practice": "Desafio prático: peão de cavalo, o seu rei cortado por uma coluna. Torre na frente do peão, xeques de frente e a troca na hora certa. O objetivo é empatar."
 }

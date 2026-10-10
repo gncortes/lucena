@@ -123,6 +123,10 @@ void main() {
       'acompanha', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    await tester.tap(find.byKey(GameDetailsKeys.last));
+    await tester.pumpAndSettle();
     expect(cubit.state.shownIndex, 2);
 
     await tester.tap(find.byKey(GameDetailsKeys.first));
@@ -270,23 +274,29 @@ void main() {
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
   });
 
-  testWidgets('enquanto a revisão roda, o Viktor conta uma história', (
-    tester,
-  ) async {
-    final id = await progress.addAttempt(game);
-    final cubit = await pump(tester, id);
-    analysis.hold = Completer<void>();
+  testWidgets(
+    'o Viktor conta uma história; pronta a revisão, ela fica até o ✕',
+    (tester) async {
+      final id = await progress.addAttempt(game);
+      final cubit = await pump(tester, id);
+      analysis.hold = Completer<void>();
 
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
-    await tester.pump(const Duration(seconds: 3));
+      await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+      await tester.pump(const Duration(seconds: 3));
 
-    expect(cubit.state.reviewing, isTrue);
-    expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
-    expect(find.textContaining('A story about'), findsOneWidget);
+      expect(cubit.state.reviewing, isTrue);
+      expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
+      expect(find.textContaining('A story about'), findsOneWidget);
 
-    analysis.hold!.complete();
-    analysis.hold = null;
-    await tester.pumpAndSettle();
-    expect(find.byKey(GameDetailsKeys.story), findsNothing);
-  });
+      analysis.hold!.complete();
+      analysis.hold = null;
+      await tester.pumpAndSettle();
+      expect(cubit.state.reviewing, isFalse);
+      expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
+
+      await tester.tap(find.byKey(GameDetailsKeys.storyClose));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameDetailsKeys.story), findsNothing);
+    },
+  );
 }

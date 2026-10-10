@@ -33,7 +33,7 @@
   "step.t_behind.hint1": "Look for a square from which the rook stops the pawn from advancing.",
   "step.t_close": "King on the short side and rook on the other side, as with the side checks. But the rook is one file closer to the pawn. Do the checks still save the game?",
   "step.t_close.hint1": "Follow the checks and see when the black king gets close to the rook or the black rook steps in between.",
-  "step.finish": "Now against the machine: rook behind the pawn, king to the short side and, if the pawn advances, checks from the side.",
+  "step.finish": "Now the practical challenge: rook behind the pawn, king to the short side and, if the pawn advances, checks from the side.",
   "ex.e08": "White to move and draw. The king is already on the short side, but your rook is glued to the pawn, doing nothing. Find it a better square.",
   "ex.e08.hint": "The farthest square on the eighth rank. From there, a side check on the second.",
   "ex.e08.solution": "Ra8 and, after Re1, Ra2+. The rook needs distance: from the a-file it gives the side checks without the black king reaching it. Rb8 also draws, but the a-file is the farthest.",
@@ -57,5 +57,5 @@
   "key.close": "The same idea with the rook one file closer: it loses. Wikipedia gives it as Grigoriev's (1937). Three files of distance, at least.",
   "key.carlsen": "Aronian against Carlsen, 2006, with colours reversed: only Kg3 draws; the rook check lost the game.",
   "history": "Philidor, in 1777, analysed what happens when the rook leaves the third rank early and concluded that the defender loses. Dufresne in 1863 and Berger in 1890 repeated the analysis. In 1897 the German teacher Max Karstedt, composer of more than a hundred studies, published the correction: the ending is drawn if the king runs to the short side and the rook waits to give side checks from the greatest possible distance. Tarrasch dealt with the ending in an article of 1906, and the side-check positions in this lesson are his. The tablebases have proved Karstedt right in everything. In practice the defence remains difficult: in 2006 Magnus Carlsen lost a drawn position to Aronian because he gave a check when the right move was a king move.",
-  "practice": "Against the machine: the black king is already in and Philidor is no longer possible. Rook behind the pawn, king to the short side and, if the pawn advances, side checks. The goal is to draw."
+  "practice": "Practical challenge: the black king is already in and Philidor is no longer possible. Rook behind the pawn, king to the short side and, if the pawn advances, side checks. The goal is to draw."
 }

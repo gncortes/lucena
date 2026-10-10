@@ -14,7 +14,7 @@
   "part.defense.title": "Black's defence",
   "part.defense.summary": "Getting the pawn past the line before the blockade, and the fifty-move rule.",
   "part.summary.title": "Summary",
-  "part.summary.summary": "Three rules for your games and the whole mate against the machine.",
+  "part.summary.summary": "Three rules for your games and the whole mate in the practical challenge.",
   "step.t_help": "White to move. King on f7, knights on f5 and d2, and the black king stuck on h7. The d2 knight is holding the pawn on d3. How does White deliver mate?",
   "step.t_help.hint1": "Imagine the same position without the black pawn. What happens when the black king runs out of squares and nobody is giving check?",
   "step.t_help.hint2": "The d2 knight has a better job than watching the pawn. Let the pawn go: every move it makes is a move the black king does not have to make.",

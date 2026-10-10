@@ -5,10 +5,12 @@ build_aula.py:
     tools/.cache/venv/bin/python tools/lessons/endgames/pawns.breakthrough.py
     tools/.cache/venv/bin/python .claude/skills/aula-final/scripts/build_aula.py pawns.breakthrough
 
-As três posições de 8 peças (três peões contra três com os dois reis) só
-aparecem em passos `think` e `talk`, que o script não julga; foram conferidas
-com o Stockfish (ver o dossiê). Todo passo julgado (demo, move, play,
-exercícios, treino) tem no máximo 7 peças e é decidido pela tabela.
+Lição refeita na T61 (ver docs/aulas/pawns.breakthrough.md, "Lição refeita").
+As posições com mais de 7 peças (três peões contra três com os dois reis, e as
+duas da partida Capablanca – Edward Lasker, Londres 1913) só aparecem em
+passos `think` e `talk`, que o script não julga; as afirmações das falas sobre
+elas foram conferidas com o Stockfish (dossiê). Todo passo julgado (demo, move,
+play, exercícios, treino) tem no máximo 7 peças e é decidido pela tabela.
 """
 import json
 import pathlib
@@ -32,7 +34,7 @@ def uci(fen, sans):
     return out
 
 
-def demo(id_, fen, goal, sans, notes=None, side=None):
+def demo(id_, fen, goal, sans, notes=None, side=None, ref=None):
     line = []
     for i, u in enumerate(uci(fen, sans)):
         e = {'uci': u}
@@ -42,6 +44,8 @@ def demo(id_, fen, goal, sans, notes=None, side=None):
     d = {'type': 'demo', 'id': id_, 'fen': fen, 'goal': goal, 'line': line}
     if side:
         d['side'] = side
+    if ref:
+        d['ref'] = ref
     return d
 
 
@@ -65,7 +69,7 @@ def move(id_, fen, goal, sans, accepts, side=None):
 
 
 def think(id_, fen, minutes, hints, ask='plan', side=None, arrows=None,
-          marks=None):
+          marks=None, ref=None):
     d = {'type': 'think', 'id': id_, 'fen': fen, 'minutes': minutes,
          'hints': hints, 'ask': ask}
     if side:
@@ -74,10 +78,12 @@ def think(id_, fen, minutes, hints, ask='plan', side=None, arrows=None,
         d['arrows'] = arrows
     if marks:
         d['marks'] = marks
+    if ref:
+        d['ref'] = ref
     return d
 
 
-def talk(id_, fen, arrows=None, marks=None, side=None):
+def talk(id_, fen, arrows=None, marks=None, side=None, ref=None):
     d = {'type': 'talk', 'id': id_, 'fen': fen}
     if side:
         d['side'] = side
@@ -85,6 +91,8 @@ def talk(id_, fen, arrows=None, marks=None, side=None):
         d['arrows'] = arrows
     if marks:
         d['marks'] = marks
+    if ref:
+        d['ref'] = ref
     return d
 
 
@@ -93,34 +101,42 @@ def exercise(id_, stars, fen, goal, sans, accepts, origin='own'):
             'origin': origin, 'turns': turns(fen, sans, accepts)}
 
 
-# Posições de 8 peças (só think/talk; julgadas pelo Stockfish no dossiê).
+# Posições com mais de 7 peças (só think/talk; julgadas pelo Stockfish no
+# dossiê).
 CLASSIC = F('6k1/ppp5/8/PPP5/8/8/8/6K1 w')          # só b6 ganha
-WIKI = F('8/5ppp/8/5PPP/8/6k1/8/6K1 w')             # só g6 ganha
 WIKI_B = F('8/5ppp/8/5PPP/8/6k1/8/6K1 b')           # só ...g6 segura
+# Capablanca – Edward Lasker, Londres 1913 (estudos VsvnZu6D e Mc6kbNae).
+CAPA_38 = F('8/7p/p5p1/3k2P1/3p1P1P/3K4/P7/8 w')    # depois de 38...Rd5: a3! ganha; f5? empata
+CAPA_40 = F('8/7p/p7/4kpPP/3p4/3K4/P7/8 w')         # depois de 40...Re5: só h6!! ganha
 
-# Depois do primeiro sacrifício (7 peças, tabela).
+# Posições julgadas pela tabela (7 peças ou menos).
 AFTER_AXB6 = F('6k1/1pp5/1p6/P1P5/8/8/8/6K1 w')     # só c6
 AFTER_CXB6 = F('6k1/pp6/1p6/P1P5/8/8/8/6K1 w')      # só a6
 COUNT_E8 = F('4k3/1pp5/1p6/P1P5/8/8/8/6K1 w')       # só c6: o rei chega tarde
-COUNT_D8 = F('3k4/1pp5/1p6/P1P5/8/8/8/6K1 w')       # perdida: o rei chega
+TOO_CLOSE = F('3k4/2pp4/8/1PPP4/8/8/8/6K1 w')       # só lances de rei ganham; b6, c6, d6 empatam
+ORDER = F('8/8/1p4p1/6k1/1PP5/8/8/7K w')            # só b5 ganha; c5 empata
 SIDE_H8 = F('7k/3pp3/3p4/2P1P3/8/8/8/7K w')         # só e6
 SIDE_A8 = F('k7/2pp4/3p4/2P1P3/8/8/8/K7 w')         # só c6
-WIKI_HXG6 = F('8/5pp1/6p1/5P1P/8/6k1/8/6K1 w')      # só f6
-WIKI_FXG6 = F('8/6pp/6p1/5P1P/8/6k1/8/6K1 w')       # só h6
+TWO_PASSERS = F('k7/8/P4p2/8/4PP2/8/8/7K w')        # ganha (tudo ganha; só demo)
+PUSH = F('8/pp1k4/P7/1P6/8/8/8/7K w')               # só b6 ganha; axb7 empata
+PUSH_MOVE = F('8/k1pp4/3P4/2P5/8/8/8/7K w')          # só c6 ganha; dxc7 empata
+KING_FIRST = F('8/8/1kp3p1/8/5P1P/8/8/K7 w')        # só Rb1 e Rb2 ganham; f5 empata
 DEF_HXG6 = F('8/5p1p/6P1/5PP1/8/6k1/8/6K1 b')       # só ...hxg6
-DEF_FXG6 = F('8/5p1p/6P1/6PP/8/6k1/8/6K1 b')        # só ...fxg6
+DEF_KING = F('8/pp1k4/8/PPP5/8/8/8/6K1 b')          # só ...a6 segura
 FINISH = F('8/1pp5/1p6/P1P5/8/8/8/2K2k2 w')         # só c6
 PRACTICE = F('7k/3pp3/3p4/2P1P3/8/8/8/1K6 w')       # só e6
 
+CAPA = 'capaLasker1913'
+
 parts = [
     {'id': 'classic', 'steps': [
-        think('t_classic', CLASSIC, 5, 2, arrows=None, marks=['a8', 'b8', 'c8']),
+        think('t_classic', CLASSIC, 5, 2, marks=['a8', 'b8', 'c8']),
         talk('classicWhy', CLASSIC, arrows=['b5b6', 'a7b6', 'c7b6'],
              marks=['b6']),
-        demo('d_classic', AFTER_AXB6, 'win', 'c6 bxc6 a6 Kf7 a7 Ke7 a8=Q', {
+        demo('d_classic', AFTER_AXB6, 'win', 'c6 bxc6 a6 Kf7 a7', {
             0: {'arrows': ['c5c6'], 'marks': ['c6']},
             2: {'arrows': ['a6a8']},
-            6: {'marks': ['a8']},
+            4: {'marks': ['a8', 'b7']},
         }),
         talk('otherCapture', AFTER_CXB6, arrows=['a5a6', 'c5c6'],
              marks=['a6']),
@@ -129,47 +145,78 @@ parts = [
     ]},
     {'id': 'count', 'steps': [
         think('t_count', COUNT_E8, 3, 2, marks=['e8']),
-        talk('square', COUNT_E8, arrows=['a6a8'],
-             marks=['a6', 'b6', 'c6', 'a7', 'b7', 'c7', 'a8', 'b8', 'c8']),
-        talk('tooClose', COUNT_D8, arrows=['d8c7'], marks=['c8', 'c7', 'd8']),
+        talk('square', COUNT_E8, arrows=['a6a8', 'e8d8', 'd8c8', 'c8b7'],
+             marks=['a6', 'b7']),
+        talk('tooClose', TOO_CLOSE, arrows=['g1f2', 'f2e3', 'e3d4'],
+             marks=['d8', 'c8']),
+        talk('capaCount', CAPA_38, arrows=['f4f5', 'h4h5', 'd5e6'],
+             marks=['a3'], ref=CAPA),
         move('countMove', COUNT_E8, 'win', 'c6 bxc6 a6 Kd7 a7',
+             ['win', 'win', 'win']),
+    ]},
+    {'id': 'order', 'steps': [
+        think('t_order', ORDER, 3, 2, marks=['b6']),
+        talk('orderWhy', ORDER, arrows=['b4b5', 'c4c5'], marks=['b6']),
+        talk('orderWrong', ORDER, arrows=['c4c5', 'b6c5', 'b4b5'],
+             marks=['b8', 'c1']),
+        move('orderMove', ORDER, 'win', 'b5 Kf4 c5 bxc5 b6',
              ['win', 'win', 'win']),
     ]},
     {'id': 'side', 'steps': [
         think('t_side', SIDE_H8, 3, 2, marks=['h8', 'c8', 'e8']),
         talk('sideWhy', SIDE_H8, arrows=['e5e6', 'c5c8'], marks=['h8']),
-        demo('d_side', SIDE_A8, 'win', 'c6 dxc6 e6 Kb7 e7 Kc8 e8=Q+', {
+        demo('d_side', SIDE_A8, 'win', 'c6 dxc6 e6 Kb7 e7', {
             0: {'arrows': ['c5c6']},
             2: {'arrows': ['e6e8'], 'marks': ['a8']},
-            6: {'marks': ['e8']},
+            4: {'marks': ['e8', 'd7']},
+        }),
+        talk('twoPassers', TWO_PASSERS, arrows=['e4e5', 'f4f5'],
+             marks=['a6', 'a8']),
+        demo('d_twoPassers', TWO_PASSERS, 'win', 'e5 fxe5 f5 Ka7 f6', {
+            0: {'arrows': ['e4e5'], 'marks': ['f6']},
+            2: {'arrows': ['f5f8'], 'marks': ['a6']},
+            4: {'marks': ['f8', 'a6']},
         }),
         move('sideMove', SIDE_H8, 'win', 'e6 dxe6 c6 Kg7 c7',
              ['win', 'win', 'win']),
     ]},
-    {'id': 'kingside', 'steps': [
-        think('t_wiki', WIKI, 5, 2, marks=['g4']),
-        talk('wikiWhy', WIKI, arrows=['g3g4', 'g5g6'], marks=['f5', 'h5']),
-        demo('d_wiki', WIKI_HXG6, 'win', 'f6 gxf6 h6 Kf4 h7 Kg5 h8=Q', {
-            0: {'arrows': ['f5f6']},
-            2: {'arrows': ['h6h8']},
-            6: {'marks': ['h8']},
+    {'id': 'pushPast', 'steps': [
+        think('t_push', CAPA_40, 3, 2, marks=['g6', 'h6'], ref=CAPA + '#80'),
+        talk('pushWhy', CAPA_40, arrows=['h5h6', 'g5g6'], marks=['f6', 'h7'],
+             ref=CAPA + '#80'),
+        demo('d_push', PUSH, 'win', 'b6 axb6 a7 Kc6 a8=Q', {
+            0: {'arrows': ['b5b6'], 'marks': ['b7']},
+            2: {'arrows': ['a6a8']},
+            4: {'marks': ['a8']},
         }),
-        move('wikiMove', WIKI_FXG6, 'win', 'h6 gxh6 f6 Kf4 f7',
-             ['win', 'win', 'win']),
+        move('pushMove', PUSH_MOVE, 'win', 'c6 dxc6 d7', ['win', 'win']),
+    ]},
+    {'id': 'kingFirst', 'steps': [
+        think('t_kingFirst', KING_FIRST, 3, 2, arrows=['f4f5'],
+              marks=['c6', 'a1']),
+        talk('kingFirstWhy', KING_FIRST, arrows=['f4f5', 'a1b2'],
+             marks=['f5', 'c6']),
+        talk('kingFirstPath', KING_FIRST, arrows=['a1b2', 'b2c2', 'c2d1'],
+             marks=['d1', 'c3']),
+        move('kingFirstMove', KING_FIRST, 'win',
+             'Kb2 c5 Kc2 c4 Kd1 Kc5 f5 gxf5 h5',
+             ['win', 'win', 'win', 'win', 'win']),
     ]},
     {'id': 'defense', 'steps': [
-        think('t_defense', WIKI_B, 3, 2, side='black', marks=['f7', 'g7', 'h7']),
+        think('t_defense', WIKI_B, 3, 2, side='black',
+              marks=['f7', 'g7', 'h7']),
         talk('defenseWhy', WIKI_B, side='black', arrows=['g7g6'],
              marks=['g6']),
         move('defenseMove', DEF_HXG6, 'draw', 'hxg6 fxg6 fxg6',
              ['hold', 'hold'], side='black'),
-        talk('sameSide', DEF_FXG6, side='black', arrows=['f7g6'],
-             marks=['h5']),
-        move('sameSideMove', DEF_FXG6, 'draw', 'fxg6 hxg6 hxg6',
-             ['hold', 'hold'], side='black'),
+        talk('defenseKing', DEF_KING, side='black', arrows=['a7a6', 'd7c6'],
+             marks=['a6', 'c5']),
+        move('defenseKingMove', DEF_KING, 'draw', 'a6 b6 Kc6 Kf2 Kxc5',
+             ['hold', 'hold', 'hold'], side='black'),
     ]},
     {'id': 'finish', 'steps': [
         talk('recap', CLASSIC, arrows=['b5b6']),
+        talk('recapDefense', WIKI_B, side='white', arrows=['g7g6']),
         move('recapMove', AFTER_AXB6, 'win', 'c6 bxc6 a6',
              ['win', 'win']),
         talk('playIntro', FINISH, marks=['f1']),
@@ -210,6 +257,16 @@ exercises = [
              ['win', 'win', 'win', 'win', 'win'], origin='studyDarkSharky'),
 ]
 
+# A partida no tabuleiro de análise, parada depois de 38...Rd5 (ply 76);
+# `#80` é depois de 40...Re5. PGN do estudo VsvnZu6D, conferido com
+# python-chess (dossiê).
+CAPA_PGN = (
+    'e4_e5_Nf3_Nc6_Bb5_a6_Ba4_Nf6_O-O_Be7_Re1_b5_Bb3_d6_c3_O-O_d4_Bg4_Be3_'
+    'Nxe4_Bd5_Qd7_dxe5_Ng5_Bxg5_Bxg5_Nxg5_Bxd1_e6_fxe6_Bxe6+_Qxe6_Nxe6_Rae8_'
+    'Nd2_Rf6_Raxd1_Rfxe6_Kf1_Ne5_Re3_Kf7_Rde1_d5_b4_Ng4_Rxe6_Rxe6_Rxe6_Kxe6_'
+    'h3_Nf6_f3_Nd7_Ke2_Kd6_Nb3_c5_bxc5+_Nxc5_Nxc5_Kxc5_Kd3_b4_f4_bxc3_Kxc3_'
+    'd4+_Kd3_Kd5_g4_g6_h4_Kc5_g5_Kd5_f5_gxf5_h5_Ke5_h6')
+
 src = {
     'id': 'pawns.breakthrough',
     'module': 'pawns',
@@ -218,12 +275,14 @@ src = {
     'exercises': exercises,
     'passScore': 12,
     'keyPositions': [
-        {'id': 'classic', 'fen': CLASSIC, 'ref': 'studyBotez'},
+        {'id': 'classic', 'fen': CLASSIC},
         {'id': 'afterAxb6', 'fen': AFTER_AXB6},
         {'id': 'afterCxb6', 'fen': AFTER_CXB6},
         {'id': 'count', 'fen': COUNT_E8},
+        {'id': 'capa', 'fen': CAPA_40, 'ref': CAPA + '#80'},
+        {'id': 'order', 'fen': ORDER},
         {'id': 'side', 'fen': SIDE_H8},
-        {'id': 'wiki', 'fen': WIKI, 'ref': 'wikiPassed'},
+        {'id': 'kingFirst', 'fen': KING_FIRST},
         {'id': 'wikiDefense', 'fen': WIKI_B, 'ref': 'wikiPassed'},
     ],
     'practice': {'fen': PRACTICE, 'goal': 'win', 'positionId': None},
@@ -239,6 +298,16 @@ src = {
          'publisher': 'Russell Enterprises', 'year': 2025,
          'where': 'cap. 1, seção "Breakthrough", p. 48 (sumário da amostra '
                   'da editora)'},
+        {'id': CAPA, 'kind': 'game', 'white': 'José Raúl Capablanca',
+         'black': 'Edward Lasker', 'event': 'partida amistosa, Londres',
+         'year': 1913,
+         'url': 'https://lichess.org/analysis/pgn/' + CAPA_PGN + '#76'},
+        {'id': 'studySalgado', 'kind': 'study', 'author': 'SalgadoChess',
+         'title': 'Finales de Peones: Rupturas',
+         'url': 'https://lichess.org/study/Mc6kbNae/MrDiUsYy'},
+        {'id': 'studyKirill', 'kind': 'study', 'author': 'Kirill',
+         'title': 'Capablanca, Jose Raul-Lasker, Edward',
+         'url': 'https://lichess.org/study/VsvnZu6D/DRuNByaO'},
         {'id': 'studyBotez', 'kind': 'study', 'author': 'alexandra_botez',
          'title': 'BREAKTHROUGH',
          'url': 'https://lichess.org/study/sWRrBd9E'},

@@ -55,6 +55,12 @@ class GameDetailsState {
     this.engineDepths = const {},
     this.viktor,
     this.stories = const [],
+    this.variationFrom = -1,
+    this.variation = const [],
+    this.variationPly,
+    this.variationLines = const {},
+    this.variationDepths = const {},
+    this.variationScores = const {},
   });
 
   final bool ready;
@@ -111,12 +117,44 @@ class GameDetailsState {
   /// Os lances sendo avaliados agora.
   final Set<int> annotating;
 
+  /// A variante que o jogador fez no tabuleiro, a partir da posição depois
+  /// do lance [variationFrom] da partida (-1: a de início). Uma só por vez:
+  /// um lance novo numa posição da partida troca a anterior. Fica só na
+  /// tela (não é gravada) e não mexe nas anotações nem na precisão.
+  final int variationFrom;
+  final List<LoggedMove> variation;
+
+  /// O lance da variante no tabuleiro (índice em [variation]). Nulo: o
+  /// tabuleiro está na partida ([selected]).
+  final int? variationPly;
+
+  /// As linhas da engine, a profundidade delas e a avaliação da barra nas
+  /// posições da variante, por FEN.
+  final Map<String, List<EngineLine>> variationLines;
+  final Map<String, int> variationDepths;
+  final Map<String, EngineScore> variationScores;
+
+  /// O tabuleiro está num lance da variante.
+  bool get inVariation => variationPly != null;
+
+  /// A posição de onde a variante sai.
+  Position? get variationStart =>
+      variationFrom < 0 ? start : moves[variationFrom].position;
+
   /// A anotação do lance [index]. Nula enquanto a engine não avaliou.
   ReviewedMove? reviewOf(int index) => live[index];
 
   /// A avaliação da posição mostrada: a da engine ligada, a da anotação ou a
   /// rápida da barra. Nula enquanto nenhuma existe.
   EngineScore? get shownScore {
+    if (inVariation) {
+      final fen = shownPosition!.fen;
+      final lines = variationLines[fen];
+      if (engine && lines != null && lines.isNotEmpty) return lines.first.score;
+      if (variationScores[fen] case final score?) return score;
+      if (lines != null && lines.isNotEmpty) return lines.first.score;
+      return null;
+    }
     final lines = engineLines[shownIndex];
     if (engine && lines != null && lines.isNotEmpty) return lines.first.score;
     // A avaliação mais pesada que a engine já fez desta posição.
@@ -127,21 +165,49 @@ class GameDetailsState {
     return null;
   }
 
-  int get shownIndex => selected ?? moves.length - 1;
+  /// A análise abre na posição de início, antes do primeiro lance. Na
+  /// variante, é o lance da partida de onde ela sai.
+  int get shownIndex => selected ?? -1;
 
   /// A posição que o tabuleiro mostra e o lance em destaque nela.
-  Position? get shownPosition =>
-      shownIndex < 0 ? start : moves[shownIndex].position;
-  Move? get shownMove => shownIndex < 0 ? null : moves[shownIndex].move;
+  Position? get shownPosition => inVariation
+      ? variation[variationPly!].position
+      : shownIndex < 0
+      ? start
+      : moves[shownIndex].position;
+  Move? get shownMove => inVariation
+      ? variation[variationPly!].move
+      : shownIndex < 0
+      ? null
+      : moves[shownIndex].move;
 
-  /// A anotação do lance mostrado. Nula sem anotação ou no início.
-  ReviewedMove? get shownReview => reviewOf(shownIndex);
+  /// A posição antes do lance mostrado. Nula no início.
+  Position? get shownBefore {
+    if (inVariation) {
+      final ply = variationPly!;
+      return ply == 0 ? variationStart : variation[ply - 1].position;
+    }
+    if (shownIndex < 0) return null;
+    return shownIndex == 0 ? start : moves[shownIndex - 1].position;
+  }
 
-  /// As linhas da engine na posição mostrada. Nulas enquanto calculam.
-  List<EngineLine>? get shownLines => engineLines[shownIndex];
+  /// A anotação do lance mostrado. Nula sem anotação, no início ou na
+  /// variante.
+  ReviewedMove? get shownReview => inVariation ? null : reviewOf(shownIndex);
 
-  bool get atStart => shownIndex < 0;
-  bool get atEnd => shownIndex >= moves.length - 1;
+  /// As linhas da engine na posição mostrada (nulas enquanto calculam) e a
+  /// profundidade delas.
+  List<EngineLine>? get shownLines => inVariation
+      ? variationLines[shownPosition!.fen]
+      : engineLines[shownIndex];
+  int? get shownDepth => inVariation
+      ? variationDepths[shownPosition!.fen]
+      : engineDepths[shownIndex];
+
+  bool get atStart => !inVariation && shownIndex < 0;
+  bool get atEnd => inVariation
+      ? variationPly! >= variation.length - 1
+      : shownIndex >= moves.length - 1;
 
   GameDetailsState copyWith({
     int? selected,
@@ -155,6 +221,13 @@ class GameDetailsState {
     Map<int, ReviewedMove>? live,
     Set<int>? annotating,
     Map<int, int>? engineDepths,
+    int? variationFrom,
+    List<LoggedMove>? variation,
+    int? variationPly,
+    bool mainLine = false,
+    Map<String, List<EngineLine>>? variationLines,
+    Map<String, int>? variationDepths,
+    Map<String, EngineScore>? variationScores,
   }) => GameDetailsState(
     ready: ready,
     attempt: attempt,
@@ -176,6 +249,12 @@ class GameDetailsState {
     engineDepths: engineDepths ?? this.engineDepths,
     viktor: viktor,
     stories: stories,
+    variationFrom: variationFrom ?? this.variationFrom,
+    variation: variation ?? this.variation,
+    variationPly: mainLine ? null : variationPly ?? this.variationPly,
+    variationLines: variationLines ?? this.variationLines,
+    variationDepths: variationDepths ?? this.variationDepths,
+    variationScores: variationScores ?? this.variationScores,
   );
 }
 
@@ -301,21 +380,96 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     unawaited(_annotate(state.shownIndex));
   }
 
-  /// Mostra a posição depois do lance [index] (-1: a de início). Durante a
-  /// revisão, o tabuleiro deixa de acompanhar a revisão.
+  /// Mostra a posição depois do lance [index] da partida (-1: a de início),
+  /// saindo da variante. Durante a revisão, o tabuleiro deixa de acompanhar
+  /// a revisão.
   void select(int index) {
     if (!state.ready) return;
     _following = false;
     final target = index.clamp(-1, state.moves.length - 1);
-    emit(state.copyWith(selected: target));
+    emit(state.copyWith(selected: target, mainLine: true));
     if (state.engine) unawaited(_analyseShown());
     unawaited(_annotate(target));
   }
 
+  /// Mostra a posição depois do lance [ply] da variante.
+  void selectVariation(int ply) {
+    if (!state.ready || state.variation.isEmpty) return;
+    _following = false;
+    final target = ply.clamp(0, state.variation.length - 1);
+    emit(state.copyWith(selected: state.variationFrom, variationPly: target));
+    if (state.engine) unawaited(_analyseShown());
+  }
+
+  /// O início e o fim são sempre os da partida; o anterior e o próximo
+  /// andam dentro da variante (do primeiro lance dela, o anterior volta à
+  /// partida, na posição de onde ela sai).
   void first() => select(-1);
-  void previous() => select(state.shownIndex - 1);
-  void next() => select(state.shownIndex + 1);
+  void previous() {
+    final ply = state.variationPly;
+    if (ply == null) return select(state.shownIndex - 1);
+    if (ply == 0) return select(state.variationFrom);
+    selectVariation(ply - 1);
+  }
+
+  void next() {
+    final ply = state.variationPly;
+    if (ply == null) return select(state.shownIndex + 1);
+    selectVariation(ply + 1);
+  }
+
   void last() => select(state.moves.length - 1);
+
+  /// Joga [move] na posição do tabuleiro, como num tabuleiro de análise.
+  /// Ilegal: nada muda. Se for o lance seguinte da partida (ou da variante),
+  /// só anda até ele. Senão, entra na variante: num lance da variante, corta
+  /// o resto dela e continua; numa posição da partida, começa outra variante
+  /// no lugar da anterior.
+  void play(Move move) {
+    final position = state.shownPosition;
+    if (!state.ready || position == null) return;
+    final played = GameRules.play(position, move);
+    if (played == null) return;
+    final logged = LoggedMove(
+      san: played.san,
+      move: move,
+      position: played.position,
+    );
+    final ply = state.variationPly;
+    if (ply != null) {
+      final next = ply + 1;
+      if (next < state.variation.length && state.variation[next].move == move) {
+        return selectVariation(next);
+      }
+      _following = false;
+      emit(
+        state.copyWith(
+          variation: [...state.variation.take(next), logged],
+          variationPly: next,
+        ),
+      );
+    } else {
+      final index = state.shownIndex;
+      if (index + 1 < state.moves.length &&
+          state.moves[index + 1].move == move) {
+        return select(index + 1);
+      }
+      if (state.variationFrom == index &&
+          state.variation.isNotEmpty &&
+          state.variation.first.move == move) {
+        return selectVariation(0);
+      }
+      _following = false;
+      emit(
+        state.copyWith(
+          variationFrom: index,
+          variation: [logged],
+          variationPly: 0,
+        ),
+      );
+    }
+    if (state.engine) unawaited(_analyseShown());
+  }
 
   /// O tabuleiro acompanha a revisão (até o jogador mexer nele).
   bool _following = false;
@@ -337,7 +491,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     final total = state.moves.length;
     // A posição de início primeiro: a barra já abre com a avaliação dela.
     if (!await _reviewLines(0, weight)) return;
-    if (_following) emit(state.copyWith(selected: -1));
+    if (_following) emit(state.copyWith(selected: -1, mainLine: true));
     for (var index = 0; index < total; index++) {
       if ((state.live[index]?.weight ?? -1) < weight) {
         emit(state.copyWith(annotating: {...state.annotating, index}));
@@ -347,7 +501,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         _setAnnotation(index, weight);
       }
       if (_following) {
-        emit(state.copyWith(selected: index));
+        emit(state.copyWith(selected: index, mainLine: true));
         if (state.engine) unawaited(_analyseShown());
       }
       emit(state.copyWith(reviewProgress: (index + 1) / total));
@@ -468,7 +622,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         // O jogador saiu do lance (ou a revisão tem a engine): o resto fica
         // para quando ele voltar.
         final known = state.live.containsKey(index);
-        if (known && (state.shownIndex != index || state.reviewing)) return;
+        if (known && !_onMove(index)) return;
         if (!known) {
           emit(state.copyWith(annotating: {...state.annotating, index}));
         }
@@ -482,7 +636,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
           // Ficando no lance: uma posição de cada vez, e para se o jogador
           // sair dele (o próximo lance passa na frente).
           for (final k in [index, index + 1]) {
-            if (state.shownIndex != index || state.reviewing) return;
+            if (!_onMove(index)) return;
             await _linesAt(k, weight, urgent: true, preemptible: true);
           }
         }
@@ -498,6 +652,11 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
 
   final _annotating = <int>{};
 
+  /// O jogador está no lance [index] da partida e a engine está livre para
+  /// aprofundar a anotação dele.
+  bool _onMove(int index) =>
+      state.shownIndex == index && !state.reviewing && !state.inVariation;
+
   /// A avaliação rápida da posição mostrada, para a barra, se ainda não
   /// existe nenhuma.
   /// Durante a revisão, ela mesma avalia a posição (pedir à parte só a
@@ -506,18 +665,30 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     final analysis = _analysis;
     final index = state.shownIndex;
     final position = state.shownPosition;
+    final variation = state.inVariation;
     if (analysis == null || position == null || state.reviewing) return;
-    if (state.shownScore != null || !_barAsked.add(index)) return;
+    if (state.shownScore != null) return;
+    final asked = variation
+        ? _variationBarAsked.add(position.fen)
+        : _barAsked.add(index);
+    if (!asked) return;
     final score = position.isGameOver
         ? ReviewRules.scoreOf(position, null)
         : (await analysis.analyse(
             position,
             depth: barDepth,
           )).firstOrNull?.score;
-    _scoreBar(index, score, 0);
+    if (!variation) return _scoreBar(index, score, 0);
+    if (isClosed || score == null) return;
+    emit(
+      state.copyWith(
+        variationScores: {...state.variationScores, position.fen: score},
+      ),
+    );
   }
 
   final _barAsked = <int>{};
+  final _variationBarAsked = <String>{};
 
   /// A avaliação da posição [index] para a barra, se for mais pesada que a
   /// que ela já tem.
@@ -539,6 +710,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// As linhas da engine na posição mostrada: primeiro rasas, na hora, e
   /// depois as fundas no lugar delas.
   Future<void> _analyseShown() async {
+    if (state.inVariation) return _analyseVariation();
     final analysis = _analysis;
     final index = state.shownIndex;
     final position = state.shownPosition;
@@ -572,7 +744,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
           ),
         );
         // O jogador já foi para outra posição: a funda fica para depois.
-        if (!state.engine || state.shownIndex != index) return;
+        if (!state.engine || state.shownIndex != index || state.inVariation) {
+          return;
+        }
       }
     } finally {
       _engineRunning.remove(index);
@@ -580,4 +754,47 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   }
 
   final _engineRunning = <int>{};
+
+  /// As linhas da engine na posição da variante no tabuleiro, como em
+  /// [_analyseShown].
+  Future<void> _analyseVariation() async {
+    final analysis = _analysis;
+    final position = state.shownPosition;
+    if (analysis == null || position == null) return;
+    final fen = position.fen;
+    if ((state.variationDepths[fen] ?? 0) >= engineDepth) return;
+    if (!_variationRunning.add(fen)) return;
+    try {
+      if (position.isGameOver) {
+        emit(
+          state.copyWith(
+            variationLines: {...state.variationLines, fen: const []},
+            variationDepths: {...state.variationDepths, fen: engineDepth},
+          ),
+        );
+        return;
+      }
+      for (final depth in engineDepths) {
+        if ((state.variationDepths[fen] ?? 0) >= depth) continue;
+        final lines = await analysis.analyse(
+          position,
+          depth: depth,
+          lines: engineLineCount,
+          urgent: true,
+        );
+        if (isClosed) return;
+        emit(
+          state.copyWith(
+            variationLines: {...state.variationLines, fen: lines},
+            variationDepths: {...state.variationDepths, fen: depth},
+          ),
+        );
+        if (!state.engine || state.shownPosition?.fen != fen) return;
+      }
+    } finally {
+      _variationRunning.remove(fen);
+    }
+  }
+
+  final _variationRunning = <String>{};
 }

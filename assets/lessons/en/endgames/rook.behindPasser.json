@@ -8,7 +8,7 @@
   "part.theirs.title": "Behind the enemy pawn",
   "part.theirs.summary": "In defence the rook also goes behind the pawn; in front of it, the rook is tied down.",
   "part.rules.title": "Recap",
-  "part.rules.summary": "Tarrasch's rule, the exception that cost Kramnik a game, and practice against the machine.",
+  "part.rules.summary": "Tarrasch's rule, the exception that cost Kramnik a game, and the practical challenge.",
   "step.t_behind": "You play White and have a passed pawn on the a-file. Look at where each rook stands. Can Black hold this pawn? And what is your plan to win?",
   "step.t_behind.hint1": "Compare the two rooks. How many squares does each have on the a-file, and how many will it have when the pawn advances?",
   "step.t_behind.hint2": "The black rook cannot leave the front of the pawn. So your king is the one who helps the pawn, and Black has only the king to defend both the pawn and the kingside.",
@@ -50,7 +50,7 @@
   "step.tarrasch": "Siegbert Tarrasch, one of the great German masters of the early twentieth century, wrote in the book of the St. Petersburg 1914 tournament that rooks belong behind passed pawns: behind your own to support the advance, behind the opponent's to hinder it. The reason is the one you have just seen: the rook behind gains room with every step of the pawn, the rook in front loses it.",
   "step.except": "But it is a rule, not a law. Tarrasch himself is quoted as saying: always put the rook behind the pawn, except when that is wrong. This position is from Kramnik against Beliavsky, 1993. Kramnik played Ra1, behind his own pawn, and lost. There, a4, Rc1 or taking the rook to b6, b7 or b8 drew. The rule points the way; calculation confirms it.",
   "step.recap": "Three rules to take to your games. One: with a passed pawn, the rook goes behind it. Two: against the opponent's passed pawn, the rook also goes behind it; blockading with the rook is the passive defence. Three: getting behind the pawn is a race; before you go, check that the enemy rook does not get there first with a check.",
-  "step.finish": "Now against the machine, from the position at the start of the lesson. Keep the rook behind the pawn, bring the king forward and win.",
+  "step.finish": "Now the practical challenge, from the position at the start of the lesson. Keep the rook behind the pawn, bring the king forward and win.",
   "ex.e05": "White to move and win. The black rook stands in front of the pawn. How do you exploit that?",
   "ex.e05.hint": "The white king wants to reach b7. What stops it right now?",
   "ex.e05.solution": "Rb2+! The check drives the black king off the b-file. After Ka6, Kc7! and the white king reaches b7: the black rook, in front of the pawn, cannot guard a8 and give checks at the same time. Beware of Kc6, which looks the same and only draws. Idea from SHREKDAVID's Lichess study.",
@@ -81,5 +81,5 @@
   "key.race": "The race to get behind the pawn: only Rc2 wins. From a Lichess study by Audax6.",
   "key.exception": "Kramnik against Beliavsky, 1993, as on Wikipedia: Ra1, behind the pawn, lost. An exception to the rule.",
   "history": "Siegbert Tarrasch (1862–1934), one of the strongest players at the turn of the twentieth century, was also the great chess teacher of his time: in Germany he was called Praeceptor Germaniae, the teacher of Germany. In the book of the St. Petersburg 1914 tournament, commenting on a game between Marshall and Lasker, he wrote that rooks belong behind passed pawns, and he repeated the idea years later in his book The Game of Chess. It became known as Tarrasch's rule. A famous example is the 34th game of the 1927 match between Alekhine and Capablanca, in which Alekhine's rook stood behind the a-pawn and White won. The exceptions are well known too: Short against Yusupov, 1984, and Kramnik against Beliavsky, 1993, are cases in which the rook behind the pawn was the wrong move.",
-  "practice": "Now against the machine: your rook behind the pawn, the black rook in front of it. Bring the king forward and win."
+  "practice": "Now the practical challenge: your rook behind the pawn, the black rook in front of it. Bring the king forward and win."
 }

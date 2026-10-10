@@ -75,6 +75,10 @@ class EndgameLesson {
   int get maxScore =>
       exercises.fold(0, (total, exercise) => total + exercise.stars);
 
+  /// A referência do `ref` de um passo ou de uma posição-base. Nula se [ref]
+  /// é nulo ou não há. Ver [Reference.resolve].
+  Reference? reference(String? ref) => Reference.resolve(references, ref);
+
   Exercise? exercise(String id) {
     for (final exercise in exercises) {
       if (exercise.id == id) return exercise;
@@ -154,6 +158,28 @@ class Reference {
   };
 
   String? get url => fields['url'];
+
+  /// A referência que um `ref` de passo ou de posição-base aponta: `id`, ou
+  /// `id#ply` quando a mesma partida aparece parada noutro lance (o ply troca
+  /// o trecho da [url] depois do `#`). Nula sem [ref] ou sem a referência.
+  static Reference? resolve(List<Reference> references, String? ref) {
+    if (ref == null) return null;
+    final hash = ref.indexOf('#');
+    final id = hash < 0 ? ref : ref.substring(0, hash);
+    final ply = hash < 0 ? null : ref.substring(hash + 1);
+    for (final reference in references) {
+      if (reference.id != id) continue;
+      final url = reference.url;
+      if (ply == null || url == null) return reference;
+      final base = url.split('#').first;
+      return Reference(
+        id: reference.id,
+        kind: reference.kind,
+        fields: {...reference.fields, 'url': '$base#$ply'},
+      );
+    }
+    return null;
+  }
 }
 
 /// O que o aluno já fez numa aula de final.
@@ -248,9 +274,13 @@ class ExerciseCheckpoint {
     this.mistakes = 0,
     this.hints = 0,
     this.open = true,
+    this.startedAt,
   });
 
   final String exerciseId;
+
+  /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
+  final DateTime? startedAt;
 
   /// O tabuleiro, quando já mudou desde o começo.
   final String? fen;
@@ -268,6 +298,7 @@ class ExerciseCheckpoint {
     'mistakes': mistakes,
     'hints': hints,
     'open': open,
+    'startedAt': ?startedAt?.toUtc().toIso8601String(),
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -281,6 +312,7 @@ class ExerciseCheckpoint {
       mistakes: json['mistakes'] as int? ?? 0,
       hints: json['hints'] as int? ?? 0,
       open: json['open'] as bool? ?? false,
+      startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
     );
   }
 
@@ -292,10 +324,12 @@ class ExerciseCheckpoint {
       other.turn == turn &&
       other.mistakes == mistakes &&
       other.hints == hints &&
-      other.open == open;
+      other.open == open &&
+      other.startedAt == startedAt;
 
   @override
-  int get hashCode => Object.hash(exerciseId, fen, turn, mistakes, hints, open);
+  int get hashCode =>
+      Object.hash(exerciseId, fen, turn, mistakes, hints, open, startedAt);
 }
 
 /// O progresso em todas as aulas de finais.

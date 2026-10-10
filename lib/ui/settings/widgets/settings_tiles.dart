@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/app_language.dart';
-import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
@@ -14,7 +13,6 @@ import '../../core/keys/settings_keys.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
-import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/settings_cubit.dart';
@@ -120,9 +118,6 @@ class GameSettingsScreen extends StatelessWidget {
     final characterTalk = context.select(
       (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
     );
-    final thinkMinutes = context.select(
-      (SettingsCubit cubit) => cubit.state?.thinkMinutes ?? 0,
-    );
     return SettingsGroupScreen(
       screenKey: SettingsKeys.gameScreen,
       title: l10n.settingsGame,
@@ -148,40 +143,6 @@ class GameSettingsScreen extends StatelessWidget {
           ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.go(Routes.settingsClock),
-        ),
-        ListTile(
-          key: SettingsKeys.thinkTimeTile,
-          leading: const Icon(Icons.hourglass_bottom_rounded),
-          title: Text(l10n.settingsThinkTime),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l10n.settingsThinkTimeHint),
-                const SizedBox(height: 8),
-                SegmentedButton<int>(
-                  showSelectedIcon: false,
-                  segments: [
-                    for (final minutes in AppSettings.thinkChoices)
-                      ButtonSegment(
-                        value: minutes,
-                        label: OneLine(
-                          minutes == 0
-                              ? l10n.settingsThinkRecommended
-                              : l10n.endgamePartMinutes(minutes),
-                          key: SettingsKeys.thinkTimeOption(minutes),
-                        ),
-                      ),
-                  ],
-                  selected: {thinkMinutes},
-                  onSelectionChanged: (selected) => context
-                      .read<SettingsCubit>()
-                      .setThinkMinutes(selected.first),
-                ),
-              ],
-            ),
-          ),
         ),
         SwitchListTile(
           key: SettingsKeys.characterTalkSwitch,

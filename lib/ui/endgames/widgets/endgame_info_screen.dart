@@ -6,6 +6,7 @@ import '../../../domain/models/endgame_lesson.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/position_board.dart';
+import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 
@@ -59,9 +60,25 @@ class EndgameInfoScreen extends StatelessWidget {
                         PositionBoard(fen: position.fen, size: 120, radius: 6),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(
-                            texts.say('${lesson.id}.key.${position.id}') ?? '',
-                            style: theme.textTheme.bodyMedium,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                texts.say('${lesson.id}.key.${position.id}') ??
+                                    '',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              // A partida ou o estudo de onde ela vem.
+                              if (lesson.reference(position.ref)
+                                  case final reference?
+                                  when reference.url != null)
+                                ReferenceLink(
+                                  key: EndgameInfoKeys.keyPositionLink(
+                                    position.id,
+                                  ),
+                                  reference: reference,
+                                ),
+                            ],
                           ),
                         ),
                       ],

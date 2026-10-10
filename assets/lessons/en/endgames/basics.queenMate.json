@@ -30,7 +30,7 @@
   "ex.e10.solution": "Qe4! and the black king only has h3. Kf2 (Qg6 also works) and the king goes to h2. Now Qg2#, Qh4# or Qh7#. The traps: Qf4? on the second move, the knight's jump from h3, is stalemate; and so is Qf3? on the last one.",
   "ex.e11": "White to move and mate. Your king is not in front of the black king: it is a knight's jump away from it.",
   "ex.e11.hint": "The queen can stand right next to the black king if your king protects her. Look for the square touching him that your king reaches.",
-  "ex.e11.solution": "Qd2#. The queen touches the black king and the king on c3 protects her; she takes c1, e1 and e2 herself, and the white king takes c2. Careful with Qe3?: it is the knight's jump from d1, it takes every square without giving check, and the black king is stalemated.",
+  "ex.e11.solution": "Qd2#. The queen touches the black king and the king on c3 protects her; she takes c1, e1 and e2 herself, and the white king takes c2. Careful with Qe3? It is the knight's jump from d1, it takes every square without giving check, and the black king is stalemated.",
   "ex.e12": "White to move and mate. Again the kings are not face to face, and there are many checks on the board. Only one is mate.",
   "ex.e12.hint": "Your king already takes e2 and f2. You need a check from afar, along the first rank, that also watches the square left on the second.",
   "ex.e12.solution": "Qh1#. The queen checks along the first rank and, from the corner, also watches g2 on the diagonal; the king on e3 takes e2 and f2. Qf3+ or Qd1+ leave an escape, and Qg2+? gives the queen away. The edge mate does not need the kings in opposition: king and queen together just have to cover every square.",

@@ -50,14 +50,13 @@ def talk(id, fen, arrows=(), marks=(), side='white'):
     return step
 
 
-def think(id, fen, minutes, hints, arrows=(), marks=(), side='white',
-          ask='plan'):
-    """Passo em que o aluno estuda a posição sozinho por `minutes`; `hints`
-    é quantas dicas a fala tem. Setas e casas aparecem com a primeira dica.
+def think(id, fen, hints, arrows=(), marks=(), side='white', ask='plan'):
+    """Passo em que o aluno estuda a posição sozinho, sem limite de tempo
+    (T60); `hints` é quantas dicas a fala tem. Setas e casas aparecem com a primeira dica.
     `ask` diz o que o Viktor pede: `plan` (o melhor plano) ou `line` (a
     sequência que ganha, quando há uma forçada)."""
-    step = {'type': 'think', 'id': id, 'fen': fen, 'minutes': minutes,
-            'hints': hints, 'ask': ask}
+    step = {'type': 'think', 'id': id, 'fen': fen, 'hints': hints,
+            'ask': ask}
     if fen.split()[1] != side[0]:
         step['side'] = side
     if arrows:

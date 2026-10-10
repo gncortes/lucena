@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_lesson",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -70,7 +69,6 @@
           "type": "think",
           "id": "t_diagonal",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -149,7 +147,6 @@
           "type": "think",
           "id": "t_capablanca",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },

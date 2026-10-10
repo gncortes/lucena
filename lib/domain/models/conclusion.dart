@@ -59,9 +59,6 @@ enum ConclusionAction {
   /// A lista dos speedruns.
   speedruns,
 
-  /// A revisão desta partida (T37).
-  analyze,
-
   /// A tela de rating, com esta partida destacada.
   ratingHistory,
 

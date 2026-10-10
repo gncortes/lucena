@@ -49,6 +49,11 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(board: board));
   }
 
+  /// Mostra ou esconde as marcações do professor no tabuleiro das aulas.
+  Future<void> setLessonMarks({required bool shown}) {
+    return _update((state ?? const AppSettings()).copyWith(lessonMarks: shown));
+  }
+
   /// Troca as preferências do relógio.
   Future<void> setClock(ClockSettings clock) {
     return _update((state ?? const AppSettings()).copyWith(clock: clock));
@@ -67,15 +72,6 @@ class SettingsCubit extends Cubit<AppSettings?> {
     await _update((state ?? const AppSettings()).copyWith(sound: enabled));
     if (enabled) await _sound?.play(GameSound.move);
   }
-
-  /// O tempo de pensar nas aulas (1, 3 ou 5 minutos, ou 0, o recomendado):
-  /// escolhido, a aula não pergunta mais.
-  Future<void> setThinkMinutes(int minutes) => _update(
-    (state ?? const AppSettings()).copyWith(
-      thinkMinutes: minutes,
-      thinkChosen: true,
-    ),
-  );
 
   /// Liga ou desliga a vibração do app.
   Future<void> setVibration({required bool enabled}) =>

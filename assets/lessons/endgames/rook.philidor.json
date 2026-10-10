@@ -12,10 +12,10 @@
           "type": "think",
           "id": "t_classic",
           "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
-          "minutes": 5,
-          "hints": 1,
+          "hints": 2,
           "ask": "plan",
-          "side": "white"
+          "side": "white",
+          "ref": "wikipedia"
         },
         {
           "type": "talk",
@@ -30,13 +30,54 @@
             "f3",
             "g3",
             "e3"
-          ]
+          ],
+          "ref": "wikipedia"
+        },
+        {
+          "type": "demo",
+          "id": "d_wait",
+          "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
+          "goal": "draw",
+          "side": "white",
+          "line": [
+            {
+              "uci": "h2b2",
+              "arrows": [
+                "h2b2"
+              ]
+            },
+            {
+              "uci": "a3c3",
+              "arrows": [
+                "a3c3"
+              ],
+              "marks": [
+                "e3",
+                "f3",
+                "g3"
+              ]
+            },
+            {
+              "uci": "b2a2",
+              "arrows": [
+                "b2a2"
+              ]
+            },
+            {
+              "uci": "c3b3",
+              "arrows": [
+                "c3b3"
+              ]
+            }
+          ],
+          "ref": "wikipedia"
         },
         {
           "type": "move",
           "id": "take",
           "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
           "goal": "draw",
+          "ref": "practicePhilidor",
           "line": [
             {
               "teach": "b1b3",
@@ -63,19 +104,181 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "side",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_side",
+          "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "talk",
+          "id": "side",
+          "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
+          "arrows": [
+            "e1e2"
+          ],
+          "marks": [
+            "e1",
+            "e2"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_sideTrap",
+          "fen": "8/8/8/8/2pk4/R7/3K4/7r b - - 0 1",
+          "goal": "draw",
+          "side": "white",
+          "line": [
+            {
+              "uci": "c4c3",
+              "arrows": [
+                "c4c3"
+              ],
+              "marks": [
+                "d3"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "sideHold",
+          "fen": "8/8/8/8/2pk4/R7/8/2K4r w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "c1c2",
+              "accept": [
+                "c1b2",
+                "c1c2"
+              ],
+              "reply": "h1h2"
+            },
+            {
+              "teach": "c2c1",
+              "accept": [
+                "c2b1",
+                "c2c1",
+                "c2d1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "behind",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_pawn",
+          "fen": "8/8/8/8/5k2/1R2p3/r7/4K3 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "ref": "wikipedia"
         },
         {
           "type": "talk",
           "id": "pawn",
-          "fen": "8/8/8/8/5k2/R3p3/7r/4K3 w - - 0 1",
+          "fen": "8/8/8/8/5k2/1R2p3/r7/4K3 w - - 0 1",
           "arrows": [
             "f4f3",
-            "h2h1",
-            "a3a8"
+            "a2a1",
+            "b3b8"
           ],
           "marks": [
             "e3"
-          ]
+          ],
+          "ref": "wikipedia"
+        },
+        {
+          "type": "demo",
+          "id": "d_behind",
+          "fen": "8/8/8/8/5k2/1R2p3/r7/4K3 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "b3b8",
+              "arrows": [
+                "b3b8"
+              ]
+            },
+            {
+              "uci": "f4f3",
+              "arrows": [
+                "a2a1"
+              ]
+            },
+            {
+              "uci": "b8f8",
+              "arrows": [
+                "f8f3"
+              ]
+            },
+            {
+              "uci": "f3e4",
+              "marks": [
+                "e3"
+              ]
+            },
+            {
+              "uci": "f8e8",
+              "arrows": [
+                "e8e4"
+              ]
+            },
+            {
+              "uci": "e4f4",
+              "arrows": [
+                "e8e3"
+              ]
+            },
+            {
+              "uci": "e8f8",
+              "arrows": [
+                "f8f4"
+              ]
+            },
+            {
+              "uci": "f4e5",
+              "marks": [
+                "e3"
+              ]
+            },
+            {
+              "uci": "f8e8",
+              "arrows": [
+                "e8e5"
+              ]
+            }
+          ],
+          "ref": "wikipedia"
+        },
+        {
+          "type": "demo",
+          "id": "d_passive",
+          "fen": "8/8/8/8/5k2/2R1p3/r7/4K3 b - - 0 1",
+          "goal": "draw",
+          "side": "white",
+          "line": [
+            {
+              "uci": "f4f3",
+              "arrows": [
+                "a2a1"
+              ],
+              "marks": [
+                "f3"
+              ]
+            }
+          ],
+          "ref": "wikipedia"
         },
         {
           "type": "move",
@@ -127,29 +330,241 @@
       ]
     },
     {
-      "id": "errors",
+      "id": "reach",
       "steps": [
         {
+          "type": "think",
+          "id": "t_reach",
+          "fen": "8/R7/8/8/3kp3/8/7r/4K3 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "ref": "noseknowsReach"
+        },
+        {
+          "type": "demo",
+          "id": "d_early",
+          "fen": "8/3R4/8/8/3kp3/8/7r/4K3 b - - 0 1",
+          "goal": "draw",
+          "side": "white",
+          "line": [
+            {
+              "uci": "d4e3",
+              "arrows": [
+                "h2h1"
+              ],
+              "marks": [
+                "e3"
+              ]
+            }
+          ],
+          "ref": "noseknowsReach"
+        },
+        {
           "type": "talk",
-          "id": "early",
-          "fen": "5R2/8/8/8/4p3/4k3/r7/4K3 w - - 0 1",
+          "id": "reachWhy",
+          "fen": "8/R7/8/8/3kp3/8/7r/4K3 w - - 0 1",
           "arrows": [
-            "a2a1"
+            "a7a3"
+          ],
+          "marks": [
+            "e3",
+            "d3",
+            "f3"
+          ],
+          "ref": "noseknowsReach"
+        },
+        {
+          "type": "move",
+          "id": "reach",
+          "fen": "8/R7/8/8/3kp3/8/7r/4K3 w - - 0 1",
+          "goal": "draw",
+          "ref": "noseknowsReach",
+          "line": [
+            {
+              "teach": "a7a3",
+              "accept": [
+                "a7a3"
+              ],
+              "reply": "e4e3"
+            },
+            {
+              "teach": "a3a8",
+              "accept": [
+                "a3a4",
+                "a3a5",
+                "a3a6",
+                "a3a7",
+                "a3a8",
+                "a3b3",
+                "e1d1",
+                "e1f1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kingFirst",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_king",
+          "fen": "8/8/8/8/3kp3/3r4/6K1/6R1 w - - 0 1",
+          "hints": 2,
+          "ask": "plan"
+        },
+        {
+          "type": "demo",
+          "id": "d_skewer",
+          "fen": "8/8/8/8/3kp3/3r4/8/5KR1 b - - 0 1",
+          "goal": "draw",
+          "side": "white",
+          "line": [
+            {
+              "uci": "d3d1",
+              "arrows": [
+                "d1g1"
+              ],
+              "marks": [
+                "f1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "kingWhy",
+          "fen": "8/8/8/8/3kp3/3r4/6K1/6R1 w - - 0 1",
+          "arrows": [
+            "g2f2",
+            "f2e1"
+          ],
+          "marks": [
+            "e1"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "kingFirst",
+          "fen": "8/8/8/8/3kp3/3r4/6K1/6R1 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "g2f2",
+              "accept": [
+                "g2f2"
+              ],
+              "reply": "d3d2"
+            },
+            {
+              "teach": "f2e1",
+              "accept": [
+                "f2e1"
+              ],
+              "reply": "d2h2"
+            },
+            {
+              "teach": "g1g3",
+              "accept": [
+                "g1g3",
+                "g1g5",
+                "g1g6",
+                "g1g7",
+                "g1g8"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "expel",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_expel",
+          "fen": "8/8/8/8/4p3/4k3/r7/4K2R w - - 0 1",
+          "hints": 1,
+          "ask": "plan"
+        },
+        {
+          "type": "demo",
+          "id": "d_expel",
+          "fen": "8/8/8/8/4p3/4k3/r7/4K2R w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "h1h3",
+              "arrows": [
+                "h1h3"
+              ]
+            },
+            {
+              "uci": "e3d4",
+              "marks": [
+                "d4"
+              ]
+            },
+            {
+              "uci": "h3b3",
+              "arrows": [
+                "h3b3"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "expelWhy",
+          "fen": "8/8/8/8/4p3/4k3/r7/4K2R w - - 0 1",
+          "arrows": [
+            "h1h3"
           ],
           "marks": [
             "e3"
           ]
         },
         {
-          "type": "talk",
-          "id": "passive",
-          "fen": "8/8/8/8/8/1R2pk2/7r/4K3 w - - 0 1",
-          "arrows": [
-            "h2h1"
-          ],
-          "marks": [
-            "f3"
+          "type": "move",
+          "id": "expel",
+          "fen": "7R/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "h8h3",
+              "accept": [
+                "h8h3"
+              ],
+              "reply": "f3f4"
+            },
+            {
+              "teach": "h3b3",
+              "accept": [
+                "e1d1",
+                "e1f1",
+                "h3b3",
+                "h3c3",
+                "h3h4",
+                "h3h5",
+                "h3h6",
+                "h3h7",
+                "h3h8"
+              ]
+            }
           ]
+        }
+      ]
+    },
+    {
+      "id": "trade",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_trade",
+          "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
+          "hints": 1,
+          "ask": "plan"
         },
         {
           "type": "talk",
@@ -161,42 +576,43 @@
           ]
         },
         {
-          "type": "move",
-          "id": "endgame",
+          "type": "demo",
+          "id": "d_trade",
           "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
           "goal": "draw",
           "line": [
             {
-              "teach": "g8d8",
-              "accept": [
-                "d1c2",
-                "d1e1",
-                "d1e2",
-                "g8b8",
-                "g8c8",
-                "g8d8",
-                "g8e8",
-                "g8f8",
-                "g8g6",
-                "g8g7",
-                "g8h8"
-              ],
-              "reply": "a5d5"
+              "uci": "g8d8",
+              "arrows": [
+                "g8d8"
+              ]
             },
             {
-              "teach": "d8d5",
-              "accept": [
-                "d8a8",
-                "d8b8",
-                "d8c8",
-                "d8d5",
-                "d8e8",
-                "d8f8",
-                "d8g8",
-                "d8h8"
-              ],
-              "reply": "d4d5"
+              "uci": "a5d5",
+              "arrows": [
+                "a5d5"
+              ]
             },
+            {
+              "uci": "d8d5",
+              "arrows": [
+                "d8d5"
+              ]
+            },
+            {
+              "uci": "d4d5",
+              "marks": [
+                "e1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "endgame",
+          "fen": "8/8/8/3k4/8/4p3/8/3K4 w - - 0 1",
+          "goal": "draw",
+          "line": [
             {
               "teach": "d1e2",
               "accept": [
@@ -222,9 +638,9 @@
           "type": "think",
           "id": "t_bishop",
           "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
-          "minutes": 5,
-          "hints": 1,
-          "ask": "line"
+          "hints": 2,
+          "ask": "line",
+          "ref": "yuri61Philidor"
         },
         {
           "type": "talk",
@@ -235,17 +651,23 @@
           ],
           "marks": [
             "c1"
-          ]
+          ],
+          "ref": "yuri61Philidor"
         },
         {
-          "type": "talk",
-          "id": "limits",
-          "fen": "8/8/8/8/3kpR2/8/7r/4K3 w - - 0 1",
-          "arrows": [
-            "f4f8"
-          ],
-          "marks": [
-            "f3"
+          "type": "move",
+          "id": "bishopMove",
+          "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
+          "goal": "draw",
+          "ref": "yuri61Philidor",
+          "line": [
+            {
+              "teach": "g8g3",
+              "accept": [
+                "d1c1",
+                "g8g3"
+              ]
+            }
           ]
         },
         {
@@ -396,12 +818,12 @@
     {
       "id": "reach",
       "fen": "8/8/8/8/4pk2/8/r7/1R2K3 w - - 0 1",
-      "ref": "practice"
+      "ref": "practicePhilidor"
     },
     {
       "id": "bishop",
       "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
-      "ref": "yuri61"
+      "ref": "yuri61Philidor"
     },
     {
       "id": "advanced",
@@ -482,6 +904,27 @@
       "title": "Secrets of Rook Endings",
       "publisher": "Gambit Publications",
       "year": 1999
+    },
+    {
+      "id": "practicePhilidor",
+      "kind": "study",
+      "author": "Lichess",
+      "title": "Lichess Practice: Basic Rook Endgames, \"Philidor Position\"",
+      "url": "https://lichess.org/study/pqUSUw8Y/CvqYotss"
+    },
+    {
+      "id": "noseknowsReach",
+      "kind": "study",
+      "author": "NoseKnowsAll",
+      "title": "Rook Endgames You Must Know!, \"Exercise 1: Reaching the Philidor\"",
+      "url": "https://lichess.org/study/bnboDhFM/7LSvVgLj"
+    },
+    {
+      "id": "yuri61Philidor",
+      "kind": "study",
+      "author": "Yuri61",
+      "title": "Rook Endgames: Lucena & Philidor, \"Philidor Position - Correct Defense\"",
+      "url": "https://lichess.org/study/dDyC6HS6/3pZ2cqM6"
     },
     {
       "id": "audax6",

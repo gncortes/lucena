@@ -92,7 +92,9 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
             ShareIconButton(
               key: ConclusionKeys.share,
               boundary: _card,
-              extra: [if (state.review != null) _analysis],
+              // A análise só entra pronta: rodando, ela fica fora da imagem
+              // (nada de cartão pela metade).
+              extra: [if (state.review != null && !state.reviewing) _analysis],
               tooltip: l10n.conclusionShare,
               fileName: 'lucena-partida.png',
               footer: 'Lucena · ${l10n.homeTagline}',
@@ -260,6 +262,32 @@ class _Body extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
     ];
+    // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
+    // cartão. Depois de pronta, ela entra na imagem de compartilhar.
+    final quick =
+        state.review != null ||
+            (conclusion.gameId != null &&
+                (conclusion.game?.moves.isNotEmpty ?? false))
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              KeyedSubtree(
+                key: ConclusionKeys.analysisShared,
+                child: RepaintBoundary(
+                  key: analysis,
+                  child: _Analysis(state: state, conclusion: conclusion),
+                ),
+              ),
+              // Abaixo do cartão, fora do RepaintBoundary: a imagem de
+              // compartilhar nunca mostra botão.
+              if (state.review != null)
+                if (conclusion.gameId case final gameId?) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  DetailedReviewButton(gameId: gameId),
+                ],
+            ],
+          )
+        : null;
     final sections = <Widget>[
       RepaintBoundary(
         key: card,
@@ -277,15 +305,6 @@ class _Body extends StatelessWidget {
           ),
         ),
       ),
-      // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
-      // cartão. Depois de pronta, ela entra na imagem de compartilhar.
-      if (state.review != null ||
-          (conclusion.gameId != null &&
-              (conclusion.game?.moves.isNotEmpty ?? false)))
-        RepaintBoundary(
-          key: analysis,
-          child: _Analysis(state: state, conclusion: conclusion),
-        ),
       if (opponent != null && comment != null)
         TeacherSpeech(
           key: ConclusionKeys.comment,
@@ -294,8 +313,6 @@ class _Body extends StatelessWidget {
           text: comment,
           emotion: state.emotion,
         ),
-      if (state.bestLine.isNotEmpty && conclusion.game?.startFen != null)
-        _BestLine(state: state, conclusion: conclusion),
       if (feedback.isNotEmpty)
         ReportPanel(
           report: GameReport(
@@ -305,7 +322,14 @@ class _Body extends StatelessWidget {
             characters: state.characters,
           ),
         ),
+      // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
+      // de compartilhar.
+      if (context.read<ConclusionCubit>().canPlayBestLine)
+        _BestLine(state: state, conclusion: conclusion),
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
+      // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
+      // curta, no toque na longa.
+      ?quick,
     ];
     return Stack(
       children: [
@@ -354,11 +378,7 @@ class _Body extends StatelessWidget {
   }
 }
 
-const _links = {
-  ConclusionAction.analyze,
-  ConclusionAction.ratingHistory,
-  ConclusionAction.gamesHistory,
-};
+const _links = {ConclusionAction.ratingHistory, ConclusionAction.gamesHistory};
 
 /// O resultado sobre a posição final desfocada e, embaixo, os dois jogadores
 /// com o "VS" da entrada da partida.
@@ -428,7 +448,7 @@ class _Header extends StatelessWidget {
                 OneLine(
                   _title(l10n, conclusion),
                   key: ConclusionKeys.title,
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -438,7 +458,7 @@ class _Header extends StatelessWidget {
                     _reason(l10n, end.reason),
                     key: ConclusionKeys.reason,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
                   ),
@@ -513,25 +533,35 @@ class _Player extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final frame = Container(
+      width: 72,
+      height: 72,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppShape.medium),
+        color: winner ? colors.primary : colors.outlineVariant,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppShape.small),
+        child: avatar,
+      ),
+    );
     return Column(
       children: [
-        Container(
-          width: 72,
-          height: 72,
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppShape.medium),
-            color: winner ? colors.primary : colors.outlineVariant,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: avatar,
-          ),
-        ),
+        // Quem venceu ganha o brilho girando em volta (sem animações, só a
+        // moldura colorida).
+        if (winner && !AppMotion.of(context).disabled)
+          WinnerGlow(
+            key: ConclusionKeys.winnerGlow,
+            color: colors.primary,
+            child: frame,
+          )
+        else
+          frame,
         const SizedBox(height: AppSpacing.xs),
         OneLine(
           name,
-          style: theme.textTheme.titleSmall?.copyWith(
+          style: theme.textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -691,8 +721,9 @@ class _ActionButton extends StatelessWidget {
         return () =>
             context.push(Routes.speedrunAttempt(run.speedrunId, run.attemptId));
       case ConclusionAction.speedruns:
-        if (run == null) return null;
-        return () => context.push(Routes.speedrun(run.speedrunId));
+        // A lista dos speedruns, de onde o jogador veio, para escolher
+        // outro.
+        return () => context.go(Routes.speedruns);
       case _:
         return null;
     }
@@ -746,13 +777,13 @@ class _Mode extends StatelessWidget {
                   speedrun == null
                       ? l10n.conclusionPace
                       : speedrunName(l10n, state.characters, speedrun),
-                  style: theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
                 Text(
                   time == null ? l10n.challengeNoClock : paceLabel(l10n, time),
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -824,7 +855,7 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
               context.l10n.reportRatingLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleSmall,
             ),
           ),
           AnimatedBuilder(
@@ -833,7 +864,6 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
               rating: (before + (after - before) * _counting.value).round(),
               change: ((after - before) * _counting.value).round(),
               up: after >= before,
-              large: true,
               valueKey: ConclusionKeys.ratingValue,
               changeKey: ConclusionKeys.ratingDelta,
             ),
@@ -942,7 +972,7 @@ class _RunState extends State<_Run> {
             Text(
               ended ? l10n.conclusionTotalTime : l10n.conclusionTotalSoFar,
               textAlign: TextAlign.center,
-              style: theme.textTheme.labelLarge?.copyWith(
+              style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -950,7 +980,7 @@ class _RunState extends State<_Run> {
               time(spent),
               key: ConclusionKeys.total,
               textAlign: TextAlign.center,
-              style: theme.textTheme.displaySmall?.copyWith(
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
@@ -962,7 +992,7 @@ class _RunState extends State<_Run> {
               '${l10n.conclusionStageTime}: ${time(stageTime)}',
               key: ConclusionKeys.stageTime,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -970,7 +1000,7 @@ class _RunState extends State<_Run> {
             Text(
               '${l10n.speedrunBest}: ${time(record)}',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
@@ -1139,7 +1169,7 @@ class _StageRow extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Text(
             time,
-            style: theme.textTheme.titleSmall?.copyWith(
+            style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
@@ -1170,18 +1200,15 @@ class _Links extends StatelessWidget {
             ListTile(
               key: ConclusionKeys.action(action),
               leading: Icon(switch (action) {
-                ConclusionAction.analyze => Icons.insights_rounded,
                 ConclusionAction.ratingHistory => Icons.show_chart_rounded,
                 _ => Icons.history_rounded,
               }),
               title: Text(switch (action) {
-                ConclusionAction.analyze => l10n.conclusionAnalyze,
                 ConclusionAction.ratingHistory => l10n.conclusionRatingHistory,
                 _ => l10n.statsGamesTitle,
               }),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => context.push(switch (action) {
-                ConclusionAction.analyze => Routes.game(conclusion.gameId!),
                 ConclusionAction.ratingHistory => Routes.ratingAt(
                   game: conclusion.gameId,
                 ),
@@ -1311,8 +1338,11 @@ class _AnalysisTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ink = theme.colorScheme.onSecondaryContainer;
-    return SizedBox(
-      height: _AnalysisRunning.titleHeight,
+    // Altura mínima, não fixa: com letra grande, a linha de baixo quebra.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: _AnalysisRunning.titleHeight,
+      ),
       child: Row(
         children: [
           Icon(Icons.insights_rounded, color: ink),
@@ -1323,7 +1353,7 @@ class _AnalysisTitle extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.conclusionQuickReview,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: ink,
                   ),
@@ -1450,7 +1480,7 @@ class _AnalysisSummary extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   '${counts[quality] ?? 0}',
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: colors.onSurface,
                   ),
@@ -1499,7 +1529,7 @@ class _AnalysisSummary extends StatelessWidget {
                         ? '–'
                         : '${formatAccuracy(value * 100, locale)}%',
                     key: ConclusionKeys.accuracy,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: colors.onPrimary,
                       fontFeatures: const [FontFeature.tabularFigures()],
@@ -1514,7 +1544,7 @@ class _AnalysisSummary extends StatelessWidget {
                   children: [
                     Text(
                       l10n.reviewAccuracy,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: ink,
                       ),
@@ -1537,8 +1567,11 @@ class _AnalysisSummary extends StatelessWidget {
   }
 }
 
-/// "Ver a melhor linha": a linha do Stockfish desde a posição de início,
-/// lance a lance, num tabuleiro dentro da própria tela.
+/// "Ver a melhor linha": a partida de novo desde a posição de início, com o
+/// Stockfish no lugar do jogador contra o mesmo adversário. Ao abrir, os
+/// lances andam sozinhos no tabuleiro conforme chegam; pronta, dá para
+/// voltar e avançar. Embaixo, o aviso de que foi rápido e o caminho para a
+/// análise detalhada.
 class _BestLine extends StatefulWidget {
   const _BestLine({required this.state, required this.conclusion});
 
@@ -1552,6 +1585,12 @@ class _BestLine extends StatefulWidget {
 class _BestLineState extends State<_BestLine> {
   bool _open = false;
 
+  void _toggle() {
+    setState(() => _open = !_open);
+    // A primeira vez que abre, a linha começa a ser jogada.
+    if (_open) context.read<ConclusionCubit>().playBestLine();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -1561,10 +1600,10 @@ class _BestLineState extends State<_BestLine> {
     final cubit = context.read<ConclusionCubit>();
     final line = state.bestLine;
     final ply = state.bestPly;
+    final running = state.bestLineRunning;
+    final game = widget.conclusion.game!;
     // A posição depois do lance mostrado e o nome dele (SAN).
-    Position position = Chess.fromSetup(
-      Setup.parseFen(widget.conclusion.game!.startFen!),
-    );
+    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
     Move? last;
     String? san;
     for (final uci in line.take(ply + 1)) {
@@ -1575,6 +1614,10 @@ class _BestLineState extends State<_BestLine> {
       last = move;
       san = name;
     }
+    final opponentName =
+        state.opponent?.name ??
+        game.opponent.label(l10n, level: game.opponentLevel);
+    final gameId = widget.conclusion.gameId;
     // Um Material próprio: o toque na linha do título aparece no cartão.
     return Material(
       key: ConclusionKeys.bestLine,
@@ -1588,11 +1631,11 @@ class _BestLineState extends State<_BestLine> {
             key: ConclusionKeys.bestLineToggle,
             leading: Icon(Icons.timeline_rounded, color: colors.primary),
             title: Text(l10n.conclusionBestLine),
-            subtitle: Text(l10n.conclusionBestLineHint),
+            subtitle: Text(l10n.conclusionBestLineHint(opponentName)),
             trailing: Icon(
               _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
             ),
-            onTap: () => setState(() => _open = !_open),
+            onTap: _toggle,
           ),
           if (_open)
             Padding(
@@ -1604,6 +1647,7 @@ class _BestLineState extends State<_BestLine> {
               ),
               child: LayoutBuilder(
                 builder: (context, box) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     PositionBoard(
                       key: ConclusionKeys.bestLineBoard,
@@ -1612,35 +1656,57 @@ class _BestLineState extends State<_BestLine> {
                       orientation: widget.conclusion.userSide,
                       lastMove: last,
                     ),
+                    if (running) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      const LinearProgressIndicator(
+                        key: ConclusionKeys.bestLineRunning,
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
                         IconButton.outlined(
                           key: ConclusionKeys.bestLineBack,
                           tooltip: l10n.reviewPrevious,
-                          onPressed: ply < 0 ? null : cubit.bestBack,
+                          onPressed: running || ply < 0 ? null : cubit.bestBack,
                           icon: const Icon(Icons.chevron_left_rounded),
                         ),
                         Expanded(
                           child: Text(
-                            ply < 0
+                            ply < 0 || san == null
                                 ? l10n.reviewStartPosition
                                 : '${l10n.conclusionBestLineMove(ply + 1, line.length)} · $san',
                             key: ConclusionKeys.bestLineMove,
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.titleSmall,
+                            style: theme.textTheme.labelLarge,
                           ),
                         ),
                         IconButton.filled(
                           key: ConclusionKeys.bestLineForward,
                           tooltip: l10n.reviewNext,
-                          onPressed: ply + 1 >= line.length
+                          onPressed: running || ply + 1 >= line.length
                               ? null
                               : cubit.bestForward,
                           icon: const Icon(Icons.chevron_right_rounded),
                         ),
                       ],
                     ),
+                    const SizedBox(height: AppSpacing.sm),
+                    // Foi rápido: o aviso e o caminho para ir mais fundo.
+                    Text(
+                      l10n.conclusionBestLineDisclaimer,
+                      key: ConclusionKeys.bestLineDisclaimer,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    if (gameId != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      DetailedReviewButton(
+                        gameId: gameId,
+                        buttonKey: ConclusionKeys.bestLineDeeper,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1678,5 +1744,29 @@ Widget? _outcome(
     mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,
     color: ChangeColors.of(context, up: fulfilled),
     title: fulfilled ? l10n.resultFulfilled : l10n.resultNotFulfilled,
+  );
+}
+
+/// "Ver a análise detalhada": a revisão completa da partida [gameId].
+class DetailedReviewButton extends StatelessWidget {
+  const DetailedReviewButton({
+    required this.gameId,
+    this.buttonKey = ConclusionKeys.reviewDeeper,
+    super.key,
+  });
+
+  final int gameId;
+  final Key buttonKey;
+
+  /// A altura, já com a área de toque.
+  static const height = 48.0;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+    key: buttonKey,
+    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(height)),
+    onPressed: () => context.push(Routes.game(gameId)),
+    icon: const Icon(Icons.insights_rounded),
+    label: OneLine(context.l10n.conclusionDetailedReview),
   );
 }

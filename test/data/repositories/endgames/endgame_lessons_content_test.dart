@@ -33,6 +33,7 @@ void main() {
     io.File(AssetEndgameLessonRepository.textsPath(language, id))
         .readAsStringSync(),
   ) as Map<String, dynamic>;
+  final gluedAnnotation = RegExp(r'[a-h1-8O][+#]?[?!]{1,2}[:;.]');
   final mateInN = RegExp(r'mate (em|in) \d+', caseSensitive: false);
 
   test('o índice só aponta aulas que existem, sem repetição', () {
@@ -85,9 +86,10 @@ void main() {
       );
       for (final position in lesson.keyPositions) {
         if (position.ref case final ref?) {
+          // `id` ou `id#ply` (a mesma partida parada noutro lance).
           expect(
-            lesson.references.any((r) => r.id == ref),
-            isTrue,
+            lesson.reference(ref),
+            isNotNull,
             reason: '${lesson.id}.key.${position.id}',
           );
         }
@@ -131,9 +133,8 @@ void main() {
             final position = GameRules.fromFen(fen);
             expect(position, isNotNull, reason: where);
             expect(GameRules.endOf(position!), isNull, reason: where);
-          case ThinkStep(:final fen, :final minutes, :final hints):
+          case ThinkStep(:final fen, :final hints):
             expect(GameRules.fromFen(fen), isNotNull, reason: where);
-            expect({1, 3, 5}, contains(minutes), reason: where);
             expect(hints, inInclusiveRange(1, 3), reason: where);
           case DemoStep(:final fen, :final line):
             // Os lances da demonstração, dos dois lados, todos legais.
@@ -171,57 +172,62 @@ void main() {
     }
   });
 
-  test(
-    'em português e em inglês, toda fala existe, sem sobra nem "mate em N"',
-    () {
-      for (final lesson in lessons) {
-        final expected = {
-          'title',
-          'summary',
-          'history',
-          'practice',
-          for (final part in lesson.lesson.parts) ...[
-            'part.${part.id}.title',
-            'part.${part.id}.summary',
+  test('em português e em inglês, toda fala existe, sem sobra nem "mate em N"', () {
+    for (final lesson in lessons) {
+      final expected = {
+        'title',
+        'summary',
+        'history',
+        'practice',
+        for (final part in lesson.lesson.parts) ...[
+          'part.${part.id}.title',
+          'part.${part.id}.summary',
+        ],
+        for (final step in lesson.lesson.steps) ...[
+          'step.${step.id}',
+          if (step is MoveStep) ...[
+            'step.${step.id}.hint',
+            'step.${step.id}.done',
           ],
-          for (final step in lesson.lesson.steps) ...[
-            'step.${step.id}',
-            if (step is MoveStep) ...[
-              'step.${step.id}.hint',
-              'step.${step.id}.done',
-            ],
-            if (step is ThinkStep)
-              for (var hint = 1; hint <= step.hints; hint++)
-                'step.${step.id}.hint$hint',
-            if (step is DemoStep)
-              for (var move = 1; move <= step.line.length; move++)
-                'step.${step.id}.m$move',
-          ],
-          for (final exercise in lesson.exercises) ...[
-            'ex.${exercise.id}',
-            'ex.${exercise.id}.hint',
-            'ex.${exercise.id}.solution',
-          ],
-          for (final position in lesson.keyPositions) 'key.${position.id}',
-        };
-        for (final language in ['pt', 'en']) {
-          final all = texts(language, lesson.id);
-          expect(all.keys.toSet(), expected, reason: '$language ${lesson.id}');
-          for (final MapEntry(:key, :value) in all.entries) {
-            final text = value is List ? value.join(' ') : '$value';
-            expect(
-              text.trim(),
-              isNotEmpty,
-              reason: '$language ${lesson.id} $key',
-            );
-            expect(
-              mateInN.hasMatch(text),
-              isFalse,
-              reason: '$language ${lesson.id} $key diz "mate em N"',
-            );
-          }
+          if (step is ThinkStep)
+            for (var hint = 1; hint <= step.hints; hint++)
+              'step.${step.id}.hint$hint',
+          if (step is DemoStep)
+            for (var move = 1; move <= step.line.length; move++)
+              'step.${step.id}.m$move',
+        ],
+        for (final exercise in lesson.exercises) ...[
+          'ex.${exercise.id}',
+          'ex.${exercise.id}.hint',
+          'ex.${exercise.id}.solution',
+        ],
+        for (final position in lesson.keyPositions) 'key.${position.id}',
+      };
+      for (final language in ['pt', 'en']) {
+        final all = texts(language, lesson.id);
+        expect(all.keys.toSet(), expected, reason: '$language ${lesson.id}');
+        for (final MapEntry(:key, :value) in all.entries) {
+          final text = value is List ? value.join(' ') : '$value';
+          expect(
+            text.trim(),
+            isNotEmpty,
+            reason: '$language ${lesson.id} $key',
+          );
+          expect(
+            mateInN.hasMatch(text),
+            isFalse,
+            reason: '$language ${lesson.id} $key diz "mate em N"',
+          );
+          // Como nos livros: o símbolo fecha a frase do lance ("Te6! A
+          // torre..."), nunca "Te6!:" nem "De3?." (T60).
+          expect(
+            gluedAnnotation.hasMatch(text),
+            isFalse,
+            reason:
+                '$language ${lesson.id} $key: ${gluedAnnotation.firstMatch(text)?.group(0)}',
+          );
         }
       }
-    },
-  );
+    }
+  });
 }

@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_decoy",
           "fen": "8/8/8/3kp3/P5p1/3K2P1/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -150,7 +149,6 @@
           "type": "think",
           "id": "t_down",
           "fen": "8/p6k/1p6/5p2/1P6/6KP/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -297,7 +295,6 @@
           "type": "think",
           "id": "t_far",
           "fen": "8/4k3/6p1/1p4P1/2K1P3/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line",
           "marks": [
@@ -370,7 +367,6 @@
           "type": "think",
           "id": "t_prot",
           "fen": "8/8/4k3/1pP4p/1P6/4K3/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -503,7 +499,6 @@
           "type": "think",
           "id": "t_fischer",
           "fen": "8/5p2/3k2p1/8/P2K4/6P1/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan",
           "marks": [

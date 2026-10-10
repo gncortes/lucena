@@ -33,7 +33,7 @@
   "step.t_behind.hint1": "Procure uma casa de onde a torre impeça o peão de avançar.",
   "step.t_close": "Rei no lado curto e torre do outro lado, como nos xeques laterais. Mas a torre está uma coluna mais perto do peão. Os xeques ainda salvam?",
   "step.t_close.hint1": "Siga os xeques e veja quando o rei preto chega perto da torre ou a torre preta se coloca no meio.",
-  "step.finish": "Agora contra a máquina: torre atrás do peão, rei para o lado curto e, se o peão avançar, xeques de lado.",
+  "step.finish": "Agora o desafio prático: torre atrás do peão, rei para o lado curto e, se o peão avançar, xeques de lado.",
   "ex.e08": "Brancas jogam e empatam. O rei já está no lado curto, mas a sua torre está colada no peão, sem fazer nada. Encontre um lugar melhor para ela.",
   "ex.e08.hint": "A casa mais distante da oitava fileira. De lá, xeque de lado na segunda.",
   "ex.e08.solution": "Ta8 e, depois de Te1, Ta2+. A torre precisa de distância: da coluna a ela dá os xeques laterais sem que o rei preto chegue nela. Tb8 também empata, mas a coluna a é a mais longe.",
@@ -57,5 +57,5 @@
   "key.close": "A mesma ideia com a torre uma coluna mais perto: perde. Segundo a Wikipedia, a posição é de Grigoriev (1937). Três colunas de distância, no mínimo.",
   "key.carlsen": "Aronian contra Carlsen, 2006, com as cores trocadas: só Rg3 empata; o xeque de torre perdeu a partida.",
   "history": "Philidor, em 1777, analisou o que acontece quando a torre sai cedo da terceira fileira e concluiu que o defensor perde. Dufresne em 1863 e Berger em 1890 repetiram a análise. Em 1897, o professor alemão Max Karstedt, compositor de mais de cem estudos, publicou a correção: o final empata se o rei foge para o lado curto e a torre espera para dar xeques laterais da maior distância possível. Tarrasch tratou do final num artigo de 1906, e são dele as posições dos xeques laterais desta aula. As tabelas de finais deram razão a Karstedt em tudo. Na prática, a defesa continua difícil: em 2006, Magnus Carlsen perdeu de Aronian uma posição empatada porque deu um xeque quando o lance certo era de rei.",
-  "practice": "Contra a máquina: o rei preto já entrou e Philidor não dá mais. Torre atrás do peão, rei para o lado curto e, se o peão avançar, xeques de lado. O objetivo é empatar."
+  "practice": "Desafio prático: o rei preto já entrou e Philidor não dá mais. Torre atrás do peão, rei para o lado curto e, se o peão avançar, xeques de lado. O objetivo é empatar."
 }

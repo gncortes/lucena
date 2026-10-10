@@ -74,14 +74,16 @@ abstract final class ConclusionRules {
         ConclusionAction.retry,
         ConclusionAction.summary,
       ],
-      ConclusionKind.speedrunEnd || ConclusionKind.marathonEnd => [
+      // O speedrun inteiro concluído: só a volta para a lista, para
+      // escolher o próximo (sem "Tentar de novo").
+      ConclusionKind.speedrunEnd => [ConclusionAction.speedruns],
+      ConclusionKind.marathonEnd => [
         ConclusionAction.retry,
         ConclusionAction.speedruns,
       ],
     };
     return [
       ...main,
-      if (recorded) ConclusionAction.analyze,
       // O histórico (rating e partidas, na mesma tela): pelo rating, quando
       // a partida contou; senão, pelas partidas.
       if (rated)
@@ -89,5 +91,33 @@ abstract final class ConclusionRules {
       else if (recorded)
         ConclusionAction.gamesHistory,
     ];
+  }
+
+  /// Até quantos lances (das duas cores) a partida é curta.
+  static const shortPlies = 12;
+
+  /// Abaixo deste tempo de jogo a partida é curta...
+  static const shortPlayTime = Duration(seconds: 30);
+
+  /// ...desde que não passe deste tanto de lances (uma partida de bala
+  /// relâmpago com 80 lances levaria minutos para analisar).
+  static const shortTimeMaxPlies = 30;
+
+  /// A partida foi curta: a análise rápida (cerca de 1,5 s por posição) sai
+  /// em poucos segundos, então a conclusão a faz sozinha. Curta é ter até
+  /// [shortPlies] lances, ou menos de [shortPlayTime] de jogo (do começo ao
+  /// fim; sem a hora do começo, o relógio do jogador) com até
+  /// [shortTimeMaxPlies] lances. Sem lances, não há o que analisar.
+  static bool isShortGame(Attempt game) {
+    final plies = game.moves.length;
+    if (plies == 0) return false;
+    if (plies <= shortPlies) return true;
+    final started = game.startedAt;
+    final played = started == null
+        ? game.userClock
+        : game.playedAt.difference(started);
+    return played != null &&
+        played < shortPlayTime &&
+        plies <= shortTimeMaxPlies;
   }
 }

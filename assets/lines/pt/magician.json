@@ -252,7 +252,7 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Abracadabra! E sua peça sumiu do tabuleiro!"
+      "text": "Abracadabra! Olha o que você fez aparecer pra mim!"
     },
     {
       "id": "magician.opponentBlunder.3",
@@ -287,7 +287,7 @@
       "category": "ownBlunder",
       "intensity": 1,
       "emotion": "nervous",
-      "text": "Faz parte do número! ...alguém viu meu bispo?"
+      "text": "Faz parte do número! ...alguém viu o roteiro?"
     },
     {
       "id": "magician.ownBlunder.2",
@@ -308,7 +308,7 @@
       "category": "ownBlunder",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Primeiro eu faço a peça sumir. Depois ela volta. Depois."
+      "text": "Primeiro eu faço tudo dar errado. Depois conserto. Depois."
     },
     {
       "id": "magician.ownBlunder.5",
@@ -434,7 +434,7 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "happy",
-      "text": "Nada na mão, nada na manga... e sua torre sumiu!"
+      "text": "Nada na mão, nada na manga... e sua peça sumiu!"
     },
     {
       "id": "magician.pieceCaptured.3",

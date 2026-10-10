@@ -117,7 +117,7 @@
   "practice": "Now the real ending: the black king on b5, yours on c1, and it is your move. Find the square whose partner it cannot reach, get in through the door and win. Pick your pace and go.",
   "ex.e01": "White to play and win. King and pawn against king: the simplest pairs of the method.",
   "ex.e01.hint": "The partner of c6 is c8. From e8, can the black king get there?",
-  "ex.e01.solution": "Kc6!: the partner of c6 is c8, and from e8 the black king cannot reach c8. After ...Kd8, d7!, the black king has to go to e7 and Kc7 takes the pawn through. Kd5? allows ...Kd8, the pair with me to move, and draws; d7+? draws too.",
+  "ex.e01.solution": "Kc6! The partner of c6 is c8, and from e8 the black king cannot reach c8. After ...Kd8, d7!, the black king has to go to e7 and Kc7 takes the pawn through. Kd5? allows ...Kd8, the pair with me to move, and draws; d7+? draws too.",
   "ex.e02": "White to play and win. Doubled pawns on the b-file, and the black king in front of them. Where does the white king go?",
   "ex.e02.hint": "c4 and b6 are a pair: whoever arrives first, with the other able to answer, has to step back. Wait on a square next to c4.",
   "ex.e02.solution": "Kd4! (Kd3 and Kb3 also win): c4 and b6 are the pair, and the white king waits beside it. After ...Kb6, Kc4!, and it is the black king that has to leave; if ...Kc7, Kc5. Kc4? at once allows ...Kb6!, and it is you who steps back: draw. b6? draws as well.",
@@ -134,5 +134,5 @@
   "step.t_defend.hint1": "Kf2, Kf4 and Ke4 lose: on each of them the black king picks the road your king cannot reach. The right square is a retreat, and not the one it seems.",
   "ex.e06": "White to play and win. A study by Strategically_Endgam. The black king guards b6, c7 and c5. Only one move wins.",
   "ex.e06.hint": "The white king goes round through the corner: the pairs are a6 with c6 and a7 with c7. The spare tempo of the a3-pawn decides who has the move; spend it at the right moment.",
-  "ex.e06.solution": "Ka6! (a4?, c5?, Ka4? and Kb4? draw). After ...Kc6, a4!: the spare tempo, spent now, leaves the black king to move (Ka7? allows ...b5 and draws). After ...Kc7, Ka7!, the partner of c7; after ...Kc6, Kb8 (or Ka6, Ka8), and the white king reaches b7 and takes the pawns. If ...Kb8 right at the start, Kxb6."
+  "ex.e06.solution": "Ka6! (a4?, c5?, Ka4? and Kb4? draw). After ...Kc6, a4! The spare tempo, spent now, leaves the black king to move (Ka7? allows ...b5 and draws). After ...Kc7, Ka7!, the partner of c7; after ...Kc6, Kb8 (or Ka6, Ka8), and the white king reaches b7 and takes the pawns. If ...Kb8 right at the start, Kxb6."
 }

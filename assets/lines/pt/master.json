@@ -246,7 +246,7 @@
       "category": "bigAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Lembra da aula do corte com a torre? Observe.",
+      "text": "Lembra da aula de cortar o rei? Observe.",
       "audience": "student"
     },
     {
@@ -261,7 +261,7 @@
       "category": "better",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Meu rei está mais ativo. Esse detalhe decide finais."
+      "text": "Detalhes pequenos decidem finais. Hoje eles estão comigo."
     },
     {
       "id": "master.better.3",
@@ -729,7 +729,7 @@
       "category": "strongMove",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Bravo. Rei ativo, como manda o figurino."
+      "text": "Bravo. Exatamente como manda o figurino."
     },
     {
       "id": "master.strongMove.4",
@@ -743,7 +743,7 @@
       "category": "strongMove",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Correto. A oposição era a chave. Você viu."
+      "text": "Correto. Você achou a chave da posição."
     },
     {
       "id": "master.strongMove.6",
@@ -816,7 +816,7 @@
       "category": "comeback",
       "intensity": 2,
       "emotion": "confident",
-      "text": "A partida virou. Um tempo de oposição muda tudo."
+      "text": "A partida virou. Um único tempo muda tudo."
     },
     {
       "id": "master.comeback.3",
@@ -939,14 +939,14 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Obrigado. Peça a mais, final mais simples."
+      "text": "Obrigado. Menos peças, final mais claro."
     },
     {
       "id": "master.pieceCaptured.2",
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Material a mais e rei ativo. Receita conhecida."
+      "text": "Tabuleiro mais vazio, ideias mais claras. Receita conhecida."
     },
     {
       "id": "master.pieceCaptured.3",
@@ -960,7 +960,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Peça sem defesa cai. Vale para todos, até para mim."
+      "text": "Peça que sai do tabuleiro não volta. Vale para todos, até para mim."
     },
     {
       "id": "master.pieceCaptured.5",
@@ -974,7 +974,7 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Uma peça a mais. Trocar agora deixa tudo mais simples."
+      "text": "Menos uma peça sua. Cada troca deixa tudo mais simples."
     },
     {
       "id": "master.pieceCaptured.7",
@@ -988,7 +988,7 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Peça solta. Lembra do que eu dizia na escola?",
+      "text": "Lembra do que eu dizia na escola? Conte o material antes de cada lance.",
       "audience": "student"
     },
     {
@@ -1004,7 +1004,7 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Uma peça a menos. Ainda tenho o rei, e ele trabalha."
+      "text": "Lá se foi uma peça. Ainda tenho o rei, e ele trabalha."
     },
     {
       "id": "master.pieceLost.2",
@@ -1018,7 +1018,7 @@
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Perdi material. Agora cada tempo vale ouro."
+      "text": "Menos peças no tabuleiro. Agora cada tempo vale ouro."
     },
     {
       "id": "master.pieceLost.4",
@@ -1032,7 +1032,7 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "nervous",
-      "text": "Bem jogado. Preciso de uma fortaleza, e rápido."
+      "text": "Bem jogado. Agora preciso recalcular tudo."
     },
     {
       "id": "master.pieceLost.6",
@@ -1046,14 +1046,14 @@
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Uma peça a menos. Agora jogo pelo empate com dignidade."
+      "text": "Lá se vai uma peça. Agora, cada lance com dignidade."
     },
     {
       "id": "master.pieceLost.8",
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Você ganhou material de mim. Isso eu não ensinei, aprendeu sozinho.",
+      "text": "Você me tomou uma peça. Isso eu não ensinei, aprendeu sozinho.",
       "audience": "student"
     },
     {
@@ -1097,7 +1097,7 @@
       "category": "ownPromotion",
       "intensity": 1,
       "emotion": "calm",
-      "text": "O rei escoltou, o peão chegou. Trabalho em equipe."
+      "text": "O peão chegou ao fim da estrada. Trabalho paciente."
     },
     {
       "id": "master.ownPromotion.6",
@@ -1154,14 +1154,14 @@
       "category": "opponentPromotion",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Muito bem. Agora não deixe escapar o afogamento."
+      "text": "Muito bem. Agora cuidado com o afogamento."
     },
     {
       "id": "master.opponentPromotion.6",
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Rei na frente do peão, como deve ser. Bem feito."
+      "text": "Promoção limpa. Era isso que a posição pedia."
     },
     {
       "id": "master.opponentPromotion.7",
@@ -1427,7 +1427,7 @@
       "category": "win",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Lição de hoje: rei ativo, peão passado, paciência."
+      "text": "Lição de hoje: rei ativo, plano claro, paciência."
     },
     {
       "id": "master.win.4",
@@ -1604,14 +1604,14 @@
       "category": "draw",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Afogamento. Um clássico. Sempre confira as casas do rei."
+      "text": "Empate. Nos finais, uma casa a mais ou a menos decide tudo."
     },
     {
       "id": "master.draw.3",
       "category": "draw",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Repetição. Nenhum de nós encontrou mais nada."
+      "text": "Empate. Nenhum de nós encontrou mais nada."
     },
     {
       "id": "master.draw.4",
@@ -1625,7 +1625,7 @@
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Material insuficiente. Às vezes o xadrez simplesmente acaba."
+      "text": "Empate. Às vezes o xadrez simplesmente acaba."
     },
     {
       "id": "master.draw.6",
@@ -1654,7 +1654,7 @@
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Afogou? Ah, meu aluno, isso eu ensinei na primeira semana!",
+      "text": "Empate, meu aluno. Revise a partida comigo depois, como na escola.",
       "audience": "student"
     },
     {
@@ -1690,7 +1690,7 @@
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Aceito, e agradeço. Meu rei estava sem casas."
+      "text": "Aceito, e agradeço. A posição estava ficando apertada."
     },
     {
       "id": "master.drawAccepted.6",
@@ -1732,7 +1732,7 @@
       "category": "drawDeclined",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Recuso. Tenho a oposição e um peão passado."
+      "text": "Recuso. Ainda tenho trunfos nesta posição."
     },
     {
       "id": "master.drawDeclined.6",
