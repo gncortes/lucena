@@ -3,7 +3,7 @@ import FeatureCard from './FeatureCard.astro';
 import Phone from './Phone.astro';
 import SiteFooter from './SiteFooter.astro';
 import { asset, links, locales, pageUrl, type Locale } from '../i18n';
-import type { Clip, Still } from '../media';
+import { clipSize, mediaDir, stills, type Clip, type Still } from '../media';
 
 interface Props {
   locale: Locale;
@@ -26,6 +26,9 @@ const phone = (clip: Clip) => ({
   playLabel: t.media.play,
   pauseLabel: t.media.pause,
 });
+const dir = mediaDir(locale);
+// As quatro telas do modo às cegas, em carrossel.
+const blindStills = ['blindMode', 'blindBoard', 'blindSquares', 'blindNone'] as const;
 const mail = (subject: string) => `mailto:${links.email}?subject=${encodeURIComponent(subject)}`;
 // Ícones dos cartões sem captura (traço de 24 px, no estilo do botão de tema).
 const icons = {
@@ -318,22 +321,56 @@ const opponents = [
         </div>
       </article>
 
-      <article class="feature feature--wide" data-reveal>
+      <article class="feature feature--flip" data-reveal>
         <div class="feature__text">
           <h3>{f.blind.title}</h3>
           <p>{f.blind.body}</p>
           <ul class="ticks">{f.blind.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
-        <ol class="shots">
-          {
-            (['blindMode', 'blindBoard', 'blindSquares', 'blindNone'] as const).map((still, i) => (
-              <li>
-                <Phone {...shot(still)} />
-                <span>{t.features.blindShots[i]}</span>
-              </li>
-            ))
-          }
-        </ol>
+        <div class="feature__media">
+          <div class="carousel" data-carousel>
+            <figure class="phone carousel__phone">
+              <div class="phone__screen">
+                <div class="carousel__track">
+                  {
+                    blindStills.map((still) => (
+                      <img
+                        src={asset(`${dir}/${stills[still]}.webp`)}
+                        alt={t.media[still]}
+                        width={clipSize.width}
+                        height={clipSize.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ))
+                  }
+                  <img
+                    src={asset(`${dir}/${stills[blindStills[0]]}.webp`)}
+                    alt=""
+                    aria-hidden="true"
+                    width={clipSize.width}
+                    height={clipSize.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+            </figure>
+            <p class="carousel__caption" aria-live="polite" data-carousel-caption>{t.features.blindShots[0]}</p>
+            <div class="carousel__dots">
+              {
+                t.features.blindShots.map((caption, i) => (
+                  <button
+                    type="button"
+                    aria-label={caption}
+                    aria-current={i === 0 ? 'true' : undefined}
+                    data-caption={caption}
+                  />
+                ))
+              }
+            </div>
+          </div>
+        </div>
       </article>
 
       <div class="feature-duo feature-duo--single">
@@ -544,5 +581,64 @@ const opponents = [
       }
     });
     if (!reduced) observer.observe(phone);
+  }
+
+  // Carrossel do modo às cegas: desliza para a esquerda a cada 2,8 s. Depois
+  // da 4ª tela vem uma cópia da 1ª, e o trilho volta ao início sem transição.
+  // Para com o mouse em cima e fora da tela; com movimento reduzido, só os pontos.
+  for (const carousel of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+    const track = carousel.querySelector<HTMLElement>('.carousel__track')!;
+    const caption = carousel.querySelector<HTMLElement>('[data-carousel-caption]')!;
+    const dots = [...carousel.querySelectorAll<HTMLButtonElement>('.carousel__dots button')];
+    const count = dots.length;
+    let index = 0;
+    let timer: number | undefined;
+    let visible = false;
+    let hovered = false;
+
+    const show = (next: number, animate = true) => {
+      index = next;
+      track.style.transition = animate && !reduced ? '' : 'none';
+      track.style.transform = `translateX(${-index * 100}%)`;
+      const current = index % count;
+      caption.textContent = dots[current].dataset.caption!;
+      dots.forEach((dot, i) => dot.toggleAttribute('aria-current', i === current));
+    };
+    track.addEventListener('transitionend', () => {
+      if (index < count) return;
+      show(0, false);
+      void track.offsetWidth;
+    });
+    const stop = () => {
+      clearInterval(timer);
+      timer = undefined;
+    };
+    const start = () => {
+      stop();
+      if (reduced || !visible || hovered) return;
+      timer = window.setInterval(() => show(index + 1), 2800);
+    };
+    dots.forEach((dot, i) =>
+      dot.addEventListener('click', () => {
+        show(i);
+        start();
+      }),
+    );
+    carousel.addEventListener('mouseenter', () => {
+      hovered = true;
+      stop();
+    });
+    carousel.addEventListener('mouseleave', () => {
+      hovered = false;
+      start();
+    });
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else stop();
+      },
+      { threshold: 0.35 },
+    ).observe(carousel);
   }
 </script>

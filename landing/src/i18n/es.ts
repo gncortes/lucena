@@ -194,7 +194,7 @@ const es: Dictionary = {
         { title: 'Ponlo a prueba', body: 'Juegas la posición hasta el final contra el motor.' },
       ],
     },
-    blindShots: ['Nueva partida: modo A ciegas', 'Tablero', 'Solo casillas', 'Sin tablero'],
+    blindShots: ['Elige el modo', 'Tablero', 'Solo casillas', 'Sin tablero'],
   },
   levels: {
     kicker: 'Para todos los niveles',

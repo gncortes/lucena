@@ -66,7 +66,7 @@ export type Dictionary = {
     >;
     /** O roteiro de cada capítulo das aulas de finais. */
     route: { label: string; steps: Block[] };
-    /** As legendas das quatro telas do modo às cegas, na ordem. */
+    /** As legendas das quatro telas do carrossel do modo às cegas, na ordem. */
     blindShots: string[];
   };
   levels: { kicker: string; title: string; beginner: Block; advanced: Block };

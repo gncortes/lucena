@@ -195,7 +195,7 @@ const pt: Dictionary = {
         { title: 'Teste na prática', body: 'Você joga a posição até o fim contra o motor.' },
       ],
     },
-    blindShots: ['Nova partida: modo Às cegas', 'Tabuleiro', 'Só as casas', 'Sem tabuleiro'],
+    blindShots: ['Escolha o modo', 'Tabuleiro', 'Só as casas', 'Sem tabuleiro'],
   },
   levels: {
     kicker: 'Para todos os níveis',

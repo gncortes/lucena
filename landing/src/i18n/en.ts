@@ -194,7 +194,7 @@ const en: Dictionary = {
         { title: 'Test it in practice', body: 'You play the position to the end against the engine.' },
       ],
     },
-    blindShots: ['New game: Blindfold mode', 'Board', 'Squares only', 'No board'],
+    blindShots: ['Choose the mode', 'Board', 'Squares only', 'No board'],
   },
   levels: {
     kicker: 'For every level',
