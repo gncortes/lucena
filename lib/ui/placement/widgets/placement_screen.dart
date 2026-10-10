@@ -227,7 +227,8 @@ class _Question extends StatelessWidget {
         Expanded(
           child: LayoutBuilder(
             builder: (context, box) => Align(
-              alignment: Alignment.topCenter,
+              // No meio do espaço entre o enunciado e as respostas.
+              alignment: Alignment.center,
               child: _Board(
                 state: state,
                 size: math.min(box.maxWidth, box.maxHeight),
@@ -250,6 +251,7 @@ class _Answers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final item = state.item!;
     final dontKnow = TextButton(
       key: PlacementKeys.dontKnow,
@@ -268,37 +270,24 @@ class _Answers extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (item.type == PlacementItemType.choice)
-            // As opções como botões grandes, lado a lado (até 3) ou em
-            // grade.
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                for (final option in item.options)
-                  SizedBox(
-                    width: item.options.length <= 3
-                        ? (MediaQuery.sizeOf(context).width -
-                                  2 * AppSpacing.screen -
-                                  (item.options.length - 1) * AppSpacing.sm) /
-                              item.options.length
-                        : (MediaQuery.sizeOf(context).width -
-                                  2 * AppSpacing.screen -
-                                  AppSpacing.sm) /
-                              2,
-                    child: FilledButton.tonal(
-                      key: PlacementKeys.option(option),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                        ),
-                      ),
-                      onPressed: () => cubit.choose(option),
-                      child: OneLine(placementOption(l10n, option)),
-                    ),
+            // As opções uma embaixo da outra, na largura toda: o texto
+            // inteiro cabe e o alvo do toque é grande.
+            for (final (index, option) in item.options.indexed) ...[
+              if (index > 0) const SizedBox(height: AppSpacing.sm),
+              OutlinedButton(
+                key: PlacementKeys.option(option),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppShape.medium),
                   ),
-              ],
-            ),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
+                  textStyle: theme.textTheme.titleMedium,
+                ),
+                onPressed: () => cubit.choose(option),
+                child: OneLine(placementOption(l10n, option)),
+              ),
+            ],
           if (item.type == PlacementItemType.squares)
             FilledButton(
               key: PlacementKeys.confirm,
