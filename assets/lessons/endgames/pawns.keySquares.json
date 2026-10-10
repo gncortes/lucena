@@ -23,6 +23,9 @@
             "d6",
             "e6",
             "f6"
+          ],
+          "arrows": [
+            "e2e3"
           ]
         },
         {
@@ -558,7 +561,8 @@
           "id": "route",
           "fen": "8/5k2/8/8/8/3P4/K7/8 w - - 0 1",
           "arrows": [
-            "a2c4"
+            "a2b3",
+            "b3c4"
           ],
           "marks": [
             "c5",
@@ -668,7 +672,12 @@
             "g6",
             "h6"
           ],
-          "ref": "wikiKeySquare"
+          "ref": "wikiKeySquare",
+          "arrows": [
+            "a3b4",
+            "b4c5",
+            "c5d6"
+          ]
         },
         {
           "type": "demo",
