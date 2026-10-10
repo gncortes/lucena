@@ -13,11 +13,30 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - Toda preferência/dado persiste; toda tela com estado sobrevive a segundo plano e a fechar à força.
 - APIs de pacotes: consultar Context7 ou o MCP do Dart antes de supor assinaturas. Não inventar API.
 
+## Textos das aulas de finais (pedidos do Gabriel, 2026-10-09; valem para toda lição, revisão e reescrita)
+- **Lance citado sempre numerado**, como nos livros: `1.Rf7!`, `1...Rh7`, `2.e4`, `Com 1.Rc4? ...`. Posição de partida real
+  (com link para abrir no Lichess): o número é o do lance real da partida, tirado do PGN. Posição montada ou de estudo:
+  começa em 1. Casa solta ("fecha g8") não leva número. O revisor de lições reprova lance sem número ou com número errado.
+- **Vocabulário do app, sempre o mesmo** (glossário em `.claude/skills/aula-final/glossario.md`): captura é "capturar"
+  (nunca "comer" nem "pegar"; só as piadas de comida do Gino ficam), chegar a tempo é "alcançar", trocar peças para
+  cair numa posição é "simplificar". Vale mesmo quando a fonte (livro, estudo, Wikipedia) usa outra palavra: o texto
+  segue o glossário. Títulos de capítulo curtos (até 3 palavras, ~22 caracteres), com o nome consagrado do tema.
+- **Fala didática**: cada fala se entende sozinha por quem está aprendendo. Partida real é apresentada como história
+  (quem jogou, onde e quando, o que estava em jogo, o que olhar na posição) antes do lance; termo novo é explicado na
+  primeira vez. Se precisar de mais espaço, a fala cresce: clareza vale mais que concisão.
+- **"Sobre este final"** (`history`, `key.*`): para leigo. O que é o final, por que importa, que parece simples e não é, uma
+  curiosidade. Sem lance solto, sem notação, sem "tabela"/motor, sem bastidores de produção nem crédito de usuário.
+- **Passo de pensar**: o app só mostra "Jogam as brancas. Pense com calma: ..."; o texto do passo abre a explicação (sem
+  a pergunta). Escrever o enunciado como contexto + pergunta no fim.
+- **Exercício**: o Viktor não fala enquanto o aluno joga (nem elogio, nem "não é esse"); só na dica e depois de resolver.
+- Detalhes: `.claude/skills/aula-final/licao.md`, `formato.md` e `.claude/agents/revisor-licoes.md`.
+
 ## Git
 - Uma branch por tarefa (`tarefa/TXX-nome-curto`), criada a partir da `develop` atualizada. Commits e push só nela; a PR vai para a `develop` (`--base develop`).
 - Nunca commitar nem dar push direto na `develop` nem na `main`. As duas só recebem código por PR com CI verde; o merge é do usuário. A `main` recebe da `develop`.
 - CI em `.github/workflows/`: `ci.yml` (PR para `develop` ou `main`: formatação, analyze, traduções, testes, APK), `qa.yml` (tag `vX.Y.Z-rc.N`: App Distribution, grupo de QA, sem Test Lab) e `release.yml` (tag `vX.Y.Z` na `main`: Patrol no Test Lab, Release com o APK e App Distribution, grupo `release`).
 - O Patrol não roda no CI da `develop`: a suíte local em paralelo é a validação antes da PR.
+- Pedido de ajuste do Gabriel = rodada de ajustes (skill `rodada-ajustes`): **cancelar na hora qualquer Patrol em andamento** e usar os emuladores para mandar o print de cada pedido (evidência) assim que ficar pronto, com agentes em paralelo. Patrol só depois do "tudo ok".
 - Segredos (keystore, credenciais) ficam só no GitHub. Nunca ler, criar ou imprimir segredo.
 
 ## Comandos

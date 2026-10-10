@@ -70,11 +70,13 @@ class _Body extends StatelessWidget {
   final EndgameLessonState state;
   final EndgameLesson lesson;
 
-  /// A fala curta do Viktor, conforme onde o aluno está: o convite para a
-  /// primeira parte, onde parou, o teste final ou o final de verdade.
+  /// A fala curta do Viktor, conforme onde o aluno está: no começo, o que a
+  /// aula ensina (o resumo dela); depois, onde parou, o teste final ou o
+  /// final de verdade.
   String? _speech() {
     final texts = state.texts;
-    final intro = texts.say('endgames.lesson.intro');
+    final intro =
+        texts.lessonSummary(lesson.id) ?? texts.say('endgames.lesson.intro');
     if (state.passed) return texts.say('endgames.lesson.passed');
     // Nota alcançada, mas a lição (as etapas) ainda não: falta ela.
     if (state.allSolved && state.score >= state.passScore) {
@@ -137,6 +139,10 @@ class _Body extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            if (lesson.inReview) ...[
+              const SizedBox(height: AppSpacing.sm),
+              _InReview(),
+            ],
             if (viktor != null) ...[
               const SizedBox(height: AppSpacing.md),
               TeacherSpeech(
@@ -201,6 +207,44 @@ class _Body extends StatelessWidget {
           child: _ContinueBar(state: state, lesson: lesson),
         ),
       ],
+    );
+  }
+}
+
+/// O aviso de que a aula ainda está em revisão e pode mudar.
+class _InReview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      key: EndgameLessonKeys.inReview,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: colors.secondaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.medium),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.rate_review_outlined,
+            size: 18,
+            color: colors.onSecondaryContainer,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              context.l10n.endgameLessonInReview,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSecondaryContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -527,9 +571,18 @@ class _ContinueBar extends StatelessWidget {
     final String label;
     final VoidCallback onPressed;
     if (part != null) {
-      label = l10n.endgameContinuePart(
-        lesson.lesson.sections.indexOf(part) + 1,
-      );
+      final number = lesson.lesson.sections.indexOf(part) + 1;
+      // A parte começada (passou do primeiro passo) é retomada; sem nada
+      // feito, a aula começa; senão, segue para a próxima parte.
+      final resume =
+          state.lessonOngoing &&
+          state.ongoingStep > 0 &&
+          (lesson.lesson.parts.isEmpty || state.ongoingPart == part.id);
+      label = resume
+          ? l10n.endgameResumePart(number)
+          : state.partsDone.isEmpty
+          ? l10n.endgameStartLesson
+          : l10n.endgameNextPart(number);
       onPressed = () => context.push(
         Routes.endgameLessonSteps(
           lesson.id,
@@ -537,7 +590,9 @@ class _ContinueBar extends StatelessWidget {
         ),
       );
     } else if (exercise != null) {
-      label = l10n.endgameContinueTest;
+      final started =
+          state.progress.stars.isNotEmpty || state.progress.exercise != null;
+      label = started ? l10n.endgameResumeTest : l10n.endgameContinueTest;
       onPressed = () => context.push(Routes.endgameExercisesIntro(lesson.id));
     } else {
       label = l10n.endgameTrain;
@@ -648,16 +703,18 @@ class _ExercisesCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                  Text(l10n.endgameScore(state.score, state.maxScore)),
-                  Text(
-                    l10n.endgameExercisesSolved(
-                      state.solved,
-                      state.exerciseCount,
+                  // Em andamento, só quantos faltam; os pontos contam no
+                  // fim, com todos resolvidos.
+                  if (state.allSolved)
+                    Text(l10n.endgameScore(state.score, state.maxScore))
+                  else
+                    Text(
+                      l10n.endgameExercisesSolved(
+                        state.solved,
+                        state.exerciseCount,
+                      ),
+                      key: EndgameLessonKeys.testSolved,
                     ),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,

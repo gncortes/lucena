@@ -4,7 +4,7 @@ const es: Dictionary = {
   meta: {
     title: 'Lucena: entrena finales de ajedrez contra Maia y Stockfish',
     description:
-      'Aprende ajedrez por los finales. Entrena finales de ajedrez contra Maia, que juega como una persona de tu nivel, hasta Stockfish a máxima fuerza, con clases interactivas de dama contra torre, mate de alfil y caballo y mucho más.',
+      'Aprende ajedrez por los finales. Haz la prueba de nivel, estudia 38 clases de finales con el Maestro Viktor y juega contra Maia, que juega como una persona de tu nivel, hasta Stockfish a máxima fuerza. Con speedrun, Maratón y partidas a ciegas.',
     ogAlt: 'La app Lucena abierta en un móvil, con un final de ajedrez en el tablero.',
   },
   nav: {
@@ -21,16 +21,18 @@ const es: Dictionary = {
     eyebrow: 'App gratuita para entrenar finales de ajedrez',
     title: 'Entrena finales de ajedrez hasta que se vuelvan',
     titleAccent: 'técnica',
-    lead: 'Lucena te pone a jugar finales contra Maia, que juega como una persona de tu nivel, y luego contra Stockfish a máxima fuerza.',
+    lead: 'Lucena enseña finales con el Maestro Viktor, desde cómo se mueven las piezas hasta la posición de Lucena, y te pone a jugarlos contra Maia, que juega como una persona de tu nivel, y luego contra Stockfish a máxima fuerza.',
     cta: 'Quiero ser tester',
     secondary: 'Ver cómo funciona',
     note: 'Android, versión de pruebas. Pronto en Google Play.',
-    chips: ['Maia 1000–2600', 'Stockfish', 'Clases interactivas'],
+    chips: ['Maia 1000–2600', 'Stockfish', '38 clases de finales'],
   },
   stats: [
     { value: '9', label: 'niveles de Maia, de 1000 a 2600' },
-    { value: '12', label: 'clases de finales clásicos' },
-    { value: '25', label: 'clases para quien empieza' },
+    { value: '38', label: 'clases de finales, en 7 módulos' },
+    { value: '39', label: 'clases en la Escuela de Viktor, para quien empieza' },
+    { value: '250', label: 'ejercicios en las pruebas finales de las clases' },
+    { value: '80', label: 'partidas de maestros citadas en las clases' },
     { value: '55', label: 'finales para entrenar las veces que quieras' },
   ],
   marquee: [
@@ -42,6 +44,10 @@ const es: Dictionary = {
     'Oposición a distancia',
     'Defensa desde la última fila',
     'Defensa del lado corto',
+    'Triangulación',
+    'Maniobra de Réti',
+    'Peón pasado alejado',
+    'Alfil del color equivocado',
   ],
   message: {
     kicker: 'Aprender ajedrez por los finales',
@@ -79,42 +85,104 @@ const es: Dictionary = {
     items: {
       progression: {
         title: 'De Maia a Stockfish',
-        body: 'Juega contra Maia, un motor de ajedrez con red neuronal creado por investigadores de la Universidad de Toronto y entrenado con millones de partidas de personas en Lichess. Acierta y se equivoca como una persona de verdad, de 1000 a 2600, y cada nivel es un rival con personalidad. Elige el ritmo, sube escalón a escalón y, cuando estés listo, enfréntate a Stockfish a máxima fuerza.',
+        body: 'Juega contra Maia, un motor de ajedrez con red neuronal creado por investigadores de la Universidad de Toronto y entrenado con millones de partidas de personas en Lichess. Acierta y se equivoca como una persona de verdad, de 1000 a 2600, y cada nivel es un rival con personalidad. Elige el ritmo, sube escalón a escalón y, cuando estés listo, enfréntate a Stockfish a máxima fuerza. Todo funciona en el móvil, sin internet.',
         bullets: [
           'Niveles humanos de 1000 a 2600',
           'Reloj con tiempo e incremento',
           'Stockfish a máxima fuerza',
+          'Tablero libre y posición personalizada',
+        ],
+      },
+      placement: {
+        title: 'Prueba de nivel: descubre por dónde empezar',
+        body: 'Son 20 preguntas, sin reloj, en unos 8 minutos: adónde puede ir la pieza, si es mate o ahogado, si todavía se puede enrocar, quién gana con el mejor juego. ¿No lo sabes? Toca "No sé" en lugar de adivinar. Al final, Viktor te muestra tu franja de rating, lo que ya dominas y lo que te falta estudiar.',
+        bullets: [
+          '20 preguntas, sin reloj',
+          'El mapa de lo que dominas y de lo que falta',
+          'Finales para ti: las clases que faltan, en el orden correcto',
+        ],
+      },
+      school: {
+        title: 'Escuela de Viktor: de cero al primer mate',
+        body: 'Para quien empieza. El Maestro Viktor enseña cómo se mueve cada pieza recogiendo estrellas en el tablero y sigue con capturas, jaque, enroque, captura al paso, tablas, notación, los primeros mates y las trampas en las que cae todo principiante, como el mate del pastor. Cada clase es corta, con pistas en el momento justo, y la última es un examen final que vale un diploma.',
+        bullets: [
+          '39 clases en 8 módulos',
+          'Piezas, reglas, notación y primeros mates',
+          'Examen final y diploma',
         ],
       },
       lessons: {
-        title: 'Clases que dividen lo difícil en pasos simples',
-        body: 'Los finales complejos se convierten en pasos cortos e interactivos. Aprendes cada idea, la practicas al momento y solo sigues cuando aciertas.',
-        bullets: ['Dama contra torre', 'Mate de alfil y caballo', 'Finales de torre y de peones'],
-      },
-      levels: {
-        title: 'Entrenamiento para principiantes e intermedios',
-        body: 'Quien empieza aprende las piezas con clases guiadas. Quien ya juega sigue el Recorrido: desafíos por nivel de rating, contra rivales con personalidad.',
+        title: 'Clases de finales en profundidad',
+        body: 'Son 38 clases en 7 módulos: finales básicos, mates difíciles, finales de peones, finales de dama, torre contra peones, finales de torre y piezas menores. De la posición de Lucena y la defensa de Philidor a la triangulación y la maniobra de Réti. Cada clase se divide en capítulos cortos, con una sola idea cada uno, y muchas posiciones vienen de partidas reales de maestros, con enlace para ver la partida completa.',
         bullets: [
-          'Clases guiadas para quien empieza',
-          'Recorrido por nivel de rating',
+          'Prueba final de ejercicios, de 1 a 3 estrellas, con nota mínima para aprobar',
+          'Una pista cuando te atascas, a cambio de un punto',
+          'Aprobado, el desafío: jugar el final de verdad contra Maia o Stockfish',
+          'Fuentes de cada clase: libros, estudios de Lichess y partidas de maestros',
+        ],
+      },
+      journey: {
+        title: 'Recorrido: un rival a la vez',
+        body: 'El paso siguiente a las clases: gana los desafíos de cada personaje para desbloquear el siguiente, desde Coco, en 1000, hasta Stockfish. Cada uno tiene personalidad y comenta la partida en un globo de diálogo. Por el camino, desafíos especiales: a ciegas, un speedrun corto y un maratón corto.',
+        bullets: [
+          '10 rivales, de 1000 a Stockfish',
+          'Desafíos especiales a ciegas y contra el reloj',
           'Estrellas y logros para seguir tu progreso',
         ],
       },
       speedrun: {
         title: 'Speedrun: contra el reloj',
-        body: 'Resuelve una serie de finales lo más rápido que puedas. Bate tu récord y mira cómo la técnica se vuelve automática.',
-        bullets: ['Parciales por etapa', 'Récord personal', 'Varios ritmos'],
+        body: 'Gana una serie de etapas lo más rápido que puedas: un final contra todos los rivales, del más débil hasta Stockfish, todos los desafíos de un rival, series de ejercicios o el Recorrido completo. Solo cuenta tu reloj, puedes pausar entre etapas, y la etapa perdida se juega de nuevo con el cronómetro corriendo.',
+        bullets: ['Parciales por etapa', 'Récord personal e historial de tiempos', 'Del Ultra Bullet a las Clásicas'],
+      },
+      marathon: {
+        title: 'Maratón: un solo reloj',
+        body: 'De 1000 a Stockfish con un solo reloj: cada etapa empieza con el tiempo que sobró de la anterior, y una partida enlaza con la siguiente. Si pierdes, empatas o se acaba el tiempo, se acaba el Maratón. Tú eliges el final, la dificultad y el ritmo.',
+        bullets: ['Finales de principiante, intermedio y avanzado', 'Récord: el tiempo que sobra al final'],
+      },
+      blind: {
+        title: 'A ciegas',
+        body: 'Juega sin ver las piezas: di, escribe o toca tus jugadas. Escucha dónde están las piezas antes de empezar, pide que repita la jugada del rival y elige cuánto quieres ver. Tu voz la reconoce el propio móvil y no se graba. Todavía es experimental.',
+        bullets: ['Con tablero, solo con las casillas o sin tablero', 'Jugadas por voz, teclado o toque'],
+      },
+      voice: {
+        title: 'El profesor te habla',
+        body: 'Activa la voz y el Maestro Viktor y los rivales leen sus frases en voz alta. Cada personaje ya trae su voz; tú eliges la del profesor, cambias la de quien quieras y ajustas la velocidad y el tono.',
+        bullets: ['Voz del profesor y de los rivales', 'Velocidad y tono ajustables'],
+      },
+      stars: {
+        title: 'Desafíos de estrellas',
+        body: 'Recoge estrellas con cada pieza contra el reloj: aparece una estrella, llevas la pieza hasta ella y se enciende otra. ¿Cuántas consigues antes de que se acabe el tiempo? Tres niveles por pieza y además el modo a ciegas, en el que la estrella llega solo por el nombre de la casilla.',
+        bullets: ['Tres niveles por pieza', 'A ciegas, por el nombre de la casilla', 'Récord en cada desafío'],
       },
       analysis: {
         title: 'Análisis de la partida',
-        body: 'Después de jugar, revisa jugada a jugada con la evaluación del motor y descubre dónde se escapó la victoria o dónde aguantó la defensa.',
-        bullets: ['Barra de evaluación', 'Mejores jugadas del motor', 'Precisión de cada jugador'],
+        body: 'Después de jugar, revisa jugada a jugada con Stockfish y descubre dónde se escapó la victoria o dónde aguantó la defensa. Elige la profundidad del análisis, mira la mejor línea con Stockfish en tu lugar y abre la partida en Lichess o en chess.com.',
+        bullets: [
+          'Barra de evaluación',
+          'Precisión y calidad de cada jugada',
+          'Copiar la posición (FEN) y la partida (PGN)',
+        ],
+      },
+      progress: {
+        title: 'Tu progreso',
+        body: 'Un Elo de finales que cambia con cada partida contra Maia o Stockfish, teniendo en cuenta cuánto ayudaba la posición, con su historial a lo largo del tiempo. Logros por desbloquear, tus números en la pantalla de inicio y cada partida guardada para revisarla.',
+        bullets: ['Elo de finales con historial', '50 logros', 'Partidas, victorias y días seguidos'],
       },
       custom: {
         title: 'A tu manera',
-        body: 'Tema claro u oscuro, colores de la app, piezas y tablero, reloj arriba o abajo. La app se adapta a ti.',
+        body: 'Tema claro u oscuro, seis colores para la app, piezas y colores del tablero, reloj arriba, abajo o uno a cada lado. Elige qué aparece en la pantalla de inicio y en qué orden. La app está en 19 idiomas.',
         bullets: [],
       },
+    },
+    route: {
+      label: 'Cada capítulo sigue el mismo recorrido',
+      steps: [
+        { title: 'Piensa', body: 'Antes de cualquier explicación, miras la posición y buscas el plan por tu cuenta.' },
+        { title: 'Mira', body: 'El Maestro Viktor comenta la idea, con flechas y casillas marcadas, y muestra la línea jugada a jugada.' },
+        { title: 'Juega', body: 'Ahora las jugadas son tuyas: el capítulo solo sigue cuando aciertas.' },
+        { title: 'Ponlo a prueba', body: 'Juegas la posición hasta el final contra el motor.' },
+      ],
     },
   },
   levels: {
@@ -122,11 +190,11 @@ const es: Dictionary = {
     title: '¿Sabes poco o ya juegas bien? Hay un desafío para ti',
     beginner: {
       title: 'Estás empezando',
-      body: 'Aprende cómo se mueve cada pieza y cómo dar mate con clases cortas, pistas en el momento justo y rivales que juegan a tu ritmo.',
+      body: 'Haz la prueba de nivel o ve directo a la Escuela de Viktor: cómo se mueve cada pieza, jaque, mate y los primeros finales, con clases cortas, pistas en el momento justo y rivales que juegan a tu ritmo.',
     },
     advanced: {
       title: 'Ya juegas bien',
-      body: 'Convierte finales teóricos contra Maia 2600 y Stockfish. Si le ganas la dama contra la torre a Stockfish, la técnica es tuya.',
+      body: 'Ve a las clases de finales y convierte posiciones teóricas contra Maia 2600 y Stockfish. Si le ganas la dama contra la torre a Stockfish, la técnica es tuya.',
     },
   },
   roadmap: {

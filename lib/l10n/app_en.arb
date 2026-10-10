@@ -2562,18 +2562,14 @@
   "@starChallengePaused": {
     "description": "Shown while the challenge clock is paused (app in background)."
   },
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Rook challenge} bishop{Bishop challenge} knight{Knight challenge} queen{Queen challenge} king{King challenge} pawn{Pawn challenge} other{Star challenge}}",
   "lessonToChallenge": "Star challenge: {piece}",
   "@starChallengeTitle": {
-    "description": "App bar of a star challenge: the piece and the level.",
+    "description": "App bar of a star challenge: the challenge named after its piece (the level shows as a chip beside it).",
     "placeholders": {
       "piece": {
         "type": "String",
-        "example": "Rook"
-      },
-      "level": {
-        "type": "String",
-        "example": "Easy"
+        "example": "rook"
       }
     }
   },
@@ -3735,7 +3731,7 @@
   "@aboutLicenses": {
     "description": "About screen: opens the list of open source licenses of the libraries used."
   },
-  "lessonPartStep": "Part {part} of {parts} · step {step} of {steps}",
+  "lessonPartStep": "Chapter {part} of {parts} · step {step} of {steps}",
   "@lessonPartStep": {
     "description": "Lesson progress label: part X of Y and step A of B inside the part.",
     "placeholders": {
@@ -3798,7 +3794,7 @@
   "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
   "lessonDemoPlay": "Play",
   "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
-  "lessonPartDone": "Part {part} complete",
+  "lessonPartDone": "Chapter {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",
     "placeholders": {
@@ -3807,7 +3803,7 @@
       }
     }
   },
-  "lessonNextPart": "Go to part {part}",
+  "lessonNextPart": "Go to chapter {part}",
   "@lessonNextPart": {
     "description": "Button at the end of a lesson part: open the next part.",
     "placeholders": {
@@ -3820,13 +3816,13 @@
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
-  "lessonReviewPart": "Review this stage",
+  "lessonReviewPart": "Review this chapter",
   "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
   "lessonPartNext": "Next",
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
   "lessonPartLearned": "What you learned",
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
-  "lessonAllPartsDone": "All parts complete",
+  "lessonAllPartsDone": "All chapters complete",
   "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
   "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
   "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
@@ -3844,24 +3840,41 @@
   "@endgameFinalTest": {
     "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
   },
-  "endgameTestAdvice": "Tip: do the parts first. The test is open whenever you want to practice.",
+  "endgameTestAdvice": "Tip: do the chapters first. The test is open whenever you want to practice.",
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
-  "endgameContinuePart": "Continue: part {part}",
-  "@endgameContinuePart": {
-    "description": "Fixed bottom button on the endgame lesson screen: continue with the recommended part.",
+  "endgameStartLesson": "Start chapter 1",
+  "@endgameStartLesson": {
+    "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
+  },
+  "endgameResumePart": "Resume chapter {part}",
+  "@endgameResumePart": {
+    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
     "placeholders": {
       "part": {
         "type": "int"
       }
     }
   },
+  "endgameNextPart": "Go to chapter {part}",
+  "@endgameNextPart": {
+    "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameResumeTest": "Continue the final test",
+  "@endgameResumeTest": {
+    "description": "Fixed bottom button on the endgame lesson screen: continue the final test already started."
+  },
   "endgameContinueTest": "Take the final test",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
-  "homeEndgamePart": "Part {part} of {parts}",
+  "homeEndgamePart": "Chapter {part} of {parts}",
   "@homeEndgamePart": {
     "description": "Home continue card: the endgame lesson part where the student stopped.",
     "placeholders": {
@@ -3898,7 +3911,16 @@
         "type": "String"
       }
     }
+  },  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
+  "@lessonThinkCalm": {
+    "description": "Teacher's short prompt in a think step, after who moves: take your time and find the winning sequence ('line') or the idea of the position (other). The step's own context comes later, in the explanation.",
+    "placeholders": {
+      "ask": {
+        "type": "String"
+      }
+    }
   },
+
   "endgameTestCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
   "@endgameTestCount": {
     "description": "Final test card title: number of exercises.",
@@ -3908,11 +3930,11 @@
       }
     }
   },
-  "lessonFinishPart": "Finish the part",
+  "lessonFinishPart": "Finish the chapter",
   "@lessonFinishPart": {
     "description": "Button on the last step of a lesson part: finish this part."
   },
-  "endgameModulePlace": "{module} · {number} of {count}",
+  "endgameModulePlace": "{module} · lesson {number} of {count}",
   "@endgameModulePlace": {
     "description": "Endgame lesson screen header: the module name and the lesson's position in it, e.g. 'Basic mates · 1 of 4'.",
     "placeholders": {
@@ -3927,7 +3949,7 @@
       }
     }
   },
-  "lessonPartTitle": "Part {part} · {title}",
+  "lessonPartTitle": "Chapter {part} · {title}",
   "@lessonPartTitle": {
     "description": "Lesson step screen title in a lesson split into parts: the part number and its title.",
     "placeholders": {
@@ -3939,7 +3961,11 @@
       }
     }
   },
-  "endgameStagesDone": "{done} of {total} stages",
+  "endgameLessonInReview": "Lesson under review: the content may still change.",
+  "@endgameLessonInReview": {
+    "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
+  },
+  "endgameStagesDone": "{done} of {total} chapters done",
   "@endgameStagesDone": {
     "description": "Endgame lesson screen header: lesson stages done out of the total.",
     "placeholders": {
@@ -5116,6 +5142,8 @@
   "@exerciseLichess": {"description": "Button on a solved-series exercise: open the position in the Lichess analysis board."},
   "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
   "@exerciseTurn": {"description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.", "placeholders": {"side": {"type": "String"}}},
+  "exerciseYourTurn": "{side, select, white{Your turn: White to play} other{Your turn: Black to play}}",
+  "@exerciseYourTurn": {"description": "Right below the exercise board while the student solves: it is their turn, with the side they play.", "placeholders": {"side": {"type": "String"}}},
   "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
   "@exercisesIntroAfter": {"description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."},
   "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",

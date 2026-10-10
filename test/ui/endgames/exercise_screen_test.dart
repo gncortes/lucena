@@ -84,10 +84,10 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
-    // Antes de resolver, o objetivo sob o tabuleiro.
+    // Antes de resolver, a vez logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'White to play',
+      'Your turn: White to play',
     );
 
     await move(tester, 'c1', 'c4');
@@ -109,14 +109,8 @@ void main() {
     expect(l10n.exerciseHintLast, 'Dica (o exercício deixa de pontuar)');
     expect(l10n.exerciseHintFree, 'Dica');
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
-    // A linha da solução, com figurino (a torre).
-    expect(
-      tester
-          .widget<Text>(find.byKey(ExerciseKeys.solution))
-          .textSpan!
-          .toPlainText(),
-      'Solution: 1.♖c4',
-    );
+    // Sem linha de "Solução": a fala do Viktor já explica.
+    expect(find.byKey(ExerciseKeys.solution), findsNothing);
     // Houve erro: a correção do Viktor vem sozinha, sem o botão.
     expect(speech(tester), 'Same bridge.');
     expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
@@ -131,9 +125,10 @@ void main() {
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
   });
 
-  testWidgets('T60: resolvendo, o Viktor com a vez em cima, o tabuleiro no '
-      'centro da tela e o cronômetro no canto inferior direito; resolvido, o '
-      'tabuleiro sobe e o resultado entra embaixo', (tester) async {
+  testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '
+      'tabuleiro no centro da tela, a vez embaixo e o cronômetro no canto '
+      'inferior direito; resolvido, o tabuleiro sobe e o resultado entra '
+      'embaixo', (tester) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = const Size(400, 900);
@@ -142,23 +137,32 @@ void main() {
     final board = tester.getRect(find.byKey(ExerciseKeys.board));
     final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
     expect(board.center.dx, closeTo(200, 1));
-    expect(board.top, greaterThanOrEqualTo(goal.bottom));
-    // No centro da tela, se não cobre o enunciado.
-    if (board.top > goal.bottom + 20) {
-      expect(board.center.dy, closeTo(450, 2));
-    }
+    expect(board.center.dy, closeTo(450, 2));
+    expect(goal.top, greaterThan(board.bottom));
+    expect(find.byKey(ExerciseKeys.speech), findsNothing);
     final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
     expect(timer.right, closeTo(400 - 16, 1));
     expect(timer.top, greaterThan(board.bottom));
     expect(find.byKey(ExerciseKeys.scroll), findsNothing);
 
     await move(tester, 'c1', 'c4');
-    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
-    expect(raised.top, lessThan(board.top));
+    // Acerto limpo: o tabuleiro não sai do lugar, e embaixo só "Ver
+    // explicação" e o próximo, numa linha.
+    expect(tester.getRect(find.byKey(ExerciseKeys.board)), board);
     expect(find.byKey(ExerciseKeys.timer), findsNothing);
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
+    expect(find.byKey(ExerciseKeys.earned), findsNothing);
+    final explain = tester.getRect(find.byKey(ExerciseKeys.explainButton));
+    final next = tester.getRect(find.byKey(ExerciseKeys.nextButton));
+    expect(explain.center.dy, closeTo(next.center.dy, 1));
+
+    // Com a explicação aberta, o tabuleiro sobe e o resultado entra embaixo.
+    await tester.tap(find.byKey(ExerciseKeys.explainButton));
+    await tester.pumpAndSettle();
+    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
+    expect(raised.top, lessThan(board.top));
     expect(
-      tester.getRect(find.byKey(ExerciseKeys.earned)).top,
+      tester.getRect(find.byKey(ExerciseKeys.speech)).top,
       greaterThan(raised.bottom),
     );
   });

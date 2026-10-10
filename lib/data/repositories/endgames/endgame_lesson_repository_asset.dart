@@ -16,6 +16,10 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   AssetEndgameLessonRepository(this._assets, {required this.school});
 
   static const indexPath = 'assets/lessons/endgames/index.json';
+
+  /// As aulas ainda em revisão (abaixo da nota A), à parte do índice porque
+  /// o `build_aula.py` regrava o índice.
+  static const reviewPath = 'assets/lessons/endgames/review.json';
   static String lessonPath(String id) => 'assets/lessons/endgames/$id.json';
   static String textsPath(String language, String id) =>
       'assets/lessons/$language/endgames/$id.json';
@@ -42,6 +46,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   Future<EndgameTrail> _loadTrail() async {
     final index =
         jsonDecode(await _assets.loadString(indexPath)) as Map<String, dynamic>;
+    final review = await _review();
     final modules = <EndgameModule>[];
     for (final module
         in (index['modules'] as List? ?? const [])
@@ -49,12 +54,27 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
       final lessons = <EndgameLesson>[];
       for (final id in (module['lessons'] as List).cast<String>()) {
         lessons.add(
-          parseLesson(jsonDecode(await _assets.loadString(lessonPath(id)))),
+          parseLesson(
+            jsonDecode(await _assets.loadString(lessonPath(id))),
+            inReview: review.contains(id),
+          ),
         );
       }
       modules.add(EndgameModule(id: module['id'] as String, lessons: lessons));
     }
     return EndgameTrail(modules: modules);
+  }
+
+  /// Sem o arquivo, nenhuma aula está em revisão.
+  Future<Set<String>> _review() async {
+    try {
+      final json = jsonDecode(
+        await _assets.loadString(reviewPath),
+      ) as Map<String, dynamic>;
+      return {...(json['lessons'] as List? ?? const []).cast<String>()};
+    } catch (_) {
+      return const {};
+    }
   }
 
   Future<LessonTexts> _load(String language) =>
@@ -86,13 +106,14 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   };
 
   /// Lê uma aula gerada. Passo de tipo desconhecido é ignorado.
-  static EndgameLesson parseLesson(Object? json) {
+  static EndgameLesson parseLesson(Object? json, {bool inReview = false}) {
     final map = json as Map<String, dynamic>;
     final id = map['id'] as String;
     final practice = map['practice'] as Map<String, dynamic>;
     return EndgameLesson(
       id: id,
       module: map['module'] as String,
+      inReview: inReview,
       lesson: AssetLessonRepository.parseLesson(map),
       exercises: [
         for (final exercise

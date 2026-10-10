@@ -31,13 +31,22 @@ ideia que nenhuma parte ensinava.
    **Lance de partida sempre com o número** (pedido do Gabriel, T60): ao comentar uma partida, o lance jogado
    e as variantes saem numerados como nos livros: "Capablanca jogou 39.f5?, e depois de 39...gxf5 40.h5...",
    "41.h6!! ganha", "41.g6? hxg6 42.h6". Nunca "jogou f5" solto. A numeração sai do PGN do `url`.
+   **Vale para toda fala, não só partida** (pedido do Gabriel, 2026-10-09): lance citado em passo, demo, enunciado, dica ou
+   solução sai numerado ("1.Rf7! fecha g8; depois de 1...Rh7, 2.e4 corre"; "Com 1.Rc4? ..."). Casa solta não.
+   - Posição de **partida real** (com link para abrir no Lichess): a numeração é a do lance real da partida (tirada do PGN).
+   - Posição **montada ou de estudo**: começa em 1.
+   O revisor reprova a lição com lance sem número ou com número que não bate com a partida.
    **O nome da partida final é "desafio prático"**: nunca "partida contra a máquina" nas falas.
-5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
+5. **Cada fala diz uma coisa, e o porquê, de forma didática.** Partida real entra como história (quem, onde, quando, o
+   que estava em jogo, o que olhar na posição) antes do lance; termo novo é explicado na primeira vez; o vocabulário é o
+   do `glossario.md`, mesmo quando a fonte usa outra palavra. Se precisar, a fala cresce: clareza antes de concisão. O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
    vaga à mais clara e nenhuma dá o lance. As setas e casas mostram o que a fala diz. pt e en dizem o mesmo.
-6. **Tempo equilibrado.** O relatório do `build_aula.py` mostra o tempo de cada parte. Partes entre 4 e 8
-   minutos; uma lição entre 25 e 45 minutos. Parte com dois `think` ou com duas ideias se divide; parte
-   com um `talk` e um `move` só, sem `demo`, costuma estar rasa.
+6. **Partes curtas, sem minutagem** (pedido do Gabriel, 2026-10-10). A parte (etapa, capítulo) segue o roteiro do
+   aluno: pensar na posição (`think`), ver o comentário do Viktor (`talk`/`demo`), jogar o lance (`move`) e, quando a
+   posição dá margem, o teste prático contra o motor (`play`). Cabe em **até 6 passos; 7 é o teto**. Parte com mais
+   passos, ou com duas ideias, se divide em parte 1, parte 2... O tempo não conta: nem o da parte, nem o total da
+   lição (45 ou 52 minutos tanto faz). Parte com um `talk` e um `move` só, sem `demo`, costuma estar rasa.
 
 ## Como o revisor nota uma lição
 
@@ -49,7 +58,7 @@ segue o plano; o que discorda do plano vai no dossiê.
 | Nota | Significa |
 |---|---|
 | A | todas as ideias cobradas têm parte; ritmo e partidas no lugar; só retoques de texto |
-| B | uma ideia sem parte ou uma parte densa demais; o resto no lugar |
+| B | uma ideia sem parte, ou uma parte com duas ideias ou mais de 7 passos (minutos não contam); o resto no lugar |
 | C | duas ou mais ideias sem parte, ou nenhuma partida real, ou falas de demo vazias |
 | D | a lição é uma sequência de `talk` com variantes empilhadas; os exercícios cobram o que ela não ensina |
 | E | errada no xadrez ou fora do tema |
@@ -99,7 +108,7 @@ marcou (tema com composição, zugzwang recíproco, casas correspondentes, ou pa
 8. **Gere e confira**: o `.py` (se houver), `build_aula.py <id>` (0 problemas, sem trocar regra de `accept`
    para passar), `check_variety.py <id>`, `dump_lesson.py <id> --links` (sem aviso; todo link "bate"),
    `flutter test test/data/repositories/endgames/endgame_lessons_content_test.dart`. Leia o despejo como
-   aluno: tempo total de 25 a 45 min, partes de 4 a 8; a fala do lance N explica o lance N.
+   aluno: até 6 passos por parte, 7 no máximo (sem contar minutos); a fala do lance N explica o lance N.
 9. **Registre no dossiê** (`docs/aulas/<id>.md`, seção "Lição refeita (T61, <data>)"): a tabela de
    cobertura final, as partes (id, ideia, FEN, de onde veio), as partidas com link e como as abriu, onde
    saiu do plano e por quê, o que julgou o Stockfish (posições com mais de 7 peças, só em `think`/`talk`),
@@ -113,5 +122,5 @@ marcou (tema com composição, zugzwang recíproco, casas correspondentes, ou pa
 - Fala que descreve lances ilegais na posição (rei sem casa). O despejo e o `build_aula.py` não pegam fala
   de `talk`: jogue a posição com python-chess antes de afirmar.
 - Partida citada na fala sem `ref` e referência `game` sem `url`; ou o `#ply` da url que não é a posição do passo.
-- Lição de 18 min (rasa) ou de 55 min (cansa): corte demos em 5 lances, divida partes com duas ideias.
+- Lição rasa (poucas partes, falas que só citam o lance) ou parte com mais de 7 passos: divida em parte 1, parte 2; o tempo não conta.
 - Scratchpad compartilhado entre agentes: scripts próprios numa subpasta com o id da aula, no scratchpad da sessão (o orquestrador passa o caminho), nunca numa pasta `scratchpad/` dentro do repositório.

@@ -44,4 +44,17 @@ void main() {
       expect(LessonRules.saysWhoMoves(text), isFalse, reason: text);
     }
   });
+
+  test('o enunciado do passo de pensar abre a explicação sem as perguntas', () {
+    expect(
+      LessonRules.thinkContext(
+        'Brancas jogam. O rei preto está longe do peão, e o branco também. '
+        'Se o rei preto alcançar o peão de f, é empate. Qual lance de rei '
+        'impede isso?',
+      ),
+      'O rei preto está longe do peão, e o branco também. '
+      'Se o rei preto alcançar o peão de f, é empate.',
+    );
+    expect(LessonRules.thinkContext('White to move. What is the plan?'), '');
+  });
 }

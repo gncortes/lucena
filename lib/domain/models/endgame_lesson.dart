@@ -50,6 +50,7 @@ class EndgameLesson {
     required this.keyPositions,
     required this.practice,
     this.references = const [],
+    this.inReview = false,
   });
 
   /// `rook.lucena`, `mates.bishopKnight.w`... Estável: o progresso é gravado
@@ -70,6 +71,9 @@ class EndgameLesson {
   /// O treino final: o final de verdade.
   final Practice practice;
   final List<Reference> references;
+
+  /// A aula ainda está em revisão (abaixo da nota A): a tela avisa o aluno.
+  final bool inReview;
 
   /// Todas as estrelas dos exercícios.
   int get maxScore =>

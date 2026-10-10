@@ -1201,6 +1201,91 @@ section {
   max-width: 330px;
 }
 
+.feature-duo + .feature-duo {
+  padding-top: 0;
+}
+
+/* Ícone dos cartões sem captura. */
+.feature__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: var(--primary-soft);
+  color: var(--on-primary-soft);
+}
+
+.feature__icon svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.feature__icon img {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}
+
+/* Roteiro dos capítulos das aulas de finais. */
+.route__label {
+  margin: 24px 0 12px;
+  color: var(--ink) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700;
+}
+
+.route {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  counter-reset: route;
+}
+
+.route li {
+  position: relative;
+  padding: 12px 14px 12px 54px;
+  border-radius: 14px;
+  background: var(--bg-alt);
+  counter-increment: route;
+}
+
+.route li::before {
+  content: counter(route);
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 750;
+  font-size: 0.9rem;
+}
+
+.route strong {
+  display: block;
+  font-weight: 700;
+}
+
+.route span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 /* ---------- Níveis ---------- */
 
 .levels {
@@ -1604,7 +1689,7 @@ section {
 
 @media (min-width: 860px) {
   .stats__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
 }
@@ -1675,6 +1760,8 @@ section {
 .stats__grid li:nth-child(2) { --delay: 90ms; }
 .stats__grid li:nth-child(3) { --delay: 180ms; }
 .stats__grid li:nth-child(4) { --delay: 270ms; }
+.stats__grid li:nth-child(5) { --delay: 360ms; }
+.stats__grid li:nth-child(6) { --delay: 450ms; }
 .feature__media { --delay: 120ms; }
 
 @keyframes rise {

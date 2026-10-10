@@ -22,7 +22,7 @@ export const fallbackLocale: Locale = 'en';
 
 export const links = {
   tester: 'https://appdistribution.firebase.dev/i/8f905d22a0d826e5',
-  email: 'novaiscortesgabriel729@gmail.com',
+  email: 'gncortes.apps@gmail.com',
   firebase: 'https://firebase.google.com/docs/app-distribution',
   stockfish: 'https://stockfishchess.org',
   maia: 'https://www.maiachess.com',

@@ -471,7 +471,11 @@
     "A waiting move, when you need one."
   ],
   "graduation.twoBishops.play2.done": "You did it. Mate with two bishops.",
-  "coach.thinkRight": ["That's it, correct!", "Exactly, that was the move!", "Correct: you found it yourself."],
+  "coach.thinkRight": [
+    "That's it, correct!",
+    "Exactly, that was the move!",
+    "Correct: you found it yourself."
+  ],
   "coach.praise": [
     "Well done!",
     "Excellent.",
@@ -495,6 +499,24 @@
     "Not that one. Think a little more.",
     "Almost. Look again.",
     "Calm. Everyone makes mistakes, even grandmasters."
+  ],
+  "coach.illegal.rook": [
+    "The rook doesn't move like that: only in straight lines, up, down or sideways."
+  ],
+  "coach.illegal.bishop": [
+    "The bishop doesn't move like that: only diagonally."
+  ],
+  "coach.illegal.knight": [
+    "The knight doesn't move like that: it jumps in an L."
+  ],
+  "coach.illegal.king": [
+    "The king doesn't move like that: one square at a time, in any direction."
+  ],
+  "coach.illegal.queen": [
+    "The queen doesn't move like that: in straight lines or diagonally."
+  ],
+  "coach.illegal.pawn": [
+    "The pawn doesn't move like that: it only goes forward, and captures diagonally."
   ],
   "coach.hint": [
     "Look at the arrow. Why this move?",
@@ -527,9 +549,9 @@
     "Again, calmly."
   ],
   "coach.partDone": [
-    "Part done. Each one makes the next easier.",
+    "Chapter done. Each one makes the next easier.",
     "Good. One more piece of the technique in place.",
-    "Part complete. Rest your head for a moment, then go on."
+    "Chapter complete. Rest your head for a moment, then go on."
   ],
   "coach.lessonDone": [
     "Lesson complete. I am proud of you.",
@@ -556,12 +578,12 @@
   "endgames.module.rook": "Rook endgames",
   "endgames.module.minor": "Minor pieces",
   "endgames.module.rookMinor": "Rook and minor piece",
-  "endgames.lesson.intro": "The lesson comes in short parts. In each one you think alone first, then I show you and you practice. Start with Part 1.",
-  "endgames.lesson.middle": "Good to see you back. Go on with the highlighted part: it is where you stopped.",
-  "endgames.lesson.test": "Parts done. Now the final test, without my help. Once your score passes the minimum, I unlock the real endgame.",
+  "endgames.lesson.intro": "Start with chapter 1.",
+  "endgames.lesson.middle": "Good to see you back. Go on with the highlighted chapter: it is where you stopped.",
+  "endgames.lesson.test": "Chapters done. Now the final test, without my help. Once your score passes the minimum, I unlock the real endgame.",
   "endgames.lesson.passed": "Passed. Now all that is left is to prove it against a flesh-and-blood opponent: or a silicon one.",
   "endgames.lesson.failed": "Not this time. Reread the lesson if you like and redo the exercises: the second time is usually much better.",
-  "endgames.lesson.lessonLeft": "You reached the score in the exercises. Now finish the lesson parts to complete the lesson and unlock the real endgame.",
+  "endgames.lesson.lessonLeft": "You reached the score in the exercises. Now finish the lesson chapters to complete the lesson and unlock the real endgame.",
   "module.notation": "Notation",
   "notation.coordinates.title": "Coordinates",
   "notation.coordinates.summary": "Every square has a name: the file letter and the rank number.",

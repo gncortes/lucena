@@ -40,10 +40,14 @@ O que fazer, nesta ordem:
    fala diz de quem é? A história cita fatos com fonte? Se a aula não tem nenhuma partida real, diga que
    partidas o tema tem (só as que você abriu: Wikipedia, estudo público do Lichess, artigo aberto; nada de
    memória) e dê o link.
-5. **Falas.** Uma coisa por fala, com o porquê; dicas da mais vaga à mais clara sem o lance; setas e casas
+5. **Falas.** Didáticas para quem aprende: partida real apresentada como história (quem, onde, quando, o que estava em
+   jogo, o que olhar) antes do lance; termo novo explicado na primeira vez; vocabulário do `glossario.md` (capturar,
+   alcançar, simplificar…) mesmo quando a fonte usa outra palavra. Uma coisa por fala, com o porquê; dicas da mais vaga à mais clara sem o lance; setas e casas
    batendo com a fala; pt e en dizendo o mesmo; notação pt R/D/T/B/C, en K/Q/R/B/N; nunca "mate em N";
    nenhuma menção a motor, tabela, Wikipedia ou Lichess dentro das falas.
-6. **Tempo.** Partes entre 4 e 8 minutos, lição entre 25 e 45 (relatório do `--dry-run`).
+6. **Divisão.** Cada parte com até 6 passos (7 é o teto) e uma ideia, no roteiro pensar → comentário → lance →
+   teste prático quando a posição dá margem. Parte acima disso derruba a nota para B. Minutos não contam (nem da parte,
+   nem da lição): não peça corte por tempo.
 
 Relatório `docs/aulas/LICAO-<id>.md`: nota geral e por regra (A–E) no topo, com uma frase de justificativa
 cada; a tabela de cobertura; achados em três níveis (**erro**: ideia cobrada sem parte, fato errado;
@@ -53,3 +57,9 @@ o id do exercício, o que está e o que deveria estar; e o **plano de reescrita*
 uma linha do que cada um faz, e as fontes a buscar. Feche com o que você não conseguiu conferir. Nada de
 elogio genérico. Na conversa, responda só com a nota geral, as três faltas principais e o caminho do
 relatório.
+
+## Numeração dos lances (pedido do Gabriel, 2026-10-09; confira em TODA fala)
+
+Todo lance citado em passo, demo, enunciado, dica ou solução tem número de notação ("1.Rf7!", "1...Rh7", "2.e4"; "Com
+1.Rc4? ..."). Posição de partida real (com link do Lichess): o número é o do lance real da partida, conferido no PGN do
+`url`. Posição montada ou de estudo: começa em 1. Lance sem número ou número errado é defeito que derruba a nota.

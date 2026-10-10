@@ -45,13 +45,20 @@ abstract final class ExerciseLayout {
   }
 
   /// Onde ele fica depois da resposta: no alto, encolhendo se precisar, para
-  /// deixar [sheetRoom] para a folha da fala.
-  static Rect explainingRect(Size area, {required double sheetRoom}) {
+  /// deixar [sheetRoom] para a folha da fala. Com [lowered] (a escola), ele
+  /// desce o quanto a folha deixar, para ficar perto de onde estava enquanto
+  /// o aluno resolvia: o tabuleiro quase não sai do lugar entre os passos.
+  static Rect explainingRect(
+    Size area, {
+    required double sheetRoom,
+    bool lowered = false,
+  }) {
     final size = max(
       min(area.width - 2 * gutter, area.height - sheetRoom),
       minBoard,
     );
-    return Rect.fromLTWH((area.width - size) / 2, gutter, size, size);
+    final top = lowered ? max(gutter, area.height - sheetRoom - size) : gutter;
+    return Rect.fromLTWH((area.width - size) / 2, top, size, size);
   }
 }
 

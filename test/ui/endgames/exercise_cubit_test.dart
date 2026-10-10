@@ -40,19 +40,26 @@ void main() {
     now = FakeNow(DateTime.utc(2026, 10, 9, 20));
   });
 
-  test('T60: resolvendo até a resposta, com o cronômetro contando sem limite; '
-      'resolvido, o professor fala', () async {
-    final exercise = cubit();
-    await exercise.load('rook.lucena', 'e03', 'en');
-    expect(exercise.state.layout, ExerciseLayoutMode.solving);
-    expect(exercise.elapsed, Duration.zero);
-    now.advance(const Duration(minutes: 6, seconds: 3));
-    expect(exercise.elapsed, const Duration(minutes: 6, seconds: 3));
-    expect(exercise.state.layout, ExerciseLayoutMode.solving);
-    expect(exercise.state.speech, isNull);
-    await exercise.play(move('c1c4'));
-    expect(exercise.state.layout, ExerciseLayoutMode.explaining);
-  });
+  test(
+    'T60: resolvendo até a resposta, com o cronômetro contando sem limite; '
+    'resolvido de primeira, o tabuleiro fica; a explicação, a pedido',
+    () async {
+      final exercise = cubit();
+      await exercise.load('rook.lucena', 'e03', 'en');
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      expect(exercise.elapsed, Duration.zero);
+      now.advance(const Duration(minutes: 6, seconds: 3));
+      expect(exercise.elapsed, const Duration(minutes: 6, seconds: 3));
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      expect(exercise.state.speech, isNull);
+      await exercise.play(move('c1c4'));
+      // Acerto limpo: o tabuleiro fica onde estava; a explicação só a pedido.
+      expect(exercise.state.cleanSolve, isTrue);
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      exercise.showExplanation();
+      expect(exercise.state.layout, ExerciseLayoutMode.explaining);
+    },
+  );
 
   test(
     'T60: fechar no meio e voltar, o cronômetro continua de onde estava',
@@ -264,5 +271,13 @@ void main() {
 
     await exercise.play(move('c1c4'));
     expect(sound.played, [GameSound.move]);
+  });
+
+  test('lance errado no meio do exercício: sem fala do Viktor', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+    await exercise.play(move('c1c2'));
+    expect(exercise.state.mistakes, 1);
+    expect(exercise.state.speech, isNull);
   });
 }

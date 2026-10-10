@@ -139,4 +139,41 @@ void main() {
       isEmpty,
     );
   });
+
+  test(
+    'exercício da vez: o aberto não resolvido, senão o primeiro sem nota',
+    () {
+      expect(
+        EndgameLessonRules.nextExercise(
+          lucena,
+          const EndgameLessonProgress(),
+        )?.id,
+        'e01',
+      );
+      expect(
+        EndgameLessonRules.nextExercise(
+          lucena,
+          const EndgameLessonProgress(stars: {'e01': 1}),
+        )?.id,
+        'e02',
+      );
+      expect(
+        EndgameLessonRules.nextExercise(
+          lucena,
+          const EndgameLessonProgress(
+            stars: {'e01': 1},
+            exercise: ExerciseCheckpoint(exerciseId: 'e03'),
+          ),
+        )?.id,
+        'e03',
+      );
+      expect(
+        EndgameLessonRules.nextExercise(
+          lucena,
+          const EndgameLessonProgress(stars: {'e01': 1, 'e02': 1, 'e03': 1}),
+        ),
+        isNull,
+      );
+    },
+  );
 }

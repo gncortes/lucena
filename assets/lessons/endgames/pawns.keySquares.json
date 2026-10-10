@@ -23,6 +23,9 @@
             "d6",
             "e6",
             "f6"
+          ],
+          "arrows": [
+            "e2e3"
           ]
         },
         {
@@ -453,6 +456,7 @@
           "id": "knightTrap",
           "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
           "arrows": [
+            "d6c6",
             "d6c7"
           ],
           "marks": [
@@ -668,7 +672,12 @@
             "g6",
             "h6"
           ],
-          "ref": "wikiKeySquare"
+          "ref": "wikiKeySquare",
+          "arrows": [
+            "a3b4",
+            "b4c5",
+            "c5d6"
+          ]
         },
         {
           "type": "demo",
@@ -1081,66 +1090,9 @@
           ]
         }
       ]
-    },
-    {
-      "id": "e17",
-      "stars": 3,
-      "fen": "8/6k1/1K3p2/4p1p1/4P1P1/5P2/8/8 b - - 0 1",
-      "goal": "draw",
-      "origin": "wikiKeySquare",
-      "line": [
-        {
-          "teach": "g7h6",
-          "accept": [
-            "g7h6"
-          ],
-          "reply": "b6c7"
-        },
-        {
-          "teach": "h6g7",
-          "accept": [
-            "h6g7"
-          ],
-          "reply": "c7b7"
-        },
-        {
-          "teach": "g7h7",
-          "accept": [
-            "g7h7"
-          ],
-          "reply": "b7b8"
-        },
-        {
-          "teach": "h7h8",
-          "accept": [
-            "h7h8"
-          ],
-          "reply": "b8c8"
-        },
-        {
-          "teach": "h8g8",
-          "accept": [
-            "h8g8"
-          ],
-          "reply": "c8d7"
-        },
-        {
-          "teach": "g8h7",
-          "accept": [
-            "g8h7"
-          ],
-          "reply": "d7e6"
-        },
-        {
-          "teach": "h7g6",
-          "accept": [
-            "h7g6"
-          ]
-        }
-      ]
     }
   ],
-  "passScore": 10,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "count",
@@ -1255,5 +1207,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 16
+  "maxScore": 13
 }

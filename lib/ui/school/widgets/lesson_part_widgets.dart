@@ -1,7 +1,9 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -18,6 +20,59 @@ abstract final class DemoPace {
   static const pauseMs = 600;
   static const minReadMs = 2500;
   static const msPerChar = 65;
+}
+
+/// Lê os toques no tabuleiro de um passo de estrelas para achar o lance
+/// proibido, que o tabuleiro só ignora: arrastar a peça para uma casa aonde
+/// ela não anda, ou tocar a peça e depois essa casa. O view model confere o
+/// lance e o Viktor explica como a peça anda.
+class IllegalStarMoves {
+  // A peça do aluno sob o dedo.
+  Square? _pressed;
+
+  // A peça escolhida com um toque, esperando o toque no destino.
+  Square? _picked;
+
+  void down(BuildContext context, Square? square) {
+    final cubit = context.read<LessonCubit>();
+    if (square == null) {
+      reset();
+      return;
+    }
+    if (_own(cubit.state, square)) {
+      _pressed = square;
+      return;
+    }
+    final picked = _picked;
+    reset();
+    if (picked != null) cubit.refuseStar(picked, square);
+  }
+
+  void up(BuildContext context, Square? square) {
+    final pressed = _pressed;
+    _pressed = null;
+    if (pressed == null) return;
+    if (square == pressed) {
+      // Um toque na peça escolhe; outro na mesma, desfaz.
+      _picked = _picked == pressed ? null : pressed;
+      return;
+    }
+    _picked = null;
+    if (square != null) context.read<LessonCubit>().refuseStar(pressed, square);
+  }
+
+  /// Esquece os toques (gesto cancelado ou passo novo).
+  void reset() {
+    _pressed = null;
+    _picked = null;
+  }
+
+  static bool _own(LessonState state, Square square) {
+    final fen = state.fen;
+    final step = state.current;
+    if (fen == null || step == null) return false;
+    return LessonRules.starsBoard(fen).pieceAt(square)?.color == step.side;
+  }
 }
 
 /// Os controles da demonstração: repetir do começo, voltar um lance (e

@@ -18,7 +18,6 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/skeleton.dart';
-import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';
@@ -41,6 +40,10 @@ class PlacementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PlacementCubit>().state;
+    // Onde o corpo começa na tela (barra de status, barra do app e a de
+    // progresso), medido aqui fora: dentro do Scaffold a margem de cima já
+    // foi descontada.
+    final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight + 4;
     return Scaffold(
       key: PlacementKeys.screen,
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
@@ -53,6 +56,23 @@ class PlacementScreen extends StatelessWidget {
                       key: PlacementKeys.counter,
                     )
                   : Text(l10n.placementTitle),
+              // Quanto do questionário já foi: uma barra contínua na base
+              // da barra do app, que anda a cada resposta.
+              bottom: state.view == PlacementView.question
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(4),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(end: (state.number - 1) / 20),
+                        duration: AppMotion.of(context).component,
+                        curve: AppMotion.enter,
+                        builder: (context, value, _) => LinearProgressIndicator(
+                          key: PlacementKeys.progress,
+                          value: value,
+                          minHeight: 4,
+                        ),
+                      ),
+                    )
+                  : null,
             ),
       body: SafeArea(
         top: state.view != PlacementView.result,
@@ -78,6 +98,7 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
               state: state,
+              bodyTop: bodyTop,
             ),
             PlacementView.result => PlacementResultView(
               key: const ValueKey('result'),
@@ -185,9 +206,12 @@ class _Intro extends StatelessWidget {
 /// largura toda e, embaixo, as opções (escolha), "Confirmar" (casas) e
 /// "Não sei".
 class _Question extends StatelessWidget {
-  const _Question({required this.state, super.key});
+  const _Question({required this.state, required this.bodyTop, super.key});
 
   final PlacementViewState state;
+
+  /// Onde o corpo começa na tela, para achar o centro da tela inteira.
+  final double bodyTop;
 
   @override
   Widget build(BuildContext context) {
@@ -196,49 +220,92 @@ class _Question extends StatelessWidget {
     final cubit = context.read<PlacementCubit>();
     final item = state.item;
     if (item == null) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    // Com duas linhas de opções, o bloco de baixo é alto: a pergunta sobe
+    // para cima do tabuleiro. Com poucas, ela fica embaixo, como nos
+    // exercícios. Nos dois casos o tabuleiro fica no meio da tela.
+    final promptAbove =
+        item.type == PlacementItemType.choice && item.options.length > 2;
+    // O centro da tela inteira, nas coordenadas do corpo (que começa
+    // abaixo da barra do app e da barra de progresso), como nos exercícios.
+    final screen = MediaQuery.sizeOf(context);
+    return CustomMultiChildLayout(
+      delegate: _QuestionLayout(
+        promptAbove: promptAbove,
+        centerY: screen.height / 2 - bodyTop,
+      ),
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.sm,
-            AppSpacing.screen,
-            AppSpacing.md,
-          ),
-          child: StepProgress(
-            key: PlacementKeys.progress,
-            total: 20,
-            value: (state.number - 1).toDouble(),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
-          child: Text(
-            placementPrompt(l10n, item),
-            key: PlacementKeys.prompt,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, box) => Align(
-              alignment: Alignment.topCenter,
-              child: _Board(
-                state: state,
-                size: math.min(box.maxWidth, box.maxHeight),
+        LayoutId(
+          id: _QuestionSlot.prompt,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+            child: Text(
+              placementPrompt(l10n, item),
+              key: PlacementKeys.prompt,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
         ),
-        _Answers(state: state, cubit: cubit),
+        LayoutId(
+          id: _QuestionSlot.board,
+          child: LayoutBuilder(
+            builder: (context, box) => _Board(state: state, size: box.maxWidth),
+          ),
+        ),
+        LayoutId(
+          id: _QuestionSlot.answers,
+          child: _Answers(state: state, cubit: cubit),
+        ),
       ],
     );
   }
+}
+
+enum _QuestionSlot { prompt, board, answers }
+
+/// O tabuleiro com o centro no centro da tela, a pergunta colada nele (em cima ou
+/// embaixo) e as respostas no rodapé. Se não couber no meio, o tabuleiro
+/// desliza (e só então encolhe) para não encostar no resto.
+class _QuestionLayout extends MultiChildLayoutDelegate {
+  _QuestionLayout({required this.promptAbove, required this.centerY});
+
+  final bool promptAbove;
+  final double centerY;
+
+  @override
+  void performLayout(Size size) {
+    const gap = AppSpacing.md;
+    // Largura toda: o texto centraliza e as opções se estendem.
+    final loose = BoxConstraints.tightFor(width: size.width);
+    final answers = layoutChild(_QuestionSlot.answers, loose);
+    final prompt = layoutChild(_QuestionSlot.prompt, loose);
+    final free = size.height - answers.height - prompt.height - 3 * gap;
+    final side = math.max(0.0, math.min(size.width, free));
+    layoutChild(_QuestionSlot.board, BoxConstraints.tight(Size(side, side)));
+    final minTop = promptAbove ? gap + prompt.height + gap : gap;
+    final maxTop = promptAbove
+        ? size.height - answers.height - gap - side
+        : size.height - answers.height - gap - prompt.height - gap - side;
+    final top = (centerY - side / 2)
+        .clamp(minTop, math.max(minTop, maxTop))
+        .toDouble();
+    final left = (size.width - side) / 2;
+    positionChild(_QuestionSlot.board, Offset(left, top));
+    positionChild(
+      _QuestionSlot.prompt,
+      Offset(0, promptAbove ? top - gap - prompt.height : top + side + gap),
+    );
+    positionChild(
+      _QuestionSlot.answers,
+      Offset(0, size.height - answers.height),
+    );
+  }
+
+  @override
+  bool shouldRelayout(_QuestionLayout oldDelegate) =>
+      oldDelegate.promptAbove != promptAbove || oldDelegate.centerY != centerY;
 }
 
 class _Answers extends StatelessWidget {
@@ -268,37 +335,22 @@ class _Answers extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (item.type == PlacementItemType.choice)
-            // As opções como botões grandes, lado a lado (até 3) ou em
-            // grade.
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                for (final option in item.options)
-                  SizedBox(
-                    width: item.options.length <= 3
-                        ? (MediaQuery.sizeOf(context).width -
-                                  2 * AppSpacing.screen -
-                                  (item.options.length - 1) * AppSpacing.sm) /
-                              item.options.length
-                        : (MediaQuery.sizeOf(context).width -
-                                  2 * AppSpacing.screen -
-                                  AppSpacing.sm) /
-                              2,
-                    child: FilledButton.tonal(
-                      key: PlacementKeys.option(option),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                        ),
-                      ),
-                      onPressed: () => cubit.choose(option),
-                      child: OneLine(placementOption(l10n, option)),
+            // As opções em grade, duas por linha; a que sobra sozinha ocupa
+            // a linha inteira.
+            for (var row = 0; row < item.options.length; row += 2) ...[
+              if (row > 0) const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  for (final (index, option)
+                      in item.options.skip(row).take(2).indexed) ...[
+                    if (index > 0) const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: _Option(option: option, cubit: cubit),
                     ),
-                  ),
-              ],
-            ),
+                  ],
+                ],
+              ),
+            ],
           if (item.type == PlacementItemType.squares)
             FilledButton(
               key: PlacementKeys.confirm,
@@ -311,6 +363,97 @@ class _Answers extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           dontKnow,
         ],
+      ),
+    );
+  }
+}
+
+/// Uma opção da pergunta de escolha: um cartão com borda, o texto no meio.
+class _Option extends StatelessWidget {
+  const _Option({required this.option, required this.cubit});
+
+  final String option;
+  final PlacementCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return OutlinedButton(
+      key: PlacementKeys.option(option),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(56),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        backgroundColor: colors.surfaceContainerLow,
+        foregroundColor: colors.onSurface,
+        side: BorderSide(color: colors.outlineVariant),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.medium),
+        ),
+        textStyle: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onPressed: () => cubit.choose(option),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _OptionBadge(option: option),
+          const SizedBox(width: AppSpacing.sm),
+          Flexible(child: OneLine(placementOption(context.l10n, option))),
+        ],
+      ),
+    );
+  }
+}
+
+/// O sinal de cada resposta: o da notação para xeque (+), mate (#) e
+/// afogamento (=), a cor do lado que ganha, o aperto de mão do empate.
+class _OptionBadge extends StatelessWidget {
+  const _OptionBadge({required this.option});
+
+  final String option;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = switch (option) {
+      'check' => '+',
+      'mate' => '#',
+      'stalemate' => '=',
+      'none' => '–',
+      _ => null,
+    };
+    final icon = switch (option) {
+      'yes' => Icons.thumb_up_alt_outlined,
+      'no' => Icons.thumb_down_alt_outlined,
+      'draw' => Icons.handshake_outlined,
+      _ => null,
+    };
+    final side = switch (option) {
+      'whiteWins' => Colors.white,
+      'blackWins' => Colors.black,
+      _ => null,
+    };
+    // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.
+    if (side != null) {
+      return Container(
+        width: 16,
+        height: 16,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: side,
+          border: Border.all(color: colors.outline),
+        ),
+      );
+    }
+    if (icon != null) return Icon(icon, size: 20, color: colors.primary);
+    return Text(
+      text ?? '',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+        color: colors.primary,
       ),
     );
   }

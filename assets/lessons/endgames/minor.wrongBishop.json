@@ -16,9 +16,6 @@
           "ask": "plan",
           "marks": [
             "h8"
-          ],
-          "arrows": [
-            "f1a6"
           ]
         },
         {
@@ -29,10 +26,6 @@
             "h8",
             "g8",
             "h7"
-          ],
-          "arrows": [
-            "h8g8",
-            "g8h8"
           ]
         },
         {
@@ -64,58 +57,6 @@
                 "g7"
               ]
             }
-          ]
-        },
-        {
-          "type": "move",
-          "id": "cornerMove",
-          "fen": "7k/8/5K2/7P/8/8/8/5B2 b - - 0 1",
-          "goal": "draw",
-          "line": [
-            {
-              "teach": "h8g8",
-              "accept": [
-                "h8g8",
-                "h8h7"
-              ],
-              "reply": "h5h6"
-            },
-            {
-              "teach": "g8h8",
-              "accept": [
-                "g8h7",
-                "g8h8"
-              ],
-              "reply": "f6g6"
-            },
-            {
-              "teach": "h8g8",
-              "accept": [
-                "h8g8"
-              ],
-              "reply": "f1c4"
-            },
-            {
-              "teach": "g8h8",
-              "accept": [
-                "g8h8"
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "colour",
-      "steps": [
-        {
-          "type": "think",
-          "id": "t_colour",
-          "fen": "7k/8/5K2/7P/8/8/8/4B3 w - - 0 1",
-          "hints": 2,
-          "ask": "plan",
-          "marks": [
-            "h8"
           ]
         },
         {
@@ -158,28 +99,11 @@
               "uci": "h8g8"
             },
             {
-              "uci": "h6h7"
-            },
-            {
-              "uci": "g8f8"
-            },
-            {
-              "uci": "h7h8q",
+              "uci": "h6h7",
               "marks": [
-                "h8"
+                "f8"
               ]
             }
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "aPawn",
-          "fen": "k7/8/PK6/8/8/8/8/4B3 w - - 0 1",
-          "marks": [
-            "a8"
-          ],
-          "arrows": [
-            "e1a5"
           ]
         },
         {
@@ -309,105 +233,100 @@
             },
             {
               "uci": "h5h6"
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "kingDoor",
+          "fen": "5K2/5B2/7k/7P/8/8/8/8 w - - 0 1",
+          "marks": [
+            "g8",
+            "h8",
+            "h7"
+          ],
+          "arrows": [
+            "f8g8"
+          ],
+          "ref": "wikiWrongRookPawn"
+        },
+        {
+          "type": "demo",
+          "id": "d_kingDoor",
+          "fen": "5K2/5B2/7k/7P/8/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "f8g8",
+              "marks": [
+                "h7",
+                "h8"
+              ]
             },
             {
-              "uci": "d6e5"
+              "uci": "h6g5"
             },
             {
-              "uci": "h6h7"
+              "uci": "g8g7"
             }
           ]
         },
         {
           "type": "move",
-          "id": "cutoffMove",
-          "fen": "5k2/8/5K2/8/8/7P/8/3B4 w - - 0 1",
+          "id": "kingDoorMove",
+          "fen": "5K2/8/6k1/8/7P/8/4B3/8 w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "teach": "d1b3",
+              "teach": "f8g8",
               "accept": [
-                "d1b3"
+                "f8g8"
               ],
-              "reply": "f8e8"
-            },
-            {
-              "teach": "f6g7",
-              "accept": [
-                "b3a2",
-                "b3a4",
-                "b3c2",
-                "b3c4",
-                "b3d1",
-                "b3d5",
-                "b3e6",
-                "b3f7",
-                "b3g8",
-                "f6e5",
-                "f6e6",
-                "f6f5",
-                "f6g5",
-                "f6g6",
-                "f6g7",
-                "h3h4"
-              ],
-              "reply": "e8e7"
-            },
-            {
-              "teach": "h3h4",
-              "accept": [
-                "b3a2",
-                "b3a4",
-                "b3c2",
-                "b3c4",
-                "b3d1",
-                "b3d5",
-                "b3e6",
-                "b3f7",
-                "b3g8",
-                "g7g6",
-                "g7g8",
-                "g7h6",
-                "g7h7",
-                "g7h8",
-                "h3h4"
-              ],
-              "reply": "e7e8"
+              "reply": "g6f5"
             },
             {
               "teach": "h4h5",
               "accept": [
-                "b3a2",
-                "b3a4",
-                "b3c2",
-                "b3c4",
-                "b3d1",
-                "b3d5",
-                "b3e6",
-                "b3f7",
-                "b3g8",
-                "g7f6",
-                "g7g6",
-                "g7g8",
-                "g7h6",
-                "g7h7",
-                "g7h8",
+                "e2d1",
+                "e2f3",
+                "e2h5",
+                "g8f7",
+                "g8f8",
+                "g8g7",
+                "g8h7",
+                "g8h8",
                 "h4h5"
               ],
-              "reply": "e8e7"
+              "reply": "f5g5"
+            },
+            {
+              "teach": "g8g7",
+              "accept": [
+                "e2d1",
+                "e2f3",
+                "e2g4",
+                "g8f7",
+                "g8f8",
+                "g8g7",
+                "g8h7",
+                "g8h8"
+              ],
+              "reply": "g5f4"
             },
             {
               "teach": "h5h6",
               "accept": [
-                "b3a2",
-                "b3a4",
-                "b3c2",
-                "b3c4",
-                "b3d1",
-                "b3d5",
-                "b3e6",
-                "b3f7",
-                "b3g8",
+                "e2a6",
+                "e2b5",
+                "e2c4",
+                "e2d1",
+                "e2d3",
+                "e2f1",
+                "e2f3",
+                "e2g4",
+                "g7f6",
+                "g7f7",
+                "g7f8",
                 "g7g6",
                 "g7g8",
                 "g7h6",
@@ -432,20 +351,22 @@
           "side": "black",
           "marks": [
             "h8"
-          ]
+          ],
+          "ref": "wikiWrongRookPawn"
         },
         {
           "type": "talk",
           "id": "mednis",
-          "fen": "5K2/5B2/7k/7P/8/8/8/8 w - - 0 1",
+          "fen": "5K2/5B2/7k/7P/8/8/8/8 b - - 0 1",
           "side": "black",
           "marks": [
-            "g8",
-            "g7"
+            "h8",
+            "h7"
           ],
           "arrows": [
-            "f8g8"
-          ]
+            "h6h7"
+          ],
+          "ref": "wikiWrongRookPawn"
         },
         {
           "type": "demo",
@@ -473,6 +394,16 @@
             }
           ],
           "side": "black"
+        },
+        {
+          "type": "talk",
+          "id": "tempo",
+          "fen": "8/8/4k3/8/5K2/8/7P/3B4 b - - 0 1",
+          "side": "black",
+          "marks": [
+            "h8",
+            "g7"
+          ]
         },
         {
           "type": "move",
@@ -537,15 +468,16 @@
         {
           "type": "think",
           "id": "t_taimanov",
-          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 1",
+          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 81",
           "hints": 2,
           "ask": "plan",
-          "side": "black"
+          "side": "black",
+          "ref": "fischerTaimanov"
         },
         {
           "type": "talk",
           "id": "taimanov",
-          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 1",
+          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 81",
           "side": "black",
           "marks": [
             "h8"
@@ -553,12 +485,13 @@
           "arrows": [
             "e5d3",
             "d3f4"
-          ]
+          ],
+          "ref": "fischerTaimanov"
         },
         {
           "type": "demo",
           "id": "d_taimanov",
-          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 1",
+          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 81",
           "goal": "draw",
           "line": [
             {
@@ -574,13 +507,115 @@
               ]
             },
             {
-              "uci": "f6g5"
+              "uci": "f6f5"
             },
             {
-              "uci": "d5e5",
+              "uci": "d5d6",
               "arrows": [
-                "e5f6",
-                "f6g7"
+                "d6f8"
+              ]
+            },
+            {
+              "uci": "f5f4"
+            },
+            {
+              "uci": "d6e7"
+            }
+          ],
+          "side": "black"
+        },
+        {
+          "type": "talk",
+          "id": "taimanovGame",
+          "fen": "8/8/5K2/4n3/4k1B1/7P/8/8 w - - 1 82",
+          "side": "black",
+          "marks": [
+            "f5"
+          ],
+          "arrows": [
+            "g4c8"
+          ],
+          "ref": "fischerTaimanov#162"
+        },
+        {
+          "type": "move",
+          "id": "taimanovMove",
+          "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 81",
+          "goal": "draw",
+          "ref": "fischerTaimanov",
+          "line": [
+            {
+              "teach": "e5d3",
+              "accept": [
+                "d5d4",
+                "d5d6",
+                "e5d3"
+              ],
+              "reply": "h3h4"
+            },
+            {
+              "teach": "d3f4",
+              "accept": [
+                "d3f4"
+              ],
+              "reply": "f6g5"
+            },
+            {
+              "teach": "d5e5",
+              "accept": [
+                "d5d6",
+                "d5e4",
+                "d5e5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transform",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_greco",
+          "fen": "8/8/8/5bk1/8/5B2/6PP/5K2 b - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "side": "black",
+          "marks": [
+            "h8"
+          ],
+          "ref": "wikiWrongRookPawn"
+        },
+        {
+          "type": "talk",
+          "id": "greco",
+          "fen": "8/8/8/5bk1/8/5B2/6PP/5K2 b - - 0 1",
+          "side": "black",
+          "marks": [
+            "h8"
+          ],
+          "arrows": [
+            "f5h3"
+          ],
+          "ref": "wikiWrongRookPawn"
+        },
+        {
+          "type": "demo",
+          "id": "d_greco",
+          "fen": "8/8/8/5bk1/8/5B2/6PP/5K2 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "f5h3"
+            },
+            {
+              "uci": "g2h3"
+            },
+            {
+              "uci": "g5h6",
+              "arrows": [
+                "h6h8"
               ]
             }
           ],
@@ -588,44 +623,252 @@
         },
         {
           "type": "talk",
-          "id": "twoPawns",
-          "fen": "7k/8/5K2/7P/7P/8/8/5B2 w - - 0 1",
+          "id": "karpovKasparov",
+          "fen": "8/5b2/3k2p1/pB3p2/P2K1P1P/8/8/8 b - - 8 82",
           "side": "black",
           "marks": [
             "h8"
+          ],
+          "arrows": [
+            "f7b3"
+          ],
+          "ref": "karpovKasparov"
+        },
+        {
+          "type": "move",
+          "id": "quizKnight",
+          "fen": "5b2/3N1k2/6p1/7p/8/8/8/4K3 w - - 0 1",
+          "goal": "draw",
+          "ref": "ibmmQuiz3",
+          "line": [
+            {
+              "teach": "d7e5",
+              "accept": [
+                "d7e5"
+              ],
+              "reply": "f7f6"
+            },
+            {
+              "teach": "e5g6",
+              "accept": [
+                "e5g6"
+              ],
+              "reply": "f6g6"
+            },
+            {
+              "teach": "e1f1",
+              "accept": [
+                "e1d1",
+                "e1d2",
+                "e1e2",
+                "e1f1",
+                "e1f2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shift",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_shift",
+          "fen": "2b5/8/2k5/pp6/8/8/3K4/3B4 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "a1"
+          ],
+          "ref": "ibmmPractice"
+        },
+        {
+          "type": "talk",
+          "id": "shift",
+          "fen": "2b5/8/2k5/pp6/8/8/3K4/3B4 w - - 0 1",
+          "marks": [
+            "a1",
+            "b5"
+          ],
+          "arrows": [
+            "d1a4"
+          ],
+          "ref": "ibmmPractice"
+        },
+        {
+          "type": "demo",
+          "id": "d_shift",
+          "fen": "2b5/8/2k5/pp6/8/8/3K4/3B4 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "d1a4"
+            },
+            {
+              "uci": "b5a4"
+            },
+            {
+              "uci": "d2c2"
+            },
+            {
+              "uci": "a4a3"
+            },
+            {
+              "uci": "c2b1",
+              "marks": [
+                "a1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "shiftWrong",
+          "fen": "2b5/8/p7/1Bk5/8/8/3K4/8 b - - 0 2",
+          "side": "white",
+          "marks": [
+            "b1"
+          ],
+          "arrows": [
+            "a6b5"
+          ],
+          "ref": "ibmmQuiz4"
+        },
+        {
+          "type": "move",
+          "id": "shiftMove",
+          "fen": "2b5/8/2k5/pp6/8/8/3K4/3B4 w - - 0 1",
+          "goal": "draw",
+          "ref": "ibmmPractice",
+          "line": [
+            {
+              "teach": "d1a4",
+              "accept": [
+                "d1a4"
+              ],
+              "reply": "c6c5"
+            },
+            {
+              "teach": "a4b5",
+              "accept": [
+                "a4b5"
+              ],
+              "reply": "c5b5"
+            },
+            {
+              "teach": "d2c2",
+              "accept": [
+                "d2c1",
+                "d2c2",
+                "d2c3",
+                "d2d1",
+                "d2d3"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prison",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_prison",
+          "fen": "7k/8/6PP/8/4K3/3B4/8/b7 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "h7",
+            "g7",
+            "g8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "prison",
+          "fen": "7k/8/6PP/8/4K3/3B4/8/b7 w - - 0 1",
+          "marks": [
+            "g8",
+            "h7",
+            "g7"
+          ],
+          "arrows": [
+            "d3c4"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_prison",
+          "fen": "7k/8/6PP/8/4K3/3B4/8/b7 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "d3c4",
+              "arrows": [
+                "c4g8"
+              ]
+            },
+            {
+              "uci": "a1c3"
+            },
+            {
+              "uci": "e4f5"
+            },
+            {
+              "uci": "c3b2"
+            },
+            {
+              "uci": "f5e6"
+            },
+            {
+              "uci": "b2c3"
+            },
+            {
+              "uci": "e6f7",
+              "marks": [
+                "g8",
+                "g7"
+              ]
+            }
           ]
         },
         {
           "type": "move",
-          "id": "twoPawnsMove",
-          "fen": "5k2/8/8/5K1P/7P/8/8/3B4 b - - 0 1",
-          "goal": "draw",
+          "id": "prisonMove",
+          "fen": "7k/8/6PP/8/5K2/8/4B3/b7 w - - 0 1",
+          "goal": "win",
           "line": [
             {
-              "teach": "f8g7",
+              "teach": "e2c4",
               "accept": [
-                "f8f7",
-                "f8g7",
-                "f8g8"
+                "e2c4"
               ],
-              "reply": "f5g5"
+              "reply": "a1b2"
             },
             {
-              "teach": "g7h7",
+              "teach": "f4f5",
               "accept": [
-                "g7f7",
-                "g7f8",
-                "g7g8",
-                "g7h7",
-                "g7h8"
+                "f4e4",
+                "f4f3",
+                "f4f5",
+                "f4g3",
+                "f4g4"
               ],
-              "reply": "h5h6"
+              "reply": "b2c3"
             },
             {
-              "teach": "h7h8",
+              "teach": "f5e6",
               "accept": [
-                "h7g8",
-                "h7h8"
+                "c4a2",
+                "c4b3",
+                "c4d5",
+                "c4e6",
+                "c4f7",
+                "f5e4",
+                "f5e6",
+                "f5g4"
               ]
             }
           ]
@@ -636,20 +879,9 @@
       "id": "summary",
       "steps": [
         {
-          "type": "think",
-          "id": "t_finish",
-          "fen": "8/8/8/2k5/8/6KP/4B3/8 b - - 0 1",
-          "hints": 1,
-          "ask": "plan",
-          "marks": [
-            "h8"
-          ]
-        },
-        {
           "type": "talk",
           "id": "recap",
           "fen": "7k/8/5K2/7P/8/8/8/5B2 w - - 0 1",
-          "side": "black",
           "marks": [
             "h8"
           ]
@@ -657,13 +889,23 @@
         {
           "type": "talk",
           "id": "rules",
-          "fen": "8/8/8/2k5/8/6KP/4B3/8 b - - 0 1",
+          "fen": "5k2/8/6K1/7P/8/3B4/8/8 w - - 0 1",
           "marks": [
             "g8",
             "h8"
           ],
           "arrows": [
-            "c5f8"
+            "d3c4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "rules3",
+          "fen": "8/8/8/5bk1/8/5B2/6PP/5K2 b - - 0 1",
+          "side": "black",
+          "marks": [
+            "h3",
+            "h8"
           ]
         },
         {
@@ -867,7 +1109,7 @@
     },
     {
       "id": "fischerTaimanov",
-      "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 1",
+      "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 81",
       "ref": "fischerTaimanov"
     }
   ],
@@ -883,6 +1125,27 @@
       "author": "ibmm",
       "title": "ChessNetwork #17: What is a Wrong Colored Bishop?",
       "url": "https://lichess.org/study/gHNmrart"
+    },
+    {
+      "id": "ibmmPractice",
+      "kind": "study",
+      "author": "ibmm",
+      "title": "ChessNetwork #17: Is this a draw? (practice)",
+      "url": "https://lichess.org/study/gHNmrart/oZbVF2m3"
+    },
+    {
+      "id": "ibmmQuiz3",
+      "kind": "study",
+      "author": "ibmm",
+      "title": "ChessNetwork #17: Quiz 3",
+      "url": "https://lichess.org/study/gHNmrart/FQvKy8Oh"
+    },
+    {
+      "id": "ibmmQuiz4",
+      "kind": "study",
+      "author": "ibmm",
+      "title": "ChessNetwork #17: Quiz 4",
+      "url": "https://lichess.org/study/gHNmrart/Ht0RaVus"
     },
     {
       "id": "studier",
@@ -940,15 +1203,17 @@
       "white": "Bobby Fischer",
       "black": "Mark Taimanov",
       "event": "Candidatos, Vancouver (partida 2)",
-      "year": 1971
+      "year": 1971,
+      "url": "https://lichess.org/analysis/pgn/e4_c5_Nf3_Nc6_d4_cxd4_Nxd4_e6_Nb5_d6_Bf4_e5_Be3_Nf6_Bg5_Qa5+_Qd2_Nxe4_Qxa5_Nxa5_Be3_Kd7_N1c3_Nxc3_Nxc3_Kd8_Nb5_Be6_O-O-O_b6_f4_exf4_Bxf4_Nb7_Be2_Bd7_Rd2_Be7_Rhd1_Bxb5_Bxb5_Kc7_Re2_Bf6_Rde1_Rac8_Bc4_Rhf8_b4_a5_Bd5_Kb8_a3_Rfd8_Bxf7_Bc3_Bd2_d5_Rd1_d4_Bxc3_Rxc3_Kb2_d3_Kxc3_dxe2_Re1_Nd6_Bh5_Nb5+_Kb2_axb4_axb4_Rd4_c3_Rh4_Bxe2_Nd6_Rd1_Kc7_h3_Rf4_Rf1_Re4_Bd3_Re5_Rf2_h5_c4_Rg5_Kc3_Kd7_Ra2_Kc8_Kd4_Kc7_Ra7+_Kd8_c5_bxc5+_bxc5_Ne8_Ra2_Nc7_Bc4_Kd7_Rb2_Kc6_Bb3_Nb5+_Ke3_Kxc5_Kf4_Rg6_Bd1_h4_Kf5_Rh6_Kg5_Nd6_Bc2_Nf7+_Kg4_Ne5+_Kf4_Kd4_Rb4+_Kc3_Rb5_Nf7_Rc5+_Kd4_Rf5_g5+_Kg4_Ne5+_Kxg5_Rg6+_Kxh4_Rxg2_Bd1_Rg8_Bg4_Ke4_Kg3_Rg7_Rf4+_Kd5_Ra4_Ng6_Ra6_Ne5_Kf4_Rf7+_Kg5_Rg7+_Kf5_Rf7+_Rf6_Rxf6+_Kxf6_Ke4_Bc8_Kf4_h4_Nf3_h5_Ng5_Bf5_Nf3_h6_Ng5_Kg6_Nf3_h7_Ne5+_Kf6#161"
     },
     {
-      "id": "korchnoiKarpov",
+      "id": "karpovKasparov",
       "kind": "game",
-      "white": "Viktor Korchnoi",
-      "black": "Anatoly Karpov",
-      "event": "Campeonato mundial, Baguio (partida 5)",
-      "year": 1978
+      "white": "Anatoly Karpov",
+      "black": "Garry Kasparov",
+      "event": "Campeonato mundial, Moscou (partida 20)",
+      "year": 1985,
+      "url": "https://lichess.org/analysis/pgn/d4_d5_c4_e6_Nc3_Be7_cxd5_exd5_Bf4_Nf6_Qc2_O-O_e3_c5_dxc5_Bxc5_Nf3_Nc6_Be2_d4_exd4_Nxd4_Nxd4_Qxd4_Bg3_Be6_O-O_Rac8_Bf3_b6_Rfe1_Qb4_Be5_Bd4_a3_Qc5_Bxd4_Qxd4_Rad1_Qc5_Qa4_a5_Qd4_Qxd4_Rxd4_Rfd8_Red1_Rxd4_Rxd4_Kf8_Kf1_Ke7_Ke2_Bb3_Ke3_Rc5_Kd2_h6_Be2_Ne8_Bf3_Nf6_Rd3_Re5_h3_Rc5_Rd4_Rc8_Be2_Rc5_Bd3_h5_g3_g6_Ne2_Nd7_Re4+_Re5_Nd4_Bd5_Re2_Rxe2+_Bxe2_Nc5_Nb5_Ne4+_Ke3_Nd6_Kd4_Bc6_Nxd6_Kxd6_Bc4_Be8_h4_f6_Bg8_Kc6_Ba2_Kd6_Bd5_Ke7_Bg8_Kd6_Bb3_Ke7_Bd1_Kd6_Be2_Bd7_Bd3_Be8_Bc4_Ke7_Be2_Kd6_g4_hxg4_Bxg4_Bf7_f4_f5_Bd1_Bd5_Ba4_Bf3_Bb3_Be2_Bf7_Bh5_Kc4_Be2+_Kc3_Bh5_b4_Ke7_Bc4_Kd6_bxa5_bxa5_Kd4_Bf3_Bf1_Bd5_Be2_Bb7_Bd1_Bd5_Ke3_Kc5_Ba4_Bf7_Bd7_Kc4_a4_Kc5_Bb5_Kd5_Kd3_Kc5_Kc3_Kd6_Kd4_Bb3_Be8_Ke7_Bxg6_Bxa4_Bxf5_Kf6#163"
     },
     {
       "id": "olaffo",

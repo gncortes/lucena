@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/star_challenge_cubit.dart';
 import 'package:lucena/ui/school/widgets/star_challenge_screen.dart';
 import 'package:lucena/ui/school/widgets/star_challenges_screen.dart';
+import 'package:lucena/ui/school/widgets/star_scoreboard.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/board_gestures.dart';
@@ -90,7 +91,14 @@ void main() {
     tester,
   ) async {
     final cubit = await pump(tester);
-    expect(find.text('Rook · Easy'), findsOneWidget);
+    expect(find.text('Rook challenge'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(StarChallengeKeys.levelChip),
+        matching: find.text('Easy'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('1:00'), findsOneWidget);
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
@@ -104,13 +112,19 @@ void main() {
     await tester.pump();
     await tester.tapAt(squareCenter(rect, star.name));
     await tester.pumpAndSettle();
-    expect(
-      int.parse(
-        tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
-      ),
-      cubit.state.points,
-    );
     expect(cubit.state.points, greaterThan(0));
+    // O painel embaixo do tabuleiro: a cor da estrela pega e o total.
+    final kind = StarKind.values.firstWhere((k) => cubit.state.countOf(k) > 0);
+    expect(
+      tester
+          .widget<Text>(find.byKey(StarChallengeKeys.kindCount(kind.name)))
+          .data,
+      '1',
+    );
+    expect(
+      tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data,
+      cubit.state.points == 1 ? '1 point' : '${cubit.state.points} points',
+    );
 
     now.advance(const Duration(seconds: 61));
     cubit.tick();
@@ -119,6 +133,63 @@ void main() {
     expect(find.text("Time's up!"), findsOneWidget);
     expect(find.text('New best!'), findsOneWidget);
     expect(find.byKey(StarChallengeKeys.retryButton), findsOneWidget);
+  });
+
+  testWidgets('o painel: estrelas de cada cor e o total de pontos', (
+    tester,
+  ) async {
+    final scores = ValueNotifier<(Map<StarKind, int>, int)>((const {}, 0));
+    addTearDown(scores.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: await settings(),
+        child: Scaffold(
+          body: Center(
+            child: ValueListenableBuilder(
+              valueListenable: scores,
+              builder: (context, value, _) =>
+                  StarScoreboard(counts: value.$1, points: value.$2),
+            ),
+          ),
+        ),
+      ),
+    );
+    String text(Key key) => tester.widget<Text>(find.byKey(key)).data!;
+
+    await tester.pumpAndSettle();
+    for (final kind in StarKind.values) {
+      expect(text(StarChallengeKeys.kindCount(kind.name)), '0');
+    }
+    expect(text(StarChallengeKeys.collected), '0 points');
+
+    // Duas de bronze, uma de prata, três de ouro: 2 + 2 + 9 = 13.
+    scores.value = (
+      const {StarKind.bronze: 2, StarKind.silver: 1, StarKind.gold: 3},
+      13,
+    );
+    await tester.pump();
+    // No meio da animação o total ainda está subindo.
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(text(StarChallengeKeys.collected), isNot('13 points'));
+    await tester.pumpAndSettle();
+    expect(text(StarChallengeKeys.kindCount('bronze')), '2');
+    expect(text(StarChallengeKeys.kindCount('silver')), '1');
+    expect(text(StarChallengeKeys.kindCount('gold')), '3');
+    expect(text(StarChallengeKeys.collected), '13 points');
+  });
+
+  testWidgets('o tabuleiro fica com o centro no centro da tela', (
+    tester,
+  ) async {
+    final cubit = await pump(tester);
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+    final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(rect.center.dy, closeTo(screen.height / 2, 1));
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('a lista: seis peças, três níveis, a melhor marca', (

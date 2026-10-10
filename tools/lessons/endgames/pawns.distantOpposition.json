@@ -12,7 +12,7 @@
           "type": "think",
           "id": "t_lesson",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-          "hints": 1,
+          "hints": 2,
           "ask": "plan"
         },
         {
@@ -22,20 +22,47 @@
           "marks": [
             "f5",
             "g5",
-            "h5"
-          ],
-          "arrows": [
-            "d3e4"
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "odd",
-          "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 0 1",
-          "marks": [
+            "h5",
             "e5",
             "e6",
             "e7"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_distant",
+          "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "d3e4",
+              "marks": [
+                "e5",
+                "e6",
+                "e7"
+              ]
+            },
+            {
+              "uci": "e8f7"
+            },
+            {
+              "uci": "e4f5",
+              "arrows": [
+                "e4f5"
+              ],
+              "marks": [
+                "f6"
+              ]
+            },
+            {
+              "uci": "f7g7"
+            },
+            {
+              "uci": "f5g5",
+              "marks": [
+                "g6"
+              ]
+            }
           ]
         },
         {
@@ -46,17 +73,20 @@
           "turns": [
             {
               "teach": "d3e4",
-              "accept": "win",
-              "reply": "e8f7"
+              "accept": "only",
+              "reply": "e8e7"
             },
             {
-              "teach": "e4f5",
-              "accept": "win",
-              "reply": "f7g7"
+              "teach": "e4e5",
+              "accept": [
+                "e4e5",
+                "e4f5"
+              ],
+              "reply": "e7f7"
             },
             {
-              "teach": "f5g5",
-              "accept": "win"
+              "teach": "e5f5",
+              "accept": "only"
             }
           ]
         }
@@ -69,7 +99,7 @@
           "type": "think",
           "id": "t_diagonal",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
-          "hints": 1,
+          "hints": 2,
           "ask": "plan"
         },
         {
@@ -84,6 +114,38 @@
           ]
         },
         {
+          "type": "demo",
+          "id": "d_diagonal",
+          "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "f3f4",
+              "marks": [
+                "e5"
+              ]
+            },
+            {
+              "uci": "d6e6"
+            },
+            {
+              "uci": "f4e4",
+              "marks": [
+                "e5"
+              ]
+            },
+            {
+              "uci": "e6d6"
+            },
+            {
+              "uci": "e4f5",
+              "marks": [
+                "f5"
+              ]
+            }
+          ]
+        },
+        {
           "type": "move",
           "id": "diagonalMove",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
@@ -91,29 +153,88 @@
           "turns": [
             {
               "teach": "f3f4",
-              "accept": "win",
-              "reply": "d6e6"
+              "accept": "only",
+              "reply": "d6d5"
             },
             {
-              "teach": "f4e4",
-              "accept": "win",
-              "reply": "e6d6"
-            },
-            {
-              "teach": "e4f5",
-              "accept": "win"
+              "teach": "f4f5",
+              "accept": "only"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "defend",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_carlsenSo",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "side": "black",
+          "ref": "carlsenSo2017"
         },
         {
           "type": "talk",
           "id": "defend",
-          "fen": "8/4k3/8/8/8/5KP1/8/8 b - - 0 1",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "side": "black",
+          "ref": "carlsenSo2017",
           "marks": [
-            "f7"
+            "f4",
+            "f5",
+            "f6"
           ],
           "arrows": [
-            "e7f7"
+            "f6f7"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_carlsenSo",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "side": "black",
+          "goal": "draw",
+          "ref": "carlsenSo2017",
+          "line": [
+            {
+              "uci": "f6f7",
+              "marks": [
+                "f4",
+                "f5",
+                "f6"
+              ]
+            },
+            {
+              "uci": "f3e3"
+            },
+            {
+              "uci": "f7e7",
+              "marks": [
+                "e4",
+                "e5",
+                "e6"
+              ]
+            },
+            {
+              "uci": "e3d3"
+            },
+            {
+              "uci": "e7d7",
+              "marks": [
+                "d4",
+                "d5",
+                "d6"
+              ]
+            },
+            {
+              "uci": "d3c4"
+            },
+            {
+              "uci": "d7e6"
+            }
           ]
         },
         {
@@ -141,13 +262,109 @@
       ]
     },
     {
+      "id": "lateral",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_euwe",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "ref": "euweWhitaker1928"
+        },
+        {
+          "type": "talk",
+          "id": "lateral",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "ref": "euweWhitaker1928",
+          "marks": [
+            "c5",
+            "d5",
+            "e5"
+          ],
+          "arrows": [
+            "c4b5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_euwe",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "goal": "win",
+          "ref": "euweWhitaker1928",
+          "line": [
+            {
+              "uci": "c4b5",
+              "marks": [
+                "c5",
+                "d5",
+                "e5"
+              ]
+            },
+            {
+              "uci": "f5e5"
+            },
+            {
+              "uci": "b5a5"
+            },
+            {
+              "uci": "e5d4",
+              "arrows": [
+                "d4c3"
+              ]
+            },
+            {
+              "uci": "a5b4",
+              "marks": [
+                "c4",
+                "c3"
+              ]
+            },
+            {
+              "uci": "d4d5"
+            },
+            {
+              "uci": "b4b5",
+              "marks": [
+                "b6",
+                "c6"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "lateralDefend",
+          "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
+          "side": "black",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "f7e6",
+              "accept": "only",
+              "reply": "a6b5"
+            },
+            {
+              "teach": "e6d5",
+              "accept": "only",
+              "reply": "b5b4"
+            },
+            {
+              "teach": "d5d4",
+              "accept": "only"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "capablanca",
       "steps": [
         {
           "type": "think",
           "id": "t_capablanca",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
-          "hints": 1,
+          "hints": 2,
           "ask": "plan"
         },
         {
@@ -164,6 +381,52 @@
           ],
           "arrows": [
             "e1e2"
+          ],
+          "ref": "capablanca"
+        },
+        {
+          "type": "demo",
+          "id": "d_capablanca",
+          "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "e1e2"
+            },
+            {
+              "uci": "e8e7"
+            },
+            {
+              "uci": "e2e3"
+            },
+            {
+              "uci": "e7e6"
+            },
+            {
+              "uci": "e3e4"
+            },
+            {
+              "uci": "e6f6"
+            },
+            {
+              "uci": "e4f4",
+              "marks": [
+                "h4"
+              ]
+            },
+            {
+              "uci": "f6g6"
+            },
+            {
+              "uci": "f4e5",
+              "arrows": [
+                "e5d5",
+                "d5c5"
+              ],
+              "marks": [
+                "b5"
+              ]
+            }
           ]
         },
         {
@@ -187,6 +450,215 @@
               "accept": "win"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "edge",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_edge",
+          "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "ref": "brandonEdge"
+        },
+        {
+          "type": "talk",
+          "id": "edge",
+          "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+          "ref": "brandonEdge",
+          "marks": [
+            "b5",
+            "c5",
+            "d5",
+            "e5"
+          ],
+          "arrows": [
+            "e5f5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_edge",
+          "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+          "goal": "win",
+          "ref": "brandonEdge",
+          "line": [
+            {
+              "uci": "e5f5",
+              "marks": [
+                "b5",
+                "c5",
+                "d5",
+                "e5"
+              ]
+            },
+            {
+              "uci": "a5b6"
+            },
+            {
+              "uci": "f5f6",
+              "marks": [
+                "c6",
+                "d6",
+                "e6"
+              ]
+            },
+            {
+              "uci": "b6b7"
+            },
+            {
+              "uci": "f6f7"
+            },
+            {
+              "uci": "b7b6"
+            },
+            {
+              "uci": "f7e8",
+              "marks": [
+                "e8"
+              ]
+            },
+            {
+              "uci": "b6a7"
+            },
+            {
+              "uci": "e8e7",
+              "marks": [
+                "b7",
+                "c7",
+                "d7"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "edgeMove",
+          "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+          "goal": "win",
+          "turns": [
+            {
+              "teach": "e5f5",
+              "accept": "only",
+              "reply": "a5a6"
+            },
+            {
+              "teach": "f5e6",
+              "accept": [
+                "f5e6"
+              ],
+              "reply": "a6b6"
+            },
+            {
+              "teach": "e6d6",
+              "accept": [
+                "e6d6",
+                "e6f6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reserve",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_reserve",
+          "fen": "4k3/8/8/1p5p/1P5P/8/P7/4K3 b - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "side": "white"
+        },
+        {
+          "type": "talk",
+          "id": "reserve",
+          "fen": "4k3/8/8/1p5p/1P5P/8/P7/4K3 b - - 0 1",
+          "side": "white",
+          "marks": [
+            "a2",
+            "a3"
+          ],
+          "arrows": [
+            "a2a3"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_reserve",
+          "fen": "4k3/8/8/1p5p/1P5P/8/P7/4K3 b - - 0 1",
+          "side": "white",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "e8e7"
+            },
+            {
+              "uci": "a2a3",
+              "arrows": [
+                "a2a3"
+              ]
+            },
+            {
+              "uci": "e7e6"
+            },
+            {
+              "uci": "e1e2",
+              "marks": [
+                "e3",
+                "e4",
+                "e5"
+              ]
+            },
+            {
+              "uci": "e6e5"
+            },
+            {
+              "uci": "e2e3",
+              "marks": [
+                "e4"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "grigorievMove",
+          "fen": "K7/8/1k6/1p6/8/2P5/1P6/8 w - - 0 1",
+          "goal": "win",
+          "ref": "grigoriev1930",
+          "turns": [
+            {
+              "teach": "b2b3",
+              "accept": "only",
+              "reply": "b6a5"
+            },
+            {
+              "teach": "a8b8",
+              "accept": "only",
+              "reply": "b5b4"
+            },
+            {
+              "teach": "c3c4",
+              "accept": "only"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "means",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_means",
+          "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
+          "hints": 1,
+          "ask": "plan"
         },
         {
           "type": "talk",
@@ -202,22 +674,60 @@
           ]
         },
         {
+          "type": "demo",
+          "id": "d_means",
+          "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "d4c5",
+              "marks": [
+                "b6",
+                "c6",
+                "d6"
+              ]
+            },
+            {
+              "uci": "e6d7"
+            },
+            {
+              "uci": "c5b6",
+              "marks": [
+                "b6"
+              ]
+            },
+            {
+              "uci": "d7c8"
+            },
+            {
+              "uci": "b6c6"
+            },
+            {
+              "uci": "c8b8"
+            },
+            {
+              "uci": "c6d7",
+              "marks": [
+                "c8",
+                "c7",
+                "c6"
+              ]
+            }
+          ]
+        },
+        {
           "type": "talk",
           "id": "recap",
-          "fen": "8/8/4k3/8/8/5P1K/8/8 w - - 0 1",
+          "fen": "8/2k5/8/8/8/8/1K3P2/8 w - - 0 1",
           "marks": [
-            "e5",
-            "f5",
-            "g5"
-          ],
-          "arrows": [
-            "h3g4"
+            "c3",
+            "c7"
           ]
         },
         {
           "type": "play",
           "id": "finish",
-          "fen": "2k5/8/8/8/8/8/2P2K2/8 w - - 0 1",
+          "fen": "8/2k5/8/8/8/8/1K3P2/8 w - - 0 1",
           "goal": "win"
         }
       ]
@@ -285,7 +795,7 @@
       "stars": 2,
       "fen": "8/8/8/3p1p2/8/4P3/6K1/2k5 w - - 0 1",
       "goal": "draw",
-      "origin": "moorthattil",
+      "origin": "capablanca",
       "turns": [
         {
           "teach": "g2g1",
@@ -459,14 +969,14 @@
       "ref": "capablanca"
     },
     {
-      "id": "wikiDiagonal",
-      "fen": "8/4k1p1/6P1/4KP2/8/8/8/8 b - - 0 1",
-      "ref": "wikiOpposition"
+      "id": "carlsenSo",
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+      "ref": "carlsenSo2017"
     },
     {
-      "id": "studyDefence",
-      "fen": "8/8/8/5kp1/8/8/8/6K1 w - - 0 1",
-      "ref": "practice"
+      "id": "euweWhitaker",
+      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+      "ref": "euweWhitaker1928"
     }
   ],
   "practice": {
@@ -516,6 +1026,44 @@
       "author": "Moorthattil",
       "title": "Distant Opposition",
       "url": "https://lichess.org/study/6lZOGy5q"
+    },
+    {
+      "id": "carlsenSo2017",
+      "kind": "game",
+      "white": "Magnus Carlsen",
+      "black": "Wesley So",
+      "event": "5th Norway Chess, Stavanger",
+      "year": 2017,
+      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_Nc6_Bc4_Bc5_O-O_Nf6_d3_O-O_h3_d6_c3_a6_a4_Be6_Bxe6_fxe6_b4_Ba7_Be3_Bxe3_fxe3_Ne7_Nbd2_Ng6_d4_Qe7_Qb3_Kh8_b5_axb5_axb5_exd4_cxd4_e5_Rxa8_Rxa8_Rc1_exd4_exd4_Nxe4_Nxe4_Qxe4_Rxc7_Rf8_Qc2_Qd5_Qc4_Qxc4_Rxc4_Kg8_b6_h6_Nd2_Nf4_Rc7_Rf7_Nc4_Nd5_Rc8+_Rf8_Rxf8+_Kxf8_Nxd6_Nxb6_Nxb7_Ke7_Kf2_Ke6_Ke3_Kd5_Na5_Na4_Nb3_Nb2_Nd2_Nd1+_Ke2_Nb2_Nb3_Kc4_Nc5_Kxd4_Ne6+_Ke4_Nxg7_Nc4_Kf2_Kf4_g3+_Ke4_g4_Kf4_Nh5+_Kg5_Kg3_Ne5_Nf4_Kf6_Kh4_Ng6+_Kg3_Nxf4_Kxf4_Kg6_h4_Kf6_Kf3_Kf7_Ke3_Ke7_Kd3_Kd7_Kc4_Ke6_Kd4_Kd6_Ke4_Ke6_Kf4_Kf6_Ke4_Ke6_Kf4_Kf6#109"
+    },
+    {
+      "id": "euweWhitaker1928",
+      "kind": "game",
+      "white": "Max Euwe",
+      "black": "Norman Whitaker",
+      "event": "Olimpíada de Haia",
+      "year": 1928,
+      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_d6_d4_exd4_Nxd4_g6_Nc3_Bg7_h4_Nf6_Be2_Qe7_Bg5_h6_Nd5_Qd8_Bxf6_Bxf6_Nxf6+_Qxf6_Qd2_Nc6_Nxc6_bxc6_O-O-O_Rb8_Qd4_Ke7_Bf3_c5_e5_cxd4_exf6+_Kxf6_Rxd4_Bb7_Rf4+_Kg7_Bxb7_Rxb7_Re1_g5_Rf3_c6_Rc3_Rc8_Re4_d5_Re5_gxh4_Rxd5_Rcb8_Rxc6_Rxb2_Rd4_Rxa2_Rg4+_Kh7_Rxh4_Ra1+_Kd2_Rd8+_Kc3_Rg1_Rcxh6+_Kg7_Rh7+_Kg6_R4h6+_Kg5_Rc6_Rg8_Rxf7_Rxg2_Rcc7_a6_Rc6_a5_Rc5+_Kg6_Rf3_Ra8_Rg3+_Rxg3+_fxg3_Kf6_g4_Rg8_g5+_Rxg5_Rxg5_Kxg5_Kc4_Kf5_Kb5_Ke5_Kxa5_Kd4_Kb4_Kd5_Kb5_Kd6_c4_Kd7_Kb6_Kc8_Kc6#96"
+    },
+    {
+      "id": "brandonEdge",
+      "kind": "study",
+      "author": "Brandon2021",
+      "title": "Distant Opposition: Practical Endgame using opposition",
+      "url": "https://lichess.org/study/CmOO2PLp/REhYmZXe"
+    },
+    {
+      "id": "grigoriev1930",
+      "kind": "study",
+      "author": "humoresque",
+      "title": "Grigoriev, Nikolai (estudo de 1930)",
+      "url": "https://lichess.org/study/0iaDBwxT/LNaVpb0U"
+    },
+    {
+      "id": "pgnMentor",
+      "kind": "web",
+      "title": "PGN Mentor: partidas de Carlsen e de Euwe",
+      "url": "https://www.pgnmentor.com/files.html"
     },
     {
       "id": "tablebase",

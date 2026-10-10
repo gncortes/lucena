@@ -74,10 +74,17 @@ class ExerciseState {
   /// Quando o exercício abriu: o cronômetro conta daqui.
   final DateTime? startedAt;
 
-  /// Resolvendo até a resposta; resolvido, o professor fala.
-  ExerciseLayoutMode get layout => phase == ExercisePhase.done
+  /// Resolvendo até a resposta; resolvido com erro ou dica (ou com a
+  /// explicação aberta), o professor fala. No acerto limpo o tabuleiro fica
+  /// onde estava: embaixo, só "você acertou" e o próximo.
+  ExerciseLayoutMode get layout =>
+      phase == ExercisePhase.done && (!cleanSolve || explained)
       ? ExerciseLayoutMode.explaining
       : ExerciseLayoutMode.solving;
+
+  /// Resolvido de primeira, sem erro nem dica.
+  bool get cleanSolve =>
+      phase == ExercisePhase.done && mistakes == 0 && hints == 0;
 
   /// A aula ou o exercício pedido não existem.
   final bool missing;
@@ -304,8 +311,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         state.copyWith(
           mistakes: mistakes,
           wrongMove: move,
-          // A pista fica para a dica: aqui só o "não é esse".
-          speech: _pick('coach.wrong'),
+          // Sem fala: o tabuleiro treme e o lance volta. O Viktor só fala
+          // na dica e depois de resolver.
+          clearSpeech: true,
           emotion: Emotion.focused,
         ),
       );
@@ -331,7 +339,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
-        speech: _pick('coach.good'),
+        // O aluno só joga: sem elogio no meio da linha. A vez volta a
+        // aparecer embaixo do tabuleiro quando o outro lado responder.
+        clearSpeech: true,
         emotion: Emotion.happy,
       ),
     );

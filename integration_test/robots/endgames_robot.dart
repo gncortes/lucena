@@ -65,10 +65,15 @@ class EndgamesRobot {
       await $(EndgameLessonKeys.speech)
           .scrollTo(scrollDirection: AxisDirection.up);
     }
-    // Os exercícios ficam no teste final, que começa recolhido (T51).
+    // Os exercícios ficam no teste final, que começa recolhido (T51). Com
+    // a fala do Viktor mais longa, o cartão pode nem estar construído: rola
+    // até ele antes de decidir se abre (tocar no aberto o fecharia).
     if (!$(key).exists && !$(EndgameLessonKeys.exercises).exists) {
-      await $(EndgameLessonKeys.finalTestSummary).scrollTo().tap();
-      await $.pumpAndSettle();
+      await $(EndgameLessonKeys.finalTestSummary).scrollTo();
+      if (!$(key).exists && !$(EndgameLessonKeys.exercises).exists) {
+        await $(EndgameLessonKeys.finalTestSummary).tap();
+        await $.pumpAndSettle();
+      }
     }
     return $(key).scrollTo();
   }
@@ -114,13 +119,7 @@ class EndgamesRobot {
           e2eNow.advance(const Duration(minutes: 5));
           await $.pump(const Duration(seconds: 1));
         case DemoStep():
-          // Avança na mão até o fim (a demonstração também anda sozinha).
-          while (!$(LessonKeys.nextButton).exists) {
-            if ($(LessonKeys.demoForward).exists) {
-              await $(LessonKeys.demoForward).tap();
-            }
-            await $.pumpAndSettle();
-          }
+          await finishDemo();
         case TalkStep() || StarsStep() || TapStep():
           break;
       }
@@ -151,6 +150,16 @@ class EndgamesRobot {
       await $.pump(const Duration(milliseconds: 100));
     }
     await $(step).waitUntilExists();
+  }
+
+  /// Avança a demonstração aberta até o fim (ela também anda sozinha).
+  Future<void> finishDemo() async {
+    while (!$(LessonKeys.nextButton).exists) {
+      if ($(LessonKeys.demoForward).exists) {
+        await $(LessonKeys.demoForward).tap();
+      }
+      await $.pumpAndSettle();
+    }
   }
 
   /// "Continuar" no passo aberto da lição (no passo de pensar, "Ver
@@ -394,6 +403,11 @@ class EndgamesRobot {
 
   /// A nota da aula ("11 of 23 points").
   void expectScore(String text) =>
+      expectTextIn(find.byKey(EndgameLessonKeys.score), text);
+
+  /// Teste em andamento: no cartão da nota, só quantos foram resolvidos
+  /// ("3 of 8 solved").
+  void expectSolvedCount(String text) =>
       expectTextIn(find.byKey(EndgameLessonKeys.score), text);
 
   /// Sem nota de reprovação (exercícios por fazer).

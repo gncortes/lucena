@@ -471,7 +471,11 @@
     "Lance de espera, quando precisar."
   ],
   "graduation.twoBishops.play2.done": "Você conseguiu. Mate com dois bispos.",
-  "coach.thinkRight": ["Isso, correto!", "Exato, era esse o lance!", "Correto: você achou sozinho."],
+  "coach.thinkRight": [
+    "Isso, correto!",
+    "Exato, era esse o lance!",
+    "Correto: você achou sozinho."
+  ],
   "coach.praise": [
     "Muito bem!",
     "Excelente.",
@@ -495,6 +499,24 @@
     "Não é esse. Pense mais um pouco.",
     "Quase. Olhe de novo.",
     "Calma. Todo mundo erra, até os grandes mestres."
+  ],
+  "coach.illegal.rook": [
+    "A torre não anda assim: só em linha reta, para cima, para baixo ou para os lados."
+  ],
+  "coach.illegal.bishop": [
+    "O bispo não anda assim: só na diagonal."
+  ],
+  "coach.illegal.knight": [
+    "O cavalo não anda assim: ele salta em L."
+  ],
+  "coach.illegal.king": [
+    "O rei não anda assim: uma casa por vez, em qualquer direção."
+  ],
+  "coach.illegal.queen": [
+    "A dama não anda assim: em linha reta ou na diagonal."
+  ],
+  "coach.illegal.pawn": [
+    "O peão não anda assim: ele só vai para a frente, e captura na diagonal."
   ],
   "coach.hint": [
     "Observe a seta. Por que este lance?",
@@ -527,9 +549,9 @@
     "De novo, com calma."
   ],
   "coach.partDone": [
-    "Etapa feita. Cada uma deixa a próxima mais fácil.",
+    "Capítulo feito. Cada um deixa o próximo mais fácil.",
     "Boa. Mais uma peça da técnica no lugar.",
-    "Etapa concluída. Descanse a cabeça um instante e siga."
+    "Capítulo concluído. Descanse a cabeça um instante e siga."
   ],
   "coach.lessonDone": [
     "Aula concluída. Estou orgulhoso de você.",
@@ -556,12 +578,12 @@
   "endgames.module.rook": "Finais de torre",
   "endgames.module.minor": "Peças menores",
   "endgames.module.rookMinor": "Torre e peça menor",
-  "endgames.lesson.intro": "A lição vem em etapas curtas. Em cada uma, você pensa sozinho primeiro, depois eu mostro e você pratica. Comece pela Etapa 1.",
-  "endgames.lesson.middle": "Bom ver você de volta. Siga pela etapa destacada: é de onde você parou.",
-  "endgames.lesson.test": "Etapas feitas. Agora o teste final: sem a minha ajuda. Quando a nota passar do mínimo, eu libero o final de verdade.",
+  "endgames.lesson.intro": "Comece pelo capítulo 1.",
+  "endgames.lesson.middle": "Bom ver você de volta. Siga pelo capítulo destacado: é de onde você parou.",
+  "endgames.lesson.test": "Capítulos feitos. Agora o teste final: sem a minha ajuda. Quando a nota passar do mínimo, eu libero o final de verdade.",
   "endgames.lesson.passed": "Aprovado. Agora só falta provar isso contra um adversário de carne e osso. Ou de silício.",
   "endgames.lesson.failed": "Ainda não foi desta vez. Releia a lição se quiser e refaça os exercícios: a segunda vez costuma ser bem melhor.",
-  "endgames.lesson.lessonLeft": "Nota alcançada nos exercícios. Agora termine as etapas da lição para concluir a aula e liberar o final de verdade.",
+  "endgames.lesson.lessonLeft": "Nota alcançada nos exercícios. Agora termine os capítulos da lição para concluir a aula e liberar o final de verdade.",
   "module.notation": "Notação",
   "notation.coordinates.title": "As coordenadas",
   "notation.coordinates.summary": "Cada casa tem um nome: a letra da coluna e o número da fileira.",

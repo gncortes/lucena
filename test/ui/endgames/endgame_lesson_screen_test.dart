@@ -19,9 +19,10 @@ void main() {
     WidgetTester tester, {
     String id = 'rook.lucena',
     EndgameProgress progress = const EndgameProgress(),
+    EndgameTrail? trail,
   }) async {
     final cubit = EndgameLessonCubit(
-      lessons: FakeEndgameLessonRepository(),
+      lessons: FakeEndgameLessonRepository(trail: trail),
       progress: FakeEndgameProgressRepository(progress),
       journey: FakeJourneyRepository(),
       characters: FakeCharacterRepository(),
@@ -194,5 +195,33 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Almost there: redo them to make it stick'), findsNothing);
+  });
+
+  testWidgets('aula em revisão: o aviso aparece só nela', (tester) async {
+    await pump(tester);
+    expect(find.byKey(EndgameLessonKeys.inReview), findsNothing);
+
+    final sample = FakeEndgameLessonRepository.sample.lessons.first;
+    final review = EndgameLesson(
+      id: sample.id,
+      module: sample.module,
+      lesson: sample.lesson,
+      exercises: sample.exercises,
+      passScore: sample.passScore,
+      keyPositions: sample.keyPositions,
+      practice: sample.practice,
+      references: sample.references,
+      inReview: true,
+    );
+    await pump(
+      tester,
+      trail: EndgameTrail(
+        modules: [
+          EndgameModule(id: review.module, lessons: [review]),
+        ],
+      ),
+    );
+    expect(find.byKey(EndgameLessonKeys.inReview), findsOneWidget);
+    expect(find.textContaining('under review'), findsOneWidget);
   });
 }

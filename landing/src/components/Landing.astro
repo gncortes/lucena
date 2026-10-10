@@ -1,4 +1,5 @@
 ---
+import FeatureCard from './FeatureCard.astro';
 import Phone from './Phone.astro';
 import { asset, links, locales, pageUrl, type Locale } from '../i18n';
 import type { Clip, Still } from '../media';
@@ -25,6 +26,15 @@ const phone = (clip: Clip) => ({
   pauseLabel: t.media.pause,
 });
 const mail = (subject: string) => `mailto:${links.email}?subject=${encodeURIComponent(subject)}`;
+// Ícones dos cartões sem captura (traço de 24 px, no estilo do botão de tema).
+const icons = {
+  placement: 'M9 4h6v3H9zM9 5.5H6V21h12V5.5h-3M9 12l2 2 4-4M9 17.5h6',
+  marathon: 'M12 12c-2-2.7-3.5-4-5.2-4a4 4 0 0 0 0 8c1.7 0 3.2-1.3 5.2-4zm0 0c2 2.7 3.5 4 5.2 4a4 4 0 0 0 0-8c-1.7 0-3.2 1.3-5.2 4z',
+  blind: 'M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 5 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A16 16 0 0 0 2 12c1 2 5 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2',
+  voice: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M8 21h8',
+  analysis: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+  progress: 'M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 21l1-4h4l1 4',
+} as const;
 const refUrls = [links.stockfish, links.maia, links.lichess, links.firebase, links.philidor];
 const opponents = [
   ['beachgoer', 'Coco', 1000],
@@ -196,17 +206,33 @@ const opponents = [
               <span>{f.progression.bullets[2]}</span>
             </li>
           </ol>
-          <ul class="pills">{f.progression.bullets.slice(1, 2).map((b) => <li>{b}</li>)}</ul>
+          <ul class="pills">{[f.progression.bullets[1], ...f.progression.bullets.slice(3)].map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media">
           <Phone {...shot('journeyChallenge')} />
         </div>
       </article>
 
+      <div class="feature-duo">
+        <FeatureCard {...f.placement} icon={icons.placement} />
+        <FeatureCard {...f.school} image="opponents/master.webp" />
+      </div>
+
       <article class="feature feature--flip" data-reveal>
         <div class="feature__text">
           <h3>{f.lessons.title}</h3>
           <p>{f.lessons.body}</p>
+          <p class="route__label">{t.features.route.label}</p>
+          <ol class="route">
+            {
+              t.features.route.steps.map((step) => (
+                <li>
+                  <strong>{step.title}</strong>
+                  <span>{step.body}</span>
+                </li>
+              ))
+            }
+          </ol>
           <ul class="ticks">{f.lessons.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media feature__media--pair">
@@ -217,13 +243,12 @@ const opponents = [
 
       <article class="feature" data-reveal>
         <div class="feature__text">
-          <h3>{f.levels.title}</h3>
-          <p>{f.levels.body}</p>
-          <ul class="ticks">{f.levels.bullets.map((b) => <li>{b}</li>)}</ul>
+          <h3>{f.journey.title}</h3>
+          <p>{f.journey.body}</p>
+          <ul class="ticks">{f.journey.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
-        <div class="feature__media feature__media--pair">
+        <div class="feature__media">
           <Phone {...phone('journey')} />
-          <Phone {...shot('stars')} />
         </div>
       </article>
 
@@ -236,24 +261,36 @@ const opponents = [
             <ul class="ticks">{f.speedrun.bullets.map((b) => <li>{b}</li>)}</ul>
           </div>
         </article>
-        <article class="feature feature--card feature--card-text" data-reveal>
+        <FeatureCard {...f.marathon} icon={icons.marathon} />
+      </div>
+
+      <div class="feature-duo">
+        <FeatureCard {...f.blind} icon={icons.blind} />
+        <FeatureCard {...f.voice} icon={icons.voice} />
+      </div>
+
+      <div class="feature-duo">
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('stars')} />
           <div class="feature__text">
-            <h3>{f.analysis.title}</h3>
-            <p>{f.analysis.body}</p>
-            <ul class="ticks">{f.analysis.bullets.map((b) => <li>{b}</li>)}</ul>
+            <h3>{f.stars.title}</h3>
+            <p>{f.stars.body}</p>
+            <ul class="ticks">{f.stars.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+        <FeatureCard {...f.analysis} icon={icons.analysis} />
+      </div>
+
+      <div class="feature-duo">
+        <FeatureCard {...f.progress} icon={icons.progress} />
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('theme')} />
+          <div class="feature__text">
+            <h3>{f.custom.title}</h3>
+            <p>{f.custom.body}</p>
           </div>
         </article>
       </div>
-
-      <article class="feature feature--flip" data-reveal>
-        <div class="feature__text">
-          <h3>{f.custom.title}</h3>
-          <p>{f.custom.body}</p>
-        </div>
-        <div class="feature__media">
-          <Phone {...shot('theme')} />
-        </div>
-      </article>
     </div>
   </section>
 

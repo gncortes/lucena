@@ -135,8 +135,8 @@ Mapa de chave para texto, como em `assets/lessons/pt/lessons.json`. As mesmas ch
 | `ex.<id>` | enunciado do exercício ("Brancas jogam e ganham. Onde o cavalo precisa chegar?") |
 | `ex.<id>.hint` | dica: aponta a ideia, não o lance |
 | `ex.<id>.solution` | a explicação que aparece depois de resolver |
-| `key.<id>` | legenda da posição-base, com o crédito |
-| `history` | a história do final, para o botão de informações |
+| `key.<id>` | legenda da posição-base, para leigo: a ideia em palavras ("o rei branco desce ao lado do preto, como numa escada"), sem lance solto e sem o crédito (o link "Ver o estudo"/"Ver a partida" já leva à fonte). Partida famosa: quem jogou, onde e quando, e o que aconteceu |
+| `history` | "Sobre este final", para quem não entende de xadrez técnico: o que é o final, por que importa, por que parece simples e não é, uma curiosidade (nome, autor, partida famosa). Sem lances, sem notação, sem "tabela"/motor e sem bastidores de como a aula foi feita. 3 a 6 frases |
 | `practice` | o convite do Viktor para o treino final |
 
 ## O que o script confere
