@@ -676,6 +676,152 @@
       ]
     },
     {
+      "id": "escort",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_escort",
+          "fen": "8/7R/4K3/1k6/r2P4/8/8/8 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "a4d4",
+            "b5c5"
+          ],
+          "marks": [
+            "d5",
+            "e6"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "escortIdea",
+          "fen": "8/7R/4K3/1k6/r2P4/8/8/8 w - - 0 1",
+          "arrows": [
+            "d4d5",
+            "b5c5",
+            "h7c7"
+          ],
+          "marks": [
+            "d5",
+            "c5",
+            "c7"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "escortDemo",
+          "fen": "8/7R/4K3/1k6/r2P4/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "d4d5",
+              "arrows": [
+                "d4d5"
+              ],
+              "marks": [
+                "e6"
+              ]
+            },
+            {
+              "uci": "b5c5",
+              "arrows": [
+                "b5c5"
+              ],
+              "marks": [
+                "d5"
+              ]
+            },
+            {
+              "uci": "h7c7",
+              "arrows": [
+                "h7c7",
+                "c7c5"
+              ],
+              "marks": [
+                "c7"
+              ]
+            },
+            {
+              "uci": "c5b5",
+              "arrows": [
+                "c5b5"
+              ]
+            },
+            {
+              "uci": "d5d6",
+              "arrows": [
+                "d5d6"
+              ],
+              "marks": [
+                "e6"
+              ]
+            },
+            {
+              "uci": "a4a6",
+              "arrows": [
+                "a4a6",
+                "a6d6"
+              ]
+            },
+            {
+              "uci": "c7c8",
+              "arrows": [
+                "c7c8"
+              ],
+              "marks": [
+                "b6"
+              ]
+            },
+            {
+              "uci": "b5b6",
+              "arrows": [
+                "b5b6"
+              ]
+            },
+            {
+              "uci": "e6d7",
+              "arrows": [
+                "e6d7"
+              ],
+              "marks": [
+                "d8",
+                "d7"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "escortMove",
+          "fen": "8/7R/4K3/1k6/r2P4/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "d4d5",
+              "accept": [
+                "d4d5"
+              ],
+              "reply": "b5c5"
+            },
+            {
+              "teach": "h7c7",
+              "accept": [
+                "h7c7"
+              ],
+              "reply": "c5b5"
+            },
+            {
+              "teach": "d5d6",
+              "accept": [
+                "d5d6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "trade",
       "steps": [
         {
@@ -987,19 +1133,137 @@
           ]
         },
         {
+          "type": "move",
+          "id": "rookPawnMove",
+          "fen": "8/P2k4/K7/8/4R3/8/8/2r5 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e4a4",
+              "accept": [
+                "e4a4"
+              ],
+              "reply": "c1c8"
+            },
+            {
+              "teach": "a6b6",
+              "accept": [
+                "a6b6"
+              ],
+              "reply": "c8c6"
+            },
+            {
+              "teach": "b6b5",
+              "accept": [
+                "b6b5"
+              ],
+              "reply": "c6c8"
+            },
+            {
+              "teach": "a7a8q",
+              "accept": [
+                "a7a8q"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rookPawnFar",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_rookPawnFar",
+          "fen": "K7/P4k2/8/8/8/8/1r6/4R3 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "b2b7",
+            "a8b7"
+          ],
+          "marks": [
+            "b7",
+            "f7"
+          ],
+          "ref": "wikiLucena"
+        },
+        {
           "type": "talk",
           "id": "silman",
           "fen": "K7/P4k2/8/8/8/8/1r6/4R3 w - - 0 1",
           "arrows": [
             "e1c1",
             "c1c8",
-            "c8b8"
+            "c8b8",
+            "a8b7"
           ],
           "marks": [
             "b8",
             "b7"
           ],
           "ref": "wikiLucena"
+        },
+        {
+          "type": "demo",
+          "id": "farDemo",
+          "fen": "K7/P4k2/8/8/8/8/1r6/4R3 w - - 0 1",
+          "goal": "win",
+          "ref": "wikiLucena",
+          "line": [
+            {
+              "uci": "e1c1",
+              "arrows": [
+                "e1c1"
+              ],
+              "marks": [
+                "b1"
+              ]
+            },
+            {
+              "uci": "f7e7",
+              "arrows": [
+                "f7e7"
+              ]
+            },
+            {
+              "uci": "c1c8",
+              "arrows": [
+                "c1c8"
+              ]
+            },
+            {
+              "uci": "e7d6",
+              "arrows": [
+                "e7d6"
+              ]
+            },
+            {
+              "uci": "c8b8",
+              "arrows": [
+                "c8b8"
+              ],
+              "marks": [
+                "b7"
+              ]
+            },
+            {
+              "uci": "b2a2",
+              "arrows": [
+                "b2a2",
+                "a2a7"
+              ]
+            },
+            {
+              "uci": "a8b7",
+              "arrows": [
+                "a8b7"
+              ],
+              "marks": [
+                "a7"
+              ]
+            }
+          ]
         },
         {
           "type": "move",
@@ -1158,6 +1422,70 @@
           ]
         },
         {
+          "type": "play",
+          "id": "tempoPlay",
+          "fen": "1K1k4/1P6/7R/8/r6p/8/8/8 w - - 0 1",
+          "goal": "win",
+          "ref": "topalov#144"
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_summary",
+          "fen": "6K1/4k1P1/8/8/8/7r/8/5R2 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "arrows": [
+            "h3h8"
+          ],
+          "marks": [
+            "e7",
+            "g8"
+          ],
+          "ref": "lichessPractice"
+        },
+        {
+          "type": "talk",
+          "id": "summaryPlan",
+          "fen": "6K1/4k1P1/8/8/8/7r/8/5R2 w - - 0 1",
+          "arrows": [
+            "f1f7",
+            "f7f4",
+            "g8f7"
+          ],
+          "marks": [
+            "d8",
+            "f4",
+            "h3"
+          ],
+          "ref": "lichessPractice"
+        },
+        {
+          "type": "move",
+          "id": "summaryMove",
+          "fen": "6K1/4k1P1/8/8/8/7r/8/5R2 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "f1f7",
+              "accept": [
+                "f1f7"
+              ],
+              "reply": "e7d8"
+            },
+            {
+              "teach": "f7f4",
+              "accept": [
+                "f7f4"
+              ]
+            }
+          ]
+        },
+        {
           "type": "talk",
           "id": "recap",
           "fen": "1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1",
@@ -1174,10 +1502,10 @@
         },
         {
           "type": "play",
-          "id": "tempoPlay",
-          "fen": "1K1k4/1P6/7R/8/r6p/8/8/8 w - - 0 1",
+          "id": "lastPlay",
+          "fen": "3K4/3P2k1/8/8/8/8/2r5/5R2 w - - 0 1",
           "goal": "win",
-          "ref": "topalov#144"
+          "ref": "wikiLucena"
         }
       ]
     }
@@ -1398,6 +1726,10 @@
       "id": "practiceBridge",
       "fen": "6K1/4k1P1/8/8/8/7r/8/5R2 w - - 0 1",
       "ref": "lichessPractice"
+    },
+    {
+      "id": "escort",
+      "fen": "8/7R/4K3/1k6/r2P4/8/8/8 w - - 0 1"
     },
     {
       "id": "andersson",
