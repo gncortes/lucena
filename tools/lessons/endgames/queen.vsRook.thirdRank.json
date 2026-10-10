@@ -402,16 +402,42 @@
           ]
         },
         {
+          "type": "demo",
+          "id": "d_short",
+          "fen": "8/k7/2Q5/8/2K5/8/r7/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "c6f6",
+              "marks": [
+                "a2",
+                "c4"
+              ]
+            },
+            {
+              "uci": "a2a6"
+            },
+            {
+              "uci": "f6d4"
+            },
+            {
+              "uci": "a7b8"
+            }
+          ],
+          "ref": "wikipedia"
+        },
+        {
           "type": "move",
-          "id": "diagB",
-          "fen": "8/3k4/8/8/3K4/1Q6/8/r7 w - - 0 1",
+          "id": "shortB",
+          "fen": "1k6/8/r7/8/2KQ4/8/8/8 w - - 0 1",
           "goal": "win",
           "turns": [
             {
-              "teach": "d4c4",
+              "teach": "c4b5",
               "accept": "only"
             }
-          ]
+          ],
+          "ref": "wikipedia"
         }
       ]
     },
@@ -624,12 +650,12 @@
     {
       "id": "e12",
       "stars": 1,
-      "fen": "k7/2r5/3Q4/1K6/8/8/8/8 w - - 0 1",
+      "fen": "3K1k2/2Q4r/8/8/8/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "adrood",
+      "origin": "own",
       "turns": [
         {
-          "teach": "d6d5",
+          "teach": "c7f4",
           "accept": "best"
         }
       ]
@@ -683,17 +709,12 @@
     {
       "id": "e15",
       "stars": 2,
-      "fen": "8/3k4/5Q2/8/3K4/8/8/r7 w - - 0 1",
+      "fen": "3Q4/2K5/7k/8/5r2/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "wikipedia",
+      "origin": "own",
       "turns": [
         {
-          "teach": "f6f7",
-          "accept": "best",
-          "reply": "d7d6"
-        },
-        {
-          "teach": "f7b3",
+          "teach": "d8g8",
           "accept": "best"
         }
       ]
@@ -724,32 +745,27 @@
     {
       "id": "e19",
       "stars": 3,
-      "fen": "6r1/8/4K3/1k6/8/2Q5/8/8 w - - 0 1",
+      "fen": "8/8/8/5K1Q/1r6/8/5k2/8 w - - 0 1",
       "goal": "win",
-      "origin": "moro",
+      "origin": "own",
       "turns": [
         {
-          "teach": "c3e5",
+          "teach": "h5f7",
           "accept": "best",
-          "reply": "b5c6"
+          "reply": "b4b2"
         },
         {
-          "teach": "e5f6",
+          "teach": "f5e4",
           "accept": "best",
-          "reply": "g8b8"
+          "reply": "f2e1"
         },
         {
-          "teach": "e6e7",
+          "teach": "f7c4",
           "accept": "best",
-          "reply": "c6b7"
+          "reply": "e1d2"
         },
         {
-          "teach": "f6e5",
-          "accept": "best",
-          "reply": "b7c8"
-        },
-        {
-          "teach": "e7d6",
+          "teach": "e4d4",
           "accept": "best"
         }
       ]
@@ -830,13 +846,6 @@
       "kind": "web",
       "title": "Walter Browne vs Belle (Computer) (1978), chessgames.com",
       "url": "https://www.chessgames.com/perl/chessgame?gid=1480951"
-    },
-    {
-      "id": "adrood",
-      "kind": "study",
-      "author": "adrood",
-      "title": "Queen versus Rook endgame",
-      "url": "https://lichess.org/study/tEH40nAS"
     },
     {
       "id": "belle1979",
