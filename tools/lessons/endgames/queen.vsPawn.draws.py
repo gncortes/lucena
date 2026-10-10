@@ -121,7 +121,7 @@ PF_HOLD = F('8/8/6K1/8/1Q6/8/2p5/1k6 b', 70, 1)  # análise: 69...c2 70.Db4+
 BISHOP = F('3Q4/8/8/8/4K3/8/1kp5/8 w')         # Wikipedia (Seirawan): empate
 ZONE_BISHOP = ['a4', 'b4', 'c4', 'd3', 'e3', 'd2', 'e2', 'e1']
 LOLLI = F('8/8/8/8/6K1/6Q1/2p5/3k4 w')         # Lolli 1763 (Wikipedia)
-BISHOP_NEAR = F('8/8/8/1K6/8/3Q4/2p5/2k5 w')   # do estudo de Danghiangmanh
+BISHOP_NEAR = F('8/8/8/1K6/8/3Q4/2p5/2k5 w')   # posição de treino de Danghiangmanh
 
 # Parte 6: o peão a mais
 EXTRA = F('8/1K6/8/8/8/1Q5p/p7/k7 w')          # própria

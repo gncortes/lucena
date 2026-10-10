@@ -18,7 +18,7 @@ def ref(step, rid):
     return step
 
 
-# Parte 1: a escada (posição própria; a linha é a do estudo de Danghiangmanh)
+# Parte 1: a escada (posição própria; a linha é a da posição de treino de Danghiangmanh)
 START = 'K7/8/8/8/8/8/3kp3/6Q1 w - - 0 1'
 STAIRS_F = 'K7/7Q/8/8/8/8/4pk2/8 w - - 0 1'        # própria, do lado f
 # Parte 2: o ciclo (capítulo "Beginner" do estudo, depois de 3...Re1)
