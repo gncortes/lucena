@@ -98,7 +98,7 @@ write({
         # 1. A posição de Philidor: rei na casa de promoção, torre na
         # terceira, e esperar.
         {'id': 'third', 'steps': [
-            ref(think('t_classic', PH, 5, 2, side='white'), 'wikipedia'),
+            ref(think('t_classic', PH, 2, side='white'), 'wikipedia'),
             ref(talk('intro', PH, arrows=['a3h3'],
                      marks=['e1', 'f3', 'g3', 'e3']), 'wikipedia'),
             ref(demo('d_wait', PH, 'Rb2 Rc3 Ra2 Rb3', goal='draw',
@@ -111,7 +111,7 @@ write({
         ]},
         # 2. O xeque lateral: o rei fica na frente do peão.
         {'id': 'side', 'steps': [
-            think('t_side', SIDECHECK, 3, 1),
+            think('t_side', SIDECHECK, 1),
             talk('side', SIDECHECK, arrows=['e1e2'], marks=['e1', 'e2']),
             demo('d_sideTrap', after(SIDETRAP, 'Kd2'), 'c3+', goal='draw',
                  notes={1: {'arrows': ['c4c3'], 'marks': ['d3']}}),
@@ -120,8 +120,8 @@ write({
         ]},
         # 3. O peão pisou na terceira: torre para o fundo, xeques por trás.
         {'id': 'behind', 'steps': [
-            ref(think('t_pawn', E3W, 3, 2), 'wikipedia'),
-            ref(talk('pawn', E3W, arrows=['f4f3', 'a2a1', 'b3b8'],
+            ref(think('t_pawn', E3W, 2), 'wikipedia'),
+            ref(talk('pawn', E3W, arrows=['b3b8', 'f4f3', 'a2a1'],
                      marks=['e3']), 'wikipedia'),
             ref(demo('d_behind', E3W, 'Rb8 Kf3 Rf8+ Ke4 Re8+ Kf4 Rf8+ Ke5 '
                      'Re8+', goal='draw',
@@ -143,7 +143,7 @@ write({
         ]},
         # 4. Chegar à terceira a tempo, sem o xeque cedo.
         {'id': 'reach', 'steps': [
-            ref(think('t_reach', T_REACH, 3, 2), 'noseknowsReach'),
+            ref(think('t_reach', T_REACH, 2), 'noseknowsReach'),
             ref(demo('d_early', after(T_REACH, 'Rd7+'), 'Ke3', goal='draw',
                      notes={1: {'arrows': ['h2h1'], 'marks': ['e3']}}),
                 'noseknowsReach'),
@@ -155,7 +155,7 @@ write({
         ]},
         # 5. Primeiro o rei, depois a torre, sem o espeto.
         {'id': 'kingFirst', 'steps': [
-            think('t_king', T_KING, 3, 2),
+            think('t_king', T_KING, 2),
             demo('d_skewer', after(T_KING, 'Kf1'), 'Rd1+', goal='draw',
                  notes={1: {'arrows': ['d1g1'], 'marks': ['f1']}}),
             talk('kingWhy', T_KING, arrows=['g2f2', 'f2e1'],
@@ -165,7 +165,7 @@ write({
         ]},
         # 6. O rei preto pisou na terceira: xeque na terceira que o expulsa.
         {'id': 'expel', 'steps': [
-            think('t_expel', T_EXPEL, 3, 1),
+            think('t_expel', T_EXPEL, 1),
             demo('d_expel', T_EXPEL, 'Rh3+ Kd4 Rb3', goal='draw',
                  notes={1: {'arrows': ['h1h3']},
                         2: {'marks': ['d4']},
@@ -176,7 +176,7 @@ write({
         ]},
         # 7. A troca de torres: o rei recua reto.
         {'id': 'trade', 'steps': [
-            think('t_trade', TRADE, 3, 1),
+            think('t_trade', TRADE, 1),
             talk('trade', TRADE, arrows=['g8d8', 'a5d5']),
             demo('d_trade', TRADE, 'Rd8+ Rd5 Rxd5+ Kxd5', goal='draw',
                  notes={1: {'arrows': ['g8d8']},
@@ -188,7 +188,7 @@ write({
         ]},
         # 8. Qualquer peão, e o resumo.
         {'id': 'beyond', 'steps': [
-            ref(think('t_bishop', BISHOP, 3, 2, ask='line'),
+            ref(think('t_bishop', BISHOP, 2, ask='line'),
                 'yuri61Philidor'),
             ref(talk('bishop', BISHOP, arrows=['g8g3'], marks=['c1']),
                 'yuri61Philidor'),
