@@ -23,7 +23,9 @@ TREB = '8/8/8/3pK3/2kP4/8/8/8 b - - 0 1'           # trebuchet (Flear, pela Wiki
 TREB_IN = '8/8/4K3/3p4/2kP4/8/8/8 w - - 0 1'       # entrar no trebuchet: Ke5
 MINED = '8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1'        # casas minadas (Wikipedia; RyanGarg)
 MINED_TRAP = after(MINED, 'Ke6 Kc5')               # Ke6? Kc5: brancas em zugzwang
-RACE = '8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1'         # monsienne, cap. 1: só Kd7
+# Própria (troca do recap, 2026-10-10): a posição antiga (monsienne, cap. 1,
+# e5/e6) é o e16 de pawns.keySquares. Peões d6/d7: só 1.Re8! ganha.
+RACE = '8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1'
 DEFEND = '8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1'       # cores trocadas de MINED: só Kb4
 DEFEND_TRAP = after(DEFEND, 'Kc4 Ke3')             # Kc4? Ke3: brancas em zugzwang
 CHEESE = '8/8/1Kp5/4p3/4P3/7k/8/8 w - - 0 1'       # ThisIsCheeseman, cores trocadas
@@ -167,12 +169,12 @@ write({
                  goal='draw'),
         ]},
         {'id': 'recap', 'steps': [
-            think('t_race', RACE, 2, marks=['d6', 'f5']),
-            talk('race', RACE, arrows=['c7d7', 'd7e6'], marks=['d6', 'f5']),
-            demo('d_race', RACE, 'Kd7 Kf5 Kd6 Kg5 Kxe6',
-                 notes={1: {'arrows': ['d7e6']},
-                        3: {'marks': ['d6', 'f5']}}),
-            move('raceMove', RACE, 'Kd7 Kf4 Kxe6', accept='win'),
+            think('t_race', RACE, 2, marks=['e7', 'c6']),
+            talk('race', RACE, arrows=['f7e8', 'e8d7'], marks=['e7', 'c6']),
+            demo('d_race', RACE, 'Ke8 Kc6 Ke7 Kd5 Kxd7',
+                 notes={1: {'arrows': ['e8d7']},
+                        3: {'marks': ['e7', 'c6']}}),
+            move('raceMove', RACE, 'Ke8 Kc5 Kxd7', accept='win'),
             talk('rules', MINED, marks=['e6', 'c5']),
             play('finish', MINED),
         ]},
@@ -192,7 +194,7 @@ write({
     'keyPositions': [
         {'id': 'trebuchet', 'fen': TREB, 'ref': 'wikiZugzwang'},
         {'id': 'mined', 'fen': MINED, 'ref': 'wikiZugzwang'},
-        {'id': 'race', 'fen': RACE, 'ref': 'monsienne'},
+        {'id': 'race', 'fen': RACE},
         {'id': 'cheeseman', 'fen': '8/8/7p/4p2K/4P3/1kP5/8/8 w - - 0 1',
          'ref': 'cheeseman'},
         {'id': 'lasker', 'fen': LASKER, 'ref': 'voigtLasker1892#161'},
