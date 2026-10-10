@@ -93,7 +93,7 @@
   "step.d_edge": "Veja os reis subindo lado a lado.",
   "step.d_edge.m1": "1.Rf5! Eu me afasto: a5 e f5, quatro casas no meio, e as pretas jogam. O rei preto não pode responder em b5, que o peão de c4 vigia.",
   "step.d_edge.m2": "O rei preto tem de sair da quinta fileira: b5 e b4 estão vigiadas pelos peões de c4 e a3. Ele sobe.",
-  "step.d_edge.m3": "2.Rf6. Subo junto: b6 e f6, três casas no meio, e a vez é dele. O peão de c6 está numa delas, mas conta igual.",
+  "step.d_edge.m3": "2.Rf6. Subo junto: b6 e f6, três casas no meio, e a vez é dele. O peão de c6 está em uma delas, mas conta igual.",
   "step.d_edge.m4": "Ele sobe para b7, e eu subo junto para manter três casas no meio na mesma fileira.",
   "step.d_edge.m5": "3.Rf7. Sétima fileira, três casas no meio, e a vez continua com ele.",
   "step.d_edge.m6": "Ele volta para b6. Se eu for a e7 agora, ele sobe para b7 e a oposição passa a ser dele.",

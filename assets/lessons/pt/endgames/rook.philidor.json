@@ -74,7 +74,7 @@
   "step.d_behind.m9": "5.Te8+. O rei preto não tem casa que não leve mais um xeque ou deixe o peão sem defesa. Empate.",
   "step.d_passive": "Agora o erro do outro lado: ficar. O peão avançou e, em vez de ir para o fundo, a torre continuou na terceira fileira, em c3.",
   "step.d_passive.m1": "1...Rf3, e o rei preto está dentro. A ameaça é 2...Ta1+, e tapar com 3.Tc1 não resolve: 3...Txc1 é mate. Um lance de atraso, e a defesa já não existe.",
-  "step.behind": "Agora você, numa posição parecida, com a torre preta em h2. O peão acabou de pisar na terceira fileira. Torre para o fundo e, quando o rei preto entrar, xeques pela coluna dele.",
+  "step.behind": "Agora você, em uma posição parecida, com a torre preta em h2. O peão acabou de pisar na terceira fileira. Torre para o fundo e, quando o rei preto entrar, xeques pela coluna dele.",
   "step.behind.done": "O rei preto não tem abrigo. Se ele se afasta do peão, a torre ataca o peão; se volta, mais xeques. Terceira fileira até o peão avançar, e aí xeques por trás.",
   "step.t_reach": "Esta posição vem de uma coleção de treino de finais de torre que NoseKnowsAll montou no Lichess; aqui as cores estão trocadas. O rei preto quer entrar em e3, e a sua torre ainda está longe, na sétima fileira. Como chegar à defesa de Philidor a tempo?",
   "step.t_reach.hint1": "Qual casa o rei preto quer, e qual fileira tira essa casa dele?",

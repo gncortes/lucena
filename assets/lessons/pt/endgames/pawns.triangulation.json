@@ -1,6 +1,6 @@
 {
   "title": "Triangulação",
-  "summary": "Perder um lance de propósito, com o rei num triângulo, para deixar o adversário com a vez errada.",
+  "summary": "Perder um lance de propósito, com o rei em um triângulo, para deixar o adversário com a vez errada.",
   "part.zugzwang.title": "Zugzwang",
   "part.zugzwang.summary": "A posição é ótima, mas a vez é sua, e no xadrez não dá para passar.",
   "step.t_zugzwang": "Os reis estão frente a frente, e o peão de c6 está protegido pelo meu rei. A vez é das pretas. Para onde o rei preto pode ir, e o que o meu rei faz em cada caso?",
@@ -26,7 +26,7 @@
   "step.t_triangle.hint1": "Compare as casas dos dois reis. Para onde o rei branco pode andar sem largar o peão de c6? E o rei preto, sem largar c8?",
   "step.t_triangle.hint2": "Conte as casas de onde o seu rei ainda protege o peão de c6 e que se tocam entre si. Agora conte as casas que o rei preto tem perto de c8.",
   "step.t_triangle.hint3": "Uma volta por três casas leva três lances. Uma volta por duas leva dois. Quem chega atrasado?",
-  "step.pairs": "Pense em pares. Rei branco em c5 e preto em c7, com as pretas na vez: zugzwang, você já viu. O mesmo vale para d6 contra d8, e para d5 contra c8. São casas que se correspondem: quando o meu rei está numa, o preto precisa estar na outra, e com a vez minha. Aqui estamos em d5 contra c8, e a vez é minha. É o par certo com a vez errada.",
+  "step.pairs": "Pense em pares. Rei branco em c5 e preto em c7, com as pretas na vez: zugzwang, você já viu. O mesmo vale para d6 contra d8, e para d5 contra c8. São casas que se correspondem: quando o meu rei está em uma, o preto precisa estar na outra, e com a vez minha. Aqui estamos em d5 contra c8, e a vez é minha. É o par certo com a vez errada.",
   "step.why": "A saída mais limpa é o triângulo. Meu rei vai de d5 a c4, de c4 a d4 e de d4 de volta a d5: três lances, e no fim d5 volta a guardar o peão. O rei preto queria fazer o mesmo, mas não tem como: b7 e d7 estão cobertas pelo peão de c6, e c7 é casa envenenada, porque ali ele ataca o peão, mas o meu rei volta para c5 ou d5 e a vez é dele. Sobram c8, d8 e b8, de onde ele só balança de dois em dois. Três lances contra dois: no fim da volta, é ele quem tem a vez.",
   "step.d_triangle": "Veja o triângulo inteiro.",
   "step.d_triangle.m1": "1.Rc4, o primeiro canto. O peão de c6 não corre perigo: em c8, o rei preto não o alcança.",
@@ -149,7 +149,7 @@
   "key.triangle": "As brancas têm a posição boa, mas com a vez errada. O rei branco dá uma volta em triângulo por três casas vizinhas; o preto, que só tem duas casas para ir e voltar, devolve a vez.",
   "key.alburtKasparov": "Alburt contra Kasparov, 1978: o jovem Kasparov deu uma volta de três lances com o rei, devolveu a vez ao adversário, e Alburt abandonou.",
   "key.defend": "O rei preto não deixa o branco passar: fica sempre na mesma coluna, a uma distância que obriga o rei branco a ceder.",
-  "history": "Triangular é perder um lance de propósito. O rei anda por três casas vizinhas, em triângulo, e volta à posição de antes; o rei adversário, com menos espaço, não consegue imitar, e quem fica com a vez errada é ele. Parece estranho dar uma volta para chegar ao mesmo lugar, e por isso tanta gente não enxerga a manobra mesmo com a vitória na mão. Em 1978, o jovem Kasparov venceu Lev Alburt com um triângulo de rei: deu uma volta, devolveu a vez ao adversário, e Alburt abandonou. A ideia não vive só nos finais de peões: nos Candidatos de 1965, Spassky triangulou com o rei num final de torre contra Tal e seguiu adiante para disputar o título mundial. Dvoretsky dedicou a ela uma seção do seu manual de finais.",
+  "history": "Triangular é perder um lance de propósito. O rei anda por três casas vizinhas, em triângulo, e volta à posição de antes; o rei adversário, com menos espaço, não consegue imitar, e quem fica com a vez errada é ele. Parece estranho dar uma volta para chegar ao mesmo lugar, e por isso tanta gente não enxerga a manobra mesmo com a vitória na mão. Em 1978, o jovem Kasparov venceu Lev Alburt com um triângulo de rei: deu uma volta, devolveu a vez ao adversário, e Alburt abandonou. A ideia não vive só nos finais de peões: nos Candidatos de 1965, Spassky triangulou com o rei em um final de torre contra Tal e seguiu adiante para disputar o título mundial. Dvoretsky dedicou a ela uma seção do seu manual de finais.",
   "practice": "Agora o final de verdade, do começo: rei em c5 contra rei em c7, e a vez é sua. Só um lance não larga o peão. Ache-o, faça o triângulo e ganhe. Escolha o ritmo e vá.",
   "key.far": "O rei branco está longe, mas a ideia é a mesma: uma volta de três casas passa a vez ao rei preto, preso perto dos peões brancos."
 }

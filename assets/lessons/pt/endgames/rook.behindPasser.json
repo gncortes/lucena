@@ -65,7 +65,7 @@
   "step.d_tempo.m2": "1...Rg5. Em xeque, as pretas não têm tempo de capturar a5: o rei tem que sair primeiro.",
   "step.d_tempo.m3": "2.Ta4. A torre chegou atrás do peão, que agora está protegido. A torre preta vai ter que ficar na frente dele.",
   "step.tempoMove": "A mesma ideia do outro lado do tabuleiro: leve a torre para trás do peão h.",
-  "step.tempoMove.hint": "A torre não chega atrás do peão num lance só. O que obriga as pretas a perder um lance?",
+  "step.tempoMove.hint": "A torre não chega atrás do peão em um lance só. O que obriga as pretas a perder um lance?",
   "step.tempoMove.done": "1.Te4+! O xeque deu o tempo, e com 2.Th4 a torre chegou atrás do peão.",
   "step.t_defend": "Agora quem tem o peão passado são as pretas, e você defende. O peão a está protegido pela torre preta. Onde a sua torre deve ficar?",
   "step.t_defend.hint1": "Pense na regra que você acabou de ver. Ela vale para os dois lados.",

@@ -79,7 +79,7 @@
   "step.checksMove": "Agora os peões estão em c3 e d3, e o rei preto em c4. Ache o xeque que ganha o tempo, e depois o lugar da torre.",
   "step.checksMove.hint": "Um xeque pela quarta fileira deixa ao rei preto uma casa só.",
   "step.checksMove.done": "1.Th4+! Rb3 2.Td4: o rei preto foi para longe do peão de d, e a torre ficou atrás dele. O seu rei chega, e é empate.",
-  "step.sacrifice": "Às vezes o xeque não basta, e a torre precisa se entregar. Os peões pretos estão em d2 e e2. Capturar o d2 com o rei perde: depois de 1.Rxd2 exf1=D, o peão de e captura a torre e promove. Qualquer outro lance também perde: um dos peões promove. 1.Tf4+!! A torre sai de f1 com xeque, numa casa em que o rei preto pode capturá-la. Depois de 1...Rxf4, 2.Rxd2 vigia e1, e o peão de e cai.",
+  "step.sacrifice": "Às vezes o xeque não basta, e a torre precisa se entregar. Os peões pretos estão em d2 e e2. Capturar o d2 com o rei perde: depois de 1.Rxd2 exf1=D, o peão de e captura a torre e promove. Qualquer outro lance também perde: um dos peões promove. 1.Tf4+!! A torre sai de f1 com xeque, em uma casa em que o rei preto pode capturá-la. Depois de 1...Rxf4, 2.Rxd2 vigia e1, e o peão de e cai.",
   "step.sacrificeMove": "Agora é a sua vez. A torre em f1 está na mira do peão de e, e o d2 está a um passo da promoção. Salve o empate.",
   "step.sacrificeMove.hint": "A torre precisa sair de f1 sem dar tempo às pretas. O rei preto pode até capturá-la: o que importa é onde ele fica.",
   "step.sacrificeMove.done": "1.Tf4+!! A torre se entregou com xeque. Depois de 1...Rxf4 2.Rxd2, o rei preto está longe de e1, o seu rei vigia a casa da promoção, e o peão de e cai. Empate.",

@@ -13,7 +13,7 @@
   "step.d_race.m3": "2.h7: no próximo lance eu coroo. Repare que h8 e a1 estão na mesma diagonal.",
   "step.d_race.m4": "2...a2: o peão preto também vai coroar, e nasce justamente em a1.",
   "step.d_race.m5": "3.h8=D: a dama nasce de olho em a1. A casa onde a dama preta vai nascer já está vigiada.",
-  "step.d_race.m6": "3...a1=D: a dama preta nasce numa casa que eu vigio. Vai viver um lance só.",
+  "step.d_race.m6": "3...a1=D: a dama preta nasce em uma casa que eu vigio. Vai viver um lance só.",
   "step.d_race.m7": "4.Dxa1: capturada no lance seguinte. Dama contra rei: o resto é técnica.",
   "step.raceMove": "Sua vez. Faça a contagem e corra com o peão certo do jeito certo.",
   "step.raceMove.hint": "Não perca tempo: o peão de h2 pode andar duas casas. E nenhum lance de rei ajuda aqui.",
@@ -93,9 +93,9 @@
   "step.d_catch.m3": "2.Rd2: a dois lances de f1, com a vez das pretas.",
   "step.d_catch.m4": "2...f2: um lance para coroar. Mas o meu rei já alcança f1.",
   "step.d_catch.m5": "3.Re2: vigio f1. O peão só coroa para ser capturado.",
-  "step.d_catch.m6": "3...f1=D+: a dama nasce com xeque, mas numa casa vigiada.",
+  "step.d_catch.m6": "3...f1=D+: a dama nasce com xeque, mas em uma casa vigiada.",
   "step.d_catch.m7": "4.Rxf1: capturo a dama. O rei preto nunca vai alcançar o meu peão de a: caçar valeu mais que correr.",
-  "step.d_restrain": "Agora o outro lado tem dois peões, e o meu está em h3. Qualquer lance de rei que não ataque g7 deixa os peões pretos avançarem para h5 e g5 e se soltarem: empate. A ideia, que {{Grigoriev|nikolai-grigoriev}} usou num estudo de 1931: primeiro prender os peões juntos, ao alcance do rei; só depois pensar em correr.",
+  "step.d_restrain": "Agora o outro lado tem dois peões, e o meu está em h3. Qualquer lance de rei que não ataque g7 deixa os peões pretos avançarem para h5 e g5 e se soltarem: empate. A ideia, que {{Grigoriev|nikolai-grigoriev}} usou em um estudo de 1931: primeiro prender os peões juntos, ao alcance do rei; só depois pensar em correr.",
   "step.d_restrain.m1": "1.h4: prende os dois peões. 1...g5 agora seria respondido com 2.hxg5, e 1...h5 deixa o peão de g7 para trás. 1.Rf7, atacando g7 de uma vez, também ganharia.",
   "step.d_restrain.m2": "1...h5: as pretas separam os peões. O de g fica sozinho e atrasado.",
   "step.d_restrain.m3": "2.Rf5: o rei vai para g5, de onde ataca h5 e vigia g6, a casa por onde o peão de g7 teria que passar.",
@@ -223,6 +223,6 @@
   "key.diagonal": "As pretas não podem só correr: se avançarem o peão até o fim, as brancas coroam com xeque. O rei preto deve voltar e capturar o peão branco antes.",
   "key.petrosianFischer": "Petrosian contra Fischer, 1958, na posição em que combinaram o empate. A torre preta, que também está no tabuleiro, pode se entregar por um peão branco: o outro coroa, mas o peão de bispo preto chega à penúltima casa com o rei ao lado, e contra isso a dama não ganha.",
   "key.alatortsev": "Alatortsev contra Chekhover, 1937: o peão de bispo preto ainda estava uma casa mais atrás. Essa casa deu à dama tempo de trazer o rei branco, e as brancas venceram.",
-  "history": "Na corrida de peões, cada lado tem um peão livre e os dois correm para coroar. Parece só contar casas, e muita gente perde aqui por contar errado ou parar de contar cedo demais: quem coroa primeiro pode ainda não ganhar, e quem coroa depois às vezes perde a dama nova num xeque. A ferramenta básica é a regra do quadrado, que todo livro de finais ensina. Em 1958, Petrosian e Fischer, dois futuros campeões do mundo, combinaram o empate num final assim, porque o peão de Fischer chegaria perto demais da coroação para a dama conseguir ganhar. Em 1937, Alatortsev venceu Chekhover numa corrida parecida, porque lá o peão estava uma casa mais atrás. Uma casa fez toda a diferença.",
+  "history": "Na corrida de peões, cada lado tem um peão livre e os dois correm para coroar. Parece só contar casas, e muita gente perde aqui por contar errado ou parar de contar cedo demais: quem coroa primeiro pode ainda não ganhar, e quem coroa depois às vezes perde a dama nova em um xeque. A ferramenta básica é a regra do quadrado, que todo livro de finais ensina. Em 1958, Petrosian e Fischer, dois futuros campeões do mundo, combinaram o empate em um final assim, porque o peão de Fischer chegaria perto demais da coroação para a dama conseguir ganhar. Em 1937, Alatortsev venceu Chekhover em uma corrida parecida, porque lá o peão estava uma casa mais atrás. Uma casa fez toda a diferença.",
   "practice": "Agora o desafio prático: peão de a contra peão de g, e o rei preto em f3. Conte, corra com o lance duplo e use o xeque quando a dama nascer. Escolha o ritmo e vá."
 }
