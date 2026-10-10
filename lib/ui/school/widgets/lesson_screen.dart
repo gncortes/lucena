@@ -18,6 +18,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/sheet_close_button.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -641,20 +642,9 @@ class _LessonScreenState extends State<LessonScreen>
                           child: AnimatedOpacity(
                             duration: AppMotion.of(context).component,
                             opacity: covering ? 1 : 0,
-                            child: IconButton.filled(
+                            child: SheetCloseButton(
                               key: LessonKeys.closeSheet,
-                              // A mesma cor da folha da fala.
-                              style: IconButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerLow,
-                                foregroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface,
-                                elevation: 2,
-                              ),
                               tooltip: l10n.lessonCloseSpeech,
-                              icon: const Icon(Icons.close_rounded),
                               onPressed: () => _sheet.animateTo(
                                 minSheet,
                                 duration: AppMotion.of(context).component,
@@ -1414,8 +1404,8 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
       positionChild(
         _Slot.close,
         Offset(
-          size.width - 12 - close.width,
-          max(0.0, size.height * (1 - open) - 68),
+          size.width - SheetCloseButton.margin - close.width,
+          max(0.0, size.height * (1 - open) - SheetCloseButton.lift),
         ),
       );
     }

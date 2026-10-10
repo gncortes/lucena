@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_shape.dart';
+import 'sheet_close_button.dart';
 import 'web_pages.dart';
 
 /// Abre uma página da web dentro do app (a Wikipedia de um nome da fala, a
 /// partida ou o estudo no Lichess): uma folha alta com a página, o título
-/// dela e o domínio no topo e um ✕. Sem internet, a folha só avisa; a aula
-/// atrás fica como estava.
+/// dela e o domínio no topo, e o ✕ flutuando acima dela, fora, como o da
+/// fala do Viktor ([SheetCloseButton]). Sem internet, a folha só avisa; a
+/// aula atrás fica como estava.
 Future<void> showExternalPage(BuildContext context, Uri url) {
   final pages = WebPages.of(context);
   return showModalBottomSheet<void>(
@@ -17,8 +20,12 @@ Future<void> showExternalPage(BuildContext context, Uri url) {
     // A página rola na vertical: arrastar não fecha a folha (o ✕ fecha).
     enableDrag: false,
     showDragHandle: false,
+    // O fundo é desenhado pela [ExternalPageSheet], abaixo do ✕: a área do
+    // botão fica transparente, sobre a tela escurecida.
+    backgroundColor: Colors.transparent,
+    elevation: 0,
     builder: (context) => FractionallySizedBox(
-      heightFactor: 0.94,
+      heightFactor: 0.96,
       child: ExternalPageSheet(url: url, pages: pages),
     ),
   );
@@ -68,11 +75,52 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
     final domain = ExternalPageSheet.domainOf(widget.url);
     final title = _title;
     final hasTitle = title != null && title.isNotEmpty && title != domain;
+    final sheet = theme.bottomSheetTheme;
     return Column(
       key: ExternalPageKeys.sheet,
       children: [
+        // O ✕ fora da folha, acima dela, no canto: o mesmo da fala do Viktor.
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 4, 8),
+          padding: const EdgeInsetsDirectional.only(
+            end: SheetCloseButton.margin,
+            bottom: SheetCloseButton.gap,
+          ),
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: SheetCloseButton(
+              key: ExternalPageKeys.close,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Material(
+            color:
+                sheet.modalBackgroundColor ??
+                sheet.backgroundColor ??
+                colors.surfaceContainerLow,
+            shape:
+                sheet.shape ??
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(AppShape.large),
+                  ),
+                ),
+            clipBehavior: Clip.antiAlias,
+            elevation: 1,
+            child: _content(theme, domain, hasTitle ? title : null),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _content(ThemeData theme, String domain, String? title) {
+    final colors = theme.colorScheme;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 12),
           child: Row(
             children: [
               Icon(Icons.public, size: 20, color: colors.onSurfaceVariant),
@@ -86,14 +134,14 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      hasTitle ? title : domain,
+                      title ?? domain,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    if (hasTitle)
+                    if (title != null)
                       Text(
                         domain,
                         maxLines: 1,
@@ -104,12 +152,6 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
                       ),
                   ],
                 ),
-              ),
-              IconButton(
-                key: ExternalPageKeys.close,
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                icon: const Icon(Icons.close_rounded),
-                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           ),
