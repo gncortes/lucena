@@ -96,14 +96,14 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 16 | pawns.shoulder | C | 3 (+2) | Fable | ombro + quadrado (Réti/Duras/Grigoriev/Mandler); demos; partida | |
 | 17 | pawns.reti | B | 1 | Fable | Réti com peça no caminho (Sarychev); Yates–Marshall com link | |
 | 18 | rook.behindPasser | C | 6 (+2) | Opus | exceções da regra só nos exercícios; falas vazias em `d_walk`; Kramnik–Beliavsky | **feita: B**, commitada (lote2); Alekhine–Capablanca 1927, Anand–Kramnik 2007, Kramnik–Beliavsky 1993 com link; Short–Yusupov 1984 (e10) com link no relatório; `d_raceError`/`d_orderError` começam com lance das pretas: Gabriel |
-| 19 | rook.cutOff | C | 2 (+2) | Opus | parte com Uhlmann–Gulko ou Pein–Ward; tempo do peão; exceções no resumo | |
-| 20 | rook.frontal | C | 1 (+2) | Opus | partida real; corte lateral (Th5!) | |
+| 19 | rook.cutOff | C | 2 (+2) | Opus | parte com Uhlmann–Gulko ou Pein–Ward; tempo do peão; exceções no resumo | **feita: B**, commitada (lote2); Uhlmann–Gulko 1978 com link, Pein–Ward como referência, Chéron; `imperfect` repete o e07 espelhado (estrela?) e a solução do e12 conta "quatro colunas" com outra conta: Gabriel |
+| 20 | rook.frontal | C | 1 (+2) | Opus | partida real; corte lateral (Th5!) | **feita: B**, commitada (lote2); Tal–Zaitsev 1968, Arencibia–Vladimirov 1991, Pein–Ward 1997 com link; `side` perto do e08 (aceitável); check_numbering acusa falso positivo com "Depois de" maiúsculo e vários pares |
 | 21 | rookPawns.vsTwo | C | 8 | Fable | ritmo bom, mas os oito exercícios cobram o que a lição não ensina | |
 | 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | |
-| 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | |
+| 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | sessão lucena-8f (depois da #25) |
 | 24 | pawns.correspondingSquares | B | 1 (+1) | Fable | numeração em demo (um par por fala); triangulação separada; Rösch–Mast | |
 | 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
-| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 23856405); Petrosian–Fischer 1958, Van Wely–Leko 1996 |
 | 27 | minor.wrongBishop | C | 3 | Fable | transformação da estrutura, rei fechando a porta, peões g+h; Fischer–Taimanov | |
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
 | 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 51e1d11e); Nakamura–Sheehan 2024 |
