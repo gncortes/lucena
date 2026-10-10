@@ -56,7 +56,7 @@
   "step.trapDemo": "Joguei Td5. É a vez das pretas.",
   "step.trapDemo.m1": "Txb7. A torre preta se dá pelo peão, porque sabe o que vem depois.",
   "step.trapDemo.m2": "Rxb7. Tomo a torre, mas a minha está em d5, ao lado do rei preto.",
-  "step.trapDemo.m3": "Rxd5. O rei preto come a torre. Rei contra rei: empate. A torre na quinta estava ao alcance do rei; na quarta, não estaria.",
+  "step.trapDemo.m3": "Rxd5. O rei preto captura a torre. Rei contra rei: empate. A torre na quinta estava ao alcance do rei; na quarta, não estaria.",
   "step.trapRight": "Como resolver, então? Primeiro um xeque na sexta fileira, para afastar o rei preto da torre; só depois a torre vai para a quinta. O resto é a ponte que você já sabe, uma fileira acima: rei b6, e a torre fecha em b5.",
   "step.trap": "Agora você. Xeque na sexta, torre na quinta, e a ponte uma fileira acima.",
   "step.trap.hint": "Primeiro o xeque em d6, empurrando o rei para a sétima. Depois Td5, rei b6 e a torre bloqueia em b5.",

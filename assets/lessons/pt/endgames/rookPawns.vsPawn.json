@@ -14,7 +14,7 @@
   "step.t_cut": "O peão corre para a promoção e o seu rei está longe. Como a torre pode ganhar o tempo que falta para o rei chegar?",
   "step.t_cut.hint1": "Procure uma fileira em que a torre fique entre o rei preto e o caminho do peão.",
   "step.intro": "Torre contra peão parece fácil: uma torre vale muito mais que um peão. Mas o peão anda sozinho, e a torre precisa do rei para ganhar. Por isso este final é uma corrida: se o seu rei chega a tempo, a torre ganha; se chega tarde, o peão vira dama ou custa a torre, e é empate. Antes de mexer, faça três perguntas. Dá para cortar o rei preto com a torre? Quantos lances o meu rei leva até o peão? E o rei preto está na frente ou atrás do peão? Aqui o rei preto ainda está longe da casa d1, e a torre pode separar ele do peão.",
-  "step.cut": "Corte o rei preto. A torre numa fileira entre o rei e o caminho do peão deixa o peão sozinho, e peão sozinho a torre come. Depois traga o seu rei.",
+  "step.cut": "Corte o rei preto. A torre numa fileira entre o rei e o caminho do peão deixa o peão sozinho, e peão sozinho a torre captura. Depois traga o seu rei.",
   "step.cut.hint": "Ta5: a quinta fileira fica proibida para o rei preto. Depois, Rg6.",
   "step.cut.done": "O rei preto não atravessa a quinta fileira. Se o peão correr, a torre pega ele; se o rei preto der a volta, o seu rei já chegou. Cortar é o primeiro recurso: custa um lance e ganha vários.",
   "step.behindIdea": "Quando não dá para cortar, ponha a torre atrás do peão. Ela não deixa o peão andar sem escolta: a cada passo, o rei preto precisa estar do lado dele para defender. E enquanto o rei preto cuida do peão, o seu rei, que está longe, ganha os tempos que faltavam.",

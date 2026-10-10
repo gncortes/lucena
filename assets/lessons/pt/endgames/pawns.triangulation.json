@@ -45,7 +45,7 @@
   "step.triangleMove": "Brancas jogam e ganham. Faça o triângulo e volte a d5 com as pretas na vez.",
   "step.triangleMove.hint": "Use c4 e d4, as duas casas atrás de d5. Quando o rei preto for a c7, responda em c5.",
   "step.triangleMove.done": "Perfeito. Três lances para voltar a d5, e o rei preto, com duas casas, chegou atrasado. Agora ele está em zugzwang.",
-  "step.t_kasparov": "Alburt contra Kasparov, 1978. Kasparov, de pretas, jogou aqui. As pretas querem chegar a g3 e comer o peão de h3. O que impede, e como resolver?",
+  "step.t_kasparov": "Alburt contra Kasparov, 1978. Kasparov, de pretas, jogou aqui. As pretas querem chegar a g3 e capturar o peão de h3. O que impede, e como resolver?",
   "step.t_kasparov.hint1": "Imagine as brancas na vez. O rei branco tem pouco espaço: e2 e g2 estão cobertas pelo peão de f3.",
   "step.t_kasparov.hint2": "Com as brancas na vez, Rf2 é respondido por Rf4, e o rei branco tem que ceder. Então as pretas querem esta posição com as brancas a jogar.",
   "step.kasparov": "Este é o mesmo problema, do outro lado do tabuleiro. Se fossem as brancas a jogar, estariam perdidas: Rf2, Rf4, e o rei branco tem que deixar o caminho para g3. Mas a vez é das pretas. Kasparov fez o triângulo e4, f5, e5 e voltou a e4 em três lances. O rei branco foi a g1 e voltou a f1 em dois, e a posição se repetiu com as brancas na vez. O peão de f3 ajuda: cobre e2 e g2, e o rei branco tem pouco espaço.",

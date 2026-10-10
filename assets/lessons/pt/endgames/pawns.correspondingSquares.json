@@ -134,5 +134,5 @@
   "step.t_defend.hint1": "Rf2, Rf4 e Re4 perdem: em cada uma delas o rei preto escolhe o caminho que o seu rei não alcança. A casa certa é um recuo, e não é a que parece.",
   "ex.e06": "Brancas jogam e ganham. Estudo de Strategically_Endgam. O rei preto vigia b6, c7 e c5. Só um lance ganha.",
   "ex.e06.hint": "O rei branco dá a volta pelo canto: os pares são a6 com c6 e a7 com c7. O tempo de reserva do peão de a3 decide quem fica com a vez; gaste-o na hora certa.",
-  "ex.e06.solution": "Ra6! (a4?, c5?, Ra4? e Rb4? empatam). Depois de ...Rc6, a4! O tempo de reserva, gasto agora, deixa o rei preto na vez (Ra7? deixa ...b5 e empata). Depois de ...Rc7, Ra7!, a parceira de c7; depois de ...Rc6, Rb8 (ou Ra6, Ra8), e o rei branco chega a b7 e come os peões. Se ...Rb8 logo no começo, Rxb6."
+  "ex.e06.solution": "Ra6! (a4?, c5?, Ra4? e Rb4? empatam). Depois de ...Rc6, a4! O tempo de reserva, gasto agora, deixa o rei preto na vez (Ra7? deixa ...b5 e empata). Depois de ...Rc7, Ra7!, a parceira de c7; depois de ...Rc6, Rb8 (ou Ra6, Ra8), e o rei branco chega a b7 e captura os peões. Se ...Rb8 logo no começo, Rxb6."
 }
