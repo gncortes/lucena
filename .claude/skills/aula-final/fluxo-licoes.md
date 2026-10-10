@@ -91,7 +91,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | **feita: B** (limite de A), commitada (lote2); Carlsen–Anand 2006, Nakamura–Abarca Gonzalez e Nakamura–Andreikin 2022, Ding–Le Quang Liem 2017 com link |
 | 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | **feita: B**, commitada (lote2); Fischer–Larsen 1971 com link, estudo de fabian1999; ~45,8 min e parte `escort` com 2,8 min: Gabriel |
 | 13 | pawns.protectedPasser | C | 3 (+2) | Opus | dois passados e a conta do quadrado; Dedrle; dividir `limits`; partida | **feita: B**, commitada (lote2); Jakovenko–Akobian 2000, Walker, estudos de Chessforall321 e IsaacWiebeSupreme com link; `twoPassers`/`d_baseInside` perto de e08/e15 (revisor: não encostam demais) |
-| 14 | pawns.rookPawnDraw | C | 3–4 | Opus | qual peão sobra na troca; tempo do peão que cai; Panno–Najdorf, Barcza–Fischer | |
+| 14 | pawns.rookPawnDraw | C | 3–4 | Opus | qual peão sobra na troca; tempo do peão que cai; Panno–Najdorf, Barcza–Fischer | **feita: B**, commitada (lote2); Panno–Najdorf 1968, Barcza–Fischer 1959 com link; `theTurn` perto do e17 (revisor: não encosta demais) |
 | 15 | pawns.triangulation | C | 2 | Opus | perder um tempo no caminho; casas correspondentes de longe; Alburt–Kasparov | |
 | 16 | pawns.shoulder | C | 3 (+2) | Fable | ombro + quadrado (Réti/Duras/Grigoriev/Mandler); demos; partida | |
 | 17 | pawns.reti | B | 1 | Fable | Réti com peça no caminho (Sarychev); Yates–Marshall com link | |
