@@ -78,7 +78,7 @@
   "step.d_capablanca.m4": "He comes forward again: two squares in between, and it is my move.",
   "step.d_capablanca.m5": "3.Ke4. Direct opposition, one square in between: now Black has to leave the file.",
   "step.d_capablanca.m6": "He gives way towards the h5-pawn.",
-  "step.d_capablanca.m7": "4.Kf4! Face to face again, on the f-file, and the h4-pawn stays protected. 4.Kd5? would race for b5 and only draw: the black king would capture the h4-pawn in time.",
+  "step.d_capablanca.m7": "4.Kf4! Face to face again, on the f-file. From here my king controls g4 and g5, and the black king cannot approach the h4-pawn. 4.Kd5? would race for b5 and only draw: the black king would capture the h4-pawn in time.",
   "step.d_capablanca.m8": "He gives way again, to g6, to guard the h5-pawn. The e-file is now free.",
   "step.d_capablanca.m9": "5.Ke5! The outflanking: the black king went to one side, and the white king goes past on the other. From here it heads for d5 and c5, the b5-pawn falls, and the black king is too far from b4.",
   "step.capablancaMove": "Take the distant opposition and, when the black king leaves the file, do not follow him: step forward on the other side and take the opposition again.",
@@ -156,8 +156,8 @@
   "key.diagonal": "The opposition works along the diagonal too: the white king stands on the same diagonal as the black king and, step by step, turns it into face-to-face opposition.",
   "key.means": "The opposition is a means, not the goal: here taking it only draws. What wins is taking the king straight to the deciding squares in front of the pawn.",
   "key.capablanca": "{{Capablanca|jose-raul-capablanca}}'s example: locked pawns on both sides and the kings far apart. Whoever is to move takes the distant opposition and wins.",
-  "key.carlsenSo": "{{Carlsen|magnus-carlsen}}–So, {{Norway Chess|norway-chess}}, {{Stavanger|stavanger}}, 2017: Black to move. 55...Kf7! steps back and takes the distant opposition; So followed the white king from file to file and drew. Moves from PGN Mentor.",
-  "key.euweWhitaker": "{{Euwe|max-euwe}}–{{Whitaker|norman-whitaker}}, {{The Hague Olympiad|olympiad-hague-1928}}, 1928: White to move. 49.Kb5! takes the distant opposition along the fifth rank, 51.Kb4! the direct lateral one, and White won. Moves from PGN Mentor.",
+  "key.carlsenSo": "{{Carlsen|magnus-carlsen}} against So, {{Norway Chess|norway-chess}}, {{Stavanger|stavanger}}, 2017. So was a pawn down and defending. His king stepped back to take the opposition from afar and followed the white king from file to file until the draw.",
+  "key.euweWhitaker": "{{Euwe|max-euwe}} against {{Whitaker|norman-whitaker}}, The Hague, 1928. The white king took the opposition from afar, sideways, on the same rank as the black king, and reached the pawn that mattered first: White won.",
   "history": "The opposition is the kings' struggle over who has to give way, and it doesn't only happen with the kings close together: it can start from far away, with several squares between them, or even along a diagonal. Whoever understands this wins pawn endings that look drawn and saves others that look lost. It looks simple and isn't: taking the opposition at the wrong moment, or treating it as the goal, throws the game away. The man who explained the opposition to ordinary players was the Cuban {{José Raúl Capablanca|jose-raul-capablanca}}, world champion, in his 1921 book Chess Fundamentals, with an example of locked pawns that still appears in manuals today. Decades later the Russian {{Yuri Averbakh|yuri-averbakh}} added the reminder this lesson repeats: the opposition is a means; the goal is to put the king on the squares that decide.",
   "practice": "Now the real ending: king on h3, pawn on f3, and the black king on e6, in front of the key squares. Find the diagonal, turn it into direct opposition and queen the pawn. Pick your pace and go."
 }
