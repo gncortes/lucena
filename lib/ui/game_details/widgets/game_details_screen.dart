@@ -11,6 +11,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -36,6 +37,12 @@ import '../../core/widgets/skeleton.dart';
 /// tempo de cada um.
 class GameDetailsScreen extends StatelessWidget {
   const GameDetailsScreen({super.key});
+
+  /// O maior tabuleiro da revisão.
+  static const _maxBoard = 480.0;
+
+  /// O espaço da linha de botões de andar pelos lances, embaixo dele.
+  static const _navigationHeight = 54.0;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,7 @@ class GameDetailsScreen extends StatelessWidget {
             )
           : LayoutBuilder(
               builder: (context, constraints) {
-                final board = math.min(constraints.maxWidth - 32, 480.0);
+                final board = math.min(constraints.maxWidth - 32, _maxBoard);
                 final user = attempt.userSide;
                 final opponent = _opponentName(context, state, attempt);
                 final you = l10n.reviewYou;
@@ -78,35 +85,75 @@ class GameDetailsScreen extends StatelessWidget {
                   Side.black => (opponent, you),
                   null => (l10n.sideWhite, l10n.sideBlack),
                 };
-                return ListView(
-                  padding: scrollPadding(context),
+                final header = [
+                  _Header(state: state, attempt: attempt),
+                  ReviewSummary(
+                    state: state,
+                    whiteName: whiteName,
+                    blackName: blackName,
+                  ),
+                ];
+                final footer = [
+                  _MoveTable(state: state),
+                  ReviewLegend(
+                    state: state,
+                    whiteName: whiteName,
+                    blackName: blackName,
+                  ),
+                ];
+                if (state.shownPosition == null) {
+                  return ListView(
+                    padding: scrollPadding(context),
+                    children: [...header, ...footer],
+                  );
+                }
+                // O tabuleiro e os botões de andar pelos lances no centro do
+                // espaço entre a barra do app e o painel (T64); o painel
+                // rola embaixo: a explicação do lance, a engine, o cartão
+                // da partida, o resumo, a tabela e a legenda.
+                return Column(
                   children: [
-                    _Header(state: state, attempt: attempt),
-                    ReviewSummary(
-                      state: state,
-                      whiteName: whiteName,
-                      blackName: blackName,
-                    ),
-                    if (state.shownPosition != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: Center(
-                          child: ReviewBoard(
-                            state: state,
-                            size: board,
-                            orientation: user ?? Side.white,
+                    SizedBox(
+                      height: BoardOptionsPanel.boardAreaFor(
+                        constraints.maxHeight,
+                        boardRoom:
+                            board +
+                            2 * (_navigationHeight + AppSpacing.sm) +
+                            AppSpacing.md,
+                        minPanel: 0.35,
+                      ),
+                      child: CenteredBoardLayout(
+                        gutter: AppSpacing.lg,
+                        maxBoard: _maxBoard,
+                        reserveBottom: _navigationHeight,
+                        board: LayoutBuilder(
+                          builder: (context, box) => Center(
+                            child: ReviewBoard(
+                              state: state,
+                              size: box.maxWidth,
+                              orientation: user ?? Side.white,
+                            ),
                           ),
                         ),
+                        bottom: ReviewNavigation(
+                          state: state,
+                          attempt: attempt,
+                        ),
                       ),
-                      ReviewNavigation(state: state, attempt: attempt),
-                      MoveExplanation(state: state),
-                      if (state.engine) EngineLinesPanel(state: state),
-                    ],
-                    _MoveTable(state: state),
-                    ReviewLegend(
-                      state: state,
-                      whiteName: whiteName,
-                      blackName: blackName,
+                    ),
+                    Expanded(
+                      child: BoardOptionsPanel(
+                        key: GameDetailsKeys.panel,
+                        child: ListView(
+                          padding: scrollPadding(context),
+                          children: [
+                            MoveExplanation(state: state),
+                            if (state.engine) EngineLinesPanel(state: state),
+                            ...header,
+                            ...footer,
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 );

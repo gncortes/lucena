@@ -54,9 +54,16 @@ void main() {
     userTime: const TimeControl(initial: Duration(minutes: 5)),
   );
 
-  Future<GameDetailsCubit> pump(WidgetTester tester, int id) async {
-    tester.view.physicalSize = const Size(1080, 4000);
+  Future<GameDetailsCubit> pump(
+    WidgetTester tester,
+    int id, {
+    Size screen = const Size(1080, 4000),
+    double textScale = 1,
+  }) async {
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
     final cubit = GameDetailsCubit(
       id,
@@ -94,6 +101,37 @@ void main() {
   String plain(WidgetTester tester, Key key) {
     final text = tester.widget<Text>(find.byKey(key));
     return text.data ?? text.textSpan!.toPlainText();
+  }
+
+  for (final (screen, scale) in [
+    (const Size(1080, 2400), 1.0),
+    (const Size(945, 1680), 1.0),
+    (const Size(945, 1680), 1.6),
+  ]) {
+    testWidgets('T64, $screen × $scale: o tabuleiro no centro do espaço '
+        'entre a barra do app e o painel, os botões de lance embaixo dele e '
+        'o resto rolando no painel', (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, screen: screen, textScale: scale);
+      final appBar = tester.getRect(find.byType(AppBar));
+      final panel = tester.getRect(find.byKey(GameDetailsKeys.panel));
+      final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+      expect(board.center.dy, closeTo((appBar.bottom + panel.top) / 2, 1));
+      expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+      expect(
+        tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
+        lessThanOrEqualTo(panel.top),
+      );
+      await tester.scrollUntilVisible(
+        find.byKey(GameDetailsKeys.move(0)),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.byKey(GameDetailsKeys.move(0)));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameDetailsKeys.move(0)).hitTestable(), findsOne);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (

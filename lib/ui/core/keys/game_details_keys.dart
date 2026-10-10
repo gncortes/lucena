@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 abstract final class GameDetailsKeys {
   static const screen = Key('gameDetails.screen');
   static const board = Key('gameDetails.board');
+
+  /// O painel embaixo do tabuleiro, que rola.
+  static const panel = Key('gameDetails.panel');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
   static const notFound = Key('gameDetails.notFound');
