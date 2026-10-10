@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "Altın 3 puan, gümüş 2, bronz 1 eder. Her hata ve her ipucu bir puan düşürür.",
   "exerciseLichess": "Lichess'te analiz et",
   "exerciseTurn": "{side, select, white{Beyaz oynar} other{Siyah oynar}}",
+  "exerciseYourTurn": "{side, select, white{Sıra sende: beyazla oyna} other{Sıra sende: siyahla oyna}}",
   "exercisesIntroAfter": "Hepsini çözdüğünde liste derste açık kalır: herhangi bir alıştırmaya dönüp tekrar bakabilir ve konumu Lichess'te analiz edebilirsin.",
   "exerciseScoreLocked": "Serbest çalışma: not değişmez. Yeniden sayılması için alıştırmaları dersten tekrar yap."
 }

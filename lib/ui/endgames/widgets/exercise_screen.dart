@@ -335,6 +335,26 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ),
                 ),
               ),
+              // A vez, enquanto o aluno joga; some enquanto o outro lado
+              // pensa e volta depois da resposta.
+              if (t == 0 &&
+                  state.ready &&
+                  exercise != null &&
+                  state.phase == ExercisePhase.active)
+                LayoutId(
+                  id: _Slot.turn,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      context.l10n.exerciseYourTurn(
+                        state.side == Side.white ? 'white' : 'black',
+                      ),
+                      key: ExerciseKeys.goal,
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
               if (t > 0 && state.ready && exercise != null)
                 LayoutId(
                   id: _Slot.below,
@@ -443,22 +463,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Widget _solvingFooter(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final cubit = context.read<ExerciseCubit>();
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // De quem é a vez, logo abaixo do tabuleiro.
-          Text(
-            l10n.exerciseTurn(state.side == Side.white ? 'white' : 'black'),
-            key: ExerciseKeys.goal,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
               // As ações tomam o espaço que sobra, alinhadas ao início; o texto
@@ -874,7 +884,7 @@ class _SolutionLine extends StatelessWidget {
 }
 
 /// As partes do espaço do tabuleiro do exercício.
-enum _Slot { prompt, board, below }
+enum _Slot { prompt, board, turn, below }
 
 /// Posiciona o enunciado, o tabuleiro e o resultado pelo andamento de
 /// [mode] (0 resolvendo, 1 resolvido).
@@ -928,6 +938,11 @@ class _AreaDelegate extends MultiChildLayoutDelegate {
     final rect = Rect.lerp(solving, explaining, t)!;
     layoutChild(_Slot.board, BoxConstraints.tight(rect.size));
     positionChild(_Slot.board, rect.topLeft);
+    if (hasChild(_Slot.turn)) {
+      // De quem é a vez, logo abaixo do tabuleiro.
+      layoutChild(_Slot.turn, BoxConstraints.loose(Size(size.width, 80)));
+      positionChild(_Slot.turn, Offset(0, rect.bottom + ExerciseLayout.gutter));
+    }
     if (hasChild(_Slot.below)) {
       final below = explaining.bottom + ExerciseLayout.gutter;
       layoutChild(

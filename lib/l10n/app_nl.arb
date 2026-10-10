@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "Goud is 3 punten waard, zilver 2 en brons 1. Elke fout en elke hint kost een punt.",
   "exerciseLichess": "Analyseren op Lichess",
   "exerciseTurn": "{side, select, white{Wit aan zet} other{Zwart aan zet}}",
+  "exerciseYourTurn": "{side, select, white{Jij bent aan zet: speel met wit} other{Jij bent aan zet: speel met zwart}}",
   "exercisesIntroAfter": "Zodra je ze allemaal hebt opgelost, blijft de lijst in de les open: ga terug naar elke oefening om die te bekijken en de stelling op Lichess te analyseren.",
   "exerciseScoreLocked": "Vrij oefenen: je cijfer verandert niet. Om weer mee te tellen, doe je de oefeningen over vanuit de les."
 }

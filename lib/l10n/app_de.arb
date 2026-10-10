@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "Gold ist 3 Punkte wert, Silber 2 und Bronze 1. Jeder Fehler und jeder Tipp zieht einen Punkt ab.",
   "exerciseLichess": "Auf Lichess analysieren",
   "exerciseTurn": "{side, select, white{Weiß am Zug} other{Schwarz am Zug}}",
+  "exerciseYourTurn": "{side, select, white{Du bist dran: spiel Weiß} other{Du bist dran: spiel Schwarz}}",
   "exercisesIntroAfter": "Sobald du alle gelöst hast, bleibt die Liste in der Lektion offen: Geh zu jeder Aufgabe zurück, um sie noch einmal anzusehen und die Stellung auf Lichess zu analysieren.",
   "exerciseScoreLocked": "Freies Üben: Die Note ändert sich nicht. Damit sie wieder zählt, mache die Aufgaben in der Lektion noch einmal."
 }

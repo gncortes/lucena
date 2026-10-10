@@ -1009,6 +1009,7 @@
   "exercisesIntroStarLegend": "Dourada vale 3 pontos, prata 2 e bronze 1. Cada erro e cada dica tiram um ponto.",
   "exerciseLichess": "Analisar no Lichess",
   "exerciseTurn": "{side, select, white{Jogam as brancas} other{Jogam as pretas}}",
+  "exerciseYourTurn": "{side, select, white{Sua vez: jogue com as brancas} other{Sua vez: jogue com as pretas}}",
   "exercisesIntroAfter": "Depois de resolver todos, a lista fica aberta na aula: volte a qualquer exercício para rever e analisar a posição no Lichess.",
   "exerciseScoreLocked": "Treino livre: a nota não muda. Para contar de novo, refaça os exercícios na aula."
 }

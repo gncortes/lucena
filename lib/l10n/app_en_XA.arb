@@ -1004,6 +1004,7 @@
   "exercisesIntroStarLegend": "[Ĝöld îš wöŕth 3 pöîñtš, šîlvéŕ 2 åñd bŕöñžé 1. Évéŕý mîštåké åñd évéŕý hîñt tåkéš öñé pöîñt öff. one two three four five six seven eight]",
   "exerciseLichess": "[Åñålýšé öñ Lîçhéšš one two]",
   "exerciseTurn": "{side, select, white{[Whîté tö plåý one two]} other{[Blåçk tö plåý one two]}}",
+  "exerciseYourTurn": "{side, select, white{[Ýöûŕ tûŕñ: plåý Whîté one two three]} other{[Ýöûŕ tûŕñ: plåý Blåçk one two three]}}",
   "exercisesIntroAfter": "[Öñçé ýöû šölvé thém åll, thé lîšt štåýš öpéñ îñ thé léššöñ: ĝö båçk tö åñý éxéŕçîšé tö ŕévîéw ît åñd åñålýšé thé pöšîtîöñ öñ Lîçhéšš. one two three four five six seven eight nine ten one two]",
   "exerciseScoreLocked": "[Fŕéé pŕåçtîçé: ýöûŕ ĝŕådé döéš ñöt çhåñĝé. Tö çöûñt åĝåîñ, ŕédö thé éxéŕçîšéš fŕöm thé léššöñ. one two three four five six seven eight]",
   "exercisesDoneShareText": "[Î çömplétéd thé léššöñ “{title}” îñ Lûçéñå wîth {score} öf {max} pöîñtš! {link} one two three four five six seven]",

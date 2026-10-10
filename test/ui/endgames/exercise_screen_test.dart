@@ -84,10 +84,10 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
-    // Antes de resolver, o objetivo sob o tabuleiro.
+    // Antes de resolver, a vez logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'White to play',
+      'Your turn: play White',
     );
 
     await move(tester, 'c1', 'c4');
