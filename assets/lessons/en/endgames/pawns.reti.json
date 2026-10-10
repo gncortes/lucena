@@ -61,7 +61,7 @@
   "step.t_piece": "Now there is a bishop on the board. The f6-bishop guards d8, so the d7-pawn cannot queen. The b4-pawn runs to b1, and the white king on g4 is outside its square. How does White draw?",
   "step.t_piece.hint1": "Counting is not enough: on the direct road the king arrives one move late. It has to gain a tempo.",
   "step.t_piece.hint2": "The bishop has a job: guarding d8. What happens if it is attacked?",
-  "step.piece": "1.Kf5! The direct road, 1.Kf3? b3 2.Ke2 b2 3.Kd2 b1=Q, arrives one move late. The diagonal through f5, e4 and d3 to c2 is just as long, but its first step attacks the bishop. The move the bishop spends escaping is the tempo I was missing. With a piece in the way, the right diagonal is the one that attacks it.",
+  "step.piece": "1.Kf5! The direct road, 1.Kf3? b3 2.Ke2 b2 3.Kd2 b1=Q, arrives one move late. The diagonal through f5, e4 and d3 to c2 is just as long, but its first step attacks the bishop. The move the bishop spends escaping is the tempo I was missing. With a piece in the way, the right diagonal is the one that attacks it. And check the road before you walk: sometimes what blocks a diagonal is one of your own pawns, which lands on it after an exchange. Look at your opponent's pawn breaks before you choose.",
   "step.d_piece": "Watch the king gain the missing tempo.",
   "step.d_piece.m1": "1.Kf5! It attacks the bishop and takes the first step towards c2.",
   "step.d_piece.m2": "1...Be7. The bishop escapes and keeps guarding d8 (1...Bd8 and 1...Bh4 are the same), but the b4-pawn stood still. If 1...b3, 2.Kxf6 b2 3.d8=Q b1=Q and there are two queens: a draw.",

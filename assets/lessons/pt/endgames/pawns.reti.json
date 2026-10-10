@@ -61,7 +61,7 @@
   "step.t_piece": "Agora há um bispo no tabuleiro. O bispo de f6 vigia d8, então o peão de d7 não coroa. O peão de b4 corre para b1, e o rei branco em g4 está fora do quadrado dele. Como as brancas empatam?",
   "step.t_piece.hint1": "Contar não basta: pelo caminho direto o rei chega um lance atrasado. Ele precisa ganhar um tempo.",
   "step.t_piece.hint2": "O bispo tem um trabalho: vigiar d8. O que acontece se ele for atacado?",
-  "step.piece": "1.Rf5! O caminho direto, 1.Rf3? b3 2.Re2 b2 3.Rd2 b1=D, chega um lance atrasado. A diagonal por f5, e4 e d3 até c2 tem o mesmo tamanho, mas o primeiro passo ataca o bispo. O lance que o bispo gasta para fugir é o tempo que faltava. Com uma peça no caminho, a diagonal certa é a que a ataca.",
+  "step.piece": "1.Rf5! O caminho direto, 1.Rf3? b3 2.Re2 b2 3.Rd2 b1=D, chega um lance atrasado. A diagonal por f5, e4 e d3 até c2 tem o mesmo tamanho, mas o primeiro passo ataca o bispo. O lance que o bispo gasta para fugir é o tempo que faltava. Com uma peça no caminho, a diagonal certa é a que a ataca. E confira o caminho antes de andar: às vezes quem fecha uma diagonal é um peão seu, que para nela depois de uma troca. Olhe as rupturas do adversário antes de escolher.",
   "step.d_piece": "Veja o rei ganhar o tempo que faltava.",
   "step.d_piece.m1": "1.Rf5! Ataca o bispo e dá o primeiro passo rumo a c2.",
   "step.d_piece.m2": "1...Be7. O bispo foge e continua vigiando d8 (1...Bd8 e 1...Bh4 dão no mesmo), mas o peão de b4 ficou parado. Se 1...b3, 2.Rxf6 b2 3.d8=D b1=D e são duas damas: empate.",
