@@ -40,11 +40,11 @@ ideia que nenhuma parte ensinava.
 5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
    vaga à mais clara e nenhuma dá o lance. As setas e casas mostram o que a fala diz. pt e en dizem o mesmo.
-6. **Partes bem divididas.** O relatório do `build_aula.py` mostra o tempo de cada parte. O que conta é a
-   divisão: uma ideia por parte, partes de 4 a 8 minutos. O total da lição não tem teto (pedido do Gabriel,
-   2026-10-10: "não tem problema a minutagem, contanto que estejam bem divididas"); não se corta parte boa
-   só para caber em 45 minutos. Parte com dois `think` ou com duas ideias se divide; parte com um `talk` e
-   um `move` só, sem `demo`, costuma estar rasa.
+6. **Partes curtas, sem minutagem** (pedido do Gabriel, 2026-10-10). A parte (etapa, capítulo) segue o roteiro do
+   aluno: pensar na posição (`think`), ver o comentário do Viktor (`talk`/`demo`), jogar o lance (`move`) e, quando a
+   posição dá margem, o teste prático contra o motor (`play`). Cabe em **até 6 passos; 7 é o teto**. Parte com mais
+   passos, ou com duas ideias, se divide em parte 1, parte 2... O tempo não conta: nem o da parte, nem o total da
+   lição (45 ou 52 minutos tanto faz). Parte com um `talk` e um `move` só, sem `demo`, costuma estar rasa.
 
 ## Como o revisor nota uma lição
 
@@ -56,7 +56,7 @@ segue o plano; o que discorda do plano vai no dossiê.
 | Nota | Significa |
 |---|---|
 | A | todas as ideias cobradas têm parte; ritmo e partidas no lugar; só retoques de texto |
-| B | uma ideia sem parte ou uma parte densa demais; o resto no lugar |
+| B | uma ideia sem parte, ou uma parte com duas ideias ou mais de 7 passos (minutos não contam); o resto no lugar |
 | C | duas ou mais ideias sem parte, ou nenhuma partida real, ou falas de demo vazias |
 | D | a lição é uma sequência de `talk` com variantes empilhadas; os exercícios cobram o que ela não ensina |
 | E | errada no xadrez ou fora do tema |
@@ -106,7 +106,7 @@ marcou (tema com composição, zugzwang recíproco, casas correspondentes, ou pa
 8. **Gere e confira**: o `.py` (se houver), `build_aula.py <id>` (0 problemas, sem trocar regra de `accept`
    para passar), `check_variety.py <id>`, `dump_lesson.py <id> --links` (sem aviso; todo link "bate"),
    `flutter test test/data/repositories/endgames/endgame_lessons_content_test.dart`. Leia o despejo como
-   aluno: partes de 4 a 8 min (o total da lição não tem teto); a fala do lance N explica o lance N.
+   aluno: até 6 passos por parte, 7 no máximo (sem contar minutos); a fala do lance N explica o lance N.
 9. **Registre no dossiê** (`docs/aulas/<id>.md`, seção "Lição refeita (T61, <data>)"): a tabela de
    cobertura final, as partes (id, ideia, FEN, de onde veio), as partidas com link e como as abriu, onde
    saiu do plano e por quê, o que julgou o Stockfish (posições com mais de 7 peças, só em `think`/`talk`),
@@ -120,5 +120,5 @@ marcou (tema com composição, zugzwang recíproco, casas correspondentes, ou pa
 - Fala que descreve lances ilegais na posição (rei sem casa). O despejo e o `build_aula.py` não pegam fala
   de `talk`: jogue a posição com python-chess antes de afirmar.
 - Partida citada na fala sem `ref` e referência `game` sem `url`; ou o `#ply` da url que não é a posição do passo.
-- Lição de 18 min (rasa) ou de 55 min (cansa): corte demos em 5 lances, divida partes com duas ideias.
+- Lição rasa (poucas partes, falas que só citam o lance) ou parte com mais de 7 passos: divida em parte 1, parte 2; o tempo não conta.
 - Scratchpad compartilhado entre agentes: scripts próprios numa subpasta com o id da aula, no scratchpad da sessão (o orquestrador passa o caminho), nunca numa pasta `scratchpad/` dentro do repositório.
