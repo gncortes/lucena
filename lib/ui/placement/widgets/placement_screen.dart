@@ -217,8 +217,15 @@ class _Question extends StatelessWidget {
     // exercícios. Nos dois casos o tabuleiro fica no meio da tela.
     final promptAbove =
         item.type == PlacementItemType.choice && item.options.length > 2;
+    // O centro da tela inteira, nas coordenadas do corpo (que começa
+    // abaixo da barra do app e da barra de progresso), como nos exercícios.
+    final screen = MediaQuery.sizeOf(context);
+    final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight + 4;
     return CustomMultiChildLayout(
-      delegate: _QuestionLayout(promptAbove: promptAbove),
+      delegate: _QuestionLayout(
+        promptAbove: promptAbove,
+        centerY: screen.height / 2 - bodyTop,
+      ),
       children: [
         LayoutId(
           id: _QuestionSlot.prompt,
@@ -251,13 +258,14 @@ class _Question extends StatelessWidget {
 
 enum _QuestionSlot { prompt, board, answers }
 
-/// O tabuleiro no meio da tela, a pergunta colada nele (em cima ou
+/// O tabuleiro com o centro no centro da tela, a pergunta colada nele (em cima ou
 /// embaixo) e as respostas no rodapé. Se não couber no meio, o tabuleiro
 /// desliza (e só então encolhe) para não encostar no resto.
 class _QuestionLayout extends MultiChildLayoutDelegate {
-  _QuestionLayout({required this.promptAbove});
+  _QuestionLayout({required this.promptAbove, required this.centerY});
 
   final bool promptAbove;
+  final double centerY;
 
   @override
   void performLayout(Size size) {
@@ -273,7 +281,7 @@ class _QuestionLayout extends MultiChildLayoutDelegate {
     final maxTop = promptAbove
         ? size.height - answers.height - gap - side
         : size.height - answers.height - gap - prompt.height - gap - side;
-    final top = ((size.height - side) / 2)
+    final top = (centerY - side / 2)
         .clamp(minTop, math.max(minTop, maxTop))
         .toDouble();
     final left = (size.width - side) / 2;
@@ -290,7 +298,7 @@ class _QuestionLayout extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_QuestionLayout oldDelegate) =>
-      oldDelegate.promptAbove != promptAbove;
+      oldDelegate.promptAbove != promptAbove || oldDelegate.centerY != centerY;
 }
 
 class _Answers extends StatelessWidget {
