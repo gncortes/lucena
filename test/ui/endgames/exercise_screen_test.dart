@@ -87,7 +87,7 @@ void main() {
     // Antes de resolver, a vez logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'Your turn: play White',
+      'Your turn: White to play',
     );
 
     await move(tester, 'c1', 'c4');

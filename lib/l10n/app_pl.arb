@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "Złota jest warta 3 punkty, srebrna 2, a brązowa 1. Każdy błąd i każda podpowiedź odejmują punkt.",
   "exerciseLichess": "Analizuj na Lichess",
   "exerciseTurn": "{side, select, white{Ruch białych} other{Ruch czarnych}}",
-  "exerciseYourTurn": "{side, select, white{Twój ruch: grasz białymi} other{Twój ruch: grasz czarnymi}}",
+  "exerciseYourTurn": "{side, select, white{Twój ruch: grają białe} other{Twój ruch: grają czarne}}",
   "exercisesIntroAfter": "Gdy rozwiążesz wszystkie, lista pozostaje otwarta w lekcji: wróć do dowolnego ćwiczenia, aby je przejrzeć i przeanalizować pozycję na Lichess.",
   "exerciseScoreLocked": "Trening dowolny: ocena się nie zmienia. Aby znów się liczyła, powtórz ćwiczenia z lekcji."
 }

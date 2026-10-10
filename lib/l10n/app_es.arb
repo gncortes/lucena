@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "La dorada vale 3 puntos, la plateada 2 y la de bronce 1. Cada error y cada pista restan un punto.",
   "exerciseLichess": "Analizar en Lichess",
   "exerciseTurn": "{side, select, white{Juegan las blancas} other{Juegan las negras}}",
-  "exerciseYourTurn": "{side, select, white{Tu turno: juega con blancas} other{Tu turno: juega con negras}}",
+  "exerciseYourTurn": "{side, select, white{Tu turno: juegan las blancas} other{Tu turno: juegan las negras}}",
   "exercisesIntroAfter": "Cuando los resuelvas todos, la lista queda abierta en la lección: vuelve a cualquier ejercicio para repasarlo y analizar la posición en Lichess.",
   "exerciseScoreLocked": "Práctica libre: la nota no cambia. Para que cuente de nuevo, rehaz los ejercicios desde la lección."
 }

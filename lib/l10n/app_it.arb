@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "L'oro vale 3 punti, l'argento 2 e il bronzo 1. Ogni errore e ogni suggerimento tolgono un punto.",
   "exerciseLichess": "Analizza su Lichess",
   "exerciseTurn": "{side, select, white{Muove il Bianco} other{Muove il Nero}}",
-  "exerciseYourTurn": "{side, select, white{Tocca a te: gioca il Bianco} other{Tocca a te: gioca il Nero}}",
+  "exerciseYourTurn": "{side, select, white{Tocca a te: muove il Bianco} other{Tocca a te: muove il Nero}}",
   "exercisesIntroAfter": "Una volta risolti tutti, l'elenco resta aperto nella lezione: torna a qualsiasi esercizio per rivederlo e analizzare la posizione su Lichess.",
   "exerciseScoreLocked": "Allenamento libero: il voto non cambia. Per farlo contare di nuovo, rifai gli esercizi dalla lezione."
 }

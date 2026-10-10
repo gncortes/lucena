@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "सुनहरा 3 अंक, चाँदी 2 और कांस्य 1 अंक का है। हर गलती और हर संकेत एक अंक घटाता है।",
   "exerciseLichess": "Lichess पर विश्लेषण करें",
   "exerciseTurn": "{side, select, white{सफ़ेद की चाल} other{काले की चाल}}",
-  "exerciseYourTurn": "{side, select, white{आपकी बारी: सफ़ेद से खेलें} other{आपकी बारी: काले से खेलें}}",
+  "exerciseYourTurn": "{side, select, white{आपकी बारी: सफ़ेद की चाल} other{आपकी बारी: काले की चाल}}",
   "exercisesIntroAfter": "सभी हल करने के बाद सूची पाठ में खुली रहती है: किसी भी अभ्यास पर लौटकर उसे दोबारा देखें और स्थिति का Lichess पर विश्लेषण करें।",
   "exerciseScoreLocked": "मुक्त अभ्यास: ग्रेड नहीं बदलता। फिर से गिनने के लिए पाठ से अभ्यास दोबारा करें।"
 }

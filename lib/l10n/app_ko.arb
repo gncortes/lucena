@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "금은 3점, 은은 2점, 동은 1점입니다. 실수와 힌트는 각각 1점을 깎습니다.",
   "exerciseLichess": "Lichess에서 분석",
   "exerciseTurn": "{side, select, white{백 차례} other{흑 차례}}",
-  "exerciseYourTurn": "{side, select, white{당신 차례: 백으로 두세요} other{당신 차례: 흑으로 두세요}}",
+  "exerciseYourTurn": "{side, select, white{당신 차례: 백 차례} other{당신 차례: 흑 차례}}",
   "exercisesIntroAfter": "모두 풀면 레슨에 목록이 열린 채로 남습니다. 어떤 연습 문제든 돌아가서 다시 보고 Lichess에서 포지션을 분석할 수 있어요.",
   "exerciseScoreLocked": "자유 연습: 점수는 바뀌지 않습니다. 다시 반영하려면 레슨에서 연습 문제를 다시 푸세요."
 }

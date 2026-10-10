@@ -5142,7 +5142,7 @@
   "@exerciseLichess": {"description": "Button on a solved-series exercise: open the position in the Lichess analysis board."},
   "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
   "@exerciseTurn": {"description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.", "placeholders": {"side": {"type": "String"}}},
-  "exerciseYourTurn": "{side, select, white{Your turn: play White} other{Your turn: play Black}}",
+  "exerciseYourTurn": "{side, select, white{Your turn: White to play} other{Your turn: Black to play}}",
   "@exerciseYourTurn": {"description": "Right below the exercise board while the student solves: it is their turn, with the side they play.", "placeholders": {"side": {"type": "String"}}},
   "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
   "@exercisesIntroAfter": {"description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."},

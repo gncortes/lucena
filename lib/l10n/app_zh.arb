@@ -1010,7 +1010,7 @@
   "exercisesIntroStarLegend": "金星 3 分，银星 2 分，铜星 1 分。每次失误和每次提示都会扣 1 分。",
   "exerciseLichess": "在 Lichess 上分析",
   "exerciseTurn": "{side, select, white{白方走棋} other{黑方走棋}}",
-  "exerciseYourTurn": "{side, select, white{轮到你：执白走棋} other{轮到你：执黑走棋}}",
+  "exerciseYourTurn": "{side, select, white{轮到你：白方走} other{轮到你：黑方走}}",
   "exercisesIntroAfter": "全部解完后，课程里的列表会保持打开：随时回到任何一道练习复习，并在 Lichess 上分析该局面。",
   "exerciseScoreLocked": "自由练习：成绩不变。要重新计分，请从课程中重做练习。"
 }
