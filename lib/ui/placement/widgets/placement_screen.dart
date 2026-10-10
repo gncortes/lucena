@@ -388,27 +388,26 @@ class _OptionBadge extends StatelessWidget {
       'blackWins' => Colors.black,
       _ => null,
     };
-    return Container(
-      width: 28,
-      height: 28,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: side ?? colors.primaryContainer,
-        border: side == null ? null : Border.all(color: colors.outline),
+    // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.
+    if (side != null) {
+      return Container(
+        width: 16,
+        height: 16,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: side,
+          border: Border.all(color: colors.outline),
+        ),
+      );
+    }
+    if (icon != null) return Icon(icon, size: 20, color: colors.primary);
+    return Text(
+      text ?? '',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+        color: colors.primary,
       ),
-      child: side != null
-          ? null
-          : icon != null
-          ? Icon(icon, size: 16, color: colors.onPrimaryContainer)
-          : Text(
-              text ?? '',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: colors.onPrimaryContainer,
-              ),
-            ),
     );
   }
 }
