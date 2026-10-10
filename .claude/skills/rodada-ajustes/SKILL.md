@@ -13,6 +13,7 @@ O Gabriel acompanha pelo celular e manda pedidos em sequência, muitas vezes ant
 ## Regras fixas
 
 1. **Sem Patrol na rodada.** Nem a suíte, nem cenário solto, nem as variantes. A validação são os prints.
+   - **Patrol rodando quando chega um pedido de ajuste** (de outra entrega, inclusive): cancelar na hora (`pkill -f patrol_parallel.sh`, `adb -s <serial> emu kill` nos `Lucena_Patrol`) e usar a máquina para o ajuste e os prints. Em 2026-10-09 ele cobrou: "toda vez quando eu solicito um ajuste, você deveria cancelar isso aí e focar em resolver os ajustes que eu pedi".
    - O Patrol só roda quando ele disser "está tudo ok, pode rodar os testes".
    - Elogio a uma tela ("ficou legal") aprova só aquele item.
    - `flutter analyze` e `flutter test` continuam a cada integração, porque são rápidos.
