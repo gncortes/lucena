@@ -96,7 +96,7 @@
   "step.d_greco.m2": "2.gxh3. The g-pawn has become an h-pawn: now there are two h-pawns, and h8 is dark.",
   "step.d_greco.m3": "2...Kh6. The king heads straight for h7 and h8. The pawns are far from queening, and White's bishop will never cover h8. A draw.",
   "step.karpovKasparov": "{{Moscow|moscow}}, 1985, game 20 of the world championship match. {{Garry Kasparov|garry-kasparov}}, with Black, was defending a bishop ending against the champion, {{Anatoly Karpov|anatoly-karpov}}. He gave two pawns for one: 82...Bb3! 83.Be8 Ke7 84.Bxg6 Bxa4 85.Bxf5 Kf6. White was left with f- and h-pawns; the black bishop gives itself up for the f-pawn when needed, and what remains is the h-pawn with the light-squared bishop, which does not cover h8. A draw was agreed, and {{Kasparov|garry-kasparov}} went on to win the match and become world champion.",
-  "step.quizKnight": "Black has g- and h-pawns and the dark-squared bishop; h1 is light.",
+  "step.quizKnight": "Black has g- and h-pawns and the dark-squared bishop; h1 is light. Apply the same idea as in {{Greco|gioachino-greco}}'s study, now with the knight.",
   "step.quizKnight.done": "That's it. 1.Ne5+! and 2.Nxg6! The knight is lost, but it captures the g-pawn with it, and the white king goes to h1.",
   "step.quizKnight.hint": "Without the g-pawn, the remaining pawn is a rook pawn, and Black's bishop does not move on h1. A check gives the knight the time it needs.",
   "step.t_shift": "Black has a- and b-pawns and the light-squared bishop. The a-pawn alone, with that bishop, would be the wrong pawn: a1 is dark. How do you make the b-pawn disappear?",

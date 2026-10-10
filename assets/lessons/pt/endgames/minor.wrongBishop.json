@@ -96,7 +96,7 @@
   "step.d_greco.m2": "2.gxh3. O peão de g se tornou um peão de h: agora são dois peões de h, e h8 é escura.",
   "step.d_greco.m3": "2...Rh6. O rei vai diretamente para h7 e h8. Os peões estão longe de coroar, e o bispo branco nunca vai vigiar h8. É empate.",
   "step.karpovKasparov": "{{Moscou|moscow}}, 1985, partida 20 do match pelo título mundial. {{Garry Kasparov|garry-kasparov}}, de pretas, defendia um final de bispos contra o campeão, {{Anatoly Karpov|anatoly-karpov}}. Ele deu dois peões por um: 82...Bb3! 83.Be8 Re7 84.Bxg6 Bxa4 85.Bxf5 Rf6. As brancas ficaram com peões de f e de h; o bispo preto se entrega pelo de f quando for preciso, e o que sobra é o peão de h com o bispo das casas claras, que não vigia h8. Os jogadores combinaram o empate, e {{Kasparov|garry-kasparov}} ganhou o match e se tornou campeão do mundo.",
-  "step.quizKnight": "As pretas têm peões de g e de h e o bispo das casas escuras; h1 é clara. Aplique a mesma ideia do estudo anterior, agora com o cavalo.",
+  "step.quizKnight": "As pretas têm peões de g e de h e o bispo das casas escuras; h1 é clara. Aplique a mesma ideia do estudo de {{Greco|gioachino-greco}}, agora com o cavalo.",
   "step.quizKnight.done": "Muito bem. 1.Ce5+! e 2.Cxg6! O cavalo se perde, mas leva o peão de g, e o rei branco vai para h1.",
   "step.quizKnight.hint": "Sem o peão de g, o peão que sobra é de torre, e o bispo preto não se move em h1. Um xeque dá o tempo de que o cavalo precisa.",
   "step.t_shift": "As pretas têm peões de a e de b e o bispo das casas claras. O peão de a sozinho, com esse bispo, seria o peão errado, porque a1 é escura. Como fazer o peão de b desaparecer?",
