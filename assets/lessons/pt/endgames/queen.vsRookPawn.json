@@ -14,7 +14,7 @@
   "step.d_shuttle.m1": "1.Tg3. A torre vai para a outra casa que o peão protege: um lance de espera.",
   "step.d_shuttle.m2": "1...Re4. O rei preto quer descer a d3, atrás da nossa linha.",
   "step.d_shuttle.m3": "2.Te3+! A torre volta com xeque. A terceira fileira é dela, e o rei não atravessa.",
-  "step.d_shuttle.m4": "2...Rf4. O rei volta para f4. Tomar não adianta: 2...Dxe3 3.fxe3 Rxe3 deixa só os reis.",
+  "step.d_shuttle.m4": "2...Rf4. O rei volta para f4. Capturar não adianta: 2...Dxe3 3.fxe3 Rxe3 deixa só os reis.",
   "step.d_shuttle.m5": "3.Th3. A terceira casa: o peão não protege h3, mas o rei em g2 protege.",
   "step.d_shuttle.m6": "3...Dc6+. Xeque pela grande diagonal, que passa por g2.",
   "step.d_shuttle.m7": "4.Rg1. O rei sai do xeque e fica ao lado do peão. A torre em h3 fica um lance sem proteção, mas nem a dama nem o rei preto a alcançam.",
@@ -195,8 +195,8 @@
   "ex.e08.solution": "1.Db8+, 1...Re7 (único) e 2.Rg7, ameaçando mate em f8. A torre tem de sair, e a dama ocupa d8: o rei preto fica preso na frente do peão e o peão cai. Com as pretas a jogar, 1...Rc7 ou 1...Rc8 empatariam.",
   "ex.e09": "Estudo de Pogosyants: a torre e o peão na sétima contra a dama, e o rei preto na frente do peão. Ache o empate.",
   "ex.e09.hint": "Xeque primeiro, para tirar o rei preto de c8. Depois o nosso rei sai da cravada, e o peão coroa com xeque.",
-  "ex.e09.solution": "1.Tc2+, 1...Rd8; 2.Rb8, para o peão não ficar cravado; a dama vai para f5 e 3.f8=D+ força a troca; depois 4.Tc8+ e a torre toma a dama. 2.Tf2 no segundo lance também empata.",
+  "ex.e09.solution": "1.Tc2+, 1...Rd8; 2.Rb8, para o peão não ficar cravado; a dama vai para f5 e 3.f8=D+ força a troca; depois 4.Tc8+ e a torre captura a dama. 2.Tf2 no segundo lance também empata.",
   "ex.e10": "Estudo de Prokeš: peão em c7, torre em c8 e a dama preta pronta para dar xeques. Seis lances, quase todos únicos. Ache o empate.",
   "ex.e10.hint": "A torre vai para a única casa de onde, depois de perder o peão, ainda dá xeques até o afogamento.",
-  "ex.e10.solution": "1.Td8, e depois dos xeques 2.Rb7 e 3.Ra8; quando a dama toma em c7, 4.Td5+, 5.Tb5+ e 6.Tb6+: o rei preto é obrigado a tomar a torre e afoga o nosso. Qualquer outra casa da torre no primeiro lance perde o peão sem o truque."
+  "ex.e10.solution": "1.Td8, e depois dos xeques 2.Rb7 e 3.Ra8; quando a dama captura em c7, 4.Td5+, 5.Tb5+ e 6.Tb6+: o rei preto é obrigado a capturar a torre e afoga o nosso. Qualquer outra casa da torre no primeiro lance perde o peão sem o truque."
 }

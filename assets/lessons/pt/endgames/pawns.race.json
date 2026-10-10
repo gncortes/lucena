@@ -212,7 +212,7 @@
   "ex.e17": "Estudo de Khachaturov, 1947, sobre uma ideia de Grigoriev. Dois peões contra dois, e todo lance é único. Ache o lance que ganha.",
   "ex.e17.hint": "Faça o rei preto gastar lances. Onde o peão de f coroa, e o que acontece se o rei preto estiver na oitava fileira quando o peão de h chegar?",
   "ex.e17.solution": "1.f5! (o peão de f coroaria com xeque), e depois de 1...Rc5, 2.h5! Depois de 2...g3, 3.Re1! (3.Re2? deixa d3 com xeque). A técnica: cada vez que o rei preto se mexe, um peão branco anda: 4.f6, 5.h6, 6.Rf2, 7.f7, 8.h7. Depois de 8...g1=D+ 9.Rxg1 d2, 10.f8=D+! oferece a dama: 10...Rxf8 e 11.h8=D+ nasce com xeque e chega a tempo de parar o peão de d.",
-  "ex.e18": "Estudo de Moravec, 1950. Tomar o peão de d logo parece óbvio. Será? Ache o empate.",
+  "ex.e18": "Estudo de Moravec, 1950. Vigiar o peão de d logo parece óbvio. Será? Ache o empate.",
   "ex.e18.hint": "Faça a conta até as pretas coroarem em e1 e o rei branco ir para c8. De onde vem o xeque que decide, e quem pode tapar essa linha?",
   "ex.e18.solution": "1.Rd5! Com 1.Rxd6? e4 2.c4 e3 3.c5 e2 4.c6 e1=D 5.Rd7 Dd1+ 6.Rc8 e 6...Dg4+ ganha. 1.Rd5 ameaça 2.Re4 e parar o peão de e, e o rei preto vem para f3: depois de 2.Rxd6 e a mesma corrida (6.Rd7 Dd1+ 7.Rc8), o rei preto em f3 tapa a diagonal d1–g4 e o peão de c segura o empate.",
   "key.race": "Os dois peões coroam, mas o branco chega primeiro, e a dama nova, no canto, já vigia a casa onde o peão preto vai coroar. Contar não basta: é preciso ver o que a dama faz depois.",

@@ -124,7 +124,7 @@
   "step.finish": "Agora o desafio prático: você tem o peão de bispo, as brancas têm a dama e o rei longe. Mantenha o rei junto do peão, do lado do canto, e não caia nas armadilhas.",
   "ex.e12": "Peão de bispo em f2, o rei preto em g3, o nosso rei bem longe, em h8. Os xeques não levam a nada aqui. Ganhe.",
   "ex.e12.hint": "Olhe para a casa da frente do peão. O rei preto a está vigiando?",
-  "ex.e12.solution": "1.Df1! A dama para na frente do peão, numa casa que o rei preto não alcança. Agora o peão não anda, e o nosso rei vem de h8 com calma para tomá-lo. Os xeques, como 1.Dg6+, deixavam o rei preto ir para o canto, e aí era o empate de sempre. A regra: se a dama consegue parar na frente do peão, acabou.",
+  "ex.e12.solution": "1.Df1! A dama para na frente do peão, numa casa que o rei preto não alcança. Agora o peão não anda, e o nosso rei vem de h8 com calma para capturá-lo. Os xeques, como 1.Dg6+, deixavam o rei preto ir para o canto, e aí era o empate de sempre. A regra: se a dama consegue parar na frente do peão, acabou.",
   "ex.e04": "A dama branca está em e1, na fileira de coroação. O rei branco está longe. Qual é o único lance que empata?",
   "ex.e04.hint": "Se o rei sair de perto do peão, a dama para na frente dele.",
   "ex.e04.solution": "1...c1=D! A dama nova está defendida pelo rei, e depois de 2.Dxc1+ Rxc1 sobram só os reis. Qualquer lance de rei deixava 2.Dc1, a dama bloqueando o peão, e o rei branco vinha buscá-lo.",

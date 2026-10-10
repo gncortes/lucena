@@ -54,7 +54,7 @@
   "step.d_around": "O rei contorna, e a dama só tira o rei preto do caminho.",
   "step.d_around.m1": "1.Rc5. O rei vai para baixo da torre e ameaça 2.Rb5, atacando a6. De c5 ele já vigia b6.",
   "step.d_around.m2": "1...Rc8. O rei preto corre para defender a torre por b7.",
-  "step.d_around.m3": "2.De7! Lance calmo. A dama toma a sétima fileira e d8, e o rei preto só pode ir para b8.",
+  "step.d_around.m3": "2.De7! Lance calmo. A dama vigia a sétima fileira e d8, e o rei preto só pode ir para b8.",
   "step.d_around.m4": "2...Rb8. De b8 o rei preto não protege a6.",
   "step.d_around.m5": "3.Rb5. O rei ataca a torre. Ficar na terceira fileira custa a torre, e por isso as pretas a tiram dali.",
   "step.d_around.m6": "3...Ta7. A torre vai para a sétima, colada no rei: é a defesa da segunda fileira, que você já sabe desfazer.",
