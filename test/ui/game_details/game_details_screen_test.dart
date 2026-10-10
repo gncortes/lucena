@@ -139,36 +139,58 @@ void main() {
     expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
   });
 
-  testWidgets('tela pequena com fonte 1,6: nada estoura, os botões de lance '
-      'ficam à vista e, com a folha aberta, tudo rola até a legenda', (
-    tester,
-  ) async {
-    final id = await progress.addAttempt(game);
-    await pump(tester, id, screen: const Size(945, 1680), textScale: 1.6);
-    expect(tester.takeException(), isNull);
-    expect(find.byKey(GameDetailsKeys.board), findsOne);
-    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
-    expect(
-      tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
-      lessThanOrEqualTo(sheetTop(tester)),
-    );
+  for (final screen in const [Size(945, 1680), Size(720, 1280)]) {
+    testWidgets('tela pequena ($screen) com fonte 1,6: nada estoura, os '
+        'botões de lance ficam à vista e, com a folha aberta, tudo rola até a '
+        'legenda', (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, screen: screen, textScale: 1.6);
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(GameDetailsKeys.board), findsOne);
+      expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+      expect(
+        tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
+        lessThanOrEqualTo(sheetTop(tester)),
+      );
 
-    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -400));
+      await tester.drag(
+        find.byKey(GameDetailsKeys.panel),
+        const Offset(0, -400),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+      // Dentro da folha aberta, a tabela inteira chega à vista rolando.
+      final last = find.byKey(GameDetailsKeys.move(game.moves.length - 1));
+      await tester.scrollUntilVisible(
+        last,
+        200,
+        scrollable: find.descendant(
+          of: find.byKey(GameDetailsKeys.panel),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(last.hitTestable(), findsOne);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('tela alta: aberta, a folha para no fim do conteúdo, sem vazio '
+      'embaixo', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 4000));
+    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -900));
     await tester.pumpAndSettle();
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
-    // Dentro da folha aberta, a tabela inteira chega à vista rolando.
-    final last = find.byKey(GameDetailsKeys.move(game.moves.length - 1));
-    await tester.scrollUntilVisible(
-      last,
-      200,
-      scrollable: find.descendant(
-        of: find.byKey(GameDetailsKeys.panel),
-        matching: find.byType(Scrollable),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(last.hitTestable(), findsOne);
-    expect(tester.takeException(), isNull);
+    final screenBottom = tester
+        .getRect(find.byKey(GameDetailsKeys.screen))
+        .bottom;
+    final legend = tester.getRect(find.byKey(GameDetailsKeys.legend));
+    expect(legend.bottom, lessThanOrEqualTo(screenBottom));
+    expect(screenBottom - legend.bottom, lessThan(AppSpacing.xxl * 2));
+    // A folha não precisou ir até o máximo: o conteúdo coube antes.
+    final appBar = tester.getRect(find.byType(AppBar));
+    final height = screenBottom - appBar.bottom;
+    expect(sheetTop(tester), greaterThan(appBar.bottom + 0.06 * height + 1));
   });
 
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (

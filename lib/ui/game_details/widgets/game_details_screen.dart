@@ -138,6 +138,24 @@ class _ReviewBodyState extends State<_ReviewBody> {
 
   final _sheet = DraggableScrollableController();
 
+  // A altura de todo o conteúdo da folha (com o puxador): aberta, ela para
+  // aí, sem vazio embaixo em tela alta.
+  double? _contentHeight;
+
+  bool _onContentMetrics(ScrollMetricsNotification notification) {
+    final metrics = notification.metrics;
+    final content =
+        metrics.viewportDimension +
+        metrics.maxScrollExtent -
+        metrics.minScrollExtent;
+    if (_contentHeight == null || (content - _contentHeight!).abs() > 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _contentHeight = content);
+      });
+    }
+    return false;
+  }
+
   // O tamanho da folha, para o "x". A folha avisa até durante a montagem;
   // o aviso passa para depois do quadro.
   final _sheetSize = ValueNotifier<double?>(null);
@@ -215,6 +233,12 @@ class _ReviewBodyState extends State<_ReviewBody> {
         );
         final minSheet = (peek / height).toDouble();
         final boardArea = height - peek;
+        // Aberta, a folha para na altura do conteúdo, até [_sheetMax].
+        final content = _contentHeight;
+        final maxSheet = content == null
+            ? _sheetMax
+            : (content / height).clamp(minSheet, _sheetMax).toDouble();
+        final opens = maxSheet > minSheet + 0.01;
         return Stack(
           children: [
             Positioned(
@@ -244,9 +268,9 @@ class _ReviewBodyState extends State<_ReviewBody> {
                 controller: _sheet,
                 initialChildSize: minSheet,
                 minChildSize: minSheet,
-                maxChildSize: _sheetMax,
-                snap: true,
-                snapSizes: [minSheet, _sheetMax],
+                maxChildSize: opens ? maxSheet : minSheet,
+                snap: opens,
+                snapSizes: opens ? [minSheet, maxSheet] : null,
                 builder: (context, scroll) => _sheetContent(context, scroll, [
                   MoveExplanation(state: state),
                   if (state.engine) EngineLinesPanel(state: state),
@@ -315,26 +339,34 @@ class _ReviewBodyState extends State<_ReviewBody> {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: ListView(
-          key: GameDetailsKeys.panel,
-          controller: scroll,
-          padding: scrollPadding(context),
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.outlineVariant,
-                    borderRadius: BorderRadius.circular(AppShape.full),
+        // A lista toda montada (sem preguiça): a altura dela é exata, e a
+        // folha aberta para nela.
+        child: NotificationListener<ScrollMetricsNotification>(
+          onNotification: _onContentMetrics,
+          child: SingleChildScrollView(
+            key: GameDetailsKeys.panel,
+            controller: scroll,
+            padding: scrollPadding(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colors.outlineVariant,
+                        borderRadius: BorderRadius.circular(AppShape.full),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                ...children,
+              ],
             ),
-            ...children,
-          ],
+          ),
         ),
       ),
     );
@@ -591,57 +623,66 @@ class _MoveTable extends StatelessWidget {
       onTap: () => context.read<GameDetailsCubit>().select(index),
       child: AnimatedContainer(
         duration: AppMotion.state,
-        height: 44,
+        constraints: const BoxConstraints(minHeight: 44),
         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
           color: selected ? colors.secondaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(AppShape.small),
         ),
-        child: Row(
+        // O lance nunca é cortado: sem espaço na linha (tela estreita ou
+        // fonte grande), o selo e o tempo descem para baixo dele.
+        alignment: AlignmentDirectional.centerStart,
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Expanded(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    for (final char in move.san.split(''))
-                      if (Figurine.ofLetter[char] case final figurine?)
-                        TextSpan(
-                          text: figurine,
-                          style: const TextStyle(
-                            fontFamily: Figurine.fontFamily,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        )
-                      else
-                        TextSpan(text: char),
-                  ],
-                ),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: selected ? colors.onSecondaryContainer : null,
-                ),
-                maxLines: 1,
+            Text.rich(
+              TextSpan(
+                children: [
+                  for (final char in move.san.split(''))
+                    if (Figurine.ofLetter[char] case final figurine?)
+                      TextSpan(
+                        text: figurine,
+                        style: const TextStyle(
+                          fontFamily: Figurine.fontFamily,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                    else
+                      TextSpan(text: char),
+                ],
               ),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: selected ? colors.onSecondaryContainer : null,
+              ),
+              softWrap: false,
             ),
-            if (state.reviewOf(index) case final reviewed?) ...[
-              MoveQualityBadge(
-                reviewed.quality,
-                size: 18,
-                key: GameDetailsKeys.moveQuality(index),
-              ),
-              const SizedBox(width: 6),
-            ],
-            // Quanto o lance levou, discreto à direita.
-            if (time != null)
-              Text(
-                _seconds(context, time),
-                key: GameDetailsKeys.moveTime(index),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-              ),
+            // O selo e o tempo; sem espaço, o tempo quebra a linha.
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                if (state.reviewOf(index) case final reviewed?) ...[
+                  MoveQualityBadge(
+                    reviewed.quality,
+                    size: 18,
+                    key: GameDetailsKeys.moveQuality(index),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                // Quanto o lance levou, discreto à direita.
+                if (time != null)
+                  Text(
+                    _seconds(context, time),
+                    key: GameDetailsKeys.moveTime(index),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
