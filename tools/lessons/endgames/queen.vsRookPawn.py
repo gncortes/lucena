@@ -16,7 +16,7 @@ from make_source import (after, demo, exercise, move, play,  # noqa: E402
 FORT = '8/8/1q6/8/5k2/4R3/5PK1/8 w - - 0 1'
 # Van der Poel-Smits 2000 (Wikipedia, "Fortress"), espelhada, depois de Dd4+
 VDP = '8/8/8/8/3qk3/5R2/3KP3/8 w - - 0 1'
-# Quais peões seguram (estudo de Schnabelwolke): posições-base
+# Quais peões seguram (coleção de Schnabelwolke no Lichess): posições-base
 A3 = '8/8/8/8/3q4/PK1k4/1R6/8 w - - 0 1'                # só Ra2
 C3 = '8/8/2q1k3/8/3R4/2P5/2K5/8 w - - 0 1'              # perdido
 # T63: peão de cavalo, a torre que espera longe (Schnabelwolke, cap. 8)
@@ -25,13 +25,10 @@ B5_MIRROR = '6q1/8/5R2/4k1P1/6K1/8/8/8 w - - 0 1'       # a mesma, peão g5
 # T63: montar a fortaleza do peão de cavalo (próprias, conferidas na tabela)
 BUILD = '8/8/3R3K/8/6P1/2k5/8/1q6 w - - 0 1'            # g5 primeiro
 BUILD2 = '8/8/4R2K/8/6P1/3k4/1q6/8 w - - 0 1'           # só g5; Tf6? cai
-# Ataque: peão de torre na segunda (estudo de KaushalK, cap. 8)
+BUILD_T = '8/8/4R2K/8/6P1/2qk4/8/8 w - - 0 1'          # think: só g5
+# Ataque: peão de torre na segunda (coleção de KaushalK no Lichess, cap. 8)
 ROOK2 = '6k1/7p/6r1/5K2/7Q/8/8/8 w - - 0 1'
 ROOK2_MIRROR = '1k6/p7/1r6/2K5/Q7/8/8/8 w - - 0 1'      # a mesma, peão a7
-# T63: a torre solta cai num xeque que também a ataca
-LOOSE_Z = after(ROOK2, 'Qe7')                           # o zugzwang
-LOOSE_G2 = '8/6kp/8/5K2/8/4Q3/6r1/8 w - - 0 5'          # 1.De7 Tg2 ... 4...Rg7
-LOOSE_B2 = '8/6kp/8/5K2/8/8/1r6/3Q4 w - - 0 1'          # própria: Dd4+ ou Da1
 # T63: Carlsen-Matlakov, Grand Swiss 2019 (PGN Mentor e chessgames)
 CARL_66 = '1Q6/8/2p5/3r4/2k3K1/8/8/8 w - - 25 66'       # ply 130: 66.Db6!
 CARL_78 = '8/8/4K3/2p5/3k4/3r4/2Q5/8 w - - 20 78'       # ply 154: 78.Rd6!
@@ -52,17 +49,18 @@ B4 = '8/8/4k3/3q4/1PR5/8/2K5/8 w - - 0 1'               # Schnabelwolke, b4
 B4_PIN = '8/8/8/1KR5/1P1k4/8/q7/8 w - - 0 1'            # Schnabelwolke, cap. 6
 # Marcotulli-Malström 2001 (Wikipedia, "Fortress"), espelhada
 MARC = '8/8/1K6/8/1P6/4k3/2R5/7q w - - 0 1'
-LAZA = '7k/4Q2p/6r1/7K/8/8/8/8 w - - 0 1'               # G. Laza (KaushalK)
+LAZA = '7k/4Q2p/6r1/7K/8/8/8/8 w - - 0 1'               # e05 (coleção de KaushalK)
 # Whitaker-Ferriz 1959 (Wikipedia, "Fortress"), espelhada: torre sem proteção
 WHIT = '8/6pk/4r3/8/Q4K1P/8/8/8 w - - 0 1'              # só Dc2+
 # Vaganian-Bologan 1997 (PGN Mentor), ply 188
 VAG = '8/1Q6/8/6K1/2p5/8/2k5/2r5 w - - 0 1'             # só Rf4
-BEYOND = '3k4/3p3K/4r3/8/1Q6/8/8/8 w - - 0 1'           # KaushalK, cap. 7
+BEYOND = '3k4/3p3K/4r3/8/1Q6/8/8/8 w - - 0 1'           # coleção de KaushalK, cap. 7
 POGOSYANTS = '2k5/K4P1q/8/8/8/8/R7/8 w - - 0 1'          # estudo (MorosFan)
 PROKES = '2R5/2P5/K7/2k5/8/8/8/2q5 w - - 0 1'            # estudo (MorosFan)
 # Peão na sexta, torre atrás: zugzwang recíproco (Grigoriev 1933, Wikipedia)
 GRIG = '8/4k3/4P3/8/8/2K1R3/8/3q4 b - - 0 1'            # pretas jogam: empate
 GRIG_B3 = '8/4k3/4P3/8/8/1K2R3/8/3q4 w - - 0 1'         # só Rc3
+GRIG_M = '8/3k4/3P4/8/8/3R2K1/8/4q3 w - - 0 1'          # espelho: só Rf3
 
 LICHESS = 'https://lichess.org/analysis/pgn/'
 CARLSEN_SANS = (
@@ -199,7 +197,8 @@ LESSON = {
         ]},
         # 3. Montar a fortaleza: o peão anda primeiro.
         {'id': 'build', 'steps': [
-            talk('build', BUILD, arrows=['g4g5'], marks=['f6', 'h6']),
+            think('t_build', BUILD_T, 2, marks=['g4', 'f6']),
+            talk('build', BUILD_T, arrows=['g4g5'], marks=['f6', 'h6']),
             demo('d_build', BUILD, 'g5 Kc4 Rf6 Qh1+ Kg7 Kd5 Kg6',
                  goal='draw',
                  notes={1: {'marks': ['f6', 'h6']},
@@ -224,19 +223,7 @@ LESSON = {
                  notes={3: {'arrows': ['g5h6']}}),
             move('m_rookPawn', ROOK2_MIRROR, 'Qd7', accept='best'),
         ]},
-        # 5. A torre solta cai num xeque que também a ataca.
-        {'id': 'loose', 'steps': [
-            talk('loose', LOOSE_Z, arrows=['g6g2'], marks=['g2']),
-            demo('d_loose', LOOSE_G2, 'Qc3+ Kg8 Qc8+ Kg7 Qb7+ Kh6 Qxg2',
-                 notes={1: {'arrows': ['c3g7']}, 5: {'arrows': ['b7g2']},
-                        7: {'marks': ['g2']}}),
-            talk('looseRule',
-                 after(LOOSE_G2, 'Qc3+ Kg8 Qc8+ Kg7 Qb7+ Kh6 Qxg2'),
-                 marks=['g2']),
-            move('m_loose', LOOSE_B2, 'Qd4+',
-                 accept={1: ['Qd4+', 'Qa1']}),
-        ]},
-        # 6. Carlsen-Matlakov: o rei, não o xeque.
+        # 5. Carlsen-Matlakov: o rei, não o xeque.
         {'id': 'king', 'steps': [
             ref(think('t_king', CARL_66, 2, marks=['c6', 'd4']),
                 'carlsen#130'),
@@ -249,27 +236,27 @@ LESSON = {
             ref(move('m_kd6', CARL_78, 'Kd6', accept={1: ['Kd6']}),
                 'carlsen#154'),
         ]},
-        # 7. Quando o rei atacante passa da terceira fileira do defensor.
+        # 6. Quando o rei atacante passa da terceira fileira do defensor.
         {'id': 'beyond', 'steps': [
-            ref(talk('conditions', FORT, marks=['f2', 'e3', 'g2', 'f4']),
-                'wikiFort'),
-            talk('beyondWhy', BEYOND_D1, marks=['b2', 'e3']),
+            think('t_beyond', BEYOND_D1, 2, marks=['b2', 'f1']),
+            talk('beyondWhy', BEYOND_D1, arrows=['f1g2'], marks=['b2', 'e3']),
             demo('d_beyond', BEYOND_D1, 'Kg2 Qd5+ Kg1 Kc2 Kh2', goal='draw',
                  notes={1: {'arrows': ['f1g2']}, 5: {'arrows': ['g1h2']}}),
             move('m_beyond', BEYOND_D2, 'Kg2', accept='hold', goal='draw'),
         ]},
-        # 8. Peão na sétima: coroar com xeque e o espeto.
+        # 7. Peão na sétima: coroar com xeque e o espeto.
         {'id': 'seventh', 'steps': [
-            talk('seventh', SKEWER, marks=['c7', 'c8', 'c6']),
-            talk('skewer', SKEWER, arrows=['c7c8', 'a2c2'], marks=['c8']),
+            think('t_seventh', SKEWER, 2, marks=['c7', 'c8', 'c6']),
             demo('d_seventh', SKEWER, 'c8=Q+ Qxc8 Rc2+ Kd7 Rxc8 Kxc8',
                  goal='draw',
                  notes={1: {'arrows': ['c8c6']},
                         3: {'arrows': ['c2c8']}}),
+            talk('seventhRule', after(SKEWER, 'c8=Q+ Qxc8 Rc2+ Kd7'),
+                 arrows=['c2c8'], marks=['c8', 'd7']),
             move('m_seventh', SKEWER2, 'f8=Q+ Qxf8 Rf2+',
                  accept={1: ['f8=Q+', 'f8=R+'], 2: 'only'}, goal='draw'),
         ]},
-        # 9. Peão na sétima: a torre louca e o afogamento.
+        # 8. Peão na sétima: a torre louca e o afogamento.
         {'id': 'desperado', 'steps': [
             think('t_desperado', DESP_BOX, 2, marks=['b7', 'b8']),
             talk('desperado', DESP_BOX, arrows=['h1h6'], marks=['a8']),
@@ -279,13 +266,18 @@ LESSON = {
             move('m_desperado', DESP_B5, 'Rh5+ Kb6 Rh6+',
                  accept='only', goal='draw'),
         ]},
-        # 10. Resumo e o zugzwang de Grigoriev.
+        # 9. Peão na sexta, torre atrás: o zugzwang recíproco de Grigoriev,
+        # depois o resumo e o desafio prático.
         {'id': 'recap', 'steps': [
-            talk('summaryRules', FORT, marks=['e3', 'g3', 'f2']),
-            ref(talk('sixth', GRIG, side='white', marks=['c3', 'e6', 'e3'],
-                     arrows=['e3e6']), 'wikiQR'),
-            move('grig', GRIG_B3, 'Kc3 Qa1+ Kd2', accept='hold',
+            ref(think('t_grig', GRIG_B3, 2, marks=['c3', 'e6', 'e3']),
+                'wikiQR'),
+            ref(talk('sixth', GRIG_B3, arrows=['b3c3'],
+                     marks=['c3', 'e6', 'e3']), 'wikiQR'),
+            demo('d_grig', GRIG, 'Qa1+ Kd2 Qa2+ Kc3', goal='draw',
+                 notes={2: {'arrows': ['c3d2']}, 4: {'arrows': ['d2c3']}}),
+            move('grig', GRIG_M, 'Kf3 Qh1+ Ke2', accept='hold',
                  goal='draw'),
+            talk('summaryRules', FORT, marks=['e3', 'g3', 'f2']),
             play('finish', FORT, goal='draw'),
         ]},
     ],
