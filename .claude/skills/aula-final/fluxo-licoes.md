@@ -100,18 +100,18 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | |
 | 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | |
 | 24 | pawns.correspondingSquares | B | 1 (+1) | Fable | numeração em demo (um par por fala); triangulação separada; Rösch–Mast | |
-| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada | |
-| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min | |
+| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 27 | minor.wrongBishop | C | 3 | Fable | transformação da estrutura, rei fechando a porta, peões g+h; Fischer–Taimanov | |
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
-| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro | |
-| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida | |
-| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle | |
-| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko | |
+| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 33 | queen.vsRookPawn | C | 4 | Fable | torre que espera longe, Laza, rei dentro, estudos da 7.ª; Carlsen–Matlakov | |
 | 34 | mates.twoKnightsPawn | C | 2 (+2) | Fable | triangulação (Chéron), captura certa (Horwitz–Kling); Karpov, Anand | |
 | 35 | mates.bishopKnight.w | C | 3 | Fable | W ditado em move, sem demo; redes c7/c8 e de Seirawan; links | |
-| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk | |
+| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 37 | mates.bishopKnight.full | C | 3 (+1) | Fable | sem demo; canto errado (Kempinski), Delétang do centro, Be4+ | |
 
 Pendências de julgamento para o Gabriel: `pawns.distantOpposition` e13 é o exemplo 28 de Capablanca deslocado uma coluna e a solução credita um estudo do Lichess (texto pt/en pronto no LICAO): trocar o crédito ou deixar; `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
