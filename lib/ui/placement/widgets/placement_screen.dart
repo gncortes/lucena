@@ -18,7 +18,6 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/skeleton.dart';
-import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';
@@ -53,6 +52,23 @@ class PlacementScreen extends StatelessWidget {
                       key: PlacementKeys.counter,
                     )
                   : Text(l10n.placementTitle),
+              // Quanto do questionário já foi: uma barra contínua na base
+              // da barra do app, que anda a cada resposta.
+              bottom: state.view == PlacementView.question
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(4),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(end: (state.number - 1) / 20),
+                        duration: AppMotion.of(context).component,
+                        curve: AppMotion.enter,
+                        builder: (context, value, _) => LinearProgressIndicator(
+                          key: PlacementKeys.progress,
+                          value: value,
+                          minHeight: 4,
+                        ),
+                      ),
+                    )
+                  : null,
             ),
       body: SafeArea(
         top: state.view != PlacementView.result,
@@ -199,19 +215,7 @@ class _Question extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.sm,
-            AppSpacing.screen,
-            AppSpacing.md,
-          ),
-          child: StepProgress(
-            key: PlacementKeys.progress,
-            total: 20,
-            value: (state.number - 1).toDouble(),
-          ),
-        ),
+        const SizedBox(height: AppSpacing.md),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
           child: Text(
@@ -251,7 +255,6 @@ class _Answers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final item = state.item!;
     final dontKnow = TextButton(
       key: PlacementKeys.dontKnow,
@@ -270,22 +273,20 @@ class _Answers extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (item.type == PlacementItemType.choice)
-            // As opções uma embaixo da outra, na largura toda: o texto
-            // inteiro cabe e o alvo do toque é grande.
-            for (final (index, option) in item.options.indexed) ...[
-              if (index > 0) const SizedBox(height: AppSpacing.sm),
-              OutlinedButton(
-                key: PlacementKeys.option(option),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppShape.medium),
-                  ),
-                  side: BorderSide(color: theme.colorScheme.outlineVariant),
-                  textStyle: theme.textTheme.titleMedium,
-                ),
-                onPressed: () => cubit.choose(option),
-                child: OneLine(placementOption(l10n, option)),
+            // As opções em grade, duas por linha; a que sobra sozinha ocupa
+            // a linha inteira.
+            for (var row = 0; row < item.options.length; row += 2) ...[
+              if (row > 0) const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  for (final (index, option)
+                      in item.options.skip(row).take(2).indexed) ...[
+                    if (index > 0) const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: _Option(option: option, cubit: cubit),
+                    ),
+                  ],
+                ],
               ),
             ],
           if (item.type == PlacementItemType.squares)
@@ -301,6 +302,38 @@ class _Answers extends StatelessWidget {
           dontKnow,
         ],
       ),
+    );
+  }
+}
+
+/// Uma opção da pergunta de escolha: um cartão com borda, o texto no meio.
+class _Option extends StatelessWidget {
+  const _Option({required this.option, required this.cubit});
+
+  final String option;
+  final PlacementCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return OutlinedButton(
+      key: PlacementKeys.option(option),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(56),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        backgroundColor: colors.surfaceContainerLow,
+        foregroundColor: colors.onSurface,
+        side: BorderSide(color: colors.outlineVariant),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.medium),
+        ),
+        textStyle: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onPressed: () => cubit.choose(option),
+      child: OneLine(placementOption(context.l10n, option)),
     );
   }
 }
