@@ -136,7 +136,7 @@
   "ex.e13": "Brancas jogam. O nosso rei está a dois passos do rei preto, mas fecha a coluna d da dama. Só um lance ganha. Qual?",
   "ex.e13.hint": "Nem sempre é preciso segurar o peão. O que acontece se ele coroar com o nosso rei bem perto do rei preto?",
   "ex.e13.solution": "1.Rd3! Se o peão vira dama, 2.Dc2 é mate, porque o rei em d3 defende c2. A melhor defesa é virar cavalo com xeque, 1...e1=C+, e dama contra cavalo ganha: 2.Re3 (ou 2.Re4, 2.Rd4). Os xeques não ajudam: 1.Dc1+ e 1.Dc2+ entregam a dama, e a coluna d está fechada pelo nosso rei.",
-  "ex.e14": "Brancas jogam. Posição de I. A. Horowitz, de 1957, citada na Wikipedia. O peão de bispo está na sexta, e o nosso rei em g7 atrapalha a dama. Só um lance ganha.",
+  "ex.e14": "Brancas jogam. Posição de I. A. Horowitz, de 1957. O peão de bispo está na sexta, e o nosso rei em g7 atrapalha a dama. Só um lance ganha.",
   "ex.e14.hint": "Contra o peão de bispo, a dama quer cravá-lo por uma diagonal até o rei preto. A grande diagonal está fechada pelo nosso rei. Não comece com xeque.",
   "ex.e14.solution": "1.Dh6!! A dama vai para a diagonal h6-c1. Se 1...c2, 2.Dc1+ e o peão cai. A melhor defesa é 1...Rb1, e só 2.Db6+ mantém a vitória, com o xeque pela coluna b. Depois de 2...Rc1, a escada segue com 3.Dg1+ (ou 3.De3+). O natural 1.Dh1+? deixa 1...Rb2!, e a cravada em h8 não existe, porque o nosso rei está em g7: empate.",
   "ex.e16": "Brancas jogam. O nosso rei está em d4, a dama em h6, e o peão em e2 ameaça coroar. Só um lance ganha, e depois dele cada lance também conta. Ache o caminho, um lance de cada vez.",
