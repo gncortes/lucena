@@ -327,8 +327,7 @@
           "id": "kingWhy",
           "fen": "8/2k5/2p3Q1/3r4/8/8/7K/8 w - - 0 1",
           "arrows": [
-            "h2g3",
-            "g3f4",
+            "h2f4",
             "f4e4"
           ],
           "marks": [

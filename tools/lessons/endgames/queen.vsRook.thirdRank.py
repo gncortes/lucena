@@ -112,7 +112,7 @@ write({
         ]},
         {'id': 'edge', 'steps': [
             ref(think('t_thirdA', TA, 2), 'wikipedia'),
-            ref(talk('a6', TA, arrows=['d5c5', 'c5b5'], marks=['a6']),
+            ref(talk('a6', TA, arrows=['d5b5'], marks=['a6']),
                 'wikipedia'),
             demo('d_around', TA, 'Kc5 Kc8 Qe7 Kb8 Kb5 Ra7', notes={
                 1: {'arrows': ['c5b5']}, 5: {'arrows': ['b5a6']}}),

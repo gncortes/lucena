@@ -108,7 +108,7 @@ src = {
         {'id': 'rookZone', 'steps': [
             think('t_rookZone', ROOK_ZONE, 5, 2),
             talk('rookZoneWhy', ROOK_ZONE, marks=ZONE_ROOK + ['b3'],
-                 arrows=['d5c4', 'c4b3']),
+                 arrows=['d5b3']),
             demo('d_rookZone', ROOK_ZONE, 'win',
                  'Qf6+ Kb1 Qf1+ Kb2 Qe2+ Kb1 Kc4 a1=Q Kb3',
                  {6: {'arrows': ['c4b3']}, 8: {'marks': ['b3', 'c2', 'd1']}}),
@@ -141,7 +141,7 @@ src = {
         {'id': 'sides', 'steps': [
             think('t_trap', TRAP410, 3, 2, side='black'),
             talk('trapWhy', TRAP410, side='black', marks=['a1', 'b1', 'c3'],
-                 arrows=['d5c4', 'c4b3']),
+                 arrows=['d5b3']),
             demo('d_trap', TRAP410_PUNISH, 'win', 'Kc4 c1=Q+ Kb3',
                  {2: {'marks': ['b3'], 'arrows': ['e2b2']}}),
             talk('longSide', LONG, marks=['g1', 'g2', 'd2'],

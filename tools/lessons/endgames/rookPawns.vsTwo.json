@@ -187,8 +187,7 @@
           "hints": 2,
           "ask": "plan",
           "arrows": [
-            "c4d3",
-            "d3e2"
+            "c4e2"
           ],
           "marks": [
             "e2",
@@ -200,8 +199,7 @@
           "id": "king",
           "fen": "7k/8/8/8/2K5/5pp1/8/R7 w - - 0 1",
           "arrows": [
-            "c4d3",
-            "d3e2"
+            "c4e2"
           ],
           "marks": [
             "e2",
@@ -213,8 +211,7 @@
           "id": "kingLate",
           "fen": "7k/8/8/8/1K6/5pp1/8/R7 w - - 0 1",
           "arrows": [
-            "b4c3",
-            "c3d2"
+            "b4d2"
           ],
           "marks": [
             "f1"
@@ -293,8 +290,7 @@
           "hints": 2,
           "ask": "line",
           "arrows": [
-            "f5g6",
-            "g6h7"
+            "f5h7"
           ],
           "marks": [
             "h7"
@@ -498,8 +494,7 @@
           "id": "rules",
           "fen": "7k/8/8/8/2K5/5pp1/8/R7 w - - 0 1",
           "arrows": [
-            "c4d3",
-            "d3e2"
+            "c4e2"
           ]
         },
         {

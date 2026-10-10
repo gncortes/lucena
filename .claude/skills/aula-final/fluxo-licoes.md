@@ -31,7 +31,7 @@ com o id da aula no scratchpad da sessão (passe o caminho no pedido), nunca den
 | 1 | 1.ª passada do revisor | Opus (Fable só se a tabela abaixo marca) | "Você é o agente `revisor-licoes`. Leia a sua definição em `.claude/agents/revisor-licoes.md` e siga-a à risca: só relata, nunca edita aula nem usa git. Worktree `<caminho>`. Aula: `<id>`. Escreva `docs/aulas/LICAO-<id>.md`. Comece por `tools/.cache/venv/bin/python tools/lessons/dump_lesson.py <id> --links`. A triagem (`fluxo-licoes.md`, tabela) já apontou: <linha da tabela>. Partidas reais só de fonte aberta que você abrir (Wikipedia `?action=raw`, estudos públicos do Lichess via `https://lichess.org/api/study/<id>.pgn`, arquivos PGN públicos como `pgnmentor.com`), conferidas com python-chess, link no formato "Links" de `pesquisa.md`. O plano de reescrita deve ser detalhado o bastante para um modelo menor seguir sem pensar muito (FEN de cada passo, lances dos demos em SAN, o que cada fala diz). Tabela: 1 s entre consultas, cache em `tools/.cache/tablebase`. Scripts seus em `<scratchpad>/<id>/`. Na conversa, responda só com a nota geral, as três faltas principais e o caminho do relatório." |
 | 2 | Reescrita | Opus (Fable só se marcado) | "Leia e siga `.claude/skills/aula-final/licao.md` (as seis regras e **"Como reescrever uma lição, passo a passo"**) e `formato.md`. Aula: `<id>`. Worktree `<caminho>`, sem git. O plano do revisor está em `docs/aulas/LICAO-<id>.md`: siga-o; se discordar de um ponto, faça do seu jeito e registre no dossiê. Só edite a fonte (`tools/lessons/endgames/<id>.py` se existir, senão o `.json`), as falas `assets/lessons/{pt,en}/endgames/<id>.json`, o gerado via `build_aula.py` e o dossiê `docs/aulas/<id>.md`. Não toque nos exercícios, `passScore`, chaves `ex.*`, `index.json`, `trail.json`, `lib/`, `test/`. Quando uma posição vem de partida, conte a partida (quem, onde, como chegaram ali, o que o mestre viu, o que aconteceu), com `ref` no passo e `url` na referência. Scripts seus em `<scratchpad>/<id>/`. No fim, relate curto e em tabela: partes (id, ideia, minutos), partidas/estudos com link, cobertura, o que o Stockfish julgou, onde saiu do plano, dúvidas." |
 | 3 | 2.ª passada do revisor | Sonnet; Opus se a 1.ª passada achou erro de xadrez ou a aula tem partidas reais | Igual ao passo 1, mais: "**segunda passada**: a lição foi reescrita (o dossiê, seção 'Lição refeita', diz onde saiu do plano). Acrescente a seção `## Segunda passada (<data>)` ao mesmo arquivo LICAO: nota nova geral e por regra, tabela de cobertura atualizada, o que ainda falta (erro/ajuste/nota, com a chave do passo) e, para toda correção mecânica (uma palavra, lance citado errado, pt ≠ en, dica que entrega o lance), o texto exato que está e o que deveria estar. Confira de verdade: jogue cada `demo` e `move` com python-chess (a fala do lance N explica o lance N), afirmações fortes contra a tabela, urls das partidas reproduzindo os FENs (o dump faz). Na conversa: a nota nova, o que falta em até cinco linhas e o caminho do relatório." |
-| 4 | Integração (quem orquestra) | — | Aplicar as correções mecânicas do relatório com o texto exato (script de substituição com assert; regerar pelo `.py` e `build_aula.py <id>`); `check_variety.py <id>`; `dump_lesson.py <id> --links` sem aviso e todo link "bate"; `flutter test test/data/repositories/endgames/endgame_lessons_content_test.dart`; `git add` só dos arquivos da aula; commit `Lição <id>: <o que mudou> (nota X → Y)`. O que é julgamento (trocar posição, estrelas, cortar exercício) vai para o Gabriel, anotado na tabela abaixo. |
+| 4 | Integração (quem orquestra) | — | Aplicar as correções mecânicas do relatório com o texto exato (script de substituição com assert; regerar pelo `.py` e `build_aula.py <id>`); `check_variety.py <id>`; `dump_lesson.py <id> --links` sem aviso e todo link "bate"; `tools/lessons/check_numbering.py <id>` zerado (lance citado sempre numerado); `flutter test test/data/repositories/endgames/endgame_lessons_content_test.dart`; `git add` só dos arquivos da aula; commit `Lição <id>: <o que mudou> (nota X → Y)`. O que é julgamento (trocar posição, estrelas, cortar exercício) vai para o Gabriel, anotado na tabela abaixo. |
 
 Pode haver várias aulas em andamento ao mesmo tempo, cada uma com o seu agente; nunca dois agentes na
 mesma aula. Até uns 6 agentes com a tabela do Lichess ao mesmo tempo.
@@ -69,6 +69,10 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 (composição, zugzwang recíproco, casas correspondentes, partida difícil de achar). Detalhe da triagem em
 `docs/aulas/TRIAGEM-LICOES*.md` (fora do git); a linha aqui é o que o revisor precisa saber.
 
+**2026-10-09, pedido do Gabriel: as aulas marcadas Fable ficam puladas** (#8, 9, 16, 17, 21, 24, 27, 28, 33, 34, 35, 37); a esteira segue só nas de Opus, na ordem.
+
+**Régua mínima: B.** Se uma aula do Opus terminar o ciclo (reescrita + 2.ª passada + correções) ainda em C, não se commita como feita: anota-se "C no Opus → Fable" no andamento e ela vai para a fila do Fable.
+
 | # | id | nota | ideias sem parte | modelo | o que falta (triagem) | andamento |
 |---|---|---|---|---|---|---|
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
@@ -76,14 +80,14 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 2 | rook.philidor | D | 4 | Opus | xeques por trás nunca em demo; laterais, 3.ª fileira, rei primeiro | **feita: B**, commitada (lote2) |
 | 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | **feita: B**, commitada (lote2); ciclo todo sem Fable |
 | 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | **feita: B**, commitada (lote2); ciclo todo sem Fable; e17 pendente |
-| 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | |
-| 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | |
-| 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | |
+| 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | **feita: B**, commitada (lote2); Carlsen–So 2017, Euwe–Whitaker 1928; e13 (crédito Capablanca ex. 28) pendente |
+| 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | **feita: B**, commitada (lote2); Carlsen–Nakamura, Aronian–Duda e Ivanchuk–Grischuk com link; `rookPawn` ~3,3 min, demos `homeCheck`/`gOne` encostados no e12/e16: Gabriel |
+| 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | **feita: A**, commitada (lote2); Ward–Arkell 1994, Aronian–Carlsen 2006; e08/e12 parecidos, e10 e e12 solução, demos `d_blockF`/`flankNow` encostados no e09/e12: Gabriel |
 | 8 | rookPawns.vsPawn | D | 4 (+2) | Fable | sem demo; escada do rei, afogamento, xeque que não ganha tempo; Saavedra, Kamsky–Bacrot | |
 | 9 | pawns.race | C | 4–5 | Fable | rei que barra, xeques que ganham a dama, coroar com xeque, tapar a linha; Petrosian–Fischer | |
-| 10 | basics.rookMate | C | 2 | Opus | sem demo, falas empilham variantes; rei que corre, tempo da torre atacada | |
-| 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | |
-| 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | |
+| 10 | basics.rookMate | C | 2 | Opus | sem demo, falas empilham variantes; rei que corre, tempo da torre atacada | **feita: A**, commitada (lote2); Nakamura–Iniyan 2026, Khagan Ahmad–Nakamura 2025, Capablanca (Gutenberg); práticas `quietMove`/`stalemateMove`/`farMove`/`runMove` perto de e12/e14/e17/e16: Gabriel |
+| 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | **feita: B** (limite de A), commitada (lote2); Carlsen–Anand 2006, Nakamura–Abarca Gonzalez e Nakamura–Andreikin 2022, Ding–Le Quang Liem 2017 com link |
+| 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | **feita: B**, commitada (lote2); Fischer–Larsen 1971 com link, estudo de fabian1999; ~45,8 min e parte `escort` com 2,8 min: Gabriel |
 | 13 | pawns.protectedPasser | C | 3 (+2) | Opus | dois passados e a conta do quadrado; Dedrle; dividir `limits`; partida | |
 | 14 | pawns.rookPawnDraw | C | 3–4 | Opus | qual peão sobra na troca; tempo do peão que cai; Panno–Najdorf, Barcza–Fischer | |
 | 15 | pawns.triangulation | C | 2 | Opus | perder um tempo no caminho; casas correspondentes de longe; Alburt–Kasparov | |
@@ -96,21 +100,21 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | |
 | 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | |
 | 24 | pawns.correspondingSquares | B | 1 (+1) | Fable | numeração em demo (um par por fala); triangulação separada; Rösch–Mast | |
-| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada | |
-| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min | |
+| 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 27 | minor.wrongBishop | C | 3 | Fable | transformação da estrutura, rei fechando a porta, peões g+h; Fischer–Taimanov | |
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
-| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro | |
-| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida | |
-| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle | |
-| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko | |
+| 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 33 | queen.vsRookPawn | C | 4 | Fable | torre que espera longe, Laza, rei dentro, estudos da 7.ª; Carlsen–Matlakov | |
 | 34 | mates.twoKnightsPawn | C | 2 (+2) | Fable | triangulação (Chéron), captura certa (Horwitz–Kling); Karpov, Anand | |
 | 35 | mates.bishopKnight.w | C | 3 | Fable | W ditado em move, sem demo; redes c7/c8 e de Seirawan; links | |
-| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk | |
+| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 37 | mates.bishopKnight.full | C | 3 (+1) | Fable | sem demo; canto errado (Kempinski), Delétang do centro, Be4+ | |
 
-Pendências de julgamento para o Gabriel: `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
+Pendências de julgamento para o Gabriel: `pawns.distantOpposition` e13 é o exemplo 28 de Capablanca deslocado uma coluna e a solução credita um estudo do Lichess (texto pt/en pronto no LICAO): trocar o crédito ou deixar; `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
 `rook.lucena` e16 e e15 encostados na lição nova (a parte `zugzwang` mostra 2 dos 3 lances do e16; o e15 é
 quase o `rookPawnDemo`) e e14 com o corte Td7+ não ensinado: trocar os exercícios de posição ou deixar; 23 soluções de exercícios (`ex.*.solution`) dizem "a tabela aceita…", que a regra das
 falas proíbe; `pawns.keySquares` e17 é o tema de `pawns.correspondingSquares` (a aula seguinte): mover o e17
