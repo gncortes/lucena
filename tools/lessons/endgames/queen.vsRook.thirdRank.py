@@ -82,7 +82,7 @@ write({
         ]},
         {'id': 'thirdA', 'steps': [
             think('t_thirdA', TA, 5, 1),
-            talk('a6', TA, arrows=['d5c5', 'c5b5'], marks=['a6']),
+            talk('a6', TA, arrows=['d5b5'], marks=['a6']),
             move('around', TA, 'Kc5 Kc8 Qe7 Kb8 Kb5'),
             talk('fourth', F, arrows=['a5h5', 'e4d3', 'd3c3', 'c3b4'],
                  marks=['a1', 'd4']),
@@ -91,7 +91,7 @@ write({
         ]},
         {'id': 'ponziani', 'steps': [
             think('t_ponziani', PONZIANI, 5, 1),
-            talk('ponziani', PONZIANI, arrows=['f7g7', 'g7h7'],
+            talk('ponziani', PONZIANI, arrows=['f7h7'],
                  marks=['g6', 'h7']),
             talk('desperado', after(MORO, 'Qg3+ Kh1 Kf3'), arrows=['h2f2'],
                  marks=['g1', 'g2', 'h2']),

@@ -125,7 +125,7 @@ LESSON = {
         ]},
         {'id': 'king', 'steps': [
             think('t_king', CARL_ZZ, 5, 2, marks=['c6', 'd4', 'c5']),
-            talk('kingWhy', CARL_START, arrows=['h2g3', 'g3f4', 'f4e4'],
+            talk('kingWhy', CARL_START, arrows=['h2f4', 'f4e4'],
                  marks=['d6', 'c5', 'd4']),
             demo('d_last', CARL_END, 'Qf5 Kc3 Qf6+ Kb3 Qf1 Rd8 Qxc4+',
                  notes={1: {'arrows': ['f5d3']}, 5: {'arrows': ['f1d3']},

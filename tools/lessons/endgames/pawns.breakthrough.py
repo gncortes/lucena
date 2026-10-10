@@ -145,9 +145,9 @@ parts = [
     ]},
     {'id': 'count', 'steps': [
         think('t_count', COUNT_E8, 3, 2, marks=['e8']),
-        talk('square', COUNT_E8, arrows=['a6a8', 'e8d8', 'd8c8', 'c8b7'],
+        talk('square', COUNT_E8, arrows=['a6a8', 'e8c8', 'c8b7'],
              marks=['a6', 'b7']),
-        talk('tooClose', TOO_CLOSE, arrows=['g1f2', 'f2e3', 'e3d4'],
+        talk('tooClose', TOO_CLOSE, arrows=['g1d4'],
              marks=['d8', 'c8']),
         talk('capaCount', CAPA_38, arrows=['f4f5', 'h4h5', 'd5e6'],
              marks=['a3'], ref=CAPA),

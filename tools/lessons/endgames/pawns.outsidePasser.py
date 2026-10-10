@@ -133,7 +133,7 @@ src = {
             {'type': 'think', 'id': 't_fischer', 'fen': FISCHER, 'minutes': 3,
              'hints': 1, 'ask': 'plan', 'marks': ['a4']},
             {'type': 'talk', 'id': 'fischer', 'fen': FISCHER,
-             'arrows': ['a4a8', 'd4e5', 'e5f6'], 'marks': ['f7', 'g6']},
+             'arrows': ['a4a8', 'd4f6'], 'marks': ['f7', 'g6']},
             {'type': 'talk', 'id': 'recap', 'fen': FISCHER},
             {'type': 'play', 'id': 'finish', 'fen': FISCHER, 'goal': 'win'},
         ]},

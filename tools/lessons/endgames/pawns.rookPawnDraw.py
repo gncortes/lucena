@@ -67,7 +67,7 @@ src = {
     move('exceptionMove', EXC, 'win', 'h7 Ke7 h8=Q', ['win', 'win']),
   ]},
   {'id': 'summary', 'steps': [
-    {'type': 'talk', 'id': 'barcza', 'fen': BARCZA, 'marks': ['c1', 'b1'], 'arrows': ['e3d2', 'd2c1']},
+    {'type': 'talk', 'id': 'barcza', 'fen': BARCZA, 'marks': ['c1', 'b1'], 'arrows': ['e3c1']},
     move('barczaMove', BARCZA, 'draw', 'Kd2 Kb3 Kc1 a4 Kb1', ['hold'] * 3),
     {'type': 'talk', 'id': 'recap', 'fen': PANNOB, 'side': 'black', 'marks': ['g7', 'g8', 'f8']},
     {'type': 'play', 'id': 'finish', 'fen': FINISH, 'goal': 'draw'},
