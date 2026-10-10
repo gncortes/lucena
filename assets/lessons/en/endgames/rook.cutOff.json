@@ -86,7 +86,7 @@
   "part.tempo.summary": "Count with the pawn where it will be: push it before the black rook gets in front of it.",
   "part.imperfect.title": "The imperfect cut",
   "part.imperfect.summary": "With the black king one rank above the pawn, whoever moves first decides.",
-  "part.behind.title": "The rook behind the pawn",
+  "part.behind.title": "Rook behind the pawn",
   "part.behind.summary": "With the pawn on the seventh, the rook stays behind it and cuts the black king off along a rank. Uhlmann against Gulko, 1978.",
   "step.d_oneFile": "And with 1.Rd1? The black king comes to c5, just one file from the pawn: four plus one, five. Watch what happens after 1...Kc5, when the white king tries to climb.",
   "step.d_oneFile.m1": "2.Kf4. The king tries to climb next to the pawn, on the side away from the black king.",

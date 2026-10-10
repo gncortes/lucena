@@ -1,11 +1,11 @@
 {
   "title": "A defesa frontal",
   "summary": "Rei cortado do peão: a torre vai para a frente dele, dá xeques de frente ou se oferece para a troca.",
-  "part.front.title": "Xeques de frente",
+  "part.front.title": "A defesa frontal",
   "part.front.summary": "O rei cortado, a torre na primeira fileira e os xeques que o rei preto não consegue evitar.",
   "part.back.title": "Xeque ou volta",
   "part.back.summary": "O rei preto encostou no peão: xeque. Se afastou: a torre volta para a frente do peão. Abandonou: captura.",
-  "part.first.title": "Torre primeiro",
+  "part.first.title": "Primeiro a torre",
   "part.first.summary": "Com a torre longe, ela volta para a primeira fileira antes de o rei se mexer. Tal contra Zaitsev, 1968.",
   "part.king.title": "O lugar do rei",
   "part.king.summary": "O seu rei perto da coluna do corte, pronto para atacar a torre preta. Arencibia contra Vladimirov, 1991.",
