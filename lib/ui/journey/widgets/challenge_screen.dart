@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/pace.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
@@ -15,11 +16,15 @@ import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
 class ChallengeScreen extends StatelessWidget {
   const ChallengeScreen({required this.rungId, super.key});
+
+  /// O espaço da linha dos selos (objetivo e ritmo).
+  static const _chipsHeight = 40.0;
 
   /// O adversário (degrau) do desafio: o retrato dele chega voando da tela
   /// de antes.
@@ -66,72 +71,109 @@ class ChallengeScreen extends StatelessWidget {
             ),
       body: challenge == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                _BigBoard(challenge: challenge),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _GoalChip(challenge: challenge),
-                      _Chip(
-                        icon: switch (challenge.time) {
-                          final time? => paceIcon(PaceCategory.of(time)),
-                          null => Icons.timer_off_outlined,
-                        },
-                        text: switch (challenge.time) {
-                          final time? => l10n.speedrunTimeControl(
-                            time.initial.inMinutes,
-                            time.increment.inSeconds,
-                          ),
-                          null => l10n.challengeNoClock,
-                        },
+          // O tabuleiro e os selos no centro do espaço entre a barra do app
+          // e o painel do adversário e das partidas (T64), que rola; o botão
+          // de jogar fica fixo embaixo.
+          : LayoutBuilder(
+              builder: (context, box) => Column(
+                children: [
+                  SizedBox(
+                    height: BoardOptionsPanel.boardAreaFor(
+                      box.maxHeight,
+                      boardRoom:
+                          box.maxWidth +
+                          2 * (_chipsHeight + AppSpacing.md) +
+                          AppSpacing.md,
+                      minPanel: 0.3,
+                    ),
+                    child: CenteredBoardLayout(
+                      gap: AppSpacing.md,
+                      reserveBottom: _chipsHeight,
+                      board: _BigBoard(challenge: challenge),
+                      bottom: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _GoalChip(challenge: challenge),
+                            _Chip(
+                              icon: switch (challenge.time) {
+                                final time? => paceIcon(PaceCategory.of(time)),
+                                null => Icons.timer_off_outlined,
+                              },
+                              text: switch (challenge.time) {
+                                final time? => l10n.speedrunTimeControl(
+                                  time.initial.inMinutes,
+                                  time.increment.inSeconds,
+                                ),
+                                null => l10n.challengeNoClock,
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                _OpponentCard(opponent: challenge.opponent, rungId: rungId),
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
-                  child: Text(
-                    l10n.setupHistory,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-                if (state.attempts.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.sports_esports_outlined,
-                          size: 40,
-                          color: theme.colorScheme.outline,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.challengeHistoryInvite,
-                          key: JourneyKeys.emptyHistory,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: BoardOptionsPanel(
+                      key: JourneyKeys.challengePanel,
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        children: [
+                          _OpponentCard(
+                            opponent: challenge.opponent,
+                            rungId: rungId,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                              16,
+                              16,
+                              16,
+                              0,
+                            ),
+                            child: Text(
+                              l10n.setupHistory,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (state.attempts.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.sports_esports_outlined,
+                                    size: 40,
+                                    color: theme.colorScheme.outline,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.challengeHistoryInvite,
+                                    key: JourneyKeys.emptyHistory,
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            AttemptHistory(
+                              attempts: state.attempts,
+                              monthKey: JourneyKeys.month,
+                              attemptKey: JourneyKeys.attempt,
+                            ),
+                        ],
+                      ),
                     ),
-                  )
-                else
-                  AttemptHistory(
-                    attempts: state.attempts,
-                    monthKey: JourneyKeys.month,
-                    attemptKey: JourneyKeys.attempt,
                   ),
-              ],
+                ],
+              ),
             ),
     );
   }
@@ -148,6 +190,7 @@ class _BigBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => PositionBoard(
+        boardKey: JourneyKeys.challengeBoard,
         fen: challenge.position.fen,
         size: constraints.maxWidth,
         coordinates: true,
