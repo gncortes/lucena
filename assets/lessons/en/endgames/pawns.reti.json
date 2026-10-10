@@ -99,7 +99,7 @@
   "step.mirrorMove.hint": "Walk along the diagonal towards the centre: every move brings the king closer to both pawns.",
   "step.mirrorMove.done": "Well done. 1.Kb7, 2.Kc6, 3.Kd5 and 4.Kc4: the same manoeuvre on the other side. 4.Kd4 was also fine at the end.",
   "step.finish": "Now play it to the end. The king starts on g8 instead of h8, and your opponent defends Black as well as it can. Find the diagonal and hold the draw.",
-  "ex.e08": "Black to play and win. The white king has already gone to g7, but the black king is on a7.",
+  "ex.e08": "The white king has already gone to g7, but the black king is on a7. Find the winning move.",
   "ex.e08.hint": "Pawn first. Then, when the white king threatens to support the c6-pawn, put your king in front of it.",
   "ex.e08.solution": "1...h4 (1...Kb8 too) and, after 2.Kf6, 2...Kb8! The black king stands in front of the c6-pawn before the white king arrives to support it, and the h4-pawn keeps running. With the black king on a7, Réti's manoeuvre comes too late.",
   "ex.e09": "Réti, 1928. White to play and draw. Now there are more black pawns.",

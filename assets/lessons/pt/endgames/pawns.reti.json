@@ -99,7 +99,7 @@
   "step.mirrorMove.hint": "Ande na diagonal na direção do centro: cada lance aproxima o rei dos dois peões.",
   "step.mirrorMove.done": "Muito bem. 1.Rb7, 2.Rc6, 3.Rd5 e 4.Rc4: a mesma manobra, do outro lado. 4.Rd4 também servia no fim.",
   "step.finish": "Agora jogue até o fim. O rei começa em g8 em vez de h8, e o adversário defende as pretas da melhor forma. Ache a diagonal e segure o empate.",
-  "ex.e08": "Pretas jogam e ganham. O rei branco já foi a g7, mas o rei preto está em a7.",
+  "ex.e08": "O rei branco já foi a g7, mas o rei preto está em a7. Ache o lance que ganha.",
   "ex.e08.hint": "Primeiro o peão. Depois, quando o rei branco ameaçar apoiar o peão de c6, ponha o seu rei na frente dele.",
   "ex.e08.solution": "1...h4 (1...Rb8 também) e, depois de 2.Rf6, 2...Rb8! O rei preto se põe na frente do peão de c6 antes que o rei branco chegue para apoiá-lo, e o peão de h4 segue correndo. Com o rei preto em a7, a manobra de Réti chega tarde.",
   "ex.e09": "Réti, 1928. Brancas jogam e empatam. Agora há mais peões pretos.",
