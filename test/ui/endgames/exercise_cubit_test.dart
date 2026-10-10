@@ -272,4 +272,12 @@ void main() {
     await exercise.play(move('c1c4'));
     expect(sound.played, [GameSound.move]);
   });
+
+  test('lance errado no meio do exercício: sem fala do Viktor', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+    await exercise.play(move('c1c2'));
+    expect(exercise.state.mistakes, 1);
+    expect(exercise.state.speech, isNull);
+  });
 }

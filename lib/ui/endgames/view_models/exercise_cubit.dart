@@ -311,8 +311,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         state.copyWith(
           mistakes: mistakes,
           wrongMove: move,
-          // A pista fica para a dica: aqui só o "não é esse".
-          speech: _pick('coach.wrong'),
+          // Sem fala: o tabuleiro treme e o lance volta. O Viktor só fala
+          // na dica e depois de resolver.
+          clearSpeech: true,
           emotion: Emotion.focused,
         ),
       );
@@ -338,7 +339,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
-        speech: _pick('coach.good'),
+        // O aluno só joga: sem elogio no meio da linha. A vez volta a
+        // aparecer embaixo do tabuleiro quando o outro lado responder.
+        clearSpeech: true,
         emotion: Emotion.happy,
       ),
     );
