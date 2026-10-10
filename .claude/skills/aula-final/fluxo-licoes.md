@@ -71,6 +71,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 
 **2026-10-09, pedido do Gabriel: as aulas marcadas Fable ficam puladas** (#8, 9, 16, 17, 21, 24, 27, 28, 33, 34, 35, 37); a esteira segue só nas de Opus, na ordem.
 
+**Régua mínima: B.** Se uma aula do Opus terminar o ciclo (reescrita + 2.ª passada + correções) ainda em C, não se commita como feita: anota-se "C no Opus → Fable" no andamento e ela vai para a fila do Fable.
+
 | # | id | nota | ideias sem parte | modelo | o que falta (triagem) | andamento |
 |---|---|---|---|---|---|---|
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
@@ -84,7 +86,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 8 | rookPawns.vsPawn | D | 4 (+2) | Fable | sem demo; escada do rei, afogamento, xeque que não ganha tempo; Saavedra, Kamsky–Bacrot | |
 | 9 | pawns.race | C | 4–5 | Fable | rei que barra, xeques que ganham a dama, coroar com xeque, tapar a linha; Petrosian–Fischer | |
 | 10 | basics.rookMate | C | 2 | Opus | sem demo, falas empilham variantes; rei que corre, tempo da torre atacada | **feita: A**, commitada (lote2); Nakamura–Iniyan 2026, Khagan Ahmad–Nakamura 2025, Capablanca (Gutenberg); práticas `quietMove`/`stalemateMove`/`farMove`/`runMove` perto de e12/e14/e17/e16: Gabriel |
-| 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | |
+| 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | **feita: B** (limite de A), commitada (lote2); Carlsen–Anand 2006, Nakamura–Abarca Gonzalez e Nakamura–Andreikin 2022, Ding–Le Quang Liem 2017 com link |
 | 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | |
 | 13 | pawns.protectedPasser | C | 3 (+2) | Opus | dois passados e a conta do quadrado; Dedrle; dividir `limits`; partida | |
 | 14 | pawns.rookPawnDraw | C | 3–4 | Opus | qual peão sobra na troca; tempo do peão que cai; Panno–Najdorf, Barcza–Fischer | |
