@@ -69,6 +69,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 (composição, zugzwang recíproco, casas correspondentes, partida difícil de achar). Detalhe da triagem em
 `docs/aulas/TRIAGEM-LICOES*.md` (fora do git); a linha aqui é o que o revisor precisa saber.
 
+**2026-10-09, pedido do Gabriel: as aulas marcadas Fable ficam puladas** (#8, 9, 16, 17, 21, 24, 27, 28, 33, 34, 35, 37); a esteira segue só nas de Opus, na ordem.
+
 | # | id | nota | ideias sem parte | modelo | o que falta (triagem) | andamento |
 |---|---|---|---|---|---|---|
 | 0 | pawns.breakthrough | C | 5 | Fable (piloto) | e11 (fixar antes de romper) sem parte; partida com link | **feita: B**, commitada |
@@ -77,7 +79,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 3 | basics.kingPawn | C | 3 (+2) | Opus | sem demo; Matanović, diagonal do rei, tempo do peão, peão de cavalo; Barcza–Fischer | **feita: B**, commitada (lote2); ciclo todo sem Fable |
 | 4 | pawns.keySquares | D | 5 | Opus | peão de cavalo, peão travado, Drtina, zugzwang mútuo; Kamsky–Kramnik | **feita: B**, commitada (lote2); ciclo todo sem Fable; e17 pendente |
 | 5 | pawns.distantOpposition | D | 4 | Opus | oposição lateral, peão de reserva (Grigoriev), contorno; partida real | **feita: B**, commitada (lote2); Carlsen–So 2017, Euwe–Whitaker 1928; e13 (crédito Capablanca ex. 28) pendente |
-| 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | |
+| 6 | rook.backRank | D | 2 (+1) | Opus | `corner` é quatro falas seguidas; "rei primeiro" e peão na 7.ª | **feita: B**, commitada (lote2); Carlsen–Nakamura, Aronian–Duda e Ivanchuk–Grischuk com link; `rookPawn` ~3,3 min, demos `homeCheck`/`gOne` encostados no e12/e16: Gabriel |
 | 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | **feita: A**, commitada (lote2); Ward–Arkell 1994, Aronian–Carlsen 2006; e08/e12 parecidos, e10 e e12 solução, demos `d_blockF`/`flankNow` encostados no e09/e12: Gabriel |
 | 8 | rookPawns.vsPawn | D | 4 (+2) | Fable | sem demo; escada do rei, afogamento, xeque que não ganha tempo; Saavedra, Kamsky–Bacrot | |
 | 9 | pawns.race | C | 4–5 | Fable | rei que barra, xeques que ganham a dama, coroar com xeque, tapar a linha; Petrosian–Fischer | |
