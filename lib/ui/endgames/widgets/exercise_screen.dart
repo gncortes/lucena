@@ -10,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/endgame_lesson.dart';
-import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
@@ -19,7 +18,6 @@ import '../../core/board/exercise_layout.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/figurine.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
@@ -607,18 +605,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final exercise = state.exercise!;
     if (state.phase != ExercisePhase.done) return const SizedBox.shrink();
     final earned = state.earned ?? 0;
-    // Com o Viktor explicando, só a linha da solução: a fala ganha o espaço
-    // e os pontos ficam na estrela da barra de cima.
-    if (state.speech != null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-        child: _SolutionLine(
-          moves: EndgameLessonRules.solution(exercise),
-          fen: exercise.fen,
-          pieceLetters: boardSettings.notation.pieceLetters(l10n),
-        ),
-      );
-    }
+    // Sem linha de "Solução": com o Viktor explicando, a fala já diz; sem
+    // fala, só a nota (a estrela).
+    if (state.speech != null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Column(
@@ -647,12 +636,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             style: theme.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
             ),
-          ),
-          const SizedBox(height: 4),
-          _SolutionLine(
-            moves: EndgameLessonRules.solution(exercise),
-            fen: exercise.fen,
-            pieceLetters: boardSettings.notation.pieceLetters(l10n),
           ),
         ],
       ),
@@ -791,93 +774,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               ],
             ),
         ],
-      ),
-    );
-  }
-}
-
-/// A linha da solução ("1.Kd4 Kg5 2.Nf4"), com figurinos ou as letras do
-/// idioma, conforme a notação escolhida.
-class _SolutionLine extends StatelessWidget {
-  const _SolutionLine({
-    required this.moves,
-    required this.fen,
-    required this.pieceLetters,
-  });
-
-  final List<String> moves;
-  final String fen;
-  final Map<String, String>? pieceLetters;
-
-  @override
-  Widget build(BuildContext context) {
-    if (moves.isEmpty) return const SizedBox.shrink();
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final parts = fen.split(' ');
-    final blackFirst = parts.length > 1 && parts[1] == 'b';
-    var number = parts.length > 5 ? int.tryParse(parts[5]) ?? 1 : 1;
-    final style = theme.textTheme.titleSmall?.copyWith(
-      fontWeight: FontWeight.w600,
-    );
-    final figurineStyle = TextStyle(
-      fontFamily: Figurine.fontFamily,
-      fontWeight: FontWeight.w400,
-      fontSize: (style?.fontSize ?? 14) * 1.15,
-    );
-    final spans = <InlineSpan>[];
-    final spoken = StringBuffer();
-    var whiteToMove = !blackFirst;
-    for (final (index, san) in moves.indexed) {
-      if (index > 0) {
-        spans.add(const TextSpan(text: '  '));
-        spoken.write(' ');
-      }
-      if (whiteToMove) {
-        spans.add(TextSpan(text: '$number.'));
-        spoken.write('$number.');
-      } else if (index == 0) {
-        spans.add(TextSpan(text: '$number...'));
-        spoken.write('$number...');
-      }
-      for (final char in san.split('')) {
-        final letter = pieceLetters?[char];
-        if (letter != null) {
-          spans.add(TextSpan(text: letter));
-          spoken.write(letter);
-        } else if (Figurine.ofLetter[char] case final figurine?
-            when pieceLetters == null) {
-          spans.add(TextSpan(text: figurine, style: figurineStyle));
-          spoken.write(char);
-        } else {
-          spans.add(TextSpan(text: char));
-          spoken.write(char);
-        }
-      }
-      if (!whiteToMove) number++;
-      whiteToMove = !whiteToMove;
-    }
-    return Semantics(
-      label: '${l10n.exerciseSolution}: $spoken',
-      excludeSemantics: true,
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: '${l10n.exerciseSolution}: ',
-              style: style?.copyWith(
-                fontWeight: FontWeight.w400,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            ...spans,
-          ],
-        ),
-        key: ExerciseKeys.solution,
-        style: style,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
