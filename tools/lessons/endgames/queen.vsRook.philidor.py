@@ -39,6 +39,11 @@ QUIET2 = '4k1r1/8/3K4/8/8/8/8/Q7 w - - 0 1'       # montada: lance calmo
 LADDER = '5Q2/8/8/r7/4K3/8/4k3/8 w - - 0 1'       # montada: escada aberta
 SQUEEZE = after(W, 'Qa6 Rc7+')                    # 1.Da6? Tc7+ (Averbakh)
 DRAW = '1k6/2r5/QK6/8/8/8/8/8 b - - 0 1'          # depois de 2.Rb6?? (Averbakh)
+# Montadas: a torre colada ao próprio rei, imune à dama (só os reis) e ao rei
+# (afogamento), segue a coluna do rei branco com xeque. Tabela: em cada lance
+# das pretas, o xeque da torre é o único que empata.
+IMMUNE = '8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1'
+IMMUNE2 = '8/8/8/8/5K2/4Q3/r7/5k2 b - - 0 1'
 
 
 def ref(step, rid):
@@ -116,7 +121,7 @@ write({
         {'id': 'fork', 'steps': [
             ref(think('t_fork', GELFAND, 2, marks=['h5', 'f8'], side='black',
                       ask='line'), 'gelfandSvidler#169'),
-            ref(talk('far', GELFAND, arrows=['c5h5', 'c5f8'], marks=['c5'],
+            ref(talk('far', GELFAND, arrows=['g1c5', 'c5h5', 'c5f8'], marks=['c5'],
                      side='black'), 'gelfandSvidler#169'),
             ref(demo('d_fork', GELFAND, 'Qc5+ Kg4 Qxf8', side='black',
                      notes={1: {'arrows': ['c5h5', 'c5f8']}}),
@@ -126,7 +131,7 @@ write({
         # 3. A escada: Carlsen-Le Tuan Minh.
         {'id': 'ladder', 'steps': [
             ref(think('t_ladder', CARLSEN, 2, marks=['h7']), 'carlsenLe#180'),
-            ref(talk('carlsen', CARLSEN, arrows=['b1h7', 'b1b8'],
+            ref(talk('carlsen', CARLSEN, arrows=['a5e5', 'b1h7', 'b1b8'],
                      marks=['b1']), 'carlsenLe#180'),
             ref(demo('d_ladder', CARLSEN, 'Qb4+ Ka7 Qa3+ Kb8 Qb3+',
                      notes={1: {'arrows': ['b4b8']}, 3: {'arrows': ['a3a7']},
@@ -137,7 +142,7 @@ write({
         {'id': 'triangle', 'steps': [
             ref(think('t_triangle', SVIDLER, 2, marks=['f6', 'g7', 'g8']),
                 'svidlerHowell#206'),
-            ref(talk('white', SVIDLER, marks=['h5']), 'svidlerHowell#206'),
+            ref(talk('white', SVIDLER, arrows=['d3d5'], marks=['h5']), 'svidlerHowell#206'),
             ref(demo('d_triangle', SVIDLER, 'Qd5+ Kh7 Qh1+ Kg8 Qh5',
                      notes={1: {'arrows': ['d5g8']}, 3: {'arrows': ['h1h7']},
                             5: {'marks': ['h5']}}), 'svidlerHowell#206'),
@@ -159,7 +164,7 @@ write({
         {'id': 'stalemate', 'steps': [
             ref(think('t_stalemate', ARONIAN, 2, marks=['a1', 'b3']),
                 'aronianMvl#154'),
-            ref(talk('stale', ARONIAN,
+            ref(talk('stale', ARONIAN, arrows=['e6a6'],
                      marks=['b3', 'a2', 'b1', 'b2']), 'aronianMvl#154'),
             ref(demo('d_check', ARONIAN, 'Qa6+ Ra3 Qxa3#',
                      notes={1: {'arrows': ['a6a1']}, 2: {'marks': ['a3']},
@@ -186,7 +191,26 @@ write({
                 'wikipedia'),
             ref(move('m_squeeze', SQUEEZE, 'Kd6', accept='win'), 'wikipedia'),
         ]},
-        # 8. O falso Philidor (Ivanchuk-Lautier), o resumo e o desafio.
+        # 8. Do lado da torre: colada ao rei, ela não pode ser capturada e os
+        # xeques não acabam (a ideia do e13 e do e14, noutra figura: rei preto
+        # a duas casas do canto, e não ao lado dele).
+        {'id': 'immune', 'steps': [
+            think('t_immune', IMMUNE, 2, marks=['b2'], side='black'),
+            talk('immune', IMMUNE, arrows=['h2c2', 'c2c6'],
+                 marks=['b2', 'c2'], side='black'),
+            demo('d_immune', IMMUNE,
+                 'Rc2+ Kb5 Rb2+ Kc4 Rc2+ Kb3 Rb2+ Ka3 Ra2+ Kxa2',
+                 goal='draw', side='black',
+                 notes={1: {'arrows': ['c2c6']}, 3: {'arrows': ['b2b5']},
+                        5: {'arrows': ['c2c4']}, 7: {'arrows': ['b2b3']},
+                        9: {'arrows': ['a2a3']},
+                        10: {'marks': ['b1', 'b2', 'c2', 'd1', 'd2']}}),
+            demo('d_trade', IMMUNE, 'Rc2+ Qxc2+ Kxc2', goal='draw',
+                 side='black', notes={2: {'arrows': ['d3c2']}}),
+            move('m_immune', IMMUNE2, 'Rf2+ Kg3 Rg2+ Kh3 Rh2+', accept='hold',
+                 goal='draw'),
+        ]},
+        # 9. O falso Philidor (Ivanchuk-Lautier), o resumo e o desafio.
         {'id': 'falseKing', 'steps': [
             ref(think('t_false', IVANCHUK, 2, marks=['a6', 'c6']),
                 'ivanchukLautier#197'),
@@ -221,6 +245,7 @@ write({
         {'id': 'corner', 'fen': SVIDLER_G, 'ref': 'svidlerHowell#211'},
         {'id': 'false', 'fen': IVANCHUK, 'ref': 'ivanchukLautier#197'},
         {'id': 'draw', 'fen': DRAW, 'ref': 'wikipedia'},
+        {'id': 'immune', 'fen': IMMUNE},
     ],
     'practice': {'fen': '1rk5/4Q3/K7/8/8/8/8/8 w - - 0 1', 'goal': 'win',
                  'positionId': 'queen.queenVsRook.0001'},

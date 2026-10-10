@@ -709,6 +709,24 @@
       ]
     },
     {
+      "id": "e14",
+      "stars": 2,
+      "fen": "3r4/8/R7/5k2/3P4/3K4/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "d3c4",
+          "accept": "win",
+          "reply": "f5e4"
+        },
+        {
+          "teach": "a6e6",
+          "accept": "win"
+        }
+      ]
+    },
+    {
       "id": "e13",
       "stars": 3,
       "fen": "1r6/8/4P3/7k/8/4RK2/8/8 w - - 0 1",
@@ -732,7 +750,7 @@
       ]
     }
   ],
-  "passScore": 5,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "cut",

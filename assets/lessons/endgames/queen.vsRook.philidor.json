@@ -116,6 +116,7 @@
           "id": "far",
           "fen": "5R2/8/8/7K/4k3/8/8/6q1 b - - 0 1",
           "arrows": [
+            "g1c5",
             "c5h5",
             "c5f8"
           ],
@@ -188,6 +189,7 @@
           "id": "carlsen",
           "fen": "1k6/7r/2K5/Q7/8/8/8/8 w - - 0 1",
           "arrows": [
+            "a5e5",
             "b1h7",
             "b1b8"
           ],
@@ -286,6 +288,9 @@
           "type": "talk",
           "id": "white",
           "fen": "6k1/6r1/5K2/8/8/3Q4/8/8 w - - 0 1",
+          "arrows": [
+            "d3d5"
+          ],
           "marks": [
             "h5"
           ],
@@ -465,6 +470,9 @@
           "type": "talk",
           "id": "stale",
           "fen": "8/8/4Q3/8/8/1r6/2K5/k7 w - - 0 1",
+          "arrows": [
+            "e6a6"
+          ],
           "marks": [
             "b3",
             "a2",
@@ -632,6 +640,142 @@
                 "c6b5",
                 "c6d5",
                 "c6d6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "immune",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_immune",
+          "fen": "8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "b2"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "immune",
+          "fen": "8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1",
+          "arrows": [
+            "h2c2",
+            "c2c6"
+          ],
+          "marks": [
+            "b2",
+            "c2"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_immune",
+          "fen": "8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "h2c2",
+              "arrows": [
+                "c2c6"
+              ]
+            },
+            {
+              "uci": "c6b5"
+            },
+            {
+              "uci": "c2b2",
+              "arrows": [
+                "b2b5"
+              ]
+            },
+            {
+              "uci": "b5c4"
+            },
+            {
+              "uci": "b2c2",
+              "arrows": [
+                "c2c4"
+              ]
+            },
+            {
+              "uci": "c4b3"
+            },
+            {
+              "uci": "c2b2",
+              "arrows": [
+                "b2b3"
+              ]
+            },
+            {
+              "uci": "b3a3"
+            },
+            {
+              "uci": "b2a2",
+              "arrows": [
+                "a2a3"
+              ]
+            },
+            {
+              "uci": "a3a2",
+              "marks": [
+                "b1",
+                "b2",
+                "c2",
+                "d1",
+                "d2"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_trade",
+          "fen": "8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "h2c2"
+            },
+            {
+              "uci": "d3c2",
+              "arrows": [
+                "d3c2"
+              ]
+            },
+            {
+              "uci": "c1c2"
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "m_immune",
+          "fen": "8/8/8/8/5K2/4Q3/r7/5k2 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "a2f2",
+              "accept": [
+                "a2f2"
+              ],
+              "reply": "f4g3"
+            },
+            {
+              "teach": "f2g2",
+              "accept": [
+                "f2g2"
+              ],
+              "reply": "g3h3"
+            },
+            {
+              "teach": "g2h2",
+              "accept": [
+                "g2h2"
               ]
             }
           ]
@@ -932,6 +1076,10 @@
       "id": "draw",
       "fen": "1k6/2r5/QK6/8/8/8/8/8 b - - 0 1",
       "ref": "wikipedia"
+    },
+    {
+      "id": "immune",
+      "fen": "8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1"
     }
   ],
   "practice": {

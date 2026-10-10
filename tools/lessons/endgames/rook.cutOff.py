@@ -35,6 +35,10 @@ RANK2 = after(RANK, 'Rc6 Rb8 Ra6 Kd5 Ka4 Kc4 Rc6+ Kd5 b5 Ra8+ Kb4 Rb8')
 # pretas jogando, só 1...Tg8 empata.
 IMP = '5r2/8/8/R7/3k4/5P2/5K2/8 w - - 0 1'
 IMP_BLACK = after('5r2/8/8/R7/3k4/5P2/5K2/8 b - - 0 1', 'Rg8')
+# Corte imperfeito com peão central (própria, e14): só 1.Rc4 ganha. 1.Tc6?
+# solta a coluna a (1...Ta8! e xeques pelo lado); 1.Rc3? Re4 ataca o peão.
+# Depois de 1...Re4, só 2.Te6+.
+IMP2 = '3r4/8/R7/5k2/3P4/3K4/8/8 w - - 0 1'
 # Torre atrás do peão cortando pela fileira (própria): só 1.Td5 ganha.
 BEHIND = '3r4/3P4/8/8/7k/8/8/3RK3 w - - 0 1'
 # Uhlmann-Gulko, Niksic 1978, depois de 57...Rf5? (ply 114).
@@ -209,10 +213,11 @@ write({
                  origin='capablanca'),
         exercise('e11', 2, PEIN, 'Re7 Kf6 Re2', accept='win',
                  origin='peinWard'),
+        exercise('e14', 2, IMP2, 'Kc4 Ke4 Re6+', accept='win'),
         exercise('e13', 3, GULKO, 'e7 Re8 Re6 Kg5 Ke4', accept='win',
                  origin='uhlmannGulko'),
     ],
-    'passScore': 5,
+    'passScore': 6,
     'keyPositions': [
         {'id': 'cut', 'fen': KEY1},
         {'id': 'count', 'fen': KEY2},

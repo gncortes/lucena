@@ -240,7 +240,8 @@
           "id": "diagonal",
           "fen": "8/8/8/8/8/4P2k/8/K7 w - - 0 1",
           "arrows": [
-            "a1d4"
+            "a1b2",
+            "b2d4"
           ],
           "marks": [
             "d4",
@@ -405,6 +406,9 @@
           "marks": [
             "d2",
             "d1"
+          ],
+          "arrows": [
+            "e1d2"
           ]
         },
         {
@@ -480,6 +484,115 @@
       ]
     },
     {
+      "id": "defendRace",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_defRace",
+          "fen": "8/8/8/8/2P2k2/3K4/8/8 b - - 0 1",
+          "hints": 3,
+          "ask": "plan",
+          "marks": [
+            "c6",
+            "b5"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "defRace",
+          "fen": "8/8/8/8/2P2k2/3K4/8/8 b - - 0 1",
+          "arrows": [
+            "f4e5",
+            "e5d6",
+            "d6c6",
+            "d3c3",
+            "c3b4",
+            "b4b5"
+          ],
+          "marks": [
+            "c6",
+            "b5"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_defRace",
+          "fen": "8/8/8/8/2P2k2/3K4/8/8 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "f4e5",
+              "arrows": [
+                "e5d6"
+              ]
+            },
+            {
+              "uci": "d3c3",
+              "arrows": [
+                "c3b4"
+              ]
+            },
+            {
+              "uci": "e5d6",
+              "marks": [
+                "c6",
+                "c7"
+              ]
+            },
+            {
+              "uci": "c3b4",
+              "marks": [
+                "b5"
+              ]
+            },
+            {
+              "uci": "d6c6",
+              "marks": [
+                "b5"
+              ]
+            },
+            {
+              "uci": "b4a5"
+            },
+            {
+              "uci": "c6c7"
+            },
+            {
+              "uci": "a5b5"
+            },
+            {
+              "uci": "c7b7",
+              "marks": [
+                "b6"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "defRaceMove",
+          "fen": "8/8/8/8/1k2P3/8/4K3/8 b - - 0 1",
+          "goal": "draw",
+          "turns": [
+            {
+              "teach": "b4c5",
+              "accept": "hold",
+              "reply": "e2e3"
+            },
+            {
+              "teach": "c5d6",
+              "accept": "hold",
+              "reply": "e3d4"
+            },
+            {
+              "teach": "d6e6",
+              "accept": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "seventh",
       "steps": [
         {
@@ -496,6 +609,9 @@
           "marks": [
             "c7",
             "b7"
+          ],
+          "arrows": [
+            "c6c7"
           ]
         },
         {
@@ -593,7 +709,8 @@
           "id": "barcza",
           "fen": "8/8/8/p7/k7/4K3/8/8 w - - 0 1",
           "arrows": [
-            "e3c1"
+            "e3d2",
+            "d2c1"
           ],
           "marks": [
             "c1",
