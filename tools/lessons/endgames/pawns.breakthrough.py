@@ -116,17 +116,18 @@ COUNT_E8 = F('4k3/1pp5/1p6/P1P5/8/8/8/6K1 w')       # só c6: o rei chega tarde
 TOO_CLOSE = F('3k4/2pp4/8/1PPP4/8/8/8/6K1 w')       # só lances de rei ganham; b6, c6, d6 empatam
 TOO_CLOSE_KC4 = F('3k4/2pp4/8/1PPP4/2K5/8/8/8 w')   # com o rei em c4, b6 e c6 ganham (d6 empata)
 ORDER = F('8/8/1p4p1/6k1/1PP5/8/8/7K w')            # só b5 ganha; c5 empata
+# Depois de 1.c5? bxc5 2.b5 (contador em 2): a corrida empata, e a dama preta
+# nasce com xeque. Demo do lado das pretas (cada lance delas é o único).
+ORDER_WRONG = '8/8/6p1/1Pp3k1/8/8/8/7K b - - 0 2'
 SIDE_H8 = F('7k/3pp3/3p4/2P1P3/8/8/8/7K w')         # só e6
 SIDE_A8 = F('k7/2pp4/3p4/2P1P3/8/8/8/K7 w')         # só c6
-TWO_PASSERS = F('k7/8/P4p2/8/4PP2/8/8/7K w')        # ganha (tudo ganha; só demo)
-# No `move` da mesma posição, a lista de aceitos fixa a ruptura: a posição
-# ganha com qualquer lance, e o que se ensina é o mecanismo.
-TWO_PASSERS_MOVE = TWO_PASSERS
-TWO_PASSERS_MOVE_LINE = 'e5 fxe5 f5 Ka7 f6'
-TWO_PASSERS_MOVE_ACCEPTS = [['e4e5'], ['f4f5'], ['f5f6']]
-PUSH = F('8/pp1k4/P7/1P6/8/8/8/7K w')               # só b6 ganha; axb7 empata
+# Só e5 ganha: f5? perde (h4! e a dama preta nasce com xeque).
+TWO_PASSERS = F('k7/8/P4p2/7p/4PP2/8/8/K7 w')
+PUSH = F('8/4pp1k/4P3/5P2/8/8/8/K7 w')              # só f6 ganha; exf7? perde (Rg7)
 PUSH_MOVE = F('8/k1pp4/3P4/2P5/8/8/8/7K w')          # só c6 ganha; dxc7 até perde (Rb7)
-KING_FIRST = F('8/8/1kp3p1/8/5P1P/8/8/K7 w')        # só Rb1 e Rb2 ganham; f5 empata
+KING_FIRST = F('8/1k6/1p4p1/8/5P1P/8/8/K7 w')       # só Rb2 ganha; f5 empata
+# Depois de 1.f5? gxf5 2.h5 (contador em 2): a dama preta nasce com xeque.
+KING_FIRST_WRONG = '8/1k6/1p6/5p1P/8/8/8/K7 b - - 0 2'
 DEF_HXG6 = F('8/5p1p/6P1/5PP1/8/6k1/8/6K1 b')       # só ...hxg6
 # Depois de 1...g6 2.fxg6: o contador do lance fica em 2 para a demo narrar
 # 2...fxg6 3.hxg6, na sequência do `t_defense`.
@@ -177,8 +178,12 @@ parts = [
     {'id': 'order', 'steps': [
         think('t_order', ORDER, 2, marks=['b6']),
         talk('orderWhy', ORDER, arrows=['b4b5', 'c4c5'], marks=['b6']),
-        talk('orderWrong', ORDER, arrows=['c4c5', 'b6c5', 'b4b5'],
-             marks=['b8', 'c1']),
+        demo('orderWrong', ORDER_WRONG, 'draw', 'c4 b6 c3 b7 c2 b8=Q c1=Q+', {
+            0: {'arrows': ['c5c4'], 'marks': ['b5']},
+            2: {'marks': ['c3', 'b6']},
+            5: {'marks': ['b8']},
+            6: {'arrows': ['c1h1'], 'marks': ['c1']},
+        }, side='black'),
         move('orderMove', ORDER, 'win', 'b5 Kf4 c5 bxc5 b6',
              ['win', 'win', 'win']),
     ]},
@@ -196,38 +201,45 @@ parts = [
     # Um rei preso a um peão passado não cuida de outro: a ruptura na outra
     # ala cria o segundo. É a ideia do e13.
     {'id': 'secondPasser', 'steps': [
-        think('t_twoPassers', TWO_PASSERS, 2, marks=['a6', 'a8']),
-        talk('twoPassers', TWO_PASSERS, arrows=['e4e5', 'f4f5'],
-             marks=['a6', 'a8']),
-        demo('d_twoPassers', TWO_PASSERS, 'win', 'e5 fxe5 f5 Ka7 f6', {
-            0: {'arrows': ['e4e5'], 'marks': ['f6']},
-            2: {'arrows': ['f5f8'], 'marks': ['a6']},
-            4: {'marks': ['f8', 'a6']},
+        think('t_twoPassers', TWO_PASSERS, 2, marks=['a6', 'a8', 'h5']),
+        talk('twoPassers', TWO_PASSERS, arrows=['e4e5', 'h5h1'],
+             marks=['f6']),
+        demo('d_twoPassers', TWO_PASSERS, 'win', 'e5 fxe5 f5 h4 f6 h3 f7', {
+            0: {'arrows': ['e5f6'], 'marks': ['f6']},
+            1: {'marks': ['f4', 'f8']},
+            3: {'arrows': ['h4h1']},
+            5: {'marks': ['h2', 'f7']},
+            6: {'arrows': ['f7f8', 'f8a8'], 'marks': ['a8']},
         }),
-        move('twoPassersMove', TWO_PASSERS_MOVE, 'win',
-             TWO_PASSERS_MOVE_LINE, TWO_PASSERS_MOVE_ACCEPTS),
+        move('twoPassersMove', TWO_PASSERS, 'win', 'e5 fxe5 f5 h4 f6',
+             ['win', 'win', 'win']),
     ]},
     {'id': 'pushPast', 'steps': [
         think('t_push', CAPA_40, 2, marks=['g6', 'h6'], ref=CAPA + '#80'),
         talk('pushWhy', CAPA_40, arrows=['h5h6', 'g5g6'], marks=['f6', 'h7'],
              ref=CAPA + '#80'),
-        demo('d_push', PUSH, 'win', 'b6 axb6 a7 Kc6 a8=Q', {
-            0: {'arrows': ['b5b6'], 'marks': ['b7']},
-            2: {'arrows': ['a6a8']},
-            4: {'marks': ['a8']},
+        demo('d_push', PUSH, 'win', 'f6 exf6 e7 Kg7 e8=Q', {
+            0: {'arrows': ['f5f6'], 'marks': ['f7']},
+            2: {'arrows': ['e7e8']},
+            4: {'marks': ['e8']},
         }),
         move('pushMove', PUSH_MOVE, 'win', 'c6 dxc6 d7', ['win', 'win']),
     ]},
     {'id': 'kingFirst', 'steps': [
-        think('t_kingFirst', KING_FIRST, 2, arrows=['f4f5'],
-              marks=['c6', 'a1']),
-        talk('kingFirstWhy', KING_FIRST, arrows=['a1b2', 'f4f5'],
-             marks=['f5', 'c6']),
-        talk('kingFirstPath', KING_FIRST, arrows=['a1b2', 'b2c2', 'c2d1'],
-             marks=['d1', 'c3']),
+        think('t_kingFirst', KING_FIRST, 2, marks=['b6', 'a1']),
+        # Sem seta: a primeira seta deste talk seria o lance "certo" do think.
+        talk('kingFirstWhy', KING_FIRST, marks=['f5', 'a1']),
+        demo('d_kingFirstWrong', KING_FIRST_WRONG, 'draw',
+             'f4 h6 f3 h7 f2 h8=Q f1=Q+', {
+                 0: {'arrows': ['f4f1'], 'marks': ['a1']},
+                 5: {'marks': ['h8']},
+                 6: {'arrows': ['f1a1'], 'marks': ['f1']},
+             }, side='black'),
+        talk('kingFirstPath', KING_FIRST, arrows=['a1b2', 'b2c3'],
+             marks=['c3', 'b6']),
         move('kingFirstMove', KING_FIRST, 'win',
-             'Kb2 c5 Kc2 c4 Kd1 Kc5 f5 gxf5 h5',
-             ['win', 'win', 'win', 'win', 'win']),
+             'Kb2 b5 Kc3 Ka6 f5 gxf5 h5',
+             ['win', 'win', 'win', 'win']),
     ]},
     {'id': 'defense', 'steps': [
         think('t_defense', WIKI_B, 2, side='black',
@@ -264,7 +276,7 @@ parts = [
     {'id': 'finish', 'steps': [
         talk('recap', CLASSIC, arrows=['b5b6']),
         talk('recapCount', TOO_CLOSE, arrows=['g1f2'], marks=['d8']),
-        talk('recapPush', PUSH, arrows=['b5b6'], marks=['a7']),
+        talk('recapPush', PUSH, arrows=['f5f6'], marks=['e7']),
         talk('recapDefense', WIKI_B, side='white', arrows=['g7g6']),
         move('recapMove', AFTER_AXB6, 'win', 'c6 bxc6 a6',
              ['win', 'win']),
