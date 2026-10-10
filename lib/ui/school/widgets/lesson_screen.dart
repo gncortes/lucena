@@ -343,8 +343,11 @@ class _LessonScreenState extends State<LessonScreen>
                           : state.texts.partTitle(lesson.id, state.part!.id) ??
                                 '',
                       key: LessonKeys.appBarTitle,
-                      maxLines: 1,
+                      // Título comprido (ou idioma mais longo) desce para a
+                      // segunda linha, menor, em vez de cortar.
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
               actions: [
                 if (lesson != null &&

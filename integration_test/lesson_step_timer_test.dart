@@ -12,6 +12,9 @@ import 'robots/settings_robot.dart';
 const _english = Locale('en', 'US');
 const _lesson = 'basics.queenMate';
 
+/// O primeiro passo de lance da aula (o mate de apoio, num lance).
+const _move = 'supportMove';
+
 /// T60: na lição, o aluno resolve com o tabuleiro no centro e um cronômetro
 /// que conta para cima, sem limite; respondido o passo, o tabuleiro sobe e o
 /// Viktor fala. O tempo de pensar não se escolhe mais.
@@ -25,7 +28,7 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lesson);
     await endgames.openSteps();
-    await endgames.expectStep(_lesson, 't_seirawan');
+    await endgames.expectStep(_lesson, 't_support');
     await endgames.expectSolving();
     final speech = endgames.speech;
     expect(speech, isNotEmpty);
@@ -47,7 +50,7 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lesson);
     await endgames.openSteps();
-    await endgames.expectStep(_lesson, 't_seirawan');
+    await endgames.expectStep(_lesson, 't_support');
     final asked = endgames.speech;
     await endgames.moreHint();
     expect(endgames.speech, isNot(asked));
@@ -66,17 +69,20 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lesson);
     await endgames.openSteps();
-    for (final step in ['t_seirawan', 'goal', 'edge', 'jump']) {
+    for (final step in ['t_support', 'goal']) {
       await endgames.expectStep(_lesson, step);
       await endgames.nextStep();
     }
-    await endgames.expectStep(_lesson, 'follow');
+    await endgames.expectStep(_lesson, 'd_support');
+    await endgames.finishDemo();
+    await endgames.nextStep();
+    await endgames.expectStep(_lesson, _move);
     await endgames.expectSolving();
     final centered = endgames.boardRect;
     expect(endgames.stepTimer, matches(RegExp(r'^0:0\d$')));
 
     final line = (lesson.lesson.steps.firstWhere(
-      (step) => step.id == 'follow',
+      (step) => step.id == _move,
     ) as dynamic).line;
     for (final turn in line) {
       await endgames.moveInLesson(turn.accept.first as String);
@@ -94,13 +100,13 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lesson);
     await endgames.openSteps();
-    await endgames.expectStep(_lesson, 't_seirawan');
+    await endgames.expectStep(_lesson, 't_support');
     e2eNow.advance(const Duration(minutes: 2));
     await $.pump(const Duration(milliseconds: 300));
     expect(endgames.stepTimer, matches(RegExp(r'^2:0\d$')));
 
     await app.restart();
-    await endgames.expectStep(_lesson, 't_seirawan');
+    await endgames.expectStep(_lesson, 't_support');
     await endgames.expectSolving();
     expect(endgames.stepTimer, matches(RegExp(r'^2:0\d$')));
   });

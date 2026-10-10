@@ -85,14 +85,11 @@ void main() {
     await endgames.solveExercise(two);
     expectText(endgames.earned, _points(0, 2));
     await endgames.back();
-    final seeded = lesson.exercises
-        .take(index)
-        .fold(0, (sum, exercise) => sum + exercise.stars);
-    final total = lesson.exercises.fold(
-      0,
-      (sum, exercise) => sum + exercise.stars,
+    // Em andamento, a aula mostra só quantos foram resolvidos (os pontos
+    // contam no fim, com todos).
+    endgames.expectSolvedCount(
+      '${index + 1} of ${lesson.exercises.length} solved',
     );
-    endgames.expectScore('$seeded of $total points');
   });
 
   patrolTest('nota abaixo do mínimo: o passo final fica fechado e refazer '
