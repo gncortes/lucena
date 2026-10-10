@@ -19,7 +19,7 @@
   "step.t_stairs.hint1": "Trace the black king's shortest path to f2. Which squares does it have to cross?",
   "step.t_stairs.hint2": "The path goes through c4, d3 and e2. Your king can stand in front of that path, not behind it.",
   "step.stairs": "1.Kb3! The white king does not run to the pawn, it runs to the black king's path. From b3 it takes c4 away, and the black king has to step sideways. Every step it takes, my king takes the same step, on the same file, two ranks below. This is shouldering: my king pushes the other one like a basketball player with his shoulder, without touching, just taking up the space.",
-  "step.stairsDraw": "Now the same position with 1...Kc4! and the black king gets in front: 2.f4 Kd5 3.f5 Ke5 4.f6 Kxf6, draw. 1...Kb4 and 1...Ka4 draw as well: any step forward by the black king arrives in time. A single tempo decides who pushes whom; that is why the shoulder has to come at once, on the first move.",
+  "step.stairsDraw": "Now the same position with Black to move. 1...Kc4! and the black king gets in front: 2.f4 Kd5 3.f5 Ke5 4.f6 Kxf6, draw. 1...Kb4 and 1...Ka4 draw as well: any step forward by the black king arrives in time. A single tempo decides who pushes whom; that is why the shoulder has to come at once, on the first move.",
   "step.d_stairs": "Watch the white king walk down the stairs together with the black one. Always on its file, always two ranks below.",
   "step.d_stairs.m1": "1.Kb3. I shut c4, the black king's doorway.",
   "step.d_stairs.m2": "1...Kc5. It goes up a rank to try d4.",

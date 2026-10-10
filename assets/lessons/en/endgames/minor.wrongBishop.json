@@ -57,7 +57,7 @@
   "step.kingDoorMove": "The black king is next to h7 and wants to get into the corner. Who shuts the door?",
   "step.kingDoorMove.done": "That's it. 1.Kg8! shuts h7, h8 and g7. After 1.h5+? Kh7! or 1.Bd3+? Kh6, the black king would come down the h-file and draw.",
   "step.kingDoorMove.hint": "A check from the bishop or the pawn does not shut the door. Which piece covers h7, h8 and g7 at the same time?",
-  "step.t_mednis": "Mednis's position again, now with Your king is in front of the pawn, on h6. Is that enough, or does it need to be somewhere else?",
+  "step.t_mednis": "Mednis's position again, now with Black to move. Your king is in front of the pawn, on h6. Is that enough, or does it need to be somewhere else?",
   "step.t_mednis.hint1": "If the white king reaches g8 or g7, what happens to your king?",
   "step.t_mednis.hint2": "In front of the pawn is not the same as inside the corner.",
   "step.mednis": "In the previous chapter, with White to move, 1.Kg8! won. Now Black moves first. In the king and rook pawn against king ending, standing in front of the pawn is enough. With the bishop it is not: the king must get into the corner before the white king shuts the door. 1...Kh7! and then 2...Kh8.",

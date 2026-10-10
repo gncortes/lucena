@@ -132,7 +132,7 @@
   "step.d_seventh.m3": "2.Kd7! I protect c8. 2.c8=Q+? now would be taken with 2...Kxc8.",
   "step.d_seventh.m4": "Nothing to be done: c8 is mine, and the black king can't reach the pawn.",
   "step.d_seventh.m5": "3.c8=Q, a new queen, and the rest is the king and queen mate.",
-  "step.d_kramnik": "The same check in a masters' game: Kamsky against Kramnik, Amber tournament, blindfold, Nice, 2009. After 124...Rxc6+ 125.Kxc6 only the kings and the pawn were left, and with 127...Kd8 the black king stood face to face with the white king, with There was no win left here; Kamsky tried the check.",
+  "step.d_kramnik": "The same check in a masters' game: Kamsky against Kramnik, Amber tournament, blindfold, Nice, 2009. After 124...Rxc6+ 125.Kxc6 only the kings and the pawn were left, and with 127...Kd8 the black king stood face to face with the white king, with White to move. There was no win left here; Kamsky tried the check.",
   "step.d_kramnik.m1": "128.e7+: the pawn reaches the seventh with check, and the square in front is free for the black king.",
   "step.d_kramnik.m2": "128...Ke8!, in front of the pawn. 128...Kc8? would lose: 129.e8=Q+.",
   "step.d_kramnik.m3": "129.Ke6, to keep protecting the pawn, and the black king has no move and is not in check: stalemate. The game ended in a draw.",

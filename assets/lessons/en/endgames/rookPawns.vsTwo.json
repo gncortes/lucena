@@ -25,7 +25,7 @@
   "step.d_fifth.m1": "1.Ra4: both pawns are attacked. If one advances, the rook captures the other.",
   "step.d_fifth.m2": "1...Kg7: the black king runs to help, but it is still far from the pawns.",
   "step.d_fifth.m3": "2.Rxf4. One pawn down. After 2...g3, 3.Rg4+ puts the rook behind the last pawn, with check, and your king comes to collect it.",
-  "step.sixthFifth": "The same position, but now it is 1...f3! One pawn reaches the sixth before the rook can move. The rook still captures a pawn, but only draws: after 2.Rh1+ Kg7 3.Rg1 Kf6 4.Rxg4 Ke5, the black king reaches the f-pawn in time. On the fifth, whoever has the move decides.",
+  "step.sixthFifth": "The same position, but now it is Black to move. 1...f3! One pawn reaches the sixth before the rook can move. The rook still captures a pawn, but only draws: after 2.Rh1+ Kg7 3.Rg1 Kf6 4.Rxg4 Ke5, the black king reaches the f-pawn in time. On the fifth, whoever has the move decides.",
   "step.recapMove": "On the other side of the board: the pawns are on the fifth, the kings far away, and the rook to move. Win.",
   "step.recapMove.hint": "On the pawns' rank, the rook attacks both from the side.",
   "step.recapMove.done": "1.Rh4! Then 2.Rxc4. Attacked from the side, the pawns cannot protect each other, and the survivor is left alone for the rook to catch from behind.",
