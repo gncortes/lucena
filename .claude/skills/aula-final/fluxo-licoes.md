@@ -92,7 +92,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | **feita: B**, commitada (lote2); Fischer–Larsen 1971 com link, estudo de fabian1999; ~45,8 min e parte `escort` com 2,8 min: Gabriel |
 | 13 | pawns.protectedPasser | C | 3 (+2) | Opus | dois passados e a conta do quadrado; Dedrle; dividir `limits`; partida | **feita: B**, commitada (lote2); Jakovenko–Akobian 2000, Walker, estudos de Chessforall321 e IsaacWiebeSupreme com link; `twoPassers`/`d_baseInside` perto de e08/e15 (revisor: não encostam demais) |
 | 14 | pawns.rookPawnDraw | C | 3–4 | Opus | qual peão sobra na troca; tempo do peão que cai; Panno–Najdorf, Barcza–Fischer | **feita: B**, commitada (lote2); Panno–Najdorf 1968, Barcza–Fischer 1959 com link; `theTurn` perto do e17 (revisor: não encosta demais) |
-| 15 | pawns.triangulation | C | 2 | Opus | perder um tempo no caminho; casas correspondentes de longe; Alburt–Kasparov | |
+| 15 | pawns.triangulation | C | 2 | Opus | perder um tempo no caminho; casas correspondentes de longe; Alburt–Kasparov | **feita: A**, commitada (lote2); Alburt–Kasparov 1978 com link, análise Shirov–Grischuk (Wikipedia); `defend` encosta no e13 (espelho), e04/e09/e11 com dúvidas: Gabriel |
 | 16 | pawns.shoulder | C | 3 (+2) | Fable | ombro + quadrado (Réti/Duras/Grigoriev/Mandler); demos; partida | |
 | 17 | pawns.reti | B | 1 | Fable | Réti com peça no caminho (Sarychev); Yates–Marshall com link | |
 | 18 | rook.behindPasser | C | 6 (+2) | Opus | exceções da regra só nos exercícios; falas vazias em `d_walk`; Kramnik–Beliavsky | |
@@ -108,7 +108,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 28 | minor.knightVsPawn | C | 3 | Fable | ~66 min e 28 falas vazias; dois peões, desvio, recuo do cavalo; Nogueiras–Gongora | |
 | 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
-| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 027f5e86); Stefánsson–Müller 1992 |
 | 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || **feita: B** (lucena-8f, tarefa/T63-licoes-opus); Morozevich–Jakovenko 2006, Browne–Belle 1978; a pedido do Gabriel, demo do e16 e e12/e15/e19 novos |
 | 33 | queen.vsRookPawn | C | 4 | Fable | torre que espera longe, Laza, rei dentro, estudos da 7.ª; Carlsen–Matlakov | |
 | 34 | mates.twoKnightsPawn | C | 2 (+2) | Fable | triangulação (Chéron), captura certa (Horwitz–Kling); Karpov, Anand | |
