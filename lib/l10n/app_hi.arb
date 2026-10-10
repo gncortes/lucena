@@ -479,7 +479,7 @@
   "starChallengeNewBest": "नया रिकॉर्ड!",
   "starChallengePlayAgain": "फिर खेलें",
   "starChallengePaused": "रुका हुआ",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{हाथी चुनौती} bishop{ऊँट चुनौती} knight{घोड़ा चुनौती} queen{वज़ीर चुनौती} king{राजा चुनौती} pawn{प्यादा चुनौती} other{तारा चुनौती}}",
   "lessonToChallenge": "तारा चुनौती: {piece}",
   "starChallengePoints": "{count} अंक",
   "starChallengePointsTotal": "कुल {count} अंक",

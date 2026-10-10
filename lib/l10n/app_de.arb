@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Neuer Rekord!",
   "starChallengePlayAgain": "Noch einmal",
   "starChallengePaused": "Pausiert",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Turm-Challenge} bishop{Läufer-Challenge} knight{Springer-Challenge} queen{Damen-Challenge} king{Königs-Challenge} pawn{Bauern-Challenge} other{Sterne-Challenge}}",
   "lessonToChallenge": "Sterne-Challenge: {piece}",
   "starChallengePoints": "{count, plural, =1{1 Punkt} other{{count} Punkte}}",
   "starChallengePointsTotal": "{count} Punkte insgesamt",

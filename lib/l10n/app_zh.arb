@@ -479,7 +479,7 @@
   "starChallengeNewBest": "新纪录！",
   "starChallengePlayAgain": "再来一次",
   "starChallengePaused": "已暂停",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{车的挑战} bishop{象的挑战} knight{马的挑战} queen{后的挑战} king{王的挑战} pawn{兵的挑战} other{星星挑战}}",
   "lessonToChallenge": "星星挑战：{piece}",
   "starChallengePoints": "{count} 分",
   "starChallengePointsTotal": "共 {count} 分",

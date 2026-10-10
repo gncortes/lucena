@@ -17,9 +17,11 @@ import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
+import 'star_scoreboard.dart';
 import 'star_shape.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
@@ -106,19 +108,24 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         }
         final piece = state.piece;
         final level = state.level;
+        // Onde o corpo começa na tela (abaixo da barra de status e da barra
+        // do app), medido fora do Scaffold, para achar o centro da tela.
+        final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight;
         return Scaffold(
           key: StarChallengeKeys.screen,
           appBar: AppBar(
-            title: piece == null || level == null
+            title: piece == null
                 ? null
-                : Text(
-                    l10n.starChallengeTitle(
-                      pieceName(l10n, piece),
-                      levelName(l10n, level),
-                    ),
-                  ),
+                : Text(l10n.starChallengeTitle(piece.name)),
+            actions: [
+              if (level != null)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: AppSpacing.lg),
+                  child: _LevelChip(level: level),
+                ),
+            ],
           ),
-          body: SafeArea(child: _body(context, state, boardSettings)),
+          body: SafeArea(child: _body(context, state, boardSettings, bodyTop)),
         );
       },
     );
@@ -128,6 +135,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     BuildContext context,
     StarChallengeState state,
     BoardSettings boardSettings,
+    double bodyTop,
   ) {
     final board = _board;
     if (!state.ready || board == null) return const SizedBox.shrink();
@@ -137,102 +145,101 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final lowTime =
         state.phase == ChallengePhase.running &&
         state.timeLeft <= const Duration(seconds: 10);
-    return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        children: [
-          // O relógio e a conta das estrelas.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 20,
-                  color: lowTime ? colors.error : colors.onSurfaceVariant,
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    return CustomMultiChildLayout(
+      delegate: _ChallengeLayout(centerY: screenHeight / 2 - bodyTop),
+      children: [
+        LayoutId(
+          id: _Slot.top,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // O relógio e a barra do tempo.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 20,
+                      color: lowTime ? colors.error : colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      clockText(state.timeLeft),
+                      key: StarChallengeKeys.timer,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                        color: lowTime ? colors.error : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppShape.small),
+                        child: LinearProgressIndicator(
+                          value: 1 - state.elapsedFraction,
+                          minHeight: 8,
+                          color: lowTime ? colors.error : colors.primary,
+                          backgroundColor: colors.surfaceContainerHighest,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  clockText(state.timeLeft),
-                  key: StarChallengeKeys.timer,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                    color: lowTime ? colors.error : null,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                    child: LinearProgressIndicator(
-                      value: 1 - state.elapsedFraction,
-                      minHeight: 8,
-                      color: lowTime ? colors.error : colors.primary,
-                      backgroundColor: colors.surfaceContainerHighest,
+              ),
+              // Às cegas: a casa da estrela pelo nome, grande, no lugar do desenho.
+              if (state.level?.announcesSquare ?? false)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: AnimatedSwitcher(
+                    duration: AppMotion.state,
+                    child: Text(
+                      star?.name ?? ' ',
+                      key: StarChallengeKeys.starName,
+                      style: theme.textTheme.displaySmall?.copyWith(
+                        color: starColor(state.starKind),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                const Icon(Icons.star_rounded, color: StarsRow.color, size: 22),
-                const SizedBox(width: 2),
-                Text(
-                  '${state.points}',
-                  key: StarChallengeKeys.collected,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-          // Às cegas: a casa da estrela pelo nome, grande, no lugar do desenho.
-          if (state.level?.announcesSquare ?? false)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: AnimatedSwitcher(
-                duration: AppMotion.state,
-                child: Text(
-                  star?.name ?? ' ',
-                  key: StarChallengeKeys.starName,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    color: starColor(state.starKind),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ),
-          // O tabuleiro na largura da tela, até uns 60% da altura.
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Chessboard(
-              key: StarChallengeKeys.board,
-              size: max(
-                min(constraints.maxWidth - 16, constraints.maxHeight * 0.6),
-                120,
-              ),
-              controller: board,
-              settings: boardSettings.chessground,
-              orientation: Side.white,
-              shapes: {
-                if (star != null && !(state.level?.announcesSquare ?? false))
-                  CustomShape(
-                    orig: star,
-                    scale: 0.75,
-                    child: StarShape(
-                      key: StarChallengeKeys.star(star.name),
-                      color: starColor(state.starKind),
-                      blinking: state.starBlinking,
+        ),
+        // O tabuleiro com o centro no centro da tela.
+        LayoutId(
+          id: _Slot.board,
+          child: LayoutBuilder(
+            builder: (context, box) => Directionality(
+              textDirection: TextDirection.ltr,
+              child: Chessboard(
+                key: StarChallengeKeys.board,
+                size: box.maxWidth,
+                controller: board,
+                settings: boardSettings.chessground,
+                orientation: Side.white,
+                shapes: {
+                  if (star != null && !(state.level?.announcesSquare ?? false))
+                    CustomShape(
+                      orig: star,
+                      scale: 0.75,
+                      child: StarShape(
+                        key: StarChallengeKeys.star(star.name),
+                        color: starColor(state.starKind),
+                        blinking: state.starBlinking,
+                      ),
                     ),
-                  ),
-              },
-              onMove: (move, {viaDragAndDrop}) =>
-                  context.read<StarChallengeCubit>().play(move),
+                },
+                onMove: (move, {viaDragAndDrop}) =>
+                    context.read<StarChallengeCubit>().play(move),
+              ),
             ),
           ),
-          Expanded(child: _below(context, state)),
-        ],
-      ),
+        ),
+        LayoutId(id: _Slot.below, child: _below(context, state)),
+      ],
     );
   }
 
@@ -249,7 +256,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 l10n.starChallengeRule(level.seconds),
@@ -315,63 +322,23 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         );
       case ChallengePhase.running:
       case ChallengePhase.paused:
-        return Center(
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.screen,
+            vertical: AppSpacing.md,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // A conta grande, que pula a cada estrela.
-              // O "+N" da última estrela sobe e some.
-              SizedBox(
-                height: 24,
-                child: state.collected == 0
-                    ? null
-                    : TweenAnimationBuilder<double>(
-                        key: ValueKey(state.collected),
-                        tween: Tween(begin: 0, end: 1),
-                        duration: AppMotion.celebrate,
-                        builder: (context, t, child) => Opacity(
-                          opacity: 1 - t,
-                          child: Transform.translate(
-                            offset: Offset(0, -12 * t),
-                            child: child,
-                          ),
-                        ),
-                        child: Text(
-                          '+${state.lastPoints}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: colors.primary,
-                          ),
-                        ),
-                      ),
-              ),
-              TweenAnimationBuilder<double>(
-                key: ValueKey(state.collected),
-                tween: Tween(begin: state.collected == 0 ? 1 : 1.5, end: 1),
-                duration: AppMotion.celebrate,
-                curve: AppMotion.bounce,
-                builder: (context, scale, child) =>
-                    Transform.scale(scale: scale, child: child),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.star_rounded,
-                      color: StarsRow.color,
-                      size: 44,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${state.points}',
-                      style: theme.textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  ],
+              // Bronze, prata, ouro e o total, que pulam a cada estrela.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: StarScoreboard(
+                  counts: state.byKind,
+                  points: state.points,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 state.phase == ChallengePhase.paused
                     ? l10n.starChallengePaused
@@ -388,7 +355,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           key: StarChallengeKeys.result,
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 l10n.starChallengeTimeUp,
@@ -448,5 +415,76 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           ),
         );
     }
+  }
+}
+
+enum _Slot { top, board, below }
+
+/// O relógio em cima, o tabuleiro com o centro no centro da tela e o resto
+/// embaixo, centrado no espaço que sobra. Se não couber, o tabuleiro sobe
+/// (e só então encolhe) para não cobrir nada.
+class _ChallengeLayout extends MultiChildLayoutDelegate {
+  _ChallengeLayout({required this.centerY});
+
+  final double centerY;
+
+  @override
+  void performLayout(Size size) {
+    const gap = AppSpacing.sm;
+    final width = BoxConstraints(maxWidth: size.width, maxHeight: size.height);
+    final top = layoutChild(_Slot.top, width.tighten(width: size.width));
+    final below = layoutChild(_Slot.below, width.tighten(width: size.width));
+    final free = size.height - top.height - below.height - gap;
+    final side = max(
+      0.0,
+      min(min(size.width - AppSpacing.lg, size.height * 0.6), free),
+    );
+    layoutChild(_Slot.board, BoxConstraints.tight(Size(side, side)));
+    final minTop = top.height;
+    final maxTop = size.height - below.height - gap - side;
+    final boardTop = (centerY - side / 2)
+        .clamp(minTop, max(minTop, maxTop))
+        .toDouble();
+    positionChild(_Slot.top, Offset.zero);
+    positionChild(_Slot.board, Offset((size.width - side) / 2, boardTop));
+    final rest = size.height - boardTop - side;
+    positionChild(
+      _Slot.below,
+      Offset(0, boardTop + side + max(0.0, (rest - below.height) / 2)),
+    );
+  }
+
+  @override
+  bool shouldRelayout(_ChallengeLayout oldDelegate) =>
+      oldDelegate.centerY != centerY;
+}
+
+/// O selo do nível, na cor dele.
+class _LevelChip extends StatelessWidget {
+  const _LevelChip({required this.level});
+
+  final ChallengeLevel level;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      key: StarChallengeKeys.levelChip,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: levelColor(level),
+        borderRadius: BorderRadius.circular(AppShape.full),
+      ),
+      child: Text(
+        levelName(context.l10n, level),
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }

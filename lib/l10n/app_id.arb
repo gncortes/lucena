@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Rekor baru!",
   "starChallengePlayAgain": "Main lagi",
   "starChallengePaused": "Dijeda",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Tantangan benteng} bishop{Tantangan gajah} knight{Tantangan kuda} queen{Tantangan menteri} king{Tantangan raja} pawn{Tantangan pion} other{Tantangan bintang}}",
   "lessonToChallenge": "Tantangan bintang: {piece}",
   "starChallengePoints": "{count} poin",
   "starChallengePointsTotal": "{count} poin total",

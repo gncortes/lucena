@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Yeni rekor!",
   "starChallengePlayAgain": "Tekrar oyna",
   "starChallengePaused": "Duraklatıldı",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Kale görevi} bishop{Fil görevi} knight{At görevi} queen{Vezir görevi} king{Şah görevi} pawn{Piyon görevi} other{Yıldız görevi}}",
   "lessonToChallenge": "Yıldız görevi: {piece}",
   "starChallengePoints": "{count} puan",
   "starChallengePointsTotal": "Toplam {count} puan",

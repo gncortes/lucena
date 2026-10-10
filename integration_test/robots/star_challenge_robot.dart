@@ -55,9 +55,11 @@ class StarChallengeRobot {
     await $.pumpAndSettle();
   }
 
-  /// Os pontos no alto da tela.
+  /// Os pontos no painel sob o tabuleiro ("12 points": só o número).
   int get points => int.parse(
-    $.tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
+    RegExp(r'\d+').firstMatch(
+      $.tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
+    )![0]!,
   );
 
   Future<void> back() async {

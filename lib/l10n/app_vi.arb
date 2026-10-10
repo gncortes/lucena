@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Kỷ lục mới!",
   "starChallengePlayAgain": "Chơi lại",
   "starChallengePaused": "Tạm dừng",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Thử thách Xe} bishop{Thử thách Tượng} knight{Thử thách Mã} queen{Thử thách Hậu} king{Thử thách Vua} pawn{Thử thách Tốt} other{Thử thách ngôi sao}}",
   "lessonToChallenge": "Thử thách ngôi sao: {piece}",
   "starChallengePoints": "{count} điểm",
   "starChallengePointsTotal": "Tổng {count} điểm",

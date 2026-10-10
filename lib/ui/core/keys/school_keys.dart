@@ -106,7 +106,17 @@ abstract final class StarChallengeKeys {
   static const goButton = Key('starChallenge.go');
   static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
+  /// O total de pontos no painel embaixo do tabuleiro.
   static const collected = Key('starChallenge.collected');
+
+  /// O painel de pontos embaixo do tabuleiro.
+  static const scoreboard = Key('starChallenge.scoreboard');
+
+  /// O selo do nível na barra.
+  static const levelChip = Key('starChallenge.levelChip');
+
+  /// Quantas estrelas de uma cor (`bronze`, `silver`, `gold`) foram pegas.
+  static Key kindCount(String kind) => Key('starChallenge.count.$kind');
   static const result = Key('starChallenge.result');
   static const earned = Key('starChallenge.earned');
   static const best = Key('starChallenge.best');

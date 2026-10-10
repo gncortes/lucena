@@ -479,7 +479,7 @@
   "starChallengeNewBest": "새 기록!",
   "starChallengePlayAgain": "다시 하기",
   "starChallengePaused": "일시정지",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{룩 도전} bishop{비숍 도전} knight{나이트 도전} queen{퀸 도전} king{킹 도전} pawn{폰 도전} other{별 도전}}",
   "lessonToChallenge": "별 도전: {piece}",
   "starChallengePoints": "{count}점",
   "starChallengePointsTotal": "총 {count}점",

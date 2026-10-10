@@ -52,3 +52,11 @@ Color starColor(StarKind kind) => switch (kind) {
   StarKind.silver => const Color(0xffb0b8c1),
   StarKind.bronze => const Color(0xffcd7f32),
 };
+
+/// A cor do selo de cada nível: verde, laranja, vermelho e, às cegas, roxo.
+Color levelColor(ChallengeLevel level) => switch (level) {
+  ChallengeLevel.easy => const Color(0xff2e7d32),
+  ChallengeLevel.medium => const Color(0xffe65100),
+  ChallengeLevel.hard => const Color(0xffc62828),
+  ChallengeLevel.named => const Color(0xff6a1b9a),
+};

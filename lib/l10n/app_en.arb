@@ -2562,18 +2562,14 @@
   "@starChallengePaused": {
     "description": "Shown while the challenge clock is paused (app in background)."
   },
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Rook challenge} bishop{Bishop challenge} knight{Knight challenge} queen{Queen challenge} king{King challenge} pawn{Pawn challenge} other{Star challenge}}",
   "lessonToChallenge": "Star challenge: {piece}",
   "@starChallengeTitle": {
-    "description": "App bar of a star challenge: the piece and the level.",
+    "description": "App bar of a star challenge: the challenge named after its piece (the level shows as a chip beside it).",
     "placeholders": {
       "piece": {
         "type": "String",
-        "example": "Rook"
-      },
-      "level": {
-        "type": "String",
-        "example": "Easy"
+        "example": "rook"
       }
     }
   },

@@ -36,6 +36,7 @@ class StarChallengeState {
     this.collected = 0,
     this.points = 0,
     this.lastPoints = 0,
+    this.byKind = const {},
     this.phase = ChallengePhase.ready,
     this.timeLeft = Duration.zero,
     this.best,
@@ -58,6 +59,12 @@ class StarChallengeState {
   final int collected;
   final int points;
   final int lastPoints;
+
+  /// Quantas estrelas de cada cor foram pegas.
+  final Map<StarKind, int> byKind;
+
+  /// Quantas estrelas desta cor foram pegas.
+  int countOf(StarKind kind) => byKind[kind] ?? 0;
   final ChallengePhase phase;
   final Duration timeLeft;
 
@@ -96,6 +103,7 @@ class StarChallengeState {
     int? collected,
     int? points,
     int? lastPoints,
+    Map<StarKind, int>? byKind,
     ChallengePhase? phase,
     Duration? timeLeft,
     int? best,
@@ -113,6 +121,7 @@ class StarChallengeState {
     collected: collected ?? this.collected,
     points: points ?? this.points,
     lastPoints: lastPoints ?? this.lastPoints,
+    byKind: byKind ?? this.byKind,
     phase: phase ?? this.phase,
     timeLeft: timeLeft ?? this.timeLeft,
     best: best ?? this.best,
@@ -265,6 +274,10 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
           collected: state.collected + 1,
           points: state.points + worth,
           lastPoints: worth,
+          byKind: {
+            ...state.byKind,
+            state.starKind: state.countOf(state.starKind) + 1,
+          },
         ),
         square,
       ),

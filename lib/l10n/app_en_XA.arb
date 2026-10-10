@@ -478,7 +478,7 @@
   "starChallengeNewBest": "[Ñéw béšt! one]",
   "starChallengePlayAgain": "[Plåý åĝåîñ one]",
   "starChallengePaused": "[Påûšéd one]",
-  "starChallengeTitle": "[{piece} · {level} one two]",
+  "starChallengeTitle": "{piece, select, rook{[Ŕöök çhålléñĝé one two]} bishop{[Bîšhöp çhålléñĝé one two]} knight{[Kñîĝht çhålléñĝé one two]} queen{[Qûééñ çhålléñĝé one two]} king{[Kîñĝ çhålléñĝé one two]} pawn{[Påwñ çhålléñĝé one two]} other{[Štåŕ çhålléñĝé one two]}}",
   "lessonToChallenge": "[Štåŕ çhålléñĝé: {piece} one two three]",
   "starChallengePoints": "{count, plural, =1{[1 pöîñt one]} other{[{count} pöîñtš one two]}}",
   "starChallengePointsTotal": "[{count} pöîñtš îñ åll one two three]",

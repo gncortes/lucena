@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Nouveau record !",
   "starChallengePlayAgain": "Rejouer",
   "starChallengePaused": "En pause",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Défi de la tour} bishop{Défi du fou} knight{Défi du cavalier} queen{Défi de la dame} king{Défi du roi} pawn{Défi du pion} other{Défi des étoiles}}",
   "lessonToChallenge": "Défi des étoiles : {piece}",
   "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points au total",

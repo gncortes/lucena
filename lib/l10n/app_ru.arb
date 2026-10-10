@@ -479,7 +479,7 @@
   "starChallengeNewBest": "Новый рекорд!",
   "starChallengePlayAgain": "Ещё раз",
   "starChallengePaused": "Пауза",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Испытание ладьи} bishop{Испытание слона} knight{Испытание коня} queen{Испытание ферзя} king{Испытание короля} pawn{Испытание пешки} other{Звёздное испытание}}",
   "lessonToChallenge": "Звёздное испытание: {piece}",
   "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очка} other{{count} очков}}",
   "starChallengePointsTotal": "Всего очков: {count}",

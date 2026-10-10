@@ -479,7 +479,7 @@
   "starChallengeNewBest": "رقم قياسي جديد!",
   "starChallengePlayAgain": "العب مجددًا",
   "starChallengePaused": "متوقف مؤقتًا",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{تحدي الرخ} bishop{تحدي الفيل} knight{تحدي الحصان} queen{تحدي الوزير} king{تحدي الملك} pawn{تحدي البيدق} other{تحدي النجوم}}",
   "lessonToChallenge": "تحدي النجوم: {piece}",
   "starChallengePoints": "{count, plural, =1{نقطة واحدة} other{{count} نقطة}}",
   "starChallengePointsTotal": "{count} نقطة في المجموع",

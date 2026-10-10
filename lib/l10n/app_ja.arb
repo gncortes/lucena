@@ -479,7 +479,7 @@
   "starChallengeNewBest": "新記録！",
   "starChallengePlayAgain": "もう一度",
   "starChallengePaused": "一時停止中",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{ルークチャレンジ} bishop{ビショップチャレンジ} knight{ナイトチャレンジ} queen{クイーンチャレンジ} king{キングチャレンジ} pawn{ポーンチャレンジ} other{星チャレンジ}}",
   "lessonToChallenge": "星チャレンジ：{piece}",
   "starChallengePoints": "{count} 点",
   "starChallengePointsTotal": "合計 {count} 点",

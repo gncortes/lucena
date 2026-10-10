@@ -479,7 +479,7 @@
   "starChallengeNewBest": "رکورد جدید!",
   "starChallengePlayAgain": "دوباره بازی کن",
   "starChallengePaused": "متوقف",
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{چالش رخ} bishop{چالش فیل} knight{چالش اسب} queen{چالش وزیر} king{چالش شاه} pawn{چالش پیاده} other{چالش ستاره}}",
   "lessonToChallenge": "چالش ستاره: {piece}",
   "starChallengePoints": "{count} امتیاز",
   "starChallengePointsTotal": "در مجموع {count} امتیاز",
