@@ -18,6 +18,7 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - Nunca commitar nem dar push direto na `develop` nem na `main`. As duas só recebem código por PR com CI verde; o merge é do usuário. A `main` recebe da `develop`.
 - CI em `.github/workflows/`: `ci.yml` (PR para `develop` ou `main`: formatação, analyze, traduções, testes, APK), `qa.yml` (tag `vX.Y.Z-rc.N`: App Distribution, grupo de QA, sem Test Lab) e `release.yml` (tag `vX.Y.Z` na `main`: Patrol no Test Lab, Release com o APK e App Distribution, grupo `release`).
 - O Patrol não roda no CI da `develop`: a suíte local em paralelo é a validação antes da PR.
+- Pedido de ajuste do Gabriel = rodada de ajustes (skill `rodada-ajustes`): **cancelar na hora qualquer Patrol em andamento** e usar os emuladores para mandar o print de cada pedido (evidência) assim que ficar pronto, com agentes em paralelo. Patrol só depois do "tudo ok".
 - Segredos (keystore, credenciais) ficam só no GitHub. Nunca ler, criar ou imprimir segredo.
 
 ## Comandos
