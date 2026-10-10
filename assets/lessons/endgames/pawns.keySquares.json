@@ -453,6 +453,7 @@
           "id": "knightTrap",
           "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
           "arrows": [
+            "d6c6",
             "d6c7"
           ],
           "marks": [

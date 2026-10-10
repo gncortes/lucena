@@ -194,7 +194,7 @@ parts = [
     {'id': 'kingFirst', 'steps': [
         think('t_kingFirst', KING_FIRST, 3, 2, arrows=['f4f5'],
               marks=['c6', 'a1']),
-        talk('kingFirstWhy', KING_FIRST, arrows=['f4f5', 'a1b2'],
+        talk('kingFirstWhy', KING_FIRST, arrows=['a1b2', 'f4f5'],
              marks=['f5', 'c6']),
         talk('kingFirstPath', KING_FIRST, arrows=['a1b2', 'b2c2', 'c2d1'],
              marks=['d1', 'c3']),
