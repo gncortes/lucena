@@ -382,8 +382,8 @@
           "fen": "8/8/8/5pk1/6rp/P4K2/8/R7 b - - 9 59",
           "side": "white",
           "arrows": [
-            "b1a1",
-            "g4g3"
+            "g4g3",
+            "b1a1"
           ],
           "ref": "kramnikBeliavsky1993#117"
         },

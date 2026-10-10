@@ -178,7 +178,7 @@ write({
         ]},
         {'id': 'carlsen', 'steps': [
             think('t_carlsen', G145, 3, 2, side='black'),
-            ref(talk('carlsen', G145, arrows=['a8a7'], side='black'),
+            ref(talk('carlsen', G145, arrows=['g7g6', 'a8a7'], side='black'),
                 'aronianCarlsen2006'),
             ref(demo('d_carlsenError', G147, 'Ra8+ Rd8 Ra6 e7', goal='win',
                      side='white', notes={2: {'marks': ['e8']}}),

@@ -202,7 +202,7 @@ write({
         {'id': 'twoPassers', 'steps': [
             ref(think('t_kramnik', KB, 2, marks=['f5', 'h4']),
                 'kramnikBeliavsky1993#116'),
-            ref(talk('kramnik', KB_ERR, arrows=['b1a1', 'g4g3']),
+            ref(talk('kramnik', KB_ERR, arrows=['g4g3', 'b1a1']),
                 'kramnikBeliavsky1993#117'),
             ref(talk('rb8', KB, arrows=['b1b8', 'b8g8']),
                 'kramnikBeliavsky1993#116'),
