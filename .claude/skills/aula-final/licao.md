@@ -40,9 +40,11 @@ ideia que nenhuma parte ensinava.
 5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
    vaga à mais clara e nenhuma dá o lance. As setas e casas mostram o que a fala diz. pt e en dizem o mesmo.
-6. **Tempo equilibrado.** O relatório do `build_aula.py` mostra o tempo de cada parte. Partes entre 4 e 8
-   minutos; uma lição entre 25 e 45 minutos. Parte com dois `think` ou com duas ideias se divide; parte
-   com um `talk` e um `move` só, sem `demo`, costuma estar rasa.
+6. **Partes bem divididas.** O relatório do `build_aula.py` mostra o tempo de cada parte. O que conta é a
+   divisão: uma ideia por parte, partes de 4 a 8 minutos. O total da lição não tem teto (pedido do Gabriel,
+   2026-10-10: "não tem problema a minutagem, contanto que estejam bem divididas"); não se corta parte boa
+   só para caber em 45 minutos. Parte com dois `think` ou com duas ideias se divide; parte com um `talk` e
+   um `move` só, sem `demo`, costuma estar rasa.
 
 ## Como o revisor nota uma lição
 
@@ -104,7 +106,7 @@ marcou (tema com composição, zugzwang recíproco, casas correspondentes, ou pa
 8. **Gere e confira**: o `.py` (se houver), `build_aula.py <id>` (0 problemas, sem trocar regra de `accept`
    para passar), `check_variety.py <id>`, `dump_lesson.py <id> --links` (sem aviso; todo link "bate"),
    `flutter test test/data/repositories/endgames/endgame_lessons_content_test.dart`. Leia o despejo como
-   aluno: tempo total de 25 a 45 min, partes de 4 a 8; a fala do lance N explica o lance N.
+   aluno: partes de 4 a 8 min (o total da lição não tem teto); a fala do lance N explica o lance N.
 9. **Registre no dossiê** (`docs/aulas/<id>.md`, seção "Lição refeita (T61, <data>)"): a tabela de
    cobertura final, as partes (id, ideia, FEN, de onde veio), as partidas com link e como as abriu, onde
    saiu do plano e por quê, o que julgou o Stockfish (posições com mais de 7 peças, só em `think`/`talk`),

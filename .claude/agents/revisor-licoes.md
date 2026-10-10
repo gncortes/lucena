@@ -43,7 +43,8 @@ O que fazer, nesta ordem:
 5. **Falas.** Uma coisa por fala, com o porquê; dicas da mais vaga à mais clara sem o lance; setas e casas
    batendo com a fala; pt e en dizendo o mesmo; notação pt R/D/T/B/C, en K/Q/R/B/N; nunca "mate em N";
    nenhuma menção a motor, tabela, Wikipedia ou Lichess dentro das falas.
-6. **Tempo.** Partes entre 4 e 8 minutos, lição entre 25 e 45 (relatório do `--dry-run`).
+6. **Divisão.** Partes entre 4 e 8 minutos, uma ideia por parte (relatório do `--dry-run`). O total da lição não tem teto
+   (pedido do Gabriel, 2026-10-10): lição longa e bem dividida não perde nota.
 
 Relatório `docs/aulas/LICAO-<id>.md`: nota geral e por regra (A–E) no topo, com uma frase de justificativa
 cada; a tabela de cobertura; achados em três níveis (**erro**: ideia cobrada sem parte, fato errado;
