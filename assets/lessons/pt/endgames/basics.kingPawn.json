@@ -23,7 +23,7 @@
   "ex.e13": "Brancas jogam e ganham. O peão de cavalo está na sexta, e o rei preto se escondeu no canto. Cuidado com o lance que parece o mais forte.",
   "ex.e13.hint": "Antes de cada lance, conte as casas do rei preto. Se ele ficar sem nenhuma e não estiver em xeque, é afogamento.",
   "ex.e13.solution": "1.Rc6! e, depois de 1...Rb8, 2.b7! Depois de 2...Ra7, 3.Rc7 e o peão coroa. 1.Rc7?? parece prender o rei preto, mas afoga: ele não tem casa e não está em xeque. 1.b7+? entrega o peão: 1...Rxb7. Com o peão de cavalo e o rei preto no canto, conte sempre as casas dele.",
-  "ex.e14": "Brancas jogam e empatam. O rei preto está ao lado do peão, e o seu ainda está atrás. Posição da Enciclopédia de Finais (Matanović, 1982), com as cores trocadas, como a Wikipedia a mostra.",
+  "ex.e14": "Brancas jogam e empatam. O rei preto está ao lado do peão, e o seu ainda está atrás. Posição da Enciclopédia de Finais (Matanović, 1982), com as cores trocadas.",
   "ex.e14.hint": "O seu rei quer ficar na frente do peão, não ao lado. E quando o peão avançar, recue em linha reta.",
   "ex.e14.solution": "1.Rd2!, na frente do peão. Depois de 1...d3, 2.Rd1!, recuando na mesma coluna; depois de 2...Re3, 3.Re1!, de frente para o rei preto; depois de 3...d2+, 4.Rd1. Agora o rei preto ou abandona o peão ou vai a d3, e aí você está afogado. 1.Re1? ou 1.Rd1? no primeiro lance perdem: o rei preto toma a frente com 1...Re3 ou 1...Rd3. 2.Rc1? no segundo lance também perde.",
   "ex.e11": "Pretas jogam e empatam. O lance natural perde.",

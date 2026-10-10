@@ -14,9 +14,6 @@
           "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
           "hints": 2,
           "ask": "line",
-          "arrows": [
-            "h8e5"
-          ],
           "marks": [
             "d6",
             "h4"
@@ -27,6 +24,7 @@
           "id": "intro",
           "fen": "7K/8/k1P5/7p/8/8/8/8 w - - 0 1",
           "arrows": [
+            "h8g7",
             "h5h1",
             "a6b7"
           ],
@@ -85,19 +83,10 @@
               "uci": "e5f4",
               "marks": [
                 "f4"
+              ],
+              "arrows": [
+                "f4h2"
               ]
-            },
-            {
-              "uci": "h4h3"
-            },
-            {
-              "uci": "f4g3"
-            },
-            {
-              "uci": "h3h2"
-            },
-            {
-              "uci": "g3h2"
             }
           ]
         },
@@ -147,10 +136,7 @@
           "id": "t_push",
           "fen": "8/8/k1P2K2/8/8/7p/8/8 w - - 0 1",
           "hints": 1,
-          "ask": "plan",
-          "arrows": [
-            "c6c7"
-          ]
+          "ask": "plan"
         },
         {
           "type": "talk",
@@ -247,48 +233,78 @@
         {
           "type": "think",
           "id": "t_marshall",
-          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
           "hints": 2,
           "ask": "plan",
-          "arrows": [
-            "b1b2"
-          ],
           "marks": [
             "a4",
             "f2"
-          ]
+          ],
+          "ref": "yatesMarshall#119"
         },
         {
           "type": "talk",
           "id": "marshall",
-          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
           "arrows": [
             "b1b2",
-            "b2c3",
-            "c3d4"
+            "b2d4"
           ],
           "marks": [
             "a4",
             "f2"
-          ]
+          ],
+          "ref": "yatesMarshall#119"
+        },
+        {
+          "type": "demo",
+          "id": "d_marshall",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "b1b2",
+              "marks": [
+                "a4"
+              ]
+            },
+            {
+              "uci": "b4a4"
+            },
+            {
+              "uci": "b2c3",
+              "arrows": [
+                "c3d4"
+              ]
+            },
+            {
+              "uci": "f2f4"
+            },
+            {
+              "uci": "c3d4"
+            }
+          ],
+          "ref": "yatesMarshall#119"
         },
         {
           "type": "talk",
           "id": "wrong",
-          "fen": "8/8/8/8/pK6/8/2k2P2/8 w - - 0 1",
-          "side": "black",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
           "arrows": [
-            "f2f4"
+            "b1c2",
+            "f2f8"
           ],
           "marks": [
             "c2"
-          ]
+          ],
+          "ref": "yatesMarshall#119"
         },
         {
           "type": "move",
           "id": "marshallMove",
-          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+          "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
           "goal": "draw",
+          "ref": "yatesMarshall#119",
           "line": [
             {
               "teach": "b1b2",
@@ -316,15 +332,116 @@
       ]
     },
     {
+      "id": "piece",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_piece",
+          "fen": "8/3P4/5b2/8/1p4K1/8/8/7k w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "d8",
+            "b4"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "piece",
+          "fen": "8/3P4/5b2/8/1p4K1/8/8/7k w - - 0 1",
+          "arrows": [
+            "g4f5",
+            "f5c2"
+          ],
+          "marks": [
+            "f6",
+            "d8"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_piece",
+          "fen": "8/3P4/5b2/8/1p4K1/8/8/7k w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "g4f5",
+              "marks": [
+                "f6"
+              ]
+            },
+            {
+              "uci": "f6e7",
+              "arrows": [
+                "e7d8"
+              ]
+            },
+            {
+              "uci": "f5e4"
+            },
+            {
+              "uci": "b4b3"
+            },
+            {
+              "uci": "e4d3"
+            },
+            {
+              "uci": "b3b2"
+            },
+            {
+              "uci": "d3c2",
+              "marks": [
+                "b1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "pieceMove",
+          "fen": "k7/2P5/4b3/8/p4K2/8/8/8 w - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "teach": "f4e5",
+              "accept": [
+                "f4e5"
+              ],
+              "reply": "e6d7"
+            },
+            {
+              "teach": "e5d4",
+              "accept": [
+                "e5d4"
+              ],
+              "reply": "a4a3"
+            },
+            {
+              "teach": "d4c3",
+              "accept": [
+                "d4c3"
+              ],
+              "reply": "a3a2"
+            },
+            {
+              "teach": "c3b2",
+              "accept": [
+                "c3b2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "limits",
       "steps": [
         {
           "type": "think",
           "id": "t_far",
-          "fen": "7K/8/k1P5/8/7p/8/8/8 w - - 0 1",
+          "fen": "8/6K1/k1P5/8/7p/8/8/8 b - - 0 1",
           "hints": 1,
           "ask": "plan",
-          "side": "black",
           "marks": [
             "h4"
           ]
@@ -332,27 +449,49 @@
         {
           "type": "talk",
           "id": "far",
-          "fen": "7K/8/k1P5/8/7p/8/8/8 w - - 0 1",
-          "side": "black",
+          "fen": "8/6K1/k1P5/8/7p/8/8/8 b - - 0 1",
           "arrows": [
-            "h4h1"
+            "h4h3"
           ],
           "marks": [
+            "h1",
             "e5",
-            "f4"
+            "d7"
           ]
         },
         {
-          "type": "talk",
-          "id": "close",
-          "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
-          "side": "black",
-          "arrows": [
-            "c6c7",
-            "a5b6"
-          ],
-          "marks": [
-            "c8"
+          "type": "demo",
+          "id": "d_far",
+          "fen": "8/6K1/k1P5/8/7p/8/8/8 b - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "h4h3"
+            },
+            {
+              "uci": "g7f6"
+            },
+            {
+              "uci": "a6b6"
+            },
+            {
+              "uci": "f6e5",
+              "arrows": [
+                "e5d6"
+              ]
+            },
+            {
+              "uci": "h3h2"
+            },
+            {
+              "uci": "e5d6"
+            },
+            {
+              "uci": "h2h1q",
+              "marks": [
+                "h1"
+              ]
+            }
           ]
         },
         {
@@ -378,12 +517,69 @@
               ]
             }
           ]
+        },
+        {
+          "type": "talk",
+          "id": "front",
+          "fen": "8/1k6/3P2K1/8/7p/8/8/8 b - - 0 1",
+          "arrows": [
+            "b7c8"
+          ],
+          "marks": [
+            "d7",
+            "d8"
+          ]
+        },
+        {
+          "type": "move",
+          "id": "frontMove",
+          "fen": "8/1k6/3P2K1/8/7p/8/8/8 b - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "b7c8",
+              "accept": [
+                "b7c8"
+              ],
+              "reply": "g6f6"
+            },
+            {
+              "teach": "c8d7",
+              "accept": [
+                "c8d7",
+                "c8d8"
+              ]
+            }
+          ]
         }
       ]
     },
     {
       "id": "recap",
       "steps": [
+        {
+          "type": "think",
+          "id": "t_close",
+          "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
+          "hints": 1,
+          "ask": "plan",
+          "marks": [
+            "c7",
+            "c8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "close",
+          "fen": "7K/8/2P5/k6p/8/8/8/8 w - - 0 1",
+          "arrows": [
+            "c6c7",
+            "a5b6"
+          ],
+          "marks": [
+            "c8"
+          ]
+        },
         {
           "type": "talk",
           "id": "rules",
@@ -392,14 +588,6 @@
             "h8e5",
             "e5d6",
             "e5h2"
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "mirror",
-          "fen": "K7/8/5P1k/p7/8/8/8/8 w - - 0 1",
-          "arrows": [
-            "a8d5"
           ]
         },
         {
@@ -749,7 +937,7 @@
     },
     {
       "id": "yatesMarshall",
-      "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 0 1",
+      "fen": "8/8/8/8/pK6/8/5P2/1k6 b - - 1 60",
       "ref": "yatesMarshall"
     }
   ],
@@ -821,15 +1009,23 @@
       "white": "Frederick Yates",
       "black": "Frank Marshall",
       "event": "Karlsbad, rodada 9",
-      "year": 1929
+      "year": 1929,
+      "url": "https://lichess.org/analysis/pgn/Nf3_Nf6_c4_e6_Nc3_d5_d4_Nbd7_Bg5_Bb4_e3_c5_cxd5_exd5_Bd3_cxd4_exd4_O-O_O-O_h6_Nxd5_hxg5_Nxb4_a5_Nc2_Nd5_Re1_Nf4_Ne3_g4_Nxg4_Nc5_Nge5_Ncxd3_Nxd3_Ne6_Nc5_Nxc5_dxc5_Qc7_Qd4_Rd8_Qh4_Bf5_Re5_Bg6_Qg3_Rac8_Rae1_Qc6_h4_Rd5_h5_Bxh5_Nh4_Rxe5_Rxe5_Bg6_Nxg6_Qxg6_Qh3_Rd8_Rh5_Kf8_Rh8+_Ke7_Qe3+_Qe6_Qg5+_Qf6_Qxf6+_gxf6_Rxd8_Kxd8_Kh2_Kd7_Kg3_Kc6_Kf4_Kxc5_Kf5_b5_Kxf6_Kc4_Kxf7_Kd3_g4_Kc2_g5_Kxb2_g6_Kxa2_g7_b4_g8=Q_a4_Ke6_b3_Kd5_b2_Kd4+_Ka3_Qf8+_Kb3_Qf3+_Ka2_Qd5+_Ka3_Qc5+_Ka2_Qc4+_Ka3_Qd3+_Ka2_Kc4_b1=Q_Qxb1+_Kxb1_Kb4_Kb2_Kxa4_Kc3_f4_Kd4#119"
     },
     {
       "id": "laskerTarrasch",
       "kind": "game",
       "white": "Emanuel Lasker",
       "black": "Siegbert Tarrasch",
-      "event": "São Petersburgo",
-      "year": 1914
+      "event": "São Petersburgo (preliminar)",
+      "year": 1914,
+      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_Nc6_Bb5_a6_Ba4_Nf6_O-O_Nxe4_d4_b5_Bb3_d5_dxe5_Be6_c3_Be7_Nbd2_O-O_Re1_Nc5_Bc2_d4_cxd4_Nxd4_Nxd4_Qxd4_Nb3_Nxb3_axb3_Qxd1_Rxd1_c5_Bd2_Rfd8_Ba5_Rxd1+_Rxd1_f6_Bc3_fxe5_Bxe5_Rd8_Rxd8+_Bxd8_f4_Kf7_Kf2_Bf6_Bd6_Bd4+_Kf3_Bd5+_Kg4_Ke6_Bf8_Kf7_Bd6_Bxg2_Bxh7_Ke6_Bf8_Kd5_Kg5_Bf6+_Kg6_Be4+_f5_Ke5_Bxg7_Bxf5+_Kf7_Bxg7_Bxf5_Kxf5_Kxg7_a5_h4_Kg4_Kg6_Kxh4_Kf5_Kg3_Ke4_Kf2_Kd5_Ke3_Kxc5_Kd3_Kxb5_Kc2_Kxa5_Kxb3#82"
+    },
+    {
+      "id": "pgnmentor",
+      "kind": "web",
+      "title": "PGN Mentor: partidas de Marshall e de Lasker",
+      "url": "https://www.pgnmentor.com/files.html"
     },
     {
       "id": "jcaselas",

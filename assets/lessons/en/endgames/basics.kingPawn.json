@@ -23,7 +23,7 @@
   "ex.e13": "White to play and win. The knight pawn is on the sixth rank, and the black king has hidden in the corner. Beware of the move that looks strongest.",
   "ex.e13.hint": "Before each move, count the black king's squares. If it has none and is not in check, it is stalemate.",
   "ex.e13.solution": "1.Kc6! and, after 1...Kb8, 2.b7! After 2...Ka7, 3.Kc7 and the pawn queens. 1.Kc7?? seems to trap the black king, but it is stalemate: no square and no check. 1.b7+? gives the pawn away: 1...Kxb7. With a knight pawn and the black king in the corner, always count its squares.",
-  "ex.e14": "White to play and draw. The black king stands beside the pawn, and yours is still behind. A position from the Encyclopedia of Chess Endings (Matanović, 1982), colours reversed, as Wikipedia shows it.",
+  "ex.e14": "White to play and draw. The black king stands beside the pawn, and yours is still behind. A position from the Encyclopedia of Chess Endings (Matanović, 1982), colours reversed.",
   "ex.e14.hint": "Your king wants to stand in front of the pawn, not beside it. And when the pawn advances, step straight back.",
   "ex.e14.solution": "1.Kd2!, in front of the pawn. After 1...d3, 2.Kd1!, stepping back on the same file; after 2...Ke3, 3.Ke1!, face to face with the black king; after 3...d2+, 4.Kd1. Now the black king either abandons the pawn or goes to d3, and you are stalemated. 1.Ke1? or 1.Kd1? on the first move lose: the black king takes the front with 1...Ke3 or 1...Kd3. 2.Kc1? on the second move loses too.",
   "ex.e11": "Black to play and draw. The natural move loses.",

@@ -116,7 +116,7 @@
   "step.raceMove.done": "Well done. Black refused to step on f5, and the e6-pawn fell at once. Had he gone to f5, you would have entered d6.",
   "step.rules": "Three rules to take with you. First: with blocked pawns, look for the trébuchet; the side to move there loses the game, and in Hooper's position it loses half a point. Second: do not step on your mine first; attack the pawn from another square, or wait next to the mine until the other king steps on his, like Alekhine. Third: the mine only decides if the other king needs his; if he defends the pawn from another square, it is a draw.",
   "step.finish": "Now play the key position to the end. Do not step on e6 too early.",
-  "ex.e08": "White to play and draw. Two pairs of blocked pawns, no spare pawn moves.",
+  "ex.e08": "White to play and draw. The g4 and g5 pawns are blocked, and pushing b5 or c5 gives the pawn away: only the kings play.",
   "ex.e08.hint": "The g4 and g5 pawns cannot move. Look at the trébuchet around b5 and c5: where are the mines?",
   "ex.e08.solution": "1.Kd3 holds (so does 1.Kb3). The mines are c4 for the white king and b6 for Black's. 1.Kc4? loses: after 1...Kb6 it is White's move and there is no pawn move to wait with. 1.b6? loses too. If the black king steps on b6 first, 2.Kc4 is the answer.",
   "ex.e10": "White to play and win. Take the pawn, then mind the mine.",

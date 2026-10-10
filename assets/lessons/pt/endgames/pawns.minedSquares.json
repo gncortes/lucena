@@ -116,7 +116,7 @@
   "step.raceMove.done": "Muito bem. As pretas não quiseram pisar em f5, e o peão de e6 caiu na hora. Se tivessem ido a f5, você entraria em d6.",
   "step.rules": "Três regras para levar. Primeira: com peões travados, procure o trebuchet; quem tem a vez ali perde a partida, e na posição de Hooper perde meio ponto. Segunda: não pise primeiro na sua mina; ataque o peão por outra casa, ou espere ao lado dela até o outro pisar na dele, como Alekhine. Terceira: a mina só decide se o outro rei precisa dela; se ele defende o peão de outra casa, é empate.",
   "step.finish": "Agora jogue a posição-chave até o fim. Não pise em e6 antes da hora.",
-  "ex.e08": "Brancas jogam e empatam. Dois pares de peões travados, nenhum lance de peão sobrando.",
+  "ex.e08": "Brancas jogam e empatam. Os peões de g4 e g5 estão travados, e avançar b5 ou c5 entrega o peão: só os reis jogam.",
   "ex.e08.hint": "Os peões de g4 e g5 não andam. Olhe o trebuchet em volta de b5 e c5: onde estão as minas?",
   "ex.e08.solution": "1.Rd3 segura (1.Rb3 também). As minas são c4 para o rei branco e b6 para o preto. 1.Rc4? perde: depois de 1...Rb6 as brancas têm a vez e nenhum lance de peão para esperar. 1.b6? também perde. Se o rei preto pisar em b6 primeiro, 2.Rc4 é a resposta.",
   "ex.e10": "Brancas jogam e ganham. Capture o peão e depois cuidado com a mina.",
