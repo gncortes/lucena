@@ -25,6 +25,7 @@ class EndgameLessonState {
     this.lessonCount = 0,
     this.nextLesson,
     this.ongoingPart,
+    this.ongoingStep = 0,
     this.moduleNumber = 0,
     this.moduleCount = 0,
   });
@@ -35,6 +36,10 @@ class EndgameLessonState {
 
   /// A parte aberta quando o aluno saiu da lição (para "Continuar").
   final String? ongoingPart;
+
+  /// O passo em que o aluno saiu da parte aberta (0: nem passou do
+  /// primeiro).
+  final int ongoingStep;
 
   /// As partes já feitas.
   Set<String> get partsDone {
@@ -115,16 +120,9 @@ class EndgameLessonState {
   /// fechou). Nulo com todos resolvidos.
   Exercise? get nextExercise {
     final lesson = this.lesson;
-    if (lesson == null) return null;
-    final open = progress.exercise?.exerciseId;
-    if (open != null && !progress.stars.containsKey(open)) {
-      final exercise = lesson.exercise(open);
-      if (exercise != null) return exercise;
-    }
-    for (final exercise in lesson.exercises) {
-      if (!progress.stars.containsKey(exercise.id)) return exercise;
-    }
-    return null;
+    return lesson == null
+        ? null
+        : EndgameLessonRules.nextExercise(lesson, progress);
   }
 
   /// As estrelas ganhas num exercício. Nula se ainda não foi resolvido.
@@ -144,6 +142,7 @@ class EndgameLessonState {
         lessonCount: lessonCount,
         nextLesson: nextLesson,
         ongoingPart: ongoingPart,
+        ongoingStep: ongoingStep,
         moduleNumber: moduleNumber,
         moduleCount: moduleCount,
       );
@@ -187,6 +186,9 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
       if (character.id == LessonCubit.viktorId) viktor = character;
     }
     final lessons = trail.lessons;
+    final checkpoint = progress.ongoing?.lessonId == lessonId
+        ? EndgameLessonRules.migrate(lesson, progress.ongoing)
+        : null;
     final module = trail.modules.firstWhere(
       (each) => each.lessons.contains(lesson),
     );
@@ -204,9 +206,8 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
         moduleCount: module.lessons.length,
         lessonCount: lessons.length,
         nextLesson: trail.after(lessonId)?.id,
-        ongoingPart: progress.ongoing?.lessonId == lessonId
-            ? EndgameLessonRules.migrate(lesson, progress.ongoing)?.part
-            : null,
+        ongoingPart: checkpoint?.part,
+        ongoingStep: checkpoint?.step ?? 0,
       ),
     );
   }

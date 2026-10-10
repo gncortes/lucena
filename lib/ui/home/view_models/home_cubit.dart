@@ -148,6 +148,7 @@ class EndgameSummary {
     required this.maxScore,
     required this.teacher,
     this.openExerciseId,
+    this.exerciseFen,
     this.exerciseNumber,
     this.exerciseCount,
     this.lessonOpen = false,
@@ -169,8 +170,13 @@ class EndgameSummary {
   final int maxScore;
   final Character? teacher;
 
-  /// O exercício aberto quando o app fechou, com a posição dele na lista.
+  /// O exercício da vez, com a posição dele na lista: o aberto quando o app
+  /// fechou ou, com o teste começado, o próximo por resolver.
   final String? openExerciseId;
+
+  /// A posição do exercício da vez, para a miniatura do cartão (que voa até
+  /// o tabuleiro dele).
+  final String? exerciseFen;
   final int? exerciseNumber;
   final int? exerciseCount;
 
@@ -348,16 +354,23 @@ class HomeCubit extends Cubit<HomeState> {
     if (lesson == null) return null;
     final texts = await _endgameLessons.texts(language);
     final done = progress.of(lesson.id);
-    final exerciseIndex = openExercise == null
-        ? -1
-        : lesson.exercises.indexWhere(
-            (each) => each.id == openExercise.$2.exerciseId,
-          );
     final lessonOpen =
         openExercise == null &&
         ongoing != null &&
         ongoing.lessonId == lesson.id &&
         !done.lessonDone;
+    // O teste começado (um exercício resolvido ou aberto antes): o cartão
+    // leva ao exercício da vez, não à tela da aula.
+    final testStarted =
+        done.lessonDone && (done.stars.isNotEmpty || done.exercise != null);
+    final exercise = openExercise != null
+        ? lesson.exercise(openExercise.$2.exerciseId)
+        : !lessonOpen && testStarted
+        ? EndgameLessonRules.nextExercise(lesson, done)
+        : null;
+    final exerciseIndex = exercise == null
+        ? -1
+        : lesson.exercises.indexOf(exercise);
     Character? teacher;
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
@@ -375,7 +388,8 @@ class HomeCubit extends Cubit<HomeState> {
       score: done.scoreOf(lesson),
       maxScore: lesson.maxScore,
       teacher: teacher,
-      openExerciseId: exerciseIndex < 0 ? null : openExercise!.$2.exerciseId,
+      openExerciseId: exercise?.id,
+      exerciseFen: exercise?.fen,
       exerciseNumber: exerciseIndex < 0 ? null : exerciseIndex + 1,
       exerciseCount: exerciseIndex < 0 ? null : lesson.exercises.length,
       lessonOpen: lessonOpen,
