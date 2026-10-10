@@ -158,7 +158,7 @@ write({
     'parts': [
         {'id': 'own', 'steps': [
             think('t_behind', BEHIND, 2, arrows=['a1a6'], marks=['a8']),
-            talk('behind', BEHIND, arrows=['a1a7'], marks=['a8']),
+            talk('behind', BEHIND, arrows=['a6a7', 'a1a7'], marks=['a8']),
             demo('d_walk', BEHIND,
                  'a7 Kf7 Kf3 Kg7 Ke4 Kf7 Kd5 Ke7 Kc6 Kd8 Kb7',
                  notes={1: {'marks': ['a8']},
@@ -202,10 +202,13 @@ write({
         {'id': 'twoPassers', 'steps': [
             ref(think('t_kramnik', KB, 2, marks=['f5', 'h4']),
                 'kramnikBeliavsky1993#116'),
-            ref(talk('kramnik', KB_ERR, arrows=['g4g3', 'b1a1']),
-                'kramnikBeliavsky1993#117'),
             ref(talk('rb8', KB, arrows=['b1b8', 'b8g8']),
                 'kramnikBeliavsky1993#116'),
+            ref(demo('d_kramnik', KB_ERR, 'Rg3+ Kf2 Kg4 Rb1 h3 Rb8 Rg2+',
+                     side='black',
+                     notes={3: {'marks': ['f5', 'h4']},
+                            5: {'arrows': ['h3h1']}}),
+                'kramnikBeliavsky1993#117'),
             ref(move('kramnikMove', KB, 'Rb8 h3 Rg8+ Kh4 Rh8+',
                      accept={1: ['Rb8', 'Rb7', 'Rb6', 'Rc1'], 2: 'hold',
                              3: 'hold'}, goal='draw'),
