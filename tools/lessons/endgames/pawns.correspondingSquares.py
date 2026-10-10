@@ -146,7 +146,7 @@ write({
     'skills': ['pawns.correspondingSquares'],
     'parts': [
         {'id': 'pair', 'steps': [
-            think('t_pair', PAIR, 2, marks=['d6', 'd8']),
+            think('t_pair', PAIR, 2, marks=['d8']),
             talk('pair', PAIR, arrows=['c5d6', 'c5b6'],
                  marks=['d6', 'd8', 'b6', 'b8']),
             demo('d_pairWrong', PAIR_WRONG, 'c7+ Kc8 Kc6', goal='draw',
