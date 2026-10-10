@@ -471,7 +471,11 @@
     "A waiting move, when you need one."
   ],
   "graduation.twoBishops.play2.done": "You did it. Mate with two bishops.",
-  "coach.thinkRight": ["That's it, correct!", "Exactly, that was the move!", "Correct: you found it yourself."],
+  "coach.thinkRight": [
+    "That's it, correct!",
+    "Exactly, that was the move!",
+    "Correct: you found it yourself."
+  ],
   "coach.praise": [
     "Well done!",
     "Excellent.",
@@ -495,6 +499,24 @@
     "Not that one. Think a little more.",
     "Almost. Look again.",
     "Calm. Everyone makes mistakes, even grandmasters."
+  ],
+  "coach.illegal.rook": [
+    "The rook doesn't move like that: only in straight lines, up, down or sideways."
+  ],
+  "coach.illegal.bishop": [
+    "The bishop doesn't move like that: only diagonally."
+  ],
+  "coach.illegal.knight": [
+    "The knight doesn't move like that: it jumps in an L."
+  ],
+  "coach.illegal.king": [
+    "The king doesn't move like that: one square at a time, in any direction."
+  ],
+  "coach.illegal.queen": [
+    "The queen doesn't move like that: in straight lines or diagonally."
+  ],
+  "coach.illegal.pawn": [
+    "The pawn doesn't move like that: it only goes forward, and captures diagonally."
   ],
   "coach.hint": [
     "Look at the arrow. Why this move?",

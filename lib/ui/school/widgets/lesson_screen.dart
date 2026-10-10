@@ -80,6 +80,9 @@ class _LessonScreenState extends State<LessonScreen>
   // A casa ou o lance tocado na fala, por um instante no tabuleiro.
   final _flash = SpeechFlash();
 
+  // Os toques no passo de estrelas, para achar o lance proibido.
+  final _illegal = IllegalStarMoves();
+
   late final _shake = AnimationController(
     vsync: this,
     duration: AppMotion.component,
@@ -272,6 +275,7 @@ class _LessonScreenState extends State<LessonScreen>
       _setMode(context, target, animate: previous.current != null);
     }
     if (state.step != previous.step) {
+      _illegal.reset();
       if (_sheet.isAttached) {
         _sheet.animateTo(
           _sheetMin,
@@ -328,7 +332,8 @@ class _LessonScreenState extends State<LessonScreen>
             key: LessonKeys.screen,
             appBar: AppBar(
               // Só o título (da parte, na aula em partes, ou da aula) e, no
-              // canto, onde ela está: "1/5".
+              // canto da aula em partes, onde ela está: "1/5". Na escola, o
+              // iniciante não vê quantas aulas faltam.
               // Na formatura, a barra fica limpa: não é mais uma aula.
               title: lesson == null || state.courseFinished
                   ? null
@@ -342,25 +347,20 @@ class _LessonScreenState extends State<LessonScreen>
                       overflow: TextOverflow.ellipsis,
                     ),
               actions: [
-                if (lesson != null && !state.courseFinished)
+                if (lesson != null &&
+                    !state.courseFinished &&
+                    state.part != null)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(end: 16),
                     child: Center(
                       child: Semantics(
-                        label: state.part == null
-                            ? l10n.lessonNumber(
-                                state.lessonNumber,
-                                state.lessonCount,
-                              )
-                            : l10n.homeEndgamePart(
-                                state.partNumber,
-                                state.partCount,
-                              ),
+                        label: l10n.homeEndgamePart(
+                          state.partNumber,
+                          state.partCount,
+                        ),
                         excludeSemantics: true,
                         child: Text(
-                          state.part == null
-                              ? '${state.lessonNumber}/${state.lessonCount}'
-                              : '${state.partNumber}/${state.partCount}',
+                          '${state.partNumber}/${state.partCount}',
                           key: LessonKeys.place,
                           style: Theme.of(context).textTheme.labelLarge
                               ?.copyWith(
@@ -529,14 +529,22 @@ class _LessonScreenState extends State<LessonScreen>
     return LayoutBuilder(
       builder: (context, box) {
         final area = Size(box.maxWidth, box.maxHeight);
+        // Na escola, o tabuleiro fica no mesmo lugar o mais possível: no
+        // centro do espaço livre resolvendo e, explicando, o mais perto
+        // disso que a folha deixar.
+        final school = !state.endgame;
         final explaining = ExerciseLayout.explainingRect(
           area,
           sheetRoom: _sheetRoom,
+          lowered: school,
         );
+        // A folha fechada começa um pouco abaixo do tabuleiro: a fileira de
+        // baixo (e os anéis nela) fica inteira à vista.
         final minSheet =
-            ((area.height - explaining.height - ExerciseLayout.gutter) /
-                    area.height)
-                .clamp(0.12, 0.9);
+            ((area.height - explaining.bottom - _sheetGap) / area.height).clamp(
+              0.12,
+              0.9,
+            );
         _sheetMin = minSheet;
         return AnimatedBuilder(
           animation: _mode,
@@ -546,10 +554,14 @@ class _LessonScreenState extends State<LessonScreen>
               delegate: _ExerciseLayoutDelegate(
                 header: _header..stepKey = '${state.lesson?.id}.${step.id}',
                 // A área vai até o fim da tela (menos a margem do sistema):
-                // o centro da tela, nas coordenadas dela.
-                centerY:
-                    _screen.height / 2 -
-                    (_screen.height - _bottomInset - area.height),
+                // o centro da tela, nas coordenadas dela. Na escola, o
+                // tabuleiro fica no meio do espaço livre entre o enunciado
+                // e o rodapé.
+                centerY: school
+                    ? null
+                    : _screen.height / 2 -
+                          (_screen.height - _bottomInset - area.height),
+                lowered: school,
                 mode: _mode,
                 sheet: _sheetSize,
                 footer: _actionsHeight,
@@ -778,24 +790,42 @@ class _LessonScreenState extends State<LessonScreen>
         // O destaque da fala muda sozinho: só o tabuleiro é refeito.
         child: ListenableBuilder(
           listenable: _flash,
-          builder: (context, _) => Chessboard(
-            key: LessonKeys.board,
-            size: size,
-            controller: board,
-            // Ler o tabuleiro sem as letras e os números da borda.
-            settings: step is TapStep && !step.coordinates
-                ? boardSettings.copyWith(coordinates: false).chessground
-                : boardSettings.chessground,
-            orientation: step.side,
-            // O destaque da fala, só na posição em que foi tocado.
-            shapes: {...shapes, ..._flash.shapesFor(state.fen ?? step.fen)},
-            onMove: (move, {viaDragAndDrop}) =>
-                context.read<LessonCubit>().play(move),
-            // No passo de tocar, o toque na casa é a resposta.
-            onTouchedSquare: step is TapStep
-                ? (square) => context.read<LessonCubit>().tap(square.name)
-                : null,
-          ),
+          builder: (context, _) {
+            final chessboard = Chessboard(
+              key: LessonKeys.board,
+              size: size,
+              controller: board,
+              // Ler o tabuleiro sem as letras e os números da borda.
+              settings: step is TapStep && !step.coordinates
+                  ? boardSettings.copyWith(coordinates: false).chessground
+                  : boardSettings.chessground,
+              orientation: step.side,
+              // O destaque da fala, só na posição em que foi tocado.
+              shapes: {...shapes, ..._flash.shapesFor(state.fen ?? step.fen)},
+              onMove: (move, {viaDragAndDrop}) =>
+                  context.read<LessonCubit>().play(move),
+              // No passo de tocar, o toque na casa é a resposta.
+              onTouchedSquare: step is TapStep
+                  ? (square) => context.read<LessonCubit>().tap(square.name)
+                  : null,
+            );
+            if (step is! StarsStep) return chessboard;
+            // O tabuleiro ignora o lance proibido em silêncio: os toques
+            // são lidos aqui para o Viktor explicar como a peça anda.
+            Square? at(Offset local) {
+              final border = chessboard.settings.border?.width ?? 0;
+              return chessboard.offsetSquare(local - Offset(border, border));
+            }
+
+            return Listener(
+              onPointerDown: (event) =>
+                  _illegal.down(context, at(event.localPosition)),
+              onPointerUp: (event) =>
+                  _illegal.up(context, at(event.localPosition)),
+              onPointerCancel: (_) => _illegal.reset(),
+              child: chessboard,
+            );
+          },
         ),
       ),
     );
@@ -1125,7 +1155,10 @@ class _LessonScreenState extends State<LessonScreen>
             )
           else
             const Spacer(),
-          StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
+          // Na escola, sem cronômetro: o iniciante aprende sem pressa (os
+          // desafios das estrelas, contra o relógio, têm o deles).
+          if (state.endgame)
+            StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
         ],
       ),
     );
@@ -1222,6 +1255,9 @@ class _LessonScreenState extends State<LessonScreen>
   /// umas 3 linhas, mais os botões.
   static const _sheetRoom = 280.0;
 
+  /// O vão entre o tabuleiro e a folha fechada.
+  static const _sheetGap = AppSpacing.sm;
+
   /// Até onde a folha da fala sobe: quase a tela toda.
   static const _sheetMax = 0.94;
 }
@@ -1288,14 +1324,16 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
     required this.sheet,
     required this.footer,
     required this.sheetRoom,
+    required this.lowered,
   }) : super(relayout: Listenable.merge([mode, sheet]));
 
   final HeaderMemo header;
-  final double centerY;
+  final double? centerY;
   final Animation<double> mode;
   final ValueListenable<double?> sheet;
   final double footer;
   final double sheetRoom;
+  final bool lowered;
 
   @override
   void performLayout(Size size) {
@@ -1333,6 +1371,7 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
     final explaining = ExerciseLayout.explainingRect(
       size,
       sheetRoom: sheetRoom,
+      lowered: lowered,
     );
     final rect = Rect.lerp(solving, explaining, t)!;
     layoutChild(_Slot.board, BoxConstraints.tight(rect.size));
@@ -1361,5 +1400,6 @@ class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
       old.mode != mode ||
       old.sheet != sheet ||
       old.footer != footer ||
-      old.sheetRoom != sheetRoom;
+      old.sheetRoom != sheetRoom ||
+      old.lowered != lowered;
 }

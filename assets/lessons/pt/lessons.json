@@ -471,7 +471,11 @@
     "Lance de espera, quando precisar."
   ],
   "graduation.twoBishops.play2.done": "Você conseguiu. Mate com dois bispos.",
-  "coach.thinkRight": ["Isso, correto!", "Exato, era esse o lance!", "Correto: você achou sozinho."],
+  "coach.thinkRight": [
+    "Isso, correto!",
+    "Exato, era esse o lance!",
+    "Correto: você achou sozinho."
+  ],
   "coach.praise": [
     "Muito bem!",
     "Excelente.",
@@ -495,6 +499,24 @@
     "Não é esse. Pense mais um pouco.",
     "Quase. Olhe de novo.",
     "Calma. Todo mundo erra, até os grandes mestres."
+  ],
+  "coach.illegal.rook": [
+    "A torre não anda assim: só em linha reta, para cima, para baixo ou para os lados."
+  ],
+  "coach.illegal.bishop": [
+    "O bispo não anda assim: só na diagonal."
+  ],
+  "coach.illegal.knight": [
+    "O cavalo não anda assim: ele salta em L."
+  ],
+  "coach.illegal.king": [
+    "O rei não anda assim: uma casa por vez, em qualquer direção."
+  ],
+  "coach.illegal.queen": [
+    "A dama não anda assim: em linha reta ou na diagonal."
+  ],
+  "coach.illegal.pawn": [
+    "O peão não anda assim: ele só vai para a frente, e captura na diagonal."
   ],
   "coach.hint": [
     "Observe a seta. Por que este lance?",

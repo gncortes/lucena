@@ -805,6 +805,26 @@ class LessonCubit extends Cubit<LessonState> {
     }
   }
 
+  /// Num passo de estrelas, o aluno levou a peça de [from] para [to], aonde
+  /// ela não anda (o tabuleiro só ignora o lance): a peça fica onde estava e
+  /// o Viktor diz, curto, como ela anda. Soltar em cima de outra peça do
+  /// aluno é só escolher outra peça: sem fala.
+  void refuseStar(Square from, Square to) {
+    final step = state.current;
+    if (step is! StarsStep || !state.interactive || from == to) return;
+    final board = LessonRules.starsBoard(state.fen!);
+    final piece = board.pieceAt(from);
+    if (piece == null || piece.color != step.side) return;
+    if (board.pieceAt(to)?.color == step.side) return;
+    if (LessonRules.moveStar(board, step.side, from, to) != null) return;
+    _refusal =
+        _pick('coach.illegal.${piece.role.name}') ?? _pick('coach.wrong');
+    emit(state.copyWith(speech: _refusal, emotion: Emotion.focused));
+  }
+
+  // A última fala de lance proibido: o lance certo seguinte a tira.
+  String? _refusal;
+
   Future<void> _playStar(StarsStep step, Move move) async {
     if (move is! NormalMove) return;
     final board = LessonRules.starsBoard(state.fen!);
@@ -829,6 +849,8 @@ class LessonCubit extends Cubit<LessonState> {
             ? state.texts.done(_lessonId, step.id) ?? _pick('coach.praise')
             : collected.length > state.collected.length
             ? _pick('coach.star')
+            : state.speech == _refusal
+            ? state.texts.step(_lessonId, step.id) ?? state.speech
             : state.speech,
         emotion: allDone ? Emotion.happy : state.emotion,
       ),

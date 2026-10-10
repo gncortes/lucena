@@ -60,10 +60,9 @@ class SchoolScreen extends StatelessWidget {
                   text: greeting,
                   avatarSize: 56,
                 ),
-              const SizedBox(height: 16),
-              _Overview(state: state),
+              // Sem a contagem de aulas: o iniciante não vê quanto falta.
               if (next != null) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 FilledButton.icon(
                   key: SchoolKeys.continueButton,
                   style: FilledButton.styleFrom(
@@ -126,40 +125,6 @@ class SchoolScreen extends StatelessWidget {
   }
 }
 
-/// Quantas aulas foram feitas, numa barra.
-class _Overview extends StatelessWidget {
-  const _Overview({required this.state});
-
-  final SchoolState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final total = state.total;
-    return Row(
-      children: [
-        Expanded(
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(end: total == 0 ? 0 : state.done / total),
-            duration: AppMotion.screen,
-            curve: AppMotion.enter,
-            builder: (context, value, _) => LinearProgressIndicator(
-              value: value,
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(AppShape.small),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          context.l10n.schoolLessonsDone(state.done, total),
-          style: theme.textTheme.labelLarge,
-        ),
-      ],
-    );
-  }
-}
-
 class _ModuleSection extends StatelessWidget {
   const _ModuleSection({
     required this.index,
@@ -175,9 +140,6 @@ class _ModuleSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final done = module.lessons
-        .where((lesson) => state.completed.contains(lesson.id))
-        .length;
     return Column(
       key: SchoolKeys.module(module.id),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -209,12 +171,6 @@ class _ModuleSection extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
-              Text(
-                '$done/${module.lessons.length}',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.onPrimaryContainer,
                 ),
               ),
             ],
