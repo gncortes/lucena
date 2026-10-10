@@ -73,6 +73,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 
 **Setas (T62):** caminho reto é uma seta só, nunca várias emendadas.
 
+**Primeira seta do `think` (2.ª passada da #22):** se o aluno joga no `think` o lance da primeira seta do `talk` seguinte (ou o 1.º lance do `demo`/`move` seguinte), o app diz "correto" (`lesson_cubit._guessed`); a primeira seta desse `talk` tem de ser o lance certo, nunca o erro que a parte ensina a evitar. Conferir com `tools/lessons/check_think_arrows.py`.
+
 **Régua mínima: B.** Se uma aula do Opus terminar o ciclo (reescrita + 2.ª passada + correções) ainda em C, não se commita como feita: anota-se "C no Opus → Fable" no andamento e ela vai para a fila do Fable.
 
 | # | id | nota | ideias sem parte | modelo | o que falta (triagem) | andamento |
@@ -99,8 +101,8 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 19 | rook.cutOff | C | 2 (+2) | Opus | parte com Uhlmann–Gulko ou Pein–Ward; tempo do peão; exceções no resumo | **feita: B**, commitada (lote2); Uhlmann–Gulko 1978 com link, Pein–Ward como referência, Chéron; `imperfect` repete o e07 espelhado (estrela?) e a solução do e12 conta "quatro colunas" com outra conta: Gabriel |
 | 20 | rook.frontal | C | 1 (+2) | Opus | partida real; corte lateral (Th5!) | **feita: B**, commitada (lote2); Tal–Zaitsev 1968, Arencibia–Vladimirov 1991, Pein–Ward 1997 com link; `side` perto do e08 (aceitável); check_numbering acusa falso positivo com "Depois de" maiúsculo e vários pares |
 | 21 | rookPawns.vsTwo | C | 8 | Fable | ritmo bom, mas os oito exercícios cobram o que a lição não ensina | |
-| 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | |
-| 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | sessão lucena-8f (depois da #25) |
+| 22 | pawns.minedSquares | C | 2 | Opus | zugzwang de meio ponto (Hooper); quando a mina não decide; trebuchet | **feita: A**, commitada (lote2); Voigt–Lasker 1892, Alekhine–Yates 1910 com link; enunciado do e08 diz "peões travados" (b5/c5 não se travam): Gabriel |
+| 23 | pawns.spareTempi | C | 1 | Opus | Bischoff–Nunn com link; defesa (Maiselis); `early` em demo | **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 928548d2); Nunn–Bischoff 1986 |
 | 24 | pawns.correspondingSquares | B | 1 (+1) | Fable | numeração em demo (um par por fala); triangulação separada; Rösch–Mast | |
 | 25 | queen.vsPawn | C | 3 | Opus | sem demo; peão de bispo na 6.ª (Alatortsev), deixar coroar com mate, cravada || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 26 | queen.vsPawn.draws | C | 4 | Opus | bloqueio calmo, troca na coroação, subpromoção, peão a mais; 14 falas vazias; ~52 min || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 23856405); Petrosian–Fischer 1958, Van Wely–Leko 1996 |
