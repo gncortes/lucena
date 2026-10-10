@@ -160,7 +160,7 @@ src = {
             {'type': 'think', 'id': 't_defense', 'fen': DEF,
              'hints': 3, 'ask': 'plan', 'marks': ['c4', 'h4']},
             {'type': 'talk', 'id': 'defenseWhy', 'fen': DEF,
-             'arrows': ['d5e4', 'e4f3', 'f3g2'], 'marks': ['h4', 'e1']},
+             'arrows': ['d5g2'], 'marks': ['h4', 'e1']},
             {'type': 'talk', 'id': 'defenseMistake', 'fen': DEF_MISTAKE,
              'side': 'white', 'arrows': ['h4h1', 'c4e2'], 'marks': ['h1']},
             demo('d_defense', DEF, 'draw', 'Ke4 h3 Kf3 h2 Kg2 Kf5 Kxh2',

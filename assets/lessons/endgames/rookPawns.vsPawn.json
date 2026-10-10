@@ -447,8 +447,7 @@
           "id": "tempoGood",
           "fen": "7R/5K2/8/3p4/8/4k3/8/8 w - - 0 1",
           "arrows": [
-            "h8e8",
-            "e8d8"
+            "h8d8"
           ],
           "marks": [
             "e3"
@@ -895,9 +894,7 @@
           "id": "staircaseIdea",
           "fen": "8/2P5/1K1r3k/8/8/8/8/8 w - - 0 1",
           "arrows": [
-            "b6b5",
-            "b5b4",
-            "b4b3",
+            "b6b3",
             "b3c2"
           ],
           "marks": [
