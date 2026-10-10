@@ -3848,14 +3848,31 @@
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
-  "endgameContinuePart": "Continue: part {part}",
-  "@endgameContinuePart": {
-    "description": "Fixed bottom button on the endgame lesson screen: continue with the recommended part.",
+  "endgameStartLesson": "Start the lesson",
+  "@endgameStartLesson": {
+    "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
+  },
+  "endgameResumePart": "Resume part {part}",
+  "@endgameResumePart": {
+    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
     "placeholders": {
       "part": {
         "type": "int"
       }
     }
+  },
+  "endgameNextPart": "Go to part {part}",
+  "@endgameNextPart": {
+    "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameResumeTest": "Continue the final test",
+  "@endgameResumeTest": {
+    "description": "Fixed bottom button on the endgame lesson screen: continue the final test already started."
   },
   "endgameContinueTest": "Take the final test",
   "@endgameContinueTest": {
@@ -3898,7 +3915,16 @@
         "type": "String"
       }
     }
+  },  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
+  "@lessonThinkCalm": {
+    "description": "Teacher's short prompt in a think step, after who moves: take your time and find the winning sequence ('line') or the idea of the position (other). The step's own context comes later, in the explanation.",
+    "placeholders": {
+      "ask": {
+        "type": "String"
+      }
+    }
   },
+
   "endgameTestCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
   "@endgameTestCount": {
     "description": "Final test card title: number of exercises.",

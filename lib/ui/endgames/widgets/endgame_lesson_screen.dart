@@ -527,9 +527,18 @@ class _ContinueBar extends StatelessWidget {
     final String label;
     final VoidCallback onPressed;
     if (part != null) {
-      label = l10n.endgameContinuePart(
-        lesson.lesson.sections.indexOf(part) + 1,
-      );
+      final number = lesson.lesson.sections.indexOf(part) + 1;
+      // A parte começada (passou do primeiro passo) é retomada; sem nada
+      // feito, a aula começa; senão, segue para a próxima parte.
+      final resume =
+          state.lessonOngoing &&
+          state.ongoingStep > 0 &&
+          (lesson.lesson.parts.isEmpty || state.ongoingPart == part.id);
+      label = resume
+          ? l10n.endgameResumePart(number)
+          : state.partsDone.isEmpty
+          ? l10n.endgameStartLesson
+          : l10n.endgameNextPart(number);
       onPressed = () => context.push(
         Routes.endgameLessonSteps(
           lesson.id,
@@ -537,7 +546,9 @@ class _ContinueBar extends StatelessWidget {
         ),
       );
     } else if (exercise != null) {
-      label = l10n.endgameContinueTest;
+      final started =
+          state.progress.stars.isNotEmpty || state.progress.exercise != null;
+      label = started ? l10n.endgameResumeTest : l10n.endgameContinueTest;
       onPressed = () => context.push(Routes.endgameExercisesIntro(lesson.id));
     } else {
       label = l10n.endgameTrain;
