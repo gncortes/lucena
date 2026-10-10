@@ -31,6 +31,11 @@ ideia que nenhuma parte ensinava.
    **Lance de partida sempre com o número** (pedido do Gabriel, T60): ao comentar uma partida, o lance jogado
    e as variantes saem numerados como nos livros: "Capablanca jogou 39.f5?, e depois de 39...gxf5 40.h5...",
    "41.h6!! ganha", "41.g6? hxg6 42.h6". Nunca "jogou f5" solto. A numeração sai do PGN do `url`.
+   **Vale para toda fala, não só partida** (pedido do Gabriel, 2026-10-09): lance citado em passo, demo, enunciado, dica ou
+   solução sai numerado ("1.Rf7! fecha g8; depois de 1...Rh7, 2.e4 corre"; "Com 1.Rc4? ..."). Casa solta não.
+   - Posição de **partida real** (com link para abrir no Lichess): a numeração é a do lance real da partida (tirada do PGN).
+   - Posição **montada ou de estudo**: começa em 1.
+   O revisor reprova a lição com lance sem número ou com número que não bate com a partida.
    **O nome da partida final é "desafio prático"**: nunca "partida contra a máquina" nas falas.
 5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
