@@ -18,6 +18,9 @@ abstract final class PlacementKeys {
   static const board = Key('placement.board');
   static const confirm = Key('placement.confirm');
   static const dontKnow = Key('placement.dontKnow');
+
+  /// O rodapé com as respostas, embaixo do tabuleiro.
+  static const answers = Key('placement.answers');
   static Key option(String option) => Key('placement.option.$option');
 
   /// No resultado.

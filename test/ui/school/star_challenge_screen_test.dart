@@ -178,15 +178,20 @@ void main() {
     expect(text(StarChallengeKeys.collected), '13 points');
   });
 
-  testWidgets('o tabuleiro fica com o centro no centro da tela', (
+  testWidgets('o tabuleiro fica com o centro no centro do espaço útil, '
+      'entre a barra do app e o fim da tela, no convite e jogando', (
     tester,
   ) async {
     final cubit = await pump(tester);
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    final appBar = tester.getRect(find.byType(AppBar));
+    final center = (appBar.bottom + screen.height) / 2;
+    final ready = tester.getRect(find.byKey(StarChallengeKeys.board));
+    expect(ready.center.dy, closeTo(center, 1));
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
     final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
-    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
-    expect(rect.center.dy, closeTo(screen.height / 2, 1));
+    expect(rect, ready);
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();
