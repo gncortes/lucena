@@ -83,7 +83,7 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 7 | rook.shortSide | D | 4 | Opus | sem demo; troca de flanco e torre que tapa os xeques; Carlsen–Aronian | **feita: A**, commitada (lote2); Ward–Arkell 1994, Aronian–Carlsen 2006; e08/e12 parecidos, e10 e e12 solução, demos `d_blockF`/`flankNow` encostados no e09/e12: Gabriel |
 | 8 | rookPawns.vsPawn | D | 4 (+2) | Fable | sem demo; escada do rei, afogamento, xeque que não ganha tempo; Saavedra, Kamsky–Bacrot | |
 | 9 | pawns.race | C | 4–5 | Fable | rei que barra, xeques que ganham a dama, coroar com xeque, tapar a linha; Petrosian–Fischer | |
-| 10 | basics.rookMate | C | 2 | Opus | sem demo, falas empilham variantes; rei que corre, tempo da torre atacada | |
+| 10 | basics.rookMate | C | 2 | Opus | sem demo, falas empilham variantes; rei que corre, tempo da torre atacada | **feita: A**, commitada (lote2); Nakamura–Iniyan 2026, Khagan Ahmad–Nakamura 2025, Capablanca (Gutenberg); práticas `quietMove`/`stalemateMove`/`farMove`/`runMove` perto de e12/e14/e17/e16: Gabriel |
 | 11 | basics.queenMate | C | 2 (+1) | Opus | sem demo, partes com 2–3 ideias; lance de espera, lado da caixa | |
 | 12 | pawns.outsidePasser | C | 3 | Opus | Fischer–Larsen real com link; defesa contra o distante; corrida depois da isca | |
 | 13 | pawns.protectedPasser | C | 3 (+2) | Opus | dois passados e a conta do quadrado; Dedrle; dividir `limits`; partida | |
