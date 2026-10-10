@@ -1935,3 +1935,67 @@ section {
 .legal strong {
   color: var(--ink);
 }
+
+/* ---------- Telas em sequência (às cegas) ---------- */
+
+.feature--wide {
+  grid-template-columns: 1fr !important;
+}
+
+.feature--wide .feature__text {
+  max-width: 720px;
+}
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: shot;
+}
+
+.shots li {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  counter-increment: shot;
+}
+
+.shots .phone {
+  max-width: 240px;
+  padding: 6px;
+  border-radius: 30px;
+}
+
+.shots .phone__screen {
+  border-radius: 25px;
+}
+
+.shots span {
+  font-weight: 650;
+  text-align: center;
+}
+
+.shots span::before {
+  content: counter(shot) '. ';
+  color: var(--primary);
+}
+
+@media (min-width: 860px) {
+  .shots {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .shots .phone {
+    padding: 9px;
+    border-radius: 44px;
+  }
+  .shots .phone__screen {
+    border-radius: 35px;
+  }
+}
+
+.feature-duo--single {
+  grid-template-columns: 1fr !important;
+}

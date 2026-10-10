@@ -25,6 +25,10 @@ export const stills = {
   achievements: 'conquistas',
   record: 'novo-recorde',
   gameEnd: 'conclusao-partida',
+  blindMode: 'cegas-escolha',
+  blindBoard: 'cegas-tabuleiro',
+  blindSquares: 'cegas-so-as-casas',
+  blindNone: 'cegas-sem-tabuleiro',
 } as const;
 
 export type Clip = keyof typeof clips;

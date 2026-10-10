@@ -142,8 +142,8 @@ const es: Dictionary = {
       },
       blind: {
         title: 'A ciegas',
-        body: 'Juega sin ver las piezas: di, escribe o toca tus jugadas. Escucha dónde están las piezas antes de empezar, pide que repita la jugada del rival y elige cuánto quieres ver. Tu voz la reconoce el propio móvil y no se graba. Todavía es experimental.',
-        bullets: ['Con tablero, solo con las casillas o sin tablero', 'Jugadas por voz, teclado o toque'],
+        body: 'Entrena la visualización: juega con los ojos cerrados contra Maia o Stockfish, diciendo las jugadas en voz alta. Antes de empezar, escucha dónde están las piezas; durante la partida, pide que se repita la jugada del rival. En Nueva partida, elige el modo A ciegas y, arriba en la partida, cuánto quieres ver. Todavía es experimental.',
+        bullets: ['Contra Maia o Stockfish', 'Jugadas por voz, teclado o toque', 'Con tablero, solo casillas o sin tablero'],
       },
       voice: {
         title: 'El profesor te habla',
@@ -194,6 +194,7 @@ const es: Dictionary = {
         { title: 'Ponlo a prueba', body: 'Juegas la posición hasta el final contra el motor.' },
       ],
     },
+    blindShots: ['Nueva partida: modo A ciegas', 'Tablero', 'Solo casillas', 'Sin tablero'],
   },
   levels: {
     kicker: 'Para todos los niveles',
@@ -280,6 +281,10 @@ const es: Dictionary = {
     privacy: 'Política de privacidad',
   },
   media: {
+    blindMode: 'Nueva partida en Lucena: la elección entre el modo normal y a ciegas',
+    blindBoard: 'Partida a ciegas con el tablero a la vista',
+    blindSquares: 'Partida a ciegas solo con casillas: la cuadrícula y las coordenadas, sin piezas',
+    blindNone: 'Partida a ciegas sin tablero, solo con las jugadas',
     hero: 'Elección del nivel de Maia y del ritmo, y la partida contra ella en Lucena',
     school: 'Primera clase de la escuela de Viktor en Lucena: la torre y las estrellas',
     placement: 'Prueba de nivel de Lucena: una pregunta a la vez, con la opción "No lo sé"',

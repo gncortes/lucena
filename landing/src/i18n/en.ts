@@ -142,8 +142,8 @@ const en: Dictionary = {
       },
       blind: {
         title: 'Blindfold',
-        body: 'Play without seeing the pieces: speak, type or tap your moves. Hear where the pieces are before you start, ask for the opponent\'s move again and choose how much you want to see. Your voice is recognised by the phone itself and is not recorded. It is still experimental.',
-        bullets: ['With the board, just the squares or no board', 'Moves by voice, keyboard or tap'],
+        body: 'Train your visualization: play with your eyes closed against Maia or Stockfish, saying your moves out loud. Before you start, hear where the pieces are; during the game, ask to repeat the opponent\'s move. In New game, pick Blindfold mode and, at the top of the game, how much you want to see. Still experimental.',
+        bullets: ['Against Maia or Stockfish', 'Moves by voice, keyboard or tap', 'With the board, squares only or no board'],
       },
       voice: {
         title: 'The teacher talks to you',
@@ -194,6 +194,7 @@ const en: Dictionary = {
         { title: 'Test it in practice', body: 'You play the position to the end against the engine.' },
       ],
     },
+    blindShots: ['New game: Blindfold mode', 'Board', 'Squares only', 'No board'],
   },
   levels: {
     kicker: 'For every level',
@@ -280,6 +281,10 @@ const en: Dictionary = {
     privacy: 'Privacy policy',
   },
   media: {
+    blindMode: 'New game in Lucena: choosing between normal and blindfold mode',
+    blindBoard: 'A blindfold game with the board visible',
+    blindSquares: 'A blindfold game with squares only: the grid and coordinates, no pieces',
+    blindNone: 'A blindfold game with no board, only the moves',
     hero: 'Choosing the Maia level and time control, then playing against it in Lucena',
     school: "The first lesson in Viktor's school in Lucena: the rook and the stars",
     placement: 'The Lucena level test: one question at a time, with an "I don\'t know" option',

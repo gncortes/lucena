@@ -143,8 +143,8 @@ const pt: Dictionary = {
       },
       blind: {
         title: 'Às cegas',
-        body: 'Jogue sem ver as peças: fale, digite ou toque os lances. Ouça onde estão as peças antes de começar, peça para repetir o lance do adversário e escolha quanto quer ver. A voz é reconhecida pelo próprio aparelho e não é gravada. Ainda é experimental.',
-        bullets: ['Com tabuleiro, só com as casas ou sem tabuleiro', 'Lances por voz, teclado ou toque'],
+        body: 'Treine a visualização: jogue de olhos fechados contra o Maia ou o Stockfish, falando os lances em voz alta. Antes de começar, ouça onde estão as peças; durante a partida, peça para repetir o lance do adversário. Na Nova partida, escolha o modo Às cegas e, no topo da partida, quanto quer ver. Ainda é experimental.',
+        bullets: ['Contra o Maia ou o Stockfish', 'Lances por voz, teclado ou toque', 'Com tabuleiro, só com as casas ou sem tabuleiro'],
       },
       voice: {
         title: 'O professor fala com você',
@@ -195,6 +195,7 @@ const pt: Dictionary = {
         { title: 'Teste na prática', body: 'Você joga a posição até o fim contra o motor.' },
       ],
     },
+    blindShots: ['Nova partida: modo Às cegas', 'Tabuleiro', 'Só as casas', 'Sem tabuleiro'],
   },
   levels: {
     kicker: 'Para todos os níveis',
@@ -281,6 +282,10 @@ const pt: Dictionary = {
     privacy: 'Política de privacidade',
   },
   media: {
+    blindMode: 'Nova partida no Lucena: a escolha entre o modo normal e o às cegas',
+    blindBoard: 'Partida às cegas com o tabuleiro à vista',
+    blindSquares: 'Partida às cegas só com as casas: a grade e as coordenadas, sem as peças',
+    blindNone: 'Partida às cegas sem tabuleiro, só com os lances',
     hero: 'Escolha do nível do Maia e do ritmo, e a partida contra ele no Lucena',
     school: 'Primeira aula da escola do Viktor no Lucena: a torre e as estrelas',
     placement: 'Teste de nível do Lucena: uma pergunta de cada vez, com a opção "Não sei"',
