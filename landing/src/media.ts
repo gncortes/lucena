@@ -4,19 +4,27 @@
 // português até haver as de inglês.
 export const clips = {
   hero: 'maia-partida',
-  school: 'escola-torre',
+  school: 'escola-pecas',
+  placement: 'teste-nivel',
+  lesson: 'aula-capitulo',
   journey: 'jornada',
-  queenRook: 'aula-dama-vs-torre',
   speedrun: 'speedrun',
+  marathon: 'maratona',
 } as const;
 
 export const stills = {
   theme: 'tema',
+  home: 'tema-escuro',
   journeyChallenge: 'desafio-jornada',
-  exercise: 'exercicio',
-  queenRookLesson: 'aula-dama-vs-torre-2',
-  shortSide: 'aula-lado-curto',
+  placementResult: 'resultado-teste-nivel',
+  lessonChapters: 'aula-capitulos',
+  realGame: 'aula-partida-real',
+  solvedExercise: 'exercicio-resolvido',
   stars: 'desafio-estrelas',
+  profile: 'perfil',
+  achievements: 'conquistas',
+  record: 'novo-recorde',
+  gameEnd: 'conclusao-partida',
 } as const;
 
 export type Clip = keyof typeof clips;

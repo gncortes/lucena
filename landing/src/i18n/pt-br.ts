@@ -175,6 +175,16 @@ const pt: Dictionary = {
         body: 'Tema claro ou escuro, seis cores para o app, peças e cores do tabuleiro, relógio acima, abaixo ou um de cada lado. Escolha o que aparece na tela inicial e em que ordem. O app está em 19 idiomas.',
         bullets: [],
       },
+      realGames: {
+        title: 'Partidas reais, contadas como história',
+        body: 'Muitas posições das aulas saíram de partidas de mestres. Antes do lance, o Mestre Viktor conta quem jogou, onde e quando, o que estava em jogo e o que olhar no tabuleiro. Um toque abre a partida inteira no Lichess, sem sair do app.',
+        bullets: ['80 partidas de mestres citadas nas aulas', 'Link para ver a partida inteira no Lichess'],
+      },
+      exercises: {
+        title: 'Exercícios com a explicação do Viktor',
+        body: 'No teste final de cada aula, os lances são só seus: o professor não fala enquanto você joga. Resolveu? Aí o Viktor explica o lance e as alternativas, com as casas marcadas no comentário.',
+        bullets: ['De 1 a 3 estrelas, conforme a dificuldade', 'A explicação aparece depois de resolver'],
+      },
     },
     route: {
       label: 'Cada capítulo segue o mesmo roteiro',
@@ -268,21 +278,89 @@ const pt: Dictionary = {
     tagline: 'Treine finais de xadrez contra o Maia e o Stockfish.',
     dev: 'Sou programador. Se você precisa de uma landing page, de um aplicativo ou quer conhecer meus serviços, fale comigo:',
     contact: 'Contato',
+    privacy: 'Política de privacidade',
   },
   media: {
     hero: 'Escolha do nível do Maia e do ritmo, e a partida contra ele no Lucena',
     school: 'Primeira aula da escola do Viktor no Lucena: a torre e as estrelas',
+    placement: 'Teste de nível do Lucena: uma pergunta de cada vez, com a opção "Não sei"',
+    lesson: 'Capítulo de uma aula de finais do Lucena, a posição de Lucena: pense, veja e jogue',
     journey: 'A Jornada do Lucena: o adversário atual e os desafios',
-    queenRook: 'Aula interativa de dama contra torre no Lucena',
     speedrun: 'Speedrun do Lucena: as etapas e a partida contra o relógio',
-    theme: 'Escolha do tema escuro e da cor do app no Lucena',
+    marathon: 'Maratona do Lucena: uma partida emenda na outra com um relógio só',
+    theme: 'Escolha do tema e da cor do app no Lucena',
+    home: 'Tela inicial do Lucena no tema escuro',
     journeyChallenge: 'Desafio da Jornada no Lucena: mate de dama contra o Tito, nível 1200',
-    exercise: 'Exercício de dama contra torre numa aula de finais do Lucena',
-    queenRookLesson: 'Aula de finais do Lucena: dama contra torre, como chegar a Philidor',
-    shortSide: 'Aula de finais do Lucena: a defesa pelo lado curto',
-    stars: 'Desafio das estrelas do Lucena com a torre, no nível difícil',
+    placementResult: 'Resultado do teste de nível: a faixa de rating e o mapa do que você já domina',
+    lessonChapters: 'Aula de finais do Lucena dividida em capítulos: Ruptura, nos finais de peões',
+    realGame: 'Capítulo com uma partida real, Andersson contra Åkesson em 1999, e o link para ela no Lichess',
+    solvedExercise: 'Exercício resolvido numa aula de finais, com o comentário do Viktor',
+    stars: 'Desafio das estrelas do Lucena com a torre',
+    profile: 'Rating de finais no Lucena, com o gráfico e o histórico de partidas',
+    achievements: 'Conquistas do Lucena: as concluídas e as que faltam',
+    record: 'Fim da Maratona no Lucena: o tempo total e um novo recorde pessoal',
+    gameEnd: 'Fim de partida no Lucena: vitória contra o Tito, o rating e a melhor linha do Stockfish',
     play: 'Reproduzir vídeo',
     pause: 'Pausar vídeo',
+  },
+  privacy: {
+    slug: 'privacidade',
+    title: 'Política de privacidade',
+    description: 'Como o Lucena trata os seus dados: o app funciona offline, não tem conta nem anúncios e não coleta, não envia nem vende dados pessoais.',
+    updated: 'Versão de 10 de outubro de 2026',
+    back: 'Voltar para o início',
+    sections: [
+      {
+        title: 'Em resumo',
+        body: [
+          'O Lucena é um app gratuito para treinar finais de xadrez no Android. Ele funciona sem internet e <strong>não coleta, não envia e não vende dados pessoais</strong>. Não tem conta, login, anúncios nem ferramentas de rastreamento.',
+        ],
+      },
+      {
+        title: 'O que fica no seu aparelho',
+        body: [
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
+        ],
+      },
+      {
+        title: 'Internet',
+        body: [
+          'O app pede permissão de internet só para abrir, dentro dele, as páginas externas que você toca: artigos da Wikipedia e partidas no Lichess. Essas páginas são de outros sites e seguem as políticas de privacidade deles (<a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" rel="noopener">Wikipedia</a> e <a href="https://lichess.org/privacy" rel="noopener">Lichess</a>).',
+          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. Quando você toca em compartilhar uma partida, o texto vai só para o app que você escolher.',
+        ],
+      },
+      {
+        title: 'Microfone',
+        body: [
+          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem guarda o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
+        ],
+      },
+      {
+        title: 'Google Play',
+        body: [
+          'O Lucena é distribuído pela Google Play. A Google trata os dados da sua conta e da instalação conforme a <a href="https://policies.google.com/privacy" rel="noopener">política de privacidade dela</a>. Eu recebo só as estatísticas anônimas e agregadas que a Google Play mostra a todo desenvolvedor, como o número de instalações.',
+        ],
+      },
+      {
+        title: 'Crianças',
+        body: [
+          'Como o app não coleta dados pessoais de ninguém, também não coleta de crianças. Ele pode ser usado por pessoas de qualquer idade.',
+        ],
+      },
+      {
+        title: 'Mudanças nesta política',
+        body: [
+          'Se algo mudar, esta página é atualizada e a data da versão, lá em cima, muda junto.',
+        ],
+      },
+      {
+        title: 'Contato',
+        body: [
+          'Dúvidas sobre privacidade? Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
   },
 };
 

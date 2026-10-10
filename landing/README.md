@@ -14,6 +14,8 @@ npx astro check  # tipos
 - Textos: `src/i18n/pt-br.ts` (raiz do site) e `src/i18n/en.ts` (`/en/`). Para um
   idioma novo: dicionário em `src/i18n/`, entrada em `src/i18n/index.ts`, no
   `astro.config.mjs` e uma página em `src/pages/<idioma>/index.astro`.
+- Política de privacidade: `src/components/Privacy.astro`, com os textos em
+  `privacy` de cada dicionário (`/privacidade/`, `/en/privacy/`, `/es/privacidad/`).
 - Capturas do app (vídeos, posters e prints) ficam em `assets/` com os nomes de
   `src/media.ts`.
 - `node scripts/brand.mjs`: ícones, mascote e peças a partir de `../assets/branding`.

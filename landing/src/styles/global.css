@@ -1879,3 +1879,59 @@ section {
 .tester__panel a:not(.btn) {
   color: #8ee6b8;
 }
+
+/* ---------- Política de privacidade ---------- */
+
+.legal {
+  padding-block: clamp(32px, 6vw, 72px) clamp(56px, 8vw, 96px);
+}
+
+.legal__doc {
+  max-width: 720px;
+}
+
+.legal__back {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal__back:hover {
+  color: var(--ink);
+}
+
+.legal h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.legal__date {
+  margin: 8px 0 32px;
+  color: var(--ink-soft);
+}
+
+.legal section {
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.legal h2 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+}
+
+.legal section p {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.legal section p:last-child {
+  margin-bottom: 0;
+}
+
+.legal strong {
+  color: var(--ink);
+}
