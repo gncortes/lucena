@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/conclusion_rules.dart';
 
 void main() {
@@ -76,7 +77,6 @@ void main() {
         [
           ConclusionAction.playAgain,
           ConclusionAction.newGame,
-          ConclusionAction.analyze,
           // Um atalho só para o histórico (rating e partidas na mesma tela).
           ConclusionAction.ratingHistory,
         ],
@@ -124,6 +124,13 @@ void main() {
           recorded: true,
         ).take(2),
         [ConclusionAction.retry, ConclusionAction.summary],
+      );
+      expect(
+        ConclusionRules.actionsFor(
+          ConclusionKind.speedrunEnd,
+          recorded: true,
+        ).where((action) => !action.name.contains('History')),
+        [ConclusionAction.speedruns],
       );
       expect(
         ConclusionRules.actionsFor(
@@ -179,5 +186,52 @@ void main() {
       ),
       2,
     );
+  });
+
+  group('partida curta (a análise rápida começa sozinha)', () {
+    final end = DateTime.utc(2026, 10, 9, 12);
+    Attempt game(int plies, {Duration? played, Duration? clock}) => Attempt(
+      positionId: 'p',
+      playedAt: end,
+      startedAt: played == null ? null : end.subtract(played),
+      outcome: AttemptOutcome.win,
+      fulfilled: true,
+      opponent: OpponentKind.maia,
+      moves: List.filled(plies, 'e2e4'),
+      userClock: clock,
+    );
+
+    test('poucos lances: curta, qualquer que seja o tempo', () {
+      expect(
+        ConclusionRules.isShortGame(game(12, played: Duration(minutes: 9))),
+        isTrue,
+      );
+    });
+
+    test('sem lances: nada a analisar', () {
+      expect(ConclusionRules.isShortGame(game(0)), isFalse);
+    });
+
+    test('mais lances: curta só abaixo de 30 s de jogo', () {
+      expect(
+        ConclusionRules.isShortGame(game(20, played: Duration(seconds: 25))),
+        isTrue,
+      );
+      expect(
+        ConclusionRules.isShortGame(game(20, played: Duration(seconds: 40))),
+        isFalse,
+      );
+      // Sem a hora do começo, vale o relógio do jogador.
+      expect(
+        ConclusionRules.isShortGame(game(20, clock: Duration(seconds: 20))),
+        isTrue,
+      );
+      expect(ConclusionRules.isShortGame(game(20)), isFalse);
+      // Rápida, mas com lances demais para analisar num instante.
+      expect(
+        ConclusionRules.isShortGame(game(40, played: Duration(seconds: 25))),
+        isFalse,
+      );
+    });
   });
 }

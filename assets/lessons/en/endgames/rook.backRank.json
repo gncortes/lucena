@@ -29,7 +29,7 @@
   "step.t_knight.hint1": "Think about where the black rook would need to go to threaten mate on the first rank, and how much room it has for that.",
   "step.t_trick": "The black rook has checked on g2. Your king has two squares. Which one draws, and what happens on the other?",
   "step.t_trick.hint1": "After your move, see whether the black king can get in front of the pawn.",
-  "step.finish": "Now against the machine: wait with the rook on the first rank and, when the check comes, go to the corner.",
+  "step.finish": "Now the practical challenge: wait with the rook on the first rank and, when the check comes, go to the corner.",
   "ex.e10": "White to move and draw. A bishop's pawn on the fourth rank, the black king beside it, and your rook on the first rank. Can you wait, as against the knight's pawn?",
   "ex.e10.hint": "Count how many moves the black king needs to enter the third rank, and remember what happens against a bishop's pawn once it does.",
   "ex.e10.solution": "Rc3, and after f3, Rc8; when the king goes to g3, Rg8+. It is the Philidor defence, set up from the first rank. Waiting with the rook on the first rank would lose to the king's advance.",
@@ -48,10 +48,10 @@
   "ex.e16": "White to move and draw. A central pawn on the seventh, and your king can blockade it. After that, every rook move counts.",
   "ex.e16.hint": "The black rook wants to come down to the first rank with check. Your rook has to be on the first rank, but not on just any square of it: think about a rook trade and about the pawn.",
   "ex.e16.solution": "Ke1, blockading the pawn; Kd2? loses to Kf2. Then the rook dances along the first rank: Rc3 Rb1, Ra3 Rc1, Rb3 Ra1. It never stands on the black rook's file (Rxa1+ trades rooks and the pawn queens) nor on d1 (the pawn takes). On any other square of the first rank, the black rook's check is met by capturing it. Our own position, checked against the tablebase.",
-  "key.knight": "The passive defence against a knight's pawn, as shown on Wikipedia (quoting Emms), with colours reversed: a draw.",
-  "key.trick": "The only trick: on the rook check the king goes to the corner. The other way loses.",
-  "key.bishop": "With a bishop's pawn the same defence loses: the attacking rook has one more file to go round. From Wikipedia, with colours reversed.",
-  "key.seventh": "Pawn on the seventh and king beside it: the rook defends from the first rank with only moves. From Wikipedia (quoting Emms), with colours reversed.",
-  "history": "The passive defence has no illustrious name and no date: it is what remains when Philidor's was not set up in time. The manuals treat it as a rule of thumb. Grandmaster Hovhannes Gabuzyan sums it up like this: against pawns on the c, d, e and f files you need to know the Philidor defence; against those on the a, b, g and h files the back rank is enough. Wikipedia, drawing on Averbakh and Kopaev, adds the detail that saves half a point: if the attacking king has not yet reached the sixth rank, there is still time to leave the passive defence with the rook, to the third rank or to the far end, against any pawn.",
-  "practice": "Against the machine: a knight's pawn, your rook on the first rank and the king in front of the pawn. Wait, and on the check go to the corner. The goal is to draw."
+  "key.knight": "Against a knight pawn, just wait: the king stands in front of the pawn and the rook shuffles along the first rank. A draw.",
+  "key.trick": "The one thing to watch: when the black rook gives check, the white king goes to the corner. Running the other way loses.",
+  "key.bishop": "With a bishop pawn the same waiting loses: on the other side of the pawn there is room for the black rook to go round and threaten mate.",
+  "key.seventh": "The pawn is one step from promoting, with the black king beside it: the rook still holds from the first rank, but every move has to be exact.",
+  "history": "This is the simplest defence in rook endings: the king stands on the square where the pawn wants to promote, the rook waits on the back rank and the defender just shuffles back and forth. It has no famous name and no date; it is what is left when the Philidor defence was not set up in time. The danger is that it looks as if it works against everything, and it does not: against rook and knight pawns it draws, but against bishop and central pawns it usually loses. Grandmaster Hovhannes Gabuzyan puts it this way: against the pawns in the middle you need to know Philidor's defence; against those near the edge, the back rank is enough. Knowing the difference saves half a point in a lot of games.",
+  "practice": "Practical challenge: a knight's pawn, your rook on the first rank and the king in front of the pawn. Wait, and on the check go to the corner. The goal is to draw."
 }

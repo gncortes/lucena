@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_knight",
           "fen": "8/8/8/8/8/5kp1/r7/1R4K1 b - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan",
           "side": "white"
@@ -100,7 +99,6 @@
           "type": "think",
           "id": "t_trick",
           "fen": "8/8/8/8/8/6pk/6r1/1R4K1 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "line"
         },

@@ -122,6 +122,23 @@ abstract final class EndgameLessonRules {
     return line;
   }
 
+  /// O exercício da vez: o aberto quando o app fechou, se ainda não foi
+  /// resolvido; senão, o primeiro não resolvido. Nulo com todos resolvidos.
+  static Exercise? nextExercise(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+  ) {
+    final open = progress.exercise?.exerciseId;
+    if (open != null && !progress.stars.containsKey(open)) {
+      final exercise = lesson.exercise(open);
+      if (exercise != null) return exercise;
+    }
+    for (final exercise in lesson.exercises) {
+      if (!progress.stars.containsKey(exercise.id)) return exercise;
+    }
+    return null;
+  }
+
   /// A parte recomendada: a primeira ainda não feita. Nula: todas feitas (o
   /// próximo é o teste final). Nada trava: é só o destaque da tela.
   static LessonPart? recommendedPart(

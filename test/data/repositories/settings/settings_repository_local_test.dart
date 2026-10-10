@@ -169,22 +169,11 @@ void main() {
     expect((await reopen().load()).vibration, isFalse);
   });
 
-  test('o tempo de pensar: sem nada gravado, ainda não escolhido; escolhido, '
-      'volta ao reabrir', () async {
-    expect((await reopen().load()).thinkChosen, isFalse);
-
-    await reopen().save(const AppSettings(thinkMinutes: 3, thinkChosen: true));
-    final loaded = await reopen().load();
-    expect(loaded.thinkMinutes, 3);
-    expect(loaded.thinkChosen, isTrue);
-  });
-
-  test('quem já tinha um tempo de pensar gravado (das Configurações) já '
-      'escolheu', () async {
+  test('o tempo de pensar gravado antes da T60 é ignorado sem erro', () async {
     await PreferencesService().setString('lessons.thinkMinutes', '5');
+    await PreferencesService().setBool('lessons.thinkChosen', value: true);
 
     final loaded = await reopen().load();
-    expect(loaded.thinkMinutes, 5);
-    expect(loaded.thinkChosen, isTrue);
+    expect(loaded, const AppSettings());
   });
 }

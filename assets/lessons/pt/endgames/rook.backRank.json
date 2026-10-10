@@ -29,7 +29,7 @@
   "step.t_knight.hint1": "Pense em onde a torre preta precisaria chegar para ameaçar mate na primeira fileira, e quanto espaço ela tem para isso.",
   "step.t_trick": "A torre preta deu xeque em g2. O rei tem duas casas. Qual delas empata, e o que acontece na outra?",
   "step.t_trick.hint1": "Depois do seu lance, veja se o rei preto consegue se colocar na frente do peão.",
-  "step.finish": "Agora contra a máquina: espere com a torre na primeira fileira e, no xeque, vá para o canto.",
+  "step.finish": "Agora o desafio prático: espere com a torre na primeira fileira e, no xeque, vá para o canto.",
   "ex.e10": "Brancas jogam e empatam. Peão de bispo na quarta fileira, rei preto ao lado dele, e a sua torre na primeira fileira. Dá para esperar, como contra o peão de cavalo?",
   "ex.e10.hint": "Conte quantos lances o rei preto precisa para entrar na terceira fileira, e lembre o que acontece contra peão de bispo quando ele entra.",
   "ex.e10.solution": "Tc3, e depois de f3, Tc8; no lance do rei para g3, Tg8+. É a defesa de Philidor, armada a partir da primeira fileira. Ficar esperando com a torre na primeira fileira perdia para o avanço do rei.",
@@ -48,10 +48,10 @@
   "ex.e16": "Brancas jogam e empatam. Peão central na sétima, e o seu rei pode bloqueá-lo. Depois, cada lance da torre conta.",
   "ex.e16.hint": "A torre preta quer descer à primeira fileira com xeque. A sua torre precisa estar na primeira fileira, mas não em qualquer casa dela: pense em troca de torres e no peão.",
   "ex.e16.solution": "Re1, bloqueando o peão; Rd2? perde para Rf2. Depois a torre dança na primeira fileira: Tc3 Tb1, Ta3 Tc1, Tb3 Ta1. Ela nunca fica na coluna da torre preta (Txa1+ troca as torres e o peão coroa) nem em d1 (o peão captura). Em qualquer outra casa da primeira fileira, o xeque da torre preta é respondido com a captura. Posição nossa, conferida na tabela.",
-  "key.knight": "A defesa passiva contra peão de cavalo, como aparece na Wikipedia (citando Emms), com as cores trocadas: empate.",
-  "key.trick": "O único truque: no xeque da torre, o rei vai para o canto. Para o outro lado, perde.",
-  "key.bishop": "Com peão de bispo a mesma defesa perde: a torre atacante tem uma coluna a mais para dar a volta. Da Wikipedia, com as cores trocadas.",
-  "key.seventh": "Peão na sétima e rei ao lado: a torre defende da primeira fileira com lances únicos. Da Wikipedia (citando Emms), com as cores trocadas.",
-  "history": "A defesa passiva não tem um nome ilustre nem uma data: é o que sobra quando a de Philidor não foi armada a tempo. Os manuais tratam essa defesa como regra prática. O grande mestre Hovhannes Gabuzyan resume assim: contra os peões das colunas c, d, e e f é preciso saber a defesa de Philidor; contra os das colunas a, b, g e h, a última fileira basta. A Wikipedia, apoiada em Averbakh e Kopaev, acrescenta o detalhe que salva meio ponto: se o rei atacante ainda não chegou à sexta fileira, ainda dá tempo de sair da defesa passiva com a torre, para a terceira fileira ou para o fundo, contra qualquer peão.",
-  "practice": "Contra a máquina: peão de cavalo, sua torre na primeira fileira e o rei na frente do peão. Espere, e no xeque vá para o canto. O objetivo é empatar."
+  "key.knight": "Contra um peão de cavalo, basta esperar: o rei fica na frente do peão e a torre vai e volta pela primeira fileira. Empate.",
+  "key.trick": "O único cuidado: quando a torre preta dá xeque, o rei branco vai para o canto. Se fugir para o outro lado, perde.",
+  "key.bishop": "Com um peão de bispo, a mesma espera perde: do outro lado do peão há espaço para a torre preta dar a volta e ameaçar mate.",
+  "key.seventh": "O peão está a uma casa de promover, com o rei preto ao lado: a torre ainda segura da primeira fileira, mas cada lance tem de ser exato.",
+  "history": "Esta é a defesa mais simples dos finais de torre: o rei fica na casa onde o peão quer promover, a torre espera na última fileira e o defensor só vai e volta. Ela não tem nome famoso nem data; é o que sobra quando a defesa de Philidor não foi montada a tempo. O perigo é que ela parece servir para tudo, e não serve: contra peões de torre e de cavalo ela empata, mas contra peões de bispo e centrais costuma perder. O grande mestre Hovhannes Gabuzyan resume assim: contra os peões do meio, é preciso saber a defesa de Philidor; contra os da beirada, a última fileira basta. Saber essa diferença salva meio ponto em muitas partidas.",
+  "practice": "Desafio prático: peão de cavalo, sua torre na primeira fileira e o rei na frente do peão. Espere, e no xeque vá para o canto. O objetivo é empatar."
 }

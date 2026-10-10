@@ -362,7 +362,8 @@ def check_texts(source, problems):
 
 
 RESERVED_STEP_IDS = {'title', 'summary', 'history', 'practice'}
-THINK_MINUTES = (1, 3, 5)
+# Quanto um aluno costuma pensar num `think`, para a estimativa de tempo.
+THINK_SECONDS = 180
 
 
 def unique(where, ids, problems):
@@ -381,14 +382,15 @@ def check_side(where, step, problems):
 
 
 def check_think(where, step, problems):
-    """Passo `think`: o aluno estuda a posição sozinho por `minutes`, depois
-    vêm as dicas (`hints` falas) com as setas e casas do passo."""
+    """Passo `think`: o aluno estuda a posição sozinho, sem limite de tempo
+    (T60); as dicas (`hints` falas), com as setas e casas do passo, e a
+    explicação ficam à mão desde o começo."""
     board_of(step.get('fen', ''), where, problems)
     check_squares(where, step, problems)
     check_side(where, step, problems)
-    if step.get('minutes') not in THINK_MINUTES:
-        problems.append(f"{where}: minutes {step.get('minutes')!r} (use 1, 3 "
-                        'ou 5)')
+    if 'minutes' in step:
+        problems.append(f'{where}: minutes não existe mais (T60): o aluno '
+                        'pensa o tempo que quiser')
     hints = step.get('hints')
     if not isinstance(hints, int) or isinstance(hints, bool) or not (
             1 <= hints <= 3):
@@ -457,13 +459,13 @@ def check_part(where, part, problems):
 
 
 def estimate_minutes(steps):
-    """Tempo estimado de uma parte: o timer de cada think, ~30 s por fala,
+    """Tempo estimado de uma parte: ~3 min por think, ~30 s por fala,
     ~10 s por lance de demonstração e ~1 min por prática."""
     seconds = 0
     for step in steps:
         kind = step.get('type')
         if kind == 'think':
-            seconds += 60 * (step.get('minutes') or 0)
+            seconds += THINK_SECONDS
         elif kind == 'talk':
             seconds += 30
         elif kind == 'demo':

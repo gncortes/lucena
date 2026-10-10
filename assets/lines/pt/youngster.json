@@ -91,7 +91,7 @@
       "category": "better",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Rei longe do peão. Erro clássico."
+      "text": "Um tempo a mais. Clássico."
     },
     {
       "id": "youngster.better.3",
@@ -427,7 +427,7 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Pendurou. Hm."
+      "text": "Capturei. Hm."
     },
     {
       "id": "youngster.pieceCaptured.3",
@@ -483,7 +483,7 @@
       "category": "pieceLost",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Pendurei. Culpa da tela."
+      "text": "Perdi. Culpa da tela."
     },
     {
       "id": "youngster.ownPromotion.1",
@@ -539,7 +539,7 @@
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Tá. Perpétuo. Cadê o perpétuo."
+      "text": "Tá. Afogamento. Cadê o afogamento."
     },
     {
       "id": "youngster.opponentPromotion.4",
@@ -749,7 +749,7 @@
       "category": "loss",
       "intensity": 1,
       "emotion": "sad",
-      "text": "Não tem condição. Capivara dessa me dando mate."
+      "text": "Não tem condição. Capivara dessa me ganhando."
     },
     {
       "id": "youngster.loss.3",
@@ -784,21 +784,21 @@
       "category": "draw",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Material insuficiente. Matemática."
+      "text": "Empate. Matemática."
     },
     {
       "id": "youngster.draw.3",
       "category": "draw",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Afogamento? Sério? Aff."
+      "text": "Empate? Sério? Aff."
     },
     {
       "id": "youngster.draw.4",
       "category": "draw",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Repetição. Que sem graça."
+      "text": "Empate. Que sem graça."
     },
     {
       "id": "youngster.draw.5",

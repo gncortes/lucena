@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_classic",
           "fen": "6k1/ppp5/8/PPP5/8/8/8/6K1 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -124,7 +123,6 @@
           "type": "think",
           "id": "t_count",
           "fen": "4k3/1pp5/1p6/P1P5/8/8/8/6K1 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -211,7 +209,6 @@
           "type": "think",
           "id": "t_order",
           "fen": "8/8/1p4p1/6k1/1PP5/8/8/7K w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -281,7 +278,6 @@
           "type": "think",
           "id": "t_side",
           "fen": "7k/3pp3/3p4/2P1P3/8/8/8/7K w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -430,7 +426,6 @@
           "type": "think",
           "id": "t_push",
           "fen": "8/7p/p7/4kpPP/3p4/3K4/P7/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -518,7 +513,6 @@
           "type": "think",
           "id": "t_kingFirst",
           "fen": "8/8/1kp3p1/8/5P1P/8/8/K7 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -609,7 +603,6 @@
           "type": "think",
           "id": "t_defense",
           "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "black",

@@ -6,6 +6,7 @@ import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
+import '../../../testing/fakes/fake_now.dart';
 
 import 'package:lucena/domain/models/game_sound.dart';
 import 'package:lucena/ui/core/sound/game_sounds.dart';
@@ -16,9 +17,11 @@ import '../../../testing/fakes/fake_sound_repository.dart';
 void main() {
   late FakeEndgameProgressRepository progress;
   late FakeSoundRepository sound;
+  late FakeNow now;
 
   ExerciseCubit cubit() {
     final cubit = ExerciseCubit(
+      now: now,
       lessons: FakeEndgameLessonRepository(),
       progress: progress,
       characters: FakeCharacterRepository(),
@@ -34,7 +37,66 @@ void main() {
   setUp(() {
     progress = FakeEndgameProgressRepository();
     sound = FakeSoundRepository();
+    now = FakeNow(DateTime.utc(2026, 10, 9, 20));
   });
+
+  test(
+    'T60: resolvendo até a resposta, com o cronômetro contando sem limite; '
+    'resolvido de primeira, o tabuleiro fica; a explicação, a pedido',
+    () async {
+      final exercise = cubit();
+      await exercise.load('rook.lucena', 'e03', 'en');
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      expect(exercise.elapsed, Duration.zero);
+      now.advance(const Duration(minutes: 6, seconds: 3));
+      expect(exercise.elapsed, const Duration(minutes: 6, seconds: 3));
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      expect(exercise.state.speech, isNull);
+      await exercise.play(move('c1c4'));
+      // Acerto limpo: o tabuleiro fica onde estava; a explicação só a pedido.
+      expect(exercise.state.cleanSolve, isTrue);
+      expect(exercise.state.layout, ExerciseLayoutMode.solving);
+      exercise.showExplanation();
+      expect(exercise.state.layout, ExerciseLayoutMode.explaining);
+    },
+  );
+
+  test(
+    'T60: fechar no meio e voltar, o cronômetro continua de onde estava',
+    () async {
+      final first = cubit();
+      await first.load('rook.lucena', 'e01', 'en');
+      now.advance(const Duration(minutes: 1));
+      await first.play(move('a1a2'));
+      await first.close();
+      now.advance(const Duration(seconds: 30));
+      final again = cubit();
+      await again.load('rook.lucena', 'e01', 'en');
+      expect(again.elapsed, const Duration(minutes: 1, seconds: 30));
+    },
+  );
+
+  test(
+    'T60: checkpoint antigo, sem o começo, abre o cronômetro do zero',
+    () async {
+      progress.saved = progress.saved.withLesson(
+        'rook.lucena',
+        progress.saved
+            .of('rook.lucena')
+            .copyWith(exercise: const ExerciseCheckpoint(exerciseId: 'e01')),
+      );
+      final exercise = cubit();
+      await exercise.load('rook.lucena', 'e01', 'en');
+      expect(exercise.elapsed, Duration.zero);
+      expect(
+        ExerciseCheckpoint.fromJson({
+          'exercise': 'e01',
+          'startedAt': '2026-10-09T20:00:00.000Z',
+        })!.startedAt,
+        DateTime.utc(2026, 10, 9, 20),
+      );
+    },
+  );
 
   test('abre com o enunciado e grava o exercício aberto', () async {
     final exercise = cubit();
@@ -209,5 +271,13 @@ void main() {
 
     await exercise.play(move('c1c4'));
     expect(sound.played, [GameSound.move]);
+  });
+
+  test('lance errado no meio do exercício: sem fala do Viktor', () async {
+    final exercise = cubit();
+    await exercise.load('rook.lucena', 'e03', 'en');
+    await exercise.play(move('c1c2'));
+    expect(exercise.state.mistakes, 1);
+    expect(exercise.state.speech, isNull);
   });
 }

@@ -77,7 +77,8 @@ void main() {
     replyDelay: Duration.zero,
   );
 
-  test('no passo de pensar, o link só vem depois do tempo', () async {
+  test('no passo de pensar, sem link (entregaria a resposta); no passo '
+      'seguinte, o link da partida', () async {
     final now = FakeNow(DateTime.utc(2026, 10, 9, 20));
     final cubit = cubitWith(
       Lesson.parted(
@@ -86,8 +87,8 @@ void main() {
           LessonPart(
             id: 'bridge',
             steps: [
-              ThinkStep(id: 'think', fen: fen, minutes: 1, ref: 'g1'),
-              TalkStep(id: 'plain', fen: fen),
+              ThinkStep(id: 'think', fen: fen, ref: 'g1'),
+              TalkStep(id: 'key', fen: fen, ref: 'g1'),
             ],
           ),
         ],
@@ -96,11 +97,10 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', 'en');
-    expect(cubit.state.thinking, isTrue);
     expect(cubit.state.link, isNull);
-    now.advance(const Duration(minutes: 2));
-    await cubit.tick();
-    expect(cubit.state.thinking, isFalse);
+    now.advance(const Duration(minutes: 10));
+    expect(cubit.state.link, isNull);
+    await cubit.next();
     expect(cubit.state.link?.url, url);
   });
 
@@ -130,7 +130,7 @@ void main() {
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', 'en');
     final settings = SettingsCubit(
-      FakeSettingsRepository(const AppSettings(thinkChosen: true)),
+      FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
     );
     addTearDown(settings.close);

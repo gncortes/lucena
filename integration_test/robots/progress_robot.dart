@@ -18,28 +18,27 @@ class ProgressRobot {
 
   final PatrolIntegrationTester $;
 
-  /// O rating no perfil, a partir da tela inicial (e volta para ela).
+  /// O rating de finais, a partir da tela inicial (e volta para ela): o
+  /// perfil tem o botão que abre a tela do rating (T59).
   Future<int> rating() async {
-    await $(HomeKeys.settingsButton).tap();
-    await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingValue).scrollTo();
-    final value = $.tester
-        .widget<Text>(find.byKey(ProfileKeys.ratingValue))
-        .data!;
+    await _openRating();
+    final value = $.tester.widget<Text>(find.byKey(RatingKeys.value)).data!;
     await _backHome();
     return int.parse(value);
   }
 
-  /// No perfil: quantas partidas contaram para o rating.
+  /// Na tela do rating: quantas partidas contaram.
   Future<void> expectRatedGames(String text) async {
+    await _openRating();
+    expectText($.tester.widget<Text>(find.byKey(RatingKeys.games)).data, text);
+    await _backHome();
+  }
+
+  Future<void> _openRating() async {
     await $(HomeKeys.settingsButton).tap();
     await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingGames).scrollTo();
-    expectText(
-      $.tester.widget<Text>(find.byKey(ProfileKeys.ratingGames)).data,
-      text,
-    );
-    await _backHome();
+    await $(ProfileKeys.ratingCard).scrollTo().tap();
+    await $(RatingKeys.value).waitUntilVisible();
   }
 
   /// Na conclusão da partida, o rating com a variação.

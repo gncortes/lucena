@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_fortress",
           "fen": "8/8/1q6/8/5k2/4R3/5PK1/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -115,7 +114,6 @@
           "type": "think",
           "id": "t_rules",
           "fen": "8/8/8/8/3q4/PK1k4/1R6/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -192,7 +190,6 @@
           "type": "think",
           "id": "t_rookPawn",
           "fen": "6k1/7p/6r1/5K2/7Q/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -289,7 +286,6 @@
           "type": "think",
           "id": "t_king",
           "fen": "1Q6/8/2p5/3r4/2k3K1/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [

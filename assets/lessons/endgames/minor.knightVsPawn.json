@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_front",
           "fen": "8/K7/8/8/8/1k6/1N1p4/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -130,7 +129,6 @@
           "type": "think",
           "id": "t_side",
           "fen": "8/8/8/8/5N2/8/2p4K/2k5 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -241,7 +239,6 @@
           "type": "think",
           "id": "t_averbakh",
           "fen": "8/6K1/8/5N2/1p6/3k4/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -351,7 +348,6 @@
           "type": "think",
           "id": "t_rook",
           "fen": "K7/8/8/5N2/8/7p/8/3k4 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -476,7 +472,6 @@
           "type": "think",
           "id": "t_king",
           "fen": "8/1K6/8/8/8/3k2N1/7p/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "white",
@@ -612,7 +607,6 @@
           "type": "think",
           "id": "t_stamma",
           "fen": "8/8/8/8/8/p2N4/k1K5/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -733,7 +727,6 @@
           "type": "think",
           "id": "t_recap",
           "fen": "7K/8/2N5/8/8/8/2p1k3/8 w - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan",
           "marks": [

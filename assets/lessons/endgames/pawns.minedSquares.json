@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_treb",
           "fen": "8/8/8/3pK3/2kP4/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "white",
@@ -105,7 +104,6 @@
           "type": "think",
           "id": "t_mined",
           "fen": "8/8/1k1p4/3P1K2/8/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 3,
           "ask": "plan",
           "marks": [
@@ -214,7 +212,6 @@
           "type": "think",
           "id": "t_race",
           "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -307,7 +304,6 @@
           "type": "think",
           "id": "t_defend",
           "fen": "8/8/8/8/3p1k2/1K1P4/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [

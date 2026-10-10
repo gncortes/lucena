@@ -274,9 +274,13 @@ class ExerciseCheckpoint {
     this.mistakes = 0,
     this.hints = 0,
     this.open = true,
+    this.startedAt,
   });
 
   final String exerciseId;
+
+  /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
+  final DateTime? startedAt;
 
   /// O tabuleiro, quando já mudou desde o começo.
   final String? fen;
@@ -294,6 +298,7 @@ class ExerciseCheckpoint {
     'mistakes': mistakes,
     'hints': hints,
     'open': open,
+    'startedAt': ?startedAt?.toUtc().toIso8601String(),
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -307,6 +312,7 @@ class ExerciseCheckpoint {
       mistakes: json['mistakes'] as int? ?? 0,
       hints: json['hints'] as int? ?? 0,
       open: json['open'] as bool? ?? false,
+      startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
     );
   }
 
@@ -318,10 +324,12 @@ class ExerciseCheckpoint {
       other.turn == turn &&
       other.mistakes == mistakes &&
       other.hints == hints &&
-      other.open == open;
+      other.open == open &&
+      other.startedAt == startedAt;
 
   @override
-  int get hashCode => Object.hash(exerciseId, fen, turn, mistakes, hints, open);
+  int get hashCode =>
+      Object.hash(exerciseId, fen, turn, mistakes, hints, open, startedAt);
 }
 
 /// O progresso em todas as aulas de finais.

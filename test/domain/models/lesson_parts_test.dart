@@ -26,7 +26,6 @@ void main() {
             'type': 'think',
             'id': 't1',
             'fen': fen,
-            'minutes': 5,
             'hints': 2,
             'arrows': ['a5e5'],
             'marks': ['e8'],
@@ -87,7 +86,6 @@ void main() {
       'far',
     ]);
     final think = parted.steps.first as ThinkStep;
-    expect(think.minutes, 5);
     expect(think.hints, 2);
     expect(think.arrows, [('a5', 'e5')]);
     expect(think.marks, ['e8']);
@@ -157,22 +155,34 @@ void main() {
     expect(migrated.open, isTrue);
   });
 
-  test('checkpoint com o timer e as dicas volta igual', () {
+  test('checkpoint com o cronômetro e as dicas volta igual', () {
     final checkpoint = LessonCheckpoint(
       lessonId: 'queen.vsRook.philidor',
       step: 0,
       part: 'philidor',
-      thinkStartedAt: DateTime.utc(2026, 10, 8, 20),
+      stepStartedAt: DateTime.utc(2026, 10, 8, 20),
       hintsShown: 1,
       demoMove: 2,
     );
     expect(LessonCheckpoint.fromJson(checkpoint.toJson()), checkpoint);
+    expect(checkpoint.toJson()['stepStartedAt'], '2026-10-08T20:00:00.000Z');
     final progress = const EndgameLessonProgress(parts: {'fork'}).toJson();
     expect(EndgameLessonProgress.fromJson(progress).parts, {'fork'});
   });
 
+  test('checkpoint de antes da T60 (só o passo de pensar guardava o começo) '
+      'restaura o cronômetro', () {
+    final old = LessonCheckpoint.fromJson({
+      'lesson': 'queen.vsRook.philidor',
+      'step': 0,
+      'part': 'philidor',
+      'thinkStartedAt': '2026-10-08T20:00:00.000Z',
+    })!;
+    expect(old.stepStartedAt, DateTime.utc(2026, 10, 8, 20));
+  });
+
   test('tempo estimado da parte', () {
-    // 5 min de pensar + meio minuto de conversa + 1 min de prática.
-    expect(parted.part('philidor')!.minutes, 7);
+    // Uns 3 min de pensar + meio minuto de conversa + 1 min de prática.
+    expect(parted.part('philidor')!.minutes, 5);
   });
 }

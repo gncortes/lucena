@@ -53,3 +53,9 @@ o id do exercício, o que está e o que deveria estar; e o **plano de reescrita*
 uma linha do que cada um faz, e as fontes a buscar. Feche com o que você não conseguiu conferir. Nada de
 elogio genérico. Na conversa, responda só com a nota geral, as três faltas principais e o caminho do
 relatório.
+
+## Numeração dos lances (pedido do Gabriel, 2026-10-09; confira em TODA fala)
+
+Todo lance citado em passo, demo, enunciado, dica ou solução tem número de notação ("1.Rf7!", "1...Rh7", "2.e4"; "Com
+1.Rc4? ..."). Posição de partida real (com link do Lichess): o número é o do lance real da partida, conferido no PGN do
+`url`. Posição montada ou de estudo: começa em 1. Lance sem número ou número errado é defeito que derruba a nota.

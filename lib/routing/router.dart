@@ -460,7 +460,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     key: ValueKey(id),
                     create: (_) => LessonCubit(
                       now: context.read<Now>(),
-                      settings: context.read<SettingsRepository>(),
                       sounds: context.read<GameSounds>(),
                       haptics: context.read<GameHaptics>(),
                       lessons: context.read<LessonRepository>(),
@@ -576,7 +575,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         key: ValueKey('steps.$id.$part'),
                         create: (_) => LessonCubit(
                           now: context.read<Now>(),
-                          settings: context.read<SettingsRepository>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
                           source: EndgameLessonSource(
@@ -644,6 +642,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
+                          now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
                           lessons: context.read<EndgameLessonRepository>(),
@@ -1015,6 +1014,7 @@ ConclusionCubit _conclusionCubit(BuildContext context) => ConclusionCubit(
   pending: context.read<ConclusionRepository>(),
   analysis: context.read<AnalysisRepository>(),
   reviews: context.read<GameReviewRepository>(),
+  opponent: context.read<OpponentRepository>(),
 );
 
 /// O filtro pedido na rota das aulas de finais: "Todos" (true), "Para você"

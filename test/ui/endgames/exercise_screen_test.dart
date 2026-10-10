@@ -84,17 +84,23 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
-    // Antes de resolver, o objetivo sob o tabuleiro.
+    // Antes de resolver, a vez logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'White to play',
+      'Your turn: White to play',
     );
 
     await move(tester, 'c1', 'c4');
     expect(find.byKey(ExerciseKeys.solved), findsOneWidget);
     // Houve erro: sem "Resolvido!".
     expect(find.text('Solved!'), findsNothing);
-    expect(find.text('2 of 3 points'), findsOneWidget);
+    // Com a correção do Viktor na tela, a estrela grande e os pontos saem
+    // (T60): os pontos ficam na estrela da barra de cima.
+    expect(find.byKey(ExerciseKeys.earned), findsNothing);
+    expect(
+      tester.getSemantics(find.byKey(ExerciseKeys.stars)).label,
+      '2 of 3 points',
+    );
     // Singular quando o total é 1.
     final l10n = lookupAppLocalizations(const Locale('pt'));
     expect(l10n.exerciseEarned(1, 1), '1 de 1 ponto');
@@ -103,14 +109,8 @@ void main() {
     expect(l10n.exerciseHintLast, 'Dica (o exercício deixa de pontuar)');
     expect(l10n.exerciseHintFree, 'Dica');
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
-    // A linha da solução, com figurino (a torre).
-    expect(
-      tester
-          .widget<Text>(find.byKey(ExerciseKeys.solution))
-          .textSpan!
-          .toPlainText(),
-      'Solution: 1.♖c4',
-    );
+    // Sem linha de "Solução": a fala do Viktor já explica.
+    expect(find.byKey(ExerciseKeys.solution), findsNothing);
     // Houve erro: a correção do Viktor vem sozinha, sem o botão.
     expect(speech(tester), 'Same bridge.');
     expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
@@ -123,5 +123,65 @@ void main() {
   testWidgets('exercício que não existe', (tester) async {
     await pump(tester, 'e99');
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
+  });
+
+  testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '
+      'tabuleiro no centro da tela, a vez embaixo e o cronômetro no canto '
+      'inferior direito; resolvido, o tabuleiro sobe e o resultado entra '
+      'embaixo', (tester) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(400, 900);
+    addTearDown(tester.view.reset);
+    await pump(tester, 'e03');
+    final board = tester.getRect(find.byKey(ExerciseKeys.board));
+    final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
+    expect(board.center.dx, closeTo(200, 1));
+    expect(board.center.dy, closeTo(450, 2));
+    expect(goal.top, greaterThan(board.bottom));
+    expect(find.byKey(ExerciseKeys.speech), findsNothing);
+    final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
+    expect(timer.right, closeTo(400 - 16, 1));
+    expect(timer.top, greaterThan(board.bottom));
+    expect(find.byKey(ExerciseKeys.scroll), findsNothing);
+
+    await move(tester, 'c1', 'c4');
+    // Acerto limpo: o tabuleiro não sai do lugar, e embaixo só "Ver
+    // explicação" e o próximo, numa linha.
+    expect(tester.getRect(find.byKey(ExerciseKeys.board)), board);
+    expect(find.byKey(ExerciseKeys.timer), findsNothing);
+    expect(find.byKey(ExerciseKeys.goal), findsNothing);
+    expect(find.byKey(ExerciseKeys.earned), findsNothing);
+    final explain = tester.getRect(find.byKey(ExerciseKeys.explainButton));
+    final next = tester.getRect(find.byKey(ExerciseKeys.nextButton));
+    expect(explain.center.dy, closeTo(next.center.dy, 1));
+
+    // Com a explicação aberta, o tabuleiro sobe e o resultado entra embaixo.
+    await tester.tap(find.byKey(ExerciseKeys.explainButton));
+    await tester.pumpAndSettle();
+    final raised = tester.getRect(find.byKey(ExerciseKeys.board));
+    expect(raised.top, lessThan(board.top));
+    expect(
+      tester.getRect(find.byKey(ExerciseKeys.speech)).top,
+      greaterThan(raised.bottom),
+    );
+  });
+
+  testWidgets('T60: a dica traz uma fala comprida e o tabuleiro não sai do '
+      'lugar', (tester) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(400, 900);
+    addTearDown(tester.view.reset);
+    await pump(tester, 'e03');
+    final before = tester.getRect(find.byKey(ExerciseKeys.board));
+    await tester.tap(find.byKey(ExerciseKeys.hintButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExerciseKeys.speech), findsOneWidget);
+    expect(tester.getRect(find.byKey(ExerciseKeys.board)), before);
+    expect(
+      tester.getRect(find.byKey(ExerciseKeys.speech)).bottom,
+      lessThanOrEqualTo(before.top),
+    );
   });
 }

@@ -61,12 +61,12 @@ def move(id_, fen, goal, sans, accepts, side=None):
 
 # Posições-base (todas conferidas na tabela do Lichess).
 TIED = F('8/4k3/8/1pP4p/1P6/4K3/8/8 w')      # Fine & Benko via Wikipedia, sem os peões de a
-CONVERT = F('8/8/2k5/1pP5/1P6/4K3/8/8 w')    # depois de comer: K+2 contra K+1
+CONVERT = F('8/8/2k5/1pP5/1P6/4K3/8/8 w')    # depois de capturar: K+2 contra K+1
 BASE = F('8/8/8/pP6/Pk6/8/8/7K w')           # o rei preto ataca a base
 BASE_D = F('8/8/8/2pP4/2Pk4/8/8/K7 w')       # o mesmo, no centro
 CORNER = F('8/1k6/pP6/P1K5/8/8/8/8 w')       # sexta fileira, perto do canto: empate
 CORNER_B = F('8/8/pP1k4/P7/8/2K5/8/8 b')     # pretas defendem o canto
-NO_TARGET = F('8/8/8/3k4/1Pp5/2P5/3K4/8 w')  # base por dentro: nada para comer, empate
+NO_TARGET = F('8/8/8/3k4/1Pp5/2P5/3K4/8 w')  # base por dentro: nada para capturar, empate
 NO_TARGET_B = F('8/8/8/3k4/1Pp5/2P5/3K4/8 b')
 RECAP = F('8/3k4/8/1pP4p/1P6/8/5K2/8 w')     # resumo: jogar até o fim
 PRACTICE = F('8/4k3/8/1pP3p1/1P6/8/4K3/8 w')
@@ -162,7 +162,7 @@ src = {
 
 # (id, estrelas, fen, objetivo, origem, lances do aluno e respostas, regra por vez)
 EX = [
-    # O rei livre come o passado do outro lado (b6? empata); o rei preto não pode defender f4 e ficar no quadrado.
+    # O rei livre captura o passado do outro lado (b6? empata); o rei preto não pode defender f4 e ficar no quadrado.
     ('e17', 1, '8/8/8/pP2k3/P4p2/5K2/8/8 w', 'win', 'studyWilliam', 'Kg4 Ke6 Kxf4', ['win'] * 2),
     # Peão de torre protegido longe do canto ganha: o rei vai a c7 (h6? perde).
     ('e12', 1, '8/2p5/5k2/6pP/6P1/8/8/7K w', 'win', 'studyChessInstitute', 'Kg2 Ke5 Kf3', ['win'] * 2),
@@ -172,7 +172,7 @@ EX = [
     # Passado distante perto (b5): o defensor acompanha o rei e segura, lance único a lance único.
     ('e14', 2, '8/8/8/1p2kPp1/6P1/4K3/8/8 b', 'draw', 'studyMatt', 'Kd5 Kd3 Ke5 Kc3 Kd5', ['only'] * 3),
     ('e10', 3, '8/2k5/8/8/Pp6/1P6/6K1/8 b', 'draw', 'studyIsaac', 'Kd6 Kf3 Kd5', ['only', 'only']),
-    # O rei preto come a base, mas Re2! deixa o rei branco no lugar certo para a corrida de damas.
+    # O rei preto captura a base, mas Re2! deixa o rei branco no lugar certo para a corrida de damas.
     ('e15', 3, '8/8/7p/8/5Pk1/6P1/5K2/8 w', 'win', 'studyChessforall',
      'Ke2 h5 Ke3 Kxg3 f5 h4 f6 h3 f7 h2 f8=Q h1=Q Qg7+', ['only', 'only', 'only', 'only', 'only', 'win', 'win']),
     # Rf5! e Re6!: o rei vai ao mate em vez de correr atrás do peão de b.

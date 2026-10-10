@@ -188,25 +188,45 @@ void main() {
       expect(endgame.step, 2);
     });
 
-    test('nada aberto: a aula começada e ainda não aprovada', () async {
+    test(
+      'teste começado e nada aberto: o próximo exercício por resolver',
+      () async {
+        endgames = FakeEndgameProgressRepository(
+          const EndgameProgress(
+            lessons: {
+              'rook.lucena': EndgameLessonProgress(
+                lessonDone: true,
+                stars: {'e01': 1, 'e02': 1},
+              ),
+            },
+          ),
+        );
+        final home = cubit();
+        await home.load();
+
+        final endgame = home.state.endgame!;
+        expect(endgame.lessonId, 'rook.lucena');
+        // A miniatura dele vai no cartão e voa até o tabuleiro.
+        expect(endgame.openExerciseId, 'e03');
+        expect(endgame.exerciseNumber, 3);
+        expect(endgame.exerciseFen, isNotNull);
+        expect(endgame.lessonOpen, isFalse);
+        expect(endgame.score, 2);
+      },
+    );
+
+    test('lição feita e teste por começar: sem exercício no cartão', () async {
       endgames = FakeEndgameProgressRepository(
         const EndgameProgress(
-          lessons: {
-            'rook.lucena': EndgameLessonProgress(
-              lessonDone: true,
-              stars: {'e01': 1, 'e02': 1},
-            ),
-          },
+          lessons: {'rook.lucena': EndgameLessonProgress(lessonDone: true)},
         ),
       );
       final home = cubit();
       await home.load();
 
       final endgame = home.state.endgame!;
-      expect(endgame.lessonId, 'rook.lucena');
       expect(endgame.openExerciseId, isNull);
-      expect(endgame.lessonOpen, isFalse);
-      expect(endgame.score, 2);
+      expect(endgame.exerciseFen, isNull);
     });
 
     test('aula aprovada não volta para a tela inicial', () async {

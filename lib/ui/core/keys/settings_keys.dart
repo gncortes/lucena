@@ -58,9 +58,6 @@ abstract final class SettingsKeys {
   static const gameTile = Key('settings.game');
   static const gameScreen = Key('settings.game.screen');
 
-  /// O tempo de pensar nas aulas (T51).
-  static const thinkTimeTile = Key('settings.thinkTime');
-  static Key thinkTimeOption(int minutes) => Key('settings.thinkTime.$minutes');
   static const soundTile = Key('settings.soundGroup');
   static const soundScreen = Key('settings.soundGroup.screen');
 

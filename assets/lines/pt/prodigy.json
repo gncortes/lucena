@@ -98,7 +98,7 @@
       "category": "better",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Meu rei chegou primeiro. Como sempre."
+      "text": "Cheguei primeiro. Como sempre."
     },
     {
       "id": "prodigy.better.3",
@@ -161,7 +161,7 @@
       "category": "worse",
       "intensity": 1,
       "emotion": "frustrated",
-      "text": "Essa terra tem dono, viu? Pode recuar esse peão."
+      "text": "Essa terra tem dono, viu? Pode ir recuando."
     },
     {
       "id": "prodigy.worse.2",

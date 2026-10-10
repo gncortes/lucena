@@ -287,7 +287,7 @@
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Sacrifício. Calculado. Muito profundo pra você."
+      "text": "Lance profundo. Calculado. Profundo demais pra você."
     },
     {
       "id": "snob.ownBlunder.4",
@@ -434,7 +434,7 @@
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Quer tentar proteger as outras? Pode tentar."
+      "text": "Quer tentar proteger o que sobrou? Pode tentar."
     },
     {
       "id": "snob.pieceCaptured.5",

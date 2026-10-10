@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_box",
           "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -83,7 +82,6 @@
           "type": "think",
           "id": "t_capablanca",
           "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -192,7 +190,6 @@
           "type": "think",
           "id": "t_stalemate",
           "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan",
           "side": "white"

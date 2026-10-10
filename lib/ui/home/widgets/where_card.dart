@@ -8,6 +8,7 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
+import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
@@ -228,7 +229,8 @@ class _SchoolCard extends StatelessWidget {
 }
 
 /// A aula de final em andamento: o título, onde parou e "continuar", que
-/// volta direto ao exercício ou à lição aberta.
+/// volta direto ao exercício ou à lição aberta. Com um exercício da vez, a
+/// miniatura dele toma o lugar do retrato e voa até o tabuleiro.
 class _EndgameCard extends StatelessWidget {
   const _EndgameCard({required this.endgame});
 
@@ -263,6 +265,8 @@ class _EndgameCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final l10n = context.l10n;
     final teacher = endgame.teacher;
+    final exerciseId = endgame.openExerciseId;
+    final fen = endgame.exerciseFen;
     return Card(
       key: HomeKeys.endgameCard,
       margin: EdgeInsets.zero,
@@ -271,7 +275,16 @@ class _EndgameCard extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
         child: Row(
           children: [
-            if (teacher != null) ...[
+            if (fen != null && exerciseId != null) ...[
+              PositionBoard(
+                key: HomeKeys.endgameBoard,
+                fen: fen,
+                size: 64,
+                radius: 4,
+                heroTag: exerciseHeroTag(endgame.lessonId, exerciseId),
+              ),
+              const SizedBox(width: 12),
+            ] else if (teacher != null) ...[
               CharacterAvatar(character: teacher, size: 48),
               const SizedBox(width: 12),
             ],
@@ -307,7 +320,8 @@ class _EndgameCard extends StatelessWidget {
             const SizedBox(width: 12),
             FilledButton(
               key: HomeKeys.endgameContinue,
-              onPressed: () => context.push(_route),
+              // A posição vai junto, para a miniatura voar até o tabuleiro.
+              onPressed: () => context.push(_route, extra: fen),
               child: Text(l10n.homeContinue),
             ),
           ],
