@@ -35,7 +35,7 @@ booted() { [[ "$(adb -s "$1" shell getprop sys.boot_completed 2>/dev/null | tr -
 # "avd porta" de cada emulador aberto.
 abertos() {
   ps -eo args | grep -E "qemu-system|/emulator " | grep -v grep |
-    sed -nE 's/.*-avd ([^ ]+).*-port ([0-9]+).*/\1 \2/p; s/.*-port ([0-9]+).*-avd ([^ ]+).*/\2 \1/p' | sort -u
+    sed -nE 's/.*-avd ([^ ]+).*-port ([0-9]+).*/\1 \2/p; s/.*-port ([0-9]+).*-avd ([^ ]+).*/\2 \1/p' | sort -u || true
 }
 dono_de() { cat "$DIR/$1" 2>/dev/null || echo "?"; }
 meus() {

@@ -361,8 +361,7 @@ class HomeCubit extends Cubit<HomeState> {
         !done.lessonDone;
     // O teste começado (um exercício resolvido ou aberto antes): o cartão
     // leva ao exercício da vez, não à tela da aula.
-    final testStarted =
-        done.lessonDone && (done.stars.isNotEmpty || done.exercise != null);
+    final testStarted = done.stars.isNotEmpty || done.exercise != null;
     final exercise = openExercise != null
         ? lesson.exercise(openExercise.$2.exerciseId)
         : !lessonOpen && testStarted
