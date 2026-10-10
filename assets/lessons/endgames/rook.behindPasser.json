@@ -26,6 +26,7 @@
           "id": "behind",
           "fen": "r7/6k1/P5p1/8/8/6P1/6K1/R7 w - - 0 1",
           "arrows": [
+            "a6a7",
             "a1a7"
           ],
           "marks": [
@@ -446,17 +447,6 @@
         },
         {
           "type": "talk",
-          "id": "kramnik",
-          "fen": "8/8/8/5pk1/6rp/P4K2/8/R7 b - - 9 59",
-          "side": "white",
-          "arrows": [
-            "g4g3",
-            "b1a1"
-          ],
-          "ref": "kramnikBeliavsky1993#117"
-        },
-        {
-          "type": "talk",
           "id": "rb8",
           "fen": "8/8/8/5pk1/6rp/P4K2/8/1R6 w - - 8 59",
           "arrows": [
@@ -464,6 +454,43 @@
             "b8g8"
           ],
           "ref": "kramnikBeliavsky1993#116"
+        },
+        {
+          "type": "demo",
+          "id": "d_kramnik",
+          "fen": "8/8/8/5pk1/6rp/P4K2/8/R7 b - - 9 59",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "g4g3"
+            },
+            {
+              "uci": "f3f2"
+            },
+            {
+              "uci": "g5g4",
+              "marks": [
+                "f5",
+                "h4"
+              ]
+            },
+            {
+              "uci": "a1b1"
+            },
+            {
+              "uci": "h4h3",
+              "arrows": [
+                "h3h1"
+              ]
+            },
+            {
+              "uci": "b1b8"
+            },
+            {
+              "uci": "g3g2"
+            }
+          ],
+          "ref": "kramnikBeliavsky1993#117"
         },
         {
           "type": "move",
