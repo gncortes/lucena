@@ -14,7 +14,7 @@
   "step.t_fortress": "Dama contra torre e peão. Você tem a torre e o peão, e a dama parece muito mais forte. Brancas jogam. Antes de eu explicar, pense: existe um jeito de as brancas nunca perderem nada?",
   "step.t_fortress.hint1": "O peão f2 protege duas casas da terceira fileira. Veja quais são e o que acontece se a dama tomar a torre numa delas.",
   "step.t_fortress.hint2": "A torre só precisa ir e voltar entre essas duas casas, e o rei fica colado no peão. O peão nunca anda.",
-  "step.why": "Esta é a fortaleza. A torre em e3 está protegida pelo peão: se a dama a toma, fxe3 e sobram só os reis. A terceira fileira é da torre, então o rei preto não passa por ela. E o nosso rei tem g1, h1 e h2 para fugir dos xeques, sempre ao lado do peão. Sem conseguir entrar nem ganhar nada, a dama só dá xeques. Três condições: o peão protege a torre, o rei protege o peão, e o peão não sai do lugar.",
+  "step.why": "Esta é a fortaleza. A torre em e3 está protegida pelo peão: se a dama a toma, o peão de f retoma e sobram só os reis. A terceira fileira é da torre, então o rei preto não passa por ela. E o nosso rei tem g1, h1 e h2 para fugir dos xeques, sempre ao lado do peão. Sem conseguir entrar nem ganhar nada, a dama só dá xeques. Três condições: o peão protege a torre, o rei protege o peão, e o peão não sai do lugar.",
   "step.d_shuttle": "Veja a torre indo e voltando. Eu jogo os dois lados; repare que nada muda, por mais que a dama tente.",
   "step.d_shuttle.m1": "A torre vai para g3, a outra casa que o peão protege. É um lance de espera.",
   "step.d_shuttle.m2": "O rei preto vai para e4, querendo descer para d3, atrás da nossa linha.",

@@ -14,7 +14,7 @@
   "step.t_fortress": "Queen against rook and pawn. You have the rook and the pawn, and the queen looks far stronger. White to move. Before I explain, think: is there a way for White never to lose anything?",
   "step.t_fortress.hint1": "The f2 pawn protects two squares on the third rank. Find them, and see what happens if the queen takes the rook on one of them.",
   "step.t_fortress.hint2": "The rook only needs to go back and forth between those two squares, and the king stays glued to the pawn. The pawn never moves.",
-  "step.why": "This is the fortress. The rook on e3 is protected by the pawn: if the queen takes it, fxe3 and only the kings are left. The third rank belongs to the rook, so the black king can't cross it. And our king has g1, h1 and h2 to escape the checks, always beside the pawn. Unable to get in or win anything, the queen can only check. Three conditions: the pawn protects the rook, the king protects the pawn, and the pawn stays put.",
+  "step.why": "This is the fortress. The rook on e3 is protected by the pawn: if the queen takes it, the f-pawn takes back and only the kings are left. The third rank belongs to the rook, so the black king can't cross it. And our king has g1, h1 and h2 to escape the checks, always beside the pawn. Unable to get in or win anything, the queen can only check. Three conditions: the pawn protects the rook, the king protects the pawn, and the pawn stays put.",
   "step.d_shuttle": "Watch the rook go back and forth. I play both sides; notice that nothing changes, however hard the queen tries.",
   "step.d_shuttle.m1": "The rook goes to g3, the other square the pawn protects. A waiting move.",
   "step.d_shuttle.m2": "The black king goes to e4, hoping to come down to d3, behind our line.",
