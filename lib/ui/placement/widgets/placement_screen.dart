@@ -216,17 +216,6 @@ class _Question extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: AppSpacing.md),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
-          child: Text(
-            placementPrompt(l10n, item),
-            key: PlacementKeys.prompt,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: LayoutBuilder(
@@ -237,6 +226,23 @@ class _Question extends StatelessWidget {
                 state: state,
                 size: math.min(box.maxWidth, box.maxHeight),
               ),
+            ),
+          ),
+        ),
+        Padding(
+          // Embaixo do tabuleiro, como nos exercícios.
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screen,
+            AppSpacing.md,
+            AppSpacing.screen,
+            0,
+          ),
+          child: Text(
+            placementPrompt(l10n, item),
+            key: PlacementKeys.prompt,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -333,7 +339,67 @@ class _Option extends StatelessWidget {
         ),
       ),
       onPressed: () => cubit.choose(option),
-      child: OneLine(placementOption(context.l10n, option)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _OptionBadge(option: option),
+          const SizedBox(width: AppSpacing.sm),
+          Flexible(child: OneLine(placementOption(context.l10n, option))),
+        ],
+      ),
+    );
+  }
+}
+
+/// O sinal de cada resposta: o da notação para xeque (+), mate (#) e
+/// afogamento (=), a cor do lado que ganha, o aperto de mão do empate.
+class _OptionBadge extends StatelessWidget {
+  const _OptionBadge({required this.option});
+
+  final String option;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = switch (option) {
+      'check' => '+',
+      'mate' => '#',
+      'stalemate' => '=',
+      'none' => '–',
+      _ => null,
+    };
+    final icon = switch (option) {
+      'yes' => Icons.thumb_up_alt_outlined,
+      'no' => Icons.thumb_down_alt_outlined,
+      'draw' => Icons.handshake_outlined,
+      _ => null,
+    };
+    final side = switch (option) {
+      'whiteWins' => Colors.white,
+      'blackWins' => Colors.black,
+      _ => null,
+    };
+    return Container(
+      width: 28,
+      height: 28,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: side ?? colors.primaryContainer,
+        border: side == null ? null : Border.all(color: colors.outline),
+      ),
+      child: side != null
+          ? null
+          : icon != null
+          ? Icon(icon, size: 16, color: colors.onPrimaryContainer)
+          : Text(
+              text ?? '',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: colors.onPrimaryContainer,
+              ),
+            ),
     );
   }
 }
