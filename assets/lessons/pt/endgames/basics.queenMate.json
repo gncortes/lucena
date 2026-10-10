@@ -93,7 +93,7 @@
   "step.d_box.m4": "2...Rb6. Ele se afasta da dama, rumo ao canto de cima, onde ainda há espaço.",
   "step.d_box.m5": "3.Dc4, salto de cavalo de b6. Agora as paredes são a coluna c e a quarta fileira: o rei preto fica nas colunas a e b, acima da quarta.",
   "step.d_box.m6": "3...Rb7. Não há saída: a coluna c e a quarta fileira são da dama, e ele só anda dentro da caixa pequena.",
-  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Em uma partida, ele precisa entrar na caixa. É o final de {{Magnus Carlsen|magnus-carlsen}} contra {{Viswanathan Anand|viswanathan-anand}}, no Glitnir Blitz de {{Reykjavik|reykjavik}}, em 2006. Carlsen deu a torre pelo peão da coluna e de Anand, o seu peão da coluna d coroou, e o rei branco ainda capturou o peão h. Olhe a caixa do rei preto e a distância do seu rei até ela. Um único lance de dama mantém o caminho mais curto. Qual?",
+  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Em uma partida, ele precisa entrar na caixa. É o final de {{Magnus Carlsen|magnus-carlsen}} contra {{Viswanathan Anand|viswanathan-anand}}, no Glitnir Blitz de {{Reykjavik|reykjavik}}, em 2006. {{Carlsen|magnus-carlsen}} deu a torre pelo peão da coluna e de {{Anand|viswanathan-anand}}, o seu peão da coluna d coroou, e o rei branco ainda capturou o peão h. Olhe a caixa do rei preto e a distância do seu rei até ela. Um único lance de dama mantém o caminho mais curto. Qual?",
   "step.t_carlsen.hint1": "O rei preto está em e3. Conte as casas a um salto de cavalo dele que a dama alcança.",
   "step.t_carlsen.hint2": "Em qual delas a parede deixa o rei preto do mesmo lado que o seu rei?",
   "step.t_carlsen.hint3": "O seu rei, em g3, precisa ficar do lado de dentro da caixa, perto do rei preto.",
@@ -135,7 +135,7 @@
   "step.waitMove.hint": "Quais casas o rei preto tem agora? Deixe só uma.",
   "step.waitMove.done": "1.Df6 fecha a coluna f e deixa ao rei preto só d1, de frente para o seu rei. Depois, o mate pela primeira fileira. Um xeque, como 1.Da1+, custaria quatro lances.",
   "step.t_corner.hint2": "Conte as casas a7, b7 e b8.",
-  "step.d_andreikin": "{{Nakamura|hikaru-nakamura}} contra {{Andreikin|dmitry-andreikin}}, outro torneio de blitz pela internet, em 2022. Nakamura coroou o peão g e, com dois lances de dama, prendeu o rei preto no canto. A dama em d2 deixa a ele a1 e b1: sempre uma casa, nunca afogado.",
+  "step.d_andreikin": "{{Nakamura|hikaru-nakamura}} contra {{Andreikin|dmitry-andreikin}}, outro torneio de blitz pela internet, em 2022. {{Nakamura|hikaru-nakamura}} coroou o peão g e, com dois lances de dama, prendeu o rei preto no canto. A dama em d2 deixa a ele a1 e b1: sempre uma casa, nunca afogado.",
   "step.d_andreikin.m1": "68.Re5. A dama não se mexe, porque já fez a caixa. O rei branco vem pela diagonal, o caminho mais curto até c3.",
   "step.d_andreikin.m2": "68...Ra1. O rei preto vai e volta entre a1 e b1, que é tudo o que tem. Cuidado agora: 69.Dc2? tiraria b1 sem xeque, e seria afogamento.",
   "step.d_andreikin.m3": "69.Rd4. O rei segue pela diagonal, rumo a c3, a casa que protege b2.",
@@ -143,6 +143,6 @@
   "step.d_andreikin.m5": "70.Rc3. O rei chega e protege b2 e c2, as casas em que a dama pode encostar.",
   "step.d_andreikin.m6": "70...Ra1. Forçado: a1 é a única casa livre, e o rei preto volta ao canto.",
   "step.d_andreikin.m7": "71.Db2, mate, como {{Nakamura|hikaru-nakamura}} jogou. A dama encosta no rei preto, protegida pelo rei de c3: o mate de apoio, no canto.",
-  "key.carlsenAnand": "Carlsen contra Anand, Glitnir Blitz, Reykjavik, 2006: um lance de dama a um salto de cavalo do rei preto deixa o rei branco dentro da caixa, e o mate vem pela primeira fileira.",
-  "key.dingLe": "Ding Liren contra Le Quang Liem, Huai'an, 2017: um lance de espera da dama, e as pretas logo abandonaram."
+  "key.carlsenAnand": "{{Carlsen|magnus-carlsen}} contra {{Anand|viswanathan-anand}}, Glitnir Blitz, {{Reykjavik|reykjavik}}, 2006: um lance de dama a um salto de cavalo do rei preto deixa o rei branco dentro da caixa, e o mate vem pela primeira fileira.",
+  "key.dingLe": "{{Ding Liren|ding-liren}} contra {{Le Quang Liem|le-quang-liem}}, {{Huai'an|huaian}}, 2017: um lance de espera da dama, e as pretas logo abandonaram."
 }
