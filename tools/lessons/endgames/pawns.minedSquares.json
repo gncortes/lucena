@@ -532,70 +532,70 @@
         {
           "type": "think",
           "id": "t_race",
-          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "fen": "8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1",
           "hints": 2,
           "ask": "plan",
           "marks": [
-            "d6",
-            "f5"
+            "e7",
+            "c6"
           ]
         },
         {
           "type": "talk",
           "id": "race",
-          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "fen": "8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1",
           "arrows": [
-            "c7d7",
-            "d7e6"
+            "f7e8",
+            "e8d7"
           ],
           "marks": [
-            "d6",
-            "f5"
+            "e7",
+            "c6"
           ]
         },
         {
           "type": "demo",
           "id": "d_race",
-          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "fen": "8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "uci": "c7d7",
+              "uci": "f7e8",
               "arrows": [
-                "d7e6"
+                "e8d7"
               ]
             },
             {
-              "uci": "g4f5"
+              "uci": "b5c6"
             },
             {
-              "uci": "d7d6",
+              "uci": "e8e7",
               "marks": [
-                "d6",
-                "f5"
+                "e7",
+                "c6"
               ]
             },
             {
-              "uci": "f5g5"
+              "uci": "c6d5"
             },
             {
-              "uci": "d6e6"
+              "uci": "e7d7"
             }
           ]
         },
         {
           "type": "move",
           "id": "raceMove",
-          "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
+          "fen": "8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1",
           "goal": "win",
           "turns": [
             {
-              "teach": "c7d7",
+              "teach": "f7e8",
               "accept": "win",
-              "reply": "g4f4"
+              "reply": "b5c5"
             },
             {
-              "teach": "d7e6",
+              "teach": "e8d7",
               "accept": "win"
             }
           ]
@@ -714,8 +714,7 @@
     },
     {
       "id": "race",
-      "fen": "8/2K5/4p3/4P3/6k1/8/8/8 w - - 0 1",
-      "ref": "monsienne"
+      "fen": "8/3p1K2/3P4/1k6/8/8/8/8 w - - 0 1"
     },
     {
       "id": "cheeseman",
