@@ -93,7 +93,7 @@
   "step.d_box.m4": "2...Rb6. Ele se afasta da dama, rumo ao canto de cima, onde ainda há espaço.",
   "step.d_box.m5": "3.Dc4, salto de cavalo de b6. Agora as paredes são a coluna c e a quarta fileira: o rei preto fica nas colunas a e b, acima da quarta.",
   "step.d_box.m6": "3...Rb7. Não há saída: a coluna c e a quarta fileira são da dama, e ele só anda dentro da caixa pequena.",
-  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Numa partida, ele precisa entrar na caixa. É o final de Carlsen contra Anand, no Glitnir Blitz de Reykjavik, em 2006: Carlsen deu a torre pelo peão e de Anand, o seu peão d coroou, e o rei branco ainda tomou o peão h. Brancas jogam. Um único lance de dama mantém o caminho mais curto. Qual?",
+  "step.t_carlsen": "No capítulo 3 o seu rei ficou parado. Numa partida, ele precisa entrar na caixa. É o final de Carlsen contra Anand, no Glitnir Blitz de Reykjavik, em 2006: Carlsen deu a torre pelo peão e de Anand, o seu peão d coroou, e o rei branco ainda tomou o peão h. Um único lance de dama mantém o caminho mais curto. Qual?",
   "step.t_carlsen.hint1": "O rei preto está em e3. Conte as casas a um salto de cavalo dele que a dama alcança.",
   "step.t_carlsen.hint2": "Em qual delas a parede deixa o rei preto do mesmo lado que o seu rei?",
   "step.t_carlsen.hint3": "O seu rei, em g3, precisa ficar do lado de dentro da caixa, perto do rei preto.",

@@ -93,7 +93,7 @@
   "step.d_emms.m4": "2...Ke5. The black king comes next to its pawn, on its way to e4.",
   "step.d_emms.m5": "3.Kf1! The king waits on the first rank, ready to take the opposition when the black king comes down. 3.Kf2? loses, because after 3...Kf4! it is the black king that has the opposition.",
   "step.d_emms.m6": "3...Ke4. The black king comes down, aiming for e3, f3 or g3, two ranks ahead of the pawn: from there the pawn would get through.",
-  "step.d_emms.m7": "4.Ke2! The opposition: the kings face each other with one square between them, and Black is to move. It cannot get through. A drawn pawn ending.",
+  "step.d_emms.m7": "4.Ke2! The opposition: the kings face each other with one square between them, and It cannot get through. A drawn pawn ending.",
   "step.rule3": "And when even the checks do not work? Here the pawn has come down one more square, and only g3 and g2 are left between it and your rook. With Black to move, Black wins: the black king shelters next to its pawn, and the rook, too close, has no room for checks. It is the rule of three the other way round. With the pawn on its fifth rank, the frontal defence is over.",
   "step.five": "Same position, but now it is your move. Checks will not save you. One thing does.",
   "step.five.hint": "1.Rf1: offer the trade. Then 2.Kxf1 and, when the black king comes, 3.Kg2.",

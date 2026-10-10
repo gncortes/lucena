@@ -138,7 +138,7 @@
   "step.t_trap.hint1": "If the pawn becomes a knight on d1, on which squares does it give check?",
   "step.t_trap.hint2": "Before moving the king, the rook can attack the pawn from a square the pawn cannot escape.",
   "step.rushWhy": "White wins with any rook move along the eighth rank, 1.Rd8 for instance, behind the pawn. What throws the win away is hurrying the king: 1.Ke3? It looks natural, bringing the king closer, but e3 is exactly the square on which a knight born on d1 gives check. Watch the punishment.",
-  "step.d_rush": "The white king rushed to e3. Now Black is to move.",
+  "step.d_rush": "The white king rushed to e3. Now",
   "step.d_rush.m1": "1...Ke1! The black king leaves the pawn's file and frees d1 for the promotion.",
   "step.d_rush.m2": "2.Rh8: the rook threatens 3.Rh1, mate, and seems to decide the game.",
   "step.d_rush.m3": "2...d1=N+ The knight is born giving check on e3, exactly the square the king rushed to. The white king has to move, and the mate on h1 never comes.",

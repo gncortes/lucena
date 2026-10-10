@@ -37,7 +37,7 @@
   "step.d_arkell1.m7": "The king goes to f8, in front of the pawn: the best square it has.",
   "step.d_arkell1.m8": "The white king returns to f6, taking e7 and g7.",
   "step.d_arkell1.m9": "The black king stays on g8, on the short side, and the rook is still behind the pawn. Five moves later, White has not advanced a step.",
-  "step.d_blunder": "Now the mistake, back with the bishop's pawn. The white king went to e1, the long side, and Black is to move.",
+  "step.d_blunder": "Now the mistake, back with the bishop's pawn. The white king went to e1, the long side, and",
   "step.d_blunder.m1": "Check. With the king on e1, the only square is d2: the king runs even further to the long side.",
   "step.d_blunder.m2": "The white king is now on the long side, far from the pawn.",
   "step.d_blunder.m3": "The black rook takes the queening square, f1. With it there, the black king can step away from the front of the pawn.",
