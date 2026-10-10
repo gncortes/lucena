@@ -17,7 +17,13 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - **Lance citado sempre numerado**, como nos livros: `1.Rf7!`, `1...Rh7`, `2.e4`, `Com 1.Rc4? ...`. Posição de partida real
   (com link para abrir no Lichess): o número é o do lance real da partida, tirado do PGN. Posição montada ou de estudo:
   começa em 1. Casa solta ("fecha g8") não leva número. O revisor de lições reprova lance sem número ou com número errado.
-- **Captura é "capturar"**, nunca "comer" (só as piadas de comida do Gino ficam).
+- **Vocabulário do app, sempre o mesmo** (glossário em `.claude/skills/aula-final/glossario.md`): captura é "capturar"
+  (nunca "comer" nem "pegar"; só as piadas de comida do Gino ficam), chegar a tempo é "alcançar", trocar peças para
+  cair numa posição é "simplificar". Vale mesmo quando a fonte (livro, estudo, Wikipedia) usa outra palavra: o texto
+  segue o glossário. Títulos de capítulo curtos (até 3 palavras, ~22 caracteres), com o nome consagrado do tema.
+- **Fala didática**: cada fala se entende sozinha por quem está aprendendo. Partida real é apresentada como história
+  (quem jogou, onde e quando, o que estava em jogo, o que olhar na posição) antes do lance; termo novo é explicado na
+  primeira vez. Se precisar de mais espaço, a fala cresce: clareza vale mais que concisão.
 - **"Sobre este final"** (`history`, `key.*`): para leigo. O que é o final, por que importa, que parece simples e não é, uma
   curiosidade. Sem lance solto, sem notação, sem "tabela"/motor, sem bastidores de produção nem crédito de usuário.
 - **Passo de pensar**: o app só mostra "Jogam as brancas. Pense com calma: ..."; o texto do passo abre a explicação (sem

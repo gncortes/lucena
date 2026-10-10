@@ -37,7 +37,9 @@ ideia que nenhuma parte ensinava.
    - Posição **montada ou de estudo**: começa em 1.
    O revisor reprova a lição com lance sem número ou com número que não bate com a partida.
    **O nome da partida final é "desafio prático"**: nunca "partida contra a máquina" nas falas.
-5. **Cada fala diz uma coisa, e o porquê.** O Viktor é paciente e direto: explica a razão antes do lance,
+5. **Cada fala diz uma coisa, e o porquê, de forma didática.** Partida real entra como história (quem, onde, quando, o
+   que estava em jogo, o que olhar na posição) antes do lance; termo novo é explicado na primeira vez; o vocabulário é o
+   do `glossario.md`, mesmo quando a fonte usa outra palavra. Se precisar, a fala cresce: clareza antes de concisão. O Viktor é paciente e direto: explica a razão antes do lance,
    nomeia a ideia com o nome que os livros usam, e cita o mestre quando ajuda. Dicas do `think` vão da mais
    vaga à mais clara e nenhuma dá o lance. As setas e casas mostram o que a fala diz. pt e en dizem o mesmo.
 6. **Partes curtas, sem minutagem** (pedido do Gabriel, 2026-10-10). A parte (etapa, capítulo) segue o roteiro do

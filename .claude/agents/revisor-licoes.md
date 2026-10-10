@@ -40,7 +40,9 @@ O que fazer, nesta ordem:
    fala diz de quem é? A história cita fatos com fonte? Se a aula não tem nenhuma partida real, diga que
    partidas o tema tem (só as que você abriu: Wikipedia, estudo público do Lichess, artigo aberto; nada de
    memória) e dê o link.
-5. **Falas.** Uma coisa por fala, com o porquê; dicas da mais vaga à mais clara sem o lance; setas e casas
+5. **Falas.** Didáticas para quem aprende: partida real apresentada como história (quem, onde, quando, o que estava em
+   jogo, o que olhar) antes do lance; termo novo explicado na primeira vez; vocabulário do `glossario.md` (capturar,
+   alcançar, simplificar…) mesmo quando a fonte usa outra palavra. Uma coisa por fala, com o porquê; dicas da mais vaga à mais clara sem o lance; setas e casas
    batendo com a fala; pt e en dizendo o mesmo; notação pt R/D/T/B/C, en K/Q/R/B/N; nunca "mate em N";
    nenhuma menção a motor, tabela, Wikipedia ou Lichess dentro das falas.
 6. **Divisão.** Cada parte com até 6 passos (7 é o teto) e uma ideia, no roteiro pensar → comentário → lance →
