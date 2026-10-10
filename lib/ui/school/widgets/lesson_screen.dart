@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:go_router/go_router.dart';
@@ -22,18 +24,22 @@ import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
+import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
-import '../../../domain/models/app_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
+import '../../core/board/exercise_layout.dart';
 import 'lesson_part_widgets.dart';
 import 'lesson_finished.dart';
 import 'star_shape.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 
-/// Uma aula com o Viktor: ele em cima, falando; o tabuleiro no meio; a barra
-/// dos passos e o botão do passo embaixo.
+/// Uma aula com o Viktor. Enquanto o aluno resolve um passo de exercício
+/// (T60), o enunciado curto fica em cima, o tabuleiro no centro e o
+/// cronômetro com as ações embaixo; respondido o passo (e nos passos de
+/// conversa e demonstração), o tabuleiro sobe e o Viktor fala numa folha
+/// embaixo dele.
 class LessonScreen extends StatefulWidget {
   const LessonScreen({super.key});
 
@@ -50,6 +56,24 @@ class _LessonScreenState extends State<LessonScreen>
     value: 1,
   );
 
+  // O layout do tabuleiro: 0 resolvendo (no centro), 1 explicando (no alto,
+  // com a folha da fala). Uma animação só move o tabuleiro e traz a folha.
+  late final _mode = AnimationController(
+    vsync: this,
+    duration: AppMotion.component,
+    value: 1,
+  );
+  double _target = 1;
+
+  // A tela inteira e a margem de baixo do sistema, para achar o centro da
+  // tela dentro da área do tabuleiro.
+  Size _screen = Size.zero;
+  double _bottomInset = 0;
+
+  // A altura do enunciado no passo aberto: só cresce dentro do passo, para
+  // o tabuleiro não pular quando a fala muda de tamanho no meio dele.
+  final _header = HeaderMemo();
+
   ChessboardController? _board;
 
   // Sacode o tabuleiro no lance errado.
@@ -61,13 +85,51 @@ class _LessonScreenState extends State<LessonScreen>
     duration: AppMotion.component,
   );
 
-  // O relógio do passo de pensar e o ritmo da demonstração (T51).
+  // O cronômetro do passo (T60) e o ritmo da demonstração (T51).
   Timer? _ticker;
+
+  // O tempo decorrido no passo, só para o cronômetro: parado quando o passo
+  // é respondido, fica com o tempo final até a transição levar.
+  final _elapsed = ValueNotifier(Duration.zero);
 
   // A folha da fala: a cada passo novo ela volta ao mínimo, para o
   // tabuleiro aparecer inteiro.
   final _sheet = DraggableScrollableController();
   double _sheetMin = 0.3;
+
+  // O tamanho da folha, para o "x". A folha avisa até durante a montagem da
+  // tela (quando o passo troca e o tamanho dela é refeito): o aviso passa
+  // para depois do quadro.
+  final _sheetSize = ValueNotifier<double?>(null);
+
+  void _onSheetChanged() {
+    void update() {
+      if (mounted && _sheet.isAttached) _sheetSize.value = _sheet.size;
+    }
+
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => update());
+    } else {
+      update();
+    }
+  }
+
+  // A fala cabe na folha fechada: ela não abre (sem o vaivém do "x").
+  bool _speechFits = false;
+
+  bool _onSpeechMetrics(ScrollMetricsNotification notification) {
+    // Só vale medindo com a folha fechada.
+    final closed = !_sheet.isAttached || _sheet.size <= _sheetMin + 0.005;
+    final fits = notification.metrics.maxScrollExtent <= 0;
+    if (closed && fits != _speechFits) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _speechFits = fits);
+      });
+    }
+    return false;
+  }
+
   final _demoClock = Stopwatch();
   String? _demoAt;
   bool _demoSpoke = false;
@@ -75,25 +137,19 @@ class _LessonScreenState extends State<LessonScreen>
   @override
   void initState() {
     super.initState();
+    _sheet.addListener(_onSheetChanged);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
-  }
-
-  /// O aluno ainda não escolheu o tempo de pensar e a aula tem passo de
-  /// pensar: a escolha vem antes (e o relógio espera).
-  bool _asksThinkTime(BuildContext context, LessonState state) {
-    final chosen = context.read<SettingsCubit>().state?.thinkChosen ?? true;
-    if (chosen || state.finished) return false;
-    return state.lesson?.steps.any((step) => step is ThinkStep) ?? false;
   }
 
   void _tick() {
     if (!mounted) return;
     final cubit = context.read<LessonCubit>();
     final state = cubit.state;
-    if (state.finished || _asksThinkTime(context, state)) return;
+    if (state.finished) return;
+    if (state.layout == LessonLayoutMode.solving) {
+      _elapsed.value = cubit.stepElapsed;
+    }
     switch (state.current) {
-      case ThinkStep() when state.thinking:
-        unawaited(cubit.tick());
       case DemoStep(:final line)
           when state.demoPlaying && state.demoMove < line.length:
         _paceDemo(cubit, state);
@@ -138,9 +194,13 @@ class _LessonScreenState extends State<LessonScreen>
   void dispose() {
     _ticker?.cancel();
     _board?.dispose();
+    _sheet.removeListener(_onSheetChanged);
     _sheet.dispose();
+    _sheetSize.dispose();
     _shake.dispose();
     _landing.dispose();
+    _mode.dispose();
+    _elapsed.dispose();
     _flash.dispose();
     super.dispose();
   }
@@ -177,19 +237,54 @@ class _LessonScreenState extends State<LessonScreen>
   // O estado anterior, para saber o que mudou.
   LessonState _previous = const LessonState();
 
+  /// O layout que o estado pede: 0 resolvendo, 1 explicando.
+  static double _targetOf(LessonState state) =>
+      state.fen != null && state.layout == LessonLayoutMode.solving ? 0 : 1;
+
+  /// Leva o tabuleiro ao layout [target]: animado, ou direto na abertura da
+  /// tela e com "reduzir movimento" ligado.
+  void _setMode(BuildContext context, double target, {required bool animate}) {
+    _target = target;
+    if (!animate || AppMotion.of(context).disabled) {
+      _mode.value = target;
+      return;
+    }
+    _mode.animateTo(
+      target,
+      duration: AppMotion.of(context).component,
+      curve: AppMotion.enter,
+    );
+  }
+
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
     _previous = state;
-    if (state.step != previous.step && _sheet.isAttached) {
-      _sheet.animateTo(
-        _sheetMin,
-        duration: AppMotion.of(context).component,
-        curve: AppMotion.enter,
-      );
+    final cubit = context.read<LessonCubit>();
+    // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
+    // tabuleiro nasce aqui, antes do primeiro tique). Saindo para a fala, ele
+    // fica parado no tempo final até sumir.
+    if (state.layout == LessonLayoutMode.solving) {
+      _elapsed.value = cubit.stepElapsed;
+    }
+    final target = _targetOf(state);
+    final modeChanged = target != _target;
+    if (modeChanged) {
+      _setMode(context, target, animate: previous.current != null);
+    }
+    if (state.step != previous.step) {
+      if (_sheet.isAttached) {
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
+      }
     }
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
+    // O pouso do passo novo; com o tabuleiro já se movendo, só o movimento.
     if (previous.current != null &&
         state.current?.id != previous.current?.id &&
+        !modeChanged &&
         !AppMotion.of(context).disabled) {
       _landing.forward(from: 0);
     }
@@ -214,8 +309,8 @@ class _LessonScreenState extends State<LessonScreen>
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    // Escolhido o tempo de pensar, a tela troca da escolha para a aula.
-    context.select((SettingsCubit cubit) => cubit.state?.thinkChosen);
+    _screen = MediaQuery.sizeOf(context);
+    _bottomInset = MediaQuery.paddingOf(context).bottom;
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) cubit.leave();
@@ -225,6 +320,8 @@ class _LessonScreenState extends State<LessonScreen>
         builder: (context, state) {
           if (state.fen != null && state.current != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
+            _setMode(context, _targetOf(state), animate: false);
+            _elapsed.value = cubit.stepElapsed;
           }
           final lesson = state.lesson;
           return Scaffold(
@@ -280,21 +377,7 @@ class _LessonScreenState extends State<LessonScreen>
                   ),
               ],
             ),
-            body: SafeArea(
-              child: _asksThinkTime(context, state)
-                  // Primeira aula com passo de pensar: antes, quanto tempo.
-                  ? _ThinkTimeChooser(
-                      onChosen: (minutes) {
-                        unawaited(
-                          context.read<SettingsCubit>().setThinkMinutes(
-                            minutes,
-                          ),
-                        );
-                        cubit.useThinkMinutes(minutes);
-                      },
-                    )
-                  : _body(context, state, boardSettings),
-            ),
+            body: SafeArea(child: _body(context, state, boardSettings)),
           );
         },
       ),
@@ -352,116 +435,15 @@ class _LessonScreenState extends State<LessonScreen>
                           ],
                         ),
                       ),
-                      // O tempo de pensar, no topo, como o relógio do desafio
-                      // das estrelas.
-                      if (step is ThinkStep && state.thinking)
-                        ThinkClock(state: state),
                       if (hasBoard) ...[
-                        // Com tabuleiro: ele fica fixo no alto, inteiro, e a
-                        // fala vem numa folha embaixo, com umas linhas à
-                        // vista. Fala longa: o aluno puxa a folha para cima e
-                        // ela sobe por cima do tabuleiro; puxando de volta,
-                        // desce e o tabuleiro reaparece.
                         Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, box) {
-                              final size = max(
-                                min(
-                                  box.maxWidth - 16,
-                                  box.maxHeight - _sheetRoom,
-                                ),
-                                120.0,
-                              );
-                              final minSheet =
-                                  ((box.maxHeight - size - 8) / box.maxHeight)
-                                      .clamp(0.12, 0.9);
-                              _sheetMin = minSheet;
-                              return Stack(
-                                children: [
-                                  Positioned(
-                                    top: 8,
-                                    left: 0,
-                                    right: 0,
-                                    child: Center(
-                                      child: _boardArea(
-                                        context,
-                                        state,
-                                        boardSettings,
-                                        board,
-                                        size: size,
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned.fill(
-                                    child: DraggableScrollableSheet(
-                                      controller: _sheet,
-                                      initialChildSize: minSheet,
-                                      minChildSize: minSheet,
-                                      maxChildSize: _sheetMax,
-                                      snap: true,
-                                      snapSizes: [minSheet, _sheetMax],
-                                      builder: (context, scroll) =>
-                                          _speechSheet(
-                                            context,
-                                            state,
-                                            step,
-                                            viktor,
-                                            scroll,
-                                          ),
-                                    ),
-                                  ),
-                                  // Folha cobrindo o tabuleiro: um "x" logo
-                                  // acima dela, para descer de uma vez.
-                                  ListenableBuilder(
-                                    listenable: _sheet,
-                                    builder: (context, _) {
-                                      final open = _sheet.isAttached
-                                          ? _sheet.size
-                                          : minSheet;
-                                      final covering = open > minSheet + 0.03;
-                                      final top =
-                                          box.maxHeight * (1 - open) - 56;
-                                      return Positioned(
-                                        top: max(0.0, top),
-                                        right: 12,
-                                        child: IgnorePointer(
-                                          ignoring: !covering,
-                                          child: AnimatedOpacity(
-                                            duration: AppMotion.of(context)
-                                                .component,
-                                            opacity: covering ? 1 : 0,
-                                            child: IconButton.filled(
-                                              key: LessonKeys.closeSheet,
-                                              // A mesma cor da folha da fala.
-                                              style: IconButton.styleFrom(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .surfaceContainerLow,
-                                                foregroundColor: Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurface,
-                                                elevation: 2,
-                                              ),
-                                              tooltip: l10n.lessonCloseSpeech,
-                                              icon: const Icon(
-                                                Icons.close_rounded,
-                                              ),
-                                              onPressed: () => _sheet.animateTo(
-                                                minSheet,
-                                                duration: AppMotion.of(context)
-                                                    .component,
-                                                curve: AppMotion.enter,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
+                          child: _exerciseArea(
+                            context,
+                            state,
+                            step,
+                            viktor,
+                            boardSettings,
+                            board,
                           ),
                         ),
                       ] else ...[
@@ -481,7 +463,7 @@ class _LessonScreenState extends State<LessonScreen>
                         if (state.link case final reference?)
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                              84,
+                              12,
                               0,
                               16,
                               0,
@@ -508,17 +490,223 @@ class _LessonScreenState extends State<LessonScreen>
                     ],
                   ),
                   // Os botões flutuam sobre a tela: a fala usa a altura
-                  // toda e passa por baixo deles.
+                  // toda e passa por baixo deles. Resolvendo, o rodapé é o
+                  // cronômetro e as ações do passo; respondido, troca num
+                  // esmaecer, com o cronômetro parado no tempo final.
                   PositionedDirectional(
                     start: 0,
                     end: 0,
                     bottom: 0,
-                    child: _actions(context, state),
+                    child: AnimatedSwitcher(
+                      duration: AppMotion.of(context).component,
+                      child: KeyedSubtree(
+                        key: ValueKey(state.layout),
+                        child: state.layout == LessonLayoutMode.solving
+                            ? _solvingFooter(context, state)
+                            : _actions(context, state),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
     );
+  }
+
+  /// O espaço do tabuleiro. Resolvendo, o enunciado em cima e o tabuleiro
+  /// no centro do que sobra; respondido, o tabuleiro no alto e a folha da
+  /// fala entrando por baixo. Uma animação só ([_mode]) leva de um ao
+  /// outro: o delegate mede o enunciado e posiciona tudo a cada quadro.
+  Widget _exerciseArea(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+    Character? viktor,
+    BoardSettings boardSettings,
+    ChessboardController board,
+  ) {
+    final l10n = context.l10n;
+    return LayoutBuilder(
+      builder: (context, box) {
+        final area = Size(box.maxWidth, box.maxHeight);
+        final explaining = ExerciseLayout.explainingRect(
+          area,
+          sheetRoom: _sheetRoom,
+        );
+        final minSheet =
+            ((area.height - explaining.height - ExerciseLayout.gutter) /
+                    area.height)
+                .clamp(0.12, 0.9);
+        _sheetMin = minSheet;
+        return AnimatedBuilder(
+          animation: _mode,
+          builder: (context, _) {
+            final t = _mode.value;
+            return CustomMultiChildLayout(
+              delegate: _ExerciseLayoutDelegate(
+                header: _header..stepKey = '${state.lesson?.id}.${step.id}',
+                // A área vai até o fim da tela (menos a margem do sistema):
+                // o centro da tela, nas coordenadas dela.
+                centerY:
+                    _screen.height / 2 -
+                    (_screen.height - _bottomInset - area.height),
+                mode: _mode,
+                sheet: _sheetSize,
+                footer: _actionsHeight,
+                sheetRoom: _sheetRoom,
+              ),
+              children: [
+                if (t < 1)
+                  LayoutId(
+                    id: _Slot.prompt,
+                    child: FadeTransition(
+                      opacity: ReverseAnimation(_mode),
+                      child: _prompt(context, state, step, viktor),
+                    ),
+                  ),
+                LayoutId(
+                  id: _Slot.board,
+                  child: LayoutBuilder(
+                    builder: (context, slot) => _boardArea(
+                      context,
+                      state,
+                      boardSettings,
+                      board,
+                      size: slot.maxWidth,
+                    ),
+                  ),
+                ),
+                if (t > 0) ...[
+                  // A fala vem numa folha embaixo do tabuleiro, com umas
+                  // linhas à vista. Fala longa: o aluno puxa a folha para
+                  // cima e ela sobe por cima do tabuleiro; puxando de volta,
+                  // desce e o tabuleiro reaparece.
+                  LayoutId(
+                    id: _Slot.sheet,
+                    child: DraggableScrollableSheet(
+                      controller: _sheet,
+                      initialChildSize: minSheet,
+                      minChildSize: minSheet,
+                      // Fala curta: a folha fica fechada (T59).
+                      maxChildSize: _speechFits ? minSheet : _sheetMax,
+                      snap: !_speechFits,
+                      snapSizes: _speechFits ? null : [minSheet, _sheetMax],
+                      builder: (context, scroll) =>
+                          _speechSheet(context, state, step, viktor, scroll),
+                    ),
+                  ),
+                  // Folha cobrindo o tabuleiro: um "x" logo acima dela, para
+                  // descer de uma vez.
+                  LayoutId(
+                    id: _Slot.close,
+                    // O tamanho chega depois do quadro (T59): sem rebuild no
+                    // meio da montagem quando o passo troca.
+                    child: ValueListenableBuilder(
+                      valueListenable: _sheetSize,
+                      builder: (context, size, _) {
+                        final open = size ?? minSheet;
+                        final covering = open > minSheet + 0.03;
+                        return IgnorePointer(
+                          ignoring: !covering,
+                          child: AnimatedOpacity(
+                            duration: AppMotion.of(context).component,
+                            opacity: covering ? 1 : 0,
+                            child: IconButton.filled(
+                              key: LessonKeys.closeSheet,
+                              // A mesma cor da folha da fala.
+                              style: IconButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerLow,
+                                foregroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface,
+                                elevation: 2,
+                              ),
+                              tooltip: l10n.lessonCloseSpeech,
+                              icon: const Icon(Icons.close_rounded),
+                              onPressed: () => _sheet.animateTo(
+                                minSheet,
+                                duration: AppMotion.of(context).component,
+                                curve: AppMotion.enter,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// O enunciado do passo, enquanto o aluno resolve: o retrato pequeno do
+  /// Viktor e o balão ao lado, como numa fala de jogo. No passo de tocar,
+  /// a casa pedida logo abaixo. Fala comprida demais rola, para o tabuleiro
+  /// não sumir.
+  Widget _prompt(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+    Character? viktor,
+  ) {
+    final theme = Theme.of(context);
+    return KeyedSubtree(
+      key: LessonKeys.prompt,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (viktor != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: TeacherSpeech(
+                  speechContext: SpeechContext.game,
+                  teacher: viktor,
+                  text: _promptText(context, state, step),
+                  emotion: state.emotion,
+                  avatarSize: 40,
+                  bubbleKey: LessonKeys.speech,
+                  onLink: (link) => _flash.toggle(
+                    link,
+                    fen: state.fen ?? step.fen,
+                    color: theme.colorScheme.primary,
+                  ),
+                  onSpoken: (link) => _flash.show(
+                    link,
+                    fen: state.fen ?? step.fen,
+                    color: theme.colorScheme.primary,
+                  ),
+                  speaks: true,
+                ),
+              ),
+            if (step is TapStep) _guide(context, state, step),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// A fala do enunciado. No passo de pensar, antes de qualquer dica, o
+  /// Viktor só diz quem joga e pede para pensar, curto (o tabuleiro fica no
+  /// centro); o contexto do passo abre a explicação.
+  String? _promptText(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+  ) {
+    if (step is ThinkStep && state.hintsShown == 0) {
+      final l10n = context.l10n;
+      return [
+        l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
+        l10n.lessonThinkCalm(step.ask.name),
+      ].join(' ');
+    }
+    return state.speech;
   }
 
   Widget _boardArea(
@@ -530,15 +718,21 @@ class _LessonScreenState extends State<LessonScreen>
   }) {
     final colors = Theme.of(context).colorScheme;
     final hint = state.hint;
+    // As marcações do professor (setas e casas): o aluno pode escondê-las.
+    final marked = context.select(
+      (SettingsCubit cubit) => cubit.state?.lessonMarks ?? true,
+    );
     final shapes = <Shape>{
-      for (final (from, to) in state.arrows)
-        Arrow(
-          color: colors.primary.withValues(alpha: 0.75),
-          orig: Square.fromName(from),
-          dest: Square.fromName(to),
-        ),
-      for (final mark in state.marks)
-        Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
+      if (marked)
+        for (final (from, to) in state.arrows)
+          Arrow(
+            color: colors.primary.withValues(alpha: 0.75),
+            orig: Square.fromName(from),
+            dest: Square.fromName(to),
+          ),
+      if (marked)
+        for (final mark in state.marks)
+          Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
       for (final star in state.stars)
         CustomShape(
           orig: Square.fromName(star),
@@ -607,7 +801,8 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// Entre o tabuleiro e a fala: o título da aula e o que fazer no passo.
+  /// Sob o enunciado: o que fazer no passo (a casa pedida, no passo de
+  /// tocar).
   Widget _guide(BuildContext context, LessonState state, LessonStep step) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
@@ -624,8 +819,7 @@ class _LessonScreenState extends State<LessonScreen>
           step.side == Side.white ? 'white' : 'black',
         ),
         PlayStep() => l10n.lessonGuidePlay(step.goal.name),
-        ThinkStep() =>
-          state.thinking ? l10n.lessonGuideThink : l10n.lessonGuideThinkDone,
+        ThinkStep() => l10n.lessonGuideThink,
         DemoStep() => l10n.lessonGuideDemo,
       },
     };
@@ -644,9 +838,9 @@ class _LessonScreenState extends State<LessonScreen>
       },
     };
     final done = state.phase == StepPhase.done;
-    // A tarefa do passo numa faixa logo abaixo do tabuleiro, alinhada à
-    // esquerda, como nos apps de ensino (o nome da aula já está na tela da
-    // aula e a parte, na barra de cima).
+    // A tarefa do passo numa faixa, alinhada à esquerda, como nos apps de
+    // ensino (o nome da aula já está na tela da aula e a parte, na barra de
+    // cima).
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: AnimatedContainer(
@@ -718,84 +912,102 @@ class _LessonScreenState extends State<LessonScreen>
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppShape.large),
         ),
-        child: ListView(
-          key: LessonKeys.scroll,
-          controller: scroll,
-          padding: const EdgeInsets.only(bottom: _actionsHeight),
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.outlineVariant,
-                    borderRadius: BorderRadius.circular(AppShape.full),
+        child: NotificationListener<ScrollMetricsNotification>(
+          onNotification: _onSpeechMetrics,
+          child: ListView(
+            key: LessonKeys.scroll,
+            controller: scroll,
+            padding: const EdgeInsets.only(bottom: _actionsHeight),
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.outlineVariant,
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                    ),
                   ),
                 ),
               ),
-            ),
-            // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-            // exercício. No resto, o Viktor já diz o que fazer.
-            if (step is TapStep) _guide(context, state, step),
-            if (viktor != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: TeacherSpeech(
-                  teacher: viktor,
-                  text: _speechText(context, state),
-                  emotion: state.emotion,
-                  avatarSize: 56,
-                  bubbleKey: LessonKeys.speech,
-                  onLink: (link) => _flash.toggle(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
+              // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
+              // exercício. No resto, o Viktor já diz o que fazer.
+              if (step is TapStep) _guide(context, state, step),
+              if (viktor != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: TeacherSpeech(
+                    teacher: viktor,
+                    text: state.speech,
+                    emotion: state.emotion,
+                    avatarSize: 56,
+                    bubbleKey: LessonKeys.speech,
+                    onLink: (link) => _flash.toggle(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onSpoken: (link) => _flash.show(
+                      link,
+                      fen: state.fen ?? state.current?.fen,
+                      color: theme.colorScheme.primary,
+                    ),
+                    speaks: true,
+                    speechContext: SpeechContext.teaching,
+                    typed: true,
+                    // Ao lado do som: mostrar ou esconder as marcações.
+                    headerAction: Builder(
+                      builder: (context) {
+                        final shown = context.select(
+                          (SettingsCubit cubit) =>
+                              cubit.state?.lessonMarks ?? true,
+                        );
+                        final l10n = context.l10n;
+                        return IconButton(
+                          key: LessonKeys.marksToggle,
+                          visualDensity: VisualDensity.compact,
+                          tooltip: shown
+                              ? l10n.lessonHideMarks
+                              : l10n.lessonShowMarks,
+                          isSelected: shown,
+                          icon: const Icon(Icons.layers_clear_outlined),
+                          selectedIcon: const Icon(Icons.layers_outlined),
+                          onPressed: () => context
+                              .read<SettingsCubit>()
+                              .setLessonMarks(shown: !shown),
+                        );
+                      },
+                    ),
                   ),
-                  onSpoken: (link) => _flash.show(
-                    link,
-                    fen: state.fen ?? state.current?.fen,
-                    color: theme.colorScheme.primary,
+                ),
+              if (state.link case final reference?)
+                Padding(
+                  // No canto de início, logo abaixo do balão (alinhado à
+                  // borda dele).
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
+                  child: ReferenceLink(
+                    key: LessonKeys.referenceLink,
+                    reference: reference,
                   ),
-                  speaks: true,
-                  speechContext: SpeechContext.teaching,
-                  typed: true,
                 ),
-              ),
-            if (state.link case final reference?)
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(84, 0, 16, 0),
-                child: ReferenceLink(
-                  key: LessonKeys.referenceLink,
-                  reference: reference,
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _actions(BuildContext context, LessonState state) {
-    final l10n = context.l10n;
-    final cubit = context.read<LessonCubit>();
-    final step = state.current!;
-    final isLast = state.step + 1 >= state.stepCount;
-    final canHint =
-        state.phase == StepPhase.active &&
-        (step is MoveStep || step is PlayStep);
-    final canGo = state.canContinue;
-    final colors = Theme.of(context).colorScheme;
-    if (step is DemoStep && state.phase != StepPhase.done) {
-      return DemoControls(state: state, height: _actionsHeight);
-    }
+  /// O esmaecer no fim da tela, por trás dos botões: a fala usa a tela até
+  /// perto da borda de baixo, passando ao lado (e por trás) deles; só uma
+  /// faixa fina no fim esmaece até a cor do fundo, para ela não terminar
+  /// cortada seco e dar para ver que continua (rolando, o fim dela sobe
+  /// acima dos botões).
+  Widget _footer(BuildContext context, {required Widget child}) {
     final background = Theme.of(context).scaffoldBackgroundColor;
-    // A fala usa a tela até perto da borda de baixo, passando ao lado (e por
-    // trás) dos botões; só uma faixa fina no fim esmaece até a cor do fundo,
-    // para ela não terminar cortada seco e dar para ver que continua
-    // (rolando, o fim dela sobe acima dos botões).
     return DecoratedBox(
+      key: LessonKeys.footer,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -810,132 +1022,194 @@ class _LessonScreenState extends State<LessonScreen>
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: Row(
-          children: [
-            if (state.canGoBack) ...[
-              FloatingActionButton(
-                key: LessonKeys.backButton,
-                heroTag: null,
-                // Redondo e da altura dos outros botões da fileira.
-                shape: const CircleBorder(),
-                elevation: 2,
-                backgroundColor: colors.surface,
-                foregroundColor: colors.primary,
-                tooltip: l10n.lessonPrevious,
-                onPressed: cubit.back,
-                child: const Icon(Icons.arrow_back),
-              ),
-              const SizedBox(width: 8),
-            ],
-            if (canHint)
-              FloatingActionButton.extended(
-                key: LessonKeys.hintButton,
-                heroTag: null,
-                shape: const StadiumBorder(),
-                elevation: 2,
-                backgroundColor: colors.surface,
-                foregroundColor: colors.primary,
-                onPressed: cubit.askHint,
-                icon: const Icon(Icons.lightbulb_outline),
-                label: Text(l10n.lessonHint),
-              ),
-            // Pensando: os dois botões dividem a largura e o texto encolhe
-            // se não couber (letra grande, tela estreita).
-            if (step is ThinkStep && state.thinking)
-              Expanded(
-                child: _ThinkAction(
-                  key: LessonKeys.thinkReset,
-                  onPressed: cubit.resetThink,
-                  icon: Icons.replay,
-                  label: l10n.lessonThinkReset,
-                  background: colors.surface,
-                  foreground: colors.primary,
-                ),
-              ),
-            if (state.canHint)
-              FloatingActionButton.extended(
-                key: LessonKeys.moreHintButton,
-                heroTag: null,
-                shape: const StadiumBorder(),
-                elevation: 2,
-                backgroundColor: colors.surface,
-                foregroundColor: colors.primary,
-                onPressed: cubit.moreHint,
-                icon: const Icon(Icons.lightbulb_outline),
-                label: Text(l10n.lessonMoreHint),
-              ),
-            if (state.phase == StepPhase.waiting)
-              Material(
-                elevation: 2,
-                color: colors.surface,
-                shape: const StadiumBorder(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox.square(
-                        dimension: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(l10n.lessonThinking),
-                    ],
-                  ),
-                ),
-              ),
-            if (step is ThinkStep && state.thinking)
-              const SizedBox(width: AppSpacing.sm)
-            else
-              const Spacer(),
-            // Não quer esperar o tempo todo: a explicação do Viktor já,
-            // no mesmo lugar onde ela aparece quando o tempo acaba.
-            if (step is ThinkStep && state.thinking)
-              Expanded(
-                child: _ThinkAction(
-                  key: LessonKeys.thinkSkip,
-                  onPressed: cubit.skipThink,
+        child: child,
+      ),
+    );
+  }
+
+  /// O texto do botão principal: "Ver explicação" no passo de pensar,
+  /// "Concluir" no último passo, "Continuar" no resto.
+  String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
+    final l10n = context.l10n;
+    final isLast = state.step + 1 >= state.stepCount;
+    if (step is ThinkStep) return l10n.lessonSeeExplanation;
+    if (isLast && state.part != null) return l10n.lessonFinishPart;
+    return isLast ? l10n.lessonFinish : l10n.lessonContinue;
+  }
+
+  /// Enquanto o aluno resolve: as ações do passo no canto de início (voltar
+  /// um passo, dica, voltar à posição e o principal com o texto, "Ver
+  /// explicação" ou "Continuar" ao rever, que encolhe se não couber) e o
+  /// cronômetro no canto de fim. Todos os botões da mesma altura.
+  Widget _solvingFooter(BuildContext context, LessonState state) {
+    final l10n = context.l10n;
+    final cubit = context.read<LessonCubit>();
+    final step = state.current!;
+    final colors = Theme.of(context).colorScheme;
+    final canHint =
+        state.phase == StepPhase.active &&
+        (step is MoveStep || step is PlayStep);
+    final moved = step is ThinkStep && state.fen != step.fen;
+    Widget round(Key key, IconData icon, String tooltip, VoidCallback onTap) =>
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
+          child: FloatingActionButton(
+            key: key,
+            heroTag: null,
+            shape: const CircleBorder(),
+            elevation: 2,
+            backgroundColor: colors.surface,
+            foregroundColor: colors.primary,
+            tooltip: tooltip,
+            onPressed: onTap,
+            child: Icon(icon),
+          ),
+        );
+    return _footer(
+      context,
+      child: Row(
+        children: [
+          if (state.canGoBack)
+            round(
+              LessonKeys.backButton,
+              Icons.arrow_back,
+              l10n.lessonPrevious,
+              cubit.back,
+            ),
+          if (canHint)
+            round(
+              LessonKeys.hintButton,
+              Icons.lightbulb_outline,
+              l10n.lessonHint,
+              cubit.askHint,
+            ),
+          // No passo de pensar: a próxima dica, quando o aluno quiser.
+          if (state.canHint)
+            round(
+              LessonKeys.moreHintButton,
+              Icons.lightbulb_outline,
+              l10n.lessonMoreHint,
+              cubit.moreHint,
+            ),
+          // Mexeu nas peças: de volta à posição do passo.
+          if (moved)
+            round(
+              LessonKeys.thinkReset,
+              Icons.replay,
+              l10n.lessonThinkReset,
+              cubit.resetThink,
+            ),
+          if (state.phase == StepPhase.waiting)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
+              child: _waiting(context),
+            ),
+          // Com botão principal, ele toma o espaço que sobra; sem ele, o
+          // cronômetro vai sozinho para o canto de fim.
+          if (state.canContinue)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: AppSpacing.md),
+                child: _FooterAction(
+                  key: LessonKeys.nextButton,
+                  onPressed: cubit.next,
                   // A explicação do Viktor (a lâmpada é da dica).
-                  icon: Icons.forum_outlined,
-                  label: l10n.lessonThinkSkip,
-                  background: colors.secondaryContainer,
-                  foreground: colors.onSecondaryContainer,
+                  icon: step is ThinkStep
+                      ? Icons.forum_outlined
+                      : Icons.arrow_forward_rounded,
+                  label: _nextLabel(context, state, step),
+                  background: colors.primary,
+                  foreground: colors.onPrimary,
                 ),
               ),
-            if (state.phase == StepPhase.failed)
-              FloatingActionButton.extended(
-                key: LessonKeys.retryButton,
-                heroTag: null,
-                shape: const StadiumBorder(),
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                onPressed: cubit.retry,
-                icon: const Icon(Icons.replay),
-                label: Text(l10n.lessonRetry),
-              ),
-            if (canGo)
-              FloatingActionButton.extended(
-                key: LessonKeys.nextButton,
-                heroTag: null,
-                shape: const StadiumBorder(),
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                onPressed: cubit.next,
-                label: Text(
-                  step is ThinkStep
-                      ? l10n.lessonSeeExplanation
-                      : isLast && state.part != null
-                      ? l10n.lessonFinishPart
-                      : isLast
-                      ? l10n.lessonFinish
-                      : l10n.lessonContinue,
-                ),
-              ),
+            )
+          else
+            const Spacer(),
+          StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
+        ],
+      ),
+    );
+  }
+
+  /// A máquina está respondendo.
+  Widget _waiting(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      elevation: 2,
+      color: colors.surface,
+      shape: const StadiumBorder(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox.square(
+              dimension: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: 10),
+            Text(context.l10n.lessonThinking),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Com o professor falando: voltar um passo, tentar de novo e continuar.
+  Widget _actions(BuildContext context, LessonState state) {
+    final l10n = context.l10n;
+    final cubit = context.read<LessonCubit>();
+    final step = state.current!;
+    final colors = Theme.of(context).colorScheme;
+    if (step is DemoStep && state.phase != StepPhase.done) {
+      return KeyedSubtree(
+        key: LessonKeys.footer,
+        child: DemoControls(state: state, height: _actionsHeight),
+      );
+    }
+    return _footer(
+      context,
+      child: Row(
+        children: [
+          if (state.canGoBack) ...[
+            FloatingActionButton(
+              key: LessonKeys.backButton,
+              heroTag: null,
+              // Redondo e da altura dos outros botões da fileira.
+              shape: const CircleBorder(),
+              elevation: 2,
+              backgroundColor: colors.surface,
+              foregroundColor: colors.primary,
+              tooltip: l10n.lessonPrevious,
+              onPressed: cubit.back,
+              child: const Icon(Icons.arrow_back),
+            ),
+            const SizedBox(width: 8),
+          ],
+          if (state.phase == StepPhase.waiting) _waiting(context),
+          const Spacer(),
+          if (state.phase == StepPhase.failed)
+            FloatingActionButton.extended(
+              key: LessonKeys.retryButton,
+              heroTag: null,
+              shape: const StadiumBorder(),
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
+              onPressed: cubit.retry,
+              icon: const Icon(Icons.replay),
+              label: Text(l10n.lessonRetry),
+            ),
+          if (state.canContinue)
+            FloatingActionButton.extended(
+              key: LessonKeys.nextButton,
+              heroTag: null,
+              shape: const StadiumBorder(),
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
+              onPressed: cubit.next,
+              label: Text(_nextLabel(context, state, step)),
+            ),
+        ],
       ),
     );
   }
@@ -950,34 +1224,16 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// Até onde a folha da fala sobe: quase a tela toda.
   static const _sheetMax = 0.94;
-
-  /// A fala do balão. Enquanto o aluno pensa, o Viktor só diz quanto
-  /// tempo ele tem (o tempo das preferências; a frase vem das traduções).
-  String? _speechText(BuildContext context, LessonState state) {
-    final step = state.current;
-    if (step is ThinkStep && state.thinking) {
-      // Quem joga, o que procurar e o tempo.
-      final l10n = context.l10n;
-      return [
-        l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
-        l10n.lessonThinkAsk(step.ask.name),
-        l10n.lessonThinkAnnounce(state.thinkTime.inMinutes),
-      ].join(' ');
-    }
-    return state.speech;
-  }
 }
 
-/// A estrela de uma casa a alcançar: entra com um salto e fica parada (uma
-/// animação sem fim não deixaria a tela "assentar" nos testes).
 /// Abre a próxima aula da trilha no lugar desta.
 void openLesson(BuildContext context, String lessonId) =>
     context.pushReplacement(Routes.lesson(lessonId));
 
-/// Um botão do rodapé enquanto o aluno pensa: da altura dos outros, com o
-/// texto numa linha só que encolhe se faltar largura.
-class _ThinkAction extends StatelessWidget {
-  const _ThinkAction({
+/// O botão principal do rodapé enquanto o aluno resolve: da altura dos
+/// outros, com o texto numa linha só que encolhe se faltar largura.
+class _FooterAction extends StatelessWidget {
+  const _FooterAction({
     required this.onPressed,
     required this.icon,
     required this.label,
@@ -993,7 +1249,7 @@ class _ThinkAction extends StatelessWidget {
   final Color foreground;
 
   @override
-  Widget build(BuildContext context) => FilledButton.icon(
+  Widget build(BuildContext context) => FilledButton(
     style: FilledButton.styleFrom(
       minimumSize: const Size(0, 56),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -1006,78 +1262,104 @@ class _ThinkAction extends StatelessWidget {
       textStyle: Theme.of(context).textTheme.labelLarge,
     ),
     onPressed: onPressed,
-    icon: Icon(icon),
-    label: OneLine(label),
+    // O texto flexível de verdade: encolhe em vez de estourar.
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(child: OneLine(label)),
+      ],
+    ),
   );
 }
 
-/// Antes da primeira aula com passo de pensar: quanto tempo o aluno quer
-/// pensar sozinho em cada posição. A escolha fica nas Configurações.
-class _ThinkTimeChooser extends StatelessWidget {
-  const _ThinkTimeChooser({required this.onChosen});
+/// As partes do espaço do tabuleiro.
+enum _Slot { prompt, board, sheet, close }
 
-  final ValueChanged<int> onChosen;
+/// Posiciona o enunciado, o tabuleiro, a folha da fala e o "x" dela pelo
+/// andamento de [mode] (0 resolvendo, 1 explicando). O enunciado é medido
+/// aqui, no mesmo quadro, e a área não muda de tamanho durante a animação.
+class _ExerciseLayoutDelegate extends MultiChildLayoutDelegate {
+  _ExerciseLayoutDelegate({
+    required this.header,
+    required this.centerY,
+    required this.mode,
+    required this.sheet,
+    required this.footer,
+    required this.sheetRoom,
+  }) : super(relayout: Listenable.merge([mode, sheet]));
+
+  final HeaderMemo header;
+  final double centerY;
+  final Animation<double> mode;
+  final ValueListenable<double?> sheet;
+  final double footer;
+  final double sheetRoom;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return SingleChildScrollView(
-      key: LessonKeys.thinkChooser,
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Icon(Icons.hourglass_bottom_rounded, size: 56, color: colors.primary),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.lessonThinkChooseTitle,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            l10n.lessonThinkChooseBody,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          for (final minutes in AppSettings.thinkChoices) ...[
-            Card(
-              margin: EdgeInsets.zero,
-              clipBehavior: Clip.antiAlias,
-              child: ListTile(
-                key: LessonKeys.thinkChoice(minutes),
-                leading: Icon(
-                  minutes == 0
-                      ? Icons.auto_awesome_rounded
-                      : Icons.hourglass_bottom_outlined,
-                  color: colors.primary,
-                ),
-                title: Text(
-                  minutes == 0
-                      ? l10n.settingsThinkRecommended
-                      : l10n.endgamePartMinutes(minutes),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                subtitle: minutes == 0
-                    ? Text(l10n.lessonThinkRecommendedHint)
-                    : null,
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => onChosen(minutes),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
-        ],
-      ),
+  void performLayout(Size size) {
+    final t = mode.value;
+    final hasPrompt = hasChild(_Slot.prompt);
+    var top = header.held;
+    var measured = false;
+    if (hasPrompt && top == null) {
+      // Passo novo: o enunciado medido (comprido demais, rola).
+      top = layoutChild(
+        _Slot.prompt,
+        BoxConstraints(maxWidth: size.width, maxHeight: size.height * 0.4),
+      ).height;
+      header.hold(top);
+      measured = true;
+    }
+    final solving = ExerciseLayout.solvingRect(
+      size,
+      header: top ?? 0,
+      footer: footer,
+      centerY: centerY,
     );
+    if (hasPrompt && !measured) {
+      // Enunciado já medido: cresce até o topo do tabuleiro, que não sai do
+      // lugar (fala maior rola).
+      layoutChild(
+        _Slot.prompt,
+        BoxConstraints(
+          maxWidth: size.width,
+          maxHeight: max(top!, solving.top - ExerciseLayout.gutter),
+        ),
+      );
+    }
+    if (hasPrompt) positionChild(_Slot.prompt, Offset(0, -t * 24));
+    final explaining = ExerciseLayout.explainingRect(
+      size,
+      sheetRoom: sheetRoom,
+    );
+    final rect = Rect.lerp(solving, explaining, t)!;
+    layoutChild(_Slot.board, BoxConstraints.tight(rect.size));
+    positionChild(_Slot.board, rect.topLeft);
+    if (hasChild(_Slot.sheet)) {
+      layoutChild(_Slot.sheet, BoxConstraints.tight(size));
+      positionChild(_Slot.sheet, Offset(0, size.height * (1 - t)));
+    }
+    if (hasChild(_Slot.close)) {
+      final close = layoutChild(_Slot.close, BoxConstraints.loose(size));
+      final open = sheet.value ?? 0.0;
+      positionChild(
+        _Slot.close,
+        Offset(
+          size.width - 12 - close.width,
+          max(0.0, size.height * (1 - open) - 68),
+        ),
+      );
+    }
   }
+
+  @override
+  bool shouldRelayout(_ExerciseLayoutDelegate old) =>
+      old.header != header ||
+      old.centerY != centerY ||
+      old.mode != mode ||
+      old.sheet != sheet ||
+      old.footer != footer ||
+      old.sheetRoom != sheetRoom;
 }

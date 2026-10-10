@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_corner",
           "fen": "7k/8/5K2/7P/8/8/8/5B2 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -113,7 +112,6 @@
           "type": "think",
           "id": "t_colour",
           "fen": "7k/8/5K2/7P/8/8/8/4B3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -263,7 +261,6 @@
           "type": "think",
           "id": "t_cutoff",
           "fen": "5k2/8/6K1/7P/8/3B4/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -430,7 +427,6 @@
           "type": "think",
           "id": "t_mednis",
           "fen": "5K2/5B2/7k/7P/8/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "black",
@@ -542,7 +538,6 @@
           "type": "think",
           "id": "t_taimanov",
           "fen": "8/8/5K2/3kn3/6B1/7P/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "black"
@@ -644,7 +639,6 @@
           "type": "think",
           "id": "t_finish",
           "fen": "8/8/8/2k5/8/6KP/4B3/8 b - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan",
           "marks": [

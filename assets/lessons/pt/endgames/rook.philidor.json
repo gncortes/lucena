@@ -25,8 +25,8 @@
   "ex.e14": "Brancas jogam e empatam. Peão de bispo, o seu rei ainda longe da casa de promoção e a torre preta já na sua terceira fileira. Chegue à defesa de Philidor.",
   "ex.e14.hint": "Primeiro o rei vai para a frente do peão. Mas o caminho mais curto deixa rei e torre na mesma fileira, e a torre preta gosta disso.",
   "ex.e14.solution": "Rd2! O caminho direto, Rd1?, perde para Tb1+: o xeque pega o rei e, atrás dele, a torre de e1. Depois de Tb2+, Rc1! (Rd1? Tb1+ de novo). Com o rei em c1, a casa de promoção, a torre toma a terceira fileira: Te3, e é a posição de Philidor (Te5, Te6, Te7 e Te8 também seguram). Primeiro o rei, depois a torre, e sem cair no espeto. Posição nossa.",
-  "history": "François-André Philidor publicou esta defesa em 1777, na segunda edição da sua Análise do jogo de xadrez, e achava que ela era o único jeito de empatar este final. Durante mais de um século os manuais repetiram a análise dele, inclusive uma variante em que ele dava o final por perdido se a torre saísse cedo da terceira fileira. Em 1897, Max Karstedt mostrou que havia outras defesas, e a análise exata de hoje confirma: naquela variante de Philidor a posição continuava empatada. A defesa da terceira fileira, porém, segue sendo a mais simples de todas, e é a primeira que qualquer jogador deve saber de cor.",
-  "practice": "Agora contra a máquina: você tem só a torre, ela tem a torre e o peão. Tome a terceira fileira, espere o peão avançar e dê os xeques por trás. O objetivo é empatar.",
+  "history": "Esta é a defesa mais importante dos finais de torre: com torre contra torre e peão, é o jeito mais simples de empatar. François-André Philidor, músico e o melhor jogador de xadrez do seu tempo, publicou-a em 1777 e achava que era o único jeito de salvar a partida. Durante mais de um século os livros repetiram a análise dele, inclusive um erro: Philidor dava como perdidas posições que ainda empatavam, como mostrou o alemão Max Karstedt em 1897. Mesmo assim, a defesa da terceira fileira continua sendo a primeira que todo jogador deve saber de cor, porque salva meio ponto em muitas partidas.",
+  "practice": "Agora o desafio prático: você tem só a torre, a máquina tem a torre e o peão. Tome a terceira fileira, espere o peão avançar e dê os xeques por trás. O objetivo é empatar.",
   "part.third.title": "A posição de Philidor",
   "part.third.summary": "Rei na casa de promoção, torre na terceira fileira, e esperar: quem precisa agir são as pretas.",
   "part.side.title": "O xeque pela primeira fileira",
@@ -120,9 +120,9 @@
   "step.bishopMove.hint": "Tg3: a torre na terceira fileira barra c3 e d3.",
   "step.bishopMove.done": "A mesma defesa, outro peão. O rei está ao lado da casa de promoção e a torre fecha a fileira: as pretas voltam a depender do avanço do peão.",
   "step.recap": "Três regras. Um: rei na casa de promoção e torre na terceira fileira, esperando; se o rei estiver longe, ele chega primeiro. Dois: quando o peão pisar na terceira fileira, a torre vai para o fundo e dá xeques por trás; nem antes, nem depois. Três: se trocarem as torres, o rei recua reto, para a frente do peão. E quando a terceira fileira já não serve, existe outra defesa: é a aula do lado curto.",
-  "step.finish": "Agora contra a máquina, do começo. Você já sabe a ordem: primeiro a fileira, depois a paciência, e os xeques só na hora certa.",
-  "key.classic": "A posição de Philidor (1777): rei na casa de promoção e torre na terceira fileira. Empate com qualquer lado jogando.",
-  "key.reach": "Falta tomar a terceira fileira: Tb3. Do capítulo \"Philidor Position\" da prática de finais de torre, com as cores trocadas.",
-  "key.bishop": "Com peão de bispo a defesa é a mesma: Tg3. Do estudo de Yuri61, com as cores trocadas.",
-  "key.advanced": "A terceira fileira já não serve: torre para o fundo e depois para trás do peão. Do capítulo \"Advanced Philidor\" da prática de finais de torre, com as cores trocadas."
+  "step.finish": "Agora o desafio prático, do começo. Você já sabe a ordem: primeiro a fileira, depois a paciência, e os xeques só na hora certa.",
+  "key.classic": "A posição de Philidor, de 1777: o rei branco na casa onde o peão quer promover e a torre na terceira fileira, barrando o rei preto. Empate, jogue quem jogar.",
+  "key.reach": "A torre branca ainda não está na terceira fileira. O primeiro passo é levá-la até lá, antes que o rei preto chegue.",
+  "key.bishop": "Contra um peão de bispo a defesa é a mesma: a torre vai para a terceira fileira e espera.",
+  "key.advanced": "Aqui a torre já não chega a tempo à terceira fileira. Ela vai para o fundo do tabuleiro e, quando o peão avançar, passa a dar xeques por trás."
 }

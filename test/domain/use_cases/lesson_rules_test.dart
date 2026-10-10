@@ -26,4 +26,35 @@ void main() {
     expect(LessonRules.endsLine(step, 1, 'c4c5'), isTrue);
     expect(LessonRules.endsLine(step, 1, 'c4c6'), isTrue);
   });
+
+  test('T60: reconhece a fala que já diz quem joga, em português e inglês', () {
+    for (final text in [
+      'Brancas jogam. Três peões contra três.',
+      'Você joga de pretas e defende.',
+      'Jogam as brancas.',
+      'White to move. What is the plan?',
+      'You play Black here.',
+    ]) {
+      expect(LessonRules.saysWhoMoves(text), isTrue, reason: text);
+    }
+    for (final text in [
+      'Torre preta atacando o seu peão pelo lado.',
+      'The black rook attacks your pawn from the side.',
+    ]) {
+      expect(LessonRules.saysWhoMoves(text), isFalse, reason: text);
+    }
+  });
+
+  test('o enunciado do passo de pensar abre a explicação sem as perguntas', () {
+    expect(
+      LessonRules.thinkContext(
+        'Brancas jogam. O rei preto está longe do peão, e o branco também. '
+        'Se o rei preto alcançar o peão de f, é empate. Qual lance de rei '
+        'impede isso?',
+      ),
+      'O rei preto está longe do peão, e o branco também. '
+      'Se o rei preto alcançar o peão de f, é empate.',
+    );
+    expect(LessonRules.thinkContext('White to move. What is the plan?'), '');
+  });
 }

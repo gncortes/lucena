@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_box",
           "fen": "8/8/8/8/1k6/7R/1K6/8 w - - 0 1",
-          "minutes": 1,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -111,7 +110,6 @@
           "type": "think",
           "id": "t_guard",
           "fen": "8/8/8/6k1/5R2/8/6K1/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -201,7 +199,6 @@
           "type": "think",
           "id": "t_far",
           "fen": "8/1k6/R7/8/7K/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -286,7 +283,6 @@
           "type": "think",
           "id": "t_run",
           "fen": "2k5/8/8/8/7K/8/8/5R2 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -370,7 +366,6 @@
           "type": "think",
           "id": "t_capablanca",
           "fen": "2k5/R7/8/3K4/8/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "capablanca"
@@ -476,7 +471,6 @@
           "type": "think",
           "id": "t_iniyan",
           "fen": "8/8/8/8/8/5RK1/8/6k1 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "nakaIniyan"
@@ -592,7 +586,6 @@
           "type": "think",
           "id": "t_stalemate",
           "fen": "k7/1R6/2K5/8/8/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan",
           "side": "white"

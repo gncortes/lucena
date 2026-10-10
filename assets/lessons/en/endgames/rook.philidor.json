@@ -25,8 +25,8 @@
   "ex.e14": "White to move and draw. A bishop pawn, your king still far from the queening square and the black rook already on your third rank. Reach the Philidor defence.",
   "ex.e14.hint": "The king goes in front of the pawn first. But the shortest road puts king and rook on the same rank, and the black rook likes that.",
   "ex.e14.solution": "Kd2! The direct Kd1? loses to Rb1+: the check hits the king and, behind it, the rook on e1. After Rb2+, Kc1! (Kd1? Rb1+ again). With the king on c1, the queening square, the rook takes the third rank: Re3, and it is the Philidor position (Re5, Re6, Re7 and Re8 also hold). King first, then the rook, and no skewer. Our own position.",
-  "history": "François-André Philidor published this defence in 1777, in the second edition of his Analysis of the Game of Chess, and believed it was the only way to draw this endgame. For more than a century the manuals repeated his analysis, including a variation in which he gave the game up as lost if the rook left the third rank early. In 1897 Max Karstedt showed that there were other defences, and today's exact analysis confirms it: in that variation of Philidor's the position was still a draw. The third-rank defence, however, remains the simplest of all, and it is the first one every player should know by heart.",
-  "practice": "Now against the machine: you have only the rook, it has the rook and the pawn. Take the third rank, wait for the pawn to advance and check from behind. The goal is to draw.",
+  "history": "This is the most important defence in rook endings: with rook against rook and pawn, it is the simplest way to draw. François-André Philidor, a composer and the best chess player of his time, published it in 1777 and believed it was the only way to save the game. For more than a century books repeated his analysis, mistake included: Philidor called some positions lost that were still drawn, as the German Max Karstedt showed in 1897. Even so, the third-rank defence is still the first one every player should know by heart, because it saves half a point in a great many games.",
+  "practice": "Now the practical challenge: you have only the rook, it has the rook and the pawn. Take the third rank, wait for the pawn to advance and check from behind. The goal is to draw.",
   "part.third.title": "The Philidor position",
   "part.third.summary": "King on the queening square, rook on the third rank, and wait: it is Black who has to act.",
   "part.side.title": "The check along the first rank",
@@ -120,9 +120,9 @@
   "step.bishopMove.hint": "Rg3: the rook on the third rank bars c3 and d3.",
   "step.bishopMove.done": "The same defence, another pawn. The king is next to the queening square and the rook closes the rank: Black is back to depending on the pawn advance.",
   "step.recap": "Three rules. One: king on the queening square and rook on the third rank, waiting; if the king is far away, it gets there first. Two: when the pawn steps onto the third rank, the rook goes to the far end and checks from behind; not before, not after. Three: if the rooks come off, the king retreats straight back, in front of the pawn. And when the third rank no longer works, there is another defence: it is the short-side lesson.",
-  "step.finish": "Now against the machine, from the start. You know the order: first the rank, then patience, and the checks only at the right moment.",
-  "key.classic": "The Philidor position (1777): king on the queening square and rook on the third rank. A draw whoever is to move.",
-  "key.reach": "The third rank still has to be taken: Rb3. From the \"Philidor Position\" chapter of the rook endgame practice, with colours reversed.",
-  "key.bishop": "With a bishop's pawn the defence is the same: Rg3. From Yuri61's study, with colours reversed.",
-  "key.advanced": "The third rank no longer works: rook to the far end and then behind the pawn. From the \"Advanced Philidor\" chapter of the rook endgame practice, with colours reversed."
+  "step.finish": "Now the practical challenge, from the start. You know the order: first the rank, then patience, and the checks only at the right moment.",
+  "key.classic": "Philidor's position, from 1777: the white king on the square where the pawn wants to promote and the rook on the third rank, barring the black king. A draw, whoever moves.",
+  "key.reach": "The white rook is not on the third rank yet. The first step is to get it there before the black king arrives.",
+  "key.bishop": "Against a bishop pawn the defence is the same: the rook goes to the third rank and waits.",
+  "key.advanced": "Here the rook can no longer reach the third rank in time. It goes to the far end of the board and, once the pawn advances, starts checking from behind."
 }

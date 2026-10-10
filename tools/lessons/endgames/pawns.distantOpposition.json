@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_lesson",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -100,7 +99,6 @@
           "type": "think",
           "id": "t_diagonal",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -173,7 +171,6 @@
           "type": "think",
           "id": "t_carlsenSo",
           "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "black",
@@ -271,7 +268,6 @@
           "type": "think",
           "id": "t_euwe",
           "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "euweWhitaker1928"
@@ -368,7 +364,6 @@
           "type": "think",
           "id": "t_capablanca",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -465,7 +460,6 @@
           "type": "think",
           "id": "t_edge",
           "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "brandonEdge"
@@ -576,7 +570,6 @@
           "type": "think",
           "id": "t_reserve",
           "fen": "4k3/8/8/1p5p/1P5P/8/P7/4K3 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "white"
@@ -664,7 +657,6 @@
           "type": "think",
           "id": "t_means",
           "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan"
         },

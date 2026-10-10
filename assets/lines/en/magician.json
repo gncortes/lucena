@@ -70,7 +70,7 @@
       "category": "bigAdvantage",
       "intensity": 2,
       "emotion": "playful",
-      "text": "I pulled a rabbit from the hat and it brought a rook."
+      "text": "I pulled a rabbit from the hat, and the rabbit brought the win."
     },
     {
       "id": "magician.bigAdvantage.5",
@@ -252,7 +252,7 @@
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Abracadabra! And your piece is gone!"
+      "text": "Abracadabra! Look what you just made appear for me!"
     },
     {
       "id": "magician.opponentBlunder.3",
@@ -308,7 +308,7 @@
       "category": "ownBlunder",
       "intensity": 2,
       "emotion": "playful",
-      "text": "First I make the piece vanish. Then I bring it back."
+      "text": "First I make it all go wrong. Then I fix it. Later."
     },
     {
       "id": "magician.ownBlunder.5",
@@ -728,7 +728,7 @@
       "category": "win",
       "intensity": 2,
       "emotion": "playful",
-      "text": "A magician never reveals his secrets. But it was the trap."
+      "text": "A magician never reveals his secrets. Not even this one."
     },
     {
       "id": "magician.win.5",

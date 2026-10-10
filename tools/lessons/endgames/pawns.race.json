@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_race",
           "fen": "8/p7/8/1k6/5K2/8/7P/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -128,7 +127,6 @@
           "type": "think",
           "id": "t_check",
           "fen": "8/8/8/7p/P7/5k2/1K6/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -220,7 +218,6 @@
           "type": "think",
           "id": "t_control",
           "fen": "8/7P/8/8/2k5/4K3/p7/8 w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "line",
           "marks": [
@@ -302,7 +299,6 @@
           "type": "think",
           "id": "t_catch",
           "fen": "8/7k/8/8/P4p2/1K6/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -389,7 +385,6 @@
           "type": "think",
           "id": "t_fischer",
           "fen": "8/5P2/6K1/8/8/2p5/2k5/8 b - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan",
           "side": "black",

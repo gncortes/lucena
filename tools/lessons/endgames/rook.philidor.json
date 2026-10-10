@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_classic",
           "fen": "8/8/8/8/4pk2/R7/7r/4K3 b - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "side": "white",
@@ -100,7 +99,6 @@
           "type": "think",
           "id": "t_side",
           "fen": "8/8/8/8/4pk2/R7/8/4K2r w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan"
         },
@@ -160,7 +158,6 @@
           "type": "think",
           "id": "t_pawn",
           "fen": "8/8/8/8/5k2/1R2p3/r7/4K3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "wikipedia"
@@ -297,7 +294,6 @@
           "type": "think",
           "id": "t_reach",
           "fen": "8/R7/8/8/3kp3/8/7r/4K3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "noseknowsReach"
@@ -364,7 +360,6 @@
           "type": "think",
           "id": "t_king",
           "fen": "8/8/8/8/3kp3/3r4/6K1/6R1 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -433,7 +428,6 @@
           "type": "think",
           "id": "t_expel",
           "fen": "8/8/8/8/4p3/4k3/r7/4K2R w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan"
         },
@@ -502,7 +496,6 @@
           "type": "think",
           "id": "t_trade",
           "fen": "6R1/8/8/r7/3k4/4p3/8/3K4 w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan"
         },
@@ -573,7 +566,6 @@
           "type": "think",
           "id": "t_bishop",
           "fen": "6R1/8/8/8/2pk4/8/7r/3K4 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line",
           "ref": "yuri61Philidor"

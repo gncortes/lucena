@@ -15,7 +15,6 @@
           "type": "think",
           "id": "t_square",
           "fen": "8/8/1k6/8/6P1/8/8/K7 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line"
         },
@@ -142,7 +141,6 @@
           "type": "think",
           "id": "t_opposition",
           "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "white"
@@ -245,7 +243,6 @@
           "type": "think",
           "id": "t_diagonal",
           "fen": "8/8/8/8/8/4P2k/8/K7 w - - 0 1",
-          "minutes": 5,
           "hints": 3,
           "ask": "plan",
           "marks": [
@@ -345,7 +342,6 @@
           "type": "think",
           "id": "t_defOpp",
           "fen": "8/8/3k4/8/8/3K4/3P4/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -425,7 +421,6 @@
           "type": "think",
           "id": "t_front",
           "fen": "8/8/8/8/8/3p1k2/8/4K3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -525,7 +520,6 @@
           "type": "think",
           "id": "t_seventh",
           "fen": "2k5/8/2PK4/8/8/8/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line"
         },
@@ -633,7 +627,6 @@
           "type": "think",
           "id": "t_barcza",
           "fen": "8/8/8/p7/k7/4K3/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [

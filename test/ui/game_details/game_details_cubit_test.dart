@@ -80,9 +80,12 @@ void main() {
       Duration(seconds: 65),
     ]);
     expect(state.moves.last.move, Move.parse('g1f3'));
-    // Sem escolha, o tabuleiro mostra o último lance.
-    expect(state.shownIndex, 2);
-    expect(state.shownPosition, state.moves.last.position);
+    // Sem escolha, o tabuleiro abre na posição de início.
+    expect(state.shownIndex, -1);
+    expect(state.shownPosition, state.start);
+    cubit.last();
+    expect(cubit.state.shownIndex, 2);
+    expect(cubit.state.shownPosition, state.moves.last.position);
     expect(state.characters, isNotEmpty);
   });
 

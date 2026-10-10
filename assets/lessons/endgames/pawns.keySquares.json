@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_count",
           "fen": "k7/8/8/8/4P3/8/4K3/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -129,7 +128,6 @@
           "type": "think",
           "id": "t_averbakh",
           "fen": "8/8/2k5/8/3K4/8/2P5/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "wikiKpk"
@@ -252,7 +250,6 @@
           "type": "think",
           "id": "t_early",
           "fen": "8/8/3k4/8/8/2K5/3P4/8 w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "plan",
           "marks": [
@@ -357,7 +354,6 @@
           "type": "think",
           "id": "t_kramnik",
           "fen": "5k2/8/2K1P3/8/8/8/8/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "kamskyKramnik"
@@ -449,7 +445,6 @@
           "type": "think",
           "id": "t_knight",
           "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan"
         },
@@ -549,7 +544,6 @@
           "type": "think",
           "id": "t_route",
           "fen": "8/5k2/8/8/8/3P4/K7/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -659,7 +653,6 @@
           "type": "think",
           "id": "t_blocked",
           "fen": "7k/8/5p2/5P2/8/K7/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "wikiKeySquare"
@@ -770,7 +763,6 @@
           "type": "think",
           "id": "t_zz",
           "fen": "8/8/1K6/3p4/3P4/5k2/8/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "ref": "wikiKeySquare"

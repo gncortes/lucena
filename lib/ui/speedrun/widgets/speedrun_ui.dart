@@ -279,54 +279,72 @@ class SpeedrunStageRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        opponentName(l10n, characters, stage.opponent),
-                        style:
-                            (current
-                                    ? theme.textTheme.titleLarge
-                                    : theme.textTheme.titleMedium)
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: ahead ? colors.onSurfaceVariant : null,
+                  // A linha tem altura fixa (a trilha passa no meio dela):
+                  // se o texto não couber (árabe, letra grande), ele encolhe
+                  // um pouco em vez de estourar.
+                  child: LayoutBuilder(
+                    builder: (context, box) => FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: SizedBox(
+                        width: box.maxWidth,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              opponentName(l10n, characters, stage.opponent),
+                              style:
+                                  (current
+                                          ? theme.textTheme.titleLarge
+                                          : theme.textTheme.titleMedium)
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: ahead
+                                            ? colors.onSurfaceVariant
+                                            : null,
+                                      ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              [
+                                l10n.speedrunStageOf(
+                                  index + 1,
+                                  speedrun.stages.length,
                                 ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        [
-                          l10n.speedrunStageOf(
-                            index + 1,
-                            speedrun.stages.length,
-                          ),
-                          // Quando o final muda de etapa para etapa, o nome
-                          // dele vem junto.
-                          if (speedrun.kind != SpeedrunKind.ending &&
-                              speedrun.kind != SpeedrunKind.marathon)
-                            endgameName(l10n, stage.position.subcategory),
-                        ].join(' · '),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                                // Quando o final muda de etapa para etapa, o nome
+                                // dele vem junto.
+                                if (speedrun.kind != SpeedrunKind.ending &&
+                                    speedrun.kind != SpeedrunKind.marathon)
+                                  endgameName(l10n, stage.position.subcategory),
+                              ].join(' · '),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            if (losses > 0)
+                              Text(
+                                l10n.speedrunLosses(losses),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.error,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            if (current || last) ...[
+                              const SizedBox(height: 6),
+                              TrailBadge(
+                                text: current
+                                    ? l10n.speedrunNow
+                                    : l10n.journeyBoss,
+                                color: current
+                                    ? colors.primary
+                                    : colors.tertiary,
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      if (losses > 0)
-                        Text(
-                          l10n.speedrunLosses(losses),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.error,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      if (current || last) ...[
-                        const SizedBox(height: 6),
-                        TrailBadge(
-                          text: current ? l10n.speedrunNow : l10n.journeyBoss,
-                          color: current ? colors.primary : colors.tertiary,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),

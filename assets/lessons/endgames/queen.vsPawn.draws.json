@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_rook",
           "fen": "3Q4/1K6/8/8/8/8/pk6/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -114,7 +113,6 @@
           "type": "think",
           "id": "t_rookZone",
           "fen": "3Q4/8/8/3K4/8/8/pk6/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan"
         },
@@ -272,7 +270,6 @@
           "type": "think",
           "id": "t_bishop",
           "fen": "3Q4/8/8/8/4K3/8/1kp5/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "marks": [
@@ -391,7 +388,6 @@
           "type": "think",
           "id": "t_lolli",
           "fen": "8/8/8/8/6K1/6Q1/2p5/3k4 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan"
         },
@@ -521,7 +517,6 @@
           "type": "think",
           "id": "t_trap",
           "fen": "8/8/8/3K4/8/8/1kp1Q3/8 b - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan",
           "side": "black"
@@ -608,7 +603,6 @@
           "type": "think",
           "id": "t_summary",
           "fen": "6Q1/8/8/8/5K2/8/1kp5/8 b - - 0 1",
-          "minutes": 1,
           "hints": 1,
           "ask": "plan",
           "side": "black"

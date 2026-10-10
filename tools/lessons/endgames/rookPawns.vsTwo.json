@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_sixth",
           "fen": "K6k/8/8/8/8/5pp1/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -118,7 +117,6 @@
           "type": "think",
           "id": "t_fifth",
           "fen": "K6k/8/8/8/5pp1/8/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "line",
           "arrows": [
@@ -186,7 +184,6 @@
           "type": "think",
           "id": "t_king",
           "fen": "7k/8/8/8/2K5/5pp1/8/R7 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "plan",
           "arrows": [
@@ -293,7 +290,6 @@
           "type": "think",
           "id": "t_escort",
           "fen": "1k6/8/7P/5KP1/8/8/8/7r w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "line",
           "arrows": [
@@ -385,7 +381,6 @@
           "type": "think",
           "id": "t_resource",
           "fen": "8/8/2R5/4K1k1/8/pp6/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 2,
           "ask": "line",
           "arrows": [

@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_start",
           "fen": "4k3/8/8/8/8/8/8/4KBN1 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -104,7 +103,6 @@
           "type": "think",
           "id": "t_shrink",
           "fen": "8/8/6B1/8/4NK2/8/6k1/8 w - - 0 1",
-          "minutes": 3,
           "hints": 1,
           "ask": "line"
         },
@@ -242,7 +240,6 @@
           "type": "think",
           "id": "t_rhine",
           "fen": "2k1B3/8/3K4/8/2N5/8/8/8 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },

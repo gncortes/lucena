@@ -9,7 +9,7 @@
   "skills": ["mate.bishopKnight"],
   "parts": [
     {"id": "corner", "steps": [
-      {"type": "think", "id": "t_corner", "fen": "…", "minutes": 5, "hints": 2,
+      {"type": "think", "id": "t_corner", "fen": "…", "hints": 2,
        "arrows": ["b1e4"], "marks": ["a1"]},
       {"type": "talk", "id": "corner", "fen": "…", "arrows": ["b1e4"], "marks": ["a1"]},
       {"type": "demo", "id": "d_w", "fen": "…", "goal": "win",
@@ -54,11 +54,10 @@ catálogo, troque também, no mapa, o tipo dela de `catalog` para `endgame` (o
 - Os passos: `talk`, `move` e `play` de `lib/domain/models/lesson.dart`, mais `think` e `demo` (só no
   formato em partes). O aluno é o lado que joga no FEN. Num passo `talk`, `"side": "white"` (ou `"black"`) fixa de que lado o tabuleiro é visto: use quando a posição ilustrada tem o outro lado jogando (o zugzwang das pretas numa aula em que o aluno joga de brancas), para o tabuleiro não virar entre um passo e outro.
 - `think`: o aluno estuda a posição sozinho antes de qualquer explicação.
-  `{"type": "think", "id": "t_philidor", "fen": "…", "minutes": 5, "hints": 2, "side": "white"?, "arrows": […]?, "marks": […]?}`.
-  `minutes` é 1, 3 ou 5 (5 para a posição-chave, 1 ou 3 para uma posição de passagem); `hints` é quantas
-  dicas a fala tem (de 1 a 3). O app mostra um timer; quando ele acaba, o Viktor diz a primeira dica, com as
-  setas e casas do passo, e aparecem "Mais uma dica" e "Ver explicação". Durante o tempo o aluno pode mexer
-  as peças à vontade, sem validação. No JSON gerado o passo sai igual.
+  `{"type": "think", "id": "t_philidor", "fen": "…", "hints": 2, "side": "white"?, "arrows": […]?, "marks": […]?}`.
+  `hints` é quantas dicas a fala tem (de 1 a 3). Não há limite de tempo (T60): um cronômetro conta para
+  cima e o aluno pede as dicas (com as setas e casas do passo) e "Ver explicação" quando quiser. Enquanto
+  pensa, ele pode mexer as peças à vontade, sem validação. No JSON gerado o passo sai igual.
 - `demo`: o Viktor joga e explica. `{"type": "demo", "id": "d_fork", "fen": "…", "goal": "win", "side": "white"?, "line": [{"uci": "a5e5", "arrows": […]?, "marks": […]?}, {"uci": "b8a7"}, …]}`.
   O app faz todos os lances da linha, dos dois lados, animados e um de cada vez, cada um com a sua fala e as
   suas setas e casas. Todo lance é legal, e o script confere, como nos passos `move`, que nenhum lance do
@@ -97,7 +96,7 @@ confere (erro, não aviso):
 - de 4 a 6 passos;
 - termina num `move` ou `play`: a prática, em que o aluno joga e o Viktor comenta;
 - no máximo um `think`, e, se houver, é o primeiro passo;
-- `minutes` em {1, 3, 5}; `hints` de 1 a 3, com todas as chaves de dica nas falas;
+- `hints` de 1 a 3, com todas as chaves de dica nas falas (sem `minutes`: não há limite de tempo);
 - lances de `demo` legais e sem jogar fora o objetivo;
 - ids de parte únicos; ids de passo únicos na aula inteira (não só na parte).
 
@@ -136,8 +135,8 @@ Mapa de chave para texto, como em `assets/lessons/pt/lessons.json`. As mesmas ch
 | `ex.<id>` | enunciado do exercício ("Brancas jogam e ganham. Onde o cavalo precisa chegar?") |
 | `ex.<id>.hint` | dica: aponta a ideia, não o lance |
 | `ex.<id>.solution` | a explicação que aparece depois de resolver |
-| `key.<id>` | legenda da posição-base, com o crédito |
-| `history` | a história do final, para o botão de informações |
+| `key.<id>` | legenda da posição-base, para leigo: a ideia em palavras ("o rei branco desce ao lado do preto, como numa escada"), sem lance solto e sem o crédito (o link "Ver o estudo"/"Ver a partida" já leva à fonte). Partida famosa: quem jogou, onde e quando, e o que aconteceu |
+| `history` | "Sobre este final", para quem não entende de xadrez técnico: o que é o final, por que importa, por que parece simples e não é, uma curiosidade (nome, autor, partida famosa). Sem lances, sem notação, sem "tabela"/motor e sem bastidores de como a aula foi feita. 3 a 6 frases |
 | `practice` | o convite do Viktor para o treino final |
 
 ## O que o script confere
@@ -161,3 +160,12 @@ Vitória que só existe sem a regra dos 50 lances (a tabela responde `cursed-win
 - O teste `test/data/repositories/endgames/endgame_lessons_content_test.dart` confere no CI cada aula gerada: FEN, lances, falas nos dois idiomas.
 
 O formato acima é o contrato: para mudar um campo, muda aqui, no script e no app juntos.
+
+## Avaliação dos lances nas falas (T60)
+
+Os símbolos `!`, `?`, `!!`, `??`, `!?` e `?!` ficam colados no lance e o app os destaca junto com ele.
+Como nos livros, o símbolo fecha a frase do lance e a próxima começa com maiúscula:
+"Agora Te6! A torre protege o peão por trás." Nunca "Te6!:", "De3?;" nem "Rd4!." no fim.
+Vírgula depois do símbolo só em lista ou aposto curto ("a4?, c5? e Ra4? empatam").
+O teste `endgame_lessons_content_test.dart` reprova a fala que cola o símbolo em `:`, `;` ou `.`.
+

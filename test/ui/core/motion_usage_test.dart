@@ -34,6 +34,8 @@ void main() {
     'lib/ui/endgames/widgets/exercise_screen.dart': {
       'duration: const Duration(milliseconds: 1100)':
           'tempo para ler o lance errado em vermelho',
+      'Timer.periodic(const Duration(milliseconds: 250)':
+          'cronômetro do exercício: tempo, não animação',
     },
     'lib/ui/home/widgets/home_screen.dart': {
       'duration: const Duration(milliseconds: 1400)':
@@ -58,8 +60,7 @@ void main() {
     },
     'lib/ui/school/widgets/lesson_screen.dart': {
       'Timer.periodic(const Duration(milliseconds: 250)':
-          'relógio do passo de pensar e ritmo da demonstração: tempo, não '
-          'animação',
+          'cronômetro do passo e ritmo da demonstração: tempo, não animação',
     },
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',

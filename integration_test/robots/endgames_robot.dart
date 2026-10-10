@@ -76,22 +76,15 @@ class EndgamesRobot {
   // A lição (os passos, na tela das aulas da escola).
 
   Future<void> openSteps() async {
-    await _show(EndgameLessonKeys.lessonButton).tap();
-    await $(LessonKeys.screen).waitUntilVisible();
-    await $.pumpAndSettle();
-    await chooseThinkTime();
-  }
-
-  /// Na primeira aula com passo de pensar, a escolha do tempo vem antes:
-  /// fica no recomendado (as próximas aulas não perguntam mais).
-  Future<void> chooseThinkTime({int minutes = 0}) async {
-    // A escolha aparece depois de a aula carregar: espera um pouco por ela.
-    for (var i = 0; i < 20 && !$(LessonKeys.thinkChooser).exists; i++) {
-      if ($(LessonKeys.nextButton).exists || $(LessonKeys.board).exists) break;
-      await $.pump(const Duration(milliseconds: 100));
+    // O botão fixo embaixo ("Continuar: etapa N") abre a etapa recomendada,
+    // a mesma do cartão; o cartão pode estar acima da área visível, e o
+    // scrollTo do Patrol só desce.
+    if ($(EndgameLessonKeys.continueButton).exists) {
+      await $(EndgameLessonKeys.continueButton).tap();
+    } else {
+      await _show(EndgameLessonKeys.lessonButton).tap();
     }
-    if (!$(LessonKeys.thinkChooser).exists) return;
-    await $(LessonKeys.thinkChoice(minutes)).scrollTo().tap();
+    await $(LessonKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
 
@@ -103,7 +96,7 @@ class EndgamesRobot {
     required Map<String, List<String>> play,
   }) async {
     for (final step in lesson.lesson.steps) {
-      await _stepOrChooser(LessonKeys.step(lesson.id, step.id));
+      await _step(LessonKeys.step(lesson.id, step.id));
       switch (step) {
         case MoveStep(:final line):
           for (final turn in line) {
@@ -116,12 +109,10 @@ class EndgamesRobot {
             await _waitReply();
           }
         case ThinkStep():
-          // O tempo de pensar (o das preferências, até 5 minutos) passa no
-          // relógio dos cenários; se o relógio da tela não andar, "ver
-          // explicação" encerra.
+          // Sem limite de tempo (T60): o cronômetro só conta. O "continuar"
+          // de baixo é o "Ver explicação".
           e2eNow.advance(const Duration(minutes: 5));
           await $.pump(const Duration(seconds: 1));
-          await _skipThink();
         case DemoStep():
           // Avança na mão até o fim (a demonstração também anda sozinha).
           while (!$(LessonKeys.nextButton).exists) {
@@ -146,15 +137,10 @@ class EndgamesRobot {
     await $(LessonKeys.finished).waitUntilVisible();
   }
 
-  /// Espera o passo [step]; se antes dele aparecer a escolha do tempo de
-  /// pensar (a primeira aula com passo de pensar), escolhe o recomendado.
-  Future<void> _stepOrChooser(Key step) async {
+  /// Espera o passo [step].
+  Future<void> _step(Key step) async {
     for (var i = 0; i < 100; i++) {
       if ($(step).exists) return;
-      if ($(LessonKeys.thinkChooser).exists) {
-        await chooseThinkTime();
-        continue;
-      }
       // A aula em partes (T51): no fim de cada parte, "ir para a parte
       // seguinte".
       if ($(LessonKeys.nextPartButton).exists) {
@@ -167,21 +153,80 @@ class EndgamesRobot {
     await $(step).waitUntilExists();
   }
 
-  /// "Continuar" no passo aberto da lição.
+  /// "Continuar" no passo aberto da lição (no passo de pensar, "Ver
+  /// explicação").
   Future<void> nextStep() async {
-    await _skipThink();
     await $(LessonKeys.nextButton).tap();
     await $.pumpAndSettle();
   }
 
-  /// No passo de pensar (T51), "ver explicação" encerra o tempo e o
-  /// "continuar" aparece.
-  Future<void> _skipThink() async {
-    if ($(LessonKeys.thinkSkip).exists) {
-      await $(LessonKeys.thinkSkip).tap();
-      await $.pumpAndSettle();
+  /// O lance [uci] no tabuleiro da lição.
+  Future<void> moveInLesson(String uci) => _move(LessonKeys.board, uci);
+
+  /// "Mais uma dica" no passo de pensar.
+  Future<void> moreHint() async {
+    await $(LessonKeys.moreHintButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  // --- o modo exercício (T60) ----------------------------------------------
+
+  /// O que o Viktor está dizendo (no enunciado ou na folha).
+  String? get speech {
+    final text = $.tester.widget<Text>(find.byKey(LessonKeys.speech).last);
+    return text.data ?? text.textSpan?.toPlainText();
+  }
+
+  /// O cronômetro do passo, como está na tela (`m:ss`).
+  String get stepTimer => $.tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(LessonKeys.stepTimer),
+          matching: find.byType(Text),
+        ),
+      )
+      .data!;
+
+  /// Resolvendo: sem folha da fala, o tabuleiro no centro da tela (ou logo
+  /// abaixo do enunciado, se ele for alto) e o cronômetro no canto inferior
+  /// de fim, abaixo do tabuleiro.
+  Future<void> expectSolving() async {
+    await $(LessonKeys.stepTimer).waitUntilVisible();
+    expect(find.byKey(LessonKeys.scroll), findsNothing);
+    final board = $.tester.getRect(find.byKey(LessonKeys.board));
+    final prompt = $.tester.getRect(find.byKey(LessonKeys.prompt));
+    final footer = $.tester.getRect(find.byKey(LessonKeys.footer));
+    final screen = $.tester.getRect(find.byKey(LessonKeys.screen));
+    // No centro da tela (±24 px), a não ser que ali cobrisse o enunciado.
+    expect(board.top, greaterThanOrEqualTo(prompt.bottom));
+    expect(board.bottom, lessThanOrEqualTo(footer.top));
+    if (board.top > prompt.bottom + 9) {
+      expect(board.center.dy, closeTo(screen.center.dy, 24));
+    }
+    expect(board.center.dx, closeTo(screen.center.dx, 2));
+    final timer = $.tester.getRect(find.byKey(LessonKeys.stepTimer));
+    expect(timer.top, greaterThan(board.bottom));
+    expect(timer.bottom, greaterThan(screen.bottom - 120));
+    // No canto de fim: à direita, ou à esquerda em árabe.
+    if (e2eVariant == E2EVariant.arabic) {
+      expect(timer.left, lessThan(screen.left + 24));
+    } else {
+      expect(timer.right, greaterThan(screen.right - 24));
     }
   }
+
+  /// Respondido: o tabuleiro no alto e a folha da fala embaixo dele, com o
+  /// Viktor; sem cronômetro.
+  Future<void> expectExplaining() async {
+    await $(LessonKeys.scroll).waitUntilVisible();
+    expect(find.byKey(LessonKeys.stepTimer), findsNothing);
+    expect(find.byKey(LessonKeys.prompt), findsNothing);
+    final board = $.tester.getRect(find.byKey(LessonKeys.board));
+    final speech = $.tester.getRect(find.byKey(LessonKeys.speech));
+    expect(speech.top, greaterThan(board.bottom));
+  }
+
+  Rect get boardRect => $.tester.getRect(find.byKey(LessonKeys.board));
 
   Future<void> expectStep(String lessonId, String stepId) async {
     await $(LessonKeys.step(lessonId, stepId)).waitUntilExists();
@@ -189,12 +234,15 @@ class EndgamesRobot {
 
   /// No fim da lição: volta para a aula, com os exercícios.
   Future<void> backToExercises() async {
-    // Na aula em partes, o fim da última parte volta à aula por "próximo";
-    // na aula inteira, por "exercícios".
+    // Na aula em partes, o fim da última parte leva ao teste final (a
+    // introdução), e dela se volta à aula; na aula inteira, "exercícios".
     if ($(LessonKeys.exercisesButton).exists) {
       await $(LessonKeys.exercisesButton).tap();
     } else {
+      await $(LessonKeys.allPartsDone).waitUntilVisible();
       await $(LessonKeys.nextPartButton).tap();
+      await $(ExercisesIntroKeys.screen).waitUntilVisible();
+      await $(BackButton).tap();
     }
     await expectLessonScreen();
   }
@@ -250,8 +298,10 @@ class EndgamesRobot {
       _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
 
   /// Os pontos ganhos no exercício resolvido ("1 of 2 points").
+  /// Lido da estrela da barra de cima: com a explicação do Viktor na tela,
+  /// a estrela grande some (T60).
   String? get earned =>
-      $.tester.widget<Text>(find.byKey(ExerciseKeys.earned)).data;
+      $.tester.getSemantics(find.byKey(ExerciseKeys.stars)).label;
 
   /// A seta da dica no tabuleiro do exercício.
   void expectHintArrow(String uci) {
@@ -282,7 +332,13 @@ class EndgamesRobot {
   Future<void> backFromExercise() async {
     // O último exercício leva ao resultado, que volta à aula.
     await $(ExerciseKeys.resultButton).tap();
-    await $(ExercisesDoneKeys.back).tap();
+    await $(ExercisesDoneKeys.screen).waitUntilVisible();
+    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pela barra.
+    if ($(ExercisesDoneKeys.back).exists) {
+      await $(ExercisesDoneKeys.back).tap();
+    } else {
+      await $(BackButton).tap();
+    }
     await expectLessonScreen();
   }
 
@@ -321,6 +377,12 @@ class EndgamesRobot {
   }
 
   // A nota e o passo final.
+
+  /// Sem exercício resolvido: o botão de começar os exercícios, sem nota.
+  Future<void> expectExercisesToStart() async {
+    await _show(EndgameLessonKeys.startExercises);
+    expect(find.byKey(EndgameLessonKeys.score), findsNothing);
+  }
 
   Future<void> expectPassed() async {
     await _show(EndgameLessonKeys.passed);

@@ -96,19 +96,25 @@ class ExercisesIntroScreen extends StatelessWidget {
                           _InfoCard(
                             child: Column(
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                // Quebra em duas linhas se faltar largura
+                                // (idioma longo, letra grande).
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: AppSpacing.lg,
+                                  runSpacing: AppSpacing.xs,
                                   children: [
-                                    for (final points in [3, 2, 1]) ...[
-                                      ValueStar(points: points, size: 26),
-                                      const SizedBox(width: AppSpacing.xs),
-                                      Text(
-                                        l10n.exercisePoints(points),
-                                        style: theme.textTheme.labelLarge,
+                                    for (final points in [3, 2, 1])
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ValueStar(points: points, size: 26),
+                                          const SizedBox(width: AppSpacing.xs),
+                                          Text(
+                                            l10n.exercisePoints(points),
+                                            style: theme.textTheme.labelLarge,
+                                          ),
+                                        ],
                                       ),
-                                      if (points > 1)
-                                        const SizedBox(width: AppSpacing.lg),
-                                    ],
                                   ],
                                 ),
                                 const SizedBox(height: AppSpacing.sm),

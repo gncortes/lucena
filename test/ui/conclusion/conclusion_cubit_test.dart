@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/use_cases/game_feedback.dart';
@@ -17,6 +19,7 @@ import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_conclusion_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
@@ -51,7 +54,9 @@ void main() {
   ConclusionCubit cubit({
     FakeAnalysisRepository? analysis,
     FakeGameReviewRepository? reviews,
+    FakeOpponentRepository? opponent,
   }) => ConclusionCubit(
+    opponent: opponent,
     analysis: analysis,
     reviews: reviews,
     progress: progress,
@@ -134,7 +139,8 @@ void main() {
     // Perdeu: o mesmo desafio de novo, sem pular para o próximo.
     expect(conclusion.next, isNull);
     expect(conclusion.actions.first, ConclusionAction.playAgain);
-    expect(conclusion.actions, contains(ConclusionAction.analyze));
+    // A análise detalhada sai do resumo da análise rápida, não dos atalhos.
+    expect(conclusion.actions, contains(ConclusionAction.ratingHistory));
     expect(state.opponent?.level, 1000);
     expect(state.comment, isNotNull);
     expect(state.replay, contains('challenge='));
@@ -235,10 +241,9 @@ void main() {
       expect(conclusion.kind, ConclusionKind.speedrunEnd);
       expect(conclusion.run!.total, const Duration(seconds: 84));
       expect(conclusion.run!.newRecord, isTrue);
-      expect(conclusion.actions.take(2), [
-        ConclusionAction.retry,
-        ConclusionAction.speedruns,
-      ]);
+      // Só a volta para a lista, sem "Tentar de novo".
+      expect(conclusion.actions.first, ConclusionAction.speedruns);
+      expect(conclusion.actions, isNot(contains(ConclusionAction.retry)));
       await conclusions.close();
     });
 
@@ -259,9 +264,48 @@ void main() {
   });
 
   group('em segundo plano', () {
-    test('a melhor linha sai sozinha; a análise rápida só no toque, e fica '
-        'gravada para a tela da revisão', () async {
+    // Uma partida longa: 16 lances (a dama e o rei indo e voltando), em
+    // cinco minutos.
+    const longMoves = [
+      'c1b1', 'd7e7', 'b1c1', 'e7d7', //
+      'c1b1', 'd7e7', 'b1c1', 'e7d7',
+      'c1b1', 'd7e7', 'b1c1', 'e7d7',
+      'c1b1', 'd7e7', 'b1c1', 'e7d7',
+    ];
+
+    test('partida longa: a análise rápida só no toque, e fica gravada para a '
+        'tela da revisão', () async {
       final analysis = FakeAnalysisRepository();
+      final reviews = FakeGameReviewRepository();
+      final id = await play(won: true);
+      progress.attempts[id - 1] = progress.attempts[id - 1].copyWith(
+        moves: longMoves,
+        startedAt: now().subtract(const Duration(minutes: 5)),
+      );
+      final conclusions = cubit(analysis: analysis, reviews: reviews);
+      await conclusions.load(id, 'en');
+      expect(conclusions.state.conclusion, isNotNull);
+      await pumpEventQueue();
+
+      expect(conclusions.state.autoReview, isFalse);
+      expect(conclusions.state.reviewing, isFalse);
+      // Sem tocar em "Análise rápida", nada de revisão nem de engine.
+      expect(conclusions.state.review, isNull);
+      expect(analysis.requests, isEmpty);
+      expect(await reviews.load(id), isNull);
+
+      await conclusions.quickReview();
+      expect(conclusions.state.review, isNotNull);
+      // Vale como a revisão rápida: a tela da revisão já a mostra feita.
+      expect((await reviews.load(id))!.depth, ConclusionCubit.reviewWeight);
+      expect(conclusions.state.reviewDone, longMoves.length);
+      expect(conclusions.state.reviewing, isFalse);
+      await conclusions.close();
+    });
+
+    test('partida curta: a análise rápida começa sozinha, andando, e fica '
+        'gravada', () async {
+      final analysis = FakeAnalysisRepository()..hold = Completer<void>();
       final reviews = FakeGameReviewRepository();
       final id = await play(won: true);
       progress.attempts[id - 1] = progress.attempts[id - 1].copyWith(
@@ -269,22 +313,32 @@ void main() {
       );
       final conclusions = cubit(analysis: analysis, reviews: reviews);
       await conclusions.load(id, 'en');
-      // As ações já estão prontas antes da engine terminar.
-      expect(conclusions.state.conclusion, isNotNull);
+      // Já abre com a análise rodando, sem toque.
+      expect(conclusions.state.autoReview, isTrue);
+      expect(conclusions.state.reviewing, isTrue);
       await pumpEventQueue();
-
-      expect(conclusions.state.bestLine, isNotEmpty);
-      // Sem tocar em "Análise rápida", nada de revisão.
       expect(conclusions.state.review, isNull);
-      expect(await reviews.load(id), isNull);
+      expect(analysis.requests, isNotEmpty);
 
-      await conclusions.quickReview();
-      expect(conclusions.state.review, isNotNull);
-      // Vale como a revisão rápida: a tela da revisão já a mostra feita.
-      expect((await reviews.load(id))!.depth, ConclusionCubit.reviewWeight);
-      expect(conclusions.state.reviewDone, 1);
+      analysis.hold!.complete();
+      analysis.hold = null;
+      await pumpEventQueue();
       expect(conclusions.state.reviewing, isFalse);
+      expect(conclusions.state.review, isNotNull);
       expect(await reviews.load(id), isNotNull);
+      await conclusions.close();
+    });
+
+    test('partida curta com a engine falhando: o convite volta', () async {
+      final id = await play(won: true);
+      progress.attempts[id - 1] = progress.attempts[id - 1].copyWith(
+        moves: const ['c1g5'],
+      );
+      final conclusions = cubit(analysis: _FailingAnalysis());
+      await conclusions.load(id, 'en');
+      await pumpEventQueue();
+      expect(conclusions.state.reviewing, isFalse);
+      expect(conclusions.state.review, isNull);
       await conclusions.close();
     });
 
@@ -298,48 +352,95 @@ void main() {
       final first = cubit(analysis: analysis, reviews: reviews);
       await first.load(id, 'en');
       await pumpEventQueue();
-      await first.quickReview();
+      expect(first.state.review, isNotNull);
       final asked = analysis.requests.length;
       final again = cubit(analysis: analysis, reviews: reviews);
       await again.load(id, 'en');
       await pumpEventQueue();
 
       expect(again.state.review, isNotNull);
-      // Só a melhor linha foi pedida de novo.
-      expect(analysis.requests.length, asked + 1);
+      expect(again.state.reviewing, isFalse);
+      expect(analysis.requests.length, asked);
       await first.close();
       await again.close();
     });
+  });
 
-    test('a melhor linha anda e volta lance a lance', () async {
-      final analysis = FakeAnalysisRepository();
+  group('melhor linha', () {
+    test('o Stockfish (1 s) no lugar do jogador contra o mesmo adversário '
+        '(o Maia no nível dele), lance a lance', () async {
+      final opponent = FakeOpponentRepository();
       final id = await play(won: true);
-      analysis.answer[samplePositions[0].fen] = [
-        const EngineLine(
-          score: EngineScore(centipawns: 900),
-          moves: ['c1g5', 'd7e6', 'g5g6'],
-        ),
-      ];
-      final conclusions = cubit(analysis: analysis);
+      final conclusions = cubit(opponent: opponent);
       await conclusions.load(id, 'en');
-      await pumpEventQueue();
+      expect(conclusions.canPlayBestLine, isTrue);
+      final seen = <int>[];
+      final sub = conclusions.stream.listen(
+        (state) => seen.add(state.bestLine.length),
+      );
 
-      expect(conclusions.state.bestPly, -1);
-      conclusions
-        ..bestForward()
-        ..bestForward();
-      expect(conclusions.state.bestPly, 1);
-      conclusions
-        ..bestForward()
-        ..bestForward();
-      expect(conclusions.state.bestPly, 2);
-      conclusions
-        ..bestBack()
-        ..bestBack()
-        ..bestBack()
-        ..bestBack();
-      expect(conclusions.state.bestPly, -1);
+      await conclusions.playBestLine();
+      final state = conclusions.state;
+      expect(state.bestLineDone, isTrue);
+      expect(state.bestLineRunning, isFalse);
+      expect(state.bestLine, isNotEmpty);
+      // Os lances chegaram um a um, com o tabuleiro no último.
+      expect(seen, containsAllInOrder([1, 2]));
+      expect(state.bestPly, state.bestLine.length - 1);
+      // As brancas (o jogador) com o Stockfish; as pretas com o Maia 1000.
+      expect(opponent.kinds.first, OpponentKind.stockfish);
+      expect(opponent.levels.first, isNull);
+      if (opponent.kinds.length > 1) {
+        expect(opponent.kinds[1], OpponentKind.maia);
+        expect(opponent.levels[1], 1000);
+      }
+      for (final (index, kind) in opponent.kinds.indexed) {
+        expect(kind, index.isEven ? OpponentKind.stockfish : OpponentKind.maia);
+      }
+      expect(opponent.thinkTimes.toSet(), {ConclusionCubit.bestLineThink});
+      expect(ConclusionCubit.bestLineThink, const Duration(seconds: 1));
+      // Pronta, dá para voltar e avançar.
+      conclusions.bestBack();
+      expect(conclusions.state.bestPly, state.bestLine.length - 2);
+      conclusions.bestForward();
+      expect(conclusions.state.bestPly, state.bestLine.length - 1);
+      await sub.cancel();
+      await conclusions.close();
+    });
+
+    test('contra o Stockfish: o Stockfish dos dois lados', () async {
+      final opponent = FakeOpponentRepository();
+      final id = await play(won: true);
+      progress.attempts[id - 1] = progress.attempts[id - 1].copyWith(
+        opponent: OpponentKind.stockfish,
+        opponentLevel: null,
+      );
+      final conclusions = cubit(opponent: opponent);
+      await conclusions.load(id, 'en');
+      await conclusions.playBestLine();
+      expect(opponent.kinds.toSet(), {OpponentKind.stockfish});
+      await conclusions.close();
+    });
+
+    test('sem quem jogar, nada a mostrar', () async {
+      final id = await play(won: true);
+      final conclusions = cubit();
+      await conclusions.load(id, 'en');
+      expect(conclusions.canPlayBestLine, isFalse);
       await conclusions.close();
     });
   });
+}
+
+/// Uma engine que sempre falha.
+class _FailingAnalysis extends FakeAnalysisRepository {
+  @override
+  Future<List<EngineLine>> analyse(
+    Position position, {
+    required int depth,
+    int lines = 1,
+    bool urgent = false,
+    Duration? time,
+    bool preemptible = false,
+  }) async => throw StateError('engine');
 }

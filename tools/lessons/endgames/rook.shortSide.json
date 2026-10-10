@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_behind",
           "fen": "1R6/8/8/8/4p3/5k2/r7/4K3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -75,7 +74,6 @@
           "type": "think",
           "id": "t_short",
           "fen": "5R2/8/8/8/5p2/5k2/r7/5K2 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -196,7 +194,6 @@
           "type": "think",
           "id": "t_tarrasch",
           "fen": "5r2/R7/8/8/8/8/4p1K1/4k3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -270,7 +267,6 @@
           "type": "think",
           "id": "t_karstedt",
           "fen": "5R2/8/8/8/4p3/4k3/6K1/4r3 w - - 0 1",
-          "minutes": 3,
           "hints": 3,
           "ask": "plan"
         },
@@ -383,7 +379,6 @@
           "type": "think",
           "id": "t_close",
           "fen": "5r2/1R6/8/8/8/8/4p1K1/4k3 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -468,7 +463,6 @@
           "type": "think",
           "id": "t_block",
           "fen": "3r4/R7/8/8/8/4p3/4k1K1/8 w - - 0 1",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },
@@ -554,7 +548,6 @@
           "type": "think",
           "id": "t_carlsen",
           "fen": "r7/4K1k1/3RP3/8/8/8/8/8 b - - 4 73",
-          "minutes": 3,
           "hints": 2,
           "ask": "plan"
         },

@@ -12,7 +12,6 @@
           "type": "think",
           "id": "t_seirawan",
           "fen": "8/8/8/8/4k3/8/8/QK6 w - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan"
         },
@@ -90,7 +89,6 @@
           "type": "think",
           "id": "t_corner",
           "fen": "k7/2Q5/8/8/8/8/8/7K b - - 0 1",
-          "minutes": 5,
           "hints": 1,
           "ask": "plan",
           "side": "white"
