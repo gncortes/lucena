@@ -5157,5 +5157,13 @@
   "exercisesDoneFinish": "Finish",
   "@exercisesDoneFinish": {"description": "Button on the exercises-done screen: close it and go back to the lesson."},
   "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
-  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."}
+  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."},
+  "wikiTitle": "Wikipedia",
+  "@wikiTitle": {"description": "Title of the in-app sheet that shows a Wikipedia page about a player or place named in a lesson."},
+  "wikiOfflineTitle": "This needs the internet",
+  "@wikiOfflineTitle": {"description": "Title shown in the Wikipedia sheet when the page cannot load (no internet)."},
+  "wikiOfflineBody": "Connect to the internet to read this page. The lesson goes on as normal.",
+  "@wikiOfflineBody": {"description": "Body shown in the Wikipedia sheet when the page cannot load; the lesson is not affected."},
+  "wikiOpen": "Open {name} on Wikipedia",
+  "@wikiOpen": {"description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.", "placeholders": {"name": {"type": "String"}}}
 }

@@ -5,8 +5,11 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/wiki_links.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/domain/use_cases/wiki_markup.dart';
 
 /// As aulas de finais de verdade (`assets/lessons/endgames`): o que o
 /// `build_aula.py` conferiu com a tabela de finais, aqui conferido de novo
@@ -239,4 +242,40 @@ void main() {
       }
     }
   });
+
+  test(
+    'todo nome marcado nas falas tem a chave em links.json, com pt ou en',
+    () {
+      final links = WikiLinks.fromJson(
+        jsonDecode(io.File(AssetWikiLinksRepository.path).readAsStringSync()),
+      );
+      // Uma marcação quebrada ({{nome}}, {{nome|}}) apareceria crua na tela.
+      final broken = RegExp(r'\{\{|\}\}');
+      for (final language in ['pt', 'en']) {
+        for (final lesson in lessons) {
+          for (final MapEntry(:key, :value) in texts(
+            language,
+            lesson.id,
+          ).entries) {
+            for (final text in value is List ? value : [value]) {
+              if (text is! String) continue;
+              final marked = WikiMarkup.parse(text);
+              expect(
+                broken.hasMatch(marked.text),
+                isFalse,
+                reason: '$language ${lesson.id} $key: marcação quebrada',
+              );
+              for (final mark in marked.marks) {
+                expect(
+                  links.url(mark.key, language),
+                  isNotNull,
+                  reason: '$language ${lesson.id} $key: ${mark.key} sem link',
+                );
+              }
+            }
+          }
+        }
+      }
+    },
+  );
 }

@@ -1013,5 +1013,9 @@
   "exerciseTurn": "{side, select, white{Ruch białych} other{Ruch czarnych}}",
   "exerciseYourTurn": "{side, select, white{Twój ruch: grają białe} other{Twój ruch: grają czarne}}",
   "exercisesIntroAfter": "Gdy rozwiążesz wszystkie, lista pozostaje otwarta w lekcji: wróć do dowolnego ćwiczenia, aby je przejrzeć i przeanalizować pozycję na Lichess.",
-  "exerciseScoreLocked": "Trening dowolny: ocena się nie zmienia. Aby znów się liczyła, powtórz ćwiczenia z lekcji."
+  "exerciseScoreLocked": "Trening dowolny: ocena się nie zmienia. Aby znów się liczyła, powtórz ćwiczenia z lekcji.",
+  "wikiTitle": "Wikipedia",
+  "wikiOfflineTitle": "To wymaga internetu",
+  "wikiOfflineBody": "Połącz się z internetem, aby przeczytać tę stronę. Lekcja toczy się dalej.",
+  "wikiOpen": "Otwórz {name} w Wikipedii"
 }

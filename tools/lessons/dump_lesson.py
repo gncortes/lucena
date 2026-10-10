@@ -18,6 +18,9 @@ import urllib.parse
 
 import chess
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from wiki_markup import plain_texts  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SRC = ROOT / 'tools' / 'lessons' / 'endgames'
 TEXTS = ROOT / 'assets' / 'lessons'
@@ -28,7 +31,8 @@ STEP_SECONDS = {'talk': 30, 'move': 60, 'play': 60}
 
 def load(lesson_id, lang):
     source = json.loads((SRC / f'{lesson_id}.json').read_text())
-    texts = json.loads((TEXTS / lang / 'endgames' / f'{lesson_id}.json').read_text())
+    # Os nomes marcados ({{Andersson|ulf-andersson}}) só com o texto visível.
+    texts = plain_texts(json.loads((TEXTS / lang / 'endgames' / f'{lesson_id}.json').read_text()))
     return source, texts
 
 

@@ -1013,5 +1013,9 @@
   "exerciseTurn": "{side, select, white{Juegan las blancas} other{Juegan las negras}}",
   "exerciseYourTurn": "{side, select, white{Tu turno: juegan las blancas} other{Tu turno: juegan las negras}}",
   "exercisesIntroAfter": "Cuando los resuelvas todos, la lista queda abierta en la lección: vuelve a cualquier ejercicio para repasarlo y analizar la posición en Lichess.",
-  "exerciseScoreLocked": "Práctica libre: la nota no cambia. Para que cuente de nuevo, rehaz los ejercicios desde la lección."
+  "exerciseScoreLocked": "Práctica libre: la nota no cambia. Para que cuente de nuevo, rehaz los ejercicios desde la lección.",
+  "wikiTitle": "Wikipedia",
+  "wikiOfflineTitle": "Esta consulta necesita internet",
+  "wikiOfflineBody": "Conéctate a internet para leer esta página. La clase sigue con normalidad.",
+  "wikiOpen": "Abrir {name} en Wikipedia"
 }

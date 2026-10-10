@@ -6,10 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
+import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
+import '../../wiki/view_models/wiki_links_cubit.dart';
+import '../../wiki/widgets/wiki_sheet.dart';
 import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
 import 'character_avatar.dart';
@@ -66,8 +70,13 @@ class TeacherSpeech extends StatelessWidget {
   final VoidCallback? onClose;
   final Key? closeKey;
 
-  /// A fala. Nula: só o retrato e o nome.
+  /// A fala. Nula: só o retrato e o nome. Pode trazer nomes marcados
+  /// (`{{Andersson|ulf-andersson}}`, ver [WikiMarkup]): na tela, sublinhados
+  /// e tocáveis (abrem a Wikipedia); na voz, só o texto visível.
   final String? text;
+
+  /// A fala sem a marcação: o que aparece e o que a voz lê.
+  String? get _plain => text == null ? null : WikiMarkup.plain(text!);
   final Emotion emotion;
   final double avatarSize;
 
@@ -95,6 +104,7 @@ class TeacherSpeech extends StatelessWidget {
       size: avatarSize,
     );
     final speech = speechOf(context);
+    final text = _plain;
     final content = _RevealOnChange(
       text: text,
       child: _layout(context, avatar),
@@ -119,10 +129,20 @@ class TeacherSpeech extends StatelessWidget {
     }
   }
 
+  /// As páginas da Wikipedia dos nomes, se o app as tem (fora do app, nos
+  /// testes de um widget só, não há: os nomes ficam como texto normal).
+  static WikiLinks wikiOf(BuildContext context) {
+    try {
+      return context.watch<WikiLinksCubit>().state;
+    } on ProviderNotFoundException {
+      return WikiLinks.empty;
+    }
+  }
+
   /// O nome e, havendo voz no idioma, o botão de áudio.
   Widget _header(BuildContext context) {
     final speech = speechOf(context);
-    final text = this.text;
+    final text = _plain;
     final action = headerAction;
     if (speech == null || text == null) {
       return action == null
@@ -279,7 +299,7 @@ class TeacherSpeech extends StatelessWidget {
   /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
   Widget _closable(BuildContext context) {
     final onClose = this.onClose;
-    if (onClose == null || text == null) return _speech(context);
+    if (onClose == null || _plain == null) return _speech(context);
     final colors = Theme.of(context).colorScheme;
     return Stack(
       clipBehavior: Clip.none,
@@ -316,6 +336,7 @@ class TeacherSpeech extends StatelessWidget {
   /// O balão, que troca de fala com uma transição suave.
   Widget _speech(BuildContext context) {
     final text = this.text;
+    final plain = _plain;
     return AnimatedSize(
       duration: AppMotion.state,
       curve: AppMotion.enter,
@@ -336,9 +357,12 @@ class TeacherSpeech extends StatelessWidget {
           alignment: AlignmentDirectional.topStart,
           children: [?current],
         ),
-        child: text == null
+        child: text == null || plain == null
             ? const SizedBox(width: double.infinity)
-            : KeyedSubtree(key: ValueKey(text), child: _bubble(context, text)),
+            : KeyedSubtree(
+                key: ValueKey(plain),
+                child: _bubble(context, WikiMarkup.parse(text)),
+              ),
       ),
     );
   }
@@ -376,18 +400,31 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
-  Widget _bubble(BuildContext context, String text) {
+  Widget _bubble(BuildContext context, MarkedText marked) {
+    final text = marked.text;
     final theme = Theme.of(context);
     final color = theme.colorScheme.surfaceContainerHighest;
+    final language = Localizations.localeOf(context).languageCode;
+    // Os nomes com página na Wikipedia; chave sem página: texto normal.
+    final wiki = wikiOf(context);
+    final pages = [
+      for (final mark in marked.marks)
+        if (wiki.url(mark.key, language) case final url?) (mark, url),
+    ];
     final onLink = this.onLink;
     final links = onLink == null
         ? const <SpeechLink>[]
-        : SpeechLinks.find(
-            text,
-            SpeechLinks.lettersFor(
-              Localizations.localeOf(context).languageCode,
-            ),
-          );
+        : [
+            for (final link in SpeechLinks.find(
+              text,
+              SpeechLinks.lettersFor(language),
+            ))
+              // Dentro de um nome, não é casa nem lance.
+              if (!pages.any(
+                (page) => link.start < page.$1.end && link.end > page.$1.start,
+              ))
+                link,
+          ];
     final style = theme.textTheme.bodyLarge;
     // As casas e os lances em seminegrito, na cor primária: tocáveis sem
     // parecer link de site.
@@ -395,21 +432,32 @@ class TeacherSpeech extends StatelessWidget {
       color: theme.colorScheme.primary,
       fontWeight: FontWeight.w700,
     );
-    final words = links.isEmpty
+    // Os nomes, sublinhados como link de site: abrem a Wikipedia.
+    final pageStyle = TextStyle(
+      color: theme.colorScheme.primary,
+      decoration: TextDecoration.underline,
+      decorationColor: theme.colorScheme.primary,
+    );
+    final spans = [
+      for (final link in links) (link.start, link.end, linkStyle),
+      for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
+    ]..sort((a, b) => a.$1.compareTo(b.$1));
+    final words = spans.isEmpty
         ? Text(text, key: bubbleKey, style: style)
         : Text.rich(
             TextSpan(
               children: [
-                for (final (index, link) in links.indexed) ...[
+                for (final (index, (start, end, spanStyle))
+                    in spans.indexed) ...[
                   TextSpan(
                     text: text.substring(
-                      index == 0 ? 0 : links[index - 1].end,
-                      link.start,
+                      index == 0 ? 0 : spans[index - 1].$2,
+                      start,
                     ),
                   ),
-                  TextSpan(text: link.text, style: linkStyle),
+                  TextSpan(text: text.substring(start, end), style: spanStyle),
                 ],
-                TextSpan(text: text.substring(links.last.end)),
+                TextSpan(text: text.substring(spans.last.$2)),
               ],
             ),
             key: bubbleKey,
@@ -418,6 +466,12 @@ class TeacherSpeech extends StatelessWidget {
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
     bool tapAt(int offset) {
+      for (final (mark, url) in pages) {
+        if (offset >= mark.start && offset < mark.end) {
+          showWikiPage(context, url);
+          return true;
+        }
+      }
       for (final link in links) {
         if (offset >= link.start && offset <= link.end) {
           onLink!(link);
@@ -427,7 +481,7 @@ class TeacherSpeech extends StatelessWidget {
       return false;
     }
 
-    final tappable = links.isEmpty ? null : tapAt;
+    final tappable = spans.isEmpty ? null : tapAt;
     final bubble = Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
@@ -448,6 +502,11 @@ class TeacherSpeech extends StatelessWidget {
         excludeSemantics: true,
         // Com leitor de tela: uma ação por casa ou lance.
         customSemanticsActions: {
+          for (final (mark, url) in pages)
+            CustomSemanticsAction(
+              label: context.l10n.wikiOpen(mark.text),
+            ): () =>
+                showWikiPage(context, url),
           for (final link in links)
             CustomSemanticsAction(
               label: context.l10n.speechShowOnBoard(link.text),

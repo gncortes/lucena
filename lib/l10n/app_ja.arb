@@ -1013,5 +1013,9 @@
   "exerciseTurn": "{side, select, white{白の手番} other{黒の手番}}",
   "exerciseYourTurn": "{side, select, white{あなたの番：白番} other{あなたの番：黒番}}",
   "exercisesIntroAfter": "すべて解くとレッスンに一覧が開いたままになります。どの練習問題にも戻って見直し、局面をLichessで分析できます。",
-  "exerciseScoreLocked": "自由練習：評価は変わりません。もう一度評価に反映させるには、レッスンから練習問題をやり直してください。"
+  "exerciseScoreLocked": "自由練習：評価は変わりません。もう一度評価に反映させるには、レッスンから練習問題をやり直してください。",
+  "wikiTitle": "ウィキペディア",
+  "wikiOfflineTitle": "インターネット接続が必要です",
+  "wikiOfflineBody": "このページを読むにはインターネットに接続してください。レッスンはそのまま続けられます。",
+  "wikiOpen": "{name}をウィキペディアで開く"
 }

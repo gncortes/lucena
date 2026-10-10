@@ -1013,5 +1013,9 @@
   "exerciseTurn": "{side, select, white{Trait aux Blancs} other{Trait aux Noirs}}",
   "exerciseYourTurn": "{side, select, white{À vous : les Blancs jouent} other{À vous : les Noirs jouent}}",
   "exercisesIntroAfter": "Une fois tous les exercices résolus, la liste reste ouverte dans la leçon : revenez sur n'importe lequel pour le revoir et analyser la position sur Lichess.",
-  "exerciseScoreLocked": "Entraînement libre : la note ne change pas. Pour qu'elle compte à nouveau, refaites les exercices depuis la leçon."
+  "exerciseScoreLocked": "Entraînement libre : la note ne change pas. Pour qu'elle compte à nouveau, refaites les exercices depuis la leçon.",
+  "wikiTitle": "Wikipédia",
+  "wikiOfflineTitle": "Cette consultation nécessite Internet",
+  "wikiOfflineBody": "Connectez-vous à Internet pour lire cette page. La leçon continue normalement.",
+  "wikiOpen": "Ouvrir {name} sur Wikipédia"
 }

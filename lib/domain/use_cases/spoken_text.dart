@@ -1,3 +1,5 @@
+import 'wiki_markup.dart';
+
 /// Converte a notação dos lances que aparece nas falas em texto que o
 /// sintetizador lê bem: `Tf3` vira "torre f3", `Cxe5+` vira "cavalo toma e5,
 /// xeque". Só o que vai para a voz muda; o texto na tela fica como está.
@@ -31,7 +33,10 @@ abstract final class SpokenText {
 
   /// [text] pronto para falar, com o caminho de volta: de uma posição no
   /// texto falado para a posição no texto da tela.
-  static SpokenUtterance utterance(String text, String language) {
+  /// A marcação dos nomes (`{{Andersson|ulf-andersson}}`) sai: só o texto
+  /// visível é falado.
+  static SpokenUtterance utterance(String marked, String language) {
+    final text = WikiMarkup.plain(marked);
     final words = _words[language.split(RegExp('[-_]')).first.toLowerCase()];
     if (words == null) return SpokenUtterance._(text, const []);
     final pieces = words.pieces.keys.join();

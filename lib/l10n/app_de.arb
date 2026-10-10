@@ -1013,5 +1013,9 @@
   "exerciseTurn": "{side, select, white{Weiß am Zug} other{Schwarz am Zug}}",
   "exerciseYourTurn": "{side, select, white{Du bist dran: Weiß am Zug} other{Du bist dran: Schwarz am Zug}}",
   "exercisesIntroAfter": "Sobald du alle gelöst hast, bleibt die Liste in der Lektion offen: Geh zu jeder Aufgabe zurück, um sie noch einmal anzusehen und die Stellung auf Lichess zu analysieren.",
-  "exerciseScoreLocked": "Freies Üben: Die Note ändert sich nicht. Damit sie wieder zählt, mache die Aufgaben in der Lektion noch einmal."
+  "exerciseScoreLocked": "Freies Üben: Die Note ändert sich nicht. Damit sie wieder zählt, mache die Aufgaben in der Lektion noch einmal.",
+  "wikiTitle": "Wikipedia",
+  "wikiOfflineTitle": "Dafür brauchst du Internet",
+  "wikiOfflineBody": "Verbinde dich mit dem Internet, um diese Seite zu lesen. Die Lektion geht normal weiter.",
+  "wikiOpen": "{name} auf Wikipedia öffnen"
 }

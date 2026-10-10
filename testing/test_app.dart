@@ -10,10 +10,13 @@ import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
+import 'package:lucena/ui/wiki/widgets/web_pages.dart';
 
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_voice_repository.dart';
+import 'fakes/fake_wiki.dart';
 
 /// Envolve um widget com tema e idiomas do app, para testes de widget.
 class TestApp extends StatelessWidget {
@@ -25,9 +28,19 @@ class TestApp extends StatelessWidget {
     this.profileCubit,
     this.speechCubit,
     this.shareRepository,
+    this.wikiLinksCubit,
+    this.webPages,
     this.router,
     super.key,
   });
+
+  /// As páginas da Wikipedia dos nomes das falas. Sem ele, nenhuma: os nomes
+  /// ficam como texto normal.
+  final WikiLinksCubit? wikiLinksCubit;
+
+  /// As páginas da web (a webview não existe nos testes). Sem elas, um falso
+  /// com internet.
+  final WebPages? webPages;
 
   final Widget child;
   final Locale locale;
@@ -91,6 +104,8 @@ class TestApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(
           create: (_) => ProfileCubit(FakeProfileRepository())..load(),
         ),
+      if (wikiLinksCubit case final wiki?)
+        BlocProvider<WikiLinksCubit>.value(value: wiki),
       if (speechCubit case final speech?)
         BlocProvider<SpeechCubit>.value(value: speech)
       else
@@ -98,8 +113,13 @@ class TestApp extends StatelessWidget {
           create: (_) => SpeechCubit(FakeVoiceRepository())..load(),
         ),
     ];
-    return RepositoryProvider<ShareRepository>.value(
-      value: shareRepository ?? FakeShareRepository(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<ShareRepository>.value(
+          value: shareRepository ?? FakeShareRepository(),
+        ),
+        RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
+      ],
       child: MultiBlocProvider(providers: providers, child: app),
     );
   }

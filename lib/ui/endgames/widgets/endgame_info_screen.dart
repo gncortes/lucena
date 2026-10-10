@@ -8,6 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 
 /// As informações de uma aula de final: a história, as posições-base com o
@@ -44,7 +45,7 @@ class EndgameInfoScreen extends StatelessWidget {
                   ),
                 ),
                 _header(theme, l10n.endgameInfoHistory),
-                Text(
+                LinkedText(
                   texts.say('${lesson.id}.history') ?? '',
                   key: EndgameInfoKeys.history,
                   style: theme.textTheme.bodyMedium,
@@ -63,7 +64,7 @@ class EndgameInfoScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              LinkedText(
                                 texts.say('${lesson.id}.key.${position.id}') ??
                                     '',
                                 style: theme.textTheme.bodyMedium,
