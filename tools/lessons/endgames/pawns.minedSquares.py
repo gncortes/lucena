@@ -41,6 +41,9 @@ ALEKHINE_B = '8/8/4k3/4P3/p3Pp2/P7/4K3/8 w - - 0 1'  # sem os peões b: só 1.Rf
 # RyanGarg, cap. 2 (d4/d5, Rf4, Rb5), levado para a ala do rei e uma coluna
 # adiante, para não repetir o e13 (c3/c4) nem as casas do e10 (d5/f4).
 NOMINE = '8/8/8/5p1k/3K1P2/8/8/8 w - - 0 1'       # empate
+# Exercício próprio (nota A): trebuchet na coluna g. 1.Rf5! fecha o trebuchet
+# com as pretas na vez; 1.Rf3? também protege g4, mas só empata.
+G_TREB = '8/8/8/6p1/4K1Pk/8/8/8 w - - 0 1'
 
 REFERENCES = [
     {'id': 'wikiZugzwang', 'kind': 'web',
@@ -177,6 +180,7 @@ write({
     'exercises': [
         exercise('e11', 1, HOOPER, 'Kb6', accept='win',
                  origin='wikiZugzwang'),
+        exercise('e15', 1, G_TREB, 'Kf5 Kh3 Kxg5', accept='win'),
         exercise('e13', 2, C_LOW, 'Kd5', accept='hold', goal='draw',
                  origin='monsienne'),
         exercise('e08', 2, RODNEY, 'Kd3', accept='hold', goal='draw',
