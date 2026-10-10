@@ -39,6 +39,11 @@ QUIET2 = '4k1r1/8/3K4/8/8/8/8/Q7 w - - 0 1'       # montada: lance calmo
 LADDER = '5Q2/8/8/r7/4K3/8/4k3/8 w - - 0 1'       # montada: escada aberta
 SQUEEZE = after(W, 'Qa6 Rc7+')                    # 1.Da6? Tc7+ (Averbakh)
 DRAW = '1k6/2r5/QK6/8/8/8/8/8 b - - 0 1'          # depois de 2.Rb6?? (Averbakh)
+# Montadas: a torre colada ao próprio rei, imune à dama (só os reis) e ao rei
+# (afogamento), segue a coluna do rei branco com xeque. Tabela: em cada lance
+# das pretas, o xeque da torre é o único que empata.
+IMMUNE = '8/8/2K5/8/8/3Q4/7r/2k5 b - - 0 1'
+IMMUNE2 = '6K1/8/8/8/8/4Q3/r7/5k2 b - - 0 1'
 
 
 def ref(step, rid):
@@ -186,6 +191,25 @@ write({
                 'wikipedia'),
             ref(move('m_squeeze', SQUEEZE, 'Kd6', accept='win'), 'wikipedia'),
         ]},
+        # 8. Do lado da torre: colada ao rei, ela não pode ser capturada e os
+        # xeques não acabam (a ideia do e13 e do e14, noutra figura: rei preto
+        # a duas casas do canto, e não ao lado dele).
+        {'id': 'immune', 'steps': [
+            think('t_immune', IMMUNE, 2, marks=['b2'], side='black'),
+            talk('immune', IMMUNE, arrows=['h2c2', 'c2c6'],
+                 marks=['b2', 'c2'], side='black'),
+            demo('d_immune', IMMUNE,
+                 'Rc2+ Kb5 Rb2+ Kc4 Rc2+ Kb3 Rb2+ Ka3 Ra2+ Kxa2',
+                 goal='draw', side='black',
+                 notes={1: {'arrows': ['c2c6']}, 3: {'arrows': ['b2b5']},
+                        5: {'arrows': ['c2c4']}, 7: {'arrows': ['b2b3']},
+                        9: {'arrows': ['a2a3']},
+                        10: {'marks': ['b1', 'b2', 'c2', 'd1', 'd2']}}),
+            demo('d_trade', IMMUNE, 'Rc2+ Qxc2+ Kxc2', goal='draw',
+                 side='black', notes={2: {'arrows': ['d3c2']}}),
+            move('m_immune', IMMUNE2, 'Rg2+ Kf7 Rf2+ Kg6 Rg2+', accept='hold',
+                 goal='draw'),
+        ]},
         # 8. O falso Philidor (Ivanchuk-Lautier), o resumo e o desafio.
         {'id': 'falseKing', 'steps': [
             ref(think('t_false', IVANCHUK, 2, marks=['a6', 'c6']),
@@ -221,6 +245,7 @@ write({
         {'id': 'corner', 'fen': SVIDLER_G, 'ref': 'svidlerHowell#211'},
         {'id': 'false', 'fen': IVANCHUK, 'ref': 'ivanchukLautier#197'},
         {'id': 'draw', 'fen': DRAW, 'ref': 'wikipedia'},
+        {'id': 'immune', 'fen': IMMUNE},
     ],
     'practice': {'fen': '1rk5/4Q3/K7/8/8/8/8/8 w - - 0 1', 'goal': 'win',
                  'positionId': 'queen.queenVsRook.0001'},
