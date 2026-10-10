@@ -49,7 +49,7 @@
   "ex.e16": "Both kings are one step from the enemy pawn. Only one move does not lose. Find the winning move.",
   "ex.e16.hint": "It is mutual zugzwang: whoever has to move once the kings face the pawns loses his own. Attack e6 from a square that still leaves you a spare square for the next move.",
   "ex.e16.solution": "1.Kd7! The king already eyes e6 and keeps d6 as a spare square. After 1...Kf5, 2.Kd6! Now Black is in zugzwang, and the black king has to leave f5; after 2...Kg6, 3.Kxe6 (3.Ke7 also wins). 1.Kd6?? straight away loses: 1...Kf5 and the zugzwang changes sides. Every other move loses too. {{Jesús de la Villa|jesus-de-la-villa}}'s example.",
-  "key.count": "Every pawn has three key squares, two ranks in front of it: the square straight ahead and its two neighbours. If the white king reaches one of them, the pawn queens, whoever is to move.",
+  "key.count": "A pawn that has not yet passed the fourth rank has three key squares, two ranks in front of it: the square on the same file and its two neighbours. If the white king reaches one of them, the pawn queens, whoever is to move.",
   "key.averbakh": "The white king is already on a key square, in front of the pawn. Now it moves forward using the opposition, always ahead of the pawn, up to the sixth rank: White wins.",
   "key.opposition": "A trap: taking the opposition out of habit only draws here. What wins is the white king stepping forward, beside the pawn, towards the key squares. The opposition is a means, not an end.",
   "key.kamskyKramnik": "{{Kamsky|gata-kamsky}} against {{Kramnik|vladimir-kramnik}}, {{Nice|nice}} 2009, in a blindfold game: the black king stayed in front of the pawn, answered every white step, and the game ended in stalemate.",
