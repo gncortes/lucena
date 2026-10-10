@@ -32,7 +32,7 @@ LOOSE2 = '3K1k2/2Q4r/8/8/8/8/8/8 w - - 0 1'   # montada (T63): torre solta na s�
 MORO93 = '8/8/5Q2/2K5/r7/3k4/8/8 w - - 0 1'     # Morozevich-Jakovenko, lance 93
 BEHIND2 = '8/8/8/5K1Q/1r6/8/5k2/8 w - - 0 1'  # montada (T63): a dama recua para trás do rei
 LONGDIAG = '3Q4/2K5/7k/8/5r2/8/8/8 w - - 0 1'  # montada (T63): motivo diagonal longo
-METHURST = '8/6Q1/8/5r1k/8/4K3/8/8 w - - 0 1'   # estudo de methurst
+METHURST = '8/6Q1/8/5r1k/8/4K3/8/8 w - - 0 1'   # posição de treino de methurst
 
 MORO_URL = ('https://lichess.org/analysis/pgn/d4_Nf6_c4_e6_Nc3_Bb4_Qc2_c5_dxc5_O-O_a3_Bxc5_Nf3_b6_e4_Nc6_Bd3_Ng4_O-O_Qc7_Nb5_Qb8_h3_Nge5_Nxe5_Nxe5_Be2_a6_Nc3_Qc7_Kh1_Bb7_f4_Nc6_Bd3_Nd4_Qd1_f5_b4_Be7_Bb2_fxe4_Bxe4_Nf5_Qd3_Bxe4_Nxe4_Rac8_Rac1_Qb7_Kh2_d5_cxd5_Qxd5_Qe2_Rxc1_Rxc1_Nd6_Rc7_Rf7_Nc3_Qf5_Bc1_b5_Rc6_Bf8_Rxa6_Rc7_Bd2_Nc4_Be1_Rd7_Nxb5_Nd6_Nc3_Qxf4+_Bg3_Qc4_Ra8_Qxe2_Nxe2_Kf7_Nd4_Nc4_Nc6_Bd6_Bxd6_Rxd6_b5_Rd5_a4_e5_Ra7+_Ke6_Rxg7_Kd6_Rxh7_e4_Rh4_Nd2_Rh6+_Kc5_Re6_e3_g4_Rd3_Kg3_Ra3_Kf4_Nf1_Re4_Ra2_Nd4_Rf2+_Ke5_Nd2_Ne6+_Kb6_Rxe3_Nc4+_Kd4_Nxe3_Kxe3_Ra2_g5_Ra3+_Kf4_Rxh3_g6_Rh8_g7_Rg8_Ke5_Ka5_Kf6_Kxa4_Nd4_Rd8_Ke7_Rxd4_g8=Q_Kxb5_Qc8_Rd5_Ke6_Rd4_Ke5_Rd3_Qc2_Rd8_Qb3+_Kc5_Qc3+_Kb5_Ke6_Kb6_Qc4_Rg8_Qd4+_Kc6_Qc3+_Kb5_Kd6_Rg6+_Kc7_Rg4_Qc6+_Kb4_Qd6+_Kc3_Kc6_Rd4_Qa3+_Kd2_Kc5_Re4_Kd5_Rg4_Qf3_Rb4_Kc5_Ra4_Qf6_Kd3_Qd6+_Ke3_Qg3+_Ke2_Qc3_Rf4_Kd5_Rg4_Ke5_Rh4_Kf5_Kf2_Qd3_Rh7_Qd4+_Kf3_Kg5_Rh2_Qf4+_Kg2_Kg4_Kg1_Qd4+_Kg2_Qd3_Kg1_Qe3+_Kf1_Qc1+_Kf2_Qd2+_Kg1_Qe1+_Kg2_Qg3+_Kh1_Kf3_Rf2+_Ke3_Re2+_Kd3_Rd2+_Kxd2')
 

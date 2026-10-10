@@ -94,7 +94,7 @@
   "step.shortB": "A torre em a6 ficou sem proteção depois de 2...Rb8, e o motivo curto não ameaça nada. É a vez do nosso rei.",
   "step.shortB.hint": "Com a torre a duas casas, o rei não precisa esperar a dama: vá direto até ela.",
   "step.shortB.done": "3.Rb5! O nosso rei ataca a torre, e a melhor saída dela é 3...Ta7, colada no rei preto: a defesa da segunda fileira. Fica a regra completa: com a torre a três casas ou mais do nosso rei, a dama cobre os dois xeques antes de o rei andar; com a torre a duas casas, o motivo é curto, e o rei pode ir em frente, porque fica perto da torre e a ataca.",
-  "step.t_behind": "Morozevich contra Jakovenko de novo, lance 81. O nosso rei quer chegar perto do rei preto, mas cada passo dele pode dar à torre uma série de xeques. Qual lance aproxima o nosso rei sem deixar a torre dar xeque?",
+  "step.t_behind": "Morozevich contra Jakovenko de novo, lance 81. O nosso rei quer chegar perto do rei preto, mas cada passo dele pode dar à torre uma série de xeques. Qual lance melhora a posição sem dar à torre nenhum xeque?",
   "step.t_behind.hint1": "Veja de que casas a torre daria xeque no rei branco depois de cada passo dele.",
   "step.t_behind.hint2": "Procure o passo do rei em que as casas de xeque já estão vigiadas, pela dama ou pelo próprio rei.",
   "step.behind": "Morozevich jogou 81.Dc3+ Rb5 82.Rd6, e a torre deu xeque com 82...Tg6+ e, depois de 83.Rc7, se afastou com 83...Tg4!!, uma das defesas mais teimosas, segundo Smerdon. Ele aponta 81.Re7! como muito melhor. Com o rei em e7, a torre não tem xeque: em g7 seria capturada pela dama, que de d4 vigia a diagonal até g7, e em e8 seria capturada pelo rei. A regra: antes do rei, a dama.",
