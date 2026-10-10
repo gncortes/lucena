@@ -5,9 +5,6 @@ import '../../../domain/models/endgame_position.dart';
 
 abstract final class CustomPositionKeys {
   static const screen = Key('custom.screen');
-
-  /// O painel da paleta e das opções, embaixo do tabuleiro.
-  static const panel = Key('custom.panel');
   static const editor = Key('custom.editor');
   static const fenField = Key('custom.fen');
   static const pasteButton = Key('custom.paste');
