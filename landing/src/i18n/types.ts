@@ -45,9 +45,23 @@ export type Dictionary = {
     title: string;
     lead: string;
     items: Record<
-      'progression' | 'lessons' | 'levels' | 'speedrun' | 'analysis' | 'custom',
+      | 'progression'
+      | 'placement'
+      | 'school'
+      | 'lessons'
+      | 'journey'
+      | 'speedrun'
+      | 'marathon'
+      | 'blind'
+      | 'voice'
+      | 'stars'
+      | 'analysis'
+      | 'progress'
+      | 'custom',
       Feature
     >;
+    /** O roteiro de cada capítulo das aulas de finais. */
+    route: { label: string; steps: Block[] };
   };
   levels: { kicker: string; title: string; beginner: Block; advanced: Block };
   roadmap: {
