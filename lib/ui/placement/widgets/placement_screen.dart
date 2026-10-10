@@ -40,6 +40,10 @@ class PlacementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PlacementCubit>().state;
+    // Onde o corpo começa na tela (barra de status, barra do app e a de
+    // progresso), medido aqui fora: dentro do Scaffold a margem de cima já
+    // foi descontada.
+    final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight + 4;
     return Scaffold(
       key: PlacementKeys.screen,
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
@@ -94,6 +98,7 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
               state: state,
+              bodyTop: bodyTop,
             ),
             PlacementView.result => PlacementResultView(
               key: const ValueKey('result'),
@@ -201,9 +206,12 @@ class _Intro extends StatelessWidget {
 /// largura toda e, embaixo, as opções (escolha), "Confirmar" (casas) e
 /// "Não sei".
 class _Question extends StatelessWidget {
-  const _Question({required this.state, super.key});
+  const _Question({required this.state, required this.bodyTop, super.key});
 
   final PlacementViewState state;
+
+  /// Onde o corpo começa na tela, para achar o centro da tela inteira.
+  final double bodyTop;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +228,6 @@ class _Question extends StatelessWidget {
     // O centro da tela inteira, nas coordenadas do corpo (que começa
     // abaixo da barra do app e da barra de progresso), como nos exercícios.
     final screen = MediaQuery.sizeOf(context);
-    final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight + 4;
     return CustomMultiChildLayout(
       delegate: _QuestionLayout(
         promptAbove: promptAbove,
