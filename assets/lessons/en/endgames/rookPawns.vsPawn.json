@@ -225,7 +225,7 @@
   "ex.e17.hint": "Your king protects more than one square on the sixth rank. A protected rook that checks forever doesn't need to win anything.",
   "ex.e17.solution": "1.Ra6!! After 1...c1=Q, 2.Rb6+; after 2...Ka3, 3.Ra6+, and so on, along the a- and b-files. The rook is always protected by the king on b7, and the black king can't get away: if it steps onto the c-file, the rook check on c6 puts the rook in front of the queen, which can only be saved by trading itself for the rook. Other moves lose: the queen is born and the black king escapes the checks.",
   "key.cut": "The cut-off: the rook sits on a rank between the black king and the pawn and keeps it from helping while the white king makes its way over.",
-  "key.shoulder": "The shoulder: the white king walks right next to the black king and pushes it away from the squares beside the pawn.",
+  "key.shoulder": "The shoulder: the white king steps into the black king's path and pushes it away from the squares beside the pawn.",
   "key.check": "A check at the right moment: the rook drives the black king back, and the white king gains the tempo it was missing.",
   "key.knight": "The defender's resource: promoting to a knight, with check, saves the draw. Promoting to a queen would lose.",
   "key.saavedra": "Saavedra, 1895: here the pawn beats the rook. Promoting to a queen would stalemate the black king; promoting to a rook wins.",
