@@ -140,7 +140,7 @@
   "step.t_rookPawn": "Peão de torre, que a regra diz que não ganha: no canto, o rei só tem um lado para sair. Mas aqui, com as brancas a jogar, ganha; com as pretas a jogar, empata. Por quê?",
   "step.t_rookPawn.hint1": "A sua torre já está na quarta fileira. Em um lance ela chega a a4, atrás do peão.",
   "step.t_rookPawn.hint2": "O rei sai agora, antes de a torre preta se arrumar. Se fosse a vez das pretas, 1...Tb1 proibiria b7 e seria empate.",
-  "step.rookPawnRule": "A regra: com peão de torre, a Lucena ganha só se a torre branca já está na quarta fileira, a torre preta não está na coluna ao lado do peão e a vez é das brancas. O rei sai já para b7; quando a torre preta sai da coluna a, a sua torre vai para a4, atrás do peão, e a coluna a passa a ser dela. Faltando qualquer uma das três, as pretas seguram, a não ser que o rei preto esteja cortado longe: é a próxima parte.",
+  "step.rookPawnRule": "A regra: com peão de torre, a Lucena ganha só se a torre branca já está na quarta fileira, a torre preta não está na coluna ao lado do peão e a vez é das brancas. O rei sai já para b7; quando a torre preta sai da coluna a, a sua torre vai para a4, atrás do peão, e a coluna a passa a ser dela. Faltando qualquer uma das três, as pretas seguram, a não ser que o rei preto esteja cortado longe: é o próximo capítulo.",
   "step.rookPawnDemo": "Veja a técnica.",
   "step.rookPawnDemo.m1": "1.Rb7. O rei sai do canto agora. A torre preta ainda está em a1 e não controla b7.",
   "step.rookPawnDemo.m2": "1...Tb1+. Xeque pela coluna b: o rei só tem a6 ou o canto, a8, e voltar para o canto jogaria a vitória fora.",

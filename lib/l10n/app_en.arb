@@ -3735,7 +3735,7 @@
   "@aboutLicenses": {
     "description": "About screen: opens the list of open source licenses of the libraries used."
   },
-  "lessonPartStep": "Part {part} of {parts} · step {step} of {steps}",
+  "lessonPartStep": "Chapter {part} of {parts} · step {step} of {steps}",
   "@lessonPartStep": {
     "description": "Lesson progress label: part X of Y and step A of B inside the part.",
     "placeholders": {
@@ -3798,7 +3798,7 @@
   "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
   "lessonDemoPlay": "Play",
   "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
-  "lessonPartDone": "Part {part} complete",
+  "lessonPartDone": "Chapter {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",
     "placeholders": {
@@ -3807,7 +3807,7 @@
       }
     }
   },
-  "lessonNextPart": "Go to part {part}",
+  "lessonNextPart": "Go to chapter {part}",
   "@lessonNextPart": {
     "description": "Button at the end of a lesson part: open the next part.",
     "placeholders": {
@@ -3820,13 +3820,13 @@
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
-  "lessonReviewPart": "Review this stage",
+  "lessonReviewPart": "Review this chapter",
   "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
   "lessonPartNext": "Next",
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
   "lessonPartLearned": "What you learned",
   "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
-  "lessonAllPartsDone": "All parts complete",
+  "lessonAllPartsDone": "All chapters complete",
   "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
   "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
   "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
@@ -3844,7 +3844,7 @@
   "@endgameFinalTest": {
     "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
   },
-  "endgameTestAdvice": "Tip: do the parts first. The test is open whenever you want to practice.",
+  "endgameTestAdvice": "Tip: do the chapters first. The test is open whenever you want to practice.",
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
@@ -3852,7 +3852,7 @@
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
-  "endgameResumePart": "Resume part {part}",
+  "endgameResumePart": "Resume chapter {part}",
   "@endgameResumePart": {
     "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
     "placeholders": {
@@ -3861,7 +3861,7 @@
       }
     }
   },
-  "endgameNextPart": "Go to part {part}",
+  "endgameNextPart": "Go to chapter {part}",
   "@endgameNextPart": {
     "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
     "placeholders": {
@@ -3878,7 +3878,7 @@
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
-  "homeEndgamePart": "Part {part} of {parts}",
+  "homeEndgamePart": "Chapter {part} of {parts}",
   "@homeEndgamePart": {
     "description": "Home continue card: the endgame lesson part where the student stopped.",
     "placeholders": {
@@ -3934,7 +3934,7 @@
       }
     }
   },
-  "lessonFinishPart": "Finish the part",
+  "lessonFinishPart": "Finish the chapter",
   "@lessonFinishPart": {
     "description": "Button on the last step of a lesson part: finish this part."
   },
@@ -3953,7 +3953,7 @@
       }
     }
   },
-  "lessonPartTitle": "Part {part} · {title}",
+  "lessonPartTitle": "Chapter {part} · {title}",
   "@lessonPartTitle": {
     "description": "Lesson step screen title in a lesson split into parts: the part number and its title.",
     "placeholders": {
@@ -3969,7 +3969,7 @@
   "@endgameLessonInReview": {
     "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
   },
-  "endgameStagesDone": "{done} of {total} stages",
+  "endgameStagesDone": "{done} of {total} chapters",
   "@endgameStagesDone": {
     "description": "Endgame lesson screen header: lesson stages done out of the total.",
     "placeholders": {

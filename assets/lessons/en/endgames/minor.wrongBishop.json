@@ -60,7 +60,7 @@
   "step.t_mednis": "Mednis's position again, now with Black to move. Your king is in front of the pawn, on h6. Is that enough, or does it need to be somewhere else?",
   "step.t_mednis.hint1": "If the white king reaches g8 or g7, what happens to your king?",
   "step.t_mednis.hint2": "In front of the pawn is not the same as inside the corner.",
-  "step.mednis": "In the previous part, with White to move, 1.Kg8! won. Now Black moves first. In the king and rook pawn against king ending, standing in front of the pawn is enough. With the bishop it is not: the king must get into the corner before the white king shuts the door. 1...Kh7! and then 2...Kh8.",
+  "step.mednis": "In the previous chapter, with White to move, 1.Kg8! won. Now Black moves first. In the king and rook pawn against king ending, standing in front of the pawn is enough. With the bishop it is not: the king must get into the corner before the white king shuts the door. 1...Kh7! and then 2...Kh8.",
   "step.d_mednis": "I will defend with Black. First I get into the corner, then I simply stay.",
   "step.d_mednis.m1": "1...Kh7! From here the king steps onto h8 next move; g8 belongs to the bishop, but I do not need it.",
   "step.d_mednis.m2": "2.Ke7. The white king cannot go to g8, next to my king, and goes round to reach g7.",

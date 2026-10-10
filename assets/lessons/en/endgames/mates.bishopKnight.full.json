@@ -84,7 +84,7 @@
   "step.d_routeWrong.m5": "3.Bf5. The bishop takes g4 and g6, and the black king is stuck on the h-file. White still wins, but the king has to be brought all the way back to h1, and every move counts towards the fifty.",
   "step.routeRight": "Now the right way: close the middle triangle with tempo and put the bishop in safety. Two moves.",
   "step.routeRight.hint": "The first move is a check. Then the bishop stays on the same diagonal, next to your king.",
-  "step.routeRight.done": "2.Bf3! The bishop stays on the d1–h5 diagonal, protected by the king on e4, and takes g2 from the black king. The black king is in the middle triangle; as in the second part, the knight still has to close d2 and f2.",
+  "step.routeRight.done": "2.Bf3! The bishop stays on the d1–h5 diagonal, protected by the king on e4, and takes g2 from the black king. The black king is in the middle triangle; as in the second chapter, the knight still has to close d2 and f2.",
   "step.t_loose": "Your pieces are scattered: the king and bishop are still at home, and the knight has gone too far, to c8, next to the black king, which attacks it. Save the knight and, if you can, gain time. What's the move?",
   "step.t_loose.hint1": "Retreating the knight saves it, but costs time. There is a move that defends the knight and forces the black king to move.",
   "step.t_loose.hint2": "Look for a check. Once the black king steps out of the way, who will be looking at c8?",

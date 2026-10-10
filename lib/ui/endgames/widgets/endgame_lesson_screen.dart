@@ -70,11 +70,13 @@ class _Body extends StatelessWidget {
   final EndgameLessonState state;
   final EndgameLesson lesson;
 
-  /// A fala curta do Viktor, conforme onde o aluno está: o convite para a
-  /// primeira parte, onde parou, o teste final ou o final de verdade.
+  /// A fala curta do Viktor, conforme onde o aluno está: no começo, o que a
+  /// aula ensina (o resumo dela); depois, onde parou, o teste final ou o
+  /// final de verdade.
   String? _speech() {
     final texts = state.texts;
-    final intro = texts.say('endgames.lesson.intro');
+    final intro =
+        texts.lessonSummary(lesson.id) ?? texts.say('endgames.lesson.intro');
     if (state.passed) return texts.say('endgames.lesson.passed');
     // Nota alcançada, mas a lição (as etapas) ainda não: falta ela.
     if (state.allSolved && state.score >= state.passScore) {

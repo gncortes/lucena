@@ -84,7 +84,7 @@
   "step.shoulder.done": "O rei preto nunca chegou perto do peão. O seu rei ficou entre os dois, e a torre termina o serviço.",
   "step.t_check": "1.Th5+ está de graça: o rei preto tem de sair de e5. Vale a pena dar esse xeque?",
   "step.t_check.hint1": "Para onde o xeque manda o rei preto? Para perto do peão ou para longe dele?",
-  "step.t_check.hint2": "Quem chega primeiro às casas na frente do peão, d3 e d2? Lembre do recurso da segunda parte: a torre pode obrigar o rei preto a escoltar.",
+  "step.t_check.hint2": "Quem chega primeiro às casas na frente do peão, d3 e d2? Lembre do recurso do segundo capítulo: a torre pode obrigar o rei preto a escoltar.",
   "step.checkIdea": "Um xeque custa um lance ao rei preto, mas o lance dele pode ser útil para ele. Veja 1.Th5+? O rei vai para e4 ou f4: na direção do peão, exatamente onde ele queria estar, com o seu rei atrás. Isso não ganha tempo, perde. O que ganha é 1.Td8! A torre fica atrás do peão, o rei preto tem de escoltar, e o seu rei contorna pela frente.",
   "step.d_badCheck": "Veja o que acontece depois do xeque errado, 1.Th5+?",
   "step.d_badCheck.m1": "1...Re4: o rei preto vai para a frente do peão, que agora anda com escolta.",

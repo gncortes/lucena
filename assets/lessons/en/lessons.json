@@ -527,9 +527,9 @@
     "Again, calmly."
   ],
   "coach.partDone": [
-    "Part done. Each one makes the next easier.",
+    "Chapter done. Each one makes the next easier.",
     "Good. One more piece of the technique in place.",
-    "Part complete. Rest your head for a moment, then go on."
+    "Chapter complete. Rest your head for a moment, then go on."
   ],
   "coach.lessonDone": [
     "Lesson complete. I am proud of you.",
@@ -556,12 +556,12 @@
   "endgames.module.rook": "Rook endgames",
   "endgames.module.minor": "Minor pieces",
   "endgames.module.rookMinor": "Rook and minor piece",
-  "endgames.lesson.intro": "The lesson comes in short parts. In each one you think alone first, then I show you and you practice. Start with Part 1.",
-  "endgames.lesson.middle": "Good to see you back. Go on with the highlighted part: it is where you stopped.",
-  "endgames.lesson.test": "Parts done. Now the final test, without my help. Once your score passes the minimum, I unlock the real endgame.",
+  "endgames.lesson.intro": "Start with chapter 1.",
+  "endgames.lesson.middle": "Good to see you back. Go on with the highlighted chapter: it is where you stopped.",
+  "endgames.lesson.test": "Chapters done. Now the final test, without my help. Once your score passes the minimum, I unlock the real endgame.",
   "endgames.lesson.passed": "Passed. Now all that is left is to prove it against a flesh-and-blood opponent: or a silicon one.",
   "endgames.lesson.failed": "Not this time. Reread the lesson if you like and redo the exercises: the second time is usually much better.",
-  "endgames.lesson.lessonLeft": "You reached the score in the exercises. Now finish the lesson parts to complete the lesson and unlock the real endgame.",
+  "endgames.lesson.lessonLeft": "You reached the score in the exercises. Now finish the lesson chapters to complete the lesson and unlock the real endgame.",
   "module.notation": "Notation",
   "notation.coordinates.title": "Coordinates",
   "notation.coordinates.summary": "Every square has a name: the file letter and the rank number.",

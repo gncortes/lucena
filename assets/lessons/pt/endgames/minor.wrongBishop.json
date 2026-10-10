@@ -60,7 +60,7 @@
   "step.t_mednis": "A posição do Mednis de novo, agora com as pretas na vez. O seu rei está na frente do peão, em h6. Isso basta, ou ele precisa estar em outro lugar?",
   "step.t_mednis.hint1": "Se o rei branco chegar a g8 ou g7, o que acontece com o seu rei?",
   "step.t_mednis.hint2": "Na frente do peão não é o mesmo que dentro do canto.",
-  "step.mednis": "Na parte anterior, com as brancas na vez, 1.Rg8! ganhava. Agora as pretas jogam primeiro. No final de rei e peão de torre contra rei, ficar na frente do peão basta. Com o bispo, não: o rei tem de entrar no canto antes que o rei branco feche a porta. 1...Rh7! e depois 2...Rh8.",
+  "step.mednis": "No capítulo anterior, com as brancas na vez, 1.Rg8! ganhava. Agora as pretas jogam primeiro. No final de rei e peão de torre contra rei, ficar na frente do peão basta. Com o bispo, não: o rei tem de entrar no canto antes que o rei branco feche a porta. 1...Rh7! e depois 2...Rh8.",
   "step.d_mednis": "Vou defender de pretas. Primeiro entro no canto, depois só fico lá.",
   "step.d_mednis.m1": "1...Rh7! Daqui o rei pisa em h8 no lance seguinte; g8 é do bispo, mas não preciso dela.",
   "step.d_mednis.m2": "2.Re7. O rei branco não pode ir a g8, colada no meu rei, e dá a volta para chegar a g7.",

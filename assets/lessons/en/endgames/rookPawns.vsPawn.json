@@ -84,7 +84,7 @@
   "step.shoulder.done": "The black king never got near the pawn. Your king stood between them, and the rook finishes the job.",
   "step.t_check": "1.Rh5+ is free: the black king has to leave e5. Is that check worth giving?",
   "step.t_check.hint1": "Where does the check send the black king? Closer to the pawn or further from it?",
-  "step.t_check.hint2": "Who reaches the squares in front of the pawn, d3 and d2, first? Remember the tool from the second part: the rook can force the black king to escort.",
+  "step.t_check.hint2": "Who reaches the squares in front of the pawn, d3 and d2, first? Remember the tool from the second chapter: the rook can force the black king to escort.",
   "step.checkIdea": "A check costs the black king a move, but that move may be useful to it. Look at 1.Rh5+? The king goes to e4 or f4: towards the pawn, exactly where it wanted to be, with your king behind. That does not gain time, it loses it. What wins is 1.Rd8! The rook stays behind the pawn, the black king has to escort, and your king walks around in front.",
   "step.d_badCheck": "Watch what happens after the wrong check, 1.Rh5+?",
   "step.d_badCheck.m1": "1...Ke4: the black king goes in front of the pawn, which now moves with an escort.",

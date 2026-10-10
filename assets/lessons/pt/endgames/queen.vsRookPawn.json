@@ -2,7 +2,7 @@
   "title": "Dama contra torre e peão: as fortalezas",
   "summary": "Com um peão a mais, a torre às vezes empata contra a dama. Quais peões seguram, como se defende e como a dama ganha quando a fortaleza não existe.",
   "practice": "Agora o desafio prático, com ou sem relógio. É a fortaleza de Müller e Lamprecht, e você defende: torre entre e3 e g3, rei ao lado do peão, e nada de mexer o peão.",
-  "step.buildDone": "A fortaleza montada: peão em g5, torre em f6 protegida por ele, rei ao lado. É a ideia da parte anterior, com o peão de cavalo na quinta: se o rei preto encostar na torre, ela espera longe na coluna f e volta depois.",
+  "step.buildDone": "A fortaleza montada: peão em g5, torre em f6 protegida por ele, rei ao lado. É a ideia do capítulo anterior, com o peão de cavalo na quinta: se o rei preto encostar na torre, ela espera longe na coluna f e volta depois.",
   "step.beyondWhy": "1.Rg2! Com o rei preto atrás da nossa linha, dama e rei podem armar mate juntos: quem tem a dama dá xeque e traz o rei para a ameaça de mate. Quem defende afasta o próprio rei do rei adversário, sem largar o peão, e deixa a torre em e3. 1.Rg1 também segura; 1.Tg3 escapa aqui, mas na próxima posição perde.",
   "part.fortress.title": "A fortaleza da segunda fileira",
   "part.fortress.summary": "Torre numa casa protegida pelo peão, rei ao lado: a dama não tem o que fazer.",

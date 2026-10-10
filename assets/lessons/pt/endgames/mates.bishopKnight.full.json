@@ -84,7 +84,7 @@
   "step.d_routeWrong.m5": "3.Bf5. O bispo tira g4 e g6, e o rei preto fica preso na coluna h. As brancas ainda ganham, mas ele tem de ser trazido de volta até h1, e cada lance conta para os cinquenta.",
   "step.routeRight": "Agora do jeito certo: feche o triângulo médio com tempo e ponha o bispo a salvo. Dois lances.",
   "step.routeRight.hint": "O primeiro lance é um xeque. Depois, o bispo fica na mesma diagonal, ao lado do seu rei.",
-  "step.routeRight.done": "2.Bf3! O bispo segue na diagonal d1–h5, protegido pelo rei em e4, e tira g2 do rei preto. O rei preto está no triângulo médio; como na segunda parte, falta o cavalo fechar d2 e f2.",
+  "step.routeRight.done": "2.Bf3! O bispo segue na diagonal d1–h5, protegido pelo rei em e4, e tira g2 do rei preto. O rei preto está no triângulo médio; como no segundo capítulo, falta o cavalo fechar d2 e f2.",
   "step.t_loose": "As suas peças se espalharam: o rei e o bispo ainda estão em casa, e o cavalo foi longe demais, até c8, ao lado do rei preto, que o ataca. Salve o cavalo e, se puder, ganhe tempo. Qual é o lance?",
   "step.t_loose.hint1": "Recuar o cavalo salva, mas custa tempo. Há um lance que defende o cavalo e obriga o rei preto a se mexer.",
   "step.t_loose.hint2": "Procure um xeque. Depois que o rei preto sair da frente, quem estará olhando para c8?",

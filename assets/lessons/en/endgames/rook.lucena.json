@@ -140,7 +140,7 @@
   "step.t_rookPawn": "A rook pawn, which the rule says does not win: in the corner the king has only one side to come out on. But here, with White to move, it wins; with Black to move, it is a draw. Why?",
   "step.t_rookPawn.hint1": "Your rook is already on the fourth rank. In one move it reaches a4, behind the pawn.",
   "step.t_rookPawn.hint2": "The king comes out now, before the black rook gets organised. If it were Black's move, 1...Rb1 would forbid b7 and it would be a draw.",
-  "step.rookPawnRule": "The rule: with a rook pawn, the Lucena wins only if the white rook is already on the fourth rank, the black rook is not on the file next to the pawn, and White has the move. The king steps out to b7 at once; when the black rook leaves the a-file, your rook goes to a4, behind the pawn, and the a-file becomes yours. With any of the three missing, Black holds, unless the black king is cut off far away: that is the next part.",
+  "step.rookPawnRule": "The rule: with a rook pawn, the Lucena wins only if the white rook is already on the fourth rank, the black rook is not on the file next to the pawn, and White has the move. The king steps out to b7 at once; when the black rook leaves the a-file, your rook goes to a4, behind the pawn, and the a-file becomes yours. With any of the three missing, Black holds, unless the black king is cut off far away: that is the next chapter.",
   "step.rookPawnDemo": "Watch the technique.",
   "step.rookPawnDemo.m1": "1.Kb7. The king leaves the corner now. The black rook is still on a1 and does not control b7.",
   "step.rookPawnDemo.m2": "1...Rb1+. Check on the b-file: the king only has a6 or the corner, a8, and going back to the corner would throw the win away.",

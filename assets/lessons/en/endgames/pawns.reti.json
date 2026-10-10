@@ -22,7 +22,7 @@
   "step.d_main.m1": "1.Kg7! The only move. The king starts down the diagonal and is already closer to both pawns.",
   "step.d_main.m2": "1...h4. Black runs with the pawn. It is still far from queening.",
   "step.d_main.m3": "2.Kf6. Now the threat is 3.Ke5, stepping into the square and heading for d6 at the same time.",
-  "step.d_main.m4": "2...Kb6. The black king goes for the c6-pawn. If it runs with the pawn, my king supports mine, as you will see in the next part.",
+  "step.d_main.m4": "2...Kb6. The black king goes for the c6-pawn. If it runs with the pawn, my king supports mine, as you will see in the next chapter.",
   "step.d_main.m5": "3.Ke5! This is the point. If Black pushes the pawn, I go to d6 and my pawn queens too. So Black has to spend a tempo taking the c6-pawn.",
   "step.d_main.m6": "3...Kxc6. Black captures the pawn. That was the tempo I needed.",
   "step.d_main.m7": "4.Kf4. My king has stepped into the square of the h4-pawn, and the rest is counting: 4...h3 5.Kg3 h2 6.Kxh2, a draw. A king that seemed far from everything arrived in time on both sides of the board.",

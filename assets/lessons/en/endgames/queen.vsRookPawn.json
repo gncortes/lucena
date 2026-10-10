@@ -2,7 +2,7 @@
   "title": "Queen against rook and pawn: the fortresses",
   "summary": "With an extra pawn, the rook sometimes draws against the queen. Which pawns hold, how to defend, and how the queen wins when there is no fortress.",
   "practice": "Now the practical challenge, with or without a clock. It's Müller and Lamprecht's fortress, and you defend: rook between e3 and g3, king beside the pawn, and don't touch the pawn.",
-  "step.buildDone": "The fortress is built: pawn on g5, rook on f6 protected by it, king beside them. It's the idea of the previous part, with the knight pawn on the fifth: if the black king comes up against the rook, it waits far away on the f-file and comes back later.",
+  "step.buildDone": "The fortress is built: pawn on g5, rook on f6 protected by it, king beside them. It's the idea of the previous chapter, with the knight pawn on the fifth: if the black king comes up against the rook, it waits far away on the f-file and comes back later.",
   "step.beyondWhy": "1.Kg2! With the black king behind our line, queen and king can build a mate together: the side with the queen checks and brings the king up for the mating threat. The defender moves their own king away from the enemy king, without leaving the pawn, and keeps the rook on e3. 1.Kg1 also holds; 1.Rg3 gets away with it here, but in the next position it loses.",
   "part.fortress.title": "The second-rank fortress",
   "part.fortress.summary": "Rook on a square the pawn protects, king beside it: the queen has nothing to do.",

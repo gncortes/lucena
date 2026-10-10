@@ -108,7 +108,7 @@
   "step.t_game.hint1": "Até aqui, as brancas respondiam a cada passo do rei preto com uma casa da mesma coluna.",
   "step.t_game.hint2": "Se o rei preto for a c5, você precisa estar pronto para responder com c3. Ficar em d3 não dá, porque a vez é sua.",
   "step.game": "Os pares desta partida ficam na mesma coluna: d6 com d2, c5 com c3, b5 com b3. Na coluna d são três casas entre os reis, a oposição distante; nas colunas c e b, uma casa só, a oposição de perto. d4 não serve, porque o peão de e5 a vigia. Contra d6, só 69.Rd2! empatava: de d2 o rei branco ainda alcança c3 quando o preto for a c5. Firouzja jogou 69.Rc3?, um passo cedo demais, e depois de 69...Rc5 abandonou. Que o par fique na mesma coluna é coisa desta estrutura, não uma regra: com outros peões, ele pode pular de coluna.",
-  "step.d_game": "Os lances da partida, a partir do 65.º. O rei preto procura um caminho para a ala da dama, e o branco responde a cada passo dele. Nesta estrutura a casa da mesma coluna sempre serve; no fim da parte você vê outra em que ela empata.",
+  "step.d_game": "Os lances da partida, a partir do 65.º. O rei preto procura um caminho para a ala da dama, e o branco responde a cada passo dele. Nesta estrutura a casa da mesma coluna sempre serve; no fim do capítulo você vê outra em que ela empata.",
   "step.d_game.m1": "65.Rf2: na coluna do rei preto, que está em f8. 65.Rf3 também segurava: o rei preto ainda está longe de c5, e as brancas têm folga.",
   "step.d_game.m2": "65...Re7: o rei preto vai para o centro.",
   "step.d_game.m3": "66.Re2: de novo na mesma coluna. Aqui 66.Re1 e 66.Re3 também serviam.",
