@@ -332,7 +332,7 @@ void main() {
     expect(find.text('Take the rook to the stars.'), findsOneWidget);
   });
 
-  testWidgets('escola: o tabuleiro no meio do espaço livre resolvendo e, '
+  testWidgets('escola: o tabuleiro no centro do espaço útil resolvendo e, '
       'explicando, perto dali, com a folha abaixo da fileira 1', (
     tester,
   ) async {
@@ -347,9 +347,12 @@ void main() {
     final stars = tester.getRect(find.byKey(LessonKeys.board));
     final prompt = tester.getRect(find.byKey(LessonKeys.prompt));
     final footer = tester.getRect(find.byKey(LessonKeys.footer));
+    final appBar = tester.getRect(find.byType(AppBar));
     expect(stars.size, talk.size);
-    // No meio entre o enunciado e o rodapé.
-    expect(stars.top - prompt.bottom, closeTo(footer.top - stars.bottom, 1));
+    // No centro do espaço útil (T64): entre a barra do app e o rodapé, sem
+    // cobrir o enunciado.
+    expect(stars.center.dy, closeTo((appBar.bottom + footer.top) / 2, 1));
+    expect(stars.top, greaterThanOrEqualTo(prompt.bottom));
     // Explicando, ele não vai para o alto: fica a menos de meio tabuleiro
     // de onde estava resolvendo.
     expect((stars.top - talk.top).abs(), lessThan(stars.height / 2));

@@ -81,14 +81,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   final _elapsed = ValueNotifier(Duration.zero);
   Timer? _ticker;
 
-  // A altura do enunciado: só cresce no exercício, para o tabuleiro não
-  // pular quando a fala muda de tamanho.
-  final _header = HeaderMemo();
-
-  // A tela inteira e onde o corpo começa, para achar o centro da tela.
-  Size _screen = Size.zero;
-  double _bodyTop = 0;
-
   @override
   void initState() {
     super.initState();
@@ -187,9 +179,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    _screen = MediaQuery.sizeOf(context);
-    // O corpo começa logo abaixo da barra de cima.
-    _bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight;
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) cubit.leave();
@@ -287,7 +276,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 
   /// O espaço do tabuleiro (T60). Resolvendo: o Viktor com o enunciado em
-  /// cima e o tabuleiro no centro da tela. Resolvido: o tabuleiro sobe e
+  /// cima e o tabuleiro no centro do espaço útil. Resolvido: o tabuleiro sobe e
   /// entram embaixo as estrelas, a solução e a fala dele.
   Widget _area(
     BuildContext context,
@@ -301,11 +290,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         builder: (context, _) {
           final t = _mode.value;
           return CustomMultiChildLayout(
-            delegate: _AreaDelegate(
-              header: _header..stepKey = '${state.lesson?.id}.${exercise?.id}',
-              centerY: _screen.height / 2 - _bodyTop,
-              mode: _mode,
-            ),
+            delegate: _AreaDelegate(mode: _mode),
             children: [
               if (t < 1 && state.ready && exercise != null)
                 LayoutId(
@@ -784,44 +769,26 @@ enum _Slot { prompt, board, turn, below }
 /// Posiciona o enunciado, o tabuleiro e o resultado pelo andamento de
 /// [mode] (0 resolvendo, 1 resolvido).
 class _AreaDelegate extends MultiChildLayoutDelegate {
-  _AreaDelegate({
-    required this.header,
-    required this.centerY,
-    required this.mode,
-  }) : super(relayout: mode);
+  _AreaDelegate({required this.mode}) : super(relayout: mode);
 
-  final HeaderMemo header;
-  final double centerY;
   final Animation<double> mode;
 
   @override
   void performLayout(Size size) {
     final t = mode.value;
     final hasPrompt = hasChild(_Slot.prompt);
-    var top = header.held;
-    var measured = false;
-    if (hasPrompt && top == null) {
-      // Passo novo: o enunciado medido (comprido demais, rola).
-      top = layoutChild(
-        _Slot.prompt,
-        BoxConstraints(maxWidth: size.width, maxHeight: size.height * 0.4),
-      ).height;
-      header.hold(top);
-      measured = true;
-    }
+    // O tabuleiro no centro do espaço útil (T64), do mesmo tamanho em todo
+    // passo; o enunciado fica com o espaço acima dele e rola se não couber.
     final solving = ExerciseLayout.solvingRect(
       size,
-      header: top ?? 0,
-      centerY: centerY,
+      header: ExerciseLayout.promptReserve,
     );
-    if (hasPrompt && !measured) {
-      // Enunciado já medido: cresce até o topo do tabuleiro, que não sai do
-      // lugar (fala maior rola).
+    if (hasPrompt) {
       layoutChild(
         _Slot.prompt,
         BoxConstraints(
           maxWidth: size.width,
-          maxHeight: max(top!, solving.top - ExerciseLayout.gutter),
+          maxHeight: max(0.0, solving.top - ExerciseLayout.gutter),
         ),
       );
     }
@@ -849,6 +816,5 @@ class _AreaDelegate extends MultiChildLayoutDelegate {
   }
 
   @override
-  bool shouldRelayout(_AreaDelegate old) =>
-      old.header != header || old.centerY != centerY || old.mode != mode;
+  bool shouldRelayout(_AreaDelegate old) => old.mode != mode;
 }

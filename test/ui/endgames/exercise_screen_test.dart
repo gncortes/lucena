@@ -135,7 +135,7 @@ void main() {
   });
 
   testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '
-      'tabuleiro no centro da tela, a vez embaixo e o cronômetro no canto '
+      'tabuleiro no centro do espaço útil, a vez embaixo e o cronômetro no canto '
       'inferior direito; resolvido, o tabuleiro sobe e o resultado entra '
       'embaixo', (tester) async {
     tester.view
@@ -146,7 +146,17 @@ void main() {
     final board = tester.getRect(find.byKey(ExerciseKeys.board));
     final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
     expect(board.center.dx, closeTo(200, 1));
-    expect(board.center.dy, closeTo(450, 2));
+    // No centro do espaço útil (T64): entre a barra do app e o rodapé.
+    final appBar = tester.getRect(find.byType(AppBar));
+    final footer = tester.getRect(
+      find
+          .ancestor(
+            of: find.byKey(ExerciseKeys.timer),
+            matching: find.byType(AnimatedSwitcher),
+          )
+          .first,
+    );
+    expect(board.center.dy, closeTo((appBar.bottom + footer.top) / 2, 1));
     expect(goal.top, greaterThan(board.bottom));
     expect(find.byKey(ExerciseKeys.speech), findsNothing);
     final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
