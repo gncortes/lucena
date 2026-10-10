@@ -469,9 +469,10 @@
         {
           "type": "talk",
           "id": "block",
-          "fen": "8/8/8/8/8/4p3/R2rk1K1/8 w - - 0 1",
+          "fen": "3r4/R7/8/8/8/4p3/4k1K1/8 w - - 0 1",
           "arrows": [
-            "a2d2"
+            "a7a2",
+            "d8d2"
           ],
           "marks": [
             "e1"
@@ -632,6 +633,24 @@
   ],
   "exercises": [
     {
+      "id": "e14",
+      "stars": 1,
+      "fen": "8/8/8/5r1R/8/2p5/3k4/1K6 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "turns": [
+        {
+          "teach": "h5h2",
+          "accept": "only",
+          "reply": "d2d3"
+        },
+        {
+          "teach": "h2h3",
+          "accept": "only"
+        }
+      ]
+    },
+    {
       "id": "e11",
       "stars": 2,
       "fen": "5R2/8/8/8/4p3/4k3/7r/4K3 w - - 0 1",
@@ -739,7 +758,7 @@
       ]
     }
   ],
-  "passScore": 6,
+  "passScore": 7,
   "keyPositions": [
     {
       "id": "behind",

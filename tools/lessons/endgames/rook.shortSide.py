@@ -36,6 +36,7 @@ S1 = 'R7/8/8/8/4p3/5k2/1r6/4K3 w - - 0 1'
 KARSTEDT = '5R2/8/8/8/4p3/4k3/7r/4K3 w - - 0 1'  # Karstedt 1897, espelhada
 LATEST = '4R3/8/8/8/8/4p3/4k1K1/4r3 w - - 0 1'   # o último momento do flanco
 TARR_D = 'r2K4/3P1k2/8/8/8/8/8/4R3 w - - 0 1'    # Tarrasch 1906: o aluno ataca
+E14 = '8/8/8/5r1R/8/2p5/3k4/1K6 w - - 0 1'   # peão de bispo na outra ala: só Th2+
 
 WARD_ARKELL = ('d4_d5_c4_dxc4_e4_Nc6_Nf3_Bg4_Bxc4_Bxf3_Qxf3_e6_d5_Ne5_Bb5+_c6_'
                'Qc3_Bd6_dxc6_bxc6_Bxc6+_Nxc6_Qxc6+_Ke7_Qb7+_Qc7_Qxc7+_Bxc7_Bg5+_'
@@ -168,7 +169,7 @@ write({
         ]},
         {'id': 'block', 'steps': [
             think('t_block', FAR, 2),
-            talk('block', BT, arrows=['a2d2'], marks=['e1']),
+            talk('block', FAR, arrows=['a7a2', 'd8d2'], marks=['e1']),
             demo('d_trade', BT, 'Rxd2+ Kxd2 Kf3 e2 Kf2 e1=Q+', goal='win',
                  side='black', notes={5: {'marks': ['e1']}}),
             move('blockE', BT, 'Ra1 Rd1 Ra2+ Ke1 Kf3 e2 Rxe2+',
@@ -190,6 +191,7 @@ write({
         ]},
     ],
     'exercises': [
+        exercise('e14', 1, E14, 'Rh2+ Kd3 Rh3+', accept='only', goal='draw'),
         exercise('e11', 2, KARSTEDT, 'Kf1 Rh1+ Kg2', accept='only',
                  goal='draw', origin='karstedt'),
         exercise('e13', 2, TARR_D, 'Kc7 Ra7+ Kc8 Ra8+ Kb7 Rd8 Kc7',
@@ -204,7 +206,7 @@ write({
                          5: 'only'},
                  goal='draw', origin='yuri61'),
     ],
-    'passScore': 6,
+    'passScore': 7,
     'keyPositions': [
         {'id': 'behind', 'fen': BEHIND, 'ref': 'profangel'},
         {'id': 'tarrasch', 'fen': TARR, 'ref': 'rookPawn'},
