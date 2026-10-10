@@ -13,6 +13,18 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - Toda preferência/dado persiste; toda tela com estado sobrevive a segundo plano e a fechar à força.
 - APIs de pacotes: consultar Context7 ou o MCP do Dart antes de supor assinaturas. Não inventar API.
 
+## Textos das aulas de finais (pedidos do Gabriel, 2026-10-09; valem para toda lição, revisão e reescrita)
+- **Lance citado sempre numerado**, como nos livros: `1.Rf7!`, `1...Rh7`, `2.e4`, `Com 1.Rc4? ...`. Posição de partida real
+  (com link para abrir no Lichess): o número é o do lance real da partida, tirado do PGN. Posição montada ou de estudo:
+  começa em 1. Casa solta ("fecha g8") não leva número. O revisor de lições reprova lance sem número ou com número errado.
+- **Captura é "capturar"**, nunca "comer" (só as piadas de comida do Gino ficam).
+- **"Sobre este final"** (`history`, `key.*`): para leigo. O que é o final, por que importa, que parece simples e não é, uma
+  curiosidade. Sem lance solto, sem notação, sem "tabela"/motor, sem bastidores de produção nem crédito de usuário.
+- **Passo de pensar**: o app só mostra "Jogam as brancas. Pense com calma: ..."; o texto do passo abre a explicação (sem
+  a pergunta). Escrever o enunciado como contexto + pergunta no fim.
+- **Exercício**: o Viktor não fala enquanto o aluno joga (nem elogio, nem "não é esse"); só na dica e depois de resolver.
+- Detalhes: `.claude/skills/aula-final/licao.md`, `formato.md` e `.claude/agents/revisor-licoes.md`.
+
 ## Git
 - Uma branch por tarefa (`tarefa/TXX-nome-curto`), criada a partir da `develop` atualizada. Commits e push só nela; a PR vai para a `develop` (`--base develop`).
 - Nunca commitar nem dar push direto na `develop` nem na `main`. As duas só recebem código por PR com CI verde; o merge é do usuário. A `main` recebe da `develop`.

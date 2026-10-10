@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "Emas bernilai 3 poin, perak 2, dan perunggu 1. Setiap kesalahan dan setiap petunjuk mengurangi satu poin.",
   "exerciseLichess": "Analisis di Lichess",
   "exerciseTurn": "{side, select, white{Giliran putih} other{Giliran hitam}}",
+  "exerciseYourTurn": "{side, select, white{Giliranmu: main dengan putih} other{Giliranmu: main dengan hitam}}",
   "exercisesIntroAfter": "Setelah semua terpecahkan, daftarnya tetap terbuka di pelajaran: kembali ke latihan mana pun untuk meninjaunya dan menganalisis posisi di Lichess.",
   "exerciseScoreLocked": "Latihan bebas: nilai tidak berubah. Agar dihitung lagi, ulangi latihan dari pelajaran."
 }

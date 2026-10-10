@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "الذهبية تساوي 3 نقاط، والفضية نقطتين، والبرونزية نقطة واحدة. كل خطأ وكل تلميح يخصم نقطة.",
   "exerciseLichess": "حلّل على Lichess",
   "exerciseTurn": "{side, select, white{الدور على الأبيض} other{الدور على الأسود}}",
+  "exerciseYourTurn": "{side, select, white{دورك: العب بالأبيض} other{دورك: العب بالأسود}}",
   "exercisesIntroAfter": "بعد أن تحلّ كل التمارين تبقى القائمة مفتوحة في الدرس: عد إلى أي تمرين لمراجعته وتحليل الوضعية على Lichess.",
   "exerciseScoreLocked": "تدريب حر: الدرجة لا تتغيّر. لتُحتسب من جديد، أعد التمارين من الدرس."
 }

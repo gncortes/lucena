@@ -84,10 +84,10 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
-    // Antes de resolver, o objetivo sob o tabuleiro.
+    // Antes de resolver, a vez logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'White to play',
+      'Your turn: play White',
     );
 
     await move(tester, 'c1', 'c4');
@@ -109,14 +109,8 @@ void main() {
     expect(l10n.exerciseHintLast, 'Dica (o exercício deixa de pontuar)');
     expect(l10n.exerciseHintFree, 'Dica');
     expect(find.byKey(ExerciseKeys.goal), findsNothing);
-    // A linha da solução, com figurino (a torre).
-    expect(
-      tester
-          .widget<Text>(find.byKey(ExerciseKeys.solution))
-          .textSpan!
-          .toPlainText(),
-      'Solution: 1.♖c4',
-    );
+    // Sem linha de "Solução": a fala do Viktor já explica.
+    expect(find.byKey(ExerciseKeys.solution), findsNothing);
     // Houve erro: a correção do Viktor vem sozinha, sem o botão.
     expect(speech(tester), 'Same bridge.');
     expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
@@ -168,7 +162,7 @@ void main() {
     final raised = tester.getRect(find.byKey(ExerciseKeys.board));
     expect(raised.top, lessThan(board.top));
     expect(
-      tester.getRect(find.byKey(ExerciseKeys.solution)).top,
+      tester.getRect(find.byKey(ExerciseKeys.speech)).top,
       greaterThan(raised.bottom),
     );
   });

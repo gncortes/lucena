@@ -1010,6 +1010,7 @@
   "exercisesIntroStarLegend": "L'étoile d'or vaut 3 points, l'argent 2 et le bronze 1. Chaque erreur et chaque indice enlèvent un point.",
   "exerciseLichess": "Analyser sur Lichess",
   "exerciseTurn": "{side, select, white{Trait aux Blancs} other{Trait aux Noirs}}",
+  "exerciseYourTurn": "{side, select, white{À vous : jouez les Blancs} other{À vous : jouez les Noirs}}",
   "exercisesIntroAfter": "Une fois tous les exercices résolus, la liste reste ouverte dans la leçon : revenez sur n'importe lequel pour le revoir et analyser la position sur Lichess.",
   "exerciseScoreLocked": "Entraînement libre : la note ne change pas. Pour qu'elle compte à nouveau, refaites les exercices depuis la leçon."
 }
