@@ -109,11 +109,11 @@ Critério: nota da triagem (D antes de C), depois o peso do final na prática. M
 | 29 | basics.twoBishops | C | 2 (+2) | Opus | moves ditados no lugar de demo; retirada longa do bispo; parede do centro || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 30 | queen.vsRook.philidor | C | 2 | Opus | lance calmo de zugzwang; torre desesperada; traps só em talk; partida || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
 | 31 | queen.vsRook.approach | C | 2 | Opus | sem demo, ~54 min; do centro até a borda; ameaça tripla; Browne–Belle || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
-| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || **feita: B** (lucena-8f, branch tarefa/T63-licoes-opus); Morozevich–Jakovenko 2006, Browne–Belle 1978; e16 sem regra que leve a 3.Rd4!, e12/e15/e19 colados na lição: Gabriel |
+| 32 | queen.vsRook.thirdRank | C | 2 | Opus | sem demo, ~58 min; dama prende o rei, dama atrás do rei; Morozevich–Jakovenko || **feita: B** (lucena-8f, tarefa/T63-licoes-opus); Morozevich–Jakovenko 2006, Browne–Belle 1978; a pedido do Gabriel, demo do e16 e e12/e15/e19 novos |
 | 33 | queen.vsRookPawn | C | 4 | Fable | torre que espera longe, Laza, rei dentro, estudos da 7.ª; Carlsen–Matlakov | |
 | 34 | mates.twoKnightsPawn | C | 2 (+2) | Fable | triangulação (Chéron), captura certa (Horwitz–Kling); Karpov, Anand | |
 | 35 | mates.bishopKnight.w | C | 3 | Fable | W ditado em move, sem demo; redes c7/c8 e de Seirawan; links | |
-| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk || sessão lucena-8f (worktree lucena-t63, branch tarefa/T63-licoes-opus) |
+| 36 | mates.bishopKnight.edge | C | 3 (+2) | Opus | sem demo; ordem dos lances, peças atacadas, desenrolar; defesas só em talk || **feita: B** (lucena-8f, tarefa/T63-licoes-opus, 270f5237); Ljubojević–Polgár 1994 |
 | 37 | mates.bishopKnight.full | C | 3 (+1) | Fable | sem demo; canto errado (Kempinski), Delétang do centro, Be4+ | |
 
 Pendências de julgamento para o Gabriel: `pawns.distantOpposition` e13 é o exemplo 28 de Capablanca deslocado uma coluna e a solução credita um estudo do Lichess (texto pt/en pronto no LICAO): trocar o crédito ou deixar; `pawns.breakthrough` parte "Resumo" com 3,5 min (régua pede 4);
