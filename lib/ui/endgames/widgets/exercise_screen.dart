@@ -350,31 +350,22 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
-  /// O enunciado enquanto o aluno resolve: o Viktor pequeno e o balão ao
-  /// lado, como numa fala de jogo. Sem fala dele, de quem é a vez.
+  /// Em cima, enquanto o aluno resolve: o Viktor pequeno e o balão ao lado,
+  /// só quando ele fala (erro, dica). De quem é a vez fica embaixo, junto da
+  /// dica e do cronômetro.
   Widget _prompt(BuildContext context, ExerciseState state) {
     final viktor = state.viktor;
-    final l10n = context.l10n;
-    final turn = l10n.exerciseTurn(
-      state.side == Side.white ? 'white' : 'black',
-    );
-    if (viktor == null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Text(turn, key: ExerciseKeys.goal),
-      );
-    }
+    if (viktor == null || state.speech == null) return const SizedBox.shrink();
     final speech = state.speech;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: TeacherSpeech(
         speechContext: SpeechContext.game,
         teacher: viktor,
-        text: speech ?? turn,
+        text: speech,
         emotion: state.emotion,
         avatarSize: 40,
-        // Só de quem é a vez: o objetivo. Com fala (erro, dica): a fala.
-        bubbleKey: speech == null ? ExerciseKeys.goal : ExerciseKeys.speech,
+        bubbleKey: ExerciseKeys.speech,
         onLink: (link) => _flash.toggle(
           link,
           fen: state.fen,
@@ -452,60 +443,79 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Widget _solvingFooter(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final cubit = context.read<ExerciseCubit>();
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // As ações tomam o espaço que sobra, alinhadas ao início; o texto
-          // fica numa linha só e encolhe se faltar largura.
-          Expanded(
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (state.interactive)
-                    Flexible(
-                      child: OutlinedButton.icon(
-                        key: ExerciseKeys.hintButton,
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 48),
-                        ),
-                        onPressed: cubit.askHint,
-                        icon: const Icon(Icons.lightbulb_outline),
-                        // O texto diz o que a dica custa agora: um ponto, o
-                        // último (o exercício deixa de pontuar) ou nada.
-                        label: OneLine(switch (_worth(state, state.exercise!)) {
-                          0 => l10n.exerciseHintFree,
-                          1 => l10n.exerciseHintLast,
-                          _ => l10n.exerciseHint,
-                        }),
-                      ),
-                    ),
-                  // Com a nota fechada, a posição vai para a análise do
-                  // Lichess.
-                  if (state.locked && state.interactive) ...[
-                    const SizedBox(width: 8),
-                    Flexible(child: _lichessButton(context, state)),
-                  ],
-                  if (state.phase == ExercisePhase.waiting)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(l10n.lessonThinking),
-                      ],
-                    ),
-                ],
-              ),
+          // De quem é a vez, logo abaixo do tabuleiro.
+          Text(
+            l10n.exerciseTurn(state.side == Side.white ? 'white' : 'black'),
+            key: ExerciseKeys.goal,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: AppSpacing.md),
-          StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              // As ações tomam o espaço que sobra, alinhadas ao início; o texto
+              // fica numa linha só e encolhe se faltar largura.
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.interactive)
+                        Flexible(
+                          child: OutlinedButton.icon(
+                            key: ExerciseKeys.hintButton,
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(0, 48),
+                            ),
+                            onPressed: cubit.askHint,
+                            icon: const Icon(Icons.lightbulb_outline),
+                            // O texto diz o que a dica custa agora: um ponto, o
+                            // último (o exercício deixa de pontuar) ou nada.
+                            label: OneLine(switch (_worth(
+                              state,
+                              state.exercise!,
+                            )) {
+                              0 => l10n.exerciseHintFree,
+                              1 => l10n.exerciseHintLast,
+                              _ => l10n.exerciseHint,
+                            }),
+                          ),
+                        ),
+                      // Com a nota fechada, a posição vai para a análise do
+                      // Lichess.
+                      if (state.locked && state.interactive) ...[
+                        const SizedBox(width: 8),
+                        Flexible(child: _lichessButton(context, state)),
+                      ],
+                      if (state.phase == ExercisePhase.waiting)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(l10n.lessonThinking),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+            ],
+          ),
         ],
       ),
     );

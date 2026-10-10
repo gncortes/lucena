@@ -131,9 +131,10 @@ void main() {
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
   });
 
-  testWidgets('T60: resolvendo, o Viktor com a vez em cima, o tabuleiro no '
-      'centro da tela e o cronômetro no canto inferior direito; resolvido, o '
-      'tabuleiro sobe e o resultado entra embaixo', (tester) async {
+  testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '
+      'tabuleiro no centro da tela, a vez embaixo e o cronômetro no canto '
+      'inferior direito; resolvido, o tabuleiro sobe e o resultado entra '
+      'embaixo', (tester) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = const Size(400, 900);
@@ -142,11 +143,9 @@ void main() {
     final board = tester.getRect(find.byKey(ExerciseKeys.board));
     final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
     expect(board.center.dx, closeTo(200, 1));
-    expect(board.top, greaterThanOrEqualTo(goal.bottom));
-    // No centro da tela, se não cobre o enunciado.
-    if (board.top > goal.bottom + 20) {
-      expect(board.center.dy, closeTo(450, 2));
-    }
+    expect(board.center.dy, closeTo(450, 2));
+    expect(goal.top, greaterThan(board.bottom));
+    expect(find.byKey(ExerciseKeys.speech), findsNothing);
     final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
     expect(timer.right, closeTo(400 - 16, 1));
     expect(timer.top, greaterThan(board.bottom));
