@@ -134,6 +134,7 @@
           "id": "square",
           "fen": "4k3/1pp5/1p6/P1P5/8/8/8/6K1 w - - 0 1",
           "arrows": [
+            "c5c6",
             "a6a8",
             "e8c8",
             "c8b7"
@@ -141,18 +142,6 @@
           "marks": [
             "a6",
             "b7"
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "tooClose",
-          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
-          "arrows": [
-            "g1d4"
-          ],
-          "marks": [
-            "d8",
-            "c8"
           ]
         },
         {
@@ -193,6 +182,102 @@
               "teach": "a6a7",
               "accept": [
                 "a6a7"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kingInstead",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_tooClose",
+          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "d8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "tooClose",
+          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
+          "arrows": [
+            "g1f2"
+          ],
+          "marks": [
+            "e3",
+            "d4"
+          ]
+        },
+        {
+          "type": "demo",
+          "id": "d_tooClose",
+          "fen": "3k4/2pp4/8/1PPP4/2K5/8/8/8 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "uci": "b5b6",
+              "arrows": [
+                "b5b6"
+              ],
+              "marks": [
+                "c4"
+              ]
+            },
+            {
+              "uci": "c7b6"
+            },
+            {
+              "uci": "c5b6",
+              "marks": [
+                "b6",
+                "c4"
+              ]
+            },
+            {
+              "uci": "d8c8"
+            },
+            {
+              "uci": "c4c5",
+              "arrows": [
+                "c4c5"
+              ],
+              "marks": [
+                "d6"
+              ]
+            },
+            {
+              "uci": "c8b7"
+            },
+            {
+              "uci": "c5d6",
+              "arrows": [
+                "c5d6"
+              ],
+              "marks": [
+                "d7"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "move",
+          "id": "tooCloseMove",
+          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "g1f2",
+              "accept": [
+                "g1f1",
+                "g1f2",
+                "g1g2",
+                "g1h1",
+                "g1h2"
               ]
             }
           ]
@@ -332,6 +417,53 @@
           ]
         },
         {
+          "type": "move",
+          "id": "sideMove",
+          "fen": "7k/3pp3/3p4/2P1P3/8/8/8/7K w - - 0 1",
+          "goal": "win",
+          "line": [
+            {
+              "teach": "e5e6",
+              "accept": [
+                "e5e6"
+              ],
+              "reply": "d7e6"
+            },
+            {
+              "teach": "c5c6",
+              "accept": [
+                "c5c6"
+              ],
+              "reply": "h8g7"
+            },
+            {
+              "teach": "c6c7",
+              "accept": [
+                "c6c7",
+                "h1g1",
+                "h1g2",
+                "h1h2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secondPasser",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_twoPassers",
+          "fen": "k7/8/P4p2/8/4PP2/8/8/7K w - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "marks": [
+            "a6",
+            "a8"
+          ]
+        },
+        {
           "type": "talk",
           "id": "twoPassers",
           "fen": "k7/8/P4p2/8/4PP2/8/8/7K w - - 0 1",
@@ -385,31 +517,28 @@
         },
         {
           "type": "move",
-          "id": "sideMove",
-          "fen": "7k/3pp3/3p4/2P1P3/8/8/8/7K w - - 0 1",
+          "id": "twoPassersMove",
+          "fen": "k7/8/P4p2/8/4PP2/8/8/7K w - - 0 1",
           "goal": "win",
           "line": [
             {
-              "teach": "e5e6",
+              "teach": "e4e5",
               "accept": [
-                "e5e6"
+                "e4e5"
               ],
-              "reply": "d7e6"
+              "reply": "f6e5"
             },
             {
-              "teach": "c5c6",
+              "teach": "f4f5",
               "accept": [
-                "c5c6"
+                "f4f5"
               ],
-              "reply": "h8g7"
+              "reply": "a8a7"
             },
             {
-              "teach": "c6c7",
+              "teach": "f5f6",
               "accept": [
-                "c6c7",
-                "h1g1",
-                "h1g2",
-                "h1h2"
+                "f5f6"
               ]
             }
           ]
@@ -622,6 +751,44 @@
           ]
         },
         {
+          "type": "demo",
+          "id": "d_defense",
+          "fen": "8/5p1p/6P1/6PP/8/6k1/8/6K1 b - - 0 2",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "f7g6",
+              "arrows": [
+                "f7g6"
+              ],
+              "marks": [
+                "h5",
+                "h7"
+              ]
+            },
+            {
+              "uci": "h5g6"
+            },
+            {
+              "uci": "h7g6",
+              "marks": [
+                "g5",
+                "g6"
+              ]
+            },
+            {
+              "uci": "g1f1"
+            },
+            {
+              "uci": "g3f4",
+              "marks": [
+                "g5"
+              ]
+            }
+          ],
+          "side": "black"
+        },
+        {
           "type": "move",
           "id": "defenseMove",
           "fen": "8/5p1p/6P1/5PP1/8/6k1/8/6K1 b - - 0 1",
@@ -642,6 +809,24 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "defenseKing",
+      "steps": [
+        {
+          "type": "think",
+          "id": "t_defenseKing",
+          "fen": "8/pp1k4/8/PPP5/8/8/8/6K1 b - - 0 1",
+          "hints": 2,
+          "ask": "plan",
+          "side": "black",
+          "marks": [
+            "d7",
+            "a7",
+            "b7"
+          ]
         },
         {
           "type": "talk",
@@ -656,6 +841,53 @@
             "a6",
             "c5"
           ]
+        },
+        {
+          "type": "demo",
+          "id": "d_defenseKing",
+          "fen": "8/pp1k4/8/PPP5/8/8/8/6K1 b - - 0 1",
+          "goal": "draw",
+          "line": [
+            {
+              "uci": "a7a6",
+              "arrows": [
+                "a7a6"
+              ],
+              "marks": [
+                "b6"
+              ]
+            },
+            {
+              "uci": "b5a6"
+            },
+            {
+              "uci": "b7a6",
+              "marks": [
+                "a5",
+                "a6",
+                "c5"
+              ]
+            },
+            {
+              "uci": "g1f2"
+            },
+            {
+              "uci": "d7c6",
+              "arrows": [
+                "c6c5"
+              ]
+            },
+            {
+              "uci": "f2e3"
+            },
+            {
+              "uci": "c6c5",
+              "marks": [
+                "c5"
+              ]
+            }
+          ],
+          "side": "black"
         },
         {
           "type": "move",
@@ -703,6 +935,28 @@
         },
         {
           "type": "talk",
+          "id": "recapCount",
+          "fen": "3k4/2pp4/8/1PPP4/8/8/8/6K1 w - - 0 1",
+          "arrows": [
+            "g1f2"
+          ],
+          "marks": [
+            "d8"
+          ]
+        },
+        {
+          "type": "talk",
+          "id": "recapPush",
+          "fen": "8/pp1k4/P7/1P6/8/8/8/7K w - - 0 1",
+          "arrows": [
+            "b5b6"
+          ],
+          "marks": [
+            "a7"
+          ]
+        },
+        {
+          "type": "talk",
           "id": "recapDefense",
           "fen": "8/5ppp/8/5PPP/8/6k1/8/6K1 b - - 0 1",
           "side": "white",
@@ -729,14 +983,6 @@
                 "a5a6"
               ]
             }
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "playIntro",
-          "fen": "8/1pp5/1p6/P1P5/8/8/8/2K2k2 w - - 0 1",
-          "marks": [
-            "f1"
           ]
         },
         {
