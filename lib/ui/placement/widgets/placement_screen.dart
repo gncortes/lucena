@@ -212,42 +212,51 @@ class _Question extends StatelessWidget {
     final cubit = context.read<PlacementCubit>();
     final item = state.item;
     if (item == null) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: AppSpacing.md),
-        const SizedBox(height: AppSpacing.md),
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, box) => Align(
-              // No meio do espaço entre o enunciado e as respostas.
-              alignment: Alignment.center,
-              child: _Board(
-                state: state,
-                size: math.min(box.maxWidth, box.maxHeight),
-              ),
-            ),
-          ),
+    final prompt = Padding(
+      // Embaixo do tabuleiro, como nos exercícios.
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.md,
+        AppSpacing.screen,
+        0,
+      ),
+      child: Text(
+        placementPrompt(l10n, item),
+        key: PlacementKeys.prompt,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
         ),
-        Padding(
-          // Embaixo do tabuleiro, como nos exercícios.
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.md,
-            AppSpacing.screen,
-            0,
-          ),
-          child: Text(
-            placementPrompt(l10n, item),
-            key: PlacementKeys.prompt,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+      ),
+    );
+    // O tabuleiro no mesmo lugar e do mesmo tamanho em todas as perguntas:
+    // embaixo dele fica reservada a altura do maior bloco (duas linhas de
+    // pergunta, duas linhas de opções e o "Não sei"), e a sobra se divide
+    // em cima.
+    return LayoutBuilder(
+      builder: (context, box) {
+        const reserved = 260.0;
+        final size = math.max(
+          0.0,
+          math.min(box.maxWidth, box.maxHeight - reserved - AppSpacing.md),
+        );
+        final top = math.max(
+          AppSpacing.md,
+          (box.maxHeight - reserved - size) / 2,
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: top),
+            Center(
+              child: _Board(state: state, size: size),
             ),
-          ),
-        ),
-        _Answers(state: state, cubit: cubit),
-      ],
+            prompt,
+            const Spacer(),
+            _Answers(state: state, cubit: cubit),
+          ],
+        );
+      },
     );
   }
 }
