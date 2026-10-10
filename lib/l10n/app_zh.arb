@@ -473,7 +473,6 @@
   "challengeLevelHard": "困难",
   "starChallengeBest": "最佳：{count}",
   "starChallengeNotPlayed": "尚未挑战",
-  "starChallengeRule": "{seconds} 秒。把棋子移到每一颗出现的星星上。",
   "starChallengeGo": "开始！",
   "starChallengeTimeUp": "时间到！",
   "starChallengeNewBest": "新纪录！",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "星星挑战：{piece}",
   "starChallengePoints": "{count} 分",
   "starChallengePointsTotal": "共 {count} 分",
-  "starChallengeLegend": "每颗星星过一会儿就会消失：金色的最先消失。",
   "starChallengeObstacles": "黑兵只是挡路，不能吃掉。你要收集的是星星。",
   "settingsSound": "声音",
   "settingsSoundHint": "棋子走动的声音，以及时间快用完时的提示",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "自由练习：成绩不变。要重新计分，请从课程中重做练习。",
   "externalPageOfflineTitle": "需要连接互联网",
   "externalPageOfflineBody": "请连接互联网以阅读此页面。课程照常进行。",
-  "wikiOpen": "在维基百科上打开{name}"
+  "wikiOpen": "在维基百科上打开{name}",
+  "starChallengeIntroTitle": "寻星",
+  "starChallengeIntroBody": "你有 {seconds} 秒。在每颗星熄灭之前，把棋子走到它那里。金星最先熄灭，所以分值更高。",
+  "starChallengeWorth": "{points, plural, =1{1 分} other{{points} 分}}",
+  "starChallengePointsLabel": "{count, plural, =1{分} other{分}}"
 }

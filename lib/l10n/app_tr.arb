@@ -473,7 +473,6 @@
   "challengeLevelHard": "Zor",
   "starChallengeBest": "Rekor: {count}",
   "starChallengeNotPlayed": "Henüz oynanmadı",
-  "starChallengeRule": "{seconds} saniye. Taşı beliren her yıldıza götür.",
   "starChallengeGo": "Başla!",
   "starChallengeTimeUp": "Süre doldu!",
   "starChallengeNewBest": "Yeni rekor!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Yıldız görevi: {piece}",
   "starChallengePoints": "{count} puan",
   "starChallengePointsTotal": "Toplam {count} puan",
-  "starChallengeLegend": "Her yıldız bir süre sonra kaybolur: önce altın olan.",
   "starChallengeObstacles": "Siyah piyonlar sadece yolu kapatır: alınamazlar. Topladığın şey yıldızlardır.",
   "settingsSound": "Sesler",
   "settingsSoundHint": "Taş hamleleri ve süren azalınca bir uyarı",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Serbest çalışma: not değişmez. Yeniden sayılması için alıştırmaları dersten tekrar yap.",
   "externalPageOfflineTitle": "Bunun için internet gerekiyor",
   "externalPageOfflineBody": "Bu sayfayı okumak için internete bağlanın. Ders normal şekilde devam ediyor.",
-  "wikiOpen": "{name} sayfasını Vikipedi'de aç"
+  "wikiOpen": "{name} sayfasını Vikipedi'de aç",
+  "starChallengeIntroTitle": "Yıldız avı",
+  "starChallengeIntroBody": "{seconds} saniyeniz var. Taşınızı her yıldıza, o sönmeden götürün. Altın yıldız önce söner, bu yüzden daha değerlidir.",
+  "starChallengeWorth": "{points, plural, =1{değeri 1} other{değeri {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{puan} other{puan}}"
 }

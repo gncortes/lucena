@@ -473,7 +473,6 @@
   "challengeLevelHard": "어려움",
   "starChallengeBest": "최고: {count}",
   "starChallengeNotPlayed": "아직 안 함",
-  "starChallengeRule": "{seconds}초. 나타나는 별마다 기물을 옮기세요.",
   "starChallengeGo": "시작!",
   "starChallengeTimeUp": "시간 종료!",
   "starChallengeNewBest": "새 기록!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "별 도전: {piece}",
   "starChallengePoints": "{count}점",
   "starChallengePointsTotal": "총 {count}점",
-  "starChallengeLegend": "별은 잠시 후 사라집니다. 금색이 먼저 사라집니다.",
   "starChallengeObstacles": "검은 폰은 길을 막을 뿐 잡을 수 없습니다. 모으는 것은 별입니다.",
   "settingsSound": "소리",
   "settingsSoundHint": "기물의 움직임과 시간이 얼마 남지 않았을 때의 알림",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "자유 연습: 점수는 바뀌지 않습니다. 다시 반영하려면 레슨에서 연습 문제를 다시 푸세요.",
   "externalPageOfflineTitle": "인터넷 연결이 필요합니다",
   "externalPageOfflineBody": "이 페이지를 읽으려면 인터넷에 연결하세요. 수업은 그대로 계속됩니다.",
-  "wikiOpen": "위키백과에서 {name} 열기"
+  "wikiOpen": "위키백과에서 {name} 열기",
+  "starChallengeIntroTitle": "별 사냥",
+  "starChallengeIntroBody": "{seconds}초가 주어집니다. 별이 사라지기 전에 기물을 각 별까지 옮기세요. 금색 별이 가장 먼저 사라지므로 점수가 더 높습니다.",
+  "starChallengeWorth": "{points, plural, =1{1점} other{{points}점}}",
+  "starChallengePointsLabel": "{count, plural, =1{점} other{점}}"
 }

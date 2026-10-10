@@ -473,7 +473,6 @@
   "challengeLevelHard": "Difficile",
   "starChallengeBest": "Record: {count}",
   "starChallengeNotPlayed": "Non ancora giocato",
-  "starChallengeRule": "{seconds} secondi. Porta il pezzo su ogni stella che appare.",
   "starChallengeGo": "Via!",
   "starChallengeTimeUp": "Tempo scaduto!",
   "starChallengeNewBest": "Nuovo record!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Sfida delle stelle: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punto} other{{count} punti}}",
   "starChallengePointsTotal": "{count} punti in totale",
-  "starChallengeLegend": "Ogni stella sparisce dopo un po’: quella d’oro per prima.",
   "starChallengeObstacles": "I pedoni neri intralciano soltanto: non si possono catturare. Quello che raccogli sono le stelle.",
   "settingsSound": "Suoni",
   "settingsSoundHint": "Le mosse dei pezzi e un avviso quando il tempo sta per finire",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Allenamento libero: il voto non cambia. Per farlo contare di nuovo, rifai gli esercizi dalla lezione.",
   "externalPageOfflineTitle": "Questa consultazione richiede Internet",
   "externalPageOfflineBody": "Connettiti a Internet per leggere questa pagina. La lezione continua normalmente.",
-  "wikiOpen": "Apri {name} su Wikipedia"
+  "wikiOpen": "Apri {name} su Wikipedia",
+  "starChallengeIntroTitle": "Caccia alle stelle",
+  "starChallengeIntroBody": "Hai {seconds} secondi. Porta il tuo pezzo su ogni stella prima che si spenga. Quella d'oro si spegne per prima, per questo vale di più.",
+  "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{punto} other{punti}}"
 }

@@ -473,7 +473,6 @@
   "challengeLevelHard": "Сложно",
   "starChallengeBest": "Рекорд: {count}",
   "starChallengeNotPlayed": "Ещё не играли",
-  "starChallengeRule": "{seconds} секунд. Ведите фигуру к каждой появляющейся звезде.",
   "starChallengeGo": "Вперёд!",
   "starChallengeTimeUp": "Время вышло!",
   "starChallengeNewBest": "Новый рекорд!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Звёздное испытание: {piece}",
   "starChallengePoints": "{count, plural, =1{1 очко} few{{count} очка} other{{count} очков}}",
   "starChallengePointsTotal": "Всего очков: {count}",
-  "starChallengeLegend": "Каждая звезда гаснет через время: золотая первой.",
   "starChallengeObstacles": "Чёрные пешки только мешают: их нельзя взять. Вы собираете звёзды.",
   "settingsSound": "Звуки",
   "settingsSoundHint": "Ходы фигур и сигнал, когда время на исходе",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Свободная тренировка: оценка не меняется. Чтобы она снова засчитывалась, перерешайте задания из урока.",
   "externalPageOfflineTitle": "Для этого нужен интернет",
   "externalPageOfflineBody": "Подключитесь к интернету, чтобы прочитать эту страницу. Урок продолжается как обычно.",
-  "wikiOpen": "Открыть {name} в Википедии"
+  "wikiOpen": "Открыть {name} в Википедии",
+  "starChallengeIntroTitle": "Охота за звёздами",
+  "starChallengeIntroBody": "У вас {seconds} секунд. Доведите фигуру до каждой звезды, пока она не погасла. Золотая гаснет первой, поэтому она ценится выше.",
+  "starChallengeWorth": "{points, plural, =1{стоит 1} other{стоит {points}}}",
+  "starChallengePointsLabel": "{count, plural, one{очко} few{очка} many{очков} other{очка}}"
 }

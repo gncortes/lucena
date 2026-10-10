@@ -472,7 +472,6 @@
   "challengeLevelHard": "Difícil",
   "starChallengeBest": "Melhor: {count}",
   "starChallengeNotPlayed": "Ainda não jogou",
-  "starChallengeRule": "{seconds} segundos. Leve a peça até cada estrela que aparecer.",
   "starChallengeGo": "Vai!",
   "starChallengeTimeUp": "Acabou o tempo!",
   "starChallengeNewBest": "Novo recorde!",
@@ -482,7 +481,6 @@
   "lessonToChallenge": "Desafio das estrelas: {piece}",
   "starChallengePoints": "{count, plural, =1{1 ponto} other{{count} pontos}}",
   "starChallengePointsTotal": "{count} pontos no total",
-  "starChallengeLegend": "Cada estrela some depois de um tempo: a de ouro vai primeiro.",
   "starChallengeObstacles": "Os peões pretos só atrapalham: não dá para capturá-los. O que você pega são as estrelas.",
   "settingsSound": "Sons",
   "settingsSoundHint": "Lances das peças e um aviso quando o seu tempo estiver acabando",
@@ -1015,5 +1013,9 @@
   "exerciseScoreLocked": "Treino livre: a nota não muda. Para contar de novo, refaça os exercícios na aula.",
   "externalPageOfflineTitle": "Esta consulta precisa de internet",
   "externalPageOfflineBody": "Conecte-se à internet para ler esta página. A aula segue normal.",
-  "wikiOpen": "Abrir {name} na Wikipédia"
+  "wikiOpen": "Abrir {name} na Wikipédia",
+  "starChallengeIntroTitle": "Caça às estrelas",
+  "starChallengeIntroBody": "Você tem {seconds} segundos. Leve a sua peça até cada estrela antes que ela se apague. A de ouro se apaga primeiro, por isso vale mais.",
+  "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{ponto} other{pontos}}"
 }

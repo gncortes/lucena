@@ -473,7 +473,6 @@
   "challengeLevelHard": "Difficile",
   "starChallengeBest": "Record : {count}",
   "starChallengeNotPlayed": "Pas encore joué",
-  "starChallengeRule": "{seconds} secondes. Amenez la pièce sur chaque étoile qui apparaît.",
   "starChallengeGo": "C’est parti !",
   "starChallengeTimeUp": "Temps écoulé !",
   "starChallengeNewBest": "Nouveau record !",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Défi des étoiles : {piece}",
   "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points au total",
-  "starChallengeLegend": "Chaque étoile disparaît au bout d’un moment : celle en or la première.",
   "starChallengeObstacles": "Les pions noirs ne font que gêner : impossible de les capturer. Ce que vous ramassez, ce sont les étoiles.",
   "settingsSound": "Sons",
   "settingsSoundHint": "Les coups des pièces et un signal quand votre temps s'épuise",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Entraînement libre : la note ne change pas. Pour qu'elle compte à nouveau, refaites les exercices depuis la leçon.",
   "externalPageOfflineTitle": "Cette consultation nécessite Internet",
   "externalPageOfflineBody": "Connectez-vous à Internet pour lire cette page. La leçon continue normalement.",
-  "wikiOpen": "Ouvrir {name} sur Wikipédia"
+  "wikiOpen": "Ouvrir {name} sur Wikipédia",
+  "starChallengeIntroTitle": "Chasse aux étoiles",
+  "starChallengeIntroBody": "Vous avez {seconds} secondes. Amenez votre pièce sur chaque étoile avant qu'elle ne s'éteigne. L'étoile d'or s'éteint en premier : c'est pourquoi elle vaut plus.",
+  "starChallengeWorth": "{points, plural, =1{vaut 1} other{vaut {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{point} other{points}}"
 }

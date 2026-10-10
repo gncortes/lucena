@@ -473,7 +473,6 @@
   "challengeLevelHard": "कठिन",
   "starChallengeBest": "सर्वश्रेष्ठ: {count}",
   "starChallengeNotPlayed": "अभी नहीं खेला",
-  "starChallengeRule": "{seconds} सेकंड। मोहरे को हर दिखने वाले तारे तक ले जाएँ।",
   "starChallengeGo": "चलो!",
   "starChallengeTimeUp": "समय समाप्त!",
   "starChallengeNewBest": "नया रिकॉर्ड!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "तारा चुनौती: {piece}",
   "starChallengePoints": "{count} अंक",
   "starChallengePointsTotal": "कुल {count} अंक",
-  "starChallengeLegend": "हर तारा कुछ देर बाद गायब हो जाता है: सुनहरा सबसे पहले।",
   "starChallengeObstacles": "काले प्यादे सिर्फ़ रास्ते में हैं: उन्हें पकड़ा नहीं जा सकता। आप तारे इकट्ठा करते हैं।",
   "settingsSound": "ध्वनियाँ",
   "settingsSoundHint": "मोहरों की चालें और समय कम होने पर चेतावनी",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "मुक्त अभ्यास: ग्रेड नहीं बदलता। फिर से गिनने के लिए पाठ से अभ्यास दोबारा करें।",
   "externalPageOfflineTitle": "इसके लिए इंटरनेट चाहिए",
   "externalPageOfflineBody": "यह पेज पढ़ने के लिए इंटरनेट से जुड़ें। पाठ सामान्य रूप से चलता रहेगा।",
-  "wikiOpen": "{name} को विकिपीडिया पर खोलें"
+  "wikiOpen": "{name} को विकिपीडिया पर खोलें",
+  "starChallengeIntroTitle": "तारों की खोज",
+  "starChallengeIntroBody": "आपके पास {seconds} सेकंड हैं। हर तारे के बुझने से पहले अपना मोहरा उस तक ले जाइए। सुनहरा तारा सबसे पहले बुझता है, इसलिए उसका मूल्य अधिक है।",
+  "starChallengeWorth": "{points, plural, =1{मूल्य 1} other{मूल्य {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{अंक} other{अंक}}"
 }

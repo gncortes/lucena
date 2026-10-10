@@ -473,7 +473,6 @@
   "challengeLevelHard": "Trudny",
   "starChallengeBest": "Rekord: {count}",
   "starChallengeNotPlayed": "Jeszcze nie grano",
-  "starChallengeRule": "{seconds} sekund. Prowadź figurę do każdej gwiazdki, która się pojawi.",
   "starChallengeGo": "Start!",
   "starChallengeTimeUp": "Koniec czasu!",
   "starChallengeNewBest": "Nowy rekord!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Wyzwanie gwiazdek: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punkt} few{{count} punkty} other{{count} punktów}}",
   "starChallengePointsTotal": "Łącznie punktów: {count}",
-  "starChallengeLegend": "Każda gwiazdka znika po chwili: złota pierwsza.",
   "starChallengeObstacles": "Czarne piony tylko przeszkadzają: nie można ich bić. Zbierasz gwiazdki.",
   "settingsSound": "Dźwięki",
   "settingsSoundHint": "Ruchy figur i sygnał, gdy kończy ci się czas",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Trening dowolny: ocena się nie zmienia. Aby znów się liczyła, powtórz ćwiczenia z lekcji.",
   "externalPageOfflineTitle": "To wymaga internetu",
   "externalPageOfflineBody": "Połącz się z internetem, aby przeczytać tę stronę. Lekcja toczy się dalej.",
-  "wikiOpen": "Otwórz {name} w Wikipedii"
+  "wikiOpen": "Otwórz {name} w Wikipedii",
+  "starChallengeIntroTitle": "Łowy na gwiazdy",
+  "starChallengeIntroBody": "Masz {seconds} sekund. Doprowadź bierkę do każdej gwiazdy, zanim zgaśnie. Złota gaśnie pierwsza, dlatego jest warta więcej.",
+  "starChallengeWorth": "{points, plural, =1{warta 1} other{warta {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{punkt} few{punkty} many{punktów} other{punktu}}"
 }

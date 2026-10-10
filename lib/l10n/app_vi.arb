@@ -473,7 +473,6 @@
   "challengeLevelHard": "Khó",
   "starChallengeBest": "Kỷ lục: {count}",
   "starChallengeNotPlayed": "Chưa chơi",
-  "starChallengeRule": "{seconds} giây. Đưa quân đến từng ngôi sao hiện ra.",
   "starChallengeGo": "Bắt đầu!",
   "starChallengeTimeUp": "Hết giờ!",
   "starChallengeNewBest": "Kỷ lục mới!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Thử thách ngôi sao: {piece}",
   "starChallengePoints": "{count} điểm",
   "starChallengePointsTotal": "Tổng {count} điểm",
-  "starChallengeLegend": "Mỗi ngôi sao biến mất sau một lúc: sao vàng đi trước.",
   "starChallengeObstacles": "Các tốt đen chỉ cản đường: không thể bắt chúng. Thứ bạn thu là các ngôi sao.",
   "settingsSound": "Âm thanh",
   "settingsSoundHint": "Tiếng quân cờ và cảnh báo khi bạn sắp hết giờ",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Luyện tập tự do: điểm không thay đổi. Để tính lại, hãy làm lại các bài tập từ bài học.",
   "externalPageOfflineTitle": "Cần có internet",
   "externalPageOfflineBody": "Hãy kết nối internet để đọc trang này. Bài học vẫn tiếp tục bình thường.",
-  "wikiOpen": "Mở {name} trên Wikipedia"
+  "wikiOpen": "Mở {name} trên Wikipedia",
+  "starChallengeIntroTitle": "Săn sao",
+  "starChallengeIntroBody": "Bạn có {seconds} giây. Hãy đưa quân của bạn đến từng ngôi sao trước khi nó tắt. Sao vàng tắt sớm nhất, vì vậy nó có giá trị cao hơn.",
+  "starChallengeWorth": "{points, plural, =1{giá trị 1} other{giá trị {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{điểm} other{điểm}}"
 }

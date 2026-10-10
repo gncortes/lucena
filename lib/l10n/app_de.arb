@@ -473,7 +473,6 @@
   "challengeLevelHard": "Schwer",
   "starChallengeBest": "Rekord: {count}",
   "starChallengeNotPlayed": "Noch nicht gespielt",
-  "starChallengeRule": "{seconds} Sekunden. Bring die Figur zu jedem Stern, der erscheint.",
   "starChallengeGo": "Los!",
   "starChallengeTimeUp": "Zeit um!",
   "starChallengeNewBest": "Neuer Rekord!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Sterne-Challenge: {piece}",
   "starChallengePoints": "{count, plural, =1{1 Punkt} other{{count} Punkte}}",
   "starChallengePointsTotal": "{count} Punkte insgesamt",
-  "starChallengeLegend": "Jeder Stern verschwindet nach einer Weile: der goldene zuerst.",
   "starChallengeObstacles": "Die schwarzen Bauern stehen nur im Weg: Du kannst sie nicht schlagen. Du sammelst die Sterne.",
   "settingsSound": "Töne",
   "settingsSoundHint": "Figurenzüge und ein Signal, wenn deine Zeit knapp wird",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Freies Üben: Die Note ändert sich nicht. Damit sie wieder zählt, mache die Aufgaben in der Lektion noch einmal.",
   "externalPageOfflineTitle": "Dafür brauchst du Internet",
   "externalPageOfflineBody": "Verbinde dich mit dem Internet, um diese Seite zu lesen. Die Lektion geht normal weiter.",
-  "wikiOpen": "{name} auf Wikipedia öffnen"
+  "wikiOpen": "{name} auf Wikipedia öffnen",
+  "starChallengeIntroTitle": "Sternenjagd",
+  "starChallengeIntroBody": "Du hast {seconds} Sekunden. Bring deine Figur zu jedem Stern, bevor er verblasst. Der goldene verblasst zuerst, deshalb zählt er mehr.",
+  "starChallengeWorth": "{points, plural, =1{zählt 1} other{zählt {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{Punkt} other{Punkte}}"
 }

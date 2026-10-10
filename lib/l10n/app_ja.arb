@@ -473,7 +473,6 @@
   "challengeLevelHard": "むずかしい",
   "starChallengeBest": "最高：{count}",
   "starChallengeNotPlayed": "未プレイ",
-  "starChallengeRule": "{seconds}秒。現れた星まで駒を動かそう。",
   "starChallengeGo": "スタート！",
   "starChallengeTimeUp": "時間切れ！",
   "starChallengeNewBest": "新記録！",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "星チャレンジ：{piece}",
   "starChallengePoints": "{count} 点",
   "starChallengePointsTotal": "合計 {count} 点",
-  "starChallengeLegend": "星はしばらくすると消える。金の星が最初に消える。",
   "starChallengeObstacles": "黒のポーンは邪魔なだけで、取ることはできない。集めるのは星だ。",
   "settingsSound": "サウンド",
   "settingsSoundHint": "駒の動きと、残り時間が少なくなったときの警告",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "自由練習：評価は変わりません。もう一度評価に反映させるには、レッスンから練習問題をやり直してください。",
   "externalPageOfflineTitle": "インターネット接続が必要です",
   "externalPageOfflineBody": "このページを読むにはインターネットに接続してください。レッスンはそのまま続けられます。",
-  "wikiOpen": "{name}をウィキペディアで開く"
+  "wikiOpen": "{name}をウィキペディアで開く",
+  "starChallengeIntroTitle": "スターハント",
+  "starChallengeIntroBody": "持ち時間は{seconds}秒です。星が消える前に、駒をそれぞれの星まで運びましょう。金の星は最初に消えるので、点数が高くなっています。",
+  "starChallengeWorth": "{points, plural, =1{1点} other{{points}点}}",
+  "starChallengePointsLabel": "{count, plural, =1{点} other{点}}"
 }

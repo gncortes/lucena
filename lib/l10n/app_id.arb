@@ -473,7 +473,6 @@
   "challengeLevelHard": "Sulit",
   "starChallengeBest": "Terbaik: {count}",
   "starChallengeNotPlayed": "Belum dimainkan",
-  "starChallengeRule": "{seconds} detik. Bawa bidak ke tiap bintang yang muncul.",
   "starChallengeGo": "Mulai!",
   "starChallengeTimeUp": "Waktu habis!",
   "starChallengeNewBest": "Rekor baru!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Tantangan bintang: {piece}",
   "starChallengePoints": "{count} poin",
   "starChallengePointsTotal": "{count} poin total",
-  "starChallengeLegend": "Tiap bintang hilang setelah beberapa saat: yang emas lebih dulu.",
   "starChallengeObstacles": "Pion hitam hanya menghalangi: tidak bisa dimakan. Yang kamu kumpulkan adalah bintang.",
   "settingsSound": "Suara",
   "settingsSoundHint": "Langkah bidak dan peringatan saat waktumu hampir habis",
@@ -1016,5 +1014,9 @@
   "exerciseScoreLocked": "Latihan bebas: nilai tidak berubah. Agar dihitung lagi, ulangi latihan dari pelajaran.",
   "externalPageOfflineTitle": "Ini memerlukan internet",
   "externalPageOfflineBody": "Sambungkan ke internet untuk membaca halaman ini. Pelajaran tetap berjalan seperti biasa.",
-  "wikiOpen": "Buka {name} di Wikipedia"
+  "wikiOpen": "Buka {name} di Wikipedia",
+  "starChallengeIntroTitle": "Berburu bintang",
+  "starChallengeIntroBody": "Anda punya {seconds} detik. Bawa bidak Anda ke setiap bintang sebelum bintang itu padam. Bintang emas padam paling dulu, karena itu nilainya lebih besar.",
+  "starChallengeWorth": "{points, plural, =1{bernilai 1} other{bernilai {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{poin} other{poin}}"
 }
