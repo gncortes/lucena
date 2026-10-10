@@ -14,10 +14,7 @@
           "fen": "4k3/7K/8/8/8/8/7P/8 w - - 0 1",
           "hints": 2,
           "ask": "plan",
-          "ref": "audaxKeys",
-          "arrows": [
-            "e8f8"
-          ]
+          "ref": "audaxKeys"
         },
         {
           "type": "talk",
@@ -890,6 +887,7 @@
           "marks": [
             "g7",
             "g8",
+            "f7",
             "f8"
           ]
         },
