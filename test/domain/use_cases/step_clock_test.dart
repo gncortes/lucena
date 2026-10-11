@@ -7,6 +7,26 @@ import '../../../testing/fakes/fake_now.dart';
 void main() {
   final start = DateTime.utc(2026, 10, 9, 20);
 
+  test('T65: exclui pausa e ignora ajuste negativo do relógio', () {
+    final paused = start.add(const Duration(seconds: 10));
+    final resumed = StepClock.resume(
+      startedAt: start,
+      pausedAt: paused,
+      now: paused.add(const Duration(minutes: 3)),
+    );
+    expect(
+      StepClock.elapsed(
+        startedAt: resumed,
+        now: paused.add(const Duration(minutes: 3)),
+      ),
+      const Duration(seconds: 10),
+    );
+    expect(
+      StepClock.resume(startedAt: start, pausedAt: paused, now: start),
+      start,
+    );
+  });
+
   test('ao abrir o passo: zero', () {
     expect(StepClock.elapsed(startedAt: start, now: start), Duration.zero);
   });

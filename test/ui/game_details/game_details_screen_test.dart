@@ -1,6 +1,11 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:lucena/domain/models/game_review.dart';
+import 'package:lucena/l10n/app_localizations.dart';
+import 'package:lucena/ui/core/review/move_quality_ui.dart';
+import 'package:lucena/ui/core/widgets/figurine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -17,6 +22,7 @@ import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -60,14 +66,20 @@ void main() {
     int id, {
     Size screen = const Size(1080, 4000),
     double textScale = 1,
+    GameReview? review,
+    ThemeMode themeMode = ThemeMode.light,
+    bool reducedMotion = false,
   }) async {
     tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
     tester.platformDispatcher.textScaleFactorTestValue = textScale;
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
+    final reviews = FakeGameReviewRepository();
+    if (review != null) reviews.reviews[id] = review;
     final cubit = GameDetailsCubit(
       id,
+      reviews: reviews,
       progress: progress,
       rating: rating,
       characters: FakeCharacterRepository(),
@@ -84,9 +96,16 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
-        child: BlocProvider.value(
-          value: cubit,
-          child: const GameDetailsScreen(),
+        themeMode: themeMode,
+        child: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(disableAnimations: reducedMotion),
+            child: BlocProvider.value(
+              value: cubit,
+              child: const GameDetailsScreen(),
+            ),
+          ),
         ),
       ),
     );
@@ -203,22 +222,26 @@ void main() {
     });
   }
 
-  testWidgets('tela alta: aberta, a folha para no fim do conteúdo, sem vazio '
-      'embaixo', (tester) async {
+  testWidgets('toque na folha abre até 95% sem mover o tabuleiro', (
+    tester,
+  ) async {
     final id = await progress.addAttempt(game);
-    await pump(tester, id, screen: const Size(1080, 4000));
-    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -900));
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final panel = find.byKey(GameDetailsKeys.panel);
+    await tester.tapAt(tester.getTopLeft(panel) + const Offset(40, 12));
     await tester.pumpAndSettle();
-    final screenBottom = tester
-        .getRect(find.byKey(GameDetailsKeys.screen))
-        .bottom;
-    final legend = tester.getRect(find.byKey(GameDetailsKeys.legend));
-    expect(legend.bottom, lessThanOrEqualTo(screenBottom));
-    expect(screenBottom - legend.bottom, lessThan(AppSpacing.xxl * 2));
-    // A folha não precisou ir até o máximo: o conteúdo coube antes.
     final appBar = tester.getRect(find.byType(AppBar));
-    final height = screenBottom - appBar.bottom;
-    expect(sheetTop(tester), greaterThan(appBar.bottom + 0.06 * height + 1));
+    final bottom = tester.getRect(find.byKey(GameDetailsKeys.screen)).bottom;
+    expect(
+      sheetTop(tester),
+      closeTo(appBar.bottom + (bottom - appBar.bottom) * .05, 1),
+    );
+    expect(tester.getRect(find.byKey(GameDetailsKeys.board)), board);
+    expect(
+      find.byKey(GameDetailsKeys.closeSheet).hitTestable(),
+      findsOneWidget,
+    );
   });
 
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (
@@ -234,6 +257,203 @@ void main() {
     final after = (await rating.history()).single.rating.rounded;
     expect(find.text('$after'), findsOneWidget);
   });
+
+  final qualities = [
+    MoveQuality.forced,
+    MoveQuality.great,
+    MoveQuality.best,
+    MoveQuality.good,
+    MoveQuality.inaccuracy,
+    MoveQuality.mistake,
+    MoveQuality.blunder,
+  ];
+  final presentationReview = GameReview(
+    moves: [
+      for (final quality in qualities)
+        ReviewedMove(
+          before: const EngineScore(centipawns: 0),
+          after: const EngineScore(centipawns: 0),
+          quality: quality,
+          accuracy: 100,
+        ),
+    ],
+  );
+
+  for (final size in [
+    const Size(360, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+      for (final scale in [1.0, 1.6]) {
+        testWidgets(
+          'B7b $size $mode fonte$scale: SAN legível e tempos alinhados',
+          (tester) async {
+            final id = await progress.addAttempt(game);
+            final cubit = await pump(
+              tester,
+              id,
+              screen: size * 2.625,
+              textScale: scale,
+              review: presentationReview,
+              themeMode: mode,
+              reducedMotion: true,
+            );
+            final panel = find.byKey(GameDetailsKeys.panel);
+            await tester.drag(panel, const Offset(0, -1000));
+            await tester.pumpAndSettle();
+            await tester.scrollUntilVisible(
+              find.byKey(GameDetailsKeys.move(0)),
+              150,
+              scrollable: find.descendant(
+                of: panel,
+                matching: find.byType(Scrollable),
+              ),
+            );
+            await tester.pumpAndSettle();
+            final rightEdges = <double>[];
+            for (var i = 0; i < game.moves.length; i++) {
+              final cell = find.byKey(GameDetailsKeys.move(i));
+              expect(
+                find.descendant(
+                  of: cell,
+                  matching: find.byType(MoveQualityBadge),
+                ),
+                findsNothing,
+              );
+              final sanFinder = find.byKey(GameDetailsKeys.moveQuality(i));
+              final san = tester.widget<Text>(sanFinder);
+              final quality = qualities[i];
+              final rendered = san.textSpan!.toPlainText();
+              final expected = cubit.state.moves[i].san
+                  .split('')
+                  .map((char) => Figurine.ofLetter[char] ?? char)
+                  .join();
+              expect(rendered, '$expected${quality.listAnnotation}');
+              if (quality == MoveQuality.best ||
+                  quality == MoveQuality.forced) {
+                expect(rendered, expected);
+              }
+              if (quality == MoveQuality.great) expect(rendered, endsWith('!'));
+              if (quality == MoveQuality.blunder) {
+                expect(rendered, endsWith('??'));
+              }
+              expect(san.strutStyle!.forceStrutHeight, isTrue);
+              expect(rendered, isNot(contains('□')));
+              expect(rendered, isNot(contains('✓')));
+              final context = tester.element(sanFinder);
+              final theme = Theme.of(context);
+              expect(san.style!.color, quality.listColor(theme.brightness));
+              double contrast(Color a, Color b) {
+                final aa = a.computeLuminance(), bb = b.computeLuminance();
+                return ((aa > bb ? aa : bb) + .05) /
+                    ((aa < bb ? aa : bb) + .05);
+              }
+
+              expect(
+                contrast(
+                  san.style!.color!,
+                  theme.colorScheme.surfaceContainerLow,
+                ),
+                greaterThanOrEqualTo(4.5),
+              );
+              expect(
+                contrast(
+                  san.style!.color!,
+                  theme.colorScheme.secondaryContainer,
+                ),
+                greaterThanOrEqualTo(4.5),
+              );
+              for (final value in MoveQuality.values) {
+                expect(
+                  contrast(
+                    value.listColor(theme.brightness),
+                    theme.colorScheme.surfaceContainerLow,
+                  ),
+                  greaterThanOrEqualTo(4.5),
+                );
+                expect(
+                  contrast(
+                    value.listColor(theme.brightness),
+                    theme.colorScheme.secondaryContainer,
+                  ),
+                  greaterThanOrEqualTo(4.5),
+                );
+              }
+              final paragraph = tester.renderObject<RenderParagraph>(sanFinder);
+              final glyphs = paragraph.getBoxesForSelection(
+                TextSelection(baseOffset: 0, extentOffset: rendered.length),
+              );
+              expect(
+                glyphs.last.right,
+                lessThanOrEqualTo(paragraph.size.width + .5),
+              );
+              final sanRect = tester.getRect(sanFinder);
+              final clockRect = tester.getRect(
+                find.byKey(GameDetailsKeys.moveTime(i)),
+              );
+              expect(sanRect.overlaps(clockRect), isFalse);
+              expect(
+                clockRect.right,
+                lessThanOrEqualTo(tester.getRect(cell).right),
+              );
+              rightEdges.add(clockRect.right);
+              final semanticWidget = tester.widget<Semantics>(
+                find
+                    .ancestor(
+                      of: cell,
+                      matching: find.byWidgetPredicate(
+                        (widget) =>
+                            widget is Semantics &&
+                            widget.properties.button == true,
+                      ),
+                    )
+                    .first,
+              );
+              final semantics = semanticWidget.properties.label!;
+              expect(semanticWidget.properties.onTap, isNotNull);
+              expect(
+                semantics,
+                contains(quality.label(AppLocalizations.of(context))),
+              );
+              expect(
+                semantics,
+                contains(plain(tester, GameDetailsKeys.moveTime(i))),
+              );
+            }
+            // Cada lado tem sua própria coluna fixa; se empilhados, a coluna é única.
+            for (var i = 2; i < rightEdges.length; i++) {
+              expect(rightEdges[i], closeTo(rightEdges[i - 2], .5));
+            }
+            final cell = find.byKey(GameDetailsKeys.move(0));
+            final container = tester.widget<AnimatedContainer>(
+              find
+                  .descendant(
+                    of: cell,
+                    matching: find.byType(AnimatedContainer),
+                  )
+                  .first,
+            );
+            expect(container.duration, Duration.zero);
+            cubit.select(0);
+            await tester.pumpAndSettle();
+            final selected = tester.widget<AnimatedContainer>(
+              find
+                  .descendant(
+                    of: cell,
+                    matching: find.byType(AnimatedContainer),
+                  )
+                  .first,
+            );
+            final border =
+                (selected.decoration! as BoxDecoration).border! as Border;
+            expect(border.top.color, isNot(Colors.transparent));
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    }
+  }
 
   testWidgets('a tabela traz cada lance com o tempo que levou', (tester) async {
     final id = await progress.addAttempt(game);

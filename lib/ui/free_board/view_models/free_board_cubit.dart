@@ -427,6 +427,18 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     return (await speedruns.start(speedrunId, _now())).id;
   }
 
+  /// Etapas já vencidas, para a confirmação de desistência da tentativa.
+  Future<int> speedrunStagesWon() async {
+    final id = state.mode.speedrunAttemptId;
+    final attempt = id == null ? null : await _speedruns?.attempt(id);
+    return attempt?.games
+            .where((game) => game.fulfilled && game.speedrunStage != null)
+            .map((game) => game.speedrunStage)
+            .toSet()
+            .length ??
+        0;
+  }
+
   /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
   /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
   /// guardada para depois.

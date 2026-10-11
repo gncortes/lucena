@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
@@ -13,6 +14,7 @@ import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
 import 'data/repositories/school/school_progress_repository.dart';
@@ -221,6 +223,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,
         ),
+        RepositoryProvider<ExerciseFeedbackRepository>.value(
+          value: dependencies.exerciseFeedbackRepository,
+        ),
         RepositoryProvider<EndgameProgressRepository>.value(
           value: dependencies.endgameProgressRepository,
         ),
@@ -232,6 +237,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SpeechInputRepository>.value(
           value: dependencies.speechInputRepository,
+        ),
+        RepositoryProvider<BlindCheckpointRepository>.value(
+          value: dependencies.blindCheckpointRepository,
         ),
         RepositoryProvider<BlindLogRepository>.value(
           value: dependencies.blindLogRepository,

@@ -101,11 +101,13 @@ class AssetLessonRepository implements LessonRepository {
     final id = json['id'] as String;
     final fen = json['fen'] as String?;
     final ref = json['ref'] as String?;
+    final lines = _lines(json['lines']);
     return switch (json['type']) {
       'talk' => TalkStep(
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         arrows: [
           for (final arrow in json['arrows'] as List? ?? const [])
             if (arrow is String && arrow.length == 4)
@@ -125,17 +127,23 @@ class AssetLessonRepository implements LessonRepository {
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         hints: json['hints'] as int? ?? 1,
         ask: ThinkAsk.fromCode(json['ask'] as String?),
         arrows: _arrows(json['arrows']),
         marks: _marks(json['marks']),
         view: _side(json['side']),
+        accept: _moves(json['accept']),
+        refusals: _refusals(json['refusals']),
+        mistakes: _mistakes(json['mistakes']),
       ),
       'demo' when fen != null => DemoStep(
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         view: _side(json['side']),
+        wrong: json['wrong'] == true,
         line: [
           for (final move
               in (json['line'] as List).cast<Map<String, dynamic>>())
@@ -150,12 +158,14 @@ class AssetLessonRepository implements LessonRepository {
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         stars: [for (final star in json['stars'] as List) star as String],
       ),
       'tap' when fen != null => TapStep(
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         targets: [
           for (final target in json['targets'] as List) target as String,
         ],
@@ -165,16 +175,20 @@ class AssetLessonRepository implements LessonRepository {
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         line: parseLine(json['line'] as List),
+        mistakes: _mistakes(json['mistakes']),
       ),
       'play' when fen != null => PlayStep(
         id: id,
         fen: fen,
         ref: ref,
+        lines: lines,
         goal: PlayGoal.fromCode(json['goal'] as String?),
         opponent:
             OpponentRef.tryParse(json['opponent'] as String?) ??
             const OpponentRef(kind: OpponentKind.stockfish),
+        mistakes: _mistakes(json['mistakes']),
       ),
       _ => null,
     };
@@ -195,5 +209,48 @@ class AssetLessonRepository implements LessonRepository {
     'white' => Side.white,
     'black' => Side.black,
     _ => null,
+  };
+
+  static Set<String> _moves(Object? json) => {
+    for (final move in json as List? ?? const [])
+      if (move is String) move,
+  };
+
+  /// `"lines": [{"uci": "e3e4 e6e7", "wrong": true}]`: os lances separados
+  /// por espaço (ou numa lista).
+  static List<CitedLine> _lines(Object? json) => [
+    for (final line in json as List? ?? const [])
+      if (line is Map)
+        if (switch (line['uci']) {
+              final String text => text.split(RegExp(r'\s+')),
+              final List list => [
+                for (final move in list)
+                  if (move is String) move,
+              ],
+              _ => const <String>[],
+            }
+            case final uci when uci.any((move) => move.isNotEmpty))
+          CitedLine(
+            uci: [
+              for (final move in uci)
+                if (move.isNotEmpty) move,
+            ],
+            wrong: line['wrong'] == true,
+          ),
+  ];
+
+  /// `"mistakes": {"e3e4": {"say": "step.w1.e3e4", "review": "opp"}}`.
+  static Map<String, StepMistake> _mistakes(Object? json) => {
+    for (final MapEntry(:key, :value) in (json as Map? ?? const {}).entries)
+      if (key is String && value is Map)
+        key: StepMistake(
+          say: value['say'] as String?,
+          review: value['review'] as String?,
+        ),
+  };
+
+  static Map<String, int> _refusals(Object? json) => {
+    for (final MapEntry(:key, :value) in (json as Map? ?? const {}).entries)
+      if (key is String && value is int) key: value,
   };
 }

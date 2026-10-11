@@ -106,6 +106,40 @@ void main() {
     return cubit;
   }
 
+  test(
+    'T65: timer exclui fundo e checkpoint conserva lance e pausa manual',
+    () async {
+      final cubit = await open();
+      now.advance(const Duration(seconds: 9));
+      await cubit.pauseForBackground();
+      final saved = progress.saved.ongoing!;
+      expect(LessonCheckpoint.fromJson(saved.toJson())!.stepPausedAt, now());
+      now.advance(const Duration(hours: 1));
+      await cubit.pauseForBackground();
+      expect(cubit.stepElapsed, const Duration(seconds: 9));
+      await cubit.resumeFromBackground();
+      expect(cubit.stepElapsed, const Duration(seconds: 9));
+      await cubit.next();
+      await cubit.demoForward();
+      cubit.demoTogglePause();
+      final fen = cubit.state.fen;
+      final speech = cubit.state.speech;
+      await cubit.pauseForBackground();
+      now.advance(const Duration(hours: 1));
+      await cubit.close();
+      final restored = await open();
+      expect(restored.state.demoMove, 1);
+      expect(restored.state.fen, fen);
+      expect(restored.state.speech, speech);
+      expect(restored.state.demoPlaying, isFalse);
+      expect(restored.stepElapsed, Duration.zero);
+      restored.demoTogglePause();
+      await restored.pauseForBackground();
+      final playing = await open();
+      expect(playing.state.demoPlaying, isTrue);
+    },
+  );
+
   test('abre a primeira parte, só com os passos dela', () async {
     final cubit = await open();
     expect(cubit.state.part?.id, 'bridge');
@@ -214,25 +248,22 @@ void main() {
     },
   );
 
-  test(
-    'checkpoint de antes da T60 (thinkStartedAt) restaura o cronômetro',
-    () async {
-      progress.saved = EndgameProgress(
-        ongoing: LessonCheckpoint.fromJson({
-          'lesson': 'rook.lucena',
-          'step': 0,
-          'part': 'bridge',
-          'open': true,
-          'thinkStartedAt': now.value
-              .subtract(const Duration(minutes: 2))
-              .toIso8601String(),
-        }),
-      );
-      final cubit = await open();
-      expect(cubit.state.current?.id, 'think');
-      expect(cubit.stepElapsed, const Duration(minutes: 2));
-    },
-  );
+  test('checkpoint de outro passo reinicia o cronômetro em vez de trazer '
+      'uma duração antiga', () async {
+    progress.saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 0,
+        part: 'bridge',
+        stepId: 'demo',
+        stepStartedAt: now.value.subtract(const Duration(hours: 23)),
+      ),
+    );
+    final cubit = await open();
+    expect(cubit.state.current?.id, 'think');
+    expect(cubit.stepElapsed, Duration.zero);
+    expect(progress.saved.ongoing?.stepId, 'think');
+  });
 
   test('fechar com uma dica mostrada volta com ela', () async {
     final first = await open();

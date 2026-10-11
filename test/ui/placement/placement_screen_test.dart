@@ -19,20 +19,42 @@ import '../../../testing/placement_synthetic.dart';
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());
   final bank = PlacementBank.fromJson(syntheticItemsJson());
+  // Enunciados reais e quatro respostas para exercitar a geometria; as
+  // posições sintéticas continuam sem uso como avaliação enxadrística.
+  final geometryJson = syntheticItemsJson();
+  for (final item in geometryJson['items'] as List<Map<String, dynamic>>) {
+    item['prompt'] = 'placementCheckMateNone';
+    if (item['type'] == 'choice') {
+      item['options'] = ['check', 'mate', 'stalemate', 'none'];
+      item['answer'] = 'check';
+    }
+  }
+  final geometryBank = PlacementBank.fromJson(geometryJson);
 
   Future<(PlacementCubit, FakeProfileRepository)> pump(
     WidgetTester tester, {
     VoidCallback? onDone,
     VoidCallback? onChooseByHand,
     Size size = const Size(400, 800),
+    bool systemBars = false,
+    bool geometry = false,
+    double textScale = 1,
+    bool disableAnimations = false,
   }) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
     addTearDown(tester.view.reset);
+    if (systemBars) {
+      tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 24);
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 24);
+    }
     final profile = FakeProfileRepository();
     final cubit = PlacementCubit(
-      placement: FakePlacementRepository(skills: skills, bank: bank),
+      placement: FakePlacementRepository(
+        skills: skills,
+        bank: geometry ? geometryBank : bank,
+      ),
       profile: profile,
       now: FakeNow(DateTime.utc(2026, 10, 8, 20)),
       characters: FakeCharacterRepository(),
@@ -50,11 +72,19 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         settingsCubit: settings,
-        child: BlocProvider.value(
-          value: cubit,
-          child: PlacementScreen(
-            onDone: onDone,
-            onChooseByHand: onChooseByHand,
+        child: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(textScale),
+              disableAnimations: disableAnimations,
+            ),
+            child: BlocProvider.value(
+              value: cubit,
+              child: PlacementScreen(
+                onDone: onDone,
+                onChooseByHand: onChooseByHand,
+              ),
+            ),
           ),
         ),
       ),
@@ -91,27 +121,136 @@ void main() {
     expect(profile.profile.rating, cubit.state.result!.theta);
   });
 
-  for (final size in [const Size(360, 640), const Size(412, 915)]) {
-    testWidgets('T64, $size: o tabuleiro no centro do espaço entre a barra '
-        'do app e as respostas, com a pergunta colada nele', (tester) async {
-      final (cubit, _) = await pump(tester, size: size);
+  for (final reducedMotion in [false, true]) {
+    testWidgets('B7: troca de pergunta sem deslocar o tabuleiro, '
+        'movimento reduzido=$reducedMotion', (tester) async {
+      final (cubit, _) = await pump(
+        tester,
+        geometry: true,
+        disableAnimations: reducedMotion,
+      );
       await cubit.start();
       await tester.pumpAndSettle();
-      for (var i = 0; i < 6; i++) {
+      final initial = tester.getRect(find.byKey(PlacementKeys.board));
+      await cubit.answer(PlacementOutcome.dontKnow);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 80));
+      final boards = find.byKey(PlacementKeys.board);
+      for (final element in boards.evaluate()) {
+        expect(
+          tester.getRect(find.byElementPredicate((e) => e == element)),
+          initial,
+        );
+      }
+      expect(
+        find.descendant(
+          of: find.byType(PlacementScreen),
+          matching: find.byType(SlideTransition),
+        ),
+        findsNothing,
+      );
+      if (reducedMotion) {
+        expect(find.byKey(const ValueKey('q1')), findsNothing);
+        expect(boards, findsOneWidget);
+      } else {
+        expect(find.byKey(const ValueKey('q1')), findsOneWidget);
+        expect(boards, findsNWidgets(2));
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('q2')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final size in [
+    const Size(320, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    testWidgets('B6, $size: centro entre status e navegação, enunciado acima '
+        'e respostas no rodapé', (tester) async {
+      final (cubit, _) = await pump(
+        tester,
+        size: size,
+        systemBars: true,
+        geometry: true,
+      );
+      await cubit.start();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < PlacementState.questionCount; i++) {
         final appBar = tester.getRect(find.byType(AppBar));
         final answers = tester.getRect(find.byKey(PlacementKeys.answers));
         final board = tester.getRect(find.byKey(PlacementKeys.board));
         final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
-        expect(board.center.dy, closeTo((appBar.bottom + answers.top) / 2, 1));
+        final above = board.top - 24;
+        final below = size.height - 24 - board.bottom;
         expect(
-          prompt.bottom <= board.top || prompt.top >= board.bottom,
-          isTrue,
+          (above - below).abs() / (size.height - 48),
+          lessThanOrEqualTo(.05),
+          reason: 'board=$board prompt=$prompt answers=$answers',
         );
+        expect(board.center.dx, closeTo(size.width / 2, 1));
+        expect(prompt.top, greaterThanOrEqualTo(appBar.bottom));
+        expect(prompt.bottom, lessThanOrEqualTo(board.top));
         expect(answers.top, greaterThanOrEqualTo(board.bottom));
+        expect(answers.bottom, closeTo(size.height - 24, 1));
+        expect(
+          find.byKey(PlacementKeys.dontKnow).hitTestable(),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         await cubit.answer(PlacementOutcome.dontKnow);
         await tester.pumpAndSettle();
       }
+    });
+  }
+
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('B6: rotação e fonte $scale preservam tabuleiro e respostas', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(
+        tester,
+        size: const Size(360, 800),
+        systemBars: true,
+        geometry: true,
+        textScale: scale,
+      );
+      await cubit.start();
+      while (cubit.state.item!.type != PlacementItemType.choice) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      final number = cubit.state.number;
+      final item = cubit.state.item;
+      tester.view.physicalSize = const Size(800, 360);
+      await tester.pumpAndSettle();
+      expect(cubit.state.number, number);
+      expect(cubit.state.item, same(item));
+      final board = tester.getRect(find.byKey(PlacementKeys.board));
+      final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
+      expect(board.width, greaterThanOrEqualTo(200));
+      expect(board.height, board.width);
+      expect(prompt.height, greaterThanOrEqualTo(20 * scale));
+      expect(prompt.bottom, lessThanOrEqualTo(board.top));
+      for (final option in item!.options) {
+        await tester.ensureVisible(find.byKey(PlacementKeys.option(option)));
+        expect(
+          find.byKey(PlacementKeys.option(option)).hitTestable(),
+          findsOneWidget,
+        );
+      }
+      await tester.ensureVisible(find.byKey(PlacementKeys.dontKnow));
+      await tester.tap(find.byKey(PlacementKeys.dontKnow));
+      await tester.pumpAndSettle();
+      expect(cubit.state.number, number + 1);
+      tester.view.physicalSize = const Size(360, 800);
+      await tester.pumpAndSettle();
+      expect(
+        tester.getSize(find.byKey(PlacementKeys.board)).width,
+        greaterThan(0),
+      );
+      expect(tester.takeException(), isNull);
     });
   }
 

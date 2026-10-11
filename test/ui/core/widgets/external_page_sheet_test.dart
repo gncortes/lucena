@@ -24,6 +24,14 @@ void main() {
     kind: 'study',
     fields: {'title': 'Lucena', 'url': 'https://lichess.org/study/abc123'},
   );
+  const wikipedia = Reference(
+    id: 'w1',
+    kind: 'web',
+    fields: {
+      'title': 'Lucena position',
+      'url': 'https://pt.wikipedia.org/wiki/Posi%C3%A7%C3%A3o_de_Lucena',
+    },
+  );
 
   Future<void> pump(
     WidgetTester tester,
@@ -85,6 +93,7 @@ void main() {
   ) async {
     final pages = FakeWebPages();
     await pump(tester, pages, study);
+    expect(find.text('View the study'), findsOneWidget);
     await tester.tap(find.byType(InkWell));
     await tester.pumpAndSettle();
     expect(pages.opened, [Uri.parse(study.url!)]);
@@ -96,6 +105,22 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('lichess.org'), findsOneWidget);
+  });
+
+  testWidgets('o rótulo descreve o destino da referência', (tester) async {
+    await pump(tester, FakeWebPages(), wikipedia);
+
+    expect(find.text('View on Wikipedia'), findsOneWidget);
+    expect(find.text('View on Lichess'), findsNothing);
+  });
+
+  testWidgets('uma análise do Lichess não se apresenta como a partida', (
+    tester,
+  ) async {
+    await pump(tester, FakeWebPages(), game);
+
+    expect(find.text('View on Lichess'), findsOneWidget);
+    expect(find.text('View the game on Lichess'), findsNothing);
   });
 
   testWidgets('sem internet: o aviso, e o X volta para a aula', (tester) async {

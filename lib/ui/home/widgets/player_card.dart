@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
+import '../../../routing/review_destinations.dart';
+import '../../core/widgets/container_navigation.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
@@ -26,64 +29,78 @@ class PlayerCard extends StatelessWidget {
         ? l10n.profileNicknameDefault
         : state.nickname;
     final rating = state.rating;
-    return Card(
-      key: HomeKeys.playerCard,
-      margin: EdgeInsets.zero,
+    return ContainerNavigation(
       color: colors.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => context.go(Routes.rating),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.homeHello(nickname),
-                      key: HomeKeys.hello,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (rating != null)
-                Semantics(
-                  container: true,
-                  label: ratingSemantics(
-                    context,
-                    rating,
-                    state.ratingChange ?? 0,
-                  ),
-                  excludeSemantics: true,
-                  // Só o número e a seta: o card inteiro já abre o rating.
-                  child: Row(
-                    key: HomeKeys.rating,
-                    mainAxisSize: MainAxisSize.min,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      routeName: Routes.rating,
+      openBuilder: ratingDestination,
+      onFallback: () async {
+        await context.push<void>(Routes.rating);
+      },
+      closedBuilder: (context, open) => Card(
+        key: HomeKeys.playerCard,
+        margin: EdgeInsets.zero,
+        color: colors.surfaceContainerLow,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: open,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Ao voltar de uma partida, o número conta até o
-                      // rating novo.
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(end: rating.toDouble()),
-                        duration: AppMotion.of(context).celebrate,
-                        curve: AppMotion.enter,
-                        builder: (context, value, _) => RatingValue(
-                          rating: value.round(),
-                          change: state.ratingChange,
-                          valueKey: HomeKeys.ratingValue,
+                      Text(
+                        l10n.homeHello(nickname),
+                        key: HomeKeys.hello,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
                     ],
                   ),
                 ),
-            ],
+                if (rating != null)
+                  Semantics(
+                    container: true,
+                    label: ratingSemantics(
+                      context,
+                      rating,
+                      state.ratingChange ?? 0,
+                    ),
+                    excludeSemantics: true,
+                    // Só o número e a seta: o card inteiro já abre o rating.
+                    child: Row(
+                      key: HomeKeys.rating,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Ao voltar de uma partida, o número conta até o
+                        // rating novo.
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(end: rating.toDouble()),
+                          duration: AppMotion.of(context).celebrate,
+                          curve: AppMotion.enter,
+                          builder: (context, value, _) => RatingValue(
+                            rating: value.round(),
+                            change: state.ratingChange,
+                            valueKey: HomeKeys.ratingValue,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Icon(
+                          Icons.chevron_right,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

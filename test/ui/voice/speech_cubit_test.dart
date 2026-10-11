@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/voice/voice_repository.dart';
 import 'package:lucena/domain/models/voice.dart';
@@ -15,6 +17,70 @@ void main() {
     await cubit.load();
     return cubit;
   }
+
+  test('T65: novo inactive invalida retomada aguardando parada', () async {
+    final delayed = _DelayedStopVoice();
+    final cubit = SpeechCubit(delayed);
+    addTearDown(cubit.close);
+    await cubit.load();
+    await cubit.say('Continue.', speakerId: 'master', language: 'en');
+    final gate = delayed.stopGate = Completer<void>();
+    final pause = cubit.pauseForBackground();
+    final resume = cubit.resumeFromBackground();
+    await cubit.pauseForBackground();
+    gate.complete();
+    await pause;
+    await resume;
+    expect(delayed.spoken, hasLength(1));
+    await cubit.resumeFromBackground();
+    expect(delayed.spoken, hasLength(2));
+  });
+
+  test(
+    'T65: background conserva fala, retoma palavra e permite parar',
+    () async {
+      final cubit = await open();
+      await cubit.say(
+        'Agora Tf3 e o rei foge.',
+        speakerId: 'master',
+        language: 'pt',
+      );
+      voice.emit(const TtsProgress(15, 16));
+      await Future<void>.delayed(Duration.zero);
+      await cubit.pauseForBackground();
+      await cubit.pauseForBackground();
+      expect(voice.stops, 1);
+      expect(cubit.state.speaking, 'Agora Tf3 e o rei foge.');
+      voice.emit(const TtsFinished());
+      await Future<void>.delayed(Duration.zero);
+      await cubit.resumeFromBackground();
+      expect(voice.spoken.last.$1, 'e o rei foge.');
+      voice.emit(const TtsProgress(2, 3));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.revealed, 'Agora Tf3 e o'.length);
+      await cubit.pauseForBackground();
+      await cubit.stop();
+      final count = voice.spoken.length;
+      await cubit.resumeFromBackground();
+      expect(voice.spoken.length, count);
+      expect(cubit.state.speaking, isNull);
+    },
+  );
+
+  test(
+    'T65: sem progresso repete fala, pedido em background aguarda',
+    () async {
+      final cubit = await open();
+      await cubit.pauseForBackground();
+      await cubit.say('Espere.', speakerId: 'master', language: 'pt');
+      expect(voice.spoken, isEmpty);
+      await cubit.resumeFromBackground();
+      expect(voice.spoken.single.$1, 'Espere.');
+      await cubit.pauseForBackground();
+      await cubit.resumeFromBackground();
+      expect(voice.spoken.last.$1, 'Espere.');
+    },
+  );
 
   test(
     'o professor fala com a voz escolhida, do jeito dela, e o texto falável',
@@ -164,4 +230,14 @@ void main() {
     expect(back, muted);
     expect(back.charactersMuted, isTrue);
   });
+}
+
+class _DelayedStopVoice extends FakeVoiceRepository {
+  Completer<void>? stopGate;
+
+  @override
+  Future<void> stop() async {
+    await stopGate?.future;
+    await super.stop();
+  }
 }

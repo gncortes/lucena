@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../data/repositories/conclusion/conclusion_repository.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
+import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../ui/conclusion/view_models/conclusion_cubit.dart';
 import '../ui/conclusion/widgets/conclusion_screen.dart';
@@ -17,6 +19,7 @@ import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../config/dependencies.dart';
+import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/use_cases/now.dart';
@@ -55,8 +58,6 @@ import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
-import '../ui/game_details/view_models/game_details_cubit.dart';
-import '../ui/game_details/widgets/game_details_screen.dart';
 import '../ui/all_modes/widgets/all_modes_screen.dart';
 import '../ui/home/view_models/home_cubit.dart';
 import '../ui/home_layout/view_models/home_layout_cubit.dart';
@@ -67,6 +68,7 @@ import '../ui/achievements/view_models/achievements_cubit.dart';
 import '../ui/achievements/widgets/achievements_screen.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
+import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_source.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
@@ -106,7 +108,6 @@ import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
 import '../ui/profile/view_models/rating_cubit.dart';
-import '../ui/profile/widgets/rating_screen.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/about_screen.dart';
@@ -183,6 +184,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             profile: context.read<ProfileRepository>(),
             endgameLessons: context.read<EndgameLessonRepository>(),
             endgameProgress: context.read<EndgameProgressRepository>(),
+            placement: context.read<PlacementRepository>(),
             homeLayout: context.read<HomeLayoutRepository>(),
             unlocks: context.read<UnlockRepository>(),
           )..load(_language(context)),
@@ -206,10 +208,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       voice: context.read<VoiceRepository>(),
                       input: context.read<SpeechInputRepository>(),
                       log: context.read<BlindLogRepository>(),
+                      checkpoints: context.read<BlindCheckpointRepository>(),
                       now: context.read<Now>(),
                       draws: context.read<DrawOfferRepository>(),
                       progress: context.read<ProgressRepository>(),
                     )..load(
+                      restore: query['new'] != 'true',
+                      resumeAny: query.isEmpty,
                       view: BlindView.values.asNameMap()[query['view']],
                       challengeId: query['challenge'],
                       positionId: query['position'],
@@ -369,7 +374,11 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'modes',
-            builder: (context, state) => const AllModesScreen(),
+            builder: (context, state) => AllModesScreen(
+              hasBlindCheckpoint: () async =>
+                  await context.read<BlindCheckpointRepository>().load() !=
+                  null,
+            ),
           ),
           _route(
             path: 'achievements',
@@ -579,6 +588,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
+                          feedback: context.read<ExerciseFeedbackRepository?>(),
                           source: EndgameLessonSource(
                             context.read<EndgameLessonRepository>(),
                             context.read<EndgameProgressRepository>(),
@@ -637,6 +647,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                   _route(
                     path: 'ex/:exercise',
+                    fade: true,
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final exercise = state.pathParameters['exercise']!;
@@ -644,6 +655,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
+                          feedback: context.read<ExerciseFeedbackRepository?>(),
                           now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
@@ -816,43 +828,21 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'rating',
-            builder: (context, state) => BlocProvider(
-              create: (context) => RatingCubit(
-                context.read<RatingRepository>(),
-                progress: context.read<ProgressRepository>(),
-                achievements: context.read<AchievementsRepository>(),
-                speedruns: context.read<SpeedrunRepository>(),
-                journey: context.read<JourneyRepository>(),
-                characters: context.read<CharacterRepository>(),
-                reviews: context.read<GameReviewRepository>(),
-                now: context.read<Now>(),
-                // Vindo da conclusão: a partida em destaque.
-                highlightedGame: int.tryParse(
-                  state.uri.queryParameters['game'] ?? '',
-                ),
-              )..load(),
-              child: const RatingScreen(),
+            sharedAxis: true,
+            builder: (context, state) => ratingDestination(
+              context,
+              highlightedGame: int.tryParse(
+                state.uri.queryParameters['game'] ?? '',
+              ),
             ),
             routes: [
               _route(
                 path: 'game/:id',
-                // O idioma é lido aqui: dentro do `create` o provider não
-                // pode depender do Localizations.
-                builder: (context, state) {
-                  final language = _language(context);
-                  return BlocProvider(
-                    create: (_) => GameDetailsCubit(
-                      int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
-                      progress: context.read<ProgressRepository>(),
-                      rating: context.read<RatingRepository>(),
-                      characters: context.read<CharacterRepository>(),
-                      analysis: context.read<AnalysisRepository>(),
-                      reviews: context.read<GameReviewRepository>(),
-                      lessons: context.read<LessonRepository>(),
-                    )..load(language: language),
-                    child: const GameDetailsScreen(),
-                  );
-                },
+                sharedAxis: true,
+                builder: (context, state) => gameDetailsDestination(
+                  context,
+                  int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+                ),
               ),
             ],
           ),
@@ -1000,10 +990,27 @@ GoRoute _route({
   GoRouterRedirect? redirect,
   List<RouteBase> routes = const [],
   bool fade = false,
+  bool sharedAxis = false,
 }) => GoRoute(
   path: path,
   redirect: redirect,
   pageBuilder: (context, state) {
+    if (sharedAxis) {
+      final duration = AppMotion.of(context).screen;
+      return CustomTransitionPage<void>(
+        key: state.pageKey,
+        transitionDuration: duration,
+        reverseTransitionDuration: duration,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            SharedAxisTransition(
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              transitionType: SharedAxisTransitionType.scaled,
+              child: child,
+            ),
+        child: builder(context, state),
+      );
+    }
     if (!fade) {
       return MaterialPage<void>(
         key: state.pageKey,

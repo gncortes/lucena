@@ -94,7 +94,9 @@ class TourScreen extends StatelessWidget {
               if (!step.isLast)
                 TextButton(
                   key: TourKeys.skipButton,
-                  onPressed: cubit.skip,
+                  onPressed: step == TourStep.level && !state.levelChosen
+                      ? null
+                      : cubit.skip,
                   child: Text(l10n.tourSkip),
                 ),
             ],
@@ -259,7 +261,11 @@ class _TourActions extends StatelessWidget {
               elevation: 2,
               backgroundColor: colors.primary,
               foregroundColor: colors.onPrimary,
-              onPressed: step.isLast ? cubit.finish : cubit.next,
+              onPressed: !state.canAdvance
+                  ? null
+                  : step.isLast
+                  ? cubit.finish
+                  : cubit.next,
               label: Text(
                 step == TourStep.characterVoices
                     ? l10n.tourKeepVoices
@@ -754,7 +760,10 @@ class _LevelStep extends StatelessWidget {
                   RatingLevelOption(
                     key: TourKeys.level(level),
                     level: level,
-                    selected: level == state.level,
+                    selected:
+                        state.levelChosen &&
+                        state.placed == null &&
+                        level == state.level,
                     onTap: () => cubit.setLevel(level),
                   ),
               ],
@@ -769,7 +778,7 @@ class _LevelStep extends StatelessWidget {
             ),
           ),
         ],
-        if (state.byHand || state.placed != null)
+        if (state.levelChosen)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
             child: Row(

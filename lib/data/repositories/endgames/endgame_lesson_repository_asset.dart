@@ -47,6 +47,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
     final index =
         jsonDecode(await _assets.loadString(indexPath)) as Map<String, dynamic>;
     final review = await _review();
+    final failed = await _review('failed');
     final modules = <EndgameModule>[];
     for (final module
         in (index['modules'] as List? ?? const [])
@@ -57,6 +58,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
           parseLesson(
             jsonDecode(await _assets.loadString(lessonPath(id))),
             inReview: review.contains(id),
+            failed: failed.contains(id),
           ),
         );
       }
@@ -66,12 +68,12 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   }
 
   /// Sem o arquivo, nenhuma aula está em revisão.
-  Future<Set<String>> _review() async {
+  Future<Set<String>> _review([String list = 'lessons']) async {
     try {
       final json = jsonDecode(
         await _assets.loadString(reviewPath),
       ) as Map<String, dynamic>;
-      return {...(json['lessons'] as List? ?? const []).cast<String>()};
+      return {...(json[list] as List? ?? const []).cast<String>()};
     } catch (_) {
       return const {};
     }
@@ -106,7 +108,11 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   };
 
   /// Lê uma aula gerada. Passo de tipo desconhecido é ignorado.
-  static EndgameLesson parseLesson(Object? json, {bool inReview = false}) {
+  static EndgameLesson parseLesson(
+    Object? json, {
+    bool inReview = false,
+    bool failed = false,
+  }) {
     final map = json as Map<String, dynamic>;
     final id = map['id'] as String;
     final practice = map['practice'] as Map<String, dynamic>;
@@ -114,6 +120,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
       id: id,
       module: map['module'] as String,
       inReview: inReview,
+      failed: failed,
       lesson: AssetLessonRepository.parseLesson(map),
       exercises: [
         for (final exercise

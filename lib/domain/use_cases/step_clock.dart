@@ -12,6 +12,18 @@ abstract final class StepClock {
     return elapsed.isNegative ? Duration.zero : elapsed;
   }
 
+  /// O começo do passo depois de uma pausa (app em segundo plano, T65): ele
+  /// anda o tempo em que o app ficou pausado, para o cronômetro não contar
+  /// esse tempo. Relógio voltado (pausa negativa): o começo fica igual.
+  static DateTime resume({
+    required DateTime startedAt,
+    required DateTime pausedAt,
+    required DateTime now,
+  }) {
+    final paused = now.difference(pausedAt);
+    return paused.isNegative ? startedAt : startedAt.add(paused);
+  }
+
   /// O tempo como no cronômetro: `m:ss` e, de uma hora em diante, `h:mm:ss`.
   /// Só segundos inteiros, arredondados para baixo.
   static String format(Duration elapsed) {

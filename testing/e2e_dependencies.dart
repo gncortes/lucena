@@ -1,3 +1,5 @@
+import 'fakes/fake_blind_checkpoint_repository.dart';
+
 import 'dart:math';
 
 import 'package:drift/drift.dart';
@@ -279,6 +281,7 @@ Future<Dependencies> e2eDependencies() async {
       e2eTts,
     ),
     speechInputRepository: e2eSpeechInput,
+    blindCheckpointRepository: FakeBlindCheckpointRepository(),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
     languages: AppLanguage.values,

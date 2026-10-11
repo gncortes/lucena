@@ -160,6 +160,7 @@ void main() {
       lessonId: 'queen.vsRook.philidor',
       step: 0,
       part: 'philidor',
+      stepId: 'think',
       stepStartedAt: DateTime.utc(2026, 10, 8, 20),
       hintsShown: 1,
       demoMove: 2,
@@ -170,15 +171,15 @@ void main() {
     expect(EndgameLessonProgress.fromJson(progress).parts, {'fork'});
   });
 
-  test('checkpoint de antes da T60 (só o passo de pensar guardava o começo) '
-      'restaura o cronômetro', () {
+  test('checkpoint sem id do passo descarta o cronômetro legado', () {
     final old = LessonCheckpoint.fromJson({
       'lesson': 'queen.vsRook.philidor',
       'step': 0,
       'part': 'philidor',
       'thinkStartedAt': '2026-10-08T20:00:00.000Z',
     })!;
-    expect(old.stepStartedAt, DateTime.utc(2026, 10, 8, 20));
+    expect(old.stepId, isNull);
+    expect(old.stepStartedAt, isNull);
   });
 
   test('tempo estimado da parte', () {

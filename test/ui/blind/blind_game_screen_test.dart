@@ -25,10 +25,19 @@ void main() {
   late FakeSpeechInputRepository input;
   late BlindGameCubit cubit;
 
-  Future<void> pump(WidgetTester tester, {bool permitted = true}) async {
-    tester.view.physicalSize = const Size(400, 900);
+  Future<void> pump(
+    WidgetTester tester, {
+    bool permitted = true,
+    Size size = const Size(400, 900),
+    bool systemBars = false,
+  }) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
+    if (systemBars) {
+      tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 32);
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 32);
+    }
     input = FakeSpeechInputRepository(permitted: permitted, grants: false);
     cubit = BlindGameCubit(
       restartDelay: Duration.zero,
@@ -138,6 +147,42 @@ void main() {
     );
   });
 
+  for (final size in [
+    const Size(360, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    testWidgets('B6b $size: centro real nas vistas e ao confirmar fala', (
+      tester,
+    ) async {
+      await pump(tester, size: size, systemBars: true);
+      final before = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+      final center = (24 + size.height - 32) / 2;
+      expect(before.center.dy, closeTo(center, 1));
+      expect(before.width, greaterThanOrEqualTo(120));
+      await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
+      await tester.pumpAndSettle();
+      expect(
+        tester.getCenter(find.byKey(BlindKeys.board)).dy,
+        closeTo(center, 1),
+      );
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(BlindKeys.mic)),
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      input.hear(['rook a7']);
+      await tester.pump(const Duration(milliseconds: 100));
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+      expect(
+        tester.getCenter(find.byKey(BlindKeys.board)).dy,
+        closeTo(center, 1),
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('T64: o tabuleiro (com peças ou só as casas) no centro do '
       'espaço entre a barra do app e o painel de baixo', (tester) async {
     await pump(tester);
@@ -145,7 +190,7 @@ void main() {
     final area = tester.getRect(find.byKey(BlindKeys.boardArea));
     expect(area.top, appBar.bottom);
     final empty = tester.getRect(find.byKey(BlindKeys.emptyBoard));
-    expect(empty.center.dy, closeTo(area.center.dy, 1));
+    expect(empty.center.dy, closeTo(450, 1));
     expect(
       tester.getRect(find.byKey(BlindKeys.status)).top,
       greaterThanOrEqualTo(empty.bottom),
@@ -153,7 +198,7 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
     await tester.pumpAndSettle();
     final board = tester.getRect(find.byKey(BlindKeys.board));
-    expect(board.center.dy, closeTo(area.center.dy, 1));
+    expect(board.center.dy, closeTo(450, 1));
     expect(tester.takeException(), isNull);
   });
 

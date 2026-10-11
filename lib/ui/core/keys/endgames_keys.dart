@@ -13,6 +13,22 @@ abstract final class EndgamesKeys {
   static const hideDone = Key('endgames.hideDone');
   static const forYouEmpty = Key('endgames.forYouEmpty');
   static Key badge(String lessonId) => Key('endgames.badge.$lessonId');
+  static Key reviewTag(String lessonId) => Key('endgames.reviewTag.$lessonId');
+
+  /// Os filtros da lista (tipo, dificuldade, situação, ordem): o botão, o
+  /// modal com as opções, os chips ativos e o estado vazio. As opções e os
+  /// chips usam o código da opção (`kind.rook`, `level.casual`,
+  /// `status.open`, `sort.easiest`).
+  static const filtersButton = Key('endgames.filters.button');
+  static const filtersSheet = Key('endgames.filters.sheet');
+  static Key filterOption(String code) => Key('endgames.filters.option.$code');
+  static Key filterChip(String code) => Key('endgames.filters.chip.$code');
+  static const filtersClear = Key('endgames.filters.clear');
+  static const filtersSheetClear = Key('endgames.filters.sheet.clear');
+  static const filtersApply = Key('endgames.filters.apply');
+  static const filtersEmpty = Key('endgames.filters.empty');
+  static const filtersEmptyClear = Key('endgames.filters.empty.clear');
+  static Key level(String name) => Key('endgames.level.$name');
 
   static const screen = Key('endgames.screen');
   static const continueButton = Key('endgames.continue');
@@ -54,6 +70,7 @@ abstract final class ExercisesDoneKeys {
 abstract final class EndgameLessonKeys {
   /// O aviso de aula ainda em revisão (abaixo da nota A).
   static const inReview = Key('endgameLesson.inReview');
+  static const reviewFailed = Key('endgameLesson.reviewFailed');
 
   /// Quantos exercícios do teste já foram resolvidos (em andamento).
   static const testSolved = Key('endgameLesson.testSolved');
@@ -100,6 +117,8 @@ abstract final class EndgameInfoKeys {
   static const screen = Key('endgameInfo.screen');
   static const history = Key('endgameInfo.history');
   static Key reference(String id) => Key('endgameInfo.reference.$id');
+  static Key referenceSource(String id) =>
+      Key('endgameInfo.reference.$id.source');
   static Key keyPosition(String id) => Key('endgameInfo.key.$id');
   static Key keyPositionLink(String id) => Key('endgameInfo.keyLink.$id');
 }
@@ -110,6 +129,8 @@ abstract final class ExerciseKeys {
   static const missing = Key('exercise.missing');
   static const board = Key('exercise.board');
   static const speech = Key('exercise.speech');
+  static const viktorSheet = Key('exercise.viktorSheet');
+  static const closeSheet = Key('exercise.sheet.close');
   static const scroll = Key('exercise.scroll');
   static const hintButton = Key('exercise.hint');
   static const stars = Key('exercise.stars');
@@ -117,6 +138,12 @@ abstract final class ExerciseKeys {
   static const earnedStar = Key('exercise.earnedStar');
   static const solved = Key('exercise.solved');
   static const explainButton = Key('exercise.explain');
+
+  /// O selo "Correto!" que surge sob o tabuleiro ao resolver.
+  static const correct = Key('exercise.correct');
+
+  /// O rodapé de resolvido com os botões empilhados (tela estreita).
+  static const solvedStacked = Key('exercise.solvedStacked');
   static const resultButton = Key('exercise.result');
   static const backButton = Key('exercise.back');
   static const locked = Key('exercise.locked');

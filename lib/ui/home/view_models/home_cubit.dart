@@ -9,6 +9,8 @@ import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/placement/placement_repository.dart';
+import '../../placement/view_models/roadmap_loader.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
@@ -157,9 +159,13 @@ class EndgameSummary {
     this.partId,
     this.partNumber,
     this.partCount,
+    this.recommended = false,
   });
 
   final String lessonId;
+
+  /// Próximo final do roteiro, ainda sem aula/exercício em andamento.
+  final bool recommended;
 
   /// Numa aula em partes: a parte em que o aluno parou (T51).
   final String? partId;
@@ -200,9 +206,11 @@ class HomeCubit extends Cubit<HomeState> {
     required this._endgameProgress,
     this._homeLayout,
     this._unlocks,
+    this._placement,
   }) : super(const HomeState());
 
   final UnlockRepository? _unlocks;
+  final PlacementRepository? _placement;
 
   /// O modo às cegas, para o cartão de modo novo.
   static const blindMode = 'blind';
@@ -254,8 +262,14 @@ class HomeCubit extends Cubit<HomeState> {
     final history = await _rating.history();
     final school = await _schoolSummary(characters);
     final profile = await _profile.load();
-    final endgame = await _endgameSummary(language, characters);
     final saved = await _homeLayout?.load();
+    final layout = HomeSuggestion.resolve(saved, profile.level);
+    final priority = layout.shown.firstOrNull;
+    final endgame = await _endgameSummary(
+      language,
+      characters,
+      recommend: priority == HomePath.endgames || priority == HomePath.forYou,
+    );
     // Quem fez o tour antes de dar para escolher ganha o aviso, uma vez.
     final notice =
         _homeLayout != null &&
@@ -282,7 +296,7 @@ class HomeCubit extends Cubit<HomeState> {
             ? null
             : history.last.rating.rounded -
                   history[history.length - 2].rating.rounded,
-        layout: HomeSuggestion.resolve(saved, profile.level),
+        layout: layout,
         layoutNotice: notice,
         unlockedBlind: unlockedBlind,
       ),
@@ -327,8 +341,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<EndgameSummary?> _endgameSummary(
     String language,
-    List<Character> characters,
-  ) async {
+    List<Character> characters, {
+    required bool recommend,
+  }) async {
     final progress = await _endgameProgress.load();
     final trail = await _endgameLessons.trail();
     final openExercise = progress.openExercise;
@@ -349,6 +364,24 @@ class HomeCubit extends Cubit<HomeState> {
           lesson = each;
           break;
         }
+      }
+    }
+    var recommended = false;
+    final placement = _placement;
+    if (lesson == null && recommend && placement != null) {
+      final roadmap = await RoadmapLoader(
+        placement: placement,
+        school: _lessons,
+        schoolProgress: _school,
+        endgames: _endgameLessons,
+        endgameProgress: _endgameProgress,
+      ).load();
+      final next = roadmap?.steps
+          .where((step) => !step.school && !step.soon)
+          .firstOrNull;
+      if (next != null) {
+        lesson = trail.lesson(next.lessonId);
+        recommended = lesson != null;
       }
     }
     if (lesson == null) return null;
@@ -383,6 +416,7 @@ class HomeCubit extends Cubit<HomeState> {
         : lesson.lesson.part(checkpoint!.part!);
     return EndgameSummary(
       lessonId: lesson.id,
+      recommended: recommended,
       title: texts.lessonTitle(lesson.id),
       score: done.scoreOf(lesson),
       maxScore: lesson.maxScore,

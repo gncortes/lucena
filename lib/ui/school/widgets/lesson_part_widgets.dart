@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/use_cases/lesson_rules.dart';
+import '../../../domain/use_cases/speech_lines.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -87,25 +88,165 @@ class DemoControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
-    final colors = Theme.of(context).colorScheme;
-    final background = Theme.of(context).scaffoldBackgroundColor;
     Widget button(
       Key key,
       IconData icon,
       String tooltip,
       VoidCallback? onPressed, {
       bool main = false,
-    }) => FloatingActionButton(
-      key: key,
-      heroTag: null,
-      shape: const CircleBorder(),
-      elevation: main ? 4 : 2,
-      backgroundColor: main ? colors.primary : colors.surface,
-      foregroundColor: main ? colors.onPrimary : colors.primary,
+    }) => _ControlButton(
+      buttonKey: key,
+      icon: icon,
       tooltip: tooltip,
       onPressed: onPressed,
-      child: Icon(icon),
+      main: main,
     );
+    return _ControlBar(
+      wrong: state.wrongDemo,
+      children: [
+        // Voltar ao passo anterior da lição, como nos outros passos.
+        button(
+          LessonKeys.backButton,
+          Icons.arrow_back,
+          l10n.lessonPrevious,
+          state.step == 0 ? null : cubit.back,
+        ),
+        button(
+          LessonKeys.demoReplay,
+          Icons.replay,
+          l10n.lessonDemoReplay,
+          cubit.demoReplay,
+        ),
+        button(
+          LessonKeys.demoBack,
+          Icons.skip_previous_rounded,
+          l10n.lessonDemoBack,
+          state.demoMove == 0 ? null : cubit.demoBack,
+        ),
+        button(
+          LessonKeys.demoPause,
+          state.demoPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+          state.demoPlaying ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
+          cubit.demoTogglePause,
+        ),
+        button(
+          LessonKeys.demoForward,
+          Icons.skip_next_rounded,
+          l10n.lessonDemoForward,
+          cubit.demoForward,
+          main: true,
+        ),
+      ],
+    );
+  }
+}
+
+/// Os controles da variante citada na fala, no estilo dos da demonstração:
+/// voltar à posição do passo, lance anterior e próximo lance.
+class VariationControls extends StatelessWidget {
+  const VariationControls({
+    required this.cursor,
+    required this.onExit,
+    required this.onBack,
+    required this.onForward,
+    this.wrong = false,
+    super.key,
+  });
+
+  final SpeechLineCursor cursor;
+
+  /// A variante é a linha errada da aula.
+  final bool wrong;
+  final VoidCallback onExit;
+  final VoidCallback onBack;
+  final VoidCallback onForward;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return _ControlBar(
+      wrong: wrong,
+      children: [
+        _ControlButton(
+          buttonKey: LessonKeys.variationExit,
+          icon: Icons.close_rounded,
+          tooltip: l10n.lessonVariationExit,
+          onPressed: onExit,
+        ),
+        _ControlButton(
+          buttonKey: LessonKeys.variationBack,
+          icon: Icons.skip_previous_rounded,
+          tooltip: l10n.lessonDemoBack,
+          onPressed: cursor.canPrevious ? onBack : null,
+        ),
+        _ControlButton(
+          buttonKey: LessonKeys.variationForward,
+          icon: Icons.skip_next_rounded,
+          tooltip: l10n.lessonDemoForward,
+          onPressed: cursor.canNext ? onForward : null,
+          main: true,
+        ),
+      ],
+    );
+  }
+}
+
+/// O selo "Linha errada": a linha mostrada é o que não fazer.
+class WrongLineBadge extends StatelessWidget {
+  const WrongLineBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final label = context.l10n.lessonWrongLine;
+    return Semantics(
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: colors.errorContainer,
+        elevation: 2,
+        shape: const StadiumBorder(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.highlight_off_rounded,
+                size: 18,
+                color: colors.onErrorContainer,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: colors.onErrorContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A fileira dos controles redondos, sobre um esmaecer até o fundo. Na
+/// linha errada, o selo vem acima dela.
+class _ControlBar extends StatelessWidget {
+  const _ControlBar({required this.children, this.wrong = false});
+
+  final List<Widget> children;
+  final bool wrong;
+
+  @override
+  Widget build(BuildContext context) {
+    final background = Theme.of(context).scaffoldBackgroundColor;
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -117,46 +258,54 @@ class DemoControls extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Voltar ao passo anterior da lição, como nos outros passos.
-            button(
-              LessonKeys.backButton,
-              Icons.arrow_back,
-              l10n.lessonPrevious,
-              state.step == 0 ? null : cubit.back,
-            ),
-            button(
-              LessonKeys.demoReplay,
-              Icons.replay,
-              l10n.lessonDemoReplay,
-              cubit.demoReplay,
-            ),
-            button(
-              LessonKeys.demoBack,
-              Icons.skip_previous_rounded,
-              l10n.lessonDemoBack,
-              state.demoMove == 0 ? null : cubit.demoBack,
-            ),
-            button(
-              LessonKeys.demoPause,
-              state.demoPlaying
-                  ? Icons.pause_rounded
-                  : Icons.play_arrow_rounded,
-              state.demoPlaying ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
-              cubit.demoTogglePause,
-            ),
-            button(
-              LessonKeys.demoForward,
-              Icons.skip_next_rounded,
-              l10n.lessonDemoForward,
-              cubit.demoForward,
-              main: true,
+            if (wrong)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: WrongLineBadge(key: LessonKeys.wrongLineControls),
+              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: children,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Um controle redondo: o principal em destaque, desligado sem ação.
+class _ControlButton extends StatelessWidget {
+  const _ControlButton({
+    required this.buttonKey,
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.main = false,
+  });
+
+  final Key buttonKey;
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final bool main;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return FloatingActionButton(
+      key: buttonKey,
+      heroTag: null,
+      shape: const CircleBorder(),
+      elevation: main ? 4 : 2,
+      backgroundColor: main ? colors.primary : colors.surface,
+      foregroundColor: main ? colors.onPrimary : colors.primary,
+      tooltip: tooltip,
+      onPressed: onPressed,
+      child: Icon(icon),
     );
   }
 }

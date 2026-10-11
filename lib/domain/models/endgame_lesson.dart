@@ -51,6 +51,7 @@ class EndgameLesson {
     required this.practice,
     this.references = const [],
     this.inReview = false,
+    this.failed = false,
   });
 
   /// `rook.lucena`, `mates.bishopKnight.w`... Estável: o progresso é gravado
@@ -74,6 +75,9 @@ class EndgameLesson {
 
   /// A aula ainda está em revisão (abaixo da nota A): a tela avisa o aluno.
   final bool inReview;
+
+  /// A revisão reprovou a aula: ela será refeita (o aluno vê o aviso).
+  final bool failed;
 
   /// Todas as estrelas dos exercícios.
   int get maxScore =>
@@ -162,6 +166,16 @@ class Reference {
   };
 
   String? get url => fields['url'];
+
+  /// Fontes de produção ficam nos dados para rastreabilidade, mas não são
+  /// mostradas como referências ao aluno.
+  bool get isLearnerFacing {
+    final value = url;
+    final uri = value == null ? null : Uri.tryParse(value);
+    if (uri == null) return true;
+    return !uri.host.endsWith('pgnmentor.com') &&
+        !uri.path.toLowerCase().endsWith('.zip');
+  }
 
   /// A referência que um `ref` de passo ou de posição-base aponta: `id`, ou
   /// `id#ply` quando a mesma partida aparece parada noutro lance (o ply troca
@@ -279,12 +293,14 @@ class ExerciseCheckpoint {
     this.hints = 0,
     this.open = true,
     this.startedAt,
+    this.pausedAt,
   });
 
   final String exerciseId;
 
   /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
   final DateTime? startedAt;
+  final DateTime? pausedAt;
 
   /// O tabuleiro, quando já mudou desde o começo.
   final String? fen;
@@ -303,6 +319,7 @@ class ExerciseCheckpoint {
     'hints': hints,
     'open': open,
     'startedAt': ?startedAt?.toUtc().toIso8601String(),
+    'pausedAt': ?pausedAt?.toUtc().toIso8601String(),
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -317,6 +334,7 @@ class ExerciseCheckpoint {
       hints: json['hints'] as int? ?? 0,
       open: json['open'] as bool? ?? false,
       startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
+      pausedAt: DateTime.tryParse(json['pausedAt'] as String? ?? ''),
     );
   }
 
@@ -329,11 +347,20 @@ class ExerciseCheckpoint {
       other.mistakes == mistakes &&
       other.hints == hints &&
       other.open == open &&
-      other.startedAt == startedAt;
+      other.startedAt == startedAt &&
+      other.pausedAt == pausedAt;
 
   @override
-  int get hashCode =>
-      Object.hash(exerciseId, fen, turn, mistakes, hints, open, startedAt);
+  int get hashCode => Object.hash(
+    exerciseId,
+    fen,
+    turn,
+    mistakes,
+    hints,
+    open,
+    startedAt,
+    pausedAt,
+  );
 }
 
 /// O progresso em todas as aulas de finais.

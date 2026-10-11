@@ -202,6 +202,7 @@ class ReviewSummary extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            child,
             if (state.viktor case final viktor? when state.stories.isNotEmpty)
               _StoryTeller(
                 viktor: viktor,
@@ -209,7 +210,6 @@ class ReviewSummary extends StatelessWidget {
                 first: state.attempt?.playedAt.millisecond ?? 0,
                 running: state.reviewing,
               ),
-            child,
           ],
         ),
       ),
@@ -566,6 +566,7 @@ class _ReviewBoardState extends State<ReviewBoard> {
   );
 
   static const _barWidth = 24.0;
+  static const _barGap = 6.0;
 
   GameData _game(GameDetailsState state) {
     final position = state.shownPosition!;
@@ -611,12 +612,11 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final settings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    final showBar = context.select(
-      (SettingsCubit cubit) => cubit.state?.evalBar ?? true,
-    );
+    // A barra anda junto com a engine: ligada, ela aparece; desligada, some.
+    final showBar = state.engine;
     final shown = state.shownScore;
     if (showBar && shown == null) {
-      // Sem anotação nem engine: uma avaliação rápida só para a barra.
+      // Sem anotação nem linhas ainda: uma avaliação rápida só para a barra.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.read<GameDetailsCubit>().scoreShown();
       });
@@ -625,7 +625,6 @@ class _ReviewBoardState extends State<ReviewBoard> {
     // volta para o meio).
     final score = shown ?? _lastScore;
     _lastScore = score;
-    final boardSize = showBar ? widget.size - _barWidth - 6 : widget.size;
     final locale = Localizations.localeOf(context).toString();
     final reviewed = state.shownReview;
     final move = state.shownMove;
@@ -640,41 +639,69 @@ class _ReviewBoardState extends State<ReviewBoard> {
       if (_arrow(state) case (final orig, final dest, final color))
         Arrow(color: color, orig: orig, dest: dest),
     };
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showBar) ...[
-            _EvalBar(
-              key: GameDetailsKeys.evalBar,
-              whiteWin: score?.whiteWinPercent,
-              label: score == null ? null : formatScore(score, locale),
-              height: boardSize,
-              width: _barWidth,
-              whiteBottom: widget.orientation == Side.white,
-            ),
-            const SizedBox(width: 6),
-          ],
-          // Sem recorte em volta: a anotação do lance passa um pouco da casa
-          // (na fileira de cima, da borda do tabuleiro).
-          Chessboard(
-            key: GameDetailsKeys.board,
-            size: boardSize,
-            controller: _controller,
-            orientation: widget.orientation,
-            settings: settings.chessground.copyWith(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(AppShape.small),
+    // A barra entra e sai deslizando: o tabuleiro cede o espaço dela aos
+    // poucos (de uma vez com as animações reduzidas).
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: showBar ? 1 : 0),
+      duration: AppMotion.of(context).component,
+      curve: AppMotion.enter,
+      builder: (context, visible, _) {
+        final room = (_barWidth + _barGap) * visible;
+        final boardSize = widget.size - room;
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (visible > 0)
+                ClipRect(
+                  child: SizedBox(
+                    width: room,
+                    height: boardSize,
+                    child: OverflowBox(
+                      alignment: Alignment.centerRight,
+                      minWidth: _barWidth + _barGap,
+                      maxWidth: _barWidth + _barGap,
+                      child: Opacity(
+                        opacity: visible.clamp(0.0, 1.0),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: _barGap),
+                          child: _EvalBar(
+                            key: GameDetailsKeys.evalBar,
+                            whiteWin: score?.whiteWinPercent,
+                            label: score == null
+                                ? null
+                                : formatScore(score, locale),
+                            height: boardSize,
+                            width: _barWidth,
+                            whiteBottom: widget.orientation == Side.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              // Sem recorte em volta: a anotação do lance passa um pouco da
+              // casa (na fileira de cima, da borda do tabuleiro).
+              Chessboard(
+                key: GameDetailsKeys.board,
+                size: boardSize,
+                controller: _controller,
+                orientation: widget.orientation,
+                settings: settings.chessground.copyWith(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(AppShape.small),
+                  ),
+                ),
+                annotations: annotations,
+                shapes: shapes,
+                onMove: (move, {viaDragAndDrop}) =>
+                    context.read<GameDetailsCubit>().play(move),
               ),
-            ),
-            annotations: annotations,
-            shapes: shapes,
-            onMove: (move, {viaDragAndDrop}) =>
-                context.read<GameDetailsCubit>().play(move),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -997,21 +1024,38 @@ class ReviewNavigation extends StatelessWidget {
             Expanded(
               child: Align(
                 alignment: AlignmentDirectional.centerEnd,
+                // Ligada: cheia, na cor principal; desligada: só o contorno.
                 child: FilterChip(
                   key: GameDetailsKeys.engineButton,
                   selected: state.engine,
                   showCheckmark: false,
+                  selectedColor: colors.primary,
+                  side: state.engine
+                      ? BorderSide(color: colors.primary)
+                      : BorderSide(color: colors.outline),
                   avatar: Icon(
                     Icons.memory,
                     size: 18,
-                    color: state.engine ? colors.onSecondaryContainer : null,
+                    color: state.engine
+                        ? colors.onPrimary
+                        : colors.onSurfaceVariant,
                   ),
                   label: Text(
                     l10n.reviewEngine,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: state.engine ? colors.onPrimary : colors.onSurface,
+                      fontWeight: state.engine
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                    ),
                   ),
-                  onSelected: (_) => cubit.toggleEngine(),
+                  // A escolha fica gravada: a próxima partida abre igual.
+                  onSelected: (on) {
+                    cubit.setEngine(on: on);
+                    context.read<SettingsCubit>().setEvalBar(enabled: on);
+                  },
                 ),
               ),
             ),
@@ -1020,13 +1064,6 @@ class ReviewNavigation extends StatelessWidget {
               tooltip: l10n.reviewMore,
               onSelected: (choice) => _export(context, choice),
               itemBuilder: (context) => [
-                CheckedPopupMenuItem(
-                  key: GameDetailsKeys.evalBarToggle,
-                  value: _Export.evalBar,
-                  checked: context.read<SettingsCubit>().state?.evalBar ?? true,
-                  child: Text(l10n.reviewEvalBar),
-                ),
-                const PopupMenuDivider(),
                 PopupMenuItem(
                   key: GameDetailsKeys.openLichess,
                   value: _Export.lichess,
@@ -1073,9 +1110,6 @@ class ReviewNavigation extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final copied = context.l10n.reviewCopied;
     switch (choice) {
-      case _Export.evalBar:
-        final settings = context.read<SettingsCubit>();
-        await settings.setEvalBar(enabled: !(settings.state?.evalBar ?? true));
       case _Export.lichess:
         await launchUrl(
           GameExport.lichess(fen),
@@ -1110,7 +1144,7 @@ class ReviewNavigation extends StatelessWidget {
   }
 }
 
-enum _Export { evalBar, lichess, chessCom, fen, pgn }
+enum _Export { lichess, chessCom, fen, pgn }
 
 /// Com a engine ligada: as melhores linhas da posição mostrada, cada uma com
 /// a avaliação e os primeiros lances.

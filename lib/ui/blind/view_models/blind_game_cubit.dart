@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/blind/blind_log_repository.dart';
+import '../../../data/repositories/blind/blind_checkpoint_repository.dart';
+import '../../../domain/models/blind_checkpoint.dart';
 import '../../../data/repositories/blind/speech_input_repository.dart';
 import '../../../data/repositories/draw/draw_offer_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
@@ -357,6 +359,7 @@ class BlindGameCubit extends Cubit<BlindState> {
     required this._log,
     required this._now,
     this._draws,
+    this._checkpoints,
     this._progress,
     this.speechTimeout = const Duration(seconds: 12),
     this.thinkTime = const Duration(milliseconds: 800),
@@ -364,6 +367,12 @@ class BlindGameCubit extends Cubit<BlindState> {
     this.restartDelay = const Duration(milliseconds: 250),
     this.tick = const Duration(milliseconds: 200),
   }) : super(const BlindState());
+
+  final BlindCheckpointRepository? _checkpoints;
+  Future<void> _checkpointWrites = Future.value();
+  bool _checkpointReady = false;
+  bool _updatingClock = false;
+  Map<String, Object?> _setup = const {};
 
   final OpponentRepository _opponent;
   final VoiceRepository _voice;
@@ -445,6 +454,8 @@ class BlindGameCubit extends Cubit<BlindState> {
 
   Future<void> load({
     required String fen,
+    bool restore = true,
+    bool resumeAny = false,
     required Side userSide,
     required OpponentKind kind,
     int? level,
@@ -456,6 +467,37 @@ class BlindGameCubit extends Cubit<BlindState> {
     String? positionId,
     PositionGoal goal = PositionGoal.win,
   }) async {
+    _setup = {
+      'fen': fen,
+      'user': userSide.name,
+      'kind': kind.name,
+      'level': level,
+      'white': clock?.white.code,
+      'black': clock?.black.code,
+      'challenge': challengeId,
+      'position': positionId,
+      'goal': goal.name,
+    };
+    final requestedSetup = Map<String, Object?>.of(_setup);
+    final checkpoint = restore ? await _checkpoints?.load() : null;
+    if (checkpoint != null &&
+        (resumeAny || mapEquals(checkpoint.setup, _setup))) {
+      try {
+        await _restore(checkpoint, language: language, phrases: phrases);
+        return;
+      } on Object {
+        // Invalid/obsolete session: start safely from the requested setup.
+        await _checkpoints?.clear();
+        _checkpointReady = false;
+        _setup = requestedSetup;
+        _clock = null;
+        _clockConfig = null;
+        _ticker?.cancel();
+        _speaker = null;
+        _history.clear();
+        _ucis.clear();
+      }
+    }
     _phrases = phrases;
     _challengeId = challengeId;
     _positionId = positionId;
@@ -471,8 +513,9 @@ class BlindGameCubit extends Cubit<BlindState> {
         : MicPermission.unknown;
     if (isClosed) return;
     _history.add(position);
+    _checkpointReady = true;
     emit(
-      state.copyWith(
+      BlindState(
         phase: BlindPhase.intro,
         position: position,
         userSide: userSide,
@@ -481,16 +524,211 @@ class BlindGameCubit extends Cubit<BlindState> {
         mic: mic,
         white: clock?.white.initial,
         black: clock?.black.initial,
-        view: view,
+        view: view ?? BlindView.empty,
       ),
     );
+  }
+
+  @override
+  void emit(BlindState state) {
+    super.emit(state);
+    if (_checkpointReady && !_updatingClock) _saveCheckpoint();
+  }
+
+  void _saveCheckpoint() {
+    final repository = _checkpoints;
+    if (repository == null || state.position == null) return;
+    if (state.phase == BlindPhase.finished) {
+      _checkpointWrites = _checkpointWrites.then((_) => repository.clear());
+      return;
+    }
+    final clock = _clock;
+    final snapshot = BlindCheckpoint(
+      setup: Map.of(_setup),
+      moves: List.of(_ucis),
+      state: {
+        'phase':
+            (state.phase == BlindPhase.listening
+                    ? _beforeListening
+                    : state.phase)
+                .name,
+        'view': state.view.name,
+        'showMoves': state.showMoves,
+        'typing': state.typing,
+        'proposal': state.proposal?.move.uci,
+        'options': [for (final option in state.options) option.move.uci],
+        'illegal': state.illegal,
+        'illegalShown': state.illegalShown,
+        'heard': state.heard,
+        'notUnderstood': state.notUnderstood,
+        'selected': state.selected?.name,
+        'drawDeclines': state.drawDeclines,
+        'speech': _speechText,
+        'speechStart': _speechStart,
+        'whiteMs': clock == null
+            ? null
+            : ClockEngine.remaining(clock, Side.white, _now()).inMilliseconds,
+        'blackMs': clock == null
+            ? null
+            : ClockEngine.remaining(clock, Side.black, _now()).inMilliseconds,
+        'running': clock?.running?.name,
+        'turnStartedAt': clock?.running == null
+            ? null
+            : _now().millisecondsSinceEpoch,
+      },
+    );
+    _checkpointWrites = _checkpointWrites.then(
+      (_) => repository.save(snapshot),
+    );
+  }
+
+  Future<void> _restore(
+    BlindCheckpoint checkpoint, {
+    required String language,
+    required BlindPhrases phrases,
+  }) async {
+    final setup = checkpoint.setup;
+    final saved = checkpoint.state;
+    final start = GameRules.fromFen(setup['fen'] as String);
+    if (start == null) throw const FormatException('Invalid start');
+    var position = start;
+    final sans = <String>[];
+    String? lastUser, lastOpponent;
+    Move? lastMove;
+    final side = Side.values.byName(setup['user'] as String);
+    _history.add(start);
+    for (final uci in checkpoint.moves) {
+      final move = Move.parse(uci);
+      if (move == null) throw const FormatException('Invalid move');
+      final played = GameRules.play(position, move);
+      if (played == null) throw const FormatException('Illegal history');
+      if (position.turn == side) {
+        lastUser = played.san;
+      } else {
+        lastOpponent = played.san;
+      }
+      position = played.position;
+      lastMove = move;
+      sans.add(played.san);
+      _history.add(position);
+      _ucis.add(uci);
+    }
+    _setup = Map.of(setup);
+    _startFen = setup['fen'] as String;
+    _challengeId = setup['challenge'] as String?;
+    _positionId = setup['position'] as String?;
+    _goal = PositionGoal.values.byName(setup['goal'] as String);
+    _language = language;
+    _phrases = phrases;
+    _speaker = await _teacherVoice();
+    final white = TimeControl.tryParse(setup['white'] as String?);
+    final black = TimeControl.tryParse(setup['black'] as String?);
+    _clockConfig = white == null || black == null
+        ? null
+        : ClockConfig(white: white, black: black);
+    var phase = BlindPhase.values.byName(saved['phase'] as String);
+    if (phase == BlindPhase.loading || phase == BlindPhase.finished) {
+      throw const FormatException('Invalid phase');
+    }
+    if (phase == BlindPhase.listening) phase = BlindPhase.playerTurn;
+    final config = _clockConfig;
+    if (config != null && saved['whiteMs'] != null) {
+      // A normal lifecycle pause saves a stopped clock. An abrupt kill keeps
+      // the running timestamp, as the other ongoing-game clock does.
+      final at = saved['turnStartedAt'] as int?;
+      final old = ClockState(
+        config: config,
+        white: Duration(milliseconds: saved['whiteMs'] as int),
+        black: Duration(milliseconds: saved['blackMs'] as int),
+        running: Side.values.asNameMap()[saved['running']],
+        turnStartedAt: at == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(at, isUtc: true),
+      );
+      _clock = ClockEngine.stop(old, _now());
+      if (phase != BlindPhase.intro) {
+        _clock = ClockEngine.resume(_clock!, turn: position.turn, now: _now());
+      }
+    }
+    final legal = SpokenMoveParser.legalMoves(position);
+    SanMove? find(Object? uci) {
+      if (uci == null) return null;
+      return legal.firstWhere((candidate) => candidate.move.uci == uci);
+    }
+
+    final proposal = find(saved['proposal']);
+    final options = [
+      for (final uci in (saved['options'] as List? ?? [])) find(uci)!,
+    ];
+    final mic = await _input.hasPermission()
+        ? MicPermission.granted
+        : MicPermission.unknown;
+    if (isClosed) return;
+    _checkpointReady = true;
+    emit(
+      BlindState(
+        phase: phase,
+        position: position,
+        userSide: side,
+        kind: OpponentKind.values.byName(setup['kind'] as String),
+        level: setup['level'] as int?,
+        sans: sans,
+        lastUser: lastUser,
+        lastOpponent: lastOpponent,
+        lastMove: lastMove,
+        view: BlindView.values.byName(saved['view'] as String),
+        showMoves: saved['showMoves'] as bool,
+        typing: saved['typing'] as bool,
+        proposal: proposal,
+        options: options,
+        illegal: saved['illegal'] as String?,
+        illegalShown: saved['illegalShown'] as String?,
+        heard: saved['heard'] as String?,
+        notUnderstood: saved['notUnderstood'] == true,
+        selected: saved['selected'] == null
+            ? null
+            : Square.fromName(saved['selected'] as String),
+        drawDeclines: saved['drawDeclines'] as int,
+        mic: mic,
+        white: _clock?.white ?? config?.white.initial,
+        black: _clock?.black ?? config?.black.initial,
+        running: _clock?.running,
+      ),
+    );
+    if (_clock?.running != null) {
+      _ticker = Timer.periodic(tick, (_) => _tickClock());
+    }
+    unawaited(
+      _continueRestored(
+        phase,
+        saved['speech'] as String?,
+        saved['speechStart'] as int? ?? 0,
+      ),
+    );
+  }
+
+  Future<void> _continueRestored(
+    BlindPhase phase,
+    String? speech,
+    int start,
+  ) async {
+    if (phase == BlindPhase.opponentThinking) {
+      await _opponentTurn();
+      return;
+    }
+    if (speech != null) await _say(speech, start: start);
+    if (isClosed) return;
+    if (phase == BlindPhase.opponentSpeaking) {
+      if (await _finishIfOver()) return;
+      emit(state.copyWith(phase: BlindPhase.playerTurn));
+    }
   }
 
   /// "Começar": a entrada versus aparece; a partida começa quando ela sai
   /// ([release]).
   Future<void> start() async {
     if (state.phase != BlindPhase.intro || state.held) return;
-    await _voice.stop();
+    await _stopSpeech();
     emit(state.copyWith(held: true));
   }
 
@@ -571,7 +809,7 @@ class BlindGameCubit extends Cubit<BlindState> {
   Future<void> reject() async {
     if (state.phase != BlindPhase.proposing) return;
     final san = state.proposal?.san ?? state.illegal;
-    await _voice.stop();
+    await _stopSpeech();
     emit(
       state.copyWith(
         phase: BlindPhase.playerTurn,
@@ -633,7 +871,7 @@ class BlindGameCubit extends Cubit<BlindState> {
       return;
     }
     // Quem vai falar é o jogador: a voz do app para.
-    await _voice.stop();
+    await _stopSpeech();
     _holding = true;
     _restarts = 0;
     _startedAt = _now();
@@ -1035,6 +1273,9 @@ class BlindGameCubit extends Cubit<BlindState> {
     emit(
       state.copyWith(
         position: played.position,
+        white: _clock?.white,
+        black: _clock?.black,
+        running: () => _clock?.running,
         sans: [...state.sans, played.san],
         lastUser: played.san,
         lastMove: move,
@@ -1071,6 +1312,9 @@ class BlindGameCubit extends Cubit<BlindState> {
     emit(
       state.copyWith(
         position: played.position,
+        white: _clock?.white,
+        black: _clock?.black,
+        running: () => _clock?.running,
         sans: [...state.sans, played.san],
         lastOpponent: played.san,
         lastMove: move,
@@ -1100,14 +1344,7 @@ class BlindGameCubit extends Cubit<BlindState> {
   void _pressClock() {
     final clock = _clock;
     if (clock == null) return;
-    final pressed = _clock = ClockEngine.press(clock, _now());
-    emit(
-      state.copyWith(
-        white: pressed.white,
-        black: pressed.black,
-        running: () => pressed.running,
-      ),
-    );
+    _clock = ClockEngine.press(clock, _now());
   }
 
   /// O tique do relógio: atualiza a tela e vê se o tempo de alguém acabou.
@@ -1115,12 +1352,14 @@ class BlindGameCubit extends Cubit<BlindState> {
     final clock = _clock;
     if (isClosed || clock == null || clock.running == null) return;
     final now = _now();
+    _updatingClock = true;
     emit(
       state.copyWith(
         white: ClockEngine.remaining(clock, Side.white, now),
         black: ClockEngine.remaining(clock, Side.black, now),
       ),
     );
+    _updatingClock = false;
     final flagged = ClockEngine.flagged(clock, now);
     if (flagged != null && state.phase != BlindPhase.finished) {
       unawaited(_input.cancel());
@@ -1235,23 +1474,138 @@ class BlindGameCubit extends Cubit<BlindState> {
     if (!isClosed) emit(state.copyWith(concluded: true, gameId: gameId));
   }
 
-  /// Fala [text] e espera terminar (o microfone fica fechado enquanto isso).
-  Future<void> _say(String text) async {
+  bool _background = false;
+  int _lifecycleGeneration = 0;
+  String? _speechText;
+  int _speechStart = 0;
+  int _speechBase = 0;
+  Completer<void>? _speechDone;
+  StreamSubscription<TtsEvent>? _speechEvents;
+  Timer? _speechTimer;
+  DateTime? _speechStartedAt;
+  Duration _speechRemaining = Duration.zero;
+  Future<void>? _stoppingSpeech;
+
+  Future<void> pauseForBackground() async {
+    _lifecycleGeneration++;
+    if (_background) return;
+    _background = true;
+    _ticker?.cancel();
+    final clock = _clock;
+    if (clock != null) {
+      _clock = ClockEngine.stop(clock, _now());
+      emit(
+        state.copyWith(
+          white: _clock!.white,
+          black: _clock!.black,
+          running: () => null,
+        ),
+      );
+    }
+    _speechTimer?.cancel();
+    final started = _speechStartedAt;
+    if (started != null) {
+      final spent = _now().difference(started);
+      if (!spent.isNegative) _speechRemaining -= spent;
+      _speechStartedAt = null;
+    }
+    // Install the stop future before persistence can yield to resumed.
+    final stopping = _stoppingSpeech = _pauseInputAndVoice();
+    _saveCheckpoint();
+    await stopping;
+    if (_checkpoints != null) await _checkpointWrites;
+  }
+
+  Future<void> _pauseInputAndVoice() async {
+    if (state.phase == BlindPhase.listening) await cancelListening();
+    await _voice.stop();
+  }
+
+  Future<void> resumeFromBackground() async {
+    final generation = ++_lifecycleGeneration;
+    if (!_background) return;
+    await _stoppingSpeech;
+    if (isClosed || !_background || generation != _lifecycleGeneration) return;
+    _background = false;
+    final clock = _clock;
+    if (clock != null && state.started && state.phase != BlindPhase.finished) {
+      _clock = ClockEngine.resume(
+        clock,
+        turn: state.position!.turn,
+        now: _now(),
+      );
+      emit(state.copyWith(running: () => _clock!.running));
+      _ticker = Timer.periodic(tick, (_) => _tickClock());
+    }
+    await _speakRemaining();
+  }
+
+  void _finishSpeech() {
+    _speechTimer?.cancel();
+    _speechStartedAt = null;
+    _speechText = null;
+    if (_checkpointReady && !isClosed) _saveCheckpoint();
+    final done = _speechDone;
+    _speechDone = null;
+    if (done != null && !done.isCompleted) done.complete();
+  }
+
+  Future<void> _stopSpeech() async {
+    _finishSpeech();
+    await _voice.stop();
+  }
+
+  Future<void> _speakRemaining() async {
+    final text = _speechText;
     final voice = _speaker;
-    if (voice == null) return;
-    final done = _voice.events
-        .firstWhere((e) => e is TtsFinished)
-        .timeout(speechTimeout, onTimeout: () => const TtsFinished());
-    await _voice.speak(text, voice);
-    await done;
+    if (text == null || voice == null || _background) return;
+    _speechBase = _speechStart.clamp(0, text.length);
+    _speechStartedAt = _now();
+    _speechTimer = Timer(
+      _speechRemaining.isNegative ? Duration.zero : _speechRemaining,
+      _finishSpeech,
+    );
+    await _voice.speak(text.substring(_speechBase), voice);
+  }
+
+  /// Fala e espera terminar; a pausa automática não conclui a sequência.
+  Future<void> _say(String text, {int start = 0}) async {
+    if (_speaker == null || isClosed) return;
+    _finishSpeech();
+    _speechText = text;
+    _speechStart = _speechBase = start.clamp(0, text.length);
+    _speechRemaining = speechTimeout;
+    _saveCheckpoint();
+    final done = _speechDone = Completer<void>();
+    _speechEvents ??= _voice.events.listen((event) {
+      if (_background || _speechText == null) return;
+      switch (event) {
+        case TtsProgress(:final start):
+          _speechStart = _speechBase + start;
+          _saveCheckpoint();
+        case TtsFinished():
+          _finishSpeech();
+        case TtsStarted():
+          break;
+      }
+    });
+    await _speakRemaining();
+    await done.future;
   }
 
   @override
   Future<void> close() async {
+    final clock = _clock;
+    if (clock != null) _clock = ClockEngine.stop(clock, _now());
+    _saveCheckpoint();
+    if (_checkpoints != null) await _checkpointWrites;
     _ticker?.cancel();
+    _checkpointReady = false;
+    _finishSpeech();
+    await _speechEvents?.cancel();
     await _listening?.cancel();
     await _input.cancel();
-    await _voice.stop();
+    await _stopSpeech();
     return super.close();
   }
 }

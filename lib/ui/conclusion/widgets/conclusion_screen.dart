@@ -78,59 +78,67 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
-    return Scaffold(
-      key: ConclusionKeys.screen,
-      appBar: AppBar(
-        leading: IconButton(
-          key: ConclusionKeys.close,
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          icon: const Icon(Icons.close_rounded),
-          onPressed: () => _close(context),
-        ),
-        actions: [
-          if (conclusion != null)
-            ShareIconButton(
-              key: ConclusionKeys.share,
-              boundary: _card,
-              // A análise só entra pronta: rodando, ela fica fora da imagem
-              // (nada de cartão pela metade).
-              extra: [if (state.review != null && !state.reviewing) _analysis],
-              tooltip: l10n.conclusionShare,
-              fileName: 'lucena-partida.png',
-              footer: 'Lucena · ${l10n.homeTagline}',
-              text: l10n.conclusionShareText(
-                _shareLine(l10n, conclusion),
-                AboutScreen.websiteFor(language).toString(),
-              ),
-            ),
-        ],
-      ),
-      body: !state.ready
-          ? const SkeletonList()
-          : conclusion == null
-          ? const SizedBox.shrink()
-          : Stack(
-              children: [
-                _Body(
-                  state: state,
-                  conclusion: conclusion,
-                  card: _card,
-                  analysis: _analysis,
+    return PopScope(
+      canPop: conclusion?.run?.nextChallenge == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _close(context);
+      },
+      child: Scaffold(
+        key: ConclusionKeys.screen,
+        appBar: AppBar(
+          leading: IconButton(
+            key: ConclusionKeys.close,
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () => _close(context),
+          ),
+          actions: [
+            if (conclusion != null)
+              ShareIconButton(
+                key: ConclusionKeys.share,
+                boundary: _card,
+                // A análise só entra pronta: rodando, ela fica fora da imagem
+                // (nada de cartão pela metade).
+                extra: [
+                  if (state.review != null && !state.reviewing) _analysis,
+                ],
+                tooltip: l10n.conclusionShare,
+                fileName: 'lucena-partida.png',
+                footer: 'Lucena · ${l10n.homeTagline}',
+                text: l10n.conclusionShareText(
+                  _shareLine(l10n, conclusion),
+                  AboutScreen.websiteFor(language).toString(),
                 ),
-                if (widget.fresh && conclusion.achievements.isNotEmpty)
-                  AchievementToasts(
-                    achievements: conclusion.achievements,
-                    characters: state.characters,
-                    onTap: (achievement) => showAchievementDetail(
-                      context,
-                      achievement: achievement,
-                      unlocked: conclusion.unlocked[achievement.id],
-                      characters: state.characters,
-                      speedrunId: conclusion.run?.speedrunId,
-                    ),
+              ),
+          ],
+        ),
+        body: !state.ready
+            ? const SkeletonList()
+            : conclusion == null
+            ? const SizedBox.shrink()
+            : Stack(
+                children: [
+                  _Body(
+                    state: state,
+                    conclusion: conclusion,
+                    card: _card,
+                    analysis: _analysis,
                   ),
-              ],
-            ),
+                  if (widget.fresh && conclusion.achievements.isNotEmpty)
+                    AchievementToasts(
+                      achievements: conclusion.achievements,
+                      characters: state.characters,
+                      onTap: (achievement) => showAchievementDetail(
+                        context,
+                        achievement: achievement,
+                        unlocked: conclusion.unlocked[achievement.id],
+                        characters: state.characters,
+                        speedrunId: conclusion.run?.speedrunId,
+                      ),
+                    ),
+                ],
+              ),
+      ),
     );
   }
 }
@@ -138,6 +146,20 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
 // Fechar: volta para onde o jogador estava antes da partida (a partida
 // foi trocada por esta tela), ou para o início se não há para onde voltar.
 void _close(BuildContext context) {
+  final run = context.read<ConclusionCubit>().state.conclusion?.run;
+  final next = run?.nextChallenge;
+  if (run != null && next != null) {
+    context.pushReplacement(
+      Routes.challengeGame(
+        next,
+        speedrunId: run.speedrunId,
+        attemptId: run.attemptId,
+        stage: run.nextStage,
+        userTime: run.nextTime,
+      ),
+    );
+    return;
+  }
   if (context.canPop()) {
     context.pop();
   } else {

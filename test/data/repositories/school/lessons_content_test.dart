@@ -266,6 +266,15 @@ void main() {
   test('o português e o inglês têm as mesmas chaves', () {
     expect(texts('pt').keys.toSet(), texts('en').keys.toSet());
   });
+
+  test('na Italiana, 4.c3 é aceito: prepara d4', () {
+    final develop = course
+        .lesson('tricks.principles')!
+        .steps
+        .whereType<MoveStep>()
+        .single;
+    expect(develop.line[2].accept, contains('c2c3'));
+  });
 }
 
 /// O tabuleiro com a peça na estrela [target], indo por qualquer caminho.

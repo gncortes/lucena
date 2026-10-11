@@ -118,7 +118,12 @@ class LessonPart {
 /// Um passo da aula. O Viktor fala em todos; o que muda é o que o aluno faz
 /// no tabuleiro.
 sealed class LessonStep {
-  const LessonStep({required this.id, required this.fen, this.ref});
+  const LessonStep({
+    required this.id,
+    required this.fen,
+    this.ref,
+    this.lines = const [],
+  });
 
   /// Único dentro da aula; as falas são procuradas por `<aula>.<passo>`.
   final String id;
@@ -132,6 +137,14 @@ sealed class LessonStep {
   /// aulas da escola.
   final String? ref;
 
+  /// As variantes citadas nas falas do passo que o JSON da aula descreve
+  /// (hoje, para marcar a linha errada).
+  final List<CitedLine> lines;
+
+  /// A variante de lances [ucis] é uma linha errada da aula.
+  bool wrongLine(List<String> ucis) =>
+      lines.any((line) => line.wrong && line.matches(ucis));
+
   /// O lado do aluno, que fica embaixo: o lado que joga no FEN.
   Side get side =>
       fen?.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
@@ -142,6 +155,7 @@ sealed class LessonStep {
 class TalkStep extends LessonStep {
   const TalkStep({
     required super.id,
+    super.lines,
     super.fen,
     super.ref,
     this.arrows = const [],
@@ -168,6 +182,7 @@ class TalkStep extends LessonStep {
 class StarsStep extends LessonStep {
   const StarsStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     required this.stars,
@@ -186,6 +201,7 @@ class StarsStep extends LessonStep {
 class TapStep extends LessonStep {
   const TapStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     required this.targets,
@@ -205,15 +221,51 @@ class TapStep extends LessonStep {
 class MoveStep extends LessonStep {
   const MoveStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     required this.line,
+    this.mistakes = const {},
   });
 
   final List<MoveTurn> line;
 
+  /// Os lances errados previstos (UCI), com a explicação e o passo a rever.
+  final Map<String, StepMistake> mistakes;
+
   @override
   String get fen => super.fen!;
+}
+
+/// Uma variante citada numa fala, descrita no JSON da aula: os lances
+/// (UCI) a partir da posição de onde ela sai e se é a linha errada.
+class CitedLine {
+  const CitedLine({required this.uci, this.wrong = false});
+
+  final List<String> uci;
+  final bool wrong;
+
+  /// A variante [ucis] é esta: uma começa com a outra (a fala pode citar só
+  /// o começo da linha, ou a linha inteira e mais).
+  bool matches(List<String> ucis) {
+    if (uci.isEmpty || ucis.isEmpty) return false;
+    final length = uci.length < ucis.length ? uci.length : ucis.length;
+    for (var i = 0; i < length; i++) {
+      if (uci[i] != ucis[i]) return false;
+    }
+    return true;
+  }
+}
+
+/// Um lance errado previsto num passo de lance, de jogar ou de pensar: a
+/// fala que explica o erro ([say], chave das falas da aula) e o passo da
+/// lição a rever ([review], id do passo; não vale no passo de pensar, em que
+/// a explicação já abre). Sem [say], a fala genérica do app.
+class StepMistake {
+  const StepMistake({this.say, this.review});
+
+  final String? say;
+  final String? review;
 }
 
 /// Uma vez do aluno num [MoveStep].
@@ -232,13 +284,19 @@ class MoveTurn {
 class PlayStep extends LessonStep {
   const PlayStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     this.goal = PlayGoal.mate,
     this.opponent = const OpponentRef(kind: OpponentKind.stockfish),
+    this.mistakes = const {},
   });
 
   final PlayGoal goal;
+
+  /// Os lances errados previstos (UCI), com a explicação e o passo a rever:
+  /// o lance não é jogado e o Viktor explica.
+  final Map<String, StepMistake> mistakes;
 
   /// Quem defende. Por padrão o Stockfish, a melhor defesa.
   final OpponentRef opponent;
@@ -254,6 +312,7 @@ class PlayStep extends LessonStep {
 class ThinkStep extends LessonStep {
   const ThinkStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     this.hints = 1,
@@ -261,6 +320,9 @@ class ThinkStep extends LessonStep {
     this.arrows = const [],
     this.marks = const [],
     this.view,
+    this.accept = const {},
+    this.refusals = const {},
+    this.mistakes = const {},
   });
 
   /// O que o Viktor pede ao aluno: o melhor plano ou a sequência que ganha.
@@ -282,6 +344,17 @@ class ThinkStep extends LessonStep {
   final List<(String, String)> arrows;
   final List<String> marks;
   final Side? view;
+
+  /// Lances que resolvem a posição estudada, além do lance principal.
+  final Set<String> accept;
+
+  /// Lances naturais que não resolvem a posição e o número da dica que
+  /// explica a variante.
+  final Map<String, int> refusals;
+
+  /// Os lances errados previstos (UCI): o lance abre a explicação, que
+  /// começa pela fala [StepMistake.say] (por que ele perde).
+  final Map<String, StepMistake> mistakes;
 
   @override
   String get fen => super.fen!;
@@ -307,14 +380,19 @@ enum ThinkAsk {
 class DemoStep extends LessonStep {
   const DemoStep({
     required super.id,
+    super.lines,
     required String super.fen,
     super.ref,
     required this.line,
     this.view,
+    this.wrong = false,
   });
 
   final List<DemoMove> line;
   final Side? view;
+
+  /// A demonstração mostra a linha errada (o que não fazer): a tela avisa.
+  final bool wrong;
 
   @override
   String get fen => super.fen!;
@@ -466,9 +544,12 @@ class LessonCheckpoint {
     this.moves = const [],
     this.open = true,
     this.part,
+    this.stepId,
     this.stepStartedAt,
+    this.stepPausedAt,
     this.hintsShown = 0,
     this.demoMove = 0,
+    this.demoPlaying = false,
   });
 
   final String lessonId;
@@ -478,15 +559,25 @@ class LessonCheckpoint {
   /// achada por `Lesson.locate`.
   final String? part;
 
+  /// Identifica o passo que abriu o cronômetro. Evita reutilizar a duração
+  /// de um checkpoint antigo se a posição desse passo mudou na aula.
+  final String? stepId;
+
   /// Quando o passo em andamento abriu: o cronômetro do passo (T60) continua
   /// daqui ao reabrir o app.
   final DateTime? stepStartedAt;
+
+  /// Quando o app foi para o segundo plano com o passo aberto (T65): o
+  /// cronômetro fica parado desde então. Nulo: o cronômetro anda.
+  final DateTime? stepPausedAt;
 
   /// Quantas dicas do passo `think` já apareceram.
   final int hintsShown;
 
   /// Quantos lances da demonstração já foram jogados.
   final int demoMove;
+
+  final bool demoPlaying;
 
   /// O índice do passo.
   final int step;
@@ -516,9 +607,12 @@ class LessonCheckpoint {
     moves: moves,
     open: open ?? this.open,
     part: part,
+    stepId: stepId,
     stepStartedAt: stepStartedAt,
+    stepPausedAt: stepPausedAt,
     hintsShown: hintsShown,
     demoMove: demoMove,
+    demoPlaying: demoPlaying,
   );
 
   Map<String, dynamic> toJson() => {
@@ -530,9 +624,12 @@ class LessonCheckpoint {
     'moves': moves,
     'open': open,
     'part': ?part,
+    'stepId': ?stepId,
     'stepStartedAt': ?stepStartedAt?.toUtc().toIso8601String(),
+    'stepPausedAt': ?stepPausedAt?.toUtc().toIso8601String(),
     if (hintsShown > 0) 'hintsShown': hintsShown,
     if (demoMove > 0) 'demoMove': demoMove,
+    'demoPlaying': demoPlaying,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -555,14 +652,12 @@ class LessonCheckpoint {
       ],
       open: json['open'] as bool? ?? false,
       part: json['part'] as String?,
-      // Checkpoint de antes da T60: só o passo de pensar guardava o começo.
-      stepStartedAt: DateTime.tryParse(
-        json['stepStartedAt'] as String? ??
-            json['thinkStartedAt'] as String? ??
-            '',
-      ),
+      stepId: json['stepId'] as String?,
+      stepStartedAt: DateTime.tryParse(json['stepStartedAt'] as String? ?? ''),
+      stepPausedAt: DateTime.tryParse(json['stepPausedAt'] as String? ?? ''),
       hintsShown: json['hintsShown'] as int? ?? 0,
       demoMove: json['demoMove'] as int? ?? 0,
+      demoPlaying: json['demoPlaying'] as bool? ?? false,
     );
   }
 
@@ -577,6 +672,7 @@ class LessonCheckpoint {
       _sameList(other.moves, moves) &&
       other.open == open &&
       other.part == part &&
+      other.stepId == stepId &&
       other.stepStartedAt == stepStartedAt &&
       other.hintsShown == hintsShown &&
       other.demoMove == demoMove;
@@ -591,6 +687,7 @@ class LessonCheckpoint {
     Object.hashAll(moves),
     open,
     part,
+    stepId,
     stepStartedAt,
     hintsShown,
     demoMove,

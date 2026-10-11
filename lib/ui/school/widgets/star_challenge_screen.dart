@@ -121,7 +121,14 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 ),
             ],
           ),
-          body: SafeArea(child: _body(context, state, boardSettings)),
+          body: BoardViewport(
+            usefulHeight: BoardViewport.usefulHeightOf(context),
+            child: SafeArea(
+              child: Builder(
+                builder: (context) => _body(context, state, boardSettings),
+              ),
+            ),
+          ),
           // O botão do momento no canto de baixo: "Vai!" no convite e "Jogar
           // de novo" no fim. Jogando, some (o Scaffold anima a saída).
           floatingActionButton: _fab(context, state),
@@ -179,14 +186,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     // ele, o convite ou o resultado; embaixo, o placar das estrelas, sempre
     // no mesmo lugar, e o botão flutuante no canto.
     return CenteredBoardLayout(
+      centerY: BoardViewport.centerYOf(context),
       gutter: AppSpacing.sm,
       reserveTop: 40,
       // O relógio fica colado na barra do app, como antes, e não no tabuleiro.
       topAlignment: Alignment.topCenter,
       reserveBottom: _reserveBottom(MediaQuery.textScalerOf(context)),
       bottomAlignment: Alignment.topCenter,
-      // Cada lado cuida de caber: em cima, o relógio fica e o convite ou o
-      // resultado diminuem; embaixo, o placar fica e o texto rola.
+      // O relógio fica; a instrução rola na fonte normal quando falta altura.
+      // O placar e o tabuleiro mantêm tamanho e posição entre os estados.
       shrinkSides: false,
       top: Column(
         mainAxisSize: MainAxisSize.min,
@@ -227,8 +235,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             ),
           ),
           Flexible(
-            child: ShrinkToFit(
-              alignment: Alignment.topCenter,
+            child: _AboveContent(
+              readable: state.phase == ChallengePhase.ready,
               child: AnimatedSwitcher(
                 duration: AppMotion.of(context).component,
                 switchInCurve: AppMotion.enter,
@@ -257,7 +265,11 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             key: StarChallengeKeys.board,
             size: box.maxWidth,
             controller: board,
-            settings: boardSettings.chessground,
+            settings: (state.level?.announcesSquare ?? false)
+                ? boardSettings
+                      .copyWith(coordinates: false, highlightLastMove: false)
+                      .chessground
+                : boardSettings.chessground,
             orientation: Side.white,
             shapes: {
               if (star != null && !(state.level?.announcesSquare ?? false))
@@ -403,6 +415,39 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       ),
     );
   }
+}
+
+/// A instrução preserva a fonte e sinaliza a rolagem sem ocupar mais altura.
+class _AboveContent extends StatefulWidget {
+  const _AboveContent({required this.readable, required this.child});
+
+  final bool readable;
+  final Widget child;
+
+  @override
+  State<_AboveContent> createState() => _AboveContentState();
+}
+
+class _AboveContentState extends State<_AboveContent> {
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.readable
+      ? Scrollbar(
+          controller: _scroll,
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            controller: _scroll,
+            child: widget.child,
+          ),
+        )
+      : ShrinkToFit(alignment: Alignment.topCenter, child: widget.child);
 }
 
 /// O convite: o nome do jogo e a regra, num cartão com a estrela de ouro.

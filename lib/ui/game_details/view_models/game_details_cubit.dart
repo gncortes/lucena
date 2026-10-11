@@ -9,6 +9,7 @@ import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/review/game_review_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
+import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
@@ -283,6 +284,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     this._analysis,
     this._reviews,
     this._lessons,
+    this._settings,
   }) : super(const GameDetailsState());
 
   /// Os orçamentos da engine por peso: 0 ao passar pelo lance; 1, 2 e 3 nas
@@ -321,7 +323,21 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   final GameReviewRepository? _reviews;
   final LessonRepository? _lessons;
 
-  Future<void> load({String language = 'en'}) async {
+  /// De onde vem a engine ligada ao abrir (a preferência gravada; a tela
+  /// grava a troca pelas preferências do app). Sem ela, começa desligada.
+  final SettingsRepository? _settings;
+
+  Future<void>? _loading;
+
+  /// A mesma tela pode receber abertura/retomada enquanto os repositórios
+  /// respondem. Compartilha o carregamento e preserva o job já iniciado.
+  Future<void> load({String language = 'en'}) {
+    if (isClosed || state.ready) return Future.value();
+    return _loading ??= _load(language: language)
+        .whenComplete(() => _loading = null);
+  }
+
+  Future<void> _load({required String language}) async {
     final attempt = (await _progress.attemptsById([_gameId]))[_gameId];
     final characters = await _characters?.characters() ?? const <Character>[];
     // O que a partida fez no rating: o ponto dela e o anterior.
@@ -360,9 +376,11 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         : null;
     final texts = await _lessons?.texts(language);
     final viktor = characters.where((c) => c.id == 'master').firstOrNull;
+    final engine = (await _settings?.load())?.evalBar ?? false;
     if (isClosed) return;
     emit(
       GameDetailsState(
+        engine: engine,
         review: review,
         live: {...?review?.moves.asMap()},
         ready: true,
@@ -376,8 +394,29 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         stories: texts?.all('review.stories') ?? const [],
       ),
     );
-    // O lance na tela já é avaliado (e aprofunda enquanto fica nele).
-    unawaited(_annotate(state.shownIndex));
+    // A engine ligada já abre com as linhas da posição no tabuleiro.
+    if (engine) unawaited(_analyseShown());
+    if (review == null) {
+      // Partida sem revisão guardada: a rápida começa sozinha, sem bloquear
+      // a abertura (o progresso aparece na folha). Com revisão guardada,
+      // nada é refeito.
+      unawaited(_reviewMissing());
+    } else {
+      unawaited(_annotate(state.shownIndex));
+    }
+  }
+
+  Future<void> _reviewMissing() async {
+    try {
+      await review(speed: ReviewSpeed.quick);
+    } catch (_) {
+      // O histórico continua utilizável quando a engine falha. O botão
+      // existente permite tentar de novo; retomadas não criam outro job.
+      _following = false;
+      if (!isClosed) {
+        emit(state.copyWith(reviewing: false, annotating: const {}));
+      }
+    }
   }
 
   /// Mostra a posição depois do lance [index] da partida (-1: a de início),
@@ -701,10 +740,14 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
 
   final _barWeights = <int, int>{};
 
-  /// Liga ou desliga a engine na posição do tabuleiro.
-  Future<void> toggleEngine() async {
-    emit(state.copyWith(engine: !state.engine));
-    if (state.engine) await _analyseShown();
+  /// Liga ou desliga a engine (e, com ela, a barra de avaliação) na
+  /// posição do tabuleiro.
+  Future<void> toggleEngine() => setEngine(on: !state.engine);
+
+  Future<void> setEngine({required bool on}) async {
+    if (state.engine == on) return;
+    emit(state.copyWith(engine: on));
+    if (on) await _analyseShown();
   }
 
   /// As linhas da engine na posição mostrada: primeiro rasas, na hora, e

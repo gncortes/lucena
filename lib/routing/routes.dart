@@ -25,6 +25,7 @@ abstract final class Routes {
   }) => Uri(
     path: blind,
     queryParameters: {
+      'new': 'true',
       'fen': fen,
       'user': user,
       'opponent': opponent,

@@ -43,6 +43,8 @@ class TtsService {
   // Pediu uma fala e ela ainda não começou: o "cancelado" que chega agora é
   // o da fala anterior, interrompida, e não conta.
   bool _awaitingStart = false;
+  int _speechGeneration = 0;
+  Future<void> _speechQueue = Future<void>.value();
 
   /// A velocidade normal para o flutter_tts.
   static const normalRate = 0.5;
@@ -125,21 +127,34 @@ class TtsService {
 
   /// Fala [text] com [voice], interrompendo a fala anterior. Não pede o foco
   /// do áudio: os sons do jogo continuam no mesmo volume.
-  Future<void> speak(String text, ResolvedVoice voice) async {
-    _setUp();
+  Future<void> speak(String text, ResolvedVoice voice) {
+    final generation = ++_speechGeneration;
     _awaitingStart = true;
+    return _speechQueue = _speechQueue.then(
+      (_) => _speak(text, voice, generation),
+    );
+  }
+
+  Future<void> _speak(String text, ResolvedVoice voice, int generation) async {
+    if (generation != _speechGeneration) return;
+    _setUp();
     try {
       await _tts.stop();
+      if (generation != _speechGeneration) return;
       await _tts.setVoice({
         'name': voice.voice.id,
         'locale': voice.voice.locale,
       });
+      if (generation != _speechGeneration) return;
       await _tts.setPitch(voice.pitch);
+      if (generation != _speechGeneration) return;
       // No flutter_tts a velocidade normal é 0,5 em todas as plataformas (no
       // Android ele dobra o valor antes de passar ao sistema).
       await _tts.setSpeechRate(voice.rate * normalRate);
+      if (generation != _speechGeneration) return;
       await _tts.speak(text);
     } on Object catch (error) {
+      if (generation != _speechGeneration) return;
       debugPrint('TtsService.speak: $error');
       _awaitingStart = false;
       _events.add(const TtsFinished());
@@ -149,6 +164,7 @@ class TtsService {
   /// Para de falar. O fim chega pelo sintetizador (o "cancelado"); quem
   /// pediu para parar já sabe que parou.
   Future<void> stop() async {
+    _speechGeneration++;
     _awaitingStart = false;
     try {
       await _tts.stop();

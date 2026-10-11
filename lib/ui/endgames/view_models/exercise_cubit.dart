@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
+import '../../../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
@@ -168,6 +169,7 @@ class ExerciseState {
     Emotion? emotion,
     int? earned,
     bool? explained,
+    DateTime? startedAt,
   }) => ExerciseState(
     ready: ready,
     missing: missing,
@@ -191,7 +193,7 @@ class ExerciseState {
     number: number,
     count: count,
     nextExercise: nextExercise,
-    startedAt: startedAt,
+    startedAt: startedAt ?? this.startedAt,
   );
 }
 
@@ -203,6 +205,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._lessons,
     required this._progress,
     required this._characters,
+    this._feedback,
     this._sounds,
     this._haptics,
     this._now = const SystemNow(),
@@ -210,18 +213,71 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }) : super(const ExerciseState());
 
   final Now _now;
+  DateTime? _pausedAt;
+  Completer<void>? _foreground;
+  bool _closing = false;
+
+  Future<void> _waitForForeground() async {
+    while (_pausedAt != null && !_closing && !isClosed) {
+      final foreground = _foreground;
+      if (foreground == null) return;
+      await foreground.future;
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _closing = true;
+    _foreground?.complete();
+    _foreground = null;
+    return super.close();
+  }
+
+  Future<void> pauseForBackground() async {
+    if (_pausedAt != null) return;
+    _pausedAt = _now();
+    _foreground = Completer<void>();
+    await _save();
+  }
+
+  Future<void> resumeFromBackground() async {
+    final pausedAt = _pausedAt;
+    if (pausedAt == null) return;
+    _pausedAt = null;
+    _foreground?.complete();
+    _foreground = null;
+    final startedAt = state.startedAt;
+    if (startedAt != null) {
+      emit(
+        state.copyWith(
+          startedAt: StepClock.resume(
+            startedAt: startedAt,
+            pausedAt: pausedAt,
+            now: _now(),
+          ),
+        ),
+      );
+    }
+    await _save();
+  }
 
   /// O cronômetro do exercício: quanto tempo passou desde que ele abriu (a
   /// tela lê a cada instante e o congela na resposta).
   Duration get elapsed {
     final startedAt = state.startedAt;
     if (startedAt == null) return Duration.zero;
-    return StepClock.elapsed(startedAt: startedAt, now: _now());
+    return StepClock.elapsed(startedAt: startedAt, now: _pausedAt ?? _now());
   }
 
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
   final CharacterRepository _characters;
+  final ExerciseFeedbackRepository? _feedback;
+  String _language = 'en';
+  int _loadRevision = 0;
+  // Ephemeral: a checkpoint resumes play without reviving an old error's text.
+  ({String lessonId, String exerciseId, int turn, String fen, String uci})?
+  _lastError;
 
   // Os sons do jogo; nulo: o exercício fica mudo.
   final GameSounds? _sounds;
@@ -235,7 +291,11 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   final _said = <String, int>{};
 
   Future<void> load(String lessonId, String exerciseId, String language) async {
+    final revision = ++_loadRevision;
+    _lastError = null;
+    _language = language;
     final trail = await _lessons.trail();
+    if (isClosed || revision != _loadRevision) return;
     final lesson = trail.lesson(lessonId);
     final exercise = lesson?.exercise(exerciseId);
     if (lesson == null || exercise == null || exercise.line.isEmpty) {
@@ -245,7 +305,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final texts = await _lessons.texts(language);
     final characters = await _characters.characters();
     final progress = await _progress.load();
-    if (isClosed) return;
+    if (isClosed || revision != _loadRevision) return;
     Character? viktor;
     for (final character in characters) {
       if (character.id == LessonCubit.viktorId) viktor = character;
@@ -274,8 +334,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      // O objetivo fica sob o tabuleiro; o Viktor só fala com erro, dica ou
-      // explicação pedida.
+      // O Viktor fala somente na dica ou depois de resolver.
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
@@ -284,7 +343,13 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         (other) => each.stars.containsKey(other.id),
       ),
       // Voltando ao exercício, o cronômetro continua de onde estava.
-      startedAt: (resumed ? saved.startedAt : null) ?? _now(),
+      startedAt: resumed && saved.startedAt != null && saved.pausedAt != null
+          ? StepClock.resume(
+              startedAt: saved.startedAt!,
+              pausedAt: saved.pausedAt!,
+              now: _now(),
+            )
+          : (resumed ? saved.startedAt : null) ?? _now(),
     );
     if (resumed) {
       opened = opened.copyWith(
@@ -292,10 +357,18 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         turn: saved.turn,
         mistakes: saved.mistakes,
         hints: saved.hints,
+        phase:
+            GameRules.fromFen(saved.fen ?? exercise.fen)?.turn !=
+                exercise.step.side
+            ? ExercisePhase.waiting
+            : ExercisePhase.active,
       );
     }
     emit(opened);
     await _save();
+    if (state.phase == ExercisePhase.waiting) {
+      unawaited(_finishReply(exercise.step));
+    }
   }
 
   /// O aluno moveu uma peça.
@@ -304,8 +377,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final exercise = state.exercise!;
     final step = exercise.step;
     final position = _position();
-    if (position == null) return;
+    if (position == null || GameRules.play(position, move) == null) return;
     if (!LessonRules.accepts(step, state.turn, move.uci)) {
+      _lastError = (
+        lessonId: state.lesson!.id,
+        exerciseId: exercise.id,
+        turn: state.turn + 1,
+        fen: state.fen!,
+        uci: move.uci,
+      );
       final mistakes = state.mistakes + 1;
       emit(
         state.copyWith(
@@ -322,6 +402,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
     final played = GameRules.play(position, move);
     if (played == null) return;
+    _lastError = null;
     unawaited(_sounds?.move(played.san));
     unawaited(_haptics?.move(played.san));
     final turn = step.line[state.turn];
@@ -345,16 +426,26 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         emotion: Emotion.happy,
       ),
     );
+    await _save();
+    await _finishReply(step);
+  }
+
+  Future<void> _finishReply(MoveStep step) async {
+    final position = _position();
+    if (position == null || state.turn >= step.line.length) return;
+    final turn = step.line[state.turn];
     final reply = Move.parse(turn.reply ?? '');
-    var after = played.position;
+    var after = position;
+    final fen = state.fen;
     if (reply != null) {
       await Future<void>.delayed(replyDelay);
-      if (isClosed) return;
+      await _waitForForeground();
+      if (isClosed || _closing || state.fen != fen) return;
       final answered = GameRules.play(after, reply);
       if (answered == null) {
         // A resposta combinada não cabe no tabuleiro (aula com dado
         // inconsistente): a linha acaba aqui, com o exercício resolvido.
-        await _solve(after.fen, move);
+        await _solve(after.fen, state.lastMove);
         return;
       }
       unawaited(_sounds?.move(answered.san));
@@ -363,7 +454,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     emit(
       state.copyWith(
         fen: after.fen,
-        lastMove: reply ?? move,
+        lastMove: reply ?? state.lastMove,
         turn: state.turn + 1,
         phase: ExercisePhase.active,
       ),
@@ -377,6 +468,34 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (!state.interactive) return;
     final step = state.exercise!.step;
     final accepted = step.line[state.turn].accept.first;
+    final error = _lastError;
+    final revision = _loadRevision;
+    final fen = state.fen;
+    final turn = state.turn;
+    String? feedback;
+    if (error != null && _feedback != null) {
+      try {
+        feedback = await _feedback.find(
+          lessonId: error.lessonId,
+          exerciseId: error.exerciseId,
+          kind: 'exercise',
+          turn: error.turn,
+          fen: error.fen,
+          uci: error.uci,
+          language: _language,
+        );
+      } catch (_) {
+        // Existing conceptual hint stays available if optional data fails.
+      }
+    }
+    if (isClosed ||
+        revision != _loadRevision ||
+        !state.interactive ||
+        fen != state.fen ||
+        turn != state.turn ||
+        error != _lastError) {
+      return;
+    }
     emit(
       state.copyWith(
         hint: Move.parse(accepted),
@@ -385,7 +504,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         // A ajuda traz o enunciado e a pista (e a seta).
         speech: [
           ?_statement(),
-          ?(_hintText() ?? _pick('coach.hint')),
+          ?(feedback ?? _hintText() ?? _pick('coach.hint')),
         ].join(' '),
         emotion: Emotion.focused,
       ),
@@ -408,7 +527,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _save(open: false);
   }
 
-  Future<void> _solve(String fen, Move move) async {
+  Future<void> _solve(String fen, Move? move) async {
+    _lastError = null;
     unawaited(_haptics?.play(HapticEvent.success));
     final lesson = state.lesson!;
     final exercise = state.exercise!;
@@ -472,6 +592,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
                 hints: state.hints,
                 open: open,
                 startedAt: state.startedAt,
+                pausedAt: _pausedAt,
               ),
             ),
       ),

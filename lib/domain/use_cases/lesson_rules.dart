@@ -89,6 +89,10 @@ abstract final class LessonRules {
     return step.line[turn].accept.contains(uci);
   }
 
+  /// O lance [uci] resolve um [ThinkStep] com respostas verificadas.
+  static bool acceptsThink(ThinkStep step, String uci) =>
+      step.accept.contains(uci);
+
   /// O lance aceito [uci] na vez [turn] encerra a linha de [step]: é a última
   /// vez, ou é outro lance aceito que não o ensinado (o primeiro). A resposta
   /// combinada e as vezes seguintes valem só para o lance ensinado; depois de

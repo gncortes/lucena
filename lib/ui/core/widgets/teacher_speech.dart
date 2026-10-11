@@ -1,6 +1,10 @@
 import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/material.dart';
+
+import 'speech_text_tap_notification.dart';
+import 'viktor_sheet.dart';
+
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,13 +38,20 @@ enum SpeechContext {
 /// O professor falando com o aluno: o retrato com a emoção e o balão, que
 /// troca de fala com uma transição suave. O desenho vem do [speechContext],
 /// sem valor padrão: quem usa diz se é ensino ou partida.
+/// Que pedaço da fala desenhar: tudo, só o cabeçalho (retrato, nome e os
+/// botões de voz) ou só o balão. A tela pode separar os dois (o cabeçalho
+/// acima do tabuleiro e o balão na folha); quem fala sozinho é o balão.
+enum TeacherSpeechPart { all, header, bubble }
+
 class TeacherSpeech extends StatelessWidget {
   const TeacherSpeech({
+    this.part = TeacherSpeechPart.all,
     required this.teacher,
     required this.text,
     required this.speechContext,
     this.emotion = Emotion.calm,
     this.avatarSize = 64,
+    this.compactInSheet = false,
     this.bubbleKey,
     this.typed = false,
     this.speaks = false,
@@ -53,6 +64,9 @@ class TeacherSpeech extends StatelessWidget {
   });
 
   final Character teacher;
+
+  /// Ver [TeacherSpeechPart].
+  final TeacherSpeechPart part;
 
   /// Com tabuleiro na tela: as casas e os lances da fala ficam tocáveis e
   /// chamam [onLink] (a tela mostra ou tira do tabuleiro). Nulo: texto
@@ -80,6 +94,12 @@ class TeacherSpeech extends StatelessWidget {
   final Emotion emotion;
   final double avatarSize;
 
+  /// Na folha recolhida, retrato e texto ficam lado a lado. O cabeçalho
+  /// completo reaparece no modal; fonte, fala e links são preservados.
+  final bool compactInSheet;
+  bool _compact(BuildContext context) =>
+      compactInSheet && !ViktorSheet.expandedOf(context);
+
   final Key? bubbleKey;
 
   /// Ensino (balão embaixo do retrato) ou partida (balão ao lado).
@@ -101,8 +121,19 @@ class TeacherSpeech extends StatelessWidget {
     final avatar = CharacterAvatar(
       character: teacher,
       emotion: emotion,
-      size: avatarSize,
+      size: _compact(context) ? 32 : avatarSize,
     );
+    if (part == TeacherSpeechPart.header) {
+      // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz
+      // sozinho é o balão (sem repetir a voz).
+      return Row(
+        children: [
+          avatar,
+          const SizedBox(width: 10),
+          Expanded(child: _header(context)),
+        ],
+      );
+    }
     final speech = speechOf(context);
     final text = _plain;
     final content = _RevealOnChange(
@@ -246,6 +277,17 @@ class TeacherSpeech extends StatelessWidget {
   }
 
   Widget _layout(BuildContext context, Widget avatar) {
+    if (part == TeacherSpeechPart.bubble) return _closable(context);
+    if (_compact(context)) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          avatar,
+          const SizedBox(width: 10),
+          Expanded(child: _closable(context)),
+        ],
+      );
+    }
     if (_stacked) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -525,7 +567,9 @@ class TeacherSpeech extends StatelessWidget {
         ),
       ),
     );
-    if (!_stacked) return bubble;
+    if (!_stacked || _compact(context) || part == TeacherSpeechPart.bubble) {
+      return bubble;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -738,6 +782,7 @@ class _TypedTextState extends State<_TypedText>
               return;
             }
             _controller.value = 1;
+            SpeechTextTapNotification().dispatch(context);
           },
           child: Builder(
             builder: (context) {
@@ -811,7 +856,9 @@ class _LinkTapper extends StatelessWidget {
             textScaler: MediaQuery.textScalerOf(context),
             locale: Localizations.maybeLocaleOf(context),
           )..layout(maxWidth: constraints.maxWidth);
-          _tapNear(painter, details.localPosition, onTapAt);
+          if (!_tapNear(painter, details.localPosition, onTapAt)) {
+            SpeechTextTapNotification().dispatch(context);
+          }
           painter.dispose();
         },
         child: text,

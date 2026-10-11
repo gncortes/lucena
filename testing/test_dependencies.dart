@@ -1,3 +1,5 @@
+import 'fakes/fake_blind_checkpoint_repository.dart';
+
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
@@ -155,6 +157,7 @@ Dependencies testDependencies({
     drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),
     voiceRepository: voiceRepository ?? FakeVoiceRepository(),
     speechInputRepository: FakeSpeechInputRepository(),
+    blindCheckpointRepository: FakeBlindCheckpointRepository(),
     blindLogRepository: FakeBlindLogRepository(),
     wikiLinksRepository: FakeWikiLinksRepository(),
     languages: languages ?? AppLanguage.selectable,

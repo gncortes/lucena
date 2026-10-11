@@ -3,6 +3,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/ui/placement/view_models/roadmap_loader.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
@@ -10,6 +12,9 @@ import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_home_layout_repository.dart';
+import '../../../testing/fakes/fake_placement_repository.dart';
+import '../../domain/placement_fixtures.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -31,7 +36,11 @@ void main() {
     endgames = FakeEndgameProgressRepository();
   });
 
-  HomeCubit cubit({Onboarding onboarding = const Onboarding(done: true)}) {
+  HomeCubit cubit({
+    Onboarding onboarding = const Onboarding(done: true),
+    FakeHomeLayoutRepository? layout,
+    FakePlacementRepository? placement,
+  }) {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
       progress: progress,
@@ -45,10 +54,130 @@ void main() {
       ),
       endgameLessons: FakeEndgameLessonRepository(),
       endgameProgress: endgames,
+      homeLayout: layout,
+      placement: placement,
     );
     addTearDown(cubit.close);
     return cubit;
   }
+
+  FakeHomeLayoutRepository priority(HomePath first) => FakeHomeLayoutRepository(
+    layout: HomeLayout(
+      order: [
+        first,
+        for (final path in HomePath.values)
+          if (path != first) path,
+      ],
+      visible: {
+        if (first != HomePath.forYou) HomePath.endgames,
+        HomePath.journey,
+        if (first == HomePath.forYou) HomePath.forYou,
+      },
+      custom: true,
+    ),
+  );
+  FakePlacementRepository placed() => FakePlacementRepository(
+    skills: smallSkills(),
+    saveResultValue: resultWith({'rook.lucena': gap, 'rook.philidor': gap}),
+  );
+
+  test('C9: finais prioritários mostram a mesma próxima aula do roteiro, não iniciada', () async {
+    final placement = placed();
+    final home = cubit(
+      layout: priority(HomePath.endgames),
+      placement: placement,
+    );
+    await home.load();
+    final roadmap = await RoadmapLoader(
+      placement: placement,
+      school: FakeLessonRepository(),
+      schoolProgress: FakeSchoolProgressRepository(),
+      endgames: FakeEndgameLessonRepository(),
+      endgameProgress: endgames,
+    ).load();
+    final expected = roadmap!.steps.firstWhere(
+      (step) => !step.school && !step.soon,
+    );
+    expect(home.state.continuePath, HomePath.endgames);
+    expect(home.state.endgame!.lessonId, expected.lessonId);
+    expect(home.state.endgame!.lessonId, 'rook.lucena');
+    expect(home.state.endgame!.recommended, isTrue);
+    expect(home.state.endgame!.lessonOpen, isFalse);
+    expect(home.state.endgame!.openExerciseId, isNull);
+    expect(endgames.saved.lessons, isEmpty);
+  });
+
+  test('C9: conclusão avança a recomendação usando progresso atual', () async {
+    final home = cubit(
+      layout: priority(HomePath.endgames),
+      placement: placed(),
+    );
+    await home.load();
+    expect(home.state.endgame!.lessonId, 'rook.lucena');
+    await endgames.save(
+      const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            lessonDone: true,
+            stars: {'e01': 1, 'e02': 2, 'e03': 3},
+          ),
+        },
+      ),
+    );
+    await home.load();
+    expect(home.state.endgame!.lessonId, 'rook.philidor');
+    expect(home.state.endgame!.recommended, isTrue);
+  });
+
+  test(
+    'C9: prioridade Jornada preserva destaque da Jornada mesmo com teste',
+    () async {
+      final home = cubit(
+        layout: priority(HomePath.journey),
+        placement: placed(),
+      );
+      await home.load();
+      expect(home.state.endgame, isNull);
+      expect(home.state.continuePath, HomePath.journey);
+    },
+  );
+
+  test('C9: sem teste mantém fallback Jornada', () async {
+    final home = cubit(
+      layout: priority(HomePath.endgames),
+      placement: FakePlacementRepository(),
+    );
+    await home.load();
+    expect(home.state.endgame, isNull);
+    expect(home.state.continuePath, HomePath.journey);
+  });
+
+  test('C9: Para você também abre a recomendação do roteiro', () async {
+    final home = cubit(layout: priority(HomePath.forYou), placement: placed());
+    await home.load();
+    expect(home.state.endgame!.lessonId, 'rook.lucena');
+    expect(home.state.continuePath, HomePath.forYou);
+  });
+
+  test(
+    'C9: aula em andamento continua no ponto salvo antes da recomendação',
+    () async {
+      endgames = FakeEndgameProgressRepository(
+        const EndgameProgress(
+          ongoing: LessonCheckpoint(lessonId: 'rook.philidor', step: 0),
+        ),
+      );
+      final home = cubit(
+        layout: priority(HomePath.endgames),
+        placement: placed(),
+      );
+      await home.load();
+      expect(home.state.endgame!.lessonId, 'rook.philidor');
+      expect(home.state.endgame!.recommended, isFalse);
+      expect(home.state.endgame!.lessonOpen, isTrue);
+      expect(home.state.endgame!.step, 1);
+    },
+  );
 
   test('onde estou, contra quem e o próximo desafio', () async {
     final home = cubit();

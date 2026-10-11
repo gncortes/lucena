@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/all_modes/widgets/all_modes_screen.dart';
@@ -10,6 +11,47 @@ import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
+  for (final checkpoint in [false, true]) {
+    testWidgets(
+      'blind entry resumes only when checkpoint exists ($checkpoint)',
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 8000);
+        tester.view.devicePixelRatio = 2.625;
+        addTearDown(tester.view.reset);
+        final router = GoRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) =>
+                  AllModesScreen(hasBlindCheckpoint: () async => checkpoint),
+            ),
+            GoRoute(
+              path: '/blind',
+              builder: (context, state) =>
+                  const Scaffold(body: Text('resume blind')),
+            ),
+            GoRoute(
+              path: '/catalog',
+              builder: (context, state) =>
+                  const Scaffold(body: Text('new blind')),
+            ),
+          ],
+        );
+        addTearDown(router.dispose);
+        await tester.pumpWidget(
+          TestApp(router: router, child: const SizedBox.shrink()),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AllModesKeys.item('blind')));
+        await tester.pumpAndSettle();
+        expect(
+          find.text(checkpoint ? 'resume blind' : 'new blind'),
+          findsOneWidget,
+        );
+      },
+    );
+  }
+
   testWidgets('todos os modos num lugar só', (tester) async {
     tester.view.physicalSize = const Size(1080, 8000);
     tester.view.devicePixelRatio = 2.625;

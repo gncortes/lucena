@@ -31,6 +31,42 @@ void main() {
     },
   );
 
+  test(
+    'escolha explícita e replay persistem, e escolha pode ser limpa',
+    () async {
+      final repository = LocalOnboardingRepository(PreferencesService());
+      const choice = Onboarding(
+        done: true,
+        step: 12,
+        selectedRating: 1530,
+        byHand: false,
+        inProgress: true,
+      );
+      await repository.save(choice);
+      expect(
+        await LocalOnboardingRepository(PreferencesService()).load(),
+        choice,
+      );
+      await repository.save(
+        choice.copyWith(selectedRating: () => null, byHand: true),
+      );
+      final loaded = await repository.load();
+      expect(loaded.selectedRating, isNull);
+      expect(loaded.byHand, isTrue);
+      expect(loaded.done, isTrue);
+      expect(loaded.inProgress, isTrue);
+    },
+  );
+
+  test('done legado não exige novo onboarding nem infere escolha', () async {
+    final preferences = PreferencesService();
+    await preferences.setBool('tour.done', value: true);
+    final loaded = await LocalOnboardingRepository(preferences).load();
+    expect(loaded.done, isTrue);
+    expect(loaded.selectedRating, isNull);
+    expect(loaded.inProgress, isFalse);
+  });
+
   test('a memória do personagem volta com a partida', () async {
     final snapshot = TalkSnapshot(
       gameStartedAt: DateTime.utc(2026, 10, 4, 12),

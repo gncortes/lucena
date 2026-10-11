@@ -41,4 +41,22 @@ void main() {
       expect(Reference.resolve(references, 'nada#3'), isNull);
     });
   });
+
+  group('Reference.isLearnerFacing', () {
+    test('oculta fontes de produção e mantém referências do aluno', () {
+      const archive = Reference(
+        id: 'pgnMentor',
+        kind: 'web',
+        fields: {'url': 'https://www.pgnmentor.com/players/Fischer.zip'},
+      );
+      const page = Reference(
+        id: 'game',
+        kind: 'game',
+        fields: {'url': 'https://www.chessgames.com/perl/chessgame?gid=1'},
+      );
+
+      expect(archive.isLearnerFacing, isFalse);
+      expect(page.isLearnerFacing, isTrue);
+    });
+  });
 }

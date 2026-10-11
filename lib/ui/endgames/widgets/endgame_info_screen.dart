@@ -86,7 +86,9 @@ class EndgameInfoScreen extends StatelessWidget {
                     ),
                   ),
                 _header(theme, l10n.endgameInfoReferences),
-                for (final reference in lesson.references)
+                for (final reference in lesson.references.where(
+                  (reference) => reference.isLearnerFacing,
+                ))
                   _ReferenceTile(reference: reference),
               ],
             ),
@@ -109,8 +111,8 @@ class _ReferenceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
     final url = reference.url;
     final text = switch (reference.kind) {
       'book' => l10n.endgameReferenceBook(
@@ -145,20 +147,33 @@ class _ReferenceTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: colors.onSurfaceVariant),
       title: Text(text),
-      subtitle: url == null
+      subtitle: uri == null
           ? null
-          : Text(
-              url,
-              style: TextStyle(
-                color: colors.primary,
-                decoration: TextDecoration.underline,
-                decorationColor: colors.primary,
+          : Chip(
+              key: EndgameInfoKeys.referenceSource(reference.id),
+              avatar: Icon(
+                _sourceIcon(uri),
+                size: 16,
+                color: colors.onSecondaryContainer,
               ),
+              label: Text(ExternalPageSheet.domainOf(uri)),
+              visualDensity: VisualDensity.compact,
             ),
       trailing: uri == null
           ? null
           : Icon(Icons.open_in_new, size: 18, color: colors.primary),
       onTap: uri == null ? null : () => showExternalPage(context, uri),
     );
+  }
+
+  IconData _sourceIcon(Uri uri) {
+    final host = uri.host.toLowerCase();
+    if (host == 'lichess.org' || host.endsWith('.lichess.org')) {
+      return Icons.sports_esports_outlined;
+    }
+    if (host == 'wikipedia.org' || host.endsWith('.wikipedia.org')) {
+      return Icons.menu_book_outlined;
+    }
+    return Icons.open_in_new;
   }
 }

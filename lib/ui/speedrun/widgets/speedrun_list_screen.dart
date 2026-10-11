@@ -59,7 +59,7 @@ class SpeedrunListScreen extends StatelessWidget {
             key: SpeedrunKeys.help,
             icon: const Icon(Icons.info_outline),
             tooltip: l10n.speedrunHelp,
-            onPressed: () => _showHelp(context, marathon: marathon),
+            onPressed: () => _showHelp(context, state),
           ),
         ],
       ),
@@ -133,55 +133,116 @@ class SpeedrunListScreen extends StatelessWidget {
     );
   }
 
-  /// O ⓘ: o que o modo é e o resto da explicação (antes a frase do modo
-  /// ficava fixa no alto da lista e empurrava os cartões para baixo).
-  void _showHelp(BuildContext context, {required bool marathon}) {
+  /// Regras dos dois modos e exemplos do catálogo/ritmo realmente carregados.
+  void _showHelp(BuildContext context, SpeedrunState state) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final pace = state.marathonMode ? state.marathonPace : state.pace;
+    final initial = pace.initial < const Duration(minutes: 1)
+        ? l10n.paceSeconds(pace.initial.inSeconds)
+        : l10n.setupPaceCustomMinutes(pace.initial.inMinutes);
+    Widget section(IconData icon, String title, Widget body) => Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 22, color: theme.colorScheme.primary),
+              const SizedBox(width: 10),
+              Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          body,
+        ],
+      ),
+    );
+    final levels = <Widget>[];
+    for (final (category, label) in [
+      (SpeedrunCategory.beginner, l10n.profileLevelBeginner),
+      (SpeedrunCategory.intermediate, l10n.profileLevelIntermediate),
+      (SpeedrunCategory.advanced, l10n.profileLevelAdvanced),
+    ]) {
+      // Os mesmos agrupamentos e nomes da lista: não manter outro catálogo
+      // nem presumir que todo tipo de série enfrenta os mesmos adversários.
+      final names = <String>{
+        for (final summary in state.all ?? <SpeedrunSummary>[])
+          if (SpeedrunCategories.of(summary.speedrun) == category)
+            speedrunName(l10n, state.characters, summary.speedrun),
+      };
+      if (names.isEmpty) continue;
+      levels.addAll([
+        const SizedBox(height: 8),
+        Text(label, style: theme.textTheme.titleSmall),
+        Text(names.join(', '), style: theme.textTheme.bodyLarge),
+      ]);
+    }
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.speedrunTitle,
-                style: theme.textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                marathon
-                    ? context.l10n.marathonIntro
-                    : context.l10n.speedrunListIntro,
-                key: SpeedrunKeys.intro,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.85,
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              0,
+              24,
+              24 + MediaQuery.paddingOf(context).bottom,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l10n.speedrunHelp, style: theme.textTheme.headlineSmall),
+                section(
+                  Icons.timer_outlined,
+                  l10n.speedrunModeClassic,
+                  Text(
+                    l10n.speedrunHelpClassic,
+                    key: SpeedrunKeys.intro,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                context.l10n.speedrunIntro,
-                key: SpeedrunKeys.helpText,
-                style: theme.textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              // O que é "15+10", para quem nunca jogou com relógio.
-              Text(
-                context.l10n.speedrunPaceHelp,
-                key: SpeedrunKeys.paceHelp,
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                context.l10n.speedrunPauseHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                section(
+                  Icons.hourglass_bottom,
+                  l10n.marathonSection,
+                  Text(
+                    l10n.speedrunHelpMarathon,
+                    key: SpeedrunKeys.helpText,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
-              ),
-            ],
+                section(
+                  Icons.av_timer_outlined,
+                  l10n.speedrunPaceLine(paceShort(l10n, pace)),
+                  Text(
+                    l10n.speedrunHelpClock(initial, pace.increment.inSeconds),
+                    key: SpeedrunKeys.paceHelp,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+                section(
+                  Icons.school_outlined,
+                  l10n.speedrunHelpLevels,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: levels,
+                  ),
+                ),
+                section(
+                  Icons.pause_circle_outline,
+                  l10n.lessonDemoPause,
+                  Text(
+                    l10n.speedrunHelpPause,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

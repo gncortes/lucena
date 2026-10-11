@@ -45,9 +45,8 @@ abstract final class GameExport {
   }
 
   /// A posição [fen] no tabuleiro de análise do Lichess.
-  static Uri lichess(String fen) => Uri.parse(
-    'https://lichess.org/analysis/standard/${fen.replaceAll(' ', '_')}',
-  );
+  static Uri lichess(String fen) =>
+      Uri.parse('https://lichess.org/analysis/${fen.replaceAll(' ', '_')}');
 
   /// A posição [fen] na análise do chess.com.
   static Uri chessCom(String fen) =>

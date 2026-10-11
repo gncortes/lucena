@@ -73,7 +73,9 @@ class SpeedrunScreen extends StatelessWidget {
                   label: Text(l10n.speedrunContinueGame),
                   onPressed: () async {
                     final cubit = context.read<SpeedrunCubit>();
-                    await context.push(Routes.freeBoard);
+                    final route = await cubit.resume();
+                    if (route == null || !context.mounted) return;
+                    await context.push(route);
                     if (context.mounted) {
                       await cubit.load(speedrunId: speedrun.id);
                     }

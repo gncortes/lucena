@@ -228,9 +228,9 @@ class _SchoolCard extends StatelessWidget {
   }
 }
 
-/// A aula de final em andamento: o título, onde parou e "continuar", que
-/// volta direto ao exercício ou à lição aberta. Com um exercício da vez, a
-/// miniatura dele toma o lugar do retrato e voa até o tabuleiro.
+/// A aula de final em andamento ou a próxima recomendada pelo roteiro.
+/// Retoma o ponto salvo ou abre a apresentação da aula ainda não iniciada.
+/// Com um exercício da vez, sua miniatura toma o lugar do retrato.
 class _EndgameCard extends StatelessWidget {
   const _EndgameCard({required this.endgame});
 
@@ -293,7 +293,7 @@ class _EndgameCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.homeEndgames,
+                    endgame.recommended ? l10n.homeForYou : l10n.homeEndgames,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: colors.onSecondaryContainer,
                     ),
@@ -306,23 +306,35 @@ class _EndgameCard extends StatelessWidget {
                       color: colors.onSecondaryContainer,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _where(l10n),
-                    key: HomeKeys.endgameWhere,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSecondaryContainer,
+                  if (!endgame.recommended) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _where(l10n),
+                      key: HomeKeys.endgameWhere,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSecondaryContainer,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            FilledButton(
-              key: HomeKeys.endgameContinue,
-              // A posição vai junto, para a miniatura voar até o tabuleiro.
-              onPressed: () => context.push(_route, extra: fen),
-              child: Text(l10n.homeContinue),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: endgame.recommended ? 140 : double.infinity,
+              ),
+              child: FilledButton(
+                key: HomeKeys.endgameContinue,
+                // A posição vai junto, para a miniatura voar até o tabuleiro.
+                onPressed: () => context.push(_route, extra: fen),
+                child: Text(
+                  endgame.recommended
+                      ? l10n.endgameLessonStart
+                      : l10n.homeContinue,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ],
         ),

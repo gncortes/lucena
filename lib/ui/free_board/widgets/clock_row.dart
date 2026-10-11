@@ -10,6 +10,7 @@ import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/free_board_state.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/widgets/game_clock.dart';
+import '../../core/widgets/character_avatar.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
 /// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro. Sem
@@ -74,6 +75,14 @@ class ClockRow extends StatelessWidget {
                   ? l10n.freeBoardWhiteToMove
                   : l10n.freeBoardBlackToMove)
             : null,
+        portrait: character == null
+            ? null
+            : CharacterAvatar(
+                key: FreeBoardKeys.characterAvatar(talk!.emotion),
+                character: character,
+                emotion: talk!.isEngine ? null : talk!.emotion,
+                size: 44,
+              ),
       );
     }
 
@@ -81,6 +90,7 @@ class ClockRow extends StatelessWidget {
       players: [for (final side in sides) entry(side)],
       board: board,
       enterClocks: true,
+      compactClocks: sides.length == 2,
     );
   }
 }

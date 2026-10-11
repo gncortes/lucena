@@ -6,6 +6,50 @@ import 'package:flutter/rendering.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 
+/// Referência explícita do centro da tela de jogo. Deve envolver o SafeArea
+/// do body; [usefulHeight] é medido fora do Scaffold, antes de ele remover
+/// os insets da barra de status. Nenhuma origem de RenderBox é presumida.
+class BoardViewport extends StatelessWidget {
+  const BoardViewport({
+    required this.usefulHeight,
+    required this.child,
+    super.key,
+  });
+
+  final double usefulHeight;
+  final Widget child;
+
+  static double usefulHeightOf(BuildContext context) =>
+      MediaQuery.sizeOf(context).height -
+      MediaQuery.viewPaddingOf(context).vertical;
+
+  /// Centro nas coordenadas do body seguro. Para uma área que começa abaixo
+  /// de uma faixa local, subtraia somente a altura medida dessa faixa.
+  static double centerYOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()!.centerY;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) => _BoardViewportData(
+      centerY:
+          box.maxHeight -
+          MediaQuery.paddingOf(context).bottom -
+          usefulHeight / 2,
+      child: child,
+    ),
+  );
+}
+
+class _BoardViewportData extends InheritedWidget {
+  const _BoardViewportData({required this.centerY, required super.child});
+
+  final double centerY;
+
+  @override
+  bool updateShouldNotify(_BoardViewportData oldWidget) =>
+      oldWidget.centerY != centerY;
+}
+
 /// A conta do tabuleiro centralizado na vertical (T64): o centro dele fica
 /// no centro do espaço útil, entre o fim da barra do app (o topo da área) e
 /// o rodapé ([footer], a barra de botões de baixo; sem rodapé, o fim da área
@@ -128,6 +172,8 @@ class CenteredBoardLayout extends StatelessWidget {
     this.bottomAlignment = Alignment.topCenter,
     this.shrinkSides = true,
     this.aboveInset = 0,
+    this.centerY,
+    this.minBoardSide,
     super.key,
   });
 
@@ -156,6 +202,14 @@ class CenteredBoardLayout extends StatelessWidget {
   /// o tabuleiro sobe metade disso.
   final double aboveInset;
 
+  /// Centro vertical explícito, nas coordenadas desta área. Sem valor,
+  /// mantém o centro entre o topo da área e o início do rodapé.
+  final double? centerY;
+
+  /// Se definido, permite rolar quando o centro pedido não comporta um
+  /// tabuleiro deste lado e o conteúdo superior na altura natural.
+  final double? minBoardSide;
+
   @override
   Widget build(BuildContext context) {
     Widget? side(Widget? child, Alignment alignment) => child == null
@@ -163,7 +217,7 @@ class CenteredBoardLayout extends StatelessWidget {
         : shrinkSides
         ? ShrinkToFit(alignment: alignment, child: child)
         : child;
-    return _CenteredBoard(
+    Widget layout({double? viewportHeight}) => _CenteredBoard(
       top: side(top, topAlignment),
       board: board,
       bottom: side(bottom, bottomAlignment),
@@ -177,6 +231,14 @@ class CenteredBoardLayout extends StatelessWidget {
       topAlignment: topAlignment,
       bottomAlignment: bottomAlignment,
       aboveInset: aboveInset,
+      centerY: centerY,
+      minBoardSide: minBoardSide,
+      viewportHeight: viewportHeight,
+    );
+    if (minBoardSide == null) return layout();
+    return LayoutBuilder(
+      builder: (context, box) =>
+          SingleChildScrollView(child: layout(viewportHeight: box.maxHeight)),
     );
   }
 }
@@ -197,6 +259,9 @@ class _CenteredBoard
     required this.topAlignment,
     required this.bottomAlignment,
     required this.aboveInset,
+    required this.centerY,
+    required this.minBoardSide,
+    required this.viewportHeight,
   });
 
   final Widget? top;
@@ -212,6 +277,9 @@ class _CenteredBoard
   final Alignment topAlignment;
   final Alignment bottomAlignment;
   final double aboveInset;
+  final double? centerY;
+  final double? minBoardSide;
+  final double? viewportHeight;
 
   @override
   Iterable<_Slot> get slots => _Slot.values;
@@ -251,7 +319,10 @@ class _RenderCenteredBoard extends RenderBox
         old.maxBoard != widget.maxBoard ||
         old.topAlignment != widget.topAlignment ||
         old.bottomAlignment != widget.bottomAlignment ||
-        old.aboveInset != widget.aboveInset) {
+        old.aboveInset != widget.aboveInset ||
+        old.centerY != widget.centerY ||
+        old.minBoardSide != widget.minBoardSide ||
+        old.viewportHeight != widget.viewportHeight) {
       markNeedsLayout();
     }
   }
@@ -263,25 +334,34 @@ class _RenderCenteredBoard extends RenderBox
       (child.parentData! as BoxParentData).offset = offset;
 
   @override
-  Size computeDryLayout(covariant BoxConstraints constraints) =>
-      constraints.biggest;
+  Size computeDryLayout(covariant BoxConstraints constraints) => Size(
+    constraints.maxWidth,
+    _config!.viewportHeight ?? constraints.maxHeight,
+  );
 
   @override
   void performLayout() {
     final config = _config!;
-    size = constraints.biggest;
+    size = Size(
+      constraints.maxWidth,
+      config.viewportHeight ?? constraints.maxHeight,
+    );
     final width = size.width;
     final footer = childForSlot(_Slot.footer);
     var footerHeight = 0.0;
     if (footer != null) {
       footer.layout(
-        BoxConstraints.tightFor(width: width).copyWith(maxHeight: size.height),
+        BoxConstraints.tightFor(width: width).copyWith(
+          maxHeight: config.viewportHeight == null
+              ? size.height
+              : double.infinity,
+        ),
         parentUsesSize: true,
       );
       footerHeight = footer.size.height;
       _place(footer, Offset(0, size.height - footerHeight));
     }
-    final geometry = BoardCentering(
+    var geometry = BoardCentering(
       size,
       footer: footerHeight,
       gap: config.gap,
@@ -291,12 +371,51 @@ class _RenderCenteredBoard extends RenderBox
       minFraction: config.minFraction,
       maxBoard: config.maxBoard,
       aboveInset: config.aboveInset,
+      centerY: config.centerY,
     );
+    final top = childForSlot(_Slot.top);
+    if (config.minBoardSide case final minimum?) {
+      top?.layout(BoxConstraints.tightFor(width: width), parentUsesSize: true);
+      final topHeight = top?.size.height ?? 0;
+      geometry = BoardCentering(
+        size,
+        footer: footerHeight,
+        gap: config.gap,
+        gutter: config.gutter,
+        reserveTop: max(config.reserveTop, topHeight),
+        reserveBottom: config.reserveBottom,
+        minFraction: config.minFraction,
+        maxBoard: config.maxBoard,
+        aboveInset: config.aboveInset,
+        centerY: config.centerY,
+      );
+      final side = min(minimum, max(0.0, width - 2 * config.gutter));
+      if (geometry.side < side || geometry.roomAbove + .01 < topHeight) {
+        // O centro da tela é fisicamente inviável. Preserva tamanho e texto,
+        // e a rolagem externa torna o rodapé alcançável.
+        final boardTop = topHeight + config.gap;
+        size = Size(
+          width,
+          max(size.height, boardTop + side + config.gap + footerHeight),
+        );
+        if (footer != null) {
+          _place(footer, Offset(0, size.height - footerHeight));
+        }
+        geometry = BoardCentering(
+          size,
+          footer: footerHeight,
+          centerY: boardTop + side / 2,
+          gap: config.gap,
+          gutter: config.gutter,
+          maxBoard: side,
+          minFraction: 1,
+        );
+      }
+    }
     final rect = geometry.board;
     final board = childForSlot(_Slot.board)!;
     board.layout(BoxConstraints.tight(rect.size));
     _place(board, rect.topLeft);
-    final top = childForSlot(_Slot.top);
     if (top != null) {
       final room = geometry.roomAbove;
       top.layout(
@@ -326,7 +445,10 @@ class _RenderCenteredBoard extends RenderBox
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    for (final child in children) {
+    // O balão flutuante em top pode atravessar a borda do tabuleiro.
+    for (final slot in [_Slot.board, _Slot.top, _Slot.bottom, _Slot.footer]) {
+      final child = childForSlot(slot);
+      if (child == null) continue;
       context.paintChild(child, offset + _offsetOf(child));
     }
   }

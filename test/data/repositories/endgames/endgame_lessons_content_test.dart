@@ -48,6 +48,25 @@ void main() {
     expect(ids, containsAll(inReview));
   });
 
+  test('Casas-chave aceita todas as rotas vencedoras e explica os empates', () {
+    final keySquares = lessons.singleWhere(
+      (lesson) => lesson.id == 'pawns.keySquares',
+    );
+    final start = keySquares.lesson.steps.whereType<ThinkStep>().first;
+    expect(start.accept, {'e2d3', 'e2e3', 'e2f3'});
+    expect(start.refusals, {'e4e5': 1, 'e2d1': 2, 'e2e1': 2, 'e2f1': 2});
+  });
+
+  test('O rei como muro não mostra uma seta solta para o lance explicado', () {
+    final shoulder = lessons.singleWhere(
+      (lesson) => lesson.id == 'pawns.shoulder',
+    );
+    final wall = shoulder.lesson.steps.firstWhere(
+      (step) => step.id == 'wall',
+    ) as TalkStep;
+    expect(wall.arrows, isNot(contains(('e4', 'd4'))));
+  });
+
   test('o índice só aponta aulas que existem, sem repetição', () {
     expect(ids.toSet().length, ids.length);
     for (final (index, lesson) in lessons.indexed) {

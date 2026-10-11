@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,11 +46,16 @@ void main() {
     ChallengeLevel level = ChallengeLevel.easy,
     Size size = const Size(412, 915),
     double textScale = 1,
+    bool systemBars = false,
   }) async {
     // Tela de celular: o tabuleiro ocupa a largura.
     tester.view.physicalSize = size * 3;
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
+    if (systemBars) {
+      tester.view.viewPadding = const FakeViewPadding(top: 72, bottom: 96);
+      tester.view.padding = const FakeViewPadding(top: 72, bottom: 96);
+    }
     tester.platformDispatcher.textScaleFactorTestValue = textScale;
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     final cubit = StarChallengeCubit(
@@ -81,6 +87,18 @@ void main() {
     await tester.pumpAndSettle();
 
     final star = cubit.state.star!;
+    final boardWidget = tester.widget<Chessboard>(
+      find.byKey(StarChallengeKeys.board),
+    );
+    expect(boardWidget.settings.enableCoordinates, isFalse);
+    expect(boardWidget.settings.showLastMove, isFalse);
+    final settings = tester
+        .element(find.byKey(StarChallengeKeys.board))
+        .read<SettingsCubit>()
+        .state!
+        .board;
+    expect(settings.coordinates, isTrue);
+    expect(settings.highlightLastMove, isTrue);
     expect(find.byKey(StarChallengeKeys.star(star.name)), findsNothing);
     expect(
       tester.widget<Text>(find.byKey(StarChallengeKeys.starName)).data,
@@ -104,6 +122,11 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('1:00'), findsOneWidget);
+    final boardWidget = tester.widget<Chessboard>(
+      find.byKey(StarChallengeKeys.board),
+    );
+    expect(boardWidget.settings.enableCoordinates, isTrue);
+    expect(boardWidget.settings.showLastMove, isTrue);
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
 
@@ -190,14 +213,84 @@ void main() {
     expect(text(StarChallengeKeys.collected), '13');
   });
 
+  for (final size in [
+    const Size(360, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    testWidgets('B6b $size: estrelas no centro real em todos os estados', (
+      tester,
+    ) async {
+      final cubit = await pump(tester, size: size, systemBars: true);
+      final before = tester.getRect(find.byKey(StarChallengeKeys.board));
+      expect(before.center.dy, closeTo((24 + size.height - 32) / 2, 1));
+      expect(before.width, greaterThanOrEqualTo(200));
+      await tester.tap(find.byKey(StarChallengeKeys.goButton));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byKey(StarChallengeKeys.board)), before);
+      now.advance(const Duration(seconds: 61));
+      cubit.tick();
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byKey(StarChallengeKeys.board)), before);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final scale in [1.0, 1.6]) {
+    testWidgets(
+      'B6b: instrução pequena em fonte $scale não encolhe e rola inteira',
+      (tester) async {
+        await pump(
+          tester,
+          size: const Size(360, 640),
+          systemBars: true,
+          textScale: scale,
+        );
+        final board = tester.getRect(find.byKey(StarChallengeKeys.board));
+        final score = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+        final intro = find.byKey(StarChallengeKeys.intro);
+        final text = find
+            .descendant(of: intro, matching: find.byType(Text))
+            .last;
+        final paragraph = tester.renderObject(text);
+        // A transformação pintada preserva a fonte; não basta o TextStyle
+        // original continuar normal sob um ShrinkToFit.
+        final screen = tester.renderObject(
+          find.byKey(StarChallengeKeys.screen),
+        );
+        expect(
+          paragraph.getTransformTo(screen).getMaxScaleOnAxis(),
+          closeTo(1, .01),
+        );
+        final scroll = find
+            .ancestor(of: intro, matching: find.byType(SingleChildScrollView))
+            .first;
+        final scrollable = find
+            .descendant(of: scroll, matching: find.byType(Scrollable))
+            .first;
+        final position = tester.state<ScrollableState>(scrollable).position;
+        expect(position.maxScrollExtent, greaterThan(0));
+        await tester.drag(scroll, const Offset(0, -1000));
+        await tester.pumpAndSettle();
+        expect(position.pixels, closeTo(position.maxScrollExtent, 1));
+        expect(
+          tester.getBottomLeft(intro).dy,
+          lessThanOrEqualTo(tester.getBottomLeft(scroll).dy + 1),
+        );
+        expect(tester.getRect(find.byKey(StarChallengeKeys.board)), board);
+        expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), score);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('o tabuleiro fica com o centro no centro do espaço útil, '
       'entre a barra do app e o fim da tela, no convite e jogando', (
     tester,
   ) async {
     final cubit = await pump(tester);
     final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
-    final appBar = tester.getRect(find.byType(AppBar));
-    final center = (appBar.bottom + screen.height) / 2;
+    final center = screen.height / 2;
     final ready = tester.getRect(find.byKey(StarChallengeKeys.board));
     expect(ready.center.dy, closeTo(center, 1));
     await tester.tap(find.byKey(StarChallengeKeys.goButton));

@@ -31,6 +31,42 @@ extension MoveQualityUi on MoveQuality {
     MoveQuality.blunder => const Color(0xFFD9372A),
   };
 
+  /// Anotação textual da lista. Melhores/bons/forçados não ganham uma
+  /// anotação de brilhantismo que a classificação original não possui.
+  String get listAnnotation => switch (this) {
+    MoveQuality.great => '!',
+    MoveQuality.inaccuracy => '?!',
+    MoveQuality.mistake || MoveQuality.miss => '?',
+    MoveQuality.blunder => '??',
+    _ => '',
+  };
+
+  /// Tons próprios para texto pequeno, inclusive sobre a seleção da lista.
+  /// Os selos do tabuleiro e da legenda conservam sua paleta original.
+  Color listColor(Brightness brightness) => brightness == Brightness.dark
+      ? switch (this) {
+          MoveQuality.forced => const Color(0xFFBCC8C0),
+          MoveQuality.great => const Color(0xFF9CCAFF),
+          MoveQuality.best => const Color(0xFFB2D68D),
+          MoveQuality.excellent => const Color(0xFFB8D993),
+          MoveQuality.good => const Color(0xFFB1C3A4),
+          MoveQuality.inaccuracy => const Color(0xFFF5D36B),
+          MoveQuality.mistake => const Color(0xFFFFB77D),
+          MoveQuality.miss => const Color(0xFFFFB1A4),
+          MoveQuality.blunder => const Color(0xFFFFB4AB),
+        }
+      : switch (this) {
+          MoveQuality.forced => const Color(0xFF53615C),
+          MoveQuality.great => const Color(0xFF24618C),
+          MoveQuality.best => const Color(0xFF326124),
+          MoveQuality.excellent => const Color(0xFF326124),
+          MoveQuality.good => const Color(0xFF486344),
+          MoveQuality.inaccuracy => const Color(0xFF7A5600),
+          MoveQuality.mistake => const Color(0xFF9B4600),
+          MoveQuality.miss => const Color(0xFFA13A32),
+          MoveQuality.blunder => const Color(0xFFB3261E),
+        };
+
   /// O que o símbolo quer dizer, numa linha.
   String meaning(AppLocalizations l10n) => switch (this) {
     MoveQuality.forced => l10n.qualityForcedHint,

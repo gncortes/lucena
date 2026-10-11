@@ -56,7 +56,33 @@ tools/*
 !tools/check_lines.py
 CLAUDE.md
 .github/agents/
-AGENTS.md
 GEMINI.md
 .gemini/
 .mcp.json
+
+
+# Codex: versionar instruções, papéis e scripts; ignorar apenas dados locais.
+.codex/local/
+.codex/sessions/
+.codex/archived_sessions/
+.codex/cache/
+.codex/backups/
+.codex/tmp/
+.codex/.tmp/
+.codex/log/
+.codex/logs/
+.codex/shell_snapshots/
+.codex/auth.json
+.codex/history.jsonl
+.codex/session_index.jsonl
+.codex/models_cache.json
+.codex/installation_id
+.codex/version.json
+.codex/*.sqlite*
+.codex/config.local.toml
+.codex/*.local.toml
+.codex/rules/*.local.rules
+# Regras existentes contêm caminhos pessoais da máquina; preservar sem publicar.
+.codex/rules/project.rules
+.codex/rules/chess.rules
+.agents/local/

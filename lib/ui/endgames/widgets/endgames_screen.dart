@@ -5,12 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../placement/widgets/placement_prompt.dart';
+import '../../profile/widgets/rating_level_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgames_cubit.dart';
+import 'endgames_filters.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 
@@ -24,7 +26,19 @@ class EndgamesScreen extends StatelessWidget {
     final l10n = context.l10n;
     return Scaffold(
       key: EndgamesKeys.screen,
-      appBar: AppBar(title: Text(l10n.endgamesTitle)),
+      appBar: AppBar(
+        title: Text(l10n.endgamesTitle),
+        actions: [
+          // Os filtros valem para a trilha inteira, não para o roteiro.
+          BlocBuilder<EndgamesCubit, EndgamesState>(
+            buildWhen: (before, after) =>
+                before.ready != after.ready || before.forYou != after.forYou,
+            builder: (context, state) => state.ready && !state.forYou
+                ? const EndgamesFilterButton()
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
       body: BlocBuilder<EndgamesCubit, EndgamesState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
@@ -131,8 +145,11 @@ class EndgamesScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _NextEndgames(state: state),
                 ],
-                for (final (index, module) in state.trail.modules.indexed)
-                  _ModuleSection(index: index, module: module, state: state),
+                if (!state.filter.isEmpty) EndgamesActiveFilters(state: state),
+                for (final section in state.sections)
+                  _Section(section: section, state: state),
+                if (state.filteredLessons.isEmpty && state.total > 0)
+                  const EndgamesFiltersEmpty(),
               ],
             ],
           );
@@ -221,28 +238,44 @@ class _Overview extends StatelessWidget {
   }
 }
 
-class _ModuleSection extends StatelessWidget {
-  const _ModuleSection({
-    required this.index,
-    required this.module,
-    required this.state,
-  });
+/// Uma seção da lista: um módulo da trilha ou uma faixa de dificuldade.
+class _Section extends StatelessWidget {
+  const _Section({required this.section, required this.state});
 
-  final int index;
-  final EndgameModule module;
+  final EndgameSection section;
   final EndgamesState state;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final passed = module.lessons
+    final l10n = context.l10n;
+    final module = section.module;
+    final level = section.level;
+    final lessons = section.lessons;
+    final (label, title) = module != null
+        ? (
+            l10n.schoolModule(section.number),
+            state.texts.plain('endgames.module.${module.id}') ?? module.id,
+          )
+        : (
+            l10n.endgamesFilterLevel,
+            level == null
+                ? l10n.endgamesLevelNone
+                : l10n.endgamesLevelSection(
+                    level.name(l10n),
+                    level.range(l10n),
+                  ),
+          );
+    final passed = lessons
         .where(
           (lesson) => state.status(lesson.id) == EndgameLessonStatus.passed,
         )
         .length;
     return Column(
-      key: EndgamesKeys.module(module.id),
+      key: module != null
+          ? EndgamesKeys.module(module.id)
+          : EndgamesKeys.level(level == null ? 'none' : EnumName(level).name),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 24),
@@ -259,14 +292,13 @@ class _ModuleSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.schoolModule(index + 1),
+                      label,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: colors.onPrimaryContainer,
                       ),
                     ),
                     Text(
-                      state.texts.plain('endgames.module.${module.id}') ??
-                          module.id,
+                      title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: colors.onPrimaryContainer,
                         fontWeight: FontWeight.w700,
@@ -276,7 +308,7 @@ class _ModuleSection extends StatelessWidget {
                 ),
               ),
               Text(
-                '$passed/${module.lessons.length}',
+                '$passed/${lessons.length}',
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: colors.onPrimaryContainer,
                 ),
@@ -285,8 +317,7 @@ class _ModuleSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        for (final lesson in module.lessons)
-          _LessonTile(lesson: lesson, state: state),
+        for (final lesson in lessons) _LessonTile(lesson: lesson, state: state),
       ],
     );
   }
@@ -356,6 +387,15 @@ class _LessonTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(texts.lessonSummary(lesson.id) ?? ''),
+              // A revisão do conteúdo: reprovada (será refeita) ou ainda
+              // em revisão.
+              if (lesson.failed || lesson.inReview) ...[
+                const SizedBox(height: 4),
+                _ReviewTag(
+                  key: EndgamesKeys.reviewTag(lesson.id),
+                  failed: lesson.failed,
+                ),
+              ],
               // Só o "já domina": a recomendada já vem em primeiro.
               if (state.badge(lesson.id) == EndgameBadge.mastered) ...[
                 const SizedBox(height: 4),
@@ -383,6 +423,49 @@ class _LessonTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// O selo da revisão do conteúdo: ✕ "Reprovada" (a aula será refeita) ou
+/// "Em revisão".
+class _ReviewTag extends StatelessWidget {
+  const _ReviewTag({required this.failed, super.key});
+
+  final bool failed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final foreground = failed
+        ? colors.onErrorContainer
+        : colors.onSecondaryContainer;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: failed ? colors.errorContainer : colors.secondaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.full),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            failed ? Icons.close_rounded : Icons.rate_review_outlined,
+            size: 14,
+            color: foreground,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              failed
+                  ? context.l10n.endgamesTagFailed
+                  : context.l10n.endgamesTagInReview,
+              style: theme.textTheme.labelSmall?.copyWith(color: foreground),
+            ),
+          ),
+        ],
       ),
     );
   }

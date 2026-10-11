@@ -88,6 +88,21 @@ void main() {
   }
 
   group('escola', () {
+    test(
+      'C12c: retomar aula dispensada abre o componente de aulas conhecidas',
+      () async {
+        final state = await school(
+          placed: result(const {
+            'rules.rook': NodeStatus(NodeState.mastered, confirmed: true),
+          }),
+          progress: const SchoolProgress(
+            ongoing: LessonCheckpoint(lessonId: 'pieces.rook', step: 0),
+          ),
+        );
+        expect(state.showSkipped, isTrue);
+        expect(state.next, 'pieces.rook');
+      },
+    );
     test('sem teste: nada dispensado, o convite aparece', () async {
       final state = await school();
       expect(state.tested, isFalse);

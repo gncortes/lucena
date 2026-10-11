@@ -4,6 +4,7 @@ import 'app_accent.dart';
 import 'app_theme_mode.dart';
 import 'board_settings.dart';
 import 'clock_settings.dart';
+import 'endgame_filter.dart';
 
 part 'app_settings.freezed.dart';
 
@@ -45,6 +46,10 @@ abstract class AppSettings with _$AppSettings {
 
     /// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
     @Default(false) bool endgamesHideDone,
+
+    /// Nas aulas de finais, os filtros da lista (tipo, dificuldade,
+    /// situação) e a ordem.
+    @Default(EndgameFilter()) EndgameFilter endgamesFilter,
 
     /// Nas aulas, as marcações do professor no tabuleiro (setas e casas).
     @Default(true) bool lessonMarks,

@@ -12,6 +12,8 @@ class EmptyState extends StatelessWidget {
     this.onAction,
     this.actionKey,
     this.messageKey,
+    this.primaryAction = false,
+    this.actionIcon,
     super.key,
   });
 
@@ -21,6 +23,8 @@ class EmptyState extends StatelessWidget {
   final VoidCallback? onAction;
   final Key? actionKey;
   final Key? messageKey;
+  final bool primaryAction;
+  final IconData? actionIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +58,19 @@ class EmptyState extends StatelessWidget {
           ),
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(height: AppSpacing.lg),
-            FilledButton.tonal(
-              key: actionKey,
-              onPressed: onAction,
-              child: Text(actionLabel),
-            ),
+            if (primaryAction)
+              FilledButton.icon(
+                key: actionKey,
+                onPressed: onAction,
+                icon: actionIcon == null ? null : Icon(actionIcon),
+                label: Text(actionLabel),
+              )
+            else
+              FilledButton.tonal(
+                key: actionKey,
+                onPressed: onAction,
+                child: Text(actionLabel),
+              ),
           ],
         ],
       ),
