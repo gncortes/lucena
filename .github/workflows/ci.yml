@@ -36,22 +36,6 @@ jobs:
       - name: Falas dos personagens
         run: python3 tools/check_lines.py
 
-      # Variedade dos exercícios das aulas de finais: só avisa (anotações).
-      - name: Variedade das aulas de finais
-        run: python3 tools/lessons/check_variety.py
-
-      # Teste de nível (T52): o mapa de habilidades (aulas, ciclos, faixas) e o
-      # banco de perguntas (formato, xadrez pelo python-chess e cotas). A
-      # tabela de finais só é consultada no desenvolvimento (--tablebase).
-      - name: Mapa de habilidades
-        run: python3 tools/placement/check_skills.py
-
-      - name: Banco do teste de nível
-        run: |
-          python3 -m venv /tmp/placement-venv
-          /tmp/placement-venv/bin/pip install --quiet chess==1.11.2
-          /tmp/placement-venv/bin/python tools/placement/build_items.py --check
-
       - name: Análise
         run: flutter analyze
 

@@ -5,7 +5,7 @@ import 'package:lucena/domain/models/placement.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/use_cases/placement_engine.dart';
 
-import '../../tools/placement/synthetic.dart';
+import '../../testing/placement_synthetic.dart';
 import 'placement_fixtures.dart';
 
 void main() {

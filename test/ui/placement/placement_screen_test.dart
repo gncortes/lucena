@@ -14,7 +14,7 @@ import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
-import '../../../tools/placement/synthetic.dart';
+import '../../../testing/placement_synthetic.dart';
 
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());
