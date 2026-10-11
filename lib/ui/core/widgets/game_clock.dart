@@ -7,6 +7,7 @@ import '../../../domain/use_cases/clock_format.dart';
 import '../board/board_settings_ui.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import 'game_entrance.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,
 /// na ponta, o relógio ou de quem é a vez. Só apresentação: quem usa dá os
@@ -41,7 +42,12 @@ class PlayerEntry {
 /// nome e o relógio na ponta) ou a dos dois juntos, espelhados (os retratos
 /// nas pontas e os relógios no meio).
 class PlayersRow extends StatelessWidget {
-  const PlayersRow({required this.players, required this.board, super.key});
+  const PlayersRow({
+    required this.players,
+    required this.board,
+    this.enterClocks = false,
+    super.key,
+  });
 
   /// Altura da fileira, para a tela reservar o espaço do tabuleiro.
   static const height = 56.0;
@@ -51,6 +57,9 @@ class PlayersRow extends StatelessWidget {
   /// A aparência escolhida: o retrato de cada lado é o peão dele, numa casa
   /// do tabuleiro.
   final BoardSettings board;
+
+  /// Os relógios dão um pop na entrada da tela (a da partida).
+  final bool enterClocks;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +81,10 @@ class PlayersRow extends StatelessWidget {
       ),
     );
   }
+
+  Widget _entering(Widget clock) => enterClocks
+      ? GameEntrance(part: GameEntrancePart.clock, child: clock)
+      : clock;
 
   Widget _player(
     BuildContext context,
@@ -100,12 +113,14 @@ class PlayersRow extends StatelessWidget {
           ),
         ),
       if (time != null)
-        GameClock(
-          key: player.clockKey,
-          timeKey: player.timeKey,
-          side: player.side,
-          time: time,
-          running: player.running,
+        _entering(
+          GameClock(
+            key: player.clockKey,
+            timeKey: player.timeKey,
+            side: player.side,
+            time: time,
+            running: player.running,
+          ),
         )
       else if (turn != null)
         TurnBadge(label: turn, labelKey: player.turnKey),

@@ -18,6 +18,7 @@ import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
+import '../../core/widgets/game_entrance.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
@@ -417,32 +418,37 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   aboveInset: MoveList.height,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
-                  top: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (character != null)
-                        CharacterBar(
-                          talk: talk,
-                          avatarSize: avatar,
-                          // A linha do relógio dos lados já tem o nome dele.
-                          showName: clocks != ClockPosition.sides,
-                        ),
-                      if (clocks == ClockPosition.top)
-                        ClockRow(
-                          sides: both,
-                          state: state,
-                          board: boardSettings,
-                          talk: talk,
-                        ),
-                      if (clocks == ClockPosition.sides)
-                        ClockRow(
-                          sides: [state.orientation.opposite],
-                          state: state,
-                          board: boardSettings,
-                          talk: talk,
-                        ),
-                    ],
+                  // Enquanto o tabuleiro termina o voo, a barra do
+                  // adversário desce do alto e a do jogador sobe de baixo.
+                  top: GameEntrance(
+                    part: GameEntrancePart.top,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (character != null)
+                          CharacterBar(
+                            talk: talk,
+                            avatarSize: avatar,
+                            // A linha do relógio dos lados já tem o nome dele.
+                            showName: clocks != ClockPosition.sides,
+                          ),
+                        if (clocks == ClockPosition.top)
+                          ClockRow(
+                            sides: both,
+                            state: state,
+                            board: boardSettings,
+                            talk: talk,
+                          ),
+                        if (clocks == ClockPosition.sides)
+                          ClockRow(
+                            sides: [state.orientation.opposite],
+                            state: state,
+                            board: boardSettings,
+                            talk: talk,
+                          ),
+                      ],
+                    ),
                   ),
                   // O tabuleiro não espelha em idiomas da direita para a
                   // esquerda.
@@ -515,28 +521,31 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       ],
                     ),
                   ),
-                  bottom: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (clocks == ClockPosition.sides)
-                        ClockRow(
-                          sides: [state.orientation],
-                          state: state,
-                          board: boardSettings,
-                          talk: talk,
-                        ),
-                      if (clocks == ClockPosition.bottom)
-                        ClockRow(
-                          sides: both,
-                          state: state,
-                          board: boardSettings,
-                          talk: talk,
-                        ),
-                      // Embaixo do tabuleiro: o fim da partida de dois.
-                      if (end != null && !state.mode.opponent.isMachine)
-                        _TwoPlayersEnd(end: end, onNewGame: cubit.newGame),
-                    ],
+                  bottom: GameEntrance(
+                    part: GameEntrancePart.bottom,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (clocks == ClockPosition.sides)
+                          ClockRow(
+                            sides: [state.orientation],
+                            state: state,
+                            board: boardSettings,
+                            talk: talk,
+                          ),
+                        if (clocks == ClockPosition.bottom)
+                          ClockRow(
+                            sides: both,
+                            state: state,
+                            board: boardSettings,
+                            talk: talk,
+                          ),
+                        // Embaixo do tabuleiro: o fim da partida de dois.
+                        if (end != null && !state.mode.opponent.isMachine)
+                          _TwoPlayersEnd(end: end, onNewGame: cubit.newGame),
+                      ],
+                    ),
                   ),
                 ),
                 // O resultado em destaque, antes da conclusão.
