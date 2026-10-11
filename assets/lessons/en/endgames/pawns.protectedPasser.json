@@ -26,7 +26,7 @@
   "step.d_tied.m2": "1...Kf6, to hold g5. If the black king goes to g6, it leaves the square, and the c-pawn runs.",
   "step.d_tied.m3": "2.Kg3. The road through g4 is closed by the h5 pawn, so I go round via h4.",
   "step.d_tied.m4": "2...Ke5. Black gives up on h5 and comes back near the c-pawn.",
-  "step.d_tied.m5": "3.Kh4. The h5 pawn has no defender: the black king, on e5, cannot go to g6 without leaving the square of c5.",
+  "step.d_tied.m5": "3.Kh4. The h5 pawn has no defender: The black king, on e5, is far from it, and to defend it from g6 it would have to leave the square of c5.",
   "step.d_tied.m6": "3...Kd5. The black king can only watch.",
   "step.d_tied.m7": "4.Kxh5. A pawn up, and the protected pawn still ties the black king down. Now it is time to come back and finish.",
   "step.tiedPush": "What if White pushed the c-pawn at once? See what happens after 1.c6?, which looks quick. The pawn leaves c5 and b4 no longer defends it. Then 1...Kd6 2.c7 Kxc7: the protected pawn has become a captured pawn. Now the free king is the black one: while my king captures h5, it goes to c4 and captures b4, and the passer that remains is Black's. The protected pawn works standing still.",

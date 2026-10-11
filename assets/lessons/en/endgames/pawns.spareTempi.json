@@ -40,7 +40,7 @@
   "step.extraMove": "Spend the tempi one at a time, without leaving Black with the last one.",
   "step.extraMove.hint": "Answer each black pawn move with a pawn move of your own. Watch out for a pawn that steps onto a square where it can be taken.",
   "step.extraMove.done": "Well done. Black ran out of pawn moves first, and the black king has to drop the f5-pawn. After 1.b3 a5, 2.b4? lost: 2...axb4 and the tempo is gone.",
-  "step.t_double": "Until now the spare pawn moved once. This training position, by DrMkcTheHandsome, needs two waiting moves. The kings face each other with one square between them, and whoever has the move must give way. White has a pawn on c2, still on its starting square. How does White use that pawn?",
+  "step.t_double": "Until now the spare pawn moved once. This training position needs two waiting moves. The kings face each other with one square between them, and whoever has the move must give way. White has a pawn on c2, still on its starting square. How does White use that pawn?",
   "step.t_double.hint1": "How many times will White need to pass the move before the end?",
   "step.t_double.hint2": "A pawn on its starting square can move one square or two. How many waiting moves does it give in each case?",
   "step.t_double.hint3": "You will need to pass the move now, and again when the king reaches e5.",
