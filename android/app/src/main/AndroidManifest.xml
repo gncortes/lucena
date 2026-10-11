@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- O modo às cegas escuta o lance falado. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- As páginas da Wikipedia dos nomes citados nas aulas (T64). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:label="Lucena"

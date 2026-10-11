@@ -171,6 +171,7 @@ void main() {
       expect(tour.state.paths.first, HomePath.speedrun);
       expect(tour.state.goals, {
         HomePath.speedrun,
+        HomePath.forYou,
         HomePath.endgames,
         HomePath.train,
       });
@@ -200,6 +201,7 @@ void main() {
       final layout = home.layout!;
       expect(layout.shown, [
         HomePath.journey,
+        HomePath.forYou,
         HomePath.endgames,
         HomePath.train,
         HomePath.speedrun,
@@ -224,6 +226,40 @@ void main() {
       expect(home.layout, HomeSuggestion.of(RatingLevel.casual));
       expect(home.layout!.custom, isFalse);
       expect(home.seen, isTrue);
+    });
+  });
+
+  group('teste de nível', () {
+    test(
+      'voltou do teste: a faixa e o rating do teste, e o tour segue',
+      () async {
+        final tour = cubit();
+        await tour.load('en');
+        await toLevel(tour);
+        // O teste já gravou o rating no perfil.
+        profile.profile = profile.profile.copyWith(rating: 1530);
+        await tour.usePlacement();
+        expect(tour.state.step, TourStep.goals);
+        expect(tour.state.level, RatingLevel.intermediate);
+        expect(tour.state.placed, 1530);
+        expect(tour.state.startRung, '1600');
+        await tour.finish();
+        expect(profile.profile.rating, 1530);
+        expect(onboarding.saved.startRung, '1600');
+      },
+    );
+
+    test('escolher a faixa na mão depois do teste vale a faixa', () async {
+      final tour = cubit();
+      await tour.load('en');
+      await toLevel(tour);
+      profile.profile = profile.profile.copyWith(rating: 1530);
+      await tour.usePlacement();
+      tour.setLevel(RatingLevel.advanced);
+      expect(tour.state.placed, isNull);
+      expect(tour.state.byHand, isTrue);
+      await tour.finish();
+      expect(profile.profile.rating, RatingLevel.advanced.rating);
     });
   });
 }

@@ -31,6 +31,8 @@ import '../../profile/widgets/rating_level_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// O tour da primeira abertura: o que é o app, a aparência (tema, cor do app
 /// e tabuleiro), rating, Jornada, finais, adversários, speedrun e recordes, e
@@ -113,6 +115,7 @@ class TourScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
                             child: TeacherSpeech(
+                              speechContext: SpeechContext.teaching,
                               key: TourKeys.viktor,
                               teacher: viktor,
                               text: state.speech,
@@ -126,9 +129,9 @@ class TourScreen extends StatelessWidget {
                           ),
                         ClipRect(
                           child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 380),
-                            switchInCurve: Curves.easeOutCubic,
-                            switchOutCurve: Curves.easeInCubic,
+                            duration: AppMotion.component,
+                            switchInCurve: AppMotion.enter,
+                            switchOutCurve: AppMotion.exit,
                             layoutBuilder: (current, previous) => Stack(
                               alignment: Alignment.topCenter,
                               children: [...previous, ?current],
@@ -296,7 +299,7 @@ class _InfoStep extends StatelessWidget {
     final theme = Theme.of(context);
     final (icon, title, body) = switch (step) {
       TourStep.goal => (
-        Icons.school_outlined,
+        Icons.sports_esports_outlined,
         l10n.tourGoalTitle,
         l10n.tourGoalBody,
       ),
@@ -306,12 +309,12 @@ class _InfoStep extends StatelessWidget {
         l10n.tourRatingBody,
       ),
       TourStep.journey => (
-        Icons.flag_rounded,
+        Icons.hiking_rounded,
         l10n.tourJourneyTitle,
         l10n.tourJourneyBody,
       ),
       TourStep.endgames => (
-        Icons.grid_on_outlined,
+        Icons.auto_stories_outlined,
         l10n.tourEndgamesTitle,
         l10n.tourEndgamesBody,
       ),
@@ -326,7 +329,7 @@ class _InfoStep extends StatelessWidget {
         l10n.tourSpeedrunBody,
       ),
       TourStep.records => (
-        Icons.emoji_events_outlined,
+        Icons.leaderboard_outlined,
         l10n.tourRecordsTitle,
         l10n.tourRecordsBody,
       ),
@@ -348,8 +351,8 @@ class _InfoStep extends StatelessWidget {
           else
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.6, end: 1),
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutBack,
+              duration: AppMotion.screen,
+              curve: AppMotion.enter,
               builder: (context, value, child) =>
                   Transform.scale(scale: value, child: child),
               child: CircleAvatar(
@@ -694,40 +697,181 @@ class _LevelStep extends StatelessWidget {
             ],
           ),
         ),
-        for (final level in RatingLevel.values)
-          RatingLevelOption(
-            key: TourKeys.level(level),
-            level: level,
-            selected: level == state.level,
-            onTap: () => cubit.setLevel(level),
+        if (!state.byHand) ...[
+          // O caminho principal: o teste. A lista das faixas fica atrás de
+          // um botão discreto.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 4, 24, 0),
+            child: _TestCard(onTap: () => _takeTest(context)),
           ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton(
+              key: TourKeys.chooseByHand,
+              onPressed: cubit.chooseByHand,
+              child: Text(l10n.placementChooseByHand),
+            ),
+          ),
+        ] else ...[
+          // Escolher na mão não monta o roteiro: o aviso deixa isso claro.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+            child: Container(
+              key: TourKeys.byHandHint,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(AppShape.medium),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 20,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.tourLevelByHandHint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Um Material só da lista: o destaque da faixa marcada acompanha
+          // a lista quando a fala do Viktor muda de tamanho.
+          Material(
+            type: MaterialType.transparency,
+            child: Column(
+              children: [
+                for (final level in RatingLevel.values)
+                  RatingLevelOption(
+                    key: TourKeys.level(level),
+                    level: level,
+                    selected: level == state.level,
+                    onTap: () => cubit.setLevel(level),
+                  ),
+              ],
+            ),
+          ),
+          Center(
+            child: TextButton.icon(
+              key: TourKeys.takeTest,
+              onPressed: () => _takeTest(context),
+              icon: const Icon(Icons.quiz_outlined),
+              label: Text(l10n.tourLevelTakeTest),
+            ),
+          ),
+        ],
+        if (state.byHand || state.placed != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+            child: Row(
+              children: [
+                Icon(
+                  state.toSchool ? Icons.school_outlined : Icons.hiking_rounded,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    state.toSchool
+                        ? l10n.tourLevelSchool
+                        : l10n.tourLevelStart(
+                            OpponentKind.maia.label(
+                              l10n,
+                              level: int.parse(state.startRung),
+                            ),
+                          ),
+                    key: TourKeys.startRung,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Abre o teste de nível. Usado o resultado, o tour segue com a faixa dele;
+/// "Prefiro escolher minha faixa" lá dentro volta com a lista aberta.
+Future<void> _takeTest(BuildContext context) async {
+  final cubit = context.read<TourCubit>();
+  final used = await context.push<bool>(Routes.placementFrom('tour'));
+  if (used == true) {
+    await cubit.usePlacement();
+  } else if (used == false) {
+    cubit.chooseByHand();
+  }
+}
+
+/// O cartão principal do passo do nível: o teste.
+class _TestCard extends StatelessWidget {
+  const _TestCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card.filled(
+      key: TourKeys.takeTestCard,
+      margin: EdgeInsets.zero,
+      color: colors.primaryContainer,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(
-                state.toSchool ? Icons.school_outlined : Icons.flag_rounded,
-                color: theme.colorScheme.primary,
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                child: const Icon(Icons.quiz_rounded),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.tourLevelTestTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.tourLevelTestBody,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  state.toSchool
-                      ? l10n.tourLevelSchool
-                      : l10n.tourLevelStart(
-                          OpponentKind.maia.label(
-                            l10n,
-                            level: int.parse(state.startRung),
-                          ),
-                        ),
-                  key: TourKeys.startRung,
-                  style: theme.textTheme.titleSmall,
-                ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.onPrimaryContainer,
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -812,13 +956,13 @@ class _GoalCard extends StatelessWidget {
     return Semantics(
       checked: selected,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
+        duration: AppMotion.state,
+        curve: AppMotion.enter,
         decoration: BoxDecoration(
           color: selected
               ? colors.secondaryContainer
               : colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppShape.large),
           border: Border.all(
             color: selected ? colors.primary : Colors.transparent,
             width: 2,
@@ -827,7 +971,7 @@ class _GoalCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppShape.large),
             onTap: enabled ? onTap : null,
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 8, 12),

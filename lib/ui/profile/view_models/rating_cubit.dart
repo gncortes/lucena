@@ -80,7 +80,12 @@ class RatingState {
     this.characters = const [],
     this.now,
     this.accuracies = const {},
+    this.highlightedGame,
   });
+
+  /// A partida em destaque no gráfico e no histórico (a que a conclusão
+  /// abriu). Nula: nenhuma.
+  final int? highlightedGame;
 
   /// A precisão do jogador em cada partida já revisada, pelo id.
   final Map<int, double> accuracies;
@@ -123,6 +128,16 @@ class RatingState {
     ];
   }
 
+  /// A partida em destaque, se ela existe no histórico; senão nula (o id da
+  /// rota é ignorado em silêncio).
+  int? get highlighted =>
+      highlightedGame != null &&
+          (allGames.containsKey(highlightedGame) ||
+              history.any((entry) => entry.gameId == highlightedGame))
+      ? highlightedGame
+      : null;
+
+  /// O mesmo estado sem o filtro do final.
   /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
   int? get lastChange => history.length < 2
       ? null
@@ -158,7 +173,11 @@ class RatingCubit extends Cubit<RatingState> {
     this._characters,
     this._reviews,
     this._now = const SystemNow(),
+    this.highlightedGame,
   }) : super(const RatingState());
+
+  /// A partida em destaque (`?game=` da rota).
+  final int? highlightedGame;
 
   final GameReviewRepository? _reviews;
 
@@ -214,6 +233,7 @@ class RatingCubit extends Cubit<RatingState> {
         now: now,
         accuracies: accuracies,
         characters: await _characters?.characters() ?? const <Character>[],
+        highlightedGame: highlightedGame,
       ),
     );
   }

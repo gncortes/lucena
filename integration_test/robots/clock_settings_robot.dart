@@ -5,6 +5,7 @@ import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'settings_robot.dart';
 import 'variant.dart';
 
 /// Tela de preferências do relógio (posição e vibração).
@@ -15,6 +16,7 @@ class ClockSettingsRobot {
 
   /// A partir de Configurações.
   Future<void> open() async {
+    await SettingsRobot($).openGame();
     await $(SettingsKeys.clockTile).scrollTo().tap();
     await expectVisible();
   }

@@ -12,7 +12,8 @@ import '../../core/l10n/l10n.dart';
 extension HomePathUi on HomePath {
   IconData get icon => switch (this) {
     HomePath.learn => Icons.school_outlined,
-    HomePath.journey => Icons.flag_rounded,
+    HomePath.journey => Icons.hiking_rounded,
+    HomePath.forYou => Icons.route_outlined,
     HomePath.endgames => Icons.auto_stories_outlined,
     HomePath.speedrun => Icons.timer_outlined,
     HomePath.train => Icons.grid_view_rounded,
@@ -21,6 +22,7 @@ extension HomePathUi on HomePath {
   String title(AppLocalizations l10n) => switch (this) {
     HomePath.learn => l10n.homeLearn,
     HomePath.journey => l10n.homeJourney,
+    HomePath.forYou => l10n.homeForYou,
     HomePath.endgames => l10n.homeEndgames,
     HomePath.speedrun => l10n.homeSpeedrun,
     HomePath.train => l10n.homeTrain,
@@ -39,6 +41,7 @@ extension HomePathUi on HomePath {
       (HomePath.speedrun, HomePathText.challenge) =>
         l10n.homeSpeedrunBodyChallenge,
       (HomePath.speedrun, _) => l10n.homeSpeedrunBody,
+      (HomePath.forYou, _) => l10n.homeForYouBody,
       (HomePath.endgames, _) => l10n.homeEndgamesBody,
       (HomePath.train, _) => l10n.homeTrainBody,
     };
@@ -47,7 +50,8 @@ extension HomePathUi on HomePath {
   String get route => switch (this) {
     HomePath.learn => Routes.school,
     HomePath.journey => Routes.journey,
-    HomePath.endgames => Routes.endgames,
+    HomePath.forYou => Routes.endgamesFiltered(forYou: true),
+    HomePath.endgames => Routes.endgamesFiltered(forYou: false),
     HomePath.speedrun => Routes.speedruns,
     HomePath.train => Routes.catalog,
   };
@@ -57,6 +61,7 @@ extension HomePathUi on HomePath {
   Key get homeKey => switch (this) {
     HomePath.learn => HomeKeys.schoolButton,
     HomePath.journey => HomeKeys.journeyButton,
+    HomePath.forYou => HomeKeys.forYouButton,
     HomePath.endgames => HomeKeys.endgamesButton,
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.train => HomeKeys.catalogButton,

@@ -209,4 +209,32 @@ void main() {
       expect(parsed!.audience, LineAudience.student);
     });
   });
+
+  test('mate adiado: o que escapou fala na hora; só adiar espera o '
+      'intervalo', () {
+    final mate = [
+      line('m2', LineCategory.mateDelayed, intensity: 2),
+      line('m3', LineCategory.mateDelayed, intensity: 3),
+    ];
+    // Acabou de falar.
+    final memory = TalkMemory.empty.copyWith(movesSinceLine: 0);
+    String? said(GameEvent event) => LinePicker.pick(
+      lines: mate,
+      events: [event],
+      memory: memory,
+      roll: 0,
+    )?.line.id;
+    expect(said(const GameEvent(LineCategory.mateDelayed, 3)), 'm3');
+    expect(said(const GameEvent(LineCategory.mateDelayed, 2)), isNull);
+  });
+
+  test('"eu falei" do empate fala mesmo logo depois de outra fala', () {
+    final got = LinePicker.pick(
+      lines: [line('t', LineCategory.toldYouDraw, intensity: 2)],
+      events: const [GameEvent(LineCategory.toldYouDraw, 2)],
+      memory: TalkMemory.empty.copyWith(movesSinceLine: 0),
+      roll: 0,
+    );
+    expect(got?.line.id, 't');
+  });
 }

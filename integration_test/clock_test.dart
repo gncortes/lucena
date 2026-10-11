@@ -98,8 +98,7 @@ void main() {
     await clock.open();
     await clock.choosePosition(ClockPosition.top);
     clock.expectPositionValue('Both above the board');
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await board.openAt(_initialFen, white: '300+0', black: '300+0');
     board.expectClockAbove(Side.white);
     board.expectClockAbove(Side.black);

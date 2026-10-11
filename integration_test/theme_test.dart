@@ -94,11 +94,12 @@ void main() {
     await settings.chooseLanguage(AppLanguage.arabic);
     await settings.back();
 
-    settings.expectTitle('الإعدادات');
     settings.expectThemeValue('داكن');
     app.expectBrightness(Brightness.dark);
     app.expectDirection(TextDirection.rtl);
     app.expectNoClippedText();
+    await settings.backToMenu();
+    settings.expectTitle('الإعدادات');
 
     await settings.back();
     await home.expectVisible();

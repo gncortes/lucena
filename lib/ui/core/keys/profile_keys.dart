@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/rating_level.dart';
 
 abstract final class ProfileKeys {
+  /// Abre o teste de nível (T52).
+  static const placementTest = Key('profile.placementTest');
+
   static const screen = Key('profile.screen');
   static const nicknameField = Key('profile.nickname');
   static const saveButton = Key('profile.save');
@@ -26,4 +29,7 @@ abstract final class ProfileKeys {
   static const ratingValue = Key('profile.rating.value');
   static const ratingGames = Key('profile.rating.games');
   static const ratingChart = Key('profile.rating.chart');
+
+  /// O ⓘ do cartão do rating, que abre a explicação.
+  static const ratingHelp = Key('profile.rating.help');
 }

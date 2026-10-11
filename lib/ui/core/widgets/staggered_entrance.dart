@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// Um item de lista que entra em cascata: aparece subindo de leve, um pouco
 /// depois do anterior ([index]). Com "remover animações" no sistema, já entra
 /// pronto.
@@ -17,7 +19,7 @@ class StaggeredEntrance extends StatefulWidget {
 
   /// O atraso entre um item e o seguinte, e o máximo de itens que esperam
   /// (os de baixo, fora da tela, não precisam esperar mais).
-  static const step = Duration(milliseconds: 45);
+  static const step = AppMotion.stagger;
   static const maxDelayed = 8;
 
   @override
@@ -28,11 +30,11 @@ class _StaggeredEntranceState extends State<StaggeredEntrance>
     with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 320),
+    duration: AppMotion.component,
   );
   late final _curve = CurvedAnimation(
     parent: _controller,
-    curve: Curves.easeOutCubic,
+    curve: AppMotion.enter,
   );
   Timer? _delay;
   bool _started = false;
@@ -42,7 +44,7 @@ class _StaggeredEntranceState extends State<StaggeredEntrance>
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (AppMotion.of(context).disabled) {
       _controller.value = 1;
       return;
     }

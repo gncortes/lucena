@@ -14,6 +14,13 @@ abstract final class TourKeys {
   static const backButton = Key('tour.back');
   static const startButton = Key('tour.start');
   static const startRung = Key('tour.startRung');
+
+  /// No passo do nível: o cartão do teste, "Prefiro escolher minha faixa" e,
+  /// com a lista aberta, a volta ao teste.
+  static const takeTestCard = Key('tour.takeTestCard');
+  static const chooseByHand = Key('tour.chooseByHand');
+  static const takeTest = Key('tour.takeTest');
+  static const byHandHint = Key('tour.byHandHint');
   static const progress = Key('tour.progress');
   static const stepCounter = Key('tour.stepCounter');
   static const viktor = Key('tour.viktor');

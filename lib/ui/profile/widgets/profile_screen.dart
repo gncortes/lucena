@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/profile_cubit.dart';
-import 'rating_card.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
+import '../../core/theme/app_shape.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,6 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _takeTest() async {
+    final cubit = context.read<ProfileCubit>();
+    final used = await context.push<bool>(Routes.placementFrom('settings'));
+    if (used == true) await cubit.load();
+  }
+
   Future<void> _save(RatingLevel level) async {
     await context.read<ProfileCubit>().save(
       nickname: _nickname.text,
@@ -103,14 +111,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 24),
                 if (level != null)
                   _LevelField(level: level, onTap: () => _pickLevel(level)),
+                // O teste de nível de novo: não apaga progresso; usado o
+                // resultado, a faixa acima muda.
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    key: ProfileKeys.placementTest,
+                    onPressed: _takeTest,
+                    icon: const Icon(Icons.quiz_outlined),
+                    label: Text(l10n.placementTake),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 FilledButton(
                   key: ProfileKeys.saveButton,
                   onPressed: level == null ? null : () => _save(level),
                   child: Text(l10n.profileSave),
                 ),
-                const SizedBox(height: 32),
-                const RatingCard(),
+                const SizedBox(height: 16),
+                // O rating de finais fica no histórico, com os detalhes.
+                OutlinedButton.icon(
+                  key: ProfileKeys.ratingCard,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  onPressed: () => context.push(Routes.rating),
+                  icon: const Icon(Icons.show_chart_rounded),
+                  label: Text(l10n.ratingHistory),
+                ),
               ],
             ),
           ),
@@ -135,7 +163,7 @@ class _LevelField extends StatelessWidget {
       button: true,
       child: InkWell(
         key: ProfileKeys.levelField,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppShape.small),
         onTap: onTap,
         child: InputDecorator(
           decoration: InputDecoration(

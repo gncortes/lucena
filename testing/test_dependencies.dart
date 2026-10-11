@@ -1,5 +1,8 @@
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/placement/placement_repository.dart';
+import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
 import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
@@ -42,6 +45,9 @@ import 'fakes/fake_star_challenge_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_share_repository.dart';
+import 'fakes/fake_placement_repository.dart';
+import 'fakes/fake_conclusion_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
@@ -58,6 +64,7 @@ import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_progress_repository.dart';
 import 'fakes/fake_settings_repository.dart';
 import 'fakes/fake_voice_repository.dart';
+import 'fakes/fake_wiki.dart';
 import 'fakes/fake_speech_input_repository.dart';
 import 'fakes/fake_blind_log_repository.dart';
 
@@ -71,7 +78,10 @@ Dependencies testDependencies({
   SettingsRepository? settingsRepository,
   ProfileRepository? profileRepository,
   HapticsRepository? hapticsRepository,
+  ShareRepository? shareRepository,
+  PlacementRepository? placementRepository,
   OngoingGameRepository? ongoingGameRepository,
+  ConclusionRepository? conclusionRepository,
   PositionsRepository? positionsRepository,
   TrainingRepository? trainingRepository,
   OpponentRepository? opponentRepository,
@@ -103,10 +113,13 @@ Dependencies testDependencies({
     settingsRepository: settingsRepository ?? FakeSettingsRepository(),
     profileRepository: profileRepository ?? FakeProfileRepository(),
     hapticsRepository: hapticsRepository ?? FakeHapticsRepository(),
+    shareRepository: shareRepository ?? FakeShareRepository(),
+    placementRepository: placementRepository ?? FakePlacementRepository(),
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),
     gameReviewRepository: FakeGameReviewRepository(),
     ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
+    conclusionRepository: conclusionRepository ?? FakeConclusionRepository(),
     positionsRepository: positionsRepository ?? FakePositionsRepository(),
     trainingRepository: trainingRepository ?? FakeTrainingRepository(),
     opponentRepository: opponentRepository ?? FakeOpponentRepository(),
@@ -143,6 +156,7 @@ Dependencies testDependencies({
     voiceRepository: voiceRepository ?? FakeVoiceRepository(),
     speechInputRepository: FakeSpeechInputRepository(),
     blindLogRepository: FakeBlindLogRepository(),
+    wikiLinksRepository: FakeWikiLinksRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

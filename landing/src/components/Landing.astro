@@ -1,7 +1,9 @@
 ---
+import FeatureCard from './FeatureCard.astro';
 import Phone from './Phone.astro';
+import SiteFooter from './SiteFooter.astro';
 import { asset, links, locales, pageUrl, type Locale } from '../i18n';
-import type { Clip, Still } from '../media';
+import { clipSize, mediaDir, stills, type Clip, type Still } from '../media';
 
 interface Props {
   locale: Locale;
@@ -24,7 +26,14 @@ const phone = (clip: Clip) => ({
   playLabel: t.media.play,
   pauseLabel: t.media.pause,
 });
+const dir = mediaDir(locale);
+// As quatro telas do modo às cegas, em carrossel.
+const blindStills = ['blindMode', 'blindBoard', 'blindSquares', 'blindNone'] as const;
 const mail = (subject: string) => `mailto:${links.email}?subject=${encodeURIComponent(subject)}`;
+// Ícones dos cartões sem captura (traço de 24 px, no estilo do botão de tema).
+const icons = {
+  voice: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M8 21h8',
+} as const;
 const refUrls = [links.stockfish, links.maia, links.lichess, links.firebase, links.philidor];
 const opponents = [
   ['beachgoer', 'Coco', 1000],
@@ -97,7 +106,7 @@ const opponents = [
         <p class="hero__note">{t.hero.note}</p>
       </div>
       <div class="hero__media" data-hero>
-        <Phone {...shot('shortSide')} class="phone--back" />
+        <Phone {...shot('home')} class="phone--back" />
         <Phone {...phone('hero')} class="phone--hero" />
         <ul class="chips" aria-hidden="true">
           {t.hero.chips.map((chip) => <li>{chip}</li>)}
@@ -196,7 +205,7 @@ const opponents = [
               <span>{f.progression.bullets[2]}</span>
             </li>
           </ol>
-          <ul class="pills">{f.progression.bullets.slice(1, 2).map((b) => <li>{b}</li>)}</ul>
+          <ul class="pills">{[f.progression.bullets[1], ...f.progression.bullets.slice(3)].map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media">
           <Phone {...shot('journeyChallenge')} />
@@ -205,25 +214,79 @@ const opponents = [
 
       <article class="feature feature--flip" data-reveal>
         <div class="feature__text">
-          <h3>{f.lessons.title}</h3>
-          <p>{f.lessons.body}</p>
-          <ul class="ticks">{f.lessons.bullets.map((b) => <li>{b}</li>)}</ul>
+          <h3>{f.placement.title}</h3>
+          <p>{f.placement.body}</p>
+          <ul class="ticks">{f.placement.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media feature__media--pair">
-          <Phone {...phone('queenRook')} />
-          <Phone {...shot('exercise')} />
+          <Phone {...phone('placement')} />
+          <Phone {...shot('placementResult')} />
         </div>
       </article>
 
       <article class="feature" data-reveal>
         <div class="feature__text">
-          <h3>{f.levels.title}</h3>
-          <p>{f.levels.body}</p>
-          <ul class="ticks">{f.levels.bullets.map((b) => <li>{b}</li>)}</ul>
+          <h3>{f.lessons.title}</h3>
+          <p>{f.lessons.body}</p>
+          <p class="route__label">{t.features.route.label}</p>
+          <ol class="route">
+            {
+              t.features.route.steps.map((step) => (
+                <li>
+                  <strong>{step.title}</strong>
+                  <span>{step.body}</span>
+                </li>
+              ))
+            }
+          </ol>
+          <ul class="ticks">{f.lessons.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="feature__media feature__media--pair">
+          <Phone {...phone('lesson')} />
+          <Phone {...shot('lessonChapters')} />
+        </div>
+      </article>
+
+      <div class="feature-duo">
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('realGame')} />
+          <div class="feature__text">
+            <h3>{f.realGames.title}</h3>
+            <p>{f.realGames.body}</p>
+            <ul class="ticks">{f.realGames.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('solvedExercise')} />
+          <div class="feature__text">
+            <h3>{f.exercises.title}</h3>
+            <p>{f.exercises.body}</p>
+            <ul class="ticks">{f.exercises.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+      </div>
+
+      <div class="feature-duo">
+        <FeatureCard {...f.school} image="opponents/master.webp" />
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('stars')} />
+          <div class="feature__text">
+            <h3>{f.stars.title}</h3>
+            <p>{f.stars.body}</p>
+            <ul class="ticks">{f.stars.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+      </div>
+
+      <article class="feature feature--flip" data-reveal>
+        <div class="feature__text">
+          <h3>{f.journey.title}</h3>
+          <p>{f.journey.body}</p>
+          <ul class="ticks">{f.journey.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
         <div class="feature__media feature__media--pair">
           <Phone {...phone('journey')} />
-          <Phone {...shot('stars')} />
+          <Phone {...shot('achievements')} />
         </div>
       </article>
 
@@ -236,7 +299,8 @@ const opponents = [
             <ul class="ticks">{f.speedrun.bullets.map((b) => <li>{b}</li>)}</ul>
           </div>
         </article>
-        <article class="feature feature--card feature--card-text" data-reveal>
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('gameEnd')} />
           <div class="feature__text">
             <h3>{f.analysis.title}</h3>
             <p>{f.analysis.body}</p>
@@ -245,15 +309,91 @@ const opponents = [
         </article>
       </div>
 
-      <article class="feature feature--flip" data-reveal>
+      <article class="feature" data-reveal>
         <div class="feature__text">
-          <h3>{f.custom.title}</h3>
-          <p>{f.custom.body}</p>
+          <h3>{f.marathon.title}</h3>
+          <p>{f.marathon.body}</p>
+          <ul class="ticks">{f.marathon.bullets.map((b) => <li>{b}</li>)}</ul>
         </div>
-        <div class="feature__media">
-          <Phone {...shot('theme')} />
+        <div class="feature__media feature__media--pair">
+          <Phone {...phone('marathon')} />
+          <Phone {...shot('record')} />
         </div>
       </article>
+
+      <article class="feature feature--flip" data-reveal>
+        <div class="feature__text">
+          <h3>{f.blind.title}</h3>
+          <p>{f.blind.body}</p>
+          <ul class="ticks">{f.blind.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="feature__media">
+          <div class="carousel" data-carousel>
+            <figure class="phone carousel__phone">
+              <div class="phone__screen">
+                <div class="carousel__track">
+                  {
+                    blindStills.map((still) => (
+                      <img
+                        src={asset(`${dir}/${stills[still]}.webp`)}
+                        alt={t.media[still]}
+                        width={clipSize.width}
+                        height={clipSize.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ))
+                  }
+                  <img
+                    src={asset(`${dir}/${stills[blindStills[0]]}.webp`)}
+                    alt=""
+                    aria-hidden="true"
+                    width={clipSize.width}
+                    height={clipSize.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+            </figure>
+            <p class="carousel__caption" aria-live="polite" data-carousel-caption>{t.features.blindShots[0]}</p>
+            <div class="carousel__dots">
+              {
+                t.features.blindShots.map((caption, i) => (
+                  <button
+                    type="button"
+                    aria-label={caption}
+                    aria-current={i === 0 ? 'true' : undefined}
+                    data-caption={caption}
+                  />
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="feature-duo feature-duo--single">
+        <FeatureCard {...f.voice} icon={icons.voice} />
+      </div>
+
+      <div class="feature-duo">
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('profile')} />
+          <div class="feature__text">
+            <h3>{f.progress.title}</h3>
+            <p>{f.progress.body}</p>
+            <ul class="ticks">{f.progress.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        </article>
+        <article class="feature feature--card" data-reveal>
+          <Phone {...shot('theme')} />
+          <div class="feature__text">
+            <h3>{f.custom.title}</h3>
+            <p>{f.custom.body}</p>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -367,35 +507,9 @@ const opponents = [
   </section>
 </main>
 
-<footer class="foot">
-  <div class="wrap foot__grid">
-    <div>
-      <a class="brand" href={pageUrl(locale)}>
-        <img src={asset('logo.webp')} alt="" width="32" height="32" loading="lazy" />
-        <span>Lucena</span>
-      </a>
-      <p>{t.footer.tagline}</p>
-    </div>
-    <p class="foot__dev">
-      {t.footer.dev} <a href={mail('Lucena')}>{links.email}</a>
-    </p>
-  </div>
-</footer>
+<SiteFooter locale={locale} />
 
 <script>
-  // Tema: alterna entre claro e escuro e guarda a escolha neste navegador.
-  const root = document.documentElement;
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
-    const current =
-      root.dataset.theme ??
-      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    const next = current === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    try {
-      localStorage.setItem('theme', next);
-    } catch {}
-  });
-
   // Entrada das seções ao rolar e contagem dos números. Sem JS, tudo aparece.
   const reveal = new IntersectionObserver(
     (entries) => {
@@ -467,5 +581,64 @@ const opponents = [
       }
     });
     if (!reduced) observer.observe(phone);
+  }
+
+  // Carrossel do modo às cegas: desliza para a esquerda a cada 2,8 s. Depois
+  // da 4ª tela vem uma cópia da 1ª, e o trilho volta ao início sem transição.
+  // Para com o mouse em cima e fora da tela; com movimento reduzido, só os pontos.
+  for (const carousel of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+    const track = carousel.querySelector<HTMLElement>('.carousel__track')!;
+    const caption = carousel.querySelector<HTMLElement>('[data-carousel-caption]')!;
+    const dots = [...carousel.querySelectorAll<HTMLButtonElement>('.carousel__dots button')];
+    const count = dots.length;
+    let index = 0;
+    let timer: number | undefined;
+    let visible = false;
+    let hovered = false;
+
+    const show = (next: number, animate = true) => {
+      index = next;
+      track.style.transition = animate && !reduced ? '' : 'none';
+      track.style.transform = `translateX(${-index * 100}%)`;
+      const current = index % count;
+      caption.textContent = dots[current].dataset.caption!;
+      dots.forEach((dot, i) => dot.toggleAttribute('aria-current', i === current));
+    };
+    track.addEventListener('transitionend', () => {
+      if (index < count) return;
+      show(0, false);
+      void track.offsetWidth;
+    });
+    const stop = () => {
+      clearInterval(timer);
+      timer = undefined;
+    };
+    const start = () => {
+      stop();
+      if (reduced || !visible || hovered) return;
+      timer = window.setInterval(() => show(index + 1), 2800);
+    };
+    dots.forEach((dot, i) =>
+      dot.addEventListener('click', () => {
+        show(i);
+        start();
+      }),
+    );
+    carousel.addEventListener('mouseenter', () => {
+      hovered = true;
+      stop();
+    });
+    carousel.addEventListener('mouseleave', () => {
+      hovered = false;
+      start();
+    });
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else stop();
+      },
+      { threshold: 0.35 },
+    ).observe(carousel);
   }
 </script>

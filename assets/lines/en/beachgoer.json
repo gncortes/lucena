@@ -213,6 +213,27 @@
       "text": "Rough out here, buddy. But I'm not letting go of my umbrella."
     },
     {
+      "id": "beachgoer.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "What if we call it a draw and share a coconut? Nobody needs to know."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Think it over, buddy: draw now, and later I'll accept one from you too."
+    },
+    {
+      "id": "beachgoer.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Look at that sunset, man... way too nice a day to checkmate anyone."
+    },
+    {
       "id": "beachgoer.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 1,
@@ -855,6 +876,76 @@
       "intensity": 3,
       "emotion": "happy",
       "text": "Gonna pass, no worries. I'm cruising, buddy. Let's ride it out."
+    },
+    {
+      "id": "beachgoer.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hey buddy, where did the mate go? It was right there. Tide took it?"
+    },
+    {
+      "id": "beachgoer.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Relax, no rush... but the sun will set and you will still be here."
+    },
+    {
+      "id": "beachgoer.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Come on, man, this is a draw. Shake hands and hit the beach?"
+    },
+    {
+      "id": "beachgoer.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "You blew it, huh? Now it is a draw. Accept it, hurts less."
+    },
+    {
+      "id": "beachgoer.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "I need to go, buddy. The crew is waiting for me at the kiosk."
+    },
+    {
+      "id": "beachgoer.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I knew it was a draw. You did not take it, made me miss the wave, but fine."
+    },
+    {
+      "id": "beachgoer.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Told you, buddy. A draw. Could have hit the water half an hour ago."
+    },
+    {
+      "id": "beachgoer.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "See? It was a draw since back then. But that is fine, it was fun."
+    },
+    {
+      "id": "beachgoer.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "A draw, just like I said. Coconut to forget about it?"
+    },
+    {
+      "id": "beachgoer.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "I warned you, man. The tide does not forgive the slow."
     }
   ]
 }

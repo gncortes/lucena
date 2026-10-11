@@ -18,6 +18,7 @@ import '../view_models/journey_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o
 /// progresso, o próximo desafio em destaque e todos os desafios em grade, com
@@ -86,7 +87,11 @@ class RungScreen extends StatelessWidget {
                                   ),
                             ),
                             const SizedBox(height: 12),
-                            TeacherSpeech(teacher: teacher, text: reunion),
+                            TeacherSpeech(
+                              speechContext: SpeechContext.teaching,
+                              teacher: teacher,
+                              text: reunion,
+                            ),
                           ],
                         ),
                       ),
@@ -179,7 +184,7 @@ class _SpecialChallenge extends StatelessWidget {
               ? Icons.lock_outline
               : switch (special.mode) {
                   ChallengeMode.speedrun => Icons.timer_outlined,
-                  ChallengeMode.marathon => Icons.hourglass_bottom_rounded,
+                  ChallengeMode.marathon => Icons.all_inclusive_rounded,
                   _ => Icons.record_voice_over_outlined,
                 },
           color: open ? colors.onTertiaryContainer : colors.outline,
@@ -309,7 +314,7 @@ class _Header extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppShape.small),
             child: AnimatedProgress(
               value: total == 0 ? 0 : done / total,
               minHeight: 10,

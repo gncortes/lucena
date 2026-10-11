@@ -50,6 +50,7 @@ class EndgameLesson {
     required this.keyPositions,
     required this.practice,
     this.references = const [],
+    this.inReview = false,
   });
 
   /// `rook.lucena`, `mates.bishopKnight.w`... Estável: o progresso é gravado
@@ -71,9 +72,16 @@ class EndgameLesson {
   final Practice practice;
   final List<Reference> references;
 
+  /// A aula ainda está em revisão (abaixo da nota A): a tela avisa o aluno.
+  final bool inReview;
+
   /// Todas as estrelas dos exercícios.
   int get maxScore =>
       exercises.fold(0, (total, exercise) => total + exercise.stars);
+
+  /// A referência do `ref` de um passo ou de uma posição-base. Nula se [ref]
+  /// é nulo ou não há. Ver [Reference.resolve].
+  Reference? reference(String? ref) => Reference.resolve(references, ref);
 
   Exercise? exercise(String id) {
     for (final exercise in exercises) {
@@ -154,18 +162,54 @@ class Reference {
   };
 
   String? get url => fields['url'];
+
+  /// A referência que um `ref` de passo ou de posição-base aponta: `id`, ou
+  /// `id#ply` quando a mesma partida aparece parada noutro lance (o ply troca
+  /// o trecho da [url] depois do `#`). Nula sem [ref] ou sem a referência.
+  static Reference? resolve(List<Reference> references, String? ref) {
+    if (ref == null) return null;
+    final hash = ref.indexOf('#');
+    final id = hash < 0 ? ref : ref.substring(0, hash);
+    final ply = hash < 0 ? null : ref.substring(hash + 1);
+    for (final reference in references) {
+      if (reference.id != id) continue;
+      final url = reference.url;
+      if (ply == null || url == null) return reference;
+      final base = url.split('#').first;
+      return Reference(
+        id: reference.id,
+        kind: reference.kind,
+        fields: {...reference.fields, 'url': '$base#$ply'},
+      );
+    }
+    return null;
+  }
 }
 
 /// O que o aluno já fez numa aula de final.
 class EndgameLessonProgress {
   const EndgameLessonProgress({
     this.lessonDone = false,
+    this.parts = const {},
     this.stars = const {},
     this.exercise,
   });
 
-  /// A lição (os passos) foi concluída.
+  /// A lição inteira (todas as partes) foi concluída. Num progresso gravado
+  /// antes das partes (T51), é o que diz que todas estão feitas.
   final bool lessonDone;
+
+  /// As partes concluídas, pelo id.
+  final Set<String> parts;
+
+  /// As partes de [lesson] já feitas. Lição concluída no formato antigo:
+  /// todas.
+  Set<String> partsDone(EndgameLesson lesson) => lessonDone
+      ? {for (final part in lesson.lesson.sections) part.id}
+      : {
+          for (final part in lesson.lesson.sections)
+            if (parts.contains(part.id)) part.id,
+        };
 
   /// As estrelas ganhas em cada exercício resolvido, pelo id dele.
   final Map<String, int> stars;
@@ -173,22 +217,36 @@ class EndgameLessonProgress {
   /// O exercício aberto quando o app fechou.
   final ExerciseCheckpoint? exercise;
 
-  /// A nota: as estrelas ganhas somadas.
-  int get score => stars.values.fold(0, (total, each) => total + each);
+  /// A nota: as estrelas ganhas nos exercícios que a aula tem hoje. A
+  /// estrela de um exercício que saiu da aula fica gravada, mas não conta.
+  int scoreOf(EndgameLesson lesson) {
+    var total = 0;
+    for (final exercise in lesson.exercises) {
+      total += stars[exercise.id] ?? 0;
+    }
+    return total;
+  }
+
+  /// Quantos exercícios da aula já foram resolvidos.
+  int solvedOf(EndgameLesson lesson) =>
+      lesson.exercises.where((e) => stars.containsKey(e.id)).length;
 
   EndgameLessonProgress copyWith({
     bool? lessonDone,
+    Set<String>? parts,
     Map<String, int>? stars,
     ExerciseCheckpoint? exercise,
     bool clearExercise = false,
   }) => EndgameLessonProgress(
     lessonDone: lessonDone ?? this.lessonDone,
+    parts: parts ?? this.parts,
     stars: stars ?? this.stars,
     exercise: clearExercise ? null : exercise ?? this.exercise,
   );
 
   Map<String, dynamic> toJson() => {
     'lessonDone': lessonDone,
+    'parts': parts.toList()..sort(),
     'stars': stars,
     'exercise': ?exercise?.toJson(),
   };
@@ -197,6 +255,10 @@ class EndgameLessonProgress {
     if (json is! Map<String, dynamic>) return const EndgameLessonProgress();
     return EndgameLessonProgress(
       lessonDone: json['lessonDone'] as bool? ?? false,
+      parts: {
+        for (final part in json['parts'] as List? ?? const [])
+          if (part is String) part,
+      },
       stars: {
         for (final MapEntry(:key, :value)
             in (json['stars'] as Map<String, dynamic>? ?? const {}).entries)
@@ -216,9 +278,13 @@ class ExerciseCheckpoint {
     this.mistakes = 0,
     this.hints = 0,
     this.open = true,
+    this.startedAt,
   });
 
   final String exerciseId;
+
+  /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
+  final DateTime? startedAt;
 
   /// O tabuleiro, quando já mudou desde o começo.
   final String? fen;
@@ -236,6 +302,7 @@ class ExerciseCheckpoint {
     'mistakes': mistakes,
     'hints': hints,
     'open': open,
+    'startedAt': ?startedAt?.toUtc().toIso8601String(),
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -249,6 +316,7 @@ class ExerciseCheckpoint {
       mistakes: json['mistakes'] as int? ?? 0,
       hints: json['hints'] as int? ?? 0,
       open: json['open'] as bool? ?? false,
+      startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
     );
   }
 
@@ -260,10 +328,12 @@ class ExerciseCheckpoint {
       other.turn == turn &&
       other.mistakes == mistakes &&
       other.hints == hints &&
-      other.open == open;
+      other.open == open &&
+      other.startedAt == startedAt;
 
   @override
-  int get hashCode => Object.hash(exerciseId, fen, turn, mistakes, hints, open);
+  int get hashCode =>
+      Object.hash(exerciseId, fen, turn, mistakes, hints, open, startedAt);
 }
 
 /// O progresso em todas as aulas de finais.

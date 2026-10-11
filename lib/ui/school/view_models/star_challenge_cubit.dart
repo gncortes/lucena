@@ -10,6 +10,8 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/game_sound.dart';
+import '../../../domain/models/haptic_event.dart';
+import '../../core/sound/game_haptics.dart';
 
 enum ChallengePhase {
   /// O tabuleiro montado, esperando o "vai".
@@ -34,6 +36,7 @@ class StarChallengeState {
     this.collected = 0,
     this.points = 0,
     this.lastPoints = 0,
+    this.byKind = const {},
     this.phase = ChallengePhase.ready,
     this.timeLeft = Duration.zero,
     this.best,
@@ -56,6 +59,12 @@ class StarChallengeState {
   final int collected;
   final int points;
   final int lastPoints;
+
+  /// Quantas estrelas de cada cor foram pegas.
+  final Map<StarKind, int> byKind;
+
+  /// Quantas estrelas desta cor foram pegas.
+  int countOf(StarKind kind) => byKind[kind] ?? 0;
   final ChallengePhase phase;
   final Duration timeLeft;
 
@@ -94,6 +103,7 @@ class StarChallengeState {
     int? collected,
     int? points,
     int? lastPoints,
+    Map<StarKind, int>? byKind,
     ChallengePhase? phase,
     Duration? timeLeft,
     int? best,
@@ -111,6 +121,7 @@ class StarChallengeState {
     collected: collected ?? this.collected,
     points: points ?? this.points,
     lastPoints: lastPoints ?? this.lastPoints,
+    byKind: byKind ?? this.byKind,
     phase: phase ?? this.phase,
     timeLeft: timeLeft ?? this.timeLeft,
     best: best ?? this.best,
@@ -127,6 +138,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     required this._progress,
     required this._now,
     this._sounds,
+    this._haptics,
     Random? random,
     this.tickEvery = const Duration(milliseconds: 100),
   }) : _random = random ?? Random(),
@@ -141,6 +153,9 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   // Os sons do jogo; nulo: o desafio fica mudo.
   final GameSounds? _sounds;
+
+  // A vibração; nula: sem retorno tátil.
+  final GameHaptics? _haptics;
 
   // O aviso de pouco tempo toca uma vez por desafio.
   var _lowTimeWarned = false;
@@ -241,6 +256,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     if (moved == null) return;
     final caught = move.to == state.star;
     unawaited(_sounds?.play(caught ? GameSound.capture : GameSound.move));
+    unawaited(_haptics?.play(caught ? HapticEvent.capture : HapticEvent.move));
     _board = StarChallengeRules.respawnIfStuck(moved, _random);
     final square = StarChallengeRules.pieceSquare(_board)!;
     final after = state.copyWith(
@@ -258,6 +274,10 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
           collected: state.collected + 1,
           points: state.points + worth,
           lastPoints: worth,
+          byKind: {
+            ...state.byKind,
+            state.starKind: state.countOf(state.starKind) + 1,
+          },
         ),
         square,
       ),

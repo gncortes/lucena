@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import 'game_setup.dart';
 import 'journey.dart';
+import '../use_cases/wiki_markup.dart';
 
 /// A Escola do Viktor: as aulas do iniciante, em módulos, na ordem em que se
 /// aprende. As falas de cada passo ficam à parte, por idioma ([LessonTexts]).
@@ -41,18 +42,83 @@ class CourseModule {
 
 /// Uma aula: uma conversa com o Viktor, passo a passo.
 class Lesson {
-  const Lesson({required this.id, required this.steps});
+  const Lesson({required this.id, required this.steps, this.parts = const []});
+
+  /// Uma aula dividida em partes curtas (T51): os passos são os das partes,
+  /// em ordem.
+  Lesson.parted({required this.id, required this.parts})
+    : steps = [for (final part in parts) ...part.steps];
 
   /// `pieces.rook`, `mates.queen`... Estável entre versões: o progresso é
   /// gravado por ele.
   final String id;
+
+  /// Todos os passos, em ordem.
   final List<LessonStep> steps;
+
+  /// As partes. Vazia: aula no formato antigo, lida como uma parte só
+  /// ([sections]).
+  final List<LessonPart> parts;
+
+  /// O id da parte única de uma aula no formato antigo.
+  static const wholeId = 'main';
+
+  /// As partes, ou a aula inteira como uma parte só.
+  List<LessonPart> get sections =>
+      parts.isEmpty ? [LessonPart(id: wholeId, steps: steps)] : parts;
+
+  /// A parte de id [id]. Nula se não há.
+  LessonPart? part(String id) {
+    for (final part in sections) {
+      if (part.id == id) return part;
+    }
+    return null;
+  }
+
+  /// A parte que contém o passo de índice [step] (na aula inteira) e o
+  /// índice dele dentro dela. Serve para ler um progresso antigo, gravado
+  /// pelo índice na aula inteira.
+  (LessonPart, int)? locate(int step) {
+    var start = 0;
+    for (final part in sections) {
+      if (step < start + part.steps.length) return (part, step - start);
+      start += part.steps.length;
+    }
+    return null;
+  }
+
+  /// Só os passos de [part], como uma aula: é o que a tela da lição toca.
+  Lesson only(LessonPart part) => Lesson(id: id, steps: part.steps);
+}
+
+/// Uma parte curta de uma aula (T51): título e resumo vêm das falas
+/// (`part.<id>.title`); termina numa prática do aluno.
+class LessonPart {
+  const LessonPart({required this.id, required this.steps});
+
+  final String id;
+  final List<LessonStep> steps;
+
+  /// O tempo estimado, em minutos: uns 3 de pensar, mais meio minuto por
+  /// conversa, uns segundos por lance mostrado e um minuto por prática.
+  int get minutes {
+    var seconds = 0;
+    for (final step in steps) {
+      seconds += switch (step) {
+        ThinkStep() => ThinkStep.typicalSeconds,
+        DemoStep(:final line) => 20 + 10 * line.length,
+        MoveStep() || PlayStep() => 60,
+        _ => 30,
+      };
+    }
+    return (seconds / 60).ceil();
+  }
 }
 
 /// Um passo da aula. O Viktor fala em todos; o que muda é o que o aluno faz
 /// no tabuleiro.
 sealed class LessonStep {
-  const LessonStep({required this.id, required this.fen});
+  const LessonStep({required this.id, required this.fen, this.ref});
 
   /// Único dentro da aula; as falas são procuradas por `<aula>.<passo>`.
   final String id;
@@ -60,6 +126,11 @@ sealed class LessonStep {
   /// A posição do tabuleiro no passo. Nula: o passo é só conversa, sem
   /// tabuleiro.
   final String? fen;
+
+  /// O id de uma referência da aula (`EndgameLesson.references`) de onde vem
+  /// a posição: a partida ou o estudo que a tela abre no Lichess. Nulo nas
+  /// aulas da escola.
+  final String? ref;
 
   /// O lado do aluno, que fica embaixo: o lado que joga no FEN.
   Side get side =>
@@ -72,6 +143,7 @@ class TalkStep extends LessonStep {
   const TalkStep({
     required super.id,
     super.fen,
+    super.ref,
     this.arrows = const [],
     this.marks = const [],
     this.view,
@@ -97,6 +169,7 @@ class StarsStep extends LessonStep {
   const StarsStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.stars,
   });
 
@@ -114,6 +187,7 @@ class TapStep extends LessonStep {
   const TapStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.targets,
     this.coordinates = true,
   });
@@ -132,6 +206,7 @@ class MoveStep extends LessonStep {
   const MoveStep({
     required super.id,
     required String super.fen,
+    super.ref,
     required this.line,
   });
 
@@ -158,6 +233,7 @@ class PlayStep extends LessonStep {
   const PlayStep({
     required super.id,
     required String super.fen,
+    super.ref,
     this.goal = PlayGoal.mate,
     this.opponent = const OpponentRef(kind: OpponentKind.stockfish),
   });
@@ -171,16 +247,112 @@ class PlayStep extends LessonStep {
   String get fen => super.fen!;
 }
 
+/// Pensar antes da explicação (T51): o aluno estuda a posição sozinho, o
+/// tempo que quiser (um cronômetro conta para cima, T60), mexendo as peças à
+/// vontade; as dicas, uma a uma, e "Ver explicação" ficam à mão desde o
+/// começo.
+class ThinkStep extends LessonStep {
+  const ThinkStep({
+    required super.id,
+    required String super.fen,
+    super.ref,
+    this.hints = 1,
+    this.ask = ThinkAsk.plan,
+    this.arrows = const [],
+    this.marks = const [],
+    this.view,
+  });
+
+  /// O que o Viktor pede ao aluno: o melhor plano ou a sequência que ganha.
+  final ThinkAsk ask;
+
+  /// Quem joga na posição (não o lado do aluno: na posição de Philidor,
+  /// jogam as pretas e o aluno pensa pelas brancas).
+  Side get turn =>
+      fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
+
+  /// Quanto um aluno costuma pensar numa posição, para a estimativa de tempo
+  /// da parte ([LessonPart.minutes]).
+  static const typicalSeconds = 180;
+
+  /// Quantas dicas o passo tem (`<passo>.hint1`...).
+  final int hints;
+
+  /// Setas e casas que aparecem com a primeira dica.
+  final List<(String, String)> arrows;
+  final List<String> marks;
+  final Side? view;
+
+  @override
+  String get fen => super.fen!;
+
+  @override
+  Side get side => view ?? super.side;
+}
+
+/// O que o Viktor pede num passo de pensar.
+enum ThinkAsk {
+  /// Sem sequência forçada: qual é o melhor plano.
+  plan,
+
+  /// Há uma sequência que ganha (ou salva) direto: qual é.
+  line;
+
+  static ThinkAsk fromCode(String? code) =>
+      code == 'line' ? ThinkAsk.line : ThinkAsk.plan;
+}
+
+/// O professor joga (T51): o app faz os lances da [line], dos dois lados,
+/// um de cada vez, e o Viktor explica cada um (`<passo>.m1`...).
+class DemoStep extends LessonStep {
+  const DemoStep({
+    required super.id,
+    required String super.fen,
+    super.ref,
+    required this.line,
+    this.view,
+  });
+
+  final List<DemoMove> line;
+  final Side? view;
+
+  @override
+  String get fen => super.fen!;
+
+  @override
+  Side get side => view ?? super.side;
+}
+
+/// Um lance da demonstração, com as setas e casas que o acompanham.
+class DemoMove {
+  const DemoMove({
+    required this.uci,
+    this.arrows = const [],
+    this.marks = const [],
+  });
+
+  final String uci;
+  final List<(String, String)> arrows;
+  final List<String> marks;
+}
+
 /// O que conta como cumprir um [PlayStep].
 enum PlayGoal {
   /// Dar xeque-mate.
   mate,
 
   /// Promover um peão (sem afogar o rei).
-  promote;
+  promote,
 
-  static PlayGoal fromCode(String? code) =>
-      code == 'promote' ? PlayGoal.promote : PlayGoal.mate;
+  /// Segurar o empate: nas aulas de defesa (T51), o aluno defende contra a
+  /// máquina.
+  draw;
+
+  static PlayGoal fromCode(String? code) => switch (code) {
+    'promote' => PlayGoal.promote,
+    'draw' => PlayGoal.draw,
+    _ => PlayGoal.mate,
+  };
 }
 
 /// As falas do Viktor num idioma: as dos passos das aulas, do tour e as de
@@ -203,11 +375,19 @@ class LessonTexts {
     return texts[index % texts.length];
   }
 
-  String moduleTitle(String moduleId) => say('module.$moduleId') ?? moduleId;
+  /// A fala de [key] só com o texto visível, sem a marcação dos nomes
+  /// (`{{Andersson|ulf-andersson}}`): para títulos, resumos e o que não
+  /// desenha o link. Nula se não há.
+  String? plain(String key, [int index = 0]) {
+    final text = say(key, index);
+    return text == null ? null : WikiMarkup.plain(text);
+  }
 
-  String lessonTitle(String lessonId) => say('$lessonId.title') ?? lessonId;
+  String moduleTitle(String moduleId) => plain('module.$moduleId') ?? moduleId;
 
-  String? lessonSummary(String lessonId) => say('$lessonId.summary');
+  String lessonTitle(String lessonId) => plain('$lessonId.title') ?? lessonId;
+
+  String? lessonSummary(String lessonId) => plain('$lessonId.summary');
 
   /// O que o Viktor diz ao abrir o passo.
   String? step(String lessonId, String stepId) => say('$lessonId.$stepId');
@@ -217,6 +397,20 @@ class LessonTexts {
 
   /// O que ele diz quando o passo é cumprido.
   String? done(String lessonId, String stepId) => say('$lessonId.$stepId.done');
+
+  /// A [number]-ésima dica (de 1 em diante) de um passo de pensar.
+  String? thinkHint(String lessonId, String stepId, int number) =>
+      say('$lessonId.$stepId.hint$number');
+
+  /// A fala do [number]-ésimo lance (de 1 em diante) de uma demonstração.
+  String? demoMove(String lessonId, String stepId, int number) =>
+      say('$lessonId.$stepId.m$number');
+
+  /// O título e o resumo de uma parte.
+  String? partTitle(String lessonId, String partId) =>
+      plain('$lessonId.part.$partId.title');
+  String? partSummary(String lessonId, String partId) =>
+      plain('$lessonId.part.$partId.summary');
 
   /// Junta [fallback] por baixo: chave que falta aqui vem dele.
   LessonTexts over(LessonTexts fallback) =>
@@ -271,9 +465,28 @@ class LessonCheckpoint {
     this.turn = 0,
     this.moves = const [],
     this.open = true,
+    this.part,
+    this.stepStartedAt,
+    this.hintsShown = 0,
+    this.demoMove = 0,
   });
 
   final String lessonId;
+
+  /// A parte aberta (aula em partes, T51). Nula: checkpoint da aula inteira
+  /// ([step] conta desde o começo da aula); numa aula de finais, a parte é
+  /// achada por `Lesson.locate`.
+  final String? part;
+
+  /// Quando o passo em andamento abriu: o cronômetro do passo (T60) continua
+  /// daqui ao reabrir o app.
+  final DateTime? stepStartedAt;
+
+  /// Quantas dicas do passo `think` já apareceram.
+  final int hintsShown;
+
+  /// Quantos lances da demonstração já foram jogados.
+  final int demoMove;
 
   /// O índice do passo.
   final int step;
@@ -302,6 +515,10 @@ class LessonCheckpoint {
     turn: turn,
     moves: moves,
     open: open ?? this.open,
+    part: part,
+    stepStartedAt: stepStartedAt,
+    hintsShown: hintsShown,
+    demoMove: demoMove,
   );
 
   Map<String, dynamic> toJson() => {
@@ -312,6 +529,10 @@ class LessonCheckpoint {
     'turn': turn,
     'moves': moves,
     'open': open,
+    'part': ?part,
+    'stepStartedAt': ?stepStartedAt?.toUtc().toIso8601String(),
+    if (hintsShown > 0) 'hintsShown': hintsShown,
+    if (demoMove > 0) 'demoMove': demoMove,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -333,6 +554,15 @@ class LessonCheckpoint {
           if (move is String) move,
       ],
       open: json['open'] as bool? ?? false,
+      part: json['part'] as String?,
+      // Checkpoint de antes da T60: só o passo de pensar guardava o começo.
+      stepStartedAt: DateTime.tryParse(
+        json['stepStartedAt'] as String? ??
+            json['thinkStartedAt'] as String? ??
+            '',
+      ),
+      hintsShown: json['hintsShown'] as int? ?? 0,
+      demoMove: json['demoMove'] as int? ?? 0,
     );
   }
 
@@ -345,7 +575,11 @@ class LessonCheckpoint {
       _sameList(other.collected, collected) &&
       other.turn == turn &&
       _sameList(other.moves, moves) &&
-      other.open == open;
+      other.open == open &&
+      other.part == part &&
+      other.stepStartedAt == stepStartedAt &&
+      other.hintsShown == hintsShown &&
+      other.demoMove == demoMove;
 
   @override
   int get hashCode => Object.hash(
@@ -356,6 +590,10 @@ class LessonCheckpoint {
     turn,
     Object.hashAll(moves),
     open,
+    part,
+    stepStartedAt,
+    hintsShown,
+    demoMove,
   );
 
   static bool _sameList(List<String> a, List<String> b) {

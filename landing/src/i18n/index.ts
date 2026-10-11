@@ -22,7 +22,7 @@ export const fallbackLocale: Locale = 'en';
 
 export const links = {
   tester: 'https://appdistribution.firebase.dev/i/8f905d22a0d826e5',
-  email: 'novaiscortesgabriel729@gmail.com',
+  email: 'gncortes.apps@gmail.com',
   firebase: 'https://firebase.google.com/docs/app-distribution',
   stockfish: 'https://stockfishchess.org',
   maia: 'https://www.maiachess.com',
@@ -36,3 +36,7 @@ export const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 export const pageUrl = (locale: Locale) =>
   `${import.meta.env.BASE_URL}${locales[locale].path}`;
+
+/** A política de privacidade em [locale] (o caminho muda com o idioma). */
+export const privacyUrl = (locale: Locale) =>
+  `${pageUrl(locale)}${locales[locale].dict.privacy.slug}/`;

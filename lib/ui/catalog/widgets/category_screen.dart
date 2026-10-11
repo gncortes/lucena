@@ -12,6 +12,8 @@ import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Os finais de uma categoria, cada um numa seção com as posições dele já
 /// abertas em grade: o jogador toca na posição e vai direto para a partida.
@@ -136,9 +138,7 @@ class _SectionHeader extends StatelessWidget {
               // A seta gira para baixo com a seção aberta e para cima fechada.
               AnimatedRotation(
                 turns: section.expanded ? 0 : 0.5,
-                duration: MediaQuery.disableAnimationsOf(context)
-                    ? Duration.zero
-                    : _Collapsible.duration,
+                duration: AppMotion.of(context).state,
                 child: Icon(Icons.expand_more, color: colors.onSurfaceVariant),
               ),
             ],
@@ -158,16 +158,12 @@ class _Collapsible extends StatelessWidget {
   final bool expanded;
   final Widget child;
 
-  static const duration = Duration(milliseconds: 200);
-
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween(end: expanded ? 1 : 0),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : duration,
-      curve: Curves.easeInOut,
+      duration: AppMotion.of(context).state,
+      curve: AppMotion.move,
       child: child,
       builder: (context, factor, child) {
         if (factor == 0) return const SizedBox.shrink();
@@ -303,7 +299,7 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -9,6 +9,8 @@ import '../../core/l10n/run_time.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/tour_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Uma demonstração curta do que o passo do tour apresenta: toca uma vez ao
 /// abrir e de novo a cada toque. Com "remover animações", aparece pronta.
@@ -48,7 +50,7 @@ class _TourDemoState extends State<TourDemo>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (AppMotion.of(context).disabled) {
       _controller.value = 1;
     } else if (_controller.isDismissed) {
       _controller.forward();
@@ -62,7 +64,7 @@ class _TourDemoState extends State<TourDemo>
   }
 
   void _replay() {
-    if (MediaQuery.disableAnimationsOf(context)) return;
+    if (AppMotion.of(context).disabled) return;
     _controller.forward(from: 0);
   }
 
@@ -75,7 +77,7 @@ class _TourDemoState extends State<TourDemo>
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
-          final t = Curves.easeInOut.transform(_controller.value);
+          final t = AppMotion.move.transform(_controller.value);
           return switch (widget.step) {
             TourStep.speedrun => _SpeedrunDemo(value: _controller.value),
             TourStep.journey => _JourneyDemo(
@@ -150,9 +152,9 @@ class _SpeedrunDemo extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppShape.small),
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: AppMotion.state,
                 child: PositionBoard(
                   key: ValueKey('$stage$mated'),
                   fen: mated ? after : fen,
@@ -185,7 +187,9 @@ class _SpeedrunDemo extends StatelessWidget {
                             height: 6,
                             margin: const EdgeInsetsDirectional.only(end: 4),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
+                              borderRadius: BorderRadius.circular(
+                                AppShape.small,
+                              ),
                               color: i < stage || (i == stage && mated)
                                   ? colors.primary
                                   : colors.outlineVariant,
@@ -211,7 +215,7 @@ class _SpeedrunDemo extends StatelessWidget {
                   const SizedBox(height: 8),
                   AnimatedOpacity(
                     opacity: mated ? 1 : 0,
-                    duration: const Duration(milliseconds: 200),
+                    duration: AppMotion.state,
                     child: Chip(
                       avatar: Icon(Icons.check_circle, color: colors.primary),
                       label: Text(l10n.tourDemoMate),
@@ -268,7 +272,7 @@ class _JourneyDemo extends StatelessWidget {
               for (final (index, person) in people.indexed)
                 AnimatedScale(
                   scale: reached >= index ? 1 : 0.85,
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.state,
                   child: Opacity(
                     opacity: reached >= index ? 1 : 0.4,
                     child: Container(
@@ -321,7 +325,7 @@ class _OpponentsDemo extends StatelessWidget {
       children: [
         for (final (index, person) in people.indexed)
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
+            duration: AppMotion.state,
             transitionBuilder: (child, animation) =>
                 ScaleTransition(scale: animation, child: child),
             child: CharacterAvatar(
@@ -364,7 +368,7 @@ class _RatingDemo extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppShape.large),
             ),
             child: Row(
               children: [
@@ -414,8 +418,8 @@ class _RecordsDemo extends StatelessWidget {
                 children: [
                   Icon(
                     index == _times.length - 1
-                        ? Icons.emoji_events
-                        : Icons.flag_outlined,
+                        ? Icons.leaderboard
+                        : Icons.timer_outlined,
                     color: index == _times.length - 1
                         ? colors.primary
                         : colors.outline,
@@ -447,7 +451,7 @@ class _EndgameDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppShape.small),
         child: const PositionBoard(
           fen: '1K6/1P1k4/8/8/8/8/r7/2R5 w - - 0 1',
           orientation: Side.white,

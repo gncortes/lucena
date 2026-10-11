@@ -57,6 +57,7 @@ class AllModesScreen extends StatelessWidget {
             body: l10n.starChallengesBody,
             route: Routes.starChallenges,
           ),
+          path(HomePath.forYou),
           path(HomePath.endgames),
         ],
       ),
@@ -115,14 +116,14 @@ class AllModesScreen extends StatelessWidget {
         [
           (
             id: 'rating',
-            icon: Icons.trending_up,
+            icon: Icons.show_chart,
             title: l10n.ratingHistory,
             body: l10n.allModesRatingBody,
             route: Routes.rating,
           ),
           (
             id: 'achievements',
-            icon: Icons.emoji_events_outlined,
+            icon: Icons.military_tech_outlined,
             title: l10n.achievementsTitle,
             body: l10n.allModesAchievementsBody,
             route: Routes.achievements,

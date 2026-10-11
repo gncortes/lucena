@@ -1,3 +1,11 @@
+import 'package:go_router/go_router.dart';
+
+import '../../../domain/models/attempt.dart';
+import '../../../domain/models/conclusion.dart';
+import '../../../domain/use_cases/conclusion_rules.dart';
+import '../../../routing/routes.dart';
+import '../../conclusion/view_models/conclusion_cubit.dart';
+
 import 'dart:async';
 import 'dart:math';
 
@@ -8,9 +16,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/spoken_text.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -18,6 +26,12 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/position_board.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../../domain/models/clock_settings.dart';
+import '../../core/widgets/game_clock.dart';
+import '../../profile/view_models/profile_cubit.dart';
+import '../../core/widgets/versus_intro.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
@@ -54,6 +68,11 @@ class BlindGameScreen extends StatefulWidget {
 }
 
 class _BlindGameScreenState extends State<BlindGameScreen> {
+  // O espaço guardado acima do tabuleiro para o seletor de visão e abaixo
+  // para "Sua vez": o tabuleiro não diminui por causa deles.
+  static const _pickerHeight = 48.0;
+  static const _statusHeight = 30.0;
+
   ChessboardController? _board;
 
   @override
@@ -79,6 +98,55 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
     );
   }
 
+  void _conclude(BuildContext context, BlindState state) {
+    final id = state.gameId;
+    if (id != null) {
+      context.pushReplacement(Routes.conclusion(id, fresh: true));
+      return;
+    }
+    final cubit = context.read<BlindGameCubit>();
+    final won = state.userWon;
+    final start = cubit.startFen;
+    final outcome = won == null
+        ? AttemptOutcome.draw
+        : won
+        ? AttemptOutcome.win
+        : AttemptOutcome.loss;
+    context.pushReplacement(
+      Routes.conclusionNow,
+      extra: ConclusionArgs(
+        conclusion: Conclusion(
+          kind: ConclusionKind.blind,
+          result: ConclusionRules.resultOf(outcome),
+          actions: ConclusionRules.actionsFor(
+            ConclusionKind.blind,
+            recorded: false,
+          ),
+          game: Attempt(
+            positionId: cubit.positionId ?? '',
+            playedAt: cubit.now(),
+            outcome: outcome,
+            fulfilled: won ?? false,
+            opponent: state.kind,
+            opponentLevel: state.level,
+            startFen: start,
+            userSide: state.userSide,
+            endReason: state.end?.reason,
+          ),
+          end: state.end,
+          userSide: state.userSide,
+          finalFen: state.position?.fen,
+          blindMoves: ConclusionRules.userMoves(
+            plies: state.sans.length,
+            userSide: state.userSide,
+            startFen: start,
+          ),
+        ),
+        replay: GoRouterState.of(context).uri.toString(),
+      ),
+    );
+  }
+
   void _onState(BuildContext context, BlindState state) {
     if (state.position == null) return;
     final board = _board;
@@ -89,6 +157,11 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
     }
     final previous = _previous;
     _previous = state;
+    // Dito o resultado, a conclusão no lugar da partida (T51, B).
+    if (state.concluded && previous.concluded != true) {
+      _conclude(context, state);
+      return;
+    }
     if (state.mic == MicPermission.asking) _askMic(context);
     // Os avisos sobem no topo, sem mexer na tela.
     final l10n = context.l10n;
@@ -271,6 +344,10 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<BlindGameCubit>();
+    final clocks = context.select(
+      (SettingsCubit cubit) =>
+          cubit.state?.clock.position ?? ClockPosition.fallback,
+    );
     return BlocConsumer<BlindGameCubit, BlindState>(
       listener: _onState,
       builder: (context, state) => Scaffold(
@@ -317,63 +394,120 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
                     Expanded(
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          // O tabuleiro com a largura da tela, sem passar da
-                          // altura que sobra (com o seletor em cima).
-                          final size = min(
-                            constraints.maxWidth - 32,
-                            constraints.maxHeight - 100,
-                          );
+                          // Os relógios como na partida (T51, A1), na posição
+                          // escolhida nas configurações.
+                          final rows = !state.started || !state.hasClock
+                              ? 0
+                              : clocks == ClockPosition.sides
+                              ? 2
+                              : 1;
+                          // O tabuleiro (ou o lugar dele, sem tabuleiro) com o
+                          // centro no centro do espaço útil (T64): entre a
+                          // barra do app e o painel de baixo. O seletor e o
+                          // relógio do adversário em cima; o do jogador, "Sua
+                          // vez" e o aviso embaixo, no espaço que sobra.
+                          final above =
+                              rows > 0 && clocks != ClockPosition.bottom;
+                          final below = rows > 0 && clocks != ClockPosition.top;
+                          final reserveTop =
+                              _pickerHeight + (above ? PlayersRow.height : 0.0);
+                          final reserveBottom =
+                              (below ? PlayersRow.height : 0.0) +
+                              (state.started ? _statusHeight : 0.0);
+                          const gutter = 16.0;
+                          final size = BoardCentering(
+                            constraints.biggest,
+                            gutter: gutter,
+                            reserveTop: reserveTop,
+                            reserveBottom: reserveBottom,
+                          ).side;
                           // Com o teclado aberto, a altura some: o tabuleiro
                           // sai até o teclado fechar.
                           if (size < 120) return const SizedBox.shrink();
-                          return Align(
-                            alignment: Alignment.topCenter,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: size,
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: _ViewPicker(state: state),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                _boardArea(context, state, size: size),
-                                if (state.started) ...[
-                                  const SizedBox(height: 10),
-                                  if (state.hasClock)
-                                    SizedBox(
-                                      width: size,
-                                      child: _Clocks(state: state),
-                                    )
-                                  else
-                                    _Status(state: state),
-                                ],
-                                if (state.offlineMissing)
+                          return CenteredBoardLayout(
+                            key: BlindKeys.boardArea,
+                            gutter: gutter,
+                            reserveTop: reserveTop,
+                            reserveBottom: reserveBottom,
+                            top: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                   SizedBox(
                                     width: size,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        l10n.blindOfflineMissing,
-                                        key: BlindKeys.offlineMissing,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
+                                    child: Align(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      child: _ViewPicker(state: state),
                                     ),
                                   ),
-                              ],
+                                  if (above) const SizedBox(height: 8),
+                                  if (above)
+                                    SizedBox(
+                                      width: size + 24,
+                                      child: _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide.opposite]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            board: _boardArea(context, state, size: size),
+                            bottom: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (below)
+                                    SizedBox(
+                                      width: size + 24,
+                                      child: _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                    ),
+                                  // "Sua vez" fica à vista (sem tabuleiro, é
+                                  // o que orienta), fora da fileira do relógio.
+                                  if (state.started) ...[
+                                    const SizedBox(height: 6),
+                                    _Status(state: state),
+                                  ],
+                                  if (state.offlineMissing)
+                                    SizedBox(
+                                      width: size,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          l10n.blindOfflineMissing,
+                                          key: BlindKeys.offlineMissing,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
-                    if (state.phase == BlindPhase.intro)
+                    if (state.held)
+                      const SizedBox.shrink()
+                    else if (state.phase == BlindPhase.intro)
                       _IntroPanel(state: state, cubit: cubit)
                     else if (state.phase == BlindPhase.finished)
                       _BottomSheetFrame(
@@ -410,7 +544,7 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
         height: size,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppShape.large),
         ),
         child: Icon(
           Icons.visibility_off_outlined,
@@ -438,7 +572,41 @@ class _BlindGameScreenState extends State<BlindGameScreen> {
       ),
       BlindView.board => const SizedBox.shrink(),
     };
-    return Center(child: child);
+    if (!state.held) return Center(child: child);
+    // A entrada versus sobre o tabuleiro, como na partida (T51, A2).
+    final nickname = context.select(
+      (ProfileCubit cubit) => cubit.state?.nickname ?? '',
+    );
+    final l10n = context.l10n;
+    return Center(
+      child: SizedBox.square(
+        dimension: size,
+        child: Stack(
+          children: [
+            child,
+            Positioned.fill(
+              child: VersusIntro(
+                playerName: nickname.isEmpty
+                    ? l10n.profileNicknameDefault
+                    : nickname,
+                opponentName: state.kind.label(l10n, level: state.level),
+                opponentRating: state.level,
+                opponentAvatar: const ColoredBox(
+                  color: Color(0xFF312E2B),
+                  child: Icon(
+                    Icons.record_voice_over_outlined,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+                playerSide: state.userSide,
+                onDone: context.read<BlindGameCubit>().release,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// O peão que chega à última fileira pelo toque vira dama.
@@ -501,7 +669,7 @@ class _Status extends StatelessWidget {
     final (text, icon, accent) = switch (state.phase) {
       BlindPhase.loading || BlindPhase.intro => (
         l10n.blindIntro,
-        Icons.school_outlined,
+        Icons.hearing_outlined,
         colors.secondary,
       ),
       BlindPhase.listening => (
@@ -525,7 +693,9 @@ class _Status extends StatelessWidget {
             : won == true
             ? l10n.blindSayWon
             : l10n.blindSayLost,
-        won == true ? Icons.emoji_events_outlined : Icons.flag_outlined,
+        won == true
+            ? Icons.emoji_events_outlined
+            : Icons.sentiment_dissatisfied_outlined,
         colors.secondary,
       ),
       BlindPhase.opponentThinking || BlindPhase.opponentSpeaking => (
@@ -558,94 +728,42 @@ class _Status extends StatelessWidget {
   }
 }
 
-/// Com relógio: o tempo do adversário, de quem é a vez e o tempo do jogador,
-/// numa linha embaixo do tabuleiro.
+/// Os relógios do às cegas: a mesma fileira da partida (o peão do lado, o
+/// nome e a caixa do relógio), de [sides].
 class _Clocks extends StatelessWidget {
-  const _Clocks({required this.state});
+  const _Clocks({required this.state, required this.sides});
 
   final BlindState state;
+  final List<Side> sides;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final user = state.userSide;
-    return Row(
-      children: [
-        _ClockChip(
-          key: BlindKeys.opponentClock,
-          label: state.kind.label(l10n, level: state.level),
-          time: state.timeOf(user.opposite)!,
-          running: state.running == user.opposite,
-        ),
-        Expanded(
-          child: Center(child: _Status(state: state)),
-        ),
-        _ClockChip(
-          key: BlindKeys.userClock,
-          label: l10n.blindYou,
-          time: state.timeOf(user)!,
-          running: state.running == user,
-        ),
-      ],
+    final board = context.select(
+      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-  }
-}
-
-/// O relógio de um lado: o nome e o tempo, em destaque quando corre e em
-/// vermelho com pouco tempo.
-class _ClockChip extends StatelessWidget {
-  const _ClockChip({
-    required this.label,
-    required this.time,
-    required this.running,
-    super.key,
-  });
-
-  final String label;
-  final Duration time;
-  final bool running;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final low = time < ClockEngine.lowTime;
-    final minutes = time.inMinutes;
-    final seconds = time.inSeconds % 60;
-    final text = low
-        ? '$seconds.${(time.inMilliseconds % 1000) ~/ 100}'
-        : '$minutes:${seconds.toString().padLeft(2, '0')}';
-    final background = running
-        ? (low ? colors.errorContainer : colors.primaryContainer)
-        : colors.surfaceContainerHighest;
-    final foreground = running
-        ? (low ? colors.onErrorContainer : colors.onPrimaryContainer)
-        : colors.onSurfaceVariant;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelSmall?.copyWith(color: foreground),
-          ),
-          Text(
-            text,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: foreground,
-              fontWeight: FontWeight.w700,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
-          ),
-        ],
-      ),
+    final nickname = context.select(
+      (ProfileCubit cubit) => cubit.state?.nickname ?? '',
+    );
+    PlayerEntry entry(Side side) => side == user
+        ? PlayerEntry(
+            side: side,
+            name: nickname.isEmpty ? l10n.profileNicknameDefault : nickname,
+            time: state.timeOf(side),
+            running: state.running == side,
+            clockKey: BlindKeys.userClock,
+          )
+        : PlayerEntry(
+            side: side,
+            name: state.kind.label(l10n, level: state.level),
+            time: state.timeOf(side),
+            running: state.running == side,
+            clockKey: BlindKeys.opponentClock,
+          );
+    return PlayersRow(
+      players: [for (final side in sides) entry(side)],
+      board: board,
     );
   }
 }
@@ -662,7 +780,9 @@ class _BottomSheetFrame extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppShape.large),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -807,41 +927,51 @@ class _TalkBarState extends State<_TalkBar> {
         state.phase == BlindPhase.proposing ||
         state.phase == BlindPhase.confirming;
 
-    // 1. As ações em voz.
-    final actions = SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _ActionChip(
-            key: BlindKeys.narratePosition,
-            icon: Icons.hearing,
-            label: l10n.blindListenPosition,
-            onPressed: cubit.narratePosition,
-          ),
-          const SizedBox(width: 8),
-          _ActionChip(
-            key: BlindKeys.narrateGame,
-            icon: Icons.menu_book_outlined,
-            label: l10n.blindNarrateGame,
-            onPressed: cubit.narrateGame,
-          ),
-          if (state.lastOpponent != null) ...[
-            const SizedBox(width: 8),
-            _ActionChip(
-              key: BlindKeys.repeat,
-              icon: Icons.volume_up_outlined,
-              label: l10n.blindHearAgain,
-              onPressed: cubit.repeatOpponent,
-            ),
+    // 1. As ações em voz, numa fileira que rola para o lado; a borda
+    // esmaece para mostrar que há mais.
+    final actions = ShaderMask(
+      // No árabe, a borda que esmaece é a da esquerda.
+      shaderCallback: (bounds) => const LinearGradient(
+        begin: AlignmentDirectional.centerStart,
+        end: AlignmentDirectional.centerEnd,
+        colors: [Colors.white, Colors.white, Colors.transparent],
+        stops: [0, 0.88, 1],
+      ).createShader(bounds, textDirection: Directionality.of(context)),
+      blendMode: BlendMode.dstIn,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsetsDirectional.only(end: 32),
+        child: Row(
+          children: [
+            for (final (index, chip) in [
+              _ActionChip(
+                key: BlindKeys.narratePosition,
+                icon: Icons.hearing,
+                label: l10n.blindListenPosition,
+                onPressed: cubit.narratePosition,
+              ),
+              _ActionChip(
+                key: BlindKeys.narrateGame,
+                icon: Icons.menu_book_outlined,
+                label: l10n.blindNarrateGame,
+                onPressed: cubit.narrateGame,
+              ),
+              if (state.lastOpponent != null)
+                _ActionChip(
+                  key: BlindKeys.repeat,
+                  icon: Icons.volume_up_outlined,
+                  label: l10n.blindHearAgain,
+                  onPressed: cubit.repeatOpponent,
+                ),
+              _ActionChip(
+                key: BlindKeys.copyLog,
+                icon: Icons.content_copy,
+                label: l10n.blindCopyLog,
+                onPressed: () => copyLog(context),
+              ),
+            ].indexed) ...[if (index > 0) const SizedBox(width: 8), chip],
           ],
-          const SizedBox(width: 8),
-          _ActionChip(
-            key: BlindKeys.copyLog,
-            icon: Icons.content_copy,
-            label: l10n.blindCopyLog,
-            onPressed: () => copyLog(context),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -1002,7 +1132,7 @@ class _TalkBarState extends State<_TalkBar> {
           isDense: true,
           prefixIcon: const Icon(Icons.keyboard_outlined, size: 20),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(AppShape.full),
             borderSide: BorderSide.none,
           ),
           contentPadding: const EdgeInsets.symmetric(
@@ -1029,7 +1159,7 @@ class _TalkBarState extends State<_TalkBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 36, child: actions),
+          SizedBox(height: 40, child: actions),
           const SizedBox(height: 4),
           SizedBox(
             height: 32,
@@ -1069,7 +1199,7 @@ class _Pill extends StatelessWidget {
     alignment: AlignmentDirectional.centerStart,
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(AppShape.full),
     ),
     child: child,
   );
@@ -1290,7 +1420,7 @@ class _MicButtonState extends State<_MicButton> {
           _hold?.cancel();
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: AppMotion.tap,
           width: 44,
           height: 44,
           decoration: BoxDecoration(
@@ -1355,7 +1485,7 @@ class _RecordingState extends State<_Recording>
           children: [
             AnimatedOpacity(
               opacity: blink ? 1 : 0.25,
-              duration: const Duration(milliseconds: 200),
+              duration: AppMotion.state,
               child: Icon(
                 Icons.fiber_manual_record,
                 size: 14,

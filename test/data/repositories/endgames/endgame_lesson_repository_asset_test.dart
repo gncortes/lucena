@@ -182,4 +182,66 @@ void main() {
     expect(lesson.steps[0].side, Side.white);
     expect(lesson.steps[1].side, Side.black);
   });
+
+  test('`ref` do passo é lido em todo tipo de passo e aponta a referência '
+      'da aula; sem `ref`, nulo', () {
+    const fen = '1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1';
+    final lesson = AssetEndgameLessonRepository.parseLesson({
+      ..._lesson,
+      'parts': [
+        {
+          'id': 'p1',
+          'steps': [
+            {'type': 'think', 'id': 't', 'fen': fen, 'ref': 'g1'},
+            {'type': 'talk', 'id': 'a', 'fen': fen, 'ref': 'g1'},
+            {
+              'type': 'demo',
+              'id': 'd',
+              'fen': fen,
+              'ref': 'g1',
+              'line': [
+                {'uci': 'c1c4'},
+              ],
+            },
+            {
+              'type': 'move',
+              'id': 'm',
+              'fen': fen,
+              'ref': 'g1',
+              'line': [
+                {
+                  'accept': ['c1c4'],
+                },
+              ],
+            },
+            {'type': 'play', 'id': 'p', 'fen': fen, 'ref': 'g1'},
+            {'type': 'talk', 'id': 'none', 'fen': fen},
+          ],
+        },
+      ],
+      'references': [
+        ...(_lesson['references']! as List),
+        {
+          'id': 'g1',
+          'kind': 'game',
+          'white': 'Lucena',
+          'black': 'X',
+          'event': 'Y',
+          'year': 1497,
+          'url': 'https://lichess.org/analysis/pgn/1.e4#1',
+        },
+      ],
+    });
+    final steps = lesson.lesson.steps;
+    expect(
+      [for (final step in steps) step.ref],
+      ['g1', 'g1', 'g1', 'g1', 'g1', null],
+    );
+    final reference = lesson.reference(steps.first.ref);
+    expect(reference?.kind, 'game');
+    expect(reference?.url, 'https://lichess.org/analysis/pgn/1.e4#1');
+    expect(lesson.reference('b1')?.url, isNull);
+    expect(lesson.reference(null), isNull);
+    expect(lesson.reference('nada'), isNull);
+  });
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
 import 'board_settings_ui.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_shape.dart';
 
 /// Tabuleiro de amostra, que muda junto com as escolhas de aparência.
 class BoardPreview extends StatelessWidget {
@@ -39,7 +41,9 @@ class BoardPreview extends StatelessWidget {
         lastMove: _lastMove,
         settings: StaticChessboardSettings.fromBoardSettings(
           board.chessground.copyWith(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(AppShape.small),
+            ),
           ),
         ),
       ),
@@ -203,7 +207,7 @@ class _Option extends StatelessWidget {
       label: label,
       excludeSemantics: true,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(4),
@@ -215,11 +219,11 @@ class _Option extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
+                      duration: AppMotion.state,
                       width: _size + 8,
                       height: _size + 8,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppShape.medium),
                         border: Border.all(
                           width: 3,
                           color: selected ? scheme.primary : Colors.transparent,
@@ -227,7 +231,7 @@ class _Option extends StatelessWidget {
                       ),
                     ),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(AppShape.small),
                       child: SizedBox.square(dimension: _size, child: child),
                     ),
                     PositionedDirectional(
@@ -235,8 +239,8 @@ class _Option extends StatelessWidget {
                       end: 0,
                       child: AnimatedScale(
                         scale: selected ? 1 : 0,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOutBack,
+                        duration: AppMotion.state,
+                        curve: AppMotion.enter,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: scheme.primary,

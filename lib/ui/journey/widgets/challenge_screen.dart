@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,24 +6,42 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/pace.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
-class ChallengeScreen extends StatelessWidget {
+class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({required this.rungId, super.key});
 
   /// O adversário (degrau) do desafio: o retrato dele chega voando da tela
   /// de antes.
   final String rungId;
+
+  @override
+  State<ChallengeScreen> createState() => _ChallengeScreenState();
+}
+
+class _ChallengeScreenState extends State<ChallengeScreen> {
+  /// O espaço da linha dos selos (objetivo e ritmo).
+  static const _chipsHeight = 40.0;
+
+  // A partida está abrindo: o tabuleiro grande voa até o centro dela. Na
+  // volta, ele retoma a marca de antes (o voo de volta para o degrau).
+  bool _launching = false;
+
+  String get rungId => widget.rungId;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +71,15 @@ class ChallengeScreen extends StatelessWidget {
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.journeyPlay),
                   onPressed: () async {
-                    if (!await playChallenge(context, challenge)) return;
+                    final played = await playChallenge(
+                      context,
+                      challenge,
+                      onLaunch: () => setState(() => _launching = true),
+                    );
+                    if (mounted && _launching) {
+                      setState(() => _launching = false);
+                    }
+                    if (!played) return;
                     if (!context.mounted) return;
                     final uri = GoRouterState.of(context).pathParameters;
                     await context.read<JourneyCubit>().load(
@@ -65,72 +92,112 @@ class ChallengeScreen extends StatelessWidget {
             ),
       body: challenge == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                _BigBoard(challenge: challenge),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _GoalChip(challenge: challenge),
-                      _Chip(
-                        icon: switch (challenge.time) {
-                          final time? => paceIcon(PaceCategory.of(time)),
-                          null => Icons.timer_off_outlined,
-                        },
-                        text: switch (challenge.time) {
-                          final time? => l10n.speedrunTimeControl(
-                            time.initial.inMinutes,
-                            time.increment.inSeconds,
-                          ),
-                          null => l10n.challengeNoClock,
-                        },
+          // O tabuleiro e os selos no centro do espaço entre a barra do app
+          // e o painel do adversário e das partidas (T64), que rola; o botão
+          // de jogar fica fixo embaixo.
+          : LayoutBuilder(
+              builder: (context, box) => Column(
+                children: [
+                  SizedBox(
+                    height: BoardOptionsPanel.boardAreaFor(
+                      box.maxHeight,
+                      boardRoom:
+                          box.maxWidth +
+                          2 * (_chipsHeight + AppSpacing.md) +
+                          AppSpacing.md,
+                      minPanel: 0.3,
+                    ),
+                    child: CenteredBoardLayout(
+                      gap: AppSpacing.md,
+                      reserveBottom: _chipsHeight,
+                      board: _BigBoard(
+                        challenge: challenge,
+                        launching: _launching,
                       ),
-                    ],
-                  ),
-                ),
-                _OpponentCard(opponent: challenge.opponent, rungId: rungId),
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
-                  child: Text(
-                    l10n.setupHistory,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      bottom: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _GoalChip(challenge: challenge),
+                            _Chip(
+                              icon: switch (challenge.time) {
+                                final time? => paceIcon(PaceCategory.of(time)),
+                                null => Icons.timer_off_outlined,
+                              },
+                              text: switch (challenge.time) {
+                                final time? => l10n.speedrunTimeControl(
+                                  time.initial.inMinutes,
+                                  time.increment.inSeconds,
+                                ),
+                                null => l10n.challengeNoClock,
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                if (state.attempts.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.sports_esports_outlined,
-                          size: 40,
-                          color: theme.colorScheme.outline,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.challengeHistoryInvite,
-                          key: JourneyKeys.emptyHistory,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: BoardOptionsPanel(
+                      key: JourneyKeys.challengePanel,
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        children: [
+                          _OpponentCard(
+                            opponent: challenge.opponent,
+                            rungId: rungId,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                              16,
+                              16,
+                              16,
+                              0,
+                            ),
+                            child: Text(
+                              l10n.setupHistory,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (state.attempts.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.sports_esports_outlined,
+                                    size: 40,
+                                    color: theme.colorScheme.outline,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l10n.challengeHistoryInvite,
+                                    key: JourneyKeys.emptyHistory,
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            AttemptHistory(
+                              attempts: state.attempts,
+                              monthKey: JourneyKeys.month,
+                              attemptKey: JourneyKeys.attempt,
+                            ),
+                        ],
+                      ),
                     ),
-                  )
-                else
-                  AttemptHistory(
-                    attempts: state.attempts,
-                    monthKey: JourneyKeys.month,
-                    attemptKey: JourneyKeys.attempt,
                   ),
-              ],
+                ],
+              ),
             ),
     );
   }
@@ -139,19 +206,30 @@ class ChallengeScreen extends StatelessWidget {
 /// A posição na largura da tela, vista pelo lado que joga. Ela chega voando
 /// do tabuleiro pequeno da tela de antes (a do adversário ou a inicial).
 class _BigBoard extends StatelessWidget {
-  const _BigBoard({required this.challenge});
+  const _BigBoard({required this.challenge, required this.launching});
 
   final Challenge challenge;
+
+  /// A partida está abrindo: o tabuleiro voa até o centro dela.
+  final bool launching;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => PositionBoard(
+        boardKey: JourneyKeys.challengeBoard,
         fen: challenge.position.fen,
         size: constraints.maxWidth,
         coordinates: true,
         radius: 0,
-        heroTag: challengeBoardTag(challenge.id),
+        // A partida é vista pelo lado que joga, como este tabuleiro.
+        heroTag: launching
+            ? gameBoardTag(
+                challenge.position.fen.split(' ')[1] == 'b'
+                    ? Side.black
+                    : Side.white,
+              )
+            : challengeBoardTag(challenge.id),
       ),
     );
   }
@@ -195,7 +273,7 @@ class _Chip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: background ?? colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppShape.full),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

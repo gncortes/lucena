@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/character.dart';
 
 abstract final class FreeBoardKeys {
+  /// O resultado em destaque, antes da conclusão.
+  static const endFlash = Key('freeBoard.endFlash');
   static const screen = Key('freeBoard.screen');
   static const board = Key('freeBoard.board');
 
@@ -32,9 +34,6 @@ abstract final class FreeBoardKeys {
 
   /// A máquina está pensando.
   static const machineThinking = Key('freeBoard.machineThinking');
-
-  /// O resultado do treino no painel do fim: objetivo cumprido ou não.
-  static const endGoal = Key('freeBoard.end.goal');
 
   /// O relógio de um lado e o tempo escrito nele.
   static Key clock(Side side) => Key('freeBoard.clock.${side.name}');
@@ -75,32 +74,17 @@ abstract final class FreeBoardKeys {
 
   /// O que a partida terminada mudou: o rating e as mensagens.
   static const report = Key('freeBoard.report');
-  static const ratingChange = Key('freeBoard.report.rating');
-  static const ratingValue = Key('freeBoard.report.rating.value');
-  static const ratingDelta = Key('freeBoard.report.rating.delta');
-  static const endNextButton = Key('freeBoard.end.next');
 
-  /// Abre os detalhes da partida que acabou, para revisá-la.
-  static const endReviewButton = Key('freeBoard.end.review');
   static const scrollArea = Key('freeBoard.scroll');
   static const characterName = Key('freeBoard.character.name');
-  static const resultCard = Key('freeBoard.result');
-  static const resultTitle = Key('freeBoard.result.title');
-  static const resultClose = Key('freeBoard.result.close');
   static Key feedback(int index) => Key('freeBoard.report.feedback.$index');
 
   /// Propor empate e o aviso de que a máquina recusou.
   static const drawButton = Key('freeBoard.draw');
 
-  /// O confete dos grandes momentos no fim da partida.
-  static const celebration = Key('freeBoard.celebration');
-
-  /// Maratona: o painel do fim (etapa perdida), tentar de novo e o resumo.
-  static const marathonLost = Key('freeBoard.marathonLost');
-  static const marathonRetry = Key('freeBoard.marathonRetry');
-  static const marathonSummary = Key('freeBoard.marathonSummary');
-
   /// A entrada de "versus" da etapa nova da Maratona e a contagem dela.
+  /// A entrada versus de toda partida contra a máquina (T51, A2).
+  static const versusIntro = Key('freeBoard.versusIntro');
   static const marathonBanner = Key('freeBoard.marathonBanner');
   static const versusCount = Key('freeBoard.versusCount');
 

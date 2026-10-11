@@ -7,217 +7,238 @@
       "category": "gameStart",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Boa partida. Vamos nessa."
+      "text": "Hm. Vai ser rápido."
     },
     {
       "id": "youngster.gameStart.2",
       "category": "gameStart",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Final, né? Meu formato favorito."
+      "text": "Final. Tá. Bora."
     },
     {
       "id": "youngster.gameStart.3",
       "category": "gameStart",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Já joguei essa posição umas mil vezes. Sem pressa."
+      "text": "Ganho essa de olho fechado."
     },
     {
       "id": "youngster.gameStart.4",
       "category": "gameStart",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Fone no ouvido, foco no tabuleiro. Bora."
+      "text": "Fone no ouvido. Não puxa assunto."
     },
     {
       "id": "youngster.gameStart.5",
       "category": "gameStart",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Tranquilo. Eu calculo, você tenta acompanhar."
+      "text": "Tenta não demorar, tá?"
     },
     {
       "id": "youngster.gameStart.6",
       "category": "gameStart",
       "intensity": 1,
       "emotion": "playful",
-      "text": "Mais uma antes de dormir. Bora."
+      "text": "Uma rapidinha. Depois volto pro ranking."
     },
     {
       "id": "youngster.bigAdvantage.1",
       "category": "bigAdvantage",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Agora é só técnica."
+      "text": "Previsível."
     },
     {
       "id": "youngster.bigAdvantage.2",
       "category": "bigAdvantage",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Converter é a parte fácil. Pra mim."
+      "text": "Já pode abandonar. Sério."
     },
     {
       "id": "youngster.bigAdvantage.3",
       "category": "bigAdvantage",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Sem firula. Lance limpo até o fim."
+      "text": "Agora é só técnica. Não atrapalha."
     },
     {
       "id": "youngster.bigAdvantage.4",
       "category": "bigAdvantage",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Isso aqui eu fecho no piloto automático."
+      "text": "Piloto automático."
     },
     {
       "id": "youngster.bigAdvantage.5",
       "category": "bigAdvantage",
       "intensity": 3,
       "emotion": "playful",
-      "text": "GG já tá no teclado, só falta digitar."
+      "text": "Pff. Isso nem devia valer rating."
     },
     {
       "id": "youngster.better.1",
       "category": "better",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Pequena vantagem. Já é o suficiente."
+      "text": "Hm. Melhorzinho. Como sempre."
     },
     {
       "id": "youngster.better.2",
       "category": "better",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Um tempo a mais faz diferença aqui."
+      "text": "Um tempo a mais. Clássico."
     },
     {
       "id": "youngster.better.3",
       "category": "better",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Você sente a pressão, né? Normal."
+      "text": "Tá sentindo a pressão? Normal."
     },
     {
       "id": "youngster.better.4",
       "category": "better",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Meu rei tá mais ativo. Isso decide final."
+      "text": "Mais dois lances e acabou."
     },
     {
       "id": "youngster.better.5",
       "category": "better",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Mais um lance preciso e acabou."
+      "text": "Já vi o final. Você ainda não."
     },
     {
       "id": "youngster.equal.1",
       "category": "equal",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Equilibrado. Quem errar primeiro perde."
+      "text": "Igual. Por enquanto."
     },
     {
       "id": "youngster.equal.2",
       "category": "equal",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Calculando. Um segundo."
+      "text": "Calculando. Shh."
     },
     {
       "id": "youngster.equal.3",
       "category": "equal",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Tá igual. Por enquanto."
+      "text": "Hm. Tá segurando. Até quando?"
     },
     {
       "id": "youngster.equal.4",
       "category": "equal",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Posição honesta. Gosto disso."
+      "text": "Tá igual. Não se acostuma."
     },
     {
       "id": "youngster.equal.5",
       "category": "equal",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Igual no papel. Na prática, eu vejo mais longe."
+      "text": "No papel tá igual. Só no papel."
     },
     {
       "id": "youngster.worse.1",
       "category": "worse",
       "intensity": 1,
-      "emotion": "focused",
-      "text": "Hm. Tô um pouco pior. Anotado."
+      "emotion": "frustrated",
+      "text": "Aff. Lag. Só pode ser lag."
     },
     {
       "id": "youngster.worse.2",
       "category": "worse",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Sem pânico. Tem recurso aqui."
+      "emotion": "frustrated",
+      "text": "Hm. Sorte. Pura sorte."
     },
     {
       "id": "youngster.worse.3",
       "category": "worse",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Ok, você jogou bem. Agora eu preciso jogar melhor."
+      "emotion": "frustrated",
+      "text": "Pff. Esse lance aí foi chute."
     },
     {
       "id": "youngster.worse.4",
       "category": "worse",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Isso não tava no meu cálculo."
+      "text": "Peraí. Isso não tava no cálculo."
     },
     {
       "id": "youngster.worse.5",
       "category": "worse",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Tá chato. Mas final pior não é final perdido."
+      "text": "Tá travando aqui. Sério, tá travando."
     },
     {
       "id": "youngster.bigDisadvantage.1",
       "category": "bigDisadvantage",
       "intensity": 1,
       "emotion": "sad",
-      "text": "É. Tá feio pra mim."
+      "text": "Não tem condição. Uma capivara me amassando."
     },
     {
       "id": "youngster.bigDisadvantage.2",
       "category": "bigDisadvantage",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Vou procurar o afogamento até o último lance."
+      "emotion": "frustrated",
+      "text": "Mano. Que que tá acontecendo."
     },
     {
       "id": "youngster.bigDisadvantage.3",
       "category": "bigDisadvantage",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Respira. Ainda tem truque."
+      "text": "Isso é bug. Reporta isso."
     },
     {
       "id": "youngster.bigDisadvantage.4",
       "category": "bigDisadvantage",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Isso aqui ia pro clipe de pior partida do dia."
+      "text": "Xadrez é muito chato, sério."
     },
     {
       "id": "youngster.bigDisadvantage.5",
       "category": "bigDisadvantage",
       "intensity": 3,
       "emotion": "sad",
-      "text": "Ok, você tá amassando. Respeito."
+      "text": "Internet caiu. Certeza que caiu."
+    },
+    {
+      "id": "youngster.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Empate? Rapidinho."
+    },
+    {
+      "id": "youngster.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "frustrated",
+      "text": "Hm. Empata aí. GG."
+    },
+    {
+      "id": "youngster.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Aff. Repete os lances, vai."
     },
     {
       "id": "youngster.opponentBlunder.1",
@@ -238,154 +259,154 @@
       "category": "opponentBlunder",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Vi na hora. Obrigado."
+      "text": "Pff. Tava esperando esse."
     },
     {
       "id": "youngster.opponentBlunder.4",
       "category": "opponentBlunder",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Isso na blitz eu já teria cobrado."
+      "text": "Isso na blitz é abandono."
     },
     {
       "id": "youngster.opponentBlunder.5",
       "category": "opponentBlunder",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Erro desses eu não deixo passar."
+      "text": "Errou. Errou feio. Rude, até."
     },
     {
       "id": "youngster.ownBlunder.1",
       "category": "ownBlunder",
       "intensity": 1,
-      "emotion": "surprised",
-      "text": "Ops. Mouse escorregou. Brincadeira, errei mesmo."
+      "emotion": "frustrated",
+      "text": "Não. Não comenta."
     },
     {
       "id": "youngster.ownBlunder.2",
       "category": "ownBlunder",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Calculei errado. Acontece."
+      "text": "Mouse escorregou."
     },
     {
       "id": "youngster.ownBlunder.3",
       "category": "ownBlunder",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Pré-move no tabuleiro físico não dá, né."
+      "text": "Tela travou. Juro."
     },
     {
       "id": "youngster.ownBlunder.4",
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Isso foi feio. Nem vou rever."
+      "text": "Pré-move. Não conta."
     },
     {
       "id": "youngster.ownBlunder.5",
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "sad",
-      "text": "Joguei rápido demais. Vício de blitz."
+      "text": "Aff. Odeio esse jogo."
     },
     {
       "id": "youngster.strongMove.1",
       "category": "strongMove",
       "intensity": 1,
       "emotion": "surprised",
-      "text": "Hm. Bom lance."
+      "text": "Hm. Achou."
     },
     {
       "id": "youngster.strongMove.2",
       "category": "strongMove",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Esse foi preciso."
+      "text": "Tá. Achou um lance. Parabéns, eu acho."
     },
     {
       "id": "youngster.strongMove.3",
       "category": "strongMove",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Não esperava esse. Boa."
+      "text": "Engine?"
     },
     {
       "id": "youngster.strongMove.4",
       "category": "strongMove",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Ok, agora eu tenho que pensar de verdade."
+      "text": "Ok. Agora vou ter que pensar. Chato."
     },
     {
       "id": "youngster.strongMove.5",
       "category": "strongMove",
       "intensity": 3,
       "emotion": "surprised",
-      "text": "Esse foi lance de clipe. Respeito."
+      "text": "Pff. Até capivara acerta uma."
     },
     {
       "id": "youngster.comeback.1",
       "category": "comeback",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Virou. Paciência resolve."
+      "text": "Pronto. Normal."
     },
     {
       "id": "youngster.comeback.2",
       "category": "comeback",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Eu disse que tinha recurso."
+      "text": "Óbvio que eu ia virar."
     },
     {
       "id": "youngster.comeback.3",
       "category": "comeback",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Isso sim foi cálculo."
+      "text": "Eu amo xadrez."
     },
     {
       "id": "youngster.comeback.4",
       "category": "comeback",
       "intensity": 3,
-      "emotion": "playful",
-      "text": "Chat, vocês viram essa virada?"
+      "emotion": "happy",
+      "text": "Que jogo lindo, véi."
     },
     {
       "id": "youngster.comeback.5",
       "category": "comeback",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Nunca abandono cedo. Por isso."
+      "text": "Lag passou. Agora sim."
     },
     {
       "id": "youngster.collapse.1",
       "category": "collapse",
       "intensity": 1,
       "emotion": "sad",
-      "text": "Deixei escapar. Hm."
+      "text": "Odeio xadrez."
     },
     {
       "id": "youngster.collapse.2",
       "category": "collapse",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Tava ganho. Tava ganho mesmo."
+      "text": "Tava ganho. Tava ganho, mano."
     },
     {
       "id": "youngster.collapse.3",
       "category": "collapse",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Ok, foco. Ainda dá pra salvar."
+      "text": "Peraí. Peraí. Como?"
     },
     {
       "id": "youngster.collapse.4",
       "category": "collapse",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Isso é o que dá jogar no automático."
+      "text": "Esse wi-fi não presta."
     },
     {
       "id": "youngster.collapse.5",
@@ -399,14 +420,14 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Essa é minha."
+      "text": "Minha."
     },
     {
       "id": "youngster.pieceCaptured.2",
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Material a mais. Simplificar agora."
+      "text": "Capturei. Hm."
     },
     {
       "id": "youngster.pieceCaptured.3",
@@ -420,63 +441,63 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Pego. Sem pensar duas vezes."
+      "text": "Valeu."
     },
     {
       "id": "youngster.pieceCaptured.5",
       "category": "pieceCaptured",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Calculado desde três lances atrás."
+      "text": "Vi isso três lances atrás."
     },
     {
       "id": "youngster.pieceLost.1",
       "category": "pieceLost",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Perdi uma peça. Faz parte."
+      "emotion": "frustrated",
+      "text": "Hm. Clique errado."
     },
     {
       "id": "youngster.pieceLost.2",
       "category": "pieceLost",
       "intensity": 1,
       "emotion": "surprised",
-      "text": "Hm, não vi essa."
+      "text": "Ué. Como assim?"
     },
     {
       "id": "youngster.pieceLost.3",
       "category": "pieceLost",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Essa doeu."
+      "text": "Aff."
     },
     {
       "id": "youngster.pieceLost.4",
       "category": "pieceLost",
       "intensity": 2,
-      "emotion": "focused",
-      "text": "Ok. Recalculando."
+      "emotion": "nervous",
+      "text": "Não. Isso não aconteceu."
     },
     {
       "id": "youngster.pieceLost.5",
       "category": "pieceLost",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Pendurei. Clássico erro de blitz."
+      "text": "Perdi. Culpa da tela."
     },
     {
       "id": "youngster.ownPromotion.1",
       "category": "ownPromotion",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Dama nova. Como planejado."
+      "text": "Dama. Como planejado."
     },
     {
       "id": "youngster.ownPromotion.2",
       "category": "ownPromotion",
       "intensity": 1,
       "emotion": "happy",
-      "text": "Peão chegou. Boa, garoto."
+      "text": "Hm. Boa, peão."
     },
     {
       "id": "youngster.ownPromotion.3",
@@ -490,112 +511,112 @@
       "category": "ownPromotion",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Upgrade feito."
+      "text": "Upgrade."
     },
     {
       "id": "youngster.ownPromotion.5",
       "category": "ownPromotion",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Contei as casas antes de você."
+      "text": "Contei as casas. Você não."
     },
     {
       "id": "youngster.opponentPromotion.1",
       "category": "opponentPromotion",
       "intensity": 1,
-      "emotion": "surprised",
-      "text": "Hm. Você promoveu."
+      "emotion": "frustrated",
+      "text": "Hm. Dama. Que ótimo."
     },
     {
       "id": "youngster.opponentPromotion.2",
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Contei errado as casas. Ok."
+      "text": "Contei errado? Eu não conto errado."
     },
     {
       "id": "youngster.opponentPromotion.3",
       "category": "opponentPromotion",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Dama nova. Hora de achar um xeque perpétuo."
+      "text": "Tá. Afogamento. Cadê o afogamento."
     },
     {
       "id": "youngster.opponentPromotion.4",
       "category": "opponentPromotion",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Não era pra esse peão passar."
+      "text": "Não era pra esse peão passar. Lag."
     },
     {
       "id": "youngster.opponentPromotion.5",
       "category": "opponentPromotion",
       "intensity": 3,
       "emotion": "sad",
-      "text": "Ok. Isso muda tudo."
+      "text": "Capivara com dama. Era só o que faltava."
     },
     {
       "id": "youngster.opponentLowTime.1",
       "category": "opponentLowTime",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Seu relógio tá baixo. Só avisando."
+      "text": "Relógio. Só avisando."
     },
     {
       "id": "youngster.opponentLowTime.2",
       "category": "opponentLowTime",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Pouco tempo. Joga o simples."
+      "text": "Tique-taque."
     },
     {
       "id": "youngster.opponentLowTime.3",
       "category": "opponentLowTime",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Bem-vindo à minha vida inteira."
+      "text": "Bem-vindo à minha vida."
     },
     {
       "id": "youngster.opponentLowTime.4",
       "category": "opponentLowTime",
       "intensity": 2,
       "emotion": "confident",
-      "text": "No zero a zero eu sou rápido."
+      "text": "Joga, ué."
     },
     {
       "id": "youngster.opponentLowTime.5",
       "category": "opponentLowTime",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Relógio também é peça. E ele tá comigo."
+      "text": "Pff. Vai cair no tempo."
     },
     {
       "id": "youngster.ownLowTime.1",
       "category": "ownLowTime",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "Pouco tempo. Tranquilo, já tô acostumado."
+      "emotion": "nervous",
+      "text": "Hm. Tempo. Tá. Tranquilo."
     },
     {
       "id": "youngster.ownLowTime.2",
       "category": "ownLowTime",
       "intensity": 2,
       "emotion": "focused",
-      "text": "Modo bullet ativado."
+      "text": "Modo bullet."
     },
     {
       "id": "youngster.ownLowTime.3",
       "category": "ownLowTime",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Gastei demais calculando. Erro meu."
+      "text": "Relógio bugado. Juro que tinha mais."
     },
     {
       "id": "youngster.ownLowTime.4",
       "category": "ownLowTime",
       "intensity": 3,
       "emotion": "focused",
-      "text": "Sem tempo pra pensar. Só instinto agora."
+      "text": "Sem pensar. Só mão."
     },
     {
       "id": "youngster.ownLowTime.5",
@@ -616,259 +637,329 @@
       "category": "timeAdvantage",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Vou jogar devagar só pra você pensar."
+      "text": "Eu tenho minutos. Você tem segundos."
     },
     {
       "id": "youngster.timeAdvantage.3",
       "category": "timeAdvantage",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Lance seguro, sem risco. Seu relógio que lute."
+      "text": "Seu relógio que lute."
     },
     {
       "id": "youngster.timeAdvantage.4",
       "category": "timeAdvantage",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Nada acontece. E seu tempo corre."
+      "text": "Nada acontece. Seu tempo corre."
     },
     {
       "id": "youngster.timeAdvantage.5",
       "category": "timeAdvantage",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Não preciso ganhar a posição. Só o relógio."
+      "text": "Nem preciso ganhar a posição. Só o relógio."
     },
     {
       "id": "youngster.opponentThinking.1",
       "category": "opponentThinking",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Pode pensar. Eu espero."
+      "text": "...sério que tá pensando nisso?"
     },
     {
       "id": "youngster.opponentThinking.2",
       "category": "opponentThinking",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Também tô calculando aqui."
+      "text": "Vai. Joga."
     },
     {
       "id": "youngster.opponentThinking.3",
       "category": "opponentThinking",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Nesse tempo eu já joguei três blitz."
+      "text": "Nesse tempo eu jogava três blitz."
     },
     {
       "id": "youngster.opponentThinking.4",
       "category": "opponentThinking",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Pensa bem. Final não perdoa."
+      "text": "Lance óbvio, véi."
     },
     {
       "id": "youngster.opponentThinking.5",
       "category": "opponentThinking",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Ainda aí? Achei que a internet tinha caído."
+      "text": "Caiu a internet aí?"
     },
     {
       "id": "youngster.win.1",
       "category": "win",
       "intensity": 1,
       "emotion": "calm",
-      "text": "GG. Boa partida."
+      "text": "Óbvio."
     },
     {
       "id": "youngster.win.2",
       "category": "win",
       "intensity": 1,
       "emotion": "happy",
-      "text": "Valeu pelo jogo. Foi bom."
+      "text": "GG. Fácil."
     },
     {
       "id": "youngster.win.3",
       "category": "win",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Técnica limpa. Do jeito que eu gosto."
+      "text": "Normal."
     },
     {
       "id": "youngster.win.4",
       "category": "win",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Mais uma? Revanche aceita."
+      "text": "Próximo."
     },
     {
       "id": "youngster.win.5",
       "category": "win",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Calculei até o fim. Nada mudou."
+      "text": "Nem suei."
     },
     {
       "id": "youngster.win.6",
       "category": "win",
       "intensity": 3,
       "emotion": "happy",
-      "text": "Essa vai pro clipe."
+      "text": "Xadrez é bom demais, cara."
     },
     {
       "id": "youngster.loss.1",
       "category": "loss",
       "intensity": 1,
-      "emotion": "calm",
-      "text": "GG. Você mereceu."
+      "emotion": "frustrated",
+      "text": "Caraca, velho. Como é que eu perdi isso aqui?"
     },
     {
       "id": "youngster.loss.2",
       "category": "loss",
       "intensity": 1,
       "emotion": "sad",
-      "text": "Perdi. Vou rever essa depois."
+      "text": "Não tem condição. Capivara dessa me ganhando."
     },
     {
       "id": "youngster.loss.3",
       "category": "loss",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Hm. Revanche?"
+      "text": "Revanche. Agora. Sem lag."
     },
     {
       "id": "youngster.loss.4",
       "category": "loss",
       "intensity": 2,
-      "emotion": "calm",
-      "text": "Bem jogado. Sério."
+      "emotion": "frustrated",
+      "text": "GG. Sorte sua. Muita sorte."
     },
     {
       "id": "youngster.loss.5",
       "category": "loss",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Vou treinar esse final a noite inteira."
+      "text": "Vou parar de jogar xadrez. Sério."
     },
     {
       "id": "youngster.draw.1",
       "category": "draw",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Empate. Justo."
+      "text": "Empate. Contra isso. Hm."
     },
     {
       "id": "youngster.draw.2",
       "category": "draw",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Material insuficiente. Matemática é matemática."
+      "text": "Empate. Matemática."
     },
     {
       "id": "youngster.draw.3",
       "category": "draw",
       "intensity": 2,
       "emotion": "surprised",
-      "text": "Afogamento? Hm. Não vi essa vindo."
+      "text": "Empate? Sério? Aff."
     },
     {
       "id": "youngster.draw.4",
       "category": "draw",
       "intensity": 2,
       "emotion": "calm",
-      "text": "Repetição. Nenhum dos dois quis arriscar."
+      "text": "Empate. Que sem graça."
     },
     {
       "id": "youngster.draw.5",
       "category": "draw",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Meio ponto. Queria o inteiro."
+      "text": "Meio ponto. Contra capivara. Aff."
     },
     {
       "id": "youngster.drawAccepted.1",
       "category": "drawAccepted",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Tá bom, empate. Faz sentido."
+      "text": "Tá. Empate. Que seja."
     },
     {
       "id": "youngster.drawAccepted.2",
       "category": "drawAccepted",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Aceito. Meio ponto tá ótimo."
+      "text": "Aceito. Hoje tá com lag."
     },
     {
       "id": "youngster.drawAccepted.3",
       "category": "drawAccepted",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Ok, aceito. Eu tava calculando a derrota."
+      "text": "Ok. Aceito. Não é medo, é lag."
     },
     {
       "id": "youngster.drawAccepted.4",
       "category": "drawAccepted",
       "intensity": 2,
-      "emotion": "happy",
-      "text": "GG. Você jogou melhor, eu aceito."
+      "emotion": "frustrated",
+      "text": "Aceito. Você deu sorte."
     },
     {
       "id": "youngster.drawAccepted.5",
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "nervous",
-      "text": "Aceito rápido. Esse clipe não vai pro chat."
+      "text": "Aceito. Esse jogo não aconteceu."
     },
     {
       "id": "youngster.drawAccepted.6",
       "category": "drawAccepted",
       "intensity": 3,
       "emotion": "calm",
-      "text": "Aceito. Errei antes, admito. Revanche depois?"
+      "text": "Fechou. Próximo."
     },
     {
       "id": "youngster.drawDeclined.1",
       "category": "drawDeclined",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Não, valeu. Ainda tem jogo."
+      "text": "Não."
     },
     {
       "id": "youngster.drawDeclined.2",
       "category": "drawDeclined",
       "intensity": 1,
       "emotion": "focused",
-      "text": "Recuso. Eu calculei, tá tudo certo aqui."
+      "text": "Empate? Comigo? Não."
     },
     {
       "id": "youngster.drawDeclined.3",
       "category": "drawDeclined",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Empate? Eu jogo isso até o fim no blitz."
+      "text": "Recuso. Vou ganhar isso aqui."
     },
     {
       "id": "youngster.drawDeclined.4",
       "category": "drawDeclined",
       "intensity": 2,
       "emotion": "playful",
-      "text": "Chat, me ofereceram empate. Recusado."
+      "text": "Hm. Engraçado. Não."
     },
     {
       "id": "youngster.drawDeclined.5",
       "category": "drawDeclined",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Não. Precisão até o fim, e eu tenho mais."
+      "text": "Joga. Não negocia."
     },
     {
       "id": "youngster.drawDeclined.6",
       "category": "drawDeclined",
       "intensity": 3,
       "emotion": "playful",
-      "text": "Recusado. Esse final vira clipe meu."
+      "text": "Sério que pediu empate? Hm. Não."
+    },
+    {
+      "id": "youngster.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hm. Era mate."
+    },
+    {
+      "id": "youngster.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Lol. Perdeu."
+    },
+    {
+      "id": "youngster.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Empate agora. GG."
+    },
+    {
+      "id": "youngster.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Aff. Não vai achar."
+    },
+    {
+      "id": "youngster.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Tenho torneio. Empata."
+    },
+    {
+      "id": "youngster.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Sabia. Empate. Perdi tempo."
+    },
+    {
+      "id": "youngster.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Falei. GG."
+    },
+    {
+      "id": "youngster.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "Empate. Óbvio."
+    },
+    {
+      "id": "youngster.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Hm. Avisei."
+    },
+    {
+      "id": "youngster.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Era empate. Beleza."
     }
   ]
 }

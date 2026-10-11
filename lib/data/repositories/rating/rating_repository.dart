@@ -9,6 +9,9 @@ abstract class RatingRepository {
   /// O rating atual. Sem partida que conte, o da faixa do perfil.
   Future<PlayerRating> current();
 
+  /// O rating de antes da primeira partida: o da faixa do perfil.
+  Future<PlayerRating> start();
+
   /// O rating depois de cada partida que contou, da mais antiga para a mais
   /// recente.
   Future<List<RatingEntry>> history();

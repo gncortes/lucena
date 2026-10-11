@@ -82,6 +82,41 @@ abstract final class AchievementRules {
     }
   }
 
+  /// Quanto já foi feito de [a], quando dá para contar: os níveis vencidos
+  /// num final ([AchievementType.allLevels]) ou os desafios concluídos num
+  /// degrau ([AchievementType.rungCompleted]). Nulo nas outras.
+  static AchievementProgress? progress(Achievement a, AchievementFacts f) {
+    switch (a.type) {
+      case AchievementType.allLevels:
+        final subcategory = a.subcategory;
+        if (subcategory == null) return null;
+        final levels = {
+          for (final game in f.games)
+            if (game.fulfilled &&
+                game.opponent == OpponentKind.maia &&
+                f.subcategoryOf[game.positionId] == subcategory &&
+                maiaLevels.contains(game.opponentLevel))
+              game.opponentLevel,
+        };
+        return AchievementProgress(
+          done: levels.length,
+          total: maiaLevels.length,
+          unit: AchievementProgressUnit.levels,
+        );
+      case AchievementType.rungCompleted:
+        final rung = f.ladder.where((r) => r.id == a.rungId).firstOrNull;
+        if (rung == null || rung.challenges.isEmpty) return null;
+        final done = f.games.fulfilledChallenges;
+        return AchievementProgress(
+          done: rung.challenges.where((c) => done.contains(c.id)).length,
+          total: rung.challenges.length,
+          unit: AchievementProgressUnit.challenges,
+        );
+      default:
+        return null;
+    }
+  }
+
   /// As conquistas de [all] ganhas e ainda não desbloqueadas, na ordem de
   /// [all].
   static List<Achievement> newlyEarned(

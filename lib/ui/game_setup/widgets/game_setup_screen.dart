@@ -12,6 +12,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -19,18 +20,34 @@ import '../view_models/game_setup_cubit.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import 'custom_pace_sheet.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
-class GameSetupScreen extends StatelessWidget {
+class GameSetupScreen extends StatefulWidget {
   const GameSetupScreen({super.key});
 
+  @override
+  State<GameSetupScreen> createState() => _GameSetupScreenState();
+}
+
+class _GameSetupScreenState extends State<GameSetupScreen> {
+  // A partida está abrindo: o tabuleiro de cima desliza até o centro dela.
+  bool _launching = false;
+
   // A partida substitui esta tela: voltar dela cai de onde a posição veio.
-  void _start(BuildContext context, GameSetupState state) =>
-      context.pushReplacement(state.gameRoute);
+  // Com o tabuleiro de jogar, a prévia troca de marca antes de a partida
+  // abrir, para voar até o centro dela (às cegas, a tela só aparece).
+  void _start(BuildContext context, GameSetupState state) {
+    if (!state.blindGame) setState(() => _launching = true);
+    context.pushReplacement(state.gameRoute);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,50 +64,65 @@ class GameSetupScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.setupTitle)),
       // A posição já aparece antes de a configuração ser lida: é nela que o
       // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 16),
-              children: [
-                _Header(state: state),
-                if (state.ready) ...[
-                  const _SectionTitle.yourSide(),
-                  _SidePicker(state: state),
-                  const _SectionTitle.opponent(),
-                  _OpponentPicker(state: state),
-                  // Às cegas: só contra a máquina e com voz no idioma.
-                  if (blind) _ModePicker(state: state),
-                  const Divider(height: 24),
-                  _ClockSection(state: state),
-                  if (state.attempts.isNotEmpty) _History(state: state),
-                ],
-              ],
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FilledButton(
-                    key: GameSetupKeys.startButton,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
-                    ),
-                    onPressed: state.canStart
-                        ? () => _start(context, state)
-                        : null,
-                    child: Text(l10n.clockStartGame),
-                  ),
-                ],
+      // O tabuleiro fica no centro do espaço entre a barra do app e o painel
+      // das opções (T64); as opções rolam dentro do painel, embaixo, com o
+      // botão de começar no pé dele.
+      body: LayoutBuilder(
+        builder: (context, box) {
+          final side = math.min(box.maxWidth - 32, _Header.maxBoard);
+          final boardArea = BoardOptionsPanel.boardAreaFor(
+            box.maxHeight,
+            boardRoom:
+                side +
+                2 * (_Header.chipsHeight + AppSpacing.md) +
+                AppSpacing.lg,
+          );
+          return Column(
+            children: [
+              SizedBox(
+                height: boardArea,
+                child: _Header(state: state, launching: _launching),
               ),
-            ),
-          ),
-        ],
+              Expanded(
+                child: BoardOptionsPanel(
+                  key: GameSetupKeys.panel,
+                  footer: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: FilledButton(
+                        key: GameSetupKeys.startButton,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(52),
+                        ),
+                        onPressed: state.canStart
+                            ? () => _start(context, state)
+                            : null,
+                        child: Text(l10n.clockStartGame),
+                      ),
+                    ),
+                  ),
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    children: [
+                      if (state.ready) ...[
+                        const _SectionTitle.yourSide(),
+                        _SidePicker(state: state),
+                        const _SectionTitle.opponent(),
+                        _OpponentPicker(state: state),
+                        // Às cegas: só contra a máquina e com voz no idioma.
+                        if (blind) _ModePicker(state: state),
+                        const Divider(height: 24),
+                        _ClockSection(state: state),
+                        if (state.attempts.isNotEmpty) _History(state: state),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -148,67 +180,77 @@ class _ModePicker extends StatelessWidget {
   }
 }
 
-/// A posição vista pelo lado do jogador, com o objetivo.
+/// A posição vista pelo lado do jogador, com o objetivo embaixo: o
+/// tabuleiro no centro do espaço dele (T64).
 class _Header extends StatelessWidget {
-  const _Header({required this.state});
+  const _Header({required this.state, required this.launching});
 
   final GameSetupState state;
+
+  /// A partida está abrindo: o tabuleiro voa até o centro dela.
+  final bool launching;
+
+  /// O maior tabuleiro da prévia.
+  static const maxBoard = 340.0;
+
+  /// O espaço da linha do objetivo e da vez.
+  static const chipsHeight = 48.0;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final positionId = state.positionId;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = math.min(constraints.maxWidth - 32, 340.0);
-        return Column(
-          children: [
-            const SizedBox(height: 8),
-            // Posição do catálogo: o tabuleiro chega voando do cartão dela.
-            PositionBoard(
-              boardKey: GameSetupKeys.preview,
-              fen: state.position.fen,
-              size: size,
-              orientation: state.userSide,
-              coordinates: true,
-              radius: 8,
-              heroTag: positionId == null ? null : catalogBoardTag(positionId),
+    return CenteredBoardLayout(
+      gutter: AppSpacing.lg,
+      gap: AppSpacing.md,
+      maxBoard: maxBoard,
+      reserveBottom: chipsHeight,
+      // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
+      // ao começar, segue voando até o centro da partida.
+      board: LayoutBuilder(
+        builder: (context, box) => PositionBoard(
+          boardKey: GameSetupKeys.preview,
+          fen: state.position.fen,
+          size: box.maxWidth,
+          orientation: state.userSide,
+          coordinates: true,
+          radius: 8,
+          heroTag: launching
+              ? gameBoardTag(state.userSide)
+              : setupBoardTag(positionId: positionId, fen: state.position.fen),
+        ),
+      ),
+      bottom: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.center,
+        children: [
+          Chip(
+            key: GameSetupKeys.goal,
+            avatar: Icon(
+              GoalStyle.of(context, state.goal).icon,
+              size: 18,
+              color: GoalStyle.of(context, state.goal).onContainer,
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                Chip(
-                  key: GameSetupKeys.goal,
-                  avatar: Icon(
-                    GoalStyle.of(context, state.goal).icon,
-                    size: 18,
-                    color: GoalStyle.of(context, state.goal).onContainer,
-                  ),
-                  label: Text(
-                    goalLabel(l10n, state.goal),
-                    style: TextStyle(
-                      color: GoalStyle.of(context, state.goal).onContainer,
-                    ),
-                  ),
-                  backgroundColor: GoalStyle.of(context, state.goal).container,
-                  side: BorderSide.none,
-                ),
-                Chip(
-                  label: Text(
-                    state.position.turn == Side.white
-                        ? l10n.freeBoardWhiteToMove
-                        : l10n.freeBoardBlackToMove,
-                  ),
-                  side: BorderSide.none,
-                ),
-              ],
+            label: Text(
+              goalLabel(l10n, state.goal),
+              style: TextStyle(
+                color: GoalStyle.of(context, state.goal).onContainer,
+              ),
             ),
-          ],
-        );
-      },
+            backgroundColor: GoalStyle.of(context, state.goal).container,
+            side: BorderSide.none,
+          ),
+          Chip(
+            label: Text(
+              state.position.turn == Side.white
+                  ? l10n.freeBoardWhiteToMove
+                  : l10n.freeBoardBlackToMove,
+            ),
+            side: BorderSide.none,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -299,7 +341,7 @@ class _OpponentPicker extends StatelessWidget {
               child: ListTile(
                 key: GameSetupKeys.opponent(kind),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppShape.large),
                 ),
                 selected: state.setup.opponent == kind,
                 selectedTileColor: colors.secondaryContainer,
@@ -308,9 +350,9 @@ class _OpponentPicker extends StatelessWidget {
                 title: Text(kind.label(l10n)),
                 subtitle: Text(kind.hint(l10n)),
                 trailing: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.state,
                   child: state.setup.opponent == kind
-                      ? const Icon(Icons.check_circle, key: ValueKey('on'))
+                      ? const Icon(Icons.check, key: ValueKey('on'))
                       : const SizedBox.square(
                           dimension: 24,
                           key: ValueKey('off'),
@@ -320,8 +362,8 @@ class _OpponentPicker extends StatelessWidget {
               ),
             ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
+            duration: AppMotion.state,
+            curve: AppMotion.enter,
             alignment: Alignment.topCenter,
             child: state.setup.opponent == OpponentKind.maia
                 ? _LevelPicker(state: state)
@@ -390,7 +432,7 @@ class _LevelPicker extends StatelessWidget {
                       ),
                       if (level == state.suggestedLevel) ...[
                         const SizedBox(width: 4),
-                        const Icon(Icons.star_rounded, size: 16),
+                        const Icon(Icons.recommend_rounded, size: 16),
                       ],
                     ],
                   ),
@@ -403,7 +445,7 @@ class _LevelPicker extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.star_rounded,
+                Icons.recommend_rounded,
                 size: 16,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -444,7 +486,7 @@ class _ClockSection extends StatelessWidget {
       children: [
         SwitchListTile(
           key: GameSetupKeys.clockSwitch,
-          secondary: const Icon(Icons.timer_outlined),
+          secondary: const Icon(Icons.av_timer_outlined),
           title: Text(l10n.clockUse),
           value: setup.clock,
           onChanged: (value) => cubit.setClock(enabled: value),

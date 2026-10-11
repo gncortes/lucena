@@ -4,6 +4,8 @@ import '../../../domain/models/clock.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// O ritmo montado à mão: o tempo de cada lado.
 class CustomPace {
@@ -115,8 +117,8 @@ class _CustomPaceSheetState extends State<_CustomPaceSheet> {
                   onChanged: (time) => setState(() => _user = time),
                 ),
                 AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
+                  duration: AppMotion.state,
+                  curve: AppMotion.enter,
                   alignment: Alignment.topCenter,
                   child: _same
                       ? const SizedBox(width: double.infinity)
@@ -187,7 +189,7 @@ class _TimeEditor extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppShape.large),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 14, 8, 8),
@@ -221,7 +223,7 @@ class _TimeEditor extends StatelessWidget {
               const SizedBox(height: 4),
               _StepSlider(
                 sliderKey: GameSetupKeys.customSlider(who, 'minutes'),
-                icon: Icons.timer_outlined,
+                icon: Icons.av_timer_outlined,
                 label: l10n.setupPaceCustomMinutes(minutes),
                 steps: CustomPaceSteps.minutes,
                 value: minutes,

@@ -12,8 +12,12 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
+import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/step_clock.dart';
 import '../../school/view_models/lesson_cubit.dart';
 import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/haptic_event.dart';
+import '../../core/sound/game_haptics.dart';
 
 /// Em que pé está o exercício.
 enum ExercisePhase {
@@ -25,6 +29,17 @@ enum ExercisePhase {
 
   /// Resolvido: a solução e as estrelas ganhas.
   done,
+}
+
+/// Como a tela se organiza (T60), como na lição.
+enum ExerciseLayoutMode {
+  /// O aluno resolve: o enunciado curto em cima, o tabuleiro no centro e a
+  /// dica com o cronômetro embaixo.
+  solving,
+
+  /// Resolvido: o tabuleiro no alto e, embaixo, as estrelas, a solução e a
+  /// fala do Viktor.
+  explaining,
 }
 
 class ExerciseState {
@@ -46,12 +61,30 @@ class ExerciseState {
     this.speech,
     this.emotion = Emotion.calm,
     this.earned,
+    this.explained = false,
+    this.locked = false,
     this.number = 0,
     this.count = 0,
     this.nextExercise,
+    this.startedAt,
   });
 
   final bool ready;
+
+  /// Quando o exercício abriu: o cronômetro conta daqui.
+  final DateTime? startedAt;
+
+  /// Resolvendo até a resposta; resolvido com erro ou dica (ou com a
+  /// explicação aberta), o professor fala. No acerto limpo o tabuleiro fica
+  /// onde estava: embaixo, só "você acertou" e o próximo.
+  ExerciseLayoutMode get layout =>
+      phase == ExercisePhase.done && (!cleanSolve || explained)
+      ? ExerciseLayoutMode.explaining
+      : ExerciseLayoutMode.solving;
+
+  /// Resolvido de primeira, sem erro nem dica.
+  bool get cleanSolve =>
+      phase == ExercisePhase.done && mistakes == 0 && hints == 0;
 
   /// A aula ou o exercício pedido não existem.
   final bool missing;
@@ -83,6 +116,13 @@ class ExerciseState {
   /// As estrelas ganhas, quando resolvido.
   final int? earned;
 
+  /// O aluno abriu a explicação detalhada da solução.
+  final bool explained;
+
+  /// A nota da aula já fechou (todos os exercícios resolvidos): este é
+  /// treino livre, e o resultado não muda. Só "refazer os exercícios" zera.
+  final bool locked;
+
   /// O número do exercício na aula (1 é o primeiro) e quantos há.
   final int number;
   final int count;
@@ -91,6 +131,15 @@ class ExerciseState {
   final String? nextExercise;
 
   bool get interactive => phase == ExercisePhase.active;
+
+  /// A explicação detalhada da solução, quando a aula tem.
+  String? get explanation => lesson == null || exercise == null
+      ? null
+      : texts.say('${lesson!.id}.ex.${exercise!.id}.solution');
+
+  /// Resolvido, com explicação a pedir: o botão "Ver explicação".
+  bool get canExplain =>
+      phase == ExercisePhase.done && !explained && explanation != null;
 
   /// O lado do aluno: o que joga no FEN do exercício.
   Side get side => exercise?.step.side ?? Side.white;
@@ -115,8 +164,10 @@ class ExerciseState {
     bool clearHint = false,
     ExercisePhase? phase,
     String? speech,
+    bool clearSpeech = false,
     Emotion? emotion,
     int? earned,
+    bool? explained,
   }) => ExerciseState(
     ready: ready,
     missing: missing,
@@ -132,12 +183,15 @@ class ExerciseState {
     hint: clearHint ? null : hint ?? this.hint,
     wrongMove: clearWrongMove ? null : wrongMove ?? this.wrongMove,
     phase: phase ?? this.phase,
-    speech: speech ?? this.speech,
+    speech: clearSpeech ? null : speech ?? this.speech,
     emotion: emotion ?? this.emotion,
     earned: earned ?? this.earned,
+    explained: explained ?? this.explained,
+    locked: locked,
     number: number,
     count: count,
     nextExercise: nextExercise,
+    startedAt: startedAt,
   );
 }
 
@@ -150,8 +204,20 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._progress,
     required this._characters,
     this._sounds,
+    this._haptics,
+    this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
   }) : super(const ExerciseState());
+
+  final Now _now;
+
+  /// O cronômetro do exercício: quanto tempo passou desde que ele abriu (a
+  /// tela lê a cada instante e o congela na resposta).
+  Duration get elapsed {
+    final startedAt = state.startedAt;
+    if (startedAt == null) return Duration.zero;
+    return StepClock.elapsed(startedAt: startedAt, now: _now());
+  }
 
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
@@ -159,6 +225,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
 
   // Os sons do jogo; nulo: o exercício fica mudo.
   final GameSounds? _sounds;
+
+  // A vibração; nula: sem retorno tátil.
+  final GameHaptics? _haptics;
 
   /// A pausa antes da resposta do outro lado.
   final Duration replyDelay;
@@ -196,6 +265,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         )
         .firstOrNull
         ?.id;
+    final saved = each.exercise;
+    final resumed = saved != null && saved.exerciseId == exerciseId;
     var opened = ExerciseState(
       ready: true,
       lesson: lesson,
@@ -203,15 +274,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      // O enunciado fica para a ajuda: aqui só o convite.
-      speech: texts.say('coach.exerciseStart', 0),
+      // O objetivo fica sob o tabuleiro; o Viktor só fala com erro, dica ou
+      // explicação pedida.
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
       nextExercise: next,
+      locked: lesson.exercises.every(
+        (other) => each.stars.containsKey(other.id),
+      ),
+      // Voltando ao exercício, o cronômetro continua de onde estava.
+      startedAt: (resumed ? saved.startedAt : null) ?? _now(),
     );
-    final saved = each.exercise;
-    if (saved != null && saved.exerciseId == exerciseId) {
+    if (resumed) {
       opened = opened.copyWith(
         fen: saved.fen,
         turn: saved.turn,
@@ -236,8 +311,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         state.copyWith(
           mistakes: mistakes,
           wrongMove: move,
-          // A pista fica para a dica: aqui só o "não é esse".
-          speech: _pick('coach.wrong'),
+          // Sem fala: o tabuleiro treme e o lance volta. O Viktor só fala
+          // na dica e depois de resolver.
+          clearSpeech: true,
           emotion: Emotion.focused,
         ),
       );
@@ -247,6 +323,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final played = GameRules.play(position, move);
     if (played == null) return;
     unawaited(_sounds?.move(played.san));
+    unawaited(_haptics?.move(played.san));
     final turn = step.line[state.turn];
     final ends = LessonRules.endsLine(step, state.turn, move.uci);
     if (ends) {
@@ -262,7 +339,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
-        speech: _pick('coach.good'),
+        // O aluno só joga: sem elogio no meio da linha. A vez volta a
+        // aparecer embaixo do tabuleiro quando o outro lado responder.
+        clearSpeech: true,
         emotion: Emotion.happy,
       ),
     );
@@ -314,6 +393,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _save();
   }
 
+  /// "Ver explicação": a fala detalhada da solução, depois de resolver.
+  void showExplanation() {
+    final text = state.explanation;
+    if (!state.canExplain || text == null) return;
+    emit(
+      state.copyWith(speech: text, explained: true, emotion: Emotion.focused),
+    );
+  }
+
   /// Sair pelo voltar: o exercício fica guardado onde parou.
   Future<void> leave() async {
     if (state.phase == ExercisePhase.done) return;
@@ -321,6 +409,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }
 
   Future<void> _solve(String fen, Move move) async {
+    unawaited(_haptics?.play(HapticEvent.success));
     final lesson = state.lesson!;
     final exercise = state.exercise!;
     final earned = EndgameLessonRules.earned(
@@ -328,18 +417,24 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       mistakes: state.mistakes,
       hints: state.hints,
     );
-    final all = await _progress.load();
-    final each = all.of(lesson.id);
-    await _progress.save(
-      all.withLesson(
-        lesson.id,
-        each.copyWith(
-          stars: {...each.stars, exercise.id: earned},
-          clearExercise: true,
+    // Com a nota fechada, o treino não grava nada.
+    if (!state.locked) {
+      final all = await _progress.load();
+      final each = all.of(lesson.id);
+      await _progress.save(
+        all.withLesson(
+          lesson.id,
+          each.copyWith(
+            stars: {...each.stars, exercise.id: earned},
+            clearExercise: true,
+          ),
         ),
-      ),
-    );
+      );
+    }
     if (isClosed) return;
+    // Acerto limpo: o Viktor fica quieto, e a explicação vem a pedido. Com
+    // erro ou dica, a correção vem sozinha.
+    final corrected = state.mistakes > 0 || state.hints > 0;
     emit(
       state.copyWith(
         fen: fen,
@@ -349,9 +444,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         clearWrongMove: true,
         phase: ExercisePhase.done,
         earned: earned,
-        speech:
-            state.texts.say('${lesson.id}.ex.${exercise.id}.solution') ??
-            _pick('coach.praise'),
+        clearSpeech: !corrected,
+        speech: corrected ? (state.explanation ?? _pick('coach.praise')) : null,
+        explained: corrected,
         emotion: earned == exercise.stars ? Emotion.happy : Emotion.calm,
       ),
     );
@@ -361,7 +456,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     final lesson = state.lesson;
     final exercise = state.exercise;
     if (lesson == null || exercise == null) return;
-    if (state.phase == ExercisePhase.done) return;
+    if (state.phase == ExercisePhase.done || state.locked) return;
     final all = await _progress.load();
     await _progress.save(
       all.withLesson(
@@ -376,6 +471,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
                 mistakes: state.mistakes,
                 hints: state.hints,
                 open: open,
+                startedAt: state.startedAt,
               ),
             ),
       ),

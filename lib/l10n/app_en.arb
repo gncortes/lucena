@@ -775,7 +775,7 @@
   "@lessonFinish": {
     "description": "Button on the last step of a lesson."
   },
-  "lessonGraduationTitle": "Graduation!",
+  "lessonGraduationTitle": "Diploma earned!",
   "@lessonGraduationTitle": {
     "description": "Title of the card at the end of the last lesson of the course."
   },
@@ -2164,11 +2164,15 @@
   "@homeEndgamesBody": {
     "description": "One line under the endgame lessons card on the home screen."
   },
+  "homeForYou": "Endgames for you",
+  "@homeForYou": {"description": "Home path: the endgame lessons recommended by the level test."},
+  "homeForYouBody": "Your own endgame study, built from your level test: the lessons you still need, in order.",
+  "@homeForYouBody": {"description": "Home path body for the personalised endgame study."},
   "endgamesTitle": "Endgame lessons",
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
   },
-  "endgamesPassedCount": "{passed} of {total} passed",
+  "endgamesPassedCount": "{passed} of {total} completed",
   "@endgamesPassedCount": {
     "description": "Beside the progress bar of the endgame lessons trail.",
     "placeholders": {
@@ -2240,7 +2244,7 @@
   "@endgameExercisesContinue": {
     "description": "Button that opens the next unsolved exercise."
   },
-  "endgameScore": "{score} of {max} stars",
+  "endgameScore": "{score} of {max} points",
   "@endgameScore": {
     "description": "The score of a lesson: stars earned over the total.",
     "placeholders": {
@@ -2248,15 +2252,6 @@
         "type": "int"
       },
       "max": {
-        "type": "int"
-      }
-    }
-  },
-  "endgameScoreMinimum": "Minimum to pass: {min}",
-  "@endgameScoreMinimum": {
-    "description": "The minimum stars to unlock the final step.",
-    "placeholders": {
-      "min": {
         "type": "int"
       }
     }
@@ -2295,7 +2290,7 @@
   "@endgamePassedTitle": {
     "description": "Title of the score card when the minimum was reached."
   },
-  "endgameFailedTitle": "Not enough stars",
+  "endgameFailedTitle": "Minimum score not reached",
   "@endgameFailedTitle": {
     "description": "Title of the score card when the minimum was not reached."
   },
@@ -2383,6 +2378,18 @@
       }
     }
   },
+  "referenceLinkGame": "View the game on Lichess",
+  "@referenceLinkGame": {
+    "description": "Link under the coach's words (and under a key position) that opens, in the browser, the game the position comes from, on Lichess."
+  },
+  "referenceLinkStudy": "View the study",
+  "@referenceLinkStudy": {
+    "description": "Link that opens, in the browser, the Lichess study the position comes from."
+  },
+  "referenceLinkWeb": "View on Lichess",
+  "@referenceLinkWeb": {
+    "description": "Link that opens, in the browser, the web page the position comes from (on Lichess)."
+  },
   "exerciseTitle": "Exercise {number} of {count}",
   "@exerciseTitle": {
     "description": "Under the lesson title on the exercise screen.",
@@ -2399,7 +2406,7 @@
   "@exerciseSolved": {
     "description": "Title of the card after solving an exercise."
   },
-  "exerciseEarned": "{earned} of {stars} stars",
+  "exerciseEarned": "{earned} of {stars, plural, =1{1 point} other{{stars} points}}",
   "@exerciseEarned": {
     "description": "Stars earned after solving an exercise.",
     "placeholders": {
@@ -2419,10 +2426,14 @@
   "@exerciseBack": {
     "description": "Button that goes back to the endgame lesson screen."
   },
-  "exerciseHint": "Hint (costs a star)",
+  "exerciseHint": "Hint (costs a point)",
   "@exerciseHint": {
     "description": "Button that asks for a hint in an exercise."
   },
+  "exerciseHintFree": "Hint",
+  "@exerciseHintFree": {"description": "Hint button when the exercise is already worth nothing: the hint costs nothing."},
+  "exerciseHintLast": "Hint (the exercise stops scoring)",
+  "@exerciseHintLast": {"description": "Hint button when the exercise is worth one point: taking it means the exercise no longer scores."},
   "exerciseMissing": "This exercise does not exist.",
   "@exerciseMissing": {
     "description": "When the exercise in the link does not exist."
@@ -2467,7 +2478,7 @@
       }
     }
   },
-  "lessonGuidePlay": "{goal, select, mate{Play on and checkmate.} other{Play on and promote the pawn.}}",
+  "lessonGuidePlay": "{goal, select, mate{Play on and checkmate.} draw{Hold the draw against the machine.} other{Play on and promote the pawn.}}",
   "@lessonGuidePlay": {
     "description": "Under the lesson board on a play step: the goal.",
     "placeholders": {
@@ -2522,15 +2533,6 @@
   "@starChallengeNotPlayed": {
     "description": "Challenge never played."
   },
-  "starChallengeRule": "{seconds} seconds. Take the piece to each star as it appears.",
-  "@starChallengeRule": {
-    "description": "Before starting a challenge: the time and what to do.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "starChallengeGo": "Go!",
   "@starChallengeGo": {
     "description": "Button that starts the challenge."
@@ -2551,18 +2553,14 @@
   "@starChallengePaused": {
     "description": "Shown while the challenge clock is paused (app in background)."
   },
-  "starChallengeTitle": "{piece} · {level}",
+  "starChallengeTitle": "{piece, select, rook{Rook challenge} bishop{Bishop challenge} knight{Knight challenge} queen{Queen challenge} king{King challenge} pawn{Pawn challenge} other{Star challenge}}",
   "lessonToChallenge": "Star challenge: {piece}",
   "@starChallengeTitle": {
-    "description": "App bar of a star challenge: the piece and the level.",
+    "description": "App bar of a star challenge: the challenge named after its piece (the level shows as a chip beside it).",
     "placeholders": {
       "piece": {
         "type": "String",
-        "example": "Rook"
-      },
-      "level": {
-        "type": "String",
-        "example": "Easy"
+        "example": "rook"
       }
     }
   },
@@ -2577,7 +2575,6 @@
   },
   "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points in all",
-  "starChallengeLegend": "Each star fades after a while: the gold one goes first.",
   "@starChallengePoints": {
     "description": "Points of a star challenge.",
     "placeholders": {
@@ -2593,9 +2590,6 @@
         "type": "int"
       }
     }
-  },
-  "@starChallengeLegend": {
-    "description": "Before starting: stars fade after a while, the gold one fastest."
   },
   "starChallengeObstacles": "The black pawns only get in the way: you cannot capture them. You collect the stars.",
   "@starChallengeObstacles": {
@@ -2709,6 +2703,10 @@
   "reviewStartPosition": "Starting position",
   "@reviewStartPosition": {
     "description": "Game details: the board shows the position before the first move."
+  },
+  "reviewVariation": "Your variation (not part of the game)",
+  "@reviewVariation": {
+    "description": "Game details: the board shows a move of the variation the user played on the board, which is not saved to the game."
   },
   "reviewFirst": "First move",
   "@reviewFirst": {
@@ -3652,6 +3650,1534 @@
     "description": "Marathon stage number in the versus intro.",
     "placeholders": {
       "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsVibration": "Vibration",
+  "@settingsVibration": {
+    "description": "Settings switch: the phone gives haptic feedback (moves, wins, achievements, low time)."
+  },
+  "settingsVibrationHint": "A light touch on your moves, wins and achievements",
+  "@settingsVibrationHint": {
+    "description": "Short explanation under the vibration switch."
+  },
+  "emptyPlayNow": "Play now",
+  "@emptyPlayNow": {
+    "description": "Button in an empty list (no games yet): opens the endgames to play one now."
+  },
+  "settingsAppearance": "Appearance",
+  "@settingsAppearance": {
+    "description": "Settings menu group: language, theme, board look and home screen."
+  },
+  "settingsAppearanceHint": "Language, theme, board and home screen",
+  "@settingsAppearanceHint": {
+    "description": "Subtitle of the Appearance group in the settings menu."
+  },
+  "settingsGame": "Game",
+  "@settingsGame": {
+    "description": "Settings menu group: how pieces move, the clock and opponent comments."
+  },
+  "settingsGameHint": "Moving pieces, clock and opponent comments",
+  "@settingsGameHint": {
+    "description": "Subtitle of the Game group in the settings menu."
+  },
+  "settingsSoundGroup": "Sound, voice and vibration",
+  "@settingsSoundGroup": {
+    "description": "Settings menu group: sounds, vibration and voice."
+  },
+  "settingsSoundGroupHint": "Piece sounds, vibration and the teacher's voice",
+  "@settingsSoundGroupHint": {
+    "description": "Subtitle of the Sound group in the settings menu."
+  },
+  "settingsAbout": "About Lucena",
+  "@settingsAbout": {
+    "description": "Settings menu entry and screen title: about the app (website, open source, licenses)."
+  },
+  "settingsAboutHint": "Website, open source, licenses and tour",
+  "@settingsAboutHint": {
+    "description": "Subtitle of the About entry in the settings menu."
+  },
+  "aboutTagline": "Endgame training against human-like opponents, fully offline.",
+  "@aboutTagline": {
+    "description": "Short description of the app on the About screen."
+  },
+  "aboutWebsite": "Lucena website",
+  "@aboutWebsite": {
+    "description": "About screen: opens the app's website (landing page)."
+  },
+  "aboutSource": "Source code",
+  "@aboutSource": {
+    "description": "About screen: opens the source code repository."
+  },
+  "aboutSourceHint": "Free software, AGPL-3.0",
+  "@aboutSourceHint": {
+    "description": "Subtitle under Source code on the About screen: the app is free software under the AGPL-3.0 license."
+  },
+  "aboutLicenses": "Open source licenses",
+  "@aboutLicenses": {
+    "description": "About screen: opens the list of open source licenses of the libraries used."
+  },
+  "lessonPartStep": "Chapter {part} of {parts} · step {step} of {steps}",
+  "@lessonPartStep": {
+    "description": "Lesson progress label: part X of Y and step A of B inside the part.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      },
+      "step": {
+        "type": "int"
+      },
+      "steps": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonGuideThink": "Study the position. You can move both sides' pieces to test ideas.",
+  "@lessonGuideThink": {
+    "description": "Lesson guide during the think step: study the position, you may move the pieces of both sides."
+  },
+  "lessonGuideDemo": "Watch: the teacher plays and explains each move.",
+  "@lessonGuideDemo": {
+    "description": "Lesson guide during a demonstration: the teacher plays the moves and explains."
+  },
+  "lessonThinkReset": "Reset position",
+  "@lessonThinkReset": {
+    "description": "Button in the think step: put the pieces back to the step's position."
+  },
+  "lessonMoreHint": "Another hint",
+  "@lessonMoreHint": {
+    "description": "Button after the think time: show the next hint."
+  },
+  "lessonSeeExplanation": "See explanation",
+  "@lessonSeeExplanation": {
+    "description": "Button after the think time: go on to the teacher's explanation."
+  },
+  "lessonStepTimer": "{time} elapsed",
+  "@lessonStepTimer": {
+    "description": "Screen reader label of the lesson step timer, which counts up: the time elapsed since the step opened (m:ss).",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonDemoBack": "Previous move",
+  "@lessonDemoBack": {
+    "description": "Tooltip: go back one move in the demonstration."
+  },
+  "lessonDemoForward": "Next move",
+  "@lessonDemoForward": {
+    "description": "Tooltip: next move in the demonstration."
+  },
+  "lessonDemoReplay": "Replay",
+  "@lessonDemoReplay": {
+    "description": "Tooltip: replay the demonstration from the start."
+  },
+  "lessonDemoPause": "Pause",
+  "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
+  "lessonDemoPlay": "Play",
+  "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
+  "lessonPartDone": "Chapter {part} complete",
+  "@lessonPartDone": {
+    "description": "Title of the card at the end of a lesson part.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonNextPart": "Go to chapter {part}",
+  "@lessonNextPart": {
+    "description": "Button at the end of a lesson part: open the next part.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonToFinalTest": "Take the final test",
+  "@lessonToFinalTest": {
+    "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
+  },
+  "lessonReviewPart": "Review this chapter",
+  "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
+  "lessonPartNext": "Next",
+  "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
+  "lessonPartLearned": "What you learned",
+  "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "lessonAllPartsDone": "All chapters complete",
+  "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
+  "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
+  "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
+  "lessonCloseSpeech": "Close",
+  "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
+  "lessonHideMarks": "Hide the marks",
+  "@lessonHideMarks": {"description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."},
+  "lessonShowMarks": "Show the marks",
+  "@lessonShowMarks": {"description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."},
+  "lessonBackToLesson": "Back to the lesson",
+  "@lessonBackToLesson": {
+    "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
+  },
+  "endgameFinalTest": "Final test",
+  "@endgameFinalTest": {
+    "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
+  },
+  "endgameTestAdvice": "Tip: do the chapters first. The test is open whenever you want to practice.",
+  "@endgameTestAdvice": {
+    "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
+  },
+  "endgameStartLesson": "Start chapter 1",
+  "@endgameStartLesson": {
+    "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
+  },
+  "endgameResumePart": "Resume chapter {part}",
+  "@endgameResumePart": {
+    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameNextPart": "Go to chapter {part}",
+  "@endgameNextPart": {
+    "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameResumeTest": "Continue the final test",
+  "@endgameResumeTest": {
+    "description": "Fixed bottom button on the endgame lesson screen: continue the final test already started."
+  },
+  "endgameContinueTest": "Take the final test",
+  "@endgameContinueTest": {
+    "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
+  },
+  "homeEndgamePart": "Chapter {part} of {parts}",
+  "@homeEndgamePart": {
+    "description": "Home continue card: the endgame lesson part where the student stopped.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      }
+    }
+  },
+  "endgamePartStart": "Start",
+  "@endgamePartStart": {
+    "description": "Button on the recommended lesson part card: start this part."
+  },
+  "endgameChallengeTitle": "Challenge yourself in this endgame",
+  "@endgameChallengeTitle": {
+    "description": "Section title on the endgame lesson screen: challenge yourself in this endgame in several modes (speedrun, training). Always open."
+  },
+  "lessonThinkTurn": "{side, select, white{White to move.} other{Black to move.}}",
+  "@lessonThinkTurn": {
+    "description": "Teacher's first sentence in a think step: which side is to move in the position. side is white or black.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonThinkAsk": "{ask, select, line{What is the winning sequence?} other{What is the best plan?}}",
+  "@lessonThinkAsk": {
+    "description": "Teacher's question in a think step: 'plan' asks for the best plan (no forced line), 'line' asks for the winning sequence.",
+    "placeholders": {
+      "ask": {
+        "type": "String"
+      }
+    }
+  },  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
+  "@lessonThinkCalm": {
+    "description": "Teacher's short prompt in a think step, after who moves: take your time and find the winning sequence ('line') or the idea of the position (other). The step's own context comes later, in the explanation.",
+    "placeholders": {
+      "ask": {
+        "type": "String"
+      }
+    }
+  },
+
+  "endgameTestCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@endgameTestCount": {
+    "description": "Final test card title: number of exercises.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonFinishPart": "Finish the chapter",
+  "@lessonFinishPart": {
+    "description": "Button on the last step of a lesson part: finish this part."
+  },
+  "endgameModulePlace": "{module} · lesson {number} of {count}",
+  "@endgameModulePlace": {
+    "description": "Endgame lesson screen header: the module name and the lesson's position in it, e.g. 'Basic mates · 1 of 4'.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lessonPartTitle": "Chapter {part} · {title}",
+  "@lessonPartTitle": {
+    "description": "Lesson step screen title in a lesson split into parts: the part number and its title.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameLessonInReview": "Lesson under review: the content may still change.",
+  "@endgameLessonInReview": {
+    "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
+  },
+  "endgameStagesDone": "{done} of {total} chapters done",
+  "@endgameStagesDone": {
+    "description": "Endgame lesson screen header: lesson stages done out of the total.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameTestPrompt": "Show that you learned it",
+  "@endgameTestPrompt": {
+    "description": "Final test card subtitle before the student reaches the lesson's goal."
+  },
+  "endgameTestLearned": "You learned this endgame!",
+  "@endgameTestLearned": {
+    "description": "Final test card subtitle when the student reached the lesson's goal."
+  },
+  "endgameTestAlmost": "Almost there: redo them to make it stick",
+  "@endgameTestAlmost": {
+    "description": "Final test card subtitle when all exercises were done but the goal was not reached."
+  },
+  "endgameTestLessonLeft": "Score reached: finish the lesson",
+  "@endgameTestLessonLeft": {"description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."},
+  "graduationDiploma": "Diploma",
+  "@graduationDiploma": {
+    "description": "Title on the graduation diploma."
+  },
+  "graduationAwardedTo": "Awarded to",
+  "@graduationAwardedTo": {
+    "description": "Diploma line before the student's name."
+  },
+  "graduationFor": "for completing the {count} lessons of Viktor's School",
+  "@graduationFor": {
+    "description": "Diploma line: for completing all lessons of the school.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "graduationDate": "Date",
+  "@graduationDate": {
+    "description": "Label under the date line on the diploma."
+  },
+  "graduationTeacher": "Teacher",
+  "@graduationTeacher": {
+    "description": "Label under the teacher's signature line on the diploma."
+  },
+  "graduationLessons": "{count} lessons completed",
+  "@graduationLessons": {
+    "description": "Graduation summary chip: number of lessons completed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "graduationPathTitle": "Your path",
+  "@graduationPathTitle": {
+    "description": "Heading of the list of school modules the student went through, on the graduation card."
+  },
+  "graduationModuleLessons": "{count, plural, =1{1 lesson} other{{count} lessons}}",
+  "@graduationModuleLessons": {
+    "description": "Number of lessons in a school module, on the graduation card.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "graduationFinalTest": "Passed the final test: {lesson}",
+  "@graduationFinalTest": {
+    "description": "Last line of the graduation path: the final test the student passed. {lesson} is the lesson title.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "graduationShare": "Share achievement",
+  "@graduationShare": {
+    "description": "Button at graduation that shares an image of the diploma and the path on social networks."
+  },
+  "graduationShareText": "I finished Viktor's School on Lucena: {count} chess endgame lessons and the final test! {link}",
+  "@graduationShareText": {
+    "description": "Text that goes with the shared graduation image. {count} is the number of lessons, {link} the app website.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "ratingHelp": "How the rating works",
+  "@ratingHelp": {
+    "description": "Tooltip of the info button in the rating screen's app bar (and on the rating card) that opens the explanation of the endgame rating."
+  },
+  "ratingResultsTitle": "Results",
+  "@ratingResultsTitle": {
+    "description": "Title of the card with the bar of wins, draws and losses on the rating screen."
+  },
+  "achievementsFilterAll": "All",
+  "@achievementsFilterAll": {
+    "description": "Achievements filter: every achievement, grouped."
+  },
+  "achievementsFilterUnlocked": "Unlocked",
+  "@achievementsFilterUnlocked": {
+    "description": "Achievements filter: only the unlocked ones."
+  },
+  "achievementsFilterLocked": "Missing",
+  "@achievementsFilterLocked": {
+    "description": "Achievements filter: only the ones still missing."
+  },
+  "achievementsFilterHistory": "History",
+  "@achievementsFilterHistory": {
+    "description": "Achievements filter: unlocked ones sorted by date, most recent first."
+  },
+  "achievementCategoryJourney": "Journey",
+  "@achievementCategoryJourney": {
+    "description": "Achievements group: Journey achievements (first endgame, rungs, fast challenges)."
+  },
+  "achievementCategoryOpponents": "Opponents",
+  "@achievementCategoryOpponents": {
+    "description": "Achievements group: beating each opponent."
+  },
+  "achievementCategorySpeedrun": "Speedrun",
+  "@achievementCategorySpeedrun": {
+    "description": "Achievements group: speedrun achievements."
+  },
+  "achievementsGroupHeader": "{group} · {done} of {total}",
+  "@achievementsGroupHeader": {
+    "description": "Header of an achievements group with how many of them were unlocked, e.g. \"Opponents · 8 of 12\".",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsToday": "today",
+  "@achievementsToday": {
+    "description": "Short relative date of an achievement unlocked today."
+  },
+  "achievementsYesterday": "yesterday",
+  "@achievementsYesterday": {
+    "description": "Short relative date of an achievement unlocked yesterday."
+  },
+  "achievementsDaysAgo": "{count, plural, one{1 day ago} other{{count} days ago}}",
+  "@achievementsDaysAgo": {
+    "description": "Short relative date of an achievement unlocked some days ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressLevels": "{total, plural, one{{done} of 1 level} other{{done} of {total} levels}}",
+  "@achievementProgressLevels": {
+    "description": "Progress of an achievement that asks to beat every level, e.g. \"3 of 9 levels\".",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressChallenges": "{total, plural, one{{done} of 1 challenge} other{{done} of {total} challenges}}",
+  "@achievementProgressChallenges": {
+    "description": "Progress of an achievement that asks to complete every challenge of a Journey rung, e.g. \"3 of 5 challenges\".",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsDateTime": "{date}, {time}",
+  "@achievementsDateTime": {
+    "description": "Full date and time an achievement was unlocked, e.g. \"Oct 7, 2026, 10:41 PM\". Both parts are already formatted for the language.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementOpenGame": "View the game",
+  "@achievementOpenGame": {
+    "description": "Button in the achievement detail: open the review of the game that unlocked it."
+  },
+  "achievementOpenSpeedrun": "View the speedrun",
+  "@achievementOpenSpeedrun": {
+    "description": "Button in the achievement detail: open the speedrun attempt that unlocked it."
+  },
+  "achievementDetailMissing": "Still to do",
+  "@achievementDetailMissing": {
+    "description": "Title over what a locked achievement still needs."
+  },
+  "achievementShortcutPlay": "Play against {opponent}",
+  "@achievementShortcutPlay": {
+    "description": "Shortcut in a locked achievement: play against the opponent it asks for.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementShortcutJourney": "Open the Journey",
+  "@achievementShortcutJourney": {
+    "description": "Shortcut in a locked achievement: open the Journey."
+  },
+  "achievementShortcutSpeedrun": "Open the speedrun",
+  "@achievementShortcutSpeedrun": {
+    "description": "Shortcut in a locked achievement: open the speedruns."
+  },
+  "achievementShortcutTrain": "Train endgames",
+  "@achievementShortcutTrain": {
+    "description": "Shortcut in a locked achievement: open the endgame catalog to train."
+  },
+  "achievementsEmptyUnlocked": "No achievements yet. Complete an endgame to get the first one.",
+  "@achievementsEmptyUnlocked": {
+    "description": "Achievements list filtered to unlocked ones, with none yet."
+  },
+  "achievementsEmptyLocked": "You unlocked them all!",
+  "@achievementsEmptyLocked": {
+    "description": "Achievements list filtered to missing ones, with every achievement already unlocked."
+  },
+  "achievementDetailUnlockedLabel": "Unlocked",
+  "@achievementDetailUnlockedLabel": {
+    "description": "Accessibility label of an unlocked achievement medal."
+  },
+  "conclusionDraw": "Draw",
+  "@conclusionDraw": {
+    "description": "Conclusion screen title: the game was drawn."
+  },
+  "conclusionStageWon": "Stage {stage} of {total} won",
+  "@conclusionStageWon": {
+    "description": "Conclusion title after winning a speedrun stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionStageLost": "Stopped at stage {stage} of {total}",
+  "@conclusionStageLost": {
+    "description": "Conclusion title after losing a speedrun stage (the attempt ends).",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionMarathonDone": "Marathon completed!",
+  "@conclusionMarathonDone": {
+    "description": "Conclusion title when the Marathon is completed."
+  },
+  "conclusionDetailedReview": "See the detailed analysis",
+  "@conclusionDetailedReview": {
+    "description": "Button right under the precision in the finished quick analysis card of the conclusion: opens the full move-by-move review of this game."
+  },
+  "conclusionBestLine": "See the best line",
+  "@conclusionBestLine": {
+    "description": "Conclusion card title: the game played again from the start, Stockfish in the player's place against the same opponent, move by move on a board."
+  },
+  "conclusionBestLineHint": "Stockfish in your place against {opponent}",
+  "@conclusionBestLineHint": {
+    "description": "Subtitle of the best line card. The opponent is the character (or engine) the player faced.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "conclusionBestLineMove": "Move {move} of {total}",
+  "@conclusionBestLineMove": {
+    "description": "Best line stepper: which move of the line is shown.",
+    "placeholders": {
+      "move": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionBestLineDisclaimer": "Stockfish played fast (1 s per move), so in some positions it may miss the best defence or the win. For a deeper look, open the detailed analysis.",
+  "@conclusionBestLineDisclaimer": {
+    "description": "Short note under the best line board: it was played fast, so it may not be perfect; points to the detailed analysis button below."
+  },
+  "conclusionRatingHistory": "Rating history",
+  "@conclusionRatingHistory": {
+    "description": "Link on the conclusion screen to the rating chart."
+  },
+  "conclusionSummary": "See the summary",
+  "@conclusionSummary": {
+    "description": "Conclusion button: opens the speedrun attempt summary with each stage time."
+  },
+  "conclusionSpeedruns": "See the speedruns",
+  "@conclusionSpeedruns": {
+    "description": "Conclusion button: opens the list of speedruns."
+  },
+  "conclusionShare": "Share",
+  "@conclusionShare": {
+    "description": "Tooltip of the share button on the conclusion screen."
+  },
+  "conclusionStageTime": "Stage time",
+  "@conclusionStageTime": {
+    "description": "Label of the time spent on the speedrun stage just played."
+  },
+  "conclusionBlindMoves": "{count, plural, =1{1 move without seeing the board} other{{count} moves without seeing the board}}",
+  "@conclusionBlindMoves": {
+    "description": "Blind-mode conclusion: how many moves the player made without seeing the board.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "conclusionShareText": "{result} Endgame training on Lucena. {link}",
+  "@conclusionShareText": {
+    "description": "Text sent with the shared conclusion image. {result} is the result line (e.g. \"You won!\").",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "conclusionTotalSoFar": "Total so far",
+  "@conclusionTotalSoFar": {
+    "description": "Speedrun stage conclusion: the time of all stages played so far."
+  },
+  "conclusionReviewTitle": "Your moves",
+  "@conclusionReviewTitle": {
+    "description": "Conclusion card: summary of the move quality of the player in this game."
+  },
+  "conclusionFastest": "Fastest",
+  "@conclusionFastest": {
+    "description": "Tag on the fastest stage in the speedrun conclusion."
+  },
+  "conclusionQuickReview": "Quick analysis",
+  "@conclusionQuickReview": {
+    "description": "Conclusion button: Stockfish quickly evaluates the game and shows accuracy and move quality."
+  },
+  "conclusionQuickReviewHint": "Your accuracy and how good your moves were",
+  "@conclusionQuickReviewHint": {
+    "description": "Subtitle of the quick analysis button."
+  },
+  "conclusionTotalTime": "Total time",
+  "@conclusionTotalTime": {
+    "description": "Speedrun conclusion: label of the total time spent on all stages."
+  },
+  "conclusionDetails": "See detailed stats",
+  "@conclusionDetails": {
+    "description": "Speedrun conclusion: button that shows the time spent against each opponent."
+  },
+  "conclusionHideDetails": "Hide details",
+  "@conclusionHideDetails": {
+    "description": "Speedrun conclusion: hides the per-opponent times again."
+  },
+  "conclusionPace": "Time control",
+  "@conclusionPace": {
+    "description": "Conclusion card label: the time control of the game."
+  },
+  "ratingPeriodTitle": "Period",
+  "@ratingPeriodTitle": {
+    "description": "Rating screen: title of the period filter sheet (7 days, 30 days, ...)."
+  },
+  "conclusionTimeSpent": "Time spent",
+  "@conclusionTimeSpent": {
+    "description": "Speedrun/Marathon conclusion after a lost stage: the time spent until then."
+  },
+  "placementTitle": "Level test",
+  "@placementTitle": {
+    "description": "Title of the placement test screen."
+  },
+  "placementIntroSpeech": "Twenty questions, no clock. No guessing: if you don't know, tap \"I don't know\". At the end I'll build your study plan.",
+  "@placementIntroSpeech": {
+    "description": "Viktor at the start of the placement test."
+  },
+  "placementChipQuestions": "20 questions",
+  "@placementChipQuestions": {
+    "description": "Chip on the placement intro."
+  },
+  "placementChipMinutes": "about 8 minutes",
+  "@placementChipMinutes": {
+    "description": "Chip on the placement intro: estimated time."
+  },
+  "placementChipNoClock": "no clock",
+  "@placementChipNoClock": {
+    "description": "Chip on the placement intro."
+  },
+  "placementStart": "Start",
+  "@placementStart": {
+    "description": "Button that starts the placement test."
+  },
+  "placementResume": "Continue from question {number}",
+  "@placementResume": {
+    "description": "Button that resumes an unfinished placement test.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "placementRestart": "Start over",
+  "@placementRestart": {
+    "description": "Button that restarts the placement test from scratch."
+  },
+  "placementDontKnow": "I don't know",
+  "@placementDontKnow": {
+    "description": "Button in a placement question when the player does not know the answer."
+  },
+  "placementConfirm": "Confirm",
+  "@placementConfirm": {
+    "description": "Button that confirms the marked squares in a placement question."
+  },
+  "placementQuestionOf": "Question {number} of 20",
+  "@placementQuestionOf": {
+    "description": "Placement question counter.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "placementResultTitle": "Your level",
+  "@placementResultTitle": {
+    "description": "Title on the placement result."
+  },
+  "placementBetween": "Between {low} and {high}",
+  "@placementBetween": {
+    "description": "Placement result: the estimated rating interval.",
+    "placeholders": {
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "placementMapTitle": "What you know and what is missing",
+  "@placementMapTitle": {
+    "description": "Placement result: heading of the skills map."
+  },
+  "placementMastered": "You know it",
+  "@placementMastered": {
+    "description": "Placement map legend: confirmed mastery."
+  },
+  "placementLikely": "Probably known",
+  "@placementLikely": {
+    "description": "Placement map legend: probably known (inferred)."
+  },
+  "placementGap": "To study",
+  "@placementGap": {
+    "description": "Placement map legend: a gap to study."
+  },
+  "placementRoadmapTitle": "Your study plan",
+  "@placementRoadmapTitle": {
+    "description": "Placement result: heading of the study plan."
+  },
+  "placementSoon": "coming soon",
+  "@placementSoon": {
+    "description": "Placement roadmap: lesson not available yet."
+  },
+  "placementUseLevel": "Use this level",
+  "@placementUseLevel": {
+    "description": "Placement result: button that saves the level and continues."
+  },
+  "placementChooseByHand": "I'd rather enter my rating",
+  "@placementChooseByHand": {
+    "description": "Placement: discreet option to pick the band by hand."
+  },
+  "placementTwoLevels": "Between two levels. Which one fits you better?",
+  "@placementTwoLevels": {
+    "description": "Placement result when the interval spans two bands."
+  },
+  "placementSources": "Puzzles: Lichess open database (CC0).",
+  "@placementSources": {
+    "description": "Placement info: credit for the Lichess puzzles."
+  },
+  "placementSquares": "Tap every square the {piece, select, king{king} queen{queen} rook{rook} bishop{bishop} knight{knight} other{pawn}} can move to.",
+  "@placementSquares": {
+    "description": "Placement test question: tap all squares the piece can go to. {piece} is king, queen, rook, bishop, knight or pawn.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "bishop"
+      }
+    }
+  },
+  "placementCaptureSquares": "Tap every piece the {piece, select, king{king} queen{queen} rook{rook} bishop{bishop} knight{knight} other{pawn}} can capture.",
+  "@placementCaptureSquares": {
+    "description": "Placement test question: tap all enemy pieces the given piece can capture now.",
+    "placeholders": {
+      "piece": {
+        "type": "String",
+        "example": "queen"
+      }
+    }
+  },
+  "placementKingEscape": "{side, select, white{White} other{Black}} is in check. Tap every square the king can move to.",
+  "@placementKingEscape": {
+    "description": "Placement test question: the side to move is in check; tap every square its king can escape to.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementTapSquare": "Tap the square {square}.",
+  "@placementTapSquare": {
+    "description": "Placement test question: tap one square by its coordinate (e4).",
+    "placeholders": {
+      "square": {
+        "type": "String",
+        "example": "e4"
+      }
+    }
+  },
+  "placementPlayMove": "{side, select, white{White} other{Black}} to move. Play {move}.",
+  "@placementPlayMove": {
+    "description": "Placement test question: play the move written in algebraic notation ({move} is like Nf3).",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      },
+      "move": {
+        "type": "String",
+        "example": "Nf3"
+      }
+    }
+  },
+  "placementCheckmate": "{side, select, white{White} other{Black}} to move and checkmate.",
+  "@placementCheckmate": {
+    "description": "Placement test question: find the checkmate (one move or a short line). Never say 'mate in N'.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementBestMove": "{side, select, white{White} other{Black}} to move. Find the best move.",
+  "@placementBestMove": {
+    "description": "Placement test question: find the best move (a puzzle or an endgame technique move).",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementMoveWin": "{side, select, white{White} other{Black}} to move and win.",
+  "@placementMoveWin": {
+    "description": "Placement test question: play the move that keeps the win.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementMoveDraw": "{side, select, white{White} other{Black}} to move and draw.",
+  "@placementMoveDraw": {
+    "description": "Placement test question: play the move that holds the draw.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementWinMaterial": "{side, select, white{White} other{Black}} to move. Win the most material.",
+  "@placementWinMaterial": {
+    "description": "Placement test question: make the capture that wins the most material.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementCheckMateNone": "{side, select, white{White} other{Black}} to move. Is it check, checkmate or neither?",
+  "@placementCheckMateNone": {
+    "description": "Placement test question with three answers: check, checkmate or neither.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementMateStalemateNone": "{side, select, white{White} other{Black}} to move. Is it checkmate, stalemate or neither?",
+  "@placementMateStalemateNone": {
+    "description": "Placement test question with three answers: checkmate, stalemate or neither.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementCanCastle": "Can {side, select, white{White} other{Black}} castle {wing, select, king{kingside} other{queenside}} now?",
+  "@placementCanCastle": {
+    "description": "Placement test question with yes/no answers: can this side castle on this wing in this position?",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      },
+      "wing": {
+        "type": "String",
+        "example": "king"
+      }
+    }
+  },
+  "placementCanEnPassant": "Can {side, select, white{White} other{Black}} capture en passant now?",
+  "@placementCanEnPassant": {
+    "description": "Placement test question with yes/no answers: is an en passant capture possible right now (the last move is highlighted)?",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementInsufficient": "Is this a draw by insufficient material?",
+  "@placementInsufficient": {
+    "description": "Placement test question with yes/no answers: can nobody checkmate with the material on the board?"
+  },
+  "placementCatchPawn": "{side, select, white{White} other{Black}} to move. Can the {king, select, white{white} other{black}} king catch the pawn?",
+  "@placementCatchPawn": {
+    "description": "Placement test question with yes/no answers (rule of the square). {king} is the color of the defending king.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "black"
+      },
+      "king": {
+        "type": "String",
+        "example": "black"
+      }
+    }
+  },
+  "placementResult": "{side, select, white{White} other{Black}} to move. What is the result with best play?",
+  "@placementResult": {
+    "description": "Placement test question: choose the result (White wins, draw or Black wins) with perfect play from both sides.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      }
+    }
+  },
+  "placementOptionMate": "Checkmate",
+  "@placementOptionMate": {
+    "description": "Answer button in the placement test: the position is checkmate."
+  },
+  "placementOptionStalemate": "Stalemate",
+  "@placementOptionStalemate": {
+    "description": "Answer button in the placement test: the position is stalemate."
+  },
+  "placementOptionCheck": "Check",
+  "@placementOptionCheck": {
+    "description": "Answer button in the placement test: the king is in check (not mate)."
+  },
+  "placementOptionNone": "Neither",
+  "@placementOptionNone": {
+    "description": "Answer button in the placement test: none of the other options."
+  },
+  "placementOptionYes": "Yes",
+  "@placementOptionYes": {
+    "description": "Answer button in the placement test."
+  },
+  "placementOptionNo": "No",
+  "@placementOptionNo": {
+    "description": "Answer button in the placement test."
+  },
+  "placementOptionWhiteWins": "White wins",
+  "@placementOptionWhiteWins": {
+    "description": "Answer button in the placement test: White wins with best play."
+  },
+  "placementOptionDraw": "Draw",
+  "@placementOptionDraw": {
+    "description": "Answer button in the placement test: the game is a draw with best play."
+  },
+  "placementOptionBlackWins": "Black wins",
+  "@placementOptionBlackWins": {
+    "description": "Answer button in the placement test: Black wins with best play."
+  },
+  "skillGroupRules": "Rules",
+  "@skillGroupRules": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillGroupMates": "Checkmates",
+  "@skillGroupMates": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillGroupPawns": "King and pawns",
+  "@skillGroupPawns": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillGroupQueenRook": "Queen and rook",
+  "@skillGroupQueenRook": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillGroupMinor": "Minor pieces",
+  "@skillGroupMinor": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillGroupTactics": "Tactics",
+  "@skillGroupTactics": {
+    "description": "Placement test: name of a group of skills in the skill map (result screen)."
+  },
+  "skillRulesRook": "Rook moves",
+  "@skillRulesRook": {
+    "description": "Placement test: name of the skill 'rules.rook' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesBishop": "Bishop moves",
+  "@skillRulesBishop": {
+    "description": "Placement test: name of the skill 'rules.bishop' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesQueen": "Queen moves",
+  "@skillRulesQueen": {
+    "description": "Placement test: name of the skill 'rules.queen' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesKing": "King moves",
+  "@skillRulesKing": {
+    "description": "Placement test: name of the skill 'rules.king' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesKnight": "Knight moves",
+  "@skillRulesKnight": {
+    "description": "Placement test: name of the skill 'rules.knight' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesPawn": "Pawn moves, captures and promotion",
+  "@skillRulesPawn": {
+    "description": "Placement test: name of the skill 'rules.pawn' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesCapture": "Capturing and protecting",
+  "@skillRulesCapture": {
+    "description": "Placement test: name of the skill 'rules.capture' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesCheck": "Check and checkmate",
+  "@skillRulesCheck": {
+    "description": "Placement test: name of the skill 'rules.check' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesOutOfCheck": "Getting out of check",
+  "@skillRulesOutOfCheck": {
+    "description": "Placement test: name of the skill 'rules.outOfCheck' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesStalemate": "Stalemate",
+  "@skillRulesStalemate": {
+    "description": "Placement test: name of the skill 'rules.stalemate' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesCastling": "Castling",
+  "@skillRulesCastling": {
+    "description": "Placement test: name of the skill 'rules.castling' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesEnPassant": "En passant",
+  "@skillRulesEnPassant": {
+    "description": "Placement test: name of the skill 'rules.enPassant' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesDraws": "Draws: repetition, 50 moves, insufficient material",
+  "@skillRulesDraws": {
+    "description": "Placement test: name of the skill 'rules.draws' in the skill map (result screen, roadmap)."
+  },
+  "skillRulesPieceValue": "Piece values and trades",
+  "@skillRulesPieceValue": {
+    "description": "Placement test: name of the skill 'rules.pieceValue' in the skill map (result screen, roadmap)."
+  },
+  "skillNotationSquares": "Board coordinates",
+  "@skillNotationSquares": {
+    "description": "Placement test: name of the skill 'notation.squares' in the skill map (result screen, roadmap)."
+  },
+  "skillNotationMoves": "Reading and writing moves",
+  "@skillNotationMoves": {
+    "description": "Placement test: name of the skill 'notation.moves' in the skill map (result screen, roadmap)."
+  },
+  "skillMateInOne": "Spotting checkmate",
+  "@skillMateInOne": {
+    "description": "Placement test: name of the skill 'mate.inOne' in the skill map (result screen, roadmap)."
+  },
+  "skillMateTwoRooks": "Two-rook ladder mate",
+  "@skillMateTwoRooks": {
+    "description": "Placement test: name of the skill 'mate.twoRooks' in the skill map (result screen, roadmap)."
+  },
+  "skillMateQueen": "Queen checkmate without stalemate",
+  "@skillMateQueen": {
+    "description": "Placement test: name of the skill 'mate.queen' in the skill map (result screen, roadmap)."
+  },
+  "skillMateRook": "Rook checkmate",
+  "@skillMateRook": {
+    "description": "Placement test: name of the skill 'mate.rook' in the skill map (result screen, roadmap)."
+  },
+  "skillMatePatterns": "Checkmate patterns",
+  "@skillMatePatterns": {
+    "description": "Placement test: name of the skill 'mate.patterns' in the skill map (result screen, roadmap)."
+  },
+  "skillMateTwoBishops": "Two-bishop checkmate",
+  "@skillMateTwoBishops": {
+    "description": "Placement test: name of the skill 'mate.twoBishops' in the skill map (result screen, roadmap)."
+  },
+  "skillMateBishopKnight": "Bishop and knight checkmate",
+  "@skillMateBishopKnight": {
+    "description": "Placement test: name of the skill 'mate.bishopKnight' in the skill map (result screen, roadmap)."
+  },
+  "skillMateTwoKnightsPawn": "Two knights against a pawn",
+  "@skillMateTwoKnightsPawn": {
+    "description": "Placement test: name of the skill 'mate.twoKnightsPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsSquare": "The rule of the square",
+  "@skillPawnsSquare": {
+    "description": "Placement test: name of the skill 'pawns.square' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsOpposition": "Opposition",
+  "@skillPawnsOpposition": {
+    "description": "Placement test: name of the skill 'pawns.opposition' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsKingPawn": "King and pawn against king",
+  "@skillPawnsKingPawn": {
+    "description": "Placement test: name of the skill 'pawns.kingPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsRookPawnDraw": "Rook pawn: the corner draw",
+  "@skillPawnsRookPawnDraw": {
+    "description": "Placement test: name of the skill 'pawns.rookPawnDraw' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsKeySquares": "Key squares",
+  "@skillPawnsKeySquares": {
+    "description": "Placement test: name of the skill 'pawns.keySquares' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsDistantOpposition": "Distant and diagonal opposition",
+  "@skillPawnsDistantOpposition": {
+    "description": "Placement test: name of the skill 'pawns.distantOpposition' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsRace": "Pawn races",
+  "@skillPawnsRace": {
+    "description": "Placement test: name of the skill 'pawns.race' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsTriangulation": "Triangulation",
+  "@skillPawnsTriangulation": {
+    "description": "Placement test: name of the skill 'pawns.triangulation' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsReti": "The Réti maneuver",
+  "@skillPawnsReti": {
+    "description": "Placement test: name of the skill 'pawns.reti' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsShoulder": "Shouldering",
+  "@skillPawnsShoulder": {
+    "description": "Placement test: name of the skill 'pawns.shoulder' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsBreakthrough": "Pawn breakthrough",
+  "@skillPawnsBreakthrough": {
+    "description": "Placement test: name of the skill 'pawns.breakthrough' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsOutsidePasser": "Outside passed pawn",
+  "@skillPawnsOutsidePasser": {
+    "description": "Placement test: name of the skill 'pawns.outsidePasser' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsProtectedPasser": "Protected passed pawn",
+  "@skillPawnsProtectedPasser": {
+    "description": "Placement test: name of the skill 'pawns.protectedPasser' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsTrebuchet": "Mutual zugzwang (trebuchet)",
+  "@skillPawnsTrebuchet": {
+    "description": "Placement test: name of the skill 'pawns.trebuchet' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsSpareTempi": "Spare tempi",
+  "@skillPawnsSpareTempi": {
+    "description": "Placement test: name of the skill 'pawns.spareTempi' in the skill map (result screen, roadmap)."
+  },
+  "skillPawnsCorrespondingSquares": "Corresponding squares",
+  "@skillPawnsCorrespondingSquares": {
+    "description": "Placement test: name of the skill 'pawns.correspondingSquares' in the skill map (result screen, roadmap)."
+  },
+  "skillQueenVsPawn": "Queen against a pawn on the seventh",
+  "@skillQueenVsPawn": {
+    "description": "Placement test: name of the skill 'queen.vsPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillQueenVsPawnDraws": "Queen against rook and bishop pawns",
+  "@skillQueenVsPawnDraws": {
+    "description": "Placement test: name of the skill 'queen.vsPawnDraws' in the skill map (result screen, roadmap)."
+  },
+  "skillQueenVsRook": "Queen against rook",
+  "@skillQueenVsRook": {
+    "description": "Placement test: name of the skill 'queen.vsRook' in the skill map (result screen, roadmap)."
+  },
+  "skillQueenVsRookPawn": "Queen against rook and pawn",
+  "@skillQueenVsRookPawn": {
+    "description": "Placement test: name of the skill 'queen.vsRookPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillQueenPawnVsQueen": "Queen and pawn against queen",
+  "@skillQueenPawnVsQueen": {
+    "description": "Placement test: name of the skill 'queen.pawnVsQueen' in the skill map (result screen, roadmap)."
+  },
+  "skillRookVsPawn": "Rook against pawn",
+  "@skillRookVsPawn": {
+    "description": "Placement test: name of the skill 'rook.vsPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillRookSaavedra": "The Saavedra position",
+  "@skillRookSaavedra": {
+    "description": "Placement test: name of the skill 'rook.saavedra' in the skill map (result screen, roadmap)."
+  },
+  "skillRookVsTwoPawns": "Rook against two connected pawns",
+  "@skillRookVsTwoPawns": {
+    "description": "Placement test: name of the skill 'rook.vsTwoPawns' in the skill map (result screen, roadmap)."
+  },
+  "skillRookLucena": "The Lucena position",
+  "@skillRookLucena": {
+    "description": "Placement test: name of the skill 'rook.lucena' in the skill map (result screen, roadmap)."
+  },
+  "skillRookPhilidor": "The Philidor defense",
+  "@skillRookPhilidor": {
+    "description": "Placement test: name of the skill 'rook.philidor' in the skill map (result screen, roadmap)."
+  },
+  "skillRookBackRank": "Passive defense on the back rank",
+  "@skillRookBackRank": {
+    "description": "Placement test: name of the skill 'rook.backRank' in the skill map (result screen, roadmap)."
+  },
+  "skillRookShortSide": "Short side and long side",
+  "@skillRookShortSide": {
+    "description": "Placement test: name of the skill 'rook.shortSide' in the skill map (result screen, roadmap)."
+  },
+  "skillRookCutOff": "The cut-off king",
+  "@skillRookCutOff": {
+    "description": "Placement test: name of the skill 'rook.cutOff' in the skill map (result screen, roadmap)."
+  },
+  "skillRookFrontal": "Frontal defense",
+  "@skillRookFrontal": {
+    "description": "Placement test: name of the skill 'rook.frontal' in the skill map (result screen, roadmap)."
+  },
+  "skillRookRookPawn": "Rook endings with a rook pawn",
+  "@skillRookRookPawn": {
+    "description": "Placement test: name of the skill 'rook.rookPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillRookVancura": "The Vančura position",
+  "@skillRookVancura": {
+    "description": "Placement test: name of the skill 'rook.vancura' in the skill map (result screen, roadmap)."
+  },
+  "skillRookBehindPasser": "Rook behind the passed pawn",
+  "@skillRookBehindPasser": {
+    "description": "Placement test: name of the skill 'rook.behindPasser' in the skill map (result screen, roadmap)."
+  },
+  "skillRookTwoPawns": "Rook and two pawns against rook",
+  "@skillRookTwoPawns": {
+    "description": "Placement test: name of the skill 'rook.twoPawns' in the skill map (result screen, roadmap)."
+  },
+  "skillRookPractical": "Practical rook endings",
+  "@skillRookPractical": {
+    "description": "Placement test: name of the skill 'rook.practical' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorWrongBishop": "The wrong bishop",
+  "@skillMinorWrongBishop": {
+    "description": "Placement test: name of the skill 'minor.wrongBishop' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorKnightVsPawn": "Knight against pawn",
+  "@skillMinorKnightVsPawn": {
+    "description": "Placement test: name of the skill 'minor.knightVsPawn' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorBishopVsPawns": "Bishop against pawns",
+  "@skillMinorBishopVsPawns": {
+    "description": "Placement test: name of the skill 'minor.bishopVsPawns' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorOppositeBishops": "Opposite-colored bishops",
+  "@skillMinorOppositeBishops": {
+    "description": "Placement test: name of the skill 'minor.oppositeBishops' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorCenturini": "Bishop and pawn against bishop",
+  "@skillMinorCenturini": {
+    "description": "Placement test: name of the skill 'minor.centurini' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorKnightEndings": "Knight and pawn against knight",
+  "@skillMinorKnightEndings": {
+    "description": "Placement test: name of the skill 'minor.knightEndings' in the skill map (result screen, roadmap)."
+  },
+  "skillMinorBishopVsKnight": "Bishop against knight",
+  "@skillMinorBishopVsKnight": {
+    "description": "Placement test: name of the skill 'minor.bishopVsKnight' in the skill map (result screen, roadmap)."
+  },
+  "skillRookMinorVsMinor": "Rook against bishop or knight",
+  "@skillRookMinorVsMinor": {
+    "description": "Placement test: name of the skill 'rookMinor.vsMinor' in the skill map (result screen, roadmap)."
+  },
+  "skillRookMinorExchange": "The exchange with pawns: fortresses",
+  "@skillRookMinorExchange": {
+    "description": "Placement test: name of the skill 'rookMinor.exchange' in the skill map (result screen, roadmap)."
+  },
+  "skillRookMinorVsRook": "Rook and minor piece against rook",
+  "@skillRookMinorVsRook": {
+    "description": "Placement test: name of the skill 'rookMinor.vsRook' in the skill map (result screen, roadmap)."
+  },
+  "skillSchoolMinorMates": "Checkmates with rook and minor pieces",
+  "@skillSchoolMinorMates": {
+    "description": "Placement test: name of the skill 'school.minorMates' in the skill map (result screen, roadmap)."
+  },
+  "skillTacticsBasic": "Forks, pins, skewers and discovered attacks",
+  "@skillTacticsBasic": {
+    "description": "Placement test: name of the skill 'tactics.basic' in the skill map (result screen, roadmap)."
+  },
+  "skillTacticsEndgame": "Endgame tactics",
+  "@skillTacticsEndgame": {
+    "description": "Placement test: name of the skill 'tactics.endgame' in the skill map (result screen, roadmap)."
+  },
+  "tourLevelTestTitle": "Take the test to find my level",
+  "@tourLevelTestTitle": {
+    "description": "Tour, level step: main card that opens the placement test."
+  },
+  "tourLevelTestBody": "20 questions, no clock, about 8 to 12 minutes. At the end I build your study plan.",
+  "@tourLevelTestBody": {
+    "description": "Tour, level step: under the test card title."
+  },
+  "tourLevelTakeTest": "I'd rather take the test",
+  "@tourLevelTakeTest": {
+    "description": "Tour, level step: after choosing by hand, a text button to go back to the test option."
+  },
+  "placementTake": "Take the level test",
+  "@placementTake": {
+    "description": "Profile settings and school/endgames: button that opens the placement test."
+  },
+  "schoolPlacedSpeech": "Your test shows you already know the start of the course. Let's begin with: {lesson}.",
+  "@schoolPlacedSpeech": {
+    "description": "School, Viktor's greeting after the placement test skipped lessons. {lesson} is the lesson title where the student starts.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolReviewSkipped": "Review earlier lessons",
+  "@schoolReviewSkipped": {
+    "description": "School: button that expands the lessons skipped by the test."
+  },
+  "schoolHideSkipped": "Hide",
+  "@schoolHideSkipped": {
+    "description": "School: button that collapses the lessons skipped by the test."
+  },
+  "schoolSkippedConfirmed": "Got it right in the test",
+  "@schoolSkippedConfirmed": {
+    "description": "School: badge on a lesson the placement test confirmed the student knows."
+  },
+  "schoolSkippedLikely": "From your level",
+  "@schoolSkippedLikely": {
+    "description": "School: badge on a lesson the test inferred the student probably knows."
+  },
+  "schoolTestPrompt": "Already know how to play? Take the test and skip what you know.",
+  "@schoolTestPrompt": {
+    "description": "School: card for students who haven't taken the placement test."
+  },
+  "endgamesTestPrompt": "Find out which endgames you already master.",
+  "@endgamesTestPrompt": {
+    "description": "Endgames trail: card for players who haven't taken the placement test."
+  },
+  "endgamesNextTitle": "Your next endgame",
+  "@endgamesNextTitle": {
+    "description": "Endgames trail: header of the roadmap card (the next lesson)."
+  },
+  "endgamesThenTitle": "Then",
+  "@endgamesThenTitle": {
+    "description": "Endgames trail: label before the following roadmap lessons."
+  },
+  "tourLevelByHandHint": "Choosing your level yourself sets your rating, but you won't get a personalized study plan. Only the test shows what you already know and what is missing.",
+  "@tourLevelByHandHint": {
+    "description": "Tour, level step: warning above the six levels when the player chooses by hand instead of taking the test."
+  },
+  "schoolKnownTitle": "You already know these",
+  "@schoolKnownTitle": {
+    "description": "School: title of the collapsed group of lessons the placement test showed the student already knows."
+  },
+  "schoolKnownBody": "The test showed you know these lessons. Review them whenever you like.",
+  "@schoolKnownBody": {
+    "description": "School: under the title of the group of lessons the test skipped."
+  },
+  "endgamesForYou": "For you",
+  "@endgamesForYou": {
+    "description": "Endgames trail filter: only the lessons of the player's roadmap (from the placement test)."
+  },
+  "endgamesAll": "All",
+  "@endgamesAll": {
+    "description": "Endgames trail filter: every lesson of the trail."
+  },
+  "endgamesForYouEmpty": "From your test, you already master every endgame here. See all of them to practise.",
+  "@endgamesForYouEmpty": {
+    "description": "Endgames trail, 'For you' filter with nothing left in the roadmap."
+  },
+  "exerciseSeeResult": "See result",
+  "@exerciseSeeResult": {
+    "description": "Button after the last exercise of a series: opens the result screen."
+  },
+  "exercisesDoneTitle": "Exercises complete",
+  "@exercisesDoneTitle": {
+    "description": "Title of the result screen after the last exercise of a lesson."
+  },
+  "exercisesDoneNeedMore": "You need at least {min} points to pass. Redo the exercises to improve.",
+  "@exercisesDoneNeedMore": {
+    "description": "Result screen: shown when the score is below the minimum.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseGradePassed": "Fair",
+  "@exerciseGradePassed": {
+    "description": "Result screen: name of the minimum grade (enough to pass)."
+  },
+  "exerciseGradeGood": "Great",
+  "@exerciseGradeGood": {
+    "description": "Result screen: name of the good grade."
+  },
+  "exerciseGradeExcellent": "Excellent",
+  "@exerciseGradeExcellent": {
+    "description": "Result screen: name of the excellent grade."
+  },
+  "exerciseGradePerfect": "Perfect",
+  "@exerciseGradePerfect": {
+    "description": "Result screen: name of the top grade (all stars)."
+  },
+  "exerciseGradeYou": "You",
+  "@exerciseGradeYou": {
+    "description": "Result screen: marker on the grade the student reached."
+  },
+  "exercisesDoneScore": "{score} of {max} possible points",
+  "@exercisesDoneScore": {"description": "Headline score on the exercises-done screen: points earned over the possible total.", "placeholders": {"score": {"type": "int"}, "max": {"type": "int"}}},
+  "exerciseGradePoints": "{min} of {max} points",
+  "@exerciseGradePoints": {"description": "On a grade tier of the exercises-done ladder: the points the tier requires, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
+  "@exercisesDoneDiplomaFor": {"description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).", "placeholders": {"grade": {"type": "String"}, "title": {"type": "String"}}},
+  "exercisesIntroSpeech": "Time to show what you learned. Your first try is what counts: after that it is free practice, and to count again just redo the exercises.",
+  "@exercisesIntroSpeech": {"description": "Viktor's speech on the screen before the exercises of an endgame lesson: mistakes and hints cost a star, the grade is set once all are solved."},
+  "exercisesIntroChipMinimum": "at least {min} of {max} points",
+  "@exercisesIntroChipMinimum": {"description": "Chip on the exercises intro: the minimum stars to pass, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "exercisesIntroChipThink": "No time limit",
+  "@exercisesIntroChipThink": {"description": "Exercises intro card title: there is no time limit per position (a timer only counts up)."},
+  "exercisesIntroCountBody": "Ordered from the simplest to the hardest.",
+  "@exercisesIntroCountBody": {"description": "Exercises intro card: the exercises go from the simplest to the hardest."},
+  "exercisesIntroMinTitle": "At least {min} points",
+  "@exercisesIntroMinTitle": {"description": "Exercises intro card title: minimum points to pass.", "placeholders": {"min": {"type": "int"}}},
+  "exercisesIntroMinBody": "Out of {max} possible points, to pass the lesson.",
+  "@exercisesIntroMinBody": {"description": "Exercises intro card body: out of how many possible points.", "placeholders": {"max": {"type": "int"}}},
+  "exercisesIntroThinkBody": "Think about each position before moving: that is how you learn.",
+  "@exercisesIntroThinkBody": {"description": "Exercises intro card body: think about each position before moving."},
+  "exercisePoints": "{count, plural, =1{1 point} other{{count} points}}",
+  "@exercisePoints": {"description": "How many points an exercise is worth right now (the star in the app bar) or a star in the legend.", "placeholders": {"count": {"type": "int"}}},
+  "exercisesIntroStarLegend": "Gold is worth 3 points, silver 2 and bronze 1. Every mistake and every hint takes one point off.",
+  "@exercisesIntroStarLegend": {"description": "On the exercises intro, under the three stars: what gold, silver and bronze are worth, and that mistakes and hints take a point off."},
+  "exerciseLichess": "Analyse on Lichess",
+  "@exerciseLichess": {"description": "Button on a solved-series exercise: open the position in the Lichess analysis board."},
+  "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
+  "@exerciseTurn": {"description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.", "placeholders": {"side": {"type": "String"}}},
+  "exerciseYourTurn": "{side, select, white{Your turn: White to play} other{Your turn: Black to play}}",
+  "@exerciseYourTurn": {"description": "Right below the exercise board while the student solves: it is their turn, with the side they play.", "placeholders": {"side": {"type": "String"}}},
+  "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
+  "@exercisesIntroAfter": {"description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."},
+  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",
+  "@exerciseScoreLocked": {"description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."},
+  "exercisesDoneShareText": "I completed the lesson “{title}” in Lucena with {score} of {max} points! {link}",
+  "@exercisesDoneShareText": {"description": "Text shared with the endgame lesson diploma image.", "placeholders": {"title": {"type": "String"}, "score": {"type": "int"}, "max": {"type": "int"}, "link": {"type": "String"}}},
+  "endgamesHideDone": "Hide completed lessons",
+  "@endgamesHideDone": {"description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."},
+  "exercisesDonePractice": "Practise this endgame",
+  "@exercisesDonePractice": {"description": "Button on the exercises-done screen when passed: go practise the lesson's endgame."},
+  "exercisesDoneFinish": "Finish",
+  "@exercisesDoneFinish": {"description": "Button on the exercises-done screen: close it and go back to the lesson."},
+  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
+  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."},
+  "externalPageOfflineTitle": "This needs the internet",
+  "@externalPageOfflineTitle": {"description": "Title shown in the in-app page sheet (Wikipedia, Lichess) when the page cannot load (no internet)."},
+  "externalPageOfflineBody": "Connect to the internet to read this page. The lesson goes on as normal.",
+  "@externalPageOfflineBody": {"description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."},
+  "wikiOpen": "Open {name} on Wikipedia",
+  "@wikiOpen": {"description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.", "placeholders": {"name": {"type": "String"}}},
+  "starChallengeIntroTitle": "Star hunt",
+  "@starChallengeIntroTitle": {
+    "description": "Title of the card before starting a star challenge: the name of the game."
+  },
+  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away. The gold one fades first, which is why it is worth more.",
+  "@starChallengeIntroBody": {
+    "description": "Card before starting a star challenge: the rule in one or two friendly sentences (take the piece to each star before it fades; the gold one fades first and is worth more).",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeWorth": "{points, plural, =1{worth 1} other{worth {points}}}",
+  "@starChallengeWorth": {
+    "description": "Under each kind of star in the star counter: how many points that star is worth.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengePointsLabel": "{count, plural, =1{point} other{points}}",
+  "@starChallengePointsLabel": {
+    "description": "Under the big total number in the star counter: the word 'points'.",
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }

@@ -216,4 +216,18 @@ void main() {
       hasLength(UserProfile.maxNicknameLength),
     );
   });
+
+  testWidgets('o rating de finais fica no histórico: só o botão para ele', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+    final button = find.byKey(ProfileKeys.ratingCard);
+    await tester.ensureVisible(button);
+    expect(
+      find.descendant(of: button, matching: find.text('Rating history')),
+      findsOneWidget,
+    );
+    expect(find.byKey(ProfileKeys.ratingHelp), findsNothing);
+  });
 }

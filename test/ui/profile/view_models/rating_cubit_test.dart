@@ -252,4 +252,60 @@ void main() {
       },
     );
   });
+
+  group('vindo da conclusão (T51 B)', () {
+    // Três partidas que contaram: duas da dama e uma da torre, no meio.
+    Future<(FakeProgressRepository, FakeRatingRepository, List<int>)>
+    played() async {
+      final progress = FakeProgressRepository();
+      final rating = FakeRatingRepository();
+      final ids = <int>[];
+      for (final (index, position) in [
+        'basic.queen.0001',
+        'basic.rook.0001',
+        'basic.queen.0001',
+      ].indexed) {
+        final game = Attempt(
+          positionId: position,
+          playedAt: at.add(Duration(minutes: index)),
+          outcome: AttemptOutcome.win,
+          fulfilled: true,
+          opponent: OpponentKind.maia,
+          opponentLevel: 1000,
+        );
+        final id = await progress.addAttempt(game);
+        ids.add(id);
+        await rating.rate(
+          game,
+          userSide: Side.white,
+          drawGoal: false,
+          gameId: id,
+        );
+      }
+      return (progress, rating, ids);
+    }
+
+    test('a partida da rota fica em destaque; id que não existe é '
+        'ignorado', () async {
+      final (progress, rating, ids) = await played();
+      final cubit = RatingCubit(
+        rating,
+        progress: progress,
+        highlightedGame: ids[1],
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      expect(cubit.state.highlighted, ids[1]);
+
+      final missing = RatingCubit(
+        rating,
+        progress: progress,
+        highlightedGame: 999,
+      );
+      addTearDown(missing.close);
+      await missing.load();
+      expect(missing.state.highlighted, isNull);
+      expect(missing.state.log, hasLength(3));
+    });
+  });
 }

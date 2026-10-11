@@ -51,9 +51,14 @@ class AssetCharacterRepository implements CharacterRepository {
   }
 
   Future<List<CharacterLine>> _loadLines(String id, String language) async {
-    final json = jsonDecode(
-      await _assets.loadString('assets/lines/$language/$id.json'),
-    ) as Map<String, dynamic>;
+    final String text;
+    try {
+      text = await _assets.loadString('assets/lines/$language/$id.json');
+    } on Object {
+      // Adversário sem falas (o Stockfish): nenhuma.
+      return const [];
+    }
+    final json = jsonDecode(text) as Map<String, dynamic>;
     return [
       for (final item in (json['lines'] as List).cast<Map<String, dynamic>>())
         // Categoria que esta versão não conhece fica de fora.

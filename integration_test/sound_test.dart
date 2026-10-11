@@ -72,8 +72,7 @@ void main() {
     await AppRobot($).open(systemLocale: _english);
     await HomeRobot($).openSettings();
     await SettingsRobot($).toggleSound();
-    await $(BackButton).tap();
-    await $.pumpAndSettle();
+    await SettingsRobot($).backToHome();
 
     await board.open();
     await board.drag('e2', 'e4');

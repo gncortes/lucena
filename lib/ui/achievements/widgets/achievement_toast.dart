@@ -4,18 +4,26 @@ import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
+import 'achievement_medal.dart';
 import 'achievement_ui.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// O aviso de conquista desbloqueada, como o troféu do PlayStation: desce do
 /// alto da tela, o troféu salta, um brilho passa por ele e o aviso some
-/// sozinho. Com várias conquistas, uma depois da outra. Não recebe toques: o
-/// que está embaixo continua usável.
+/// sozinho. Com várias conquistas, uma depois da outra. Com [onTap], tocar no
+/// aviso abre o detalhe da conquista (T51, A6); fora dele, o que está embaixo
+/// continua usável.
 class AchievementToasts extends StatefulWidget {
   const AchievementToasts({
     required this.achievements,
     this.characters = const [],
+    this.onTap,
     super.key,
   });
+
+  /// O aviso de [Achievement] foi tocado. Nulo: o aviso não recebe toques.
+  final ValueChanged<Achievement>? onTap;
 
   final List<Achievement> achievements;
 
@@ -75,50 +83,62 @@ class _AchievementToastsState extends State<AchievementToasts>
     final colors = theme.colorScheme;
     final title = achievement.title(l10n, widget.characters);
     // Sem animações (pedido do aparelho), o aviso só aparece e some.
-    final still = MediaQuery.disableAnimationsOf(context);
+    final still = AppMotion.of(context).disabled;
     final enter = CurvedAnimation(
       parent: _show,
-      curve: const Interval(0, 0.12, curve: Curves.easeOutCubic),
+      curve: const Interval(0, 0.12, curve: AppMotion.enter),
     );
     final leave = CurvedAnimation(
       parent: _show,
-      curve: const Interval(0.9, 1, curve: Curves.easeInCubic),
+      curve: const Interval(0.9, 1, curve: AppMotion.exit),
     );
     final pop = CurvedAnimation(
       parent: _show,
-      curve: const Interval(0.08, 0.26, curve: Curves.easeOutBack),
+      curve: const Interval(0.08, 0.26, curve: AppMotion.pop),
     );
     final shine = CurvedAnimation(
       parent: _show,
-      curve: const Interval(0.24, 0.5, curve: Curves.easeInOut),
+      curve: const Interval(0.24, 0.5, curve: AppMotion.move),
     );
-    return IgnorePointer(
-      child: SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: AnimatedBuilder(
-              animation: _show,
-              builder: (context, child) {
-                final visible = enter.value - leave.value;
-                return Opacity(
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: AnimatedBuilder(
+            animation: _show,
+            builder: (context, child) {
+              final visible = enter.value - leave.value;
+              // Só o aviso à vista recebe toques; fora dele, nada.
+              return IgnorePointer(
+                ignoring: widget.onTap == null || visible < 0.5,
+                child: Opacity(
                   opacity: visible.clamp(0, 1),
                   child: FractionalTranslation(
                     translation: Offset(0, still ? 0 : visible - 1),
                     child: child,
                   ),
-                );
-              },
-              child: Semantics(
-                liveRegion: true,
-                label: '${l10n.achievementUnlocked}: $title',
-                excludeSemantics: true,
-                child: Material(
-                  key: AchievementsKeys.toast,
-                  color: colors.inverseSurface,
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(36),
+                ),
+              );
+            },
+            child: Semantics(
+              liveRegion: true,
+              label: '${l10n.achievementUnlocked}: $title',
+              button: widget.onTap != null,
+              onTap: widget.onTap == null
+                  ? null
+                  : () => widget.onTap!(achievement),
+              excludeSemantics: true,
+              child: Material(
+                key: AchievementsKeys.toast,
+                color: colors.inverseSurface,
+                elevation: 8,
+                borderRadius: BorderRadius.circular(AppShape.full),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: widget.onTap == null
+                      ? null
+                      : () => widget.onTap!(achievement),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
                     child: Padding(
@@ -138,8 +158,10 @@ class _AchievementToastsState extends State<AchievementToasts>
                                     begin: 0.3,
                                     end: 1,
                                   ).animate(pop),
-                            child: _Trophy(
+                            child: AchievementMedal(
                               icon: achievement.iconData,
+                              unlocked: true,
+                              size: 48,
                               shine: still
                                   ? const AlwaysStoppedAnimation(0)
                                   : shine,
@@ -178,72 +200,6 @@ class _AchievementToastsState extends State<AchievementToasts>
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// O troféu dourado com o ícone da conquista; o brilho atravessa o disco.
-class _Trophy extends StatelessWidget {
-  const _Trophy({required this.icon, required this.shine});
-
-  final IconData icon;
-  final Animation<double> shine;
-
-  static const _size = 48.0;
-  static const _gold = [
-    Color(0xFFFFE08A),
-    Color(0xFFF2B705),
-    Color(0xFFB97A00),
-  ];
-  static const _ink = Color(0xFF4A3000);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: _size,
-      child: ClipOval(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: _gold,
-                ),
-              ),
-            ),
-            Icon(icon, size: 28, color: _ink),
-            AnimatedBuilder(
-              animation: shine,
-              builder: (context, _) {
-                final t = shine.value;
-                // Parado no começo e no fim, o brilho fica fora do disco.
-                if (t == 0 || t == 1) return const SizedBox.shrink();
-                return FractionalTranslation(
-                  translation: Offset(t * 2.4 - 1.2, 0),
-                  child: Transform.rotate(
-                    angle: 0.5,
-                    child: const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0x00FFFFFF),
-                            Color(0xCCFFFFFF),
-                            Color(0x00FFFFFF),
-                          ],
-                          stops: [0.35, 0.5, 0.65],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
         ),
       ),
     );

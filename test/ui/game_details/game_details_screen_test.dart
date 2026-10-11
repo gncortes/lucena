@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -54,9 +55,16 @@ void main() {
     userTime: const TimeControl(initial: Duration(minutes: 5)),
   );
 
-  Future<GameDetailsCubit> pump(WidgetTester tester, int id) async {
-    tester.view.physicalSize = const Size(1080, 4000);
+  Future<GameDetailsCubit> pump(
+    WidgetTester tester,
+    int id, {
+    Size screen = const Size(1080, 4000),
+    double textScale = 1,
+  }) async {
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
     final cubit = GameDetailsCubit(
       id,
@@ -96,6 +104,123 @@ void main() {
     return text.data ?? text.textSpan!.toPlainText();
   }
 
+  double sheetTop(WidgetTester tester) =>
+      tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
+
+  testWidgets('a folha: recolhida embaixo do tabuleiro; puxada, sobe por '
+      'cima dele com o x; o x a desce de volta', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final appBar = tester.getRect(find.byType(AppBar));
+    final collapsed = sheetTop(tester);
+    // Recolhida: o tabuleiro inteiro acima dela, no centro do espaço, e os
+    // botões de lance à vista; o x escondido.
+    expect(board.bottom, lessThanOrEqualTo(collapsed));
+    expect(
+      board.center.dy,
+      closeTo((appBar.bottom + collapsed) / 2, AppSpacing.xxl * 2),
+    );
+    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
+
+    // Puxada para cima: cobre o tabuleiro e o x aparece.
+    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -600));
+    await tester.pumpAndSettle();
+    final open = sheetTop(tester);
+    expect(open, lessThan(board.center.dy));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+
+    // O x desce a folha de uma vez.
+    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), closeTo(collapsed, 1));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
+    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+  });
+
+  testWidgets('folha rolada até a legenda e fechada pelo x: o conteúdo volta '
+      'ao topo e puxar de novo abre a folha', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final collapsed = sheetTop(tester);
+    final panel = find.byKey(GameDetailsKeys.panel);
+    // Abre e rola até a legenda.
+    await tester.drag(panel, const Offset(0, -600));
+    await tester.pumpAndSettle();
+    await tester.fling(panel, const Offset(0, -1500), 3000);
+    await tester.pumpAndSettle();
+    final scroll = tester.state<ScrollableState>(
+      find.descendant(of: panel, matching: find.byType(Scrollable)),
+    );
+    expect(scroll.position.pixels, greaterThan(0));
+
+    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), closeTo(collapsed, 1));
+    expect(scroll.position.pixels, 0);
+
+    // Puxar o conteúdo (ou a alça) abre de novo, com o x.
+    await tester.drag(panel, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(sheetTop(tester), lessThan(collapsed - 100));
+    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+  });
+
+  for (final screen in const [Size(945, 1680), Size(720, 1280)]) {
+    testWidgets('tela pequena ($screen) com fonte 1,6: nada estoura, os '
+        'botões de lance ficam à vista e, com a folha aberta, tudo rola até a '
+        'legenda', (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, screen: screen, textScale: 1.6);
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(GameDetailsKeys.board), findsOne);
+      expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+      expect(
+        tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
+        lessThanOrEqualTo(sheetTop(tester)),
+      );
+
+      await tester.drag(
+        find.byKey(GameDetailsKeys.panel),
+        const Offset(0, -400),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+      // Dentro da folha aberta, a tabela inteira chega à vista rolando.
+      final last = find.byKey(GameDetailsKeys.move(game.moves.length - 1));
+      await tester.scrollUntilVisible(
+        last,
+        200,
+        scrollable: find.descendant(
+          of: find.byKey(GameDetailsKeys.panel),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(last.hitTestable(), findsOne);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('tela alta: aberta, a folha para no fim do conteúdo, sem vazio '
+      'embaixo', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 4000));
+    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -900));
+    await tester.pumpAndSettle();
+    final screenBottom = tester
+        .getRect(find.byKey(GameDetailsKeys.screen))
+        .bottom;
+    final legend = tester.getRect(find.byKey(GameDetailsKeys.legend));
+    expect(legend.bottom, lessThanOrEqualTo(screenBottom));
+    expect(screenBottom - legend.bottom, lessThan(AppSpacing.xxl * 2));
+    // A folha não precisou ir até o máximo: o conteúdo coube antes.
+    final appBar = tester.getRect(find.byType(AppBar));
+    final height = screenBottom - appBar.bottom;
+    expect(sheetTop(tester), greaterThan(appBar.bottom + 0.06 * height + 1));
+  });
+
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (
     tester,
   ) async {
@@ -130,7 +255,12 @@ void main() {
   testWidgets('tocar num lance mostra a posição depois dele', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
-    // Abre no último lance: o mate.
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    expect(boardFen(tester), cubit.state.start!.fen);
+
+    cubit.last();
+    await tester.pumpAndSettle();
     expect(boardFen(tester), cubit.state.moves.last.position.fen);
 
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));
@@ -145,6 +275,87 @@ void main() {
       ).board.pieceAt(Square.e4),
       Piece.whitePawn,
     );
+  });
+
+  /// O texto do lance [ply] da variante na tabela.
+  String variationText(WidgetTester tester, int ply) => tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(GameDetailsKeys.variationMove(ply)),
+          matching: find.byType(Text),
+        ),
+      )
+      .textSpan!
+      .toPlainText();
+
+  /// Toca na casa [square] do tabuleiro (brancas embaixo).
+  Future<void> tapSquare(WidgetTester tester, Square square) async {
+    final rect = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final size = rect.width / 8;
+    await tester.tapAt(
+      rect.topLeft +
+          Offset(
+            (square.file.value + 0.5) * size,
+            (7 - square.rank.value + 0.5) * size,
+          ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('um lance no tabuleiro vira variante na tabela; tocar num '
+      'lance da partida volta para ela', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    await tester.tap(find.byKey(GameDetailsKeys.move(0)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.variation), findsNothing);
+
+    // 1... c5 no lugar de 1... e5.
+    await tapSquare(tester, Square.c7);
+    await tapSquare(tester, Square.c5);
+
+    expect(cubit.state.inVariation, isTrue);
+    final fen = cubit.state.variation.single.position.fen;
+    expect(boardFen(tester), fen);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
+    expect(variationText(tester, 0), '(1... c5)');
+
+    // A variante continua: 2. Nf3.
+    await tapSquare(tester, Square.g1);
+    await tapSquare(tester, Square.f3);
+    expect(cubit.state.variation, hasLength(2));
+    expect(variationText(tester, 0), '(1... c5');
+    expect(variationText(tester, 1), '2. ♘f3)');
+
+    // Tocar num lance da variante mostra a posição dele.
+    await tester.tap(find.byKey(GameDetailsKeys.variationMove(0)));
+    await tester.pumpAndSettle();
+    expect(boardFen(tester), fen);
+
+    // Tocar num lance da partida volta para ela; a variante fica na lista.
+    await tester.tap(find.byKey(GameDetailsKeys.move(2)));
+    await tester.pumpAndSettle();
+    expect(cubit.state.inVariation, isFalse);
+    expect(boardFen(tester), cubit.state.moves[2].position.fen);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
+  });
+
+  testWidgets('lance ilegal no tabuleiro não muda nada', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    final before = boardFen(tester);
+
+    // Na posição de início, a dama não anda.
+    await tapSquare(tester, Square.d1);
+    await tapSquare(tester, Square.d4);
+    tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board)).onMove!(
+      Move.parse('d1d4')!,
+    );
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.inVariation, isFalse);
+    expect(boardFen(tester), before);
+    expect(find.byKey(GameDetailsKeys.variation), findsNothing);
   });
 
   testWidgets('partida que não existe mais: o aviso', (tester) async {

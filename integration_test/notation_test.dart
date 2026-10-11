@@ -20,8 +20,12 @@ Future<void> _seedPieces() =>
           'pieces.king',
           'pieces.knight',
           'pieces.pawn',
+          'rules.captureProtect',
           'pieces.check',
+          'rules.outOfCheck',
+          'rules.castling',
           'pieces.stalemate',
+          'rules.draws',
         },
       ),
     );

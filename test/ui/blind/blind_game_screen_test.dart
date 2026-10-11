@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -55,10 +57,35 @@ void main() {
       phrases: blindPhrases(l10n),
     );
     await cubit.start();
+    await cubit.release();
+    // No fim, a conclusão abre no lugar da partida.
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              BlocProvider.value(value: cubit, child: const BlindGameScreen()),
+        ),
+        GoRoute(
+          path: '/result',
+          builder: (context, state) {
+            final args = state.extra! as ConclusionArgs;
+            return Scaffold(
+              body: Text(
+                'conclusion ${args.conclusion.result.name} '
+                '${args.conclusion.blindMoves}',
+              ),
+            );
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
-        child: BlocProvider.value(value: cubit, child: const BlindGameScreen()),
+        router: router,
+        child: const SizedBox.shrink(),
       ),
     );
     await tester.pumpAndSettle();
@@ -109,6 +136,25 @@ void main() {
       tester.widget<Text>(find.byKey(BlindKeys.hint)).data,
       'Tap or hold to talk',
     );
+  });
+
+  testWidgets('T64: o tabuleiro (com peças ou só as casas) no centro do '
+      'espaço entre a barra do app e o painel de baixo', (tester) async {
+    await pump(tester);
+    final appBar = tester.getRect(find.byType(AppBar));
+    final area = tester.getRect(find.byKey(BlindKeys.boardArea));
+    expect(area.top, appBar.bottom);
+    final empty = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+    expect(empty.center.dy, closeTo(area.center.dy, 1));
+    expect(
+      tester.getRect(find.byKey(BlindKeys.status)).top,
+      greaterThanOrEqualTo(empty.bottom),
+    );
+    await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
+    await tester.pumpAndSettle();
+    final board = tester.getRect(find.byKey(BlindKeys.board));
+    expect(board.center.dy, closeTo(area.center.dy, 1));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('o tabuleiro com as peças aceita o toque', (tester) async {
@@ -233,6 +279,9 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resignConfirm));
     await tester.pumpAndSettle();
     expect(cubit.state.phase, BlindPhase.finished);
+    // Dito o resultado, a conclusão às cegas, sem nenhum lance jogado.
+    expect(find.text('conclusion lost 0'), findsOneWidget);
+    expect(find.byType(BlindGameScreen), findsNothing);
   });
 
   testWidgets('com o teclado aberto e pouca altura, nada estoura', (

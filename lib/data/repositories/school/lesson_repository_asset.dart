@@ -60,14 +60,28 @@ class AssetLessonRepository implements LessonRepository {
     );
   }
 
-  /// Uma aula (`id` e `steps`); passo de tipo desconhecido é ignorado.
-  static Lesson parseLesson(Map<String, dynamic> lesson) => Lesson(
-    id: lesson['id'] as String,
-    steps: [
-      for (final step in (lesson['steps'] as List).cast<Map<String, dynamic>>())
-        ?_step(step),
-    ],
-  );
+  /// Uma aula (`id` e `steps`, ou `parts` com os passos de cada parte);
+  /// passo de tipo desconhecido é ignorado.
+  static Lesson parseLesson(Map<String, dynamic> lesson) {
+    final id = lesson['id'] as String;
+    List<LessonStep> steps(List<dynamic> json) => [
+      for (final step in json.cast<Map<String, dynamic>>()) ?_step(step),
+    ];
+    final parts = lesson['parts'];
+    if (parts is List) {
+      return Lesson.parted(
+        id: id,
+        parts: [
+          for (final part in parts.cast<Map<String, dynamic>>())
+            LessonPart(
+              id: part['id'] as String,
+              steps: steps(part['steps'] as List),
+            ),
+        ],
+      );
+    }
+    return Lesson(id: id, steps: steps(lesson['steps'] as List));
+  }
 
   /// As vezes do aluno de um passo de lance: os aceitos e a resposta. O
   /// lance ensinado (`teach`), quando vem, fica em primeiro entre os aceitos:
@@ -86,10 +100,12 @@ class AssetLessonRepository implements LessonRepository {
   static LessonStep? _step(Map<String, dynamic> json) {
     final id = json['id'] as String;
     final fen = json['fen'] as String?;
+    final ref = json['ref'] as String?;
     return switch (json['type']) {
       'talk' => TalkStep(
         id: id,
         fen: fen,
+        ref: ref,
         arrows: [
           for (final arrow in json['arrows'] as List? ?? const [])
             if (arrow is String && arrow.length == 4)
@@ -105,14 +121,41 @@ class AssetLessonRepository implements LessonRepository {
           _ => null,
         },
       ),
+      'think' when fen != null => ThinkStep(
+        id: id,
+        fen: fen,
+        ref: ref,
+        hints: json['hints'] as int? ?? 1,
+        ask: ThinkAsk.fromCode(json['ask'] as String?),
+        arrows: _arrows(json['arrows']),
+        marks: _marks(json['marks']),
+        view: _side(json['side']),
+      ),
+      'demo' when fen != null => DemoStep(
+        id: id,
+        fen: fen,
+        ref: ref,
+        view: _side(json['side']),
+        line: [
+          for (final move
+              in (json['line'] as List).cast<Map<String, dynamic>>())
+            DemoMove(
+              uci: move['uci'] as String,
+              arrows: _arrows(move['arrows']),
+              marks: _marks(move['marks']),
+            ),
+        ],
+      ),
       'stars' when fen != null => StarsStep(
         id: id,
         fen: fen,
+        ref: ref,
         stars: [for (final star in json['stars'] as List) star as String],
       ),
       'tap' when fen != null => TapStep(
         id: id,
         fen: fen,
+        ref: ref,
         targets: [
           for (final target in json['targets'] as List) target as String,
         ],
@@ -121,11 +164,13 @@ class AssetLessonRepository implements LessonRepository {
       'move' when fen != null => MoveStep(
         id: id,
         fen: fen,
+        ref: ref,
         line: parseLine(json['line'] as List),
       ),
       'play' when fen != null => PlayStep(
         id: id,
         fen: fen,
+        ref: ref,
         goal: PlayGoal.fromCode(json['goal'] as String?),
         opponent:
             OpponentRef.tryParse(json['opponent'] as String?) ??
@@ -134,4 +179,21 @@ class AssetLessonRepository implements LessonRepository {
       _ => null,
     };
   }
+
+  static List<(String, String)> _arrows(Object? json) => [
+    for (final arrow in json as List? ?? const [])
+      if (arrow is String && arrow.length == 4)
+        (arrow.substring(0, 2), arrow.substring(2)),
+  ];
+
+  static List<String> _marks(Object? json) => [
+    for (final mark in json as List? ?? const [])
+      if (mark is String) mark,
+  ];
+
+  static Side? _side(Object? json) => switch (json) {
+    'white' => Side.white,
+    'black' => Side.black,
+    _ => null,
+  };
 }

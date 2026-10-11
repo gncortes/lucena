@@ -14,29 +14,44 @@
       "lessons": [
         "mates.bishopKnight.w",
         "mates.bishopKnight.edge",
-        "mates.bishopKnight.full"
+        "mates.bishopKnight.full",
+        "mates.twoKnightsPawn"
       ]
     },
     {
       "id": "pawns",
       "lessons": [
         "pawns.keySquares",
-        "pawns.distantOpposition"
+        "pawns.distantOpposition",
+        "pawns.triangulation",
+        "pawns.rookPawnDraw",
+        "pawns.race",
+        "pawns.reti",
+        "pawns.shoulder",
+        "pawns.breakthrough",
+        "pawns.outsidePasser",
+        "pawns.protectedPasser",
+        "pawns.minedSquares",
+        "pawns.spareTempi",
+        "pawns.correspondingSquares"
       ]
     },
     {
       "id": "queen",
       "lessons": [
         "queen.vsPawn",
+        "queen.vsPawn.draws",
         "queen.vsRook.philidor",
         "queen.vsRook.approach",
-        "queen.vsRook.thirdRank"
+        "queen.vsRook.thirdRank",
+        "queen.vsRookPawn"
       ]
     },
     {
       "id": "rookPawns",
       "lessons": [
-        "rookPawns.vsPawn"
+        "rookPawns.vsPawn",
+        "rookPawns.vsTwo"
       ]
     },
     {
@@ -45,7 +60,17 @@
         "rook.lucena",
         "rook.philidor",
         "rook.backRank",
-        "rook.shortSide"
+        "rook.shortSide",
+        "rook.cutOff",
+        "rook.frontal",
+        "rook.behindPasser"
+      ]
+    },
+    {
+      "id": "minor",
+      "lessons": [
+        "minor.wrongBishop",
+        "minor.knightVsPawn"
       ]
     }
   ]

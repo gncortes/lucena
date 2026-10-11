@@ -74,10 +74,13 @@ abstract final class SpeechLinks {
     // Isolado: nem letra nem número colado antes ou depois ("be4" dentro de
     // uma palavra não vale).
     final pattern = RegExp(
-      r'(?<![\p{L}\p{N}])(?:(O-O-O|O-O|0-0-0|0-0)|'
+      // O número do lance ("40." ou "40...") faz parte dele (T60).
+      r'(?<![\p{L}\p{N}.])(?:\d{1,3}\.(?:\.\.)?)?(?:(O-O-O|O-O|0-0-0|0-0)|'
       '([$pieces])?([a-h])?([1-8])?(x)?([a-h][1-8])'
       '(?:=([$pieces]))?)'
-      r'([+#])?(?![\p{L}\p{N}])',
+      // A avaliação do lance (!, ?, !!, ??, !?, ?!) faz parte dele, como
+      // nos livros: "Te6!" se destaca inteiro.
+      r'([+#])?([?!]{1,2})?(?![\p{L}\p{N}])',
       unicode: true,
     );
     final links = <SpeechLink>[];
@@ -108,7 +111,8 @@ abstract final class SpeechLinks {
           rank != null ||
           capture ||
           promotion ||
-          check;
+          check ||
+          match.group(9) != null;
       // "a2a4" sem peça é um lance em coordenadas; a coluna e a fileira de
       // saída só valem num lance.
       links.add(

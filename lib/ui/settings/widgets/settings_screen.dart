@@ -3,23 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
-import '../../../domain/models/app_language.dart';
-import '../../../domain/models/app_theme_mode.dart';
-import '../../../domain/models/board_settings.dart';
-import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
-import '../../core/board/board_settings_ui.dart';
-import '../../core/board/clock_settings_ui.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_theme_mode_ui.dart';
+import '../../core/widgets/scroll_padding.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_ui.dart';
-import '../view_models/settings_cubit.dart';
-import '../../core/keys/voice_keys.dart';
-import '../../voice/view_models/speech_cubit.dart';
 
+/// O menu principal das Configurações: o perfil e os grupos (aparência,
+/// partida, som), cada um com a sua tela, e o "Sobre".
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, this.version = appVersion});
 
@@ -29,40 +22,18 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageCode = context.select(
-      (SettingsCubit cubit) => cubit.state?.languageCode,
-    );
-    final language = AppLanguage.fromCode(languageCode);
-    final themeMode = context.select(
-      (SettingsCubit cubit) => cubit.state?.themeMode ?? AppThemeMode.system,
-    );
-    final board = context.select(
-      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
-    );
-    final clock = context.select(
-      (SettingsCubit cubit) => cubit.state?.clock ?? const ClockSettings(),
-    );
+    final l10n = context.l10n;
     final profile = context.select((ProfileCubit cubit) => cubit.state);
-    final characterTalk = context.select(
-      (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
-    );
-    final sound = context.select(
-      (SettingsCubit cubit) => cubit.state?.sound ?? true,
-    );
-    final voiceEnabled = context.select(
-      (SpeechCubit cubit) => cubit.state.settings.enabled,
-    );
     return Scaffold(
       key: SettingsKeys.screen,
-      appBar: AppBar(
-        title: Text(context.l10n.settingsTitle, key: SettingsKeys.title),
-      ),
+      appBar: AppBar(title: Text(l10n.settingsTitle, key: SettingsKeys.title)),
       body: ListView(
+        padding: scrollPadding(context),
         children: [
           ListTile(
             key: SettingsKeys.profileTile,
             leading: const Icon(Icons.person_outline),
-            title: Text(context.l10n.settingsProfile),
+            title: Text(l10n.settingsProfile),
             subtitle: Text(
               profile == null ? '' : _profileSummary(context, profile),
               key: SettingsKeys.profileValue,
@@ -70,111 +41,42 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsProfile),
           ),
-          ListTile(
-            key: SettingsKeys.languageTile,
-            leading: const Icon(Icons.language),
-            title: Text(context.l10n.settingsLanguage),
-            subtitle: Text(
-              language?.nativeName ?? context.l10n.settingsLanguageSystem,
-              key: SettingsKeys.languageValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsLanguage),
+          const Divider(indent: 16, endIndent: 16),
+          _Group(
+            tileKey: SettingsKeys.appearanceTile,
+            icon: Icons.palette_outlined,
+            title: l10n.settingsAppearance,
+            hint: l10n.settingsAppearanceHint,
+            route: Routes.settingsAppearance,
           ),
-          ListTile(
-            key: SettingsKeys.themeTile,
-            leading: Icon(themeMode.icon),
-            title: Text(context.l10n.settingsTheme),
-            subtitle: Text(
-              themeMode.label(context.l10n),
-              key: SettingsKeys.themeValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsTheme),
+          _Group(
+            tileKey: SettingsKeys.gameTile,
+            icon: Icons.sports_esports_outlined,
+            title: l10n.settingsGame,
+            hint: l10n.settingsGameHint,
+            route: Routes.settingsGame,
           ),
-          ListTile(
-            key: SettingsKeys.boardAppearanceTile,
-            leading: const Icon(Icons.palette_outlined),
-            title: Text(context.l10n.settingsBoardAppearance),
-            subtitle: Text(
-              '${board.colors.label(context.l10n)} · ${board.pieces.label}',
-              key: SettingsKeys.boardAppearanceValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsBoardAppearance),
+          _Group(
+            tileKey: SettingsKeys.soundTile,
+            icon: Icons.volume_up_outlined,
+            title: l10n.settingsSoundGroup,
+            hint: l10n.settingsSoundGroupHint,
+            route: Routes.settingsSound,
           ),
-          ListTile(
-            key: SettingsKeys.boardBehaviorTile,
-            leading: const Icon(Icons.touch_app_outlined),
-            title: Text(context.l10n.settingsBoardBehavior),
-            subtitle: Text(
-              board.moveMethod.label(context.l10n),
-              key: SettingsKeys.boardBehaviorValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsBoardBehavior),
-          ),
-          ListTile(
-            key: SettingsKeys.clockTile,
-            leading: const Icon(Icons.timer_outlined),
-            title: Text(context.l10n.settingsClock),
-            subtitle: Text(
-              clock.position.label(context.l10n),
-              key: SettingsKeys.clockValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsClock),
-          ),
-          SwitchListTile(
-            key: SettingsKeys.soundSwitch,
-            secondary: const Icon(Icons.volume_up_outlined),
-            title: Text(context.l10n.settingsSound),
-            subtitle: Text(context.l10n.settingsSoundHint),
-            value: sound,
-            onChanged: (value) =>
-                context.read<SettingsCubit>().setSound(enabled: value),
-          ),
-          ListTile(
-            key: VoiceKeys.settingsTile,
-            leading: const Icon(Icons.record_voice_over_outlined),
-            title: Text(context.l10n.voiceSection),
-            subtitle: Text(
-              voiceEnabled
-                  ? context.l10n.voiceSpeakAloud
-                  : context.l10n.voiceNone,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsVoice),
-          ),
-          ListTile(
-            key: SettingsKeys.homeLayoutTile,
-            leading: const Icon(Icons.dashboard_customize_outlined),
-            title: Text(context.l10n.homeLayoutTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.homeLayout),
-          ),
-          SwitchListTile(
-            key: SettingsKeys.characterTalkSwitch,
-            secondary: const Icon(Icons.chat_bubble_outline),
-            title: Text(context.l10n.settingsCharacterTalk),
-            subtitle: Text(context.l10n.settingsCharacterTalkHint),
-            value: characterTalk,
-            onChanged: (value) =>
-                context.read<SettingsCubit>().setCharacterTalk(enabled: value),
-          ),
-          ListTile(
-            key: SettingsKeys.tourTile,
-            leading: const Icon(Icons.tour_outlined),
-            title: Text(context.l10n.settingsTour),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(Routes.tour),
+          const Divider(indent: 16, endIndent: 16),
+          _Group(
+            tileKey: SettingsKeys.aboutTile,
+            icon: Icons.info_outline,
+            title: l10n.settingsAbout,
+            hint: l10n.settingsAboutHint,
+            route: Routes.settingsAbout,
           ),
           // Só em build de desenvolvimento e de teste.
           if (showsDevTools)
             ListTile(
               key: SettingsKeys.maiaDebugTile,
               leading: const Icon(Icons.bug_report_outlined),
-              title: Text(context.l10n.maiaDebugTitle),
+              title: Text(l10n.maiaDebugTitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.go(Routes.settingsMaia),
             ),
@@ -182,7 +84,7 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
               child: Text(
-                context.l10n.homeVersion(version),
+                l10n.homeVersion(version),
                 key: SettingsKeys.version,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -201,5 +103,34 @@ class SettingsScreen extends StatelessWidget {
         ? context.l10n.profileNicknameDefault
         : profile.nickname;
     return '$nickname · ${profile.level.name(context.l10n)}';
+  }
+}
+
+/// Um grupo do menu: abre a tela dele.
+class _Group extends StatelessWidget {
+  const _Group({
+    required this.tileKey,
+    required this.icon,
+    required this.title,
+    required this.hint,
+    required this.route,
+  });
+
+  final Key tileKey;
+  final IconData icon;
+  final String title;
+  final String hint;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      key: tileKey,
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(hint),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.go(route),
+    );
   }
 }

@@ -162,4 +162,18 @@ void main() {
     await reopen().save(const AppSettings(sound: false));
     expect((await reopen().load()).sound, isFalse);
   });
+
+  test('vibração: ligada de fábrica, desligar fica gravado', () async {
+    expect((await reopen().load()).vibration, isTrue);
+    await reopen().save(const AppSettings(vibration: false));
+    expect((await reopen().load()).vibration, isFalse);
+  });
+
+  test('o tempo de pensar gravado antes da T60 é ignorado sem erro', () async {
+    await PreferencesService().setString('lessons.thinkMinutes', '5');
+    await PreferencesService().setBool('lessons.thinkChosen', value: true);
+
+    final loaded = await reopen().load();
+    expect(loaded, const AppSettings());
+  });
 }

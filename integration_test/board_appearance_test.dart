@@ -89,8 +89,7 @@ void main() {
       coordinates: false,
     );
 
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await board.open();
     board.expectAppearance(
       colors: BoardColors.blue,

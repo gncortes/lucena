@@ -147,6 +147,7 @@ void main() {
     home.expectDark(dark: true);
     app.expectAccent(AppAccent.pink);
     await home.openSettings();
+    await settings.openAppearance();
     settings.expectThemeValue('Dark');
     await settings.expectBoardAppearanceValue('Green · Merida');
   });

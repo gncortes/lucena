@@ -4,9 +4,16 @@ import 'package:flutter/widgets.dart';
 abstract final class GameDetailsKeys {
   static const screen = Key('gameDetails.screen');
   static const board = Key('gameDetails.board');
+
+  /// A folha que sobe por cima do tabuleiro, a lista dela (que rola) e o
+  /// "x" que a desce.
+  static const sheet = Key('gameDetails.sheet');
+  static const panel = Key('gameDetails.panel');
+  static const closeSheet = Key('gameDetails.sheet.close');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
   static const notFound = Key('gameDetails.notFound');
+  static const loading = Key('gameDetails.loading');
 
   /// O lance [index] na tabela e o tempo dele.
   static Key move(int index) => Key('gameDetails.move.$index');
@@ -14,6 +21,10 @@ abstract final class GameDetailsKeys {
 
   /// O símbolo da qualidade do lance [index] na tabela.
   static Key moveQuality(int index) => Key('gameDetails.move.$index.quality');
+
+  /// A variante feita no tabuleiro, na tabela, e o lance [ply] dela.
+  static const variation = Key('gameDetails.variation');
+  static Key variationMove(int ply) => Key('gameDetails.variation.$ply');
 
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.
   static const reviewButton = Key('gameDetails.review.button');
@@ -23,6 +34,9 @@ abstract final class GameDetailsKeys {
 
   /// A história que o Viktor conta enquanto a revisão roda.
   static const story = Key('gameDetails.review.story');
+
+  /// O ✕ no balão da história, que a fecha.
+  static const storyClose = Key('gameDetails.review.story.close');
   static const reviewSummary = Key('gameDetails.review.summary');
   static const accuracyWhite = Key('gameDetails.review.accuracy.white');
   static const accuracyBlack = Key('gameDetails.review.accuracy.black');

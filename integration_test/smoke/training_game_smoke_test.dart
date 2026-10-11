@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:patrol/patrol.dart';
 
 import '../robots/app_robot.dart';
+import '../robots/conclusion_robot.dart';
 import '../robots/free_board_robot.dart';
 import '../robots/home_robot.dart';
 import '../robots/settings_robot.dart';
@@ -34,8 +35,8 @@ void main() {
     await board.move('c1', 'g5');
     await board.resign();
 
+    await ConclusionRobot($).expectGoal('Goal not achieved');
     app.expectBrightness(Brightness.dark);
-    await board.expectGoalResult('Goal not achieved');
   });
 
   patrolTest('treino contra a máquina em árabe: nada cortado', ($) async {
@@ -48,7 +49,7 @@ void main() {
 
     await board.resign();
 
-    await board.expectGoalResult('لم يتحقّق الهدف');
+    await ConclusionRobot($).expectGoal('لم يتحقّق الهدف');
     app.expectNoClippedText();
   });
 
@@ -60,13 +61,13 @@ void main() {
     await HomeRobot($).openSettings();
     await settings.openLanguages();
     await settings.chooseLanguage(AppLanguage.pseudo);
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await HomeRobot($).expectVisible();
 
     await start(board);
     app.expectNoClippedText();
     await board.resign();
+    await ConclusionRobot($).waitConclusion();
     app.expectNoClippedText();
   });
 }

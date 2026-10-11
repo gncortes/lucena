@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/star_challenge_cubit.dart';
 import 'package:lucena/ui/school/widgets/star_challenge_screen.dart';
 import 'package:lucena/ui/school/widgets/star_challenges_screen.dart';
+import 'package:lucena/ui/school/widgets/star_scoreboard.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/board_gestures.dart';
@@ -42,11 +43,15 @@ void main() {
   Future<StarChallengeCubit> pump(
     WidgetTester tester, {
     ChallengeLevel level = ChallengeLevel.easy,
+    Size size = const Size(412, 915),
+    double textScale = 1,
   }) async {
     // Tela de celular: o tabuleiro ocupa a largura.
-    tester.view.physicalSize = const Size(1236, 2745);
+    tester.view.physicalSize = size * 3;
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     final cubit = StarChallengeCubit(
       progress: progress,
       now: now,
@@ -90,7 +95,14 @@ void main() {
     tester,
   ) async {
     final cubit = await pump(tester);
-    expect(find.text('Rook · Easy'), findsOneWidget);
+    expect(find.text('Rook challenge'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(StarChallengeKeys.levelChip),
+        matching: find.text('Easy'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('1:00'), findsOneWidget);
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
@@ -104,13 +116,19 @@ void main() {
     await tester.pump();
     await tester.tapAt(squareCenter(rect, star.name));
     await tester.pumpAndSettle();
-    expect(
-      int.parse(
-        tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data!,
-      ),
-      cubit.state.points,
-    );
     expect(cubit.state.points, greaterThan(0));
+    // O painel embaixo do tabuleiro: a cor da estrela pega e o total.
+    final kind = StarKind.values.firstWhere((k) => cubit.state.countOf(k) > 0);
+    expect(
+      tester
+          .widget<Text>(find.byKey(StarChallengeKeys.kindCount(kind.name)))
+          .data,
+      '1',
+    );
+    expect(
+      tester.widget<Text>(find.byKey(StarChallengeKeys.collected)).data,
+      '${cubit.state.points}',
+    );
 
     now.advance(const Duration(seconds: 61));
     cubit.tick();
@@ -118,7 +136,155 @@ void main() {
     expect(find.byKey(StarChallengeKeys.result), findsOneWidget);
     expect(find.text("Time's up!"), findsOneWidget);
     expect(find.text('New best!'), findsOneWidget);
-    expect(find.byKey(StarChallengeKeys.retryButton), findsOneWidget);
+    expect(
+      tester.widget(find.byKey(StarChallengeKeys.retryButton)),
+      isA<FloatingActionButton>(),
+    );
+    expect(find.byKey(StarChallengeKeys.backButton), findsOneWidget);
+  });
+
+  testWidgets('o painel: estrelas de cada cor e o total de pontos', (
+    tester,
+  ) async {
+    final scores = ValueNotifier<(Map<StarKind, int>, int)>((const {}, 0));
+    addTearDown(scores.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: await settings(),
+        child: Scaffold(
+          body: Center(
+            child: ValueListenableBuilder(
+              valueListenable: scores,
+              builder: (context, value, _) =>
+                  StarScoreboard(counts: value.$1, points: value.$2),
+            ),
+          ),
+        ),
+      ),
+    );
+    String text(Key key) => tester.widget<Text>(find.byKey(key)).data!;
+
+    await tester.pumpAndSettle();
+    for (final kind in StarKind.values) {
+      expect(text(StarChallengeKeys.kindCount(kind.name)), '0');
+    }
+    expect(text(StarChallengeKeys.collected), '0');
+    // Cada estrela diz quanto vale.
+    expect(find.text('worth 3'), findsOneWidget);
+    expect(find.text('worth 2'), findsOneWidget);
+    expect(find.text('worth 1'), findsOneWidget);
+
+    // Duas de bronze, uma de prata, três de ouro: 2 + 2 + 9 = 13.
+    scores.value = (
+      const {StarKind.bronze: 2, StarKind.silver: 1, StarKind.gold: 3},
+      13,
+    );
+    await tester.pump();
+    // No meio da animação o total ainda está subindo.
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(text(StarChallengeKeys.collected), isNot('13'));
+    await tester.pumpAndSettle();
+    expect(text(StarChallengeKeys.kindCount('bronze')), '2');
+    expect(text(StarChallengeKeys.kindCount('silver')), '1');
+    expect(text(StarChallengeKeys.kindCount('gold')), '3');
+    expect(text(StarChallengeKeys.collected), '13');
+  });
+
+  testWidgets('o tabuleiro fica com o centro no centro do espaço útil, '
+      'entre a barra do app e o fim da tela, no convite e jogando', (
+    tester,
+  ) async {
+    final cubit = await pump(tester);
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    final appBar = tester.getRect(find.byType(AppBar));
+    final center = (appBar.bottom + screen.height) / 2;
+    final ready = tester.getRect(find.byKey(StarChallengeKeys.board));
+    expect(ready.center.dy, closeTo(center, 1));
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+    final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
+    expect(rect, ready);
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('o placar das estrelas tem o mesmo tamanho e lugar no convite, '
+      'jogando e no fim', (tester) async {
+    final cubit = await pump(tester);
+    Rect card() => tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+    final ready = card();
+    expect(find.byKey(StarChallengeKeys.intro), findsOneWidget);
+    expect(find.text('Star hunt'), findsOneWidget);
+    // Fica logo abaixo do tabuleiro.
+    final board = tester.getRect(find.byKey(StarChallengeKeys.board));
+    expect(ready.top, greaterThan(board.bottom));
+    expect(ready.top - board.bottom, lessThan(16));
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(StarChallengeKeys.intro), findsNothing);
+    expect(card(), ready);
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+    expect(find.byKey(StarChallengeKeys.result), findsOneWidget);
+    expect(card(), ready);
+  });
+
+  testWidgets('o "Vai!" flutuante começa o jogo e some', (tester) async {
+    final cubit = await pump(tester);
+    final fab = find.byKey(StarChallengeKeys.goButton);
+    expect(
+      find.descendant(of: fab, matching: find.byType(FloatingActionButton)),
+      findsNothing,
+    );
+    expect(tester.widget(fab), isA<FloatingActionButton>());
+    expect(find.text('Go!'), findsOneWidget);
+    // No canto de baixo, à direita.
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    final rect = tester.getRect(fab);
+    expect(rect.right, greaterThan(screen.width * 0.8));
+    expect(rect.bottom, greaterThan(screen.height * 0.9));
+    expect(cubit.state.phase, ChallengePhase.ready);
+
+    await tester.tap(fab);
+    await tester.pump();
+    expect(cubit.state.phase, ChallengePhase.running);
+    await tester.pumpAndSettle();
+    expect(fab, findsNothing);
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('tela pequena com fonte 1,6: nada estoura e o "Vai!" não cobre '
+      'o tabuleiro nem o placar', (tester) async {
+    final cubit = await pump(
+      tester,
+      level: ChallengeLevel.hard,
+      size: const Size(360, 640),
+      textScale: 1.6,
+    );
+    expect(tester.takeException(), isNull);
+    final fab = tester.getRect(find.byKey(StarChallengeKeys.goButton));
+    final board = tester.getRect(find.byKey(StarChallengeKeys.board));
+    final card = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+    expect(fab.overlaps(board), isFalse);
+    expect(fab.overlaps(card), isFalse);
+    final ready = card;
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), ready);
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), ready);
+    // No fim, o "Jogar de novo" fica no mesmo canto, também sem cobrir.
+    final retry = tester.getRect(find.byKey(StarChallengeKeys.retryButton));
+    expect(retry.overlaps(board), isFalse);
+    expect(retry.overlaps(ready), isFalse);
   });
 
   testWidgets('a lista: seis peças, três níveis, a melhor marca', (

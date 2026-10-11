@@ -43,11 +43,18 @@ class GameDetailsRobot {
     await $.tester.ensureVisible(find.byKey(GameDetailsKeys.reviewSummary));
     await $.pumpAndSettle();
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
-    expect(find.byKey(GameDetailsKeys.reviewButton), findsNothing);
+    // A revisão feita fica no botão, marcada e desligada (T51).
   }
 
+  // Os botões de lance ficam fixos embaixo do tabuleiro: se a folha está
+  // aberta por cima deles, o "x" a desce antes.
   Future<void> _tap(Key key) async {
-    await $(key).scrollTo().tap();
+    final close = find.byKey(GameDetailsKeys.closeSheet).hitTestable();
+    if (close.evaluate().isNotEmpty) {
+      await $.tester.tap(close);
+      await $.pumpAndSettle();
+    }
+    await $(key).tap();
     await $.pumpAndSettle();
   }
 

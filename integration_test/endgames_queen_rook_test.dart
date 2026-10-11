@@ -24,7 +24,7 @@ void main() {
       final lesson = await endgames.lesson(id);
       await endgames.openFromHome();
       await endgames.openLesson(id);
-      await endgames.expectFinalLocked();
+      await endgames.expectFinalStep();
 
       await endgames.openSteps();
       await endgames.completeSteps(lesson, play: {'finish': finish});

@@ -7,6 +7,7 @@ import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../view_models/speech_cubit.dart';
+import '../../core/theme/app_shape.dart';
 
 /// O idioma do app, para escolher as vozes que falam nele.
 String voiceLanguage(BuildContext context) =>
@@ -87,7 +88,7 @@ class VoiceCard extends StatelessWidget {
       child: Material(
         color: selected ? colors.primaryContainer : colors.surfaceContainerLow,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppShape.large),
           side: BorderSide(
             color: selected ? colors.primary : colors.outlineVariant,
             width: selected ? 2 : 1,
@@ -107,7 +108,7 @@ class VoiceCard extends StatelessWidget {
                     child:
                         leading ??
                         Icon(
-                          selected ? Icons.check_circle : icon,
+                          selected ? Icons.check : icon,
                           size: 30,
                           color: selected ? colors.primary : foreground,
                         ),

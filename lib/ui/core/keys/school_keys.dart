@@ -1,9 +1,19 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class SchoolKeys {
+  /// O teste de nível (T52): a entrada e o grupo das aulas dispensadas.
+  static const placementTest = Key('school.placementTest');
+  static const skippedGroup = Key('school.skippedGroup');
+  static const reviewSkipped = Key('school.reviewSkipped');
+
   static const screen = Key('school.screen');
   static const continueButton = Key('school.continue');
   static const graduated = Key('school.graduated');
+  static const diploma = Key('school.graduation.diploma');
+  static const diplomaName = Key('school.graduation.diplomaName');
+  static const graduationSummary = Key('school.graduation.summary');
+  static const graduationCard = Key('school.graduation.card');
+  static const graduationShare = Key('school.graduation.share');
   static const endgamesButton = Key('school.endgames');
   static const challengesButton = Key('school.challenges');
 
@@ -15,9 +25,18 @@ abstract final class SchoolKeys {
 }
 
 abstract final class LessonKeys {
+  /// T60, modo exercício: a faixa do enunciado em cima, o cronômetro do
+  /// passo e o rodapé das ações.
+  static const prompt = Key('lesson.prompt');
+  static const stepTimer = Key('lesson.step.timer');
+  static const footer = Key('lesson.footer');
+
   /// O convite para jogar no Lichess e o botão que abre o site.
   static const lichessInvite = Key('lesson.lichessInvite');
   static const lichessButton = Key('lesson.lichessButton');
+
+  /// O link do passo para a partida ou o estudo de onde vem a posição.
+  static const referenceLink = Key('lesson.referenceLink');
 
   /// O confete do fim da aula.
   static const celebration = Key('lesson.celebration');
@@ -42,6 +61,23 @@ abstract final class LessonKeys {
   static const guide = Key('lesson.guide');
   static const nextButton = Key('lesson.next');
   static const hintButton = Key('lesson.hint');
+
+  /// T51: o passo de pensar, a demonstração e o fim de uma parte.
+  static const appBarTitle = Key('lesson.appBar.title');
+  static const place = Key('lesson.appBar.place');
+  static const thinkReset = Key('lesson.think.reset');
+  static const moreHintButton = Key('lesson.think.moreHint');
+  static const demoBack = Key('lesson.demo.back');
+  static const demoForward = Key('lesson.demo.forward');
+  static const demoReplay = Key('lesson.demo.replay');
+  static const demoPause = Key('lesson.demo.pause');
+  static const partFinished = Key('lesson.part.finished');
+  static const nextPartButton = Key('lesson.part.next');
+  static const reviewPartButton = Key('lesson.part.review');
+  static const closeSheet = Key('lesson.sheet.close');
+  static const marksToggle = Key('lesson.marks');
+  static const partSummary = Key('lesson.part.summary');
+  static const allPartsDone = Key('lesson.part.allDone');
   static const retryButton = Key('lesson.retry');
   static const finished = Key('lesson.finished');
   static const nextLessonButton = Key('lesson.nextLesson');
@@ -67,13 +103,31 @@ abstract final class StarChallengeKeys {
   static const listScreen = Key('starChallenges.screen');
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');
+
+  /// O "Vai!" flutuante, no canto de baixo, antes de começar.
   static const goButton = Key('starChallenge.go');
+
+  /// O cartão do convite, sob o relógio, antes de começar.
+  static const intro = Key('starChallenge.intro');
   static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
+
+  /// O total de pontos no painel embaixo do tabuleiro.
   static const collected = Key('starChallenge.collected');
+
+  /// O painel de pontos embaixo do tabuleiro.
+  static const scoreboard = Key('starChallenge.scoreboard');
+
+  /// O selo do nível na barra.
+  static const levelChip = Key('starChallenge.levelChip');
+
+  /// Quantas estrelas de uma cor (`bronze`, `silver`, `gold`) foram pegas.
+  static Key kindCount(String kind) => Key('starChallenge.count.$kind');
   static const result = Key('starChallenge.result');
   static const earned = Key('starChallenge.earned');
   static const best = Key('starChallenge.best');
+
+  /// O "Jogar de novo" flutuante, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
   static const backButton = Key('starChallenge.back');
 

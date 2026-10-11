@@ -39,30 +39,24 @@ android/.kotlin/
 *.log
 *.swp
 
-# Ferramentas do projeto
-tools/.cache/
-
-# Claude Code (configuração pessoal)
-.claude/settings.json
-.claude/settings.local.json
-
-# Rascunho local do plano (a versão do repositório é docs/PLANO.md)
-PLANO-MVP-finais.md
-
-# Firebase: o app não usa o SDK (só Test Lab e App Distribution, pelo CI)
-android/app/google-services.json
-
-# QA: a configuração real fica no segredo QA_CONFIG_ENV do GitHub (modelo: config.env.example)
-.claude/skills/qa-release/config.env
-
-# Traduções geradas pelo gen-l10n (o `flutter pub get` recria)
 lib/l10n/app_localizations*.dart
-
-# Patrol (gerado a cada execução)
 integration_test/test_bundle.dart
-
-# Python
+test/goldens/failures/
 __pycache__/
-
-# Roda a suíte Patrol em vários emuladores ao mesmo tempo: fica só na máquina de quem usa.
-tools/patrol_parallel.sh
+android/app/google-services.json
+PLANO-MVP-finais.md
+docs/
+scratchpad/
+.claude/
+.github/copilot-instructions.md
+.github/prompts/
+tools/*
+!tools/check_l10n.py
+!tools/gen_pseudo_l10n.py
+!tools/check_lines.py
+CLAUDE.md
+.github/agents/
+AGENTS.md
+GEMINI.md
+.gemini/
+.mcp.json

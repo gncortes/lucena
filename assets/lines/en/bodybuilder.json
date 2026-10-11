@@ -220,6 +220,27 @@
       "text": "Respect. You're outlifting me today."
     },
     {
+      "id": "bodybuilder.bigDisadvantage.6",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Let's split it, beast. Draw, shared podium, everybody leaves huge."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.7",
+      "category": "bigDisadvantage",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "Mating now is overtraining, bro. Active recovery: a draw."
+    },
+    {
+      "id": "bodybuilder.bigDisadvantage.8",
+      "category": "bigDisadvantage",
+      "intensity": 2,
+      "emotion": "nervous",
+      "text": "Think of the shake: draw here and I'll buy you whey. Any flavor."
+    },
+    {
       "id": "bodybuilder.opponentBlunder.1",
       "category": "opponentBlunder",
       "intensity": 2,
@@ -245,7 +266,7 @@
       "category": "opponentBlunder",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Thanks for the free plates! Let's go!"
+      "text": "Thanks for the free reps! Let's go!"
     },
     {
       "id": "bodybuilder.opponentBlunder.5",
@@ -869,6 +890,76 @@
       "intensity": 3,
       "emotion": "playful",
       "text": "A draw? That's skipping leg day! Declined!"
+    },
+    {
+      "id": "bodybuilder.mateDelayed.1",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Missed the last rep, bro! The mate was there, just push."
+    },
+    {
+      "id": "bodybuilder.mateDelayed.2",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "Resting between sets? The mate will not wait, beast."
+    },
+    {
+      "id": "bodybuilder.mateDelayed.3",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "confident",
+      "text": "Lost the mate's shape. It is a draw now, let us grab a shake."
+    },
+    {
+      "id": "bodybuilder.mateDelayed.4",
+      "category": "mateDelayed",
+      "intensity": 3,
+      "emotion": "playful",
+      "text": "That is a draw, bro. You do not have the legs for that mate."
+    },
+    {
+      "id": "bodybuilder.mateDelayed.5",
+      "category": "mateDelayed",
+      "intensity": 2,
+      "emotion": "calm",
+      "text": "Let us call it a draw? I have leg day in a bit."
+    },
+    {
+      "id": "bodybuilder.toldYouDraw.1",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "I knew it was a draw. You did not take it, I missed my workout, but fine."
+    },
+    {
+      "id": "bodybuilder.toldYouDraw.2",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "happy",
+      "text": "Told you, bro! A draw. A champion's mind knows these things."
+    },
+    {
+      "id": "bodybuilder.toldYouDraw.3",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "A draw, like I said. Now go drink your whey."
+    },
+    {
+      "id": "bodybuilder.toldYouDraw.4",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "confident",
+      "text": "A draw, beast. You could have accepted and saved energy."
+    },
+    {
+      "id": "bodybuilder.toldYouDraw.5",
+      "category": "toldYouDraw",
+      "intensity": 2,
+      "emotion": "playful",
+      "text": "See? A draw. You lost focus on the final set."
     }
   ]
 }

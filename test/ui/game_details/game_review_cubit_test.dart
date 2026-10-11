@@ -67,6 +67,8 @@ void main() {
     final id = await save(['g1g2', 'h8h7', 'g2g7']);
     final cubit = build(id);
     await cubit.load();
+    // Abre no início; a tela do último lance é a que já tinha anotação.
+    cubit.last();
     await settle();
     expect(cubit.state.review, isNull);
 
@@ -106,6 +108,7 @@ void main() {
     final id = await save(['g1g6']);
     final cubit = build(id);
     await cubit.load();
+    cubit.last();
     await settle();
 
     final review = cubit.state.review!;
@@ -122,12 +125,14 @@ void main() {
     final id = await save(['g1g7']);
     final first = build(id);
     await first.load();
+    first.last();
     await settle();
     await first.review();
     analysis.requests.clear();
 
     final again = build(id);
     await again.load();
+    again.last();
     await settle();
     expect(again.state.review!.moves.single.quality, MoveQuality.best);
     expect(again.state.live[0]!.weight, heaviest);
@@ -138,7 +143,10 @@ void main() {
     final id = await save(['g1g2', 'h8h7', 'g2g7']);
     final cubit = build(id);
     await cubit.load();
-    expect(cubit.state.shownIndex, 2);
+    // Abre na posição de início.
+    expect(cubit.state.shownIndex, -1);
+    expect(cubit.state.atStart, isTrue);
+    cubit.last();
     expect(cubit.state.atEnd, isTrue);
 
     cubit.previous();
@@ -158,6 +166,7 @@ void main() {
     final id = await save(['g1g2', 'h8h7']);
     final cubit = build(id);
     await cubit.load();
+    cubit.last();
 
     await cubit.toggleEngine();
     expect(cubit.state.engine, isTrue);
@@ -178,8 +187,10 @@ void main() {
     final id = await save(['g1g2', 'h8h7', 'g2g7']);
     final cubit = build(id);
     await cubit.load();
+    // Abre no início; indo ao último lance (o mate), ele é anotado na hora.
+    expect(cubit.state.shownIndex, -1);
+    cubit.last();
     await settle();
-    // Abre no último lance (o mate): já anotado.
     expect(cubit.state.live[2], isNotNull);
     expect(cubit.state.review, isNull);
 

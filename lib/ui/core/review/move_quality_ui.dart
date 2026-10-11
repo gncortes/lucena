@@ -68,8 +68,8 @@ class MoveQualityBadge extends StatelessWidget {
   /// que a letra da fonte não garante.
   static const _icons = {
     MoveQuality.forced: Icons.crop_square_rounded,
-    MoveQuality.best: Icons.star_rounded,
-    MoveQuality.excellent: Icons.check_rounded,
+    MoveQuality.best: Icons.diamond_rounded,
+    MoveQuality.excellent: Icons.done_all_rounded,
     MoveQuality.good: Icons.check_rounded,
     MoveQuality.miss: Icons.close_rounded,
   };

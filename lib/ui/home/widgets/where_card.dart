@@ -8,10 +8,12 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
+import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_shape.dart';
 
 /// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
 /// próximo desafio, com o tabuleiro em miniatura.
@@ -26,7 +28,7 @@ class WhereCard extends StatelessWidget {
     switch (state.continuePath) {
       case null:
         return const SizedBox.shrink();
-      case HomePath.endgames when state.endgame != null:
+      case HomePath.endgames || HomePath.forYou when state.endgame != null:
         return _EndgameCard(endgame: state.endgame!);
       case HomePath.learn when state.school != null:
         return _SchoolCard(school: state.school!);
@@ -98,7 +100,7 @@ class WhereCard extends StatelessWidget {
             if (current != null) ...[
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppShape.small),
                 child: AnimatedProgress(
                   value: total == 0 ? 0 : done / total,
                   minHeight: 8,
@@ -199,7 +201,7 @@ class _SchoolCard extends StatelessWidget {
                   LinearProgressIndicator(
                     value: school.total == 0 ? 0 : school.done / school.total,
                     minHeight: 6,
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -227,7 +229,8 @@ class _SchoolCard extends StatelessWidget {
 }
 
 /// A aula de final em andamento: o título, onde parou e "continuar", que
-/// volta direto ao exercício ou à lição aberta.
+/// volta direto ao exercício ou à lição aberta. Com um exercício da vez, a
+/// miniatura dele toma o lugar do retrato e voa até o tabuleiro.
 class _EndgameCard extends StatelessWidget {
   const _EndgameCard({required this.endgame});
 
@@ -239,6 +242,8 @@ class _EndgameCard extends StatelessWidget {
     if (exercise != null) {
       return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
     }
+    final part = endgame.partNumber;
+    if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
     if (step != null) return l10n.lessonStep(step, endgame.stepCount!);
     return l10n.endgameScore(endgame.score, endgame.maxScore);
   }
@@ -248,7 +253,9 @@ class _EndgameCard extends StatelessWidget {
     if (exerciseId != null) {
       return Routes.endgameExercise(endgame.lessonId, exerciseId);
     }
-    if (endgame.lessonOpen) return Routes.endgameLessonSteps(endgame.lessonId);
+    if (endgame.lessonOpen) {
+      return Routes.endgameLessonSteps(endgame.lessonId, part: endgame.partId);
+    }
     return Routes.endgameLesson(endgame.lessonId);
   }
 
@@ -258,6 +265,8 @@ class _EndgameCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final l10n = context.l10n;
     final teacher = endgame.teacher;
+    final exerciseId = endgame.openExerciseId;
+    final fen = endgame.exerciseFen;
     return Card(
       key: HomeKeys.endgameCard,
       margin: EdgeInsets.zero,
@@ -266,7 +275,16 @@ class _EndgameCard extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
         child: Row(
           children: [
-            if (teacher != null) ...[
+            if (fen != null && exerciseId != null) ...[
+              PositionBoard(
+                key: HomeKeys.endgameBoard,
+                fen: fen,
+                size: 64,
+                radius: 4,
+                heroTag: exerciseHeroTag(endgame.lessonId, exerciseId),
+              ),
+              const SizedBox(width: 12),
+            ] else if (teacher != null) ...[
               CharacterAvatar(character: teacher, size: 48),
               const SizedBox(width: 12),
             ],
@@ -302,7 +320,8 @@ class _EndgameCard extends StatelessWidget {
             const SizedBox(width: 12),
             FilledButton(
               key: HomeKeys.endgameContinue,
-              onPressed: () => context.push(_route),
+              // A posição vai junto, para a miniatura voar até o tabuleiro.
+              onPressed: () => context.push(_route, extra: fen),
               child: Text(l10n.homeContinue),
             ),
           ],

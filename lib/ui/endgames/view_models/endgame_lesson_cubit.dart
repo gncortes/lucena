@@ -24,7 +24,38 @@ class EndgameLessonState {
     this.lessonNumber = 0,
     this.lessonCount = 0,
     this.nextLesson,
+    this.ongoingPart,
+    this.ongoingStep = 0,
+    this.moduleNumber = 0,
+    this.moduleCount = 0,
   });
+
+  /// A posição da aula no módulo dela (1 é a primeira) e quantas ele tem.
+  final int moduleNumber;
+  final int moduleCount;
+
+  /// A parte aberta quando o aluno saiu da lição (para "Continuar").
+  final String? ongoingPart;
+
+  /// O passo em que o aluno saiu da parte aberta (0: nem passou do
+  /// primeiro).
+  final int ongoingStep;
+
+  /// As partes já feitas.
+  Set<String> get partsDone {
+    final lesson = this.lesson;
+    return lesson == null ? const {} : progress.partsDone(lesson);
+  }
+
+  /// A parte recomendada; nula com todas feitas (o próximo é o teste).
+  LessonPart? get recommendedPart {
+    final lesson = this.lesson;
+    return lesson == null
+        ? null
+        : EndgameLessonRules.recommendedPart(lesson, progress);
+  }
+
+  bool get allPartsDone => lesson != null && recommendedPart == null;
 
   final bool ready;
 
@@ -46,11 +77,32 @@ class EndgameLessonState {
   /// A aula seguinte na trilha. Nula na última.
   final String? nextLesson;
 
-  int get score => progress.score;
+  int get score {
+    final lesson = this.lesson;
+    return lesson == null ? 0 : progress.scoreOf(lesson);
+  }
+
   int get maxScore => lesson?.maxScore ?? 0;
   int get passScore => lesson?.passScore ?? 0;
 
-  int get solved => progress.stars.length;
+  /// A faixa da nota atual e as estrelas que cada faixa pede.
+  ExerciseGrade get grade {
+    final lesson = this.lesson;
+    return lesson == null
+        ? ExerciseGrade.below
+        : EndgameLessonRules.grade(lesson, score);
+  }
+
+  Map<ExerciseGrade, int> get gradeStars {
+    final lesson = this.lesson;
+    return lesson == null ? const {} : EndgameLessonRules.gradeStars(lesson);
+  }
+
+  int get solved {
+    final lesson = this.lesson;
+    return lesson == null ? 0 : progress.solvedOf(lesson);
+  }
+
   int get exerciseCount => lesson?.exercises.length ?? 0;
 
   bool get allSolved {
@@ -68,15 +120,9 @@ class EndgameLessonState {
   /// fechou). Nulo com todos resolvidos.
   Exercise? get nextExercise {
     final lesson = this.lesson;
-    if (lesson == null) return null;
-    final open = progress.exercise?.exerciseId;
-    if (open != null && !progress.stars.containsKey(open)) {
-      return lesson.exercise(open);
-    }
-    for (final exercise in lesson.exercises) {
-      if (!progress.stars.containsKey(exercise.id)) return exercise;
-    }
-    return null;
+    return lesson == null
+        ? null
+        : EndgameLessonRules.nextExercise(lesson, progress);
   }
 
   /// As estrelas ganhas num exercício. Nula se ainda não foi resolvido.
@@ -95,6 +141,10 @@ class EndgameLessonState {
         lessonNumber: lessonNumber,
         lessonCount: lessonCount,
         nextLesson: nextLesson,
+        ongoingPart: ongoingPart,
+        ongoingStep: ongoingStep,
+        moduleNumber: moduleNumber,
+        moduleCount: moduleCount,
       );
 }
 
@@ -121,7 +171,13 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
       return;
     }
     final texts = await _lessons.texts(language);
-    final progress = await _progress.load();
+    var progress = await _progress.load();
+    // Exercício cortado da aula: a estrela e o exercício aberto dele saem.
+    final pruned = EndgameLessonRules.prune(lesson, progress.of(lessonId));
+    if (!identical(pruned, progress.of(lessonId))) {
+      progress = progress.withLesson(lessonId, pruned);
+      await _progress.save(progress);
+    }
     final speedruns = await _journey.speedruns();
     final characters = await _characters.characters();
     if (isClosed) return;
@@ -130,6 +186,12 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
       if (character.id == LessonCubit.viktorId) viktor = character;
     }
     final lessons = trail.lessons;
+    final checkpoint = progress.ongoing?.lessonId == lessonId
+        ? EndgameLessonRules.migrate(lesson, progress.ongoing)
+        : null;
+    final module = trail.modules.firstWhere(
+      (each) => each.lessons.contains(lesson),
+    );
     emit(
       EndgameLessonState(
         ready: true,
@@ -140,8 +202,12 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
         speedrun: EndgameLessonRules.speedrunOf(lesson, speedruns),
         viktor: viktor,
         lessonNumber: lessons.indexOf(lesson) + 1,
+        moduleNumber: module.lessons.indexOf(lesson) + 1,
+        moduleCount: module.lessons.length,
         lessonCount: lessons.length,
         nextLesson: trail.after(lessonId)?.id,
+        ongoingPart: checkpoint?.part,
+        ongoingStep: checkpoint?.step ?? 0,
       ),
     );
   }

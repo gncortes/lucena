@@ -30,7 +30,7 @@ class SchoolRobot {
     // A trilha é longa: a aula vai para o meio da tela, longe do botão fixo
     // de baixo, antes do toque.
     final lesson = find.byKey(SchoolKeys.lesson(id));
-    await $.scrollUntilExists(finder: lesson);
+    await $.scrollUntilExists(finder: lesson, maxScrolls: 80);
     await Scrollable.ensureVisible($.tester.element(lesson), alignment: 0.5);
     await $.pumpAndSettle();
     await $(lesson).tap();

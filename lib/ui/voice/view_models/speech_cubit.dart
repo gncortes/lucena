@@ -8,6 +8,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/voice.dart';
 import '../../../domain/use_cases/spoken_text.dart';
 import '../../../domain/use_cases/voice_resolver.dart';
+import '../../../domain/use_cases/wiki_markup.dart';
 
 class SpeechState {
   const SpeechState({
@@ -54,7 +55,10 @@ class SpeechState {
   bool get charactersHeard => settings.enabled && !settings.charactersMuted;
 
   /// Fala [text] agora?
-  bool isSpeaking(String? text) => text != null && speaking == text;
+  /// Uma fala com nomes marcados (`{{Andersson|ulf-andersson}}`) vale pelo
+  /// texto visível.
+  bool isSpeaking(String? text) =>
+      text != null && speaking == WikiMarkup.plain(text);
 
   /// A voz com que [characterId] fala em [language].
   ResolvedVoice? voiceOf(String characterId, String language) =>
@@ -135,12 +139,14 @@ class SpeechCubit extends Cubit<SpeechState> {
   }
 
   /// Fala [text] na voz de [speakerId], em [language], interrompendo a fala
-  /// anterior. Sem voz no idioma, nada.
+  /// anterior. Sem voz no idioma, nada. A marcação dos nomes
+  /// (`{{Andersson|ulf-andersson}}`) sai: a voz lê só o texto visível.
   Future<void> say(
-    String text, {
+    String marked, {
     required String speakerId,
     required String language,
   }) async {
+    final text = WikiMarkup.plain(marked);
     final voice = state.voiceOf(speakerId, language);
     if (voice == null) return;
     final utterance = _utterance = SpokenText.utterance(text, language);

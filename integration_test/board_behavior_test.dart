@@ -24,8 +24,7 @@ void main() {
 
     await behavior.chooseMoveMethod(MoveMethod.tap);
     behavior.expectMoveMethodValue('Tap only');
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await board.open();
 
     await board.drag('e2', 'e4');
@@ -57,8 +56,7 @@ void main() {
     await behavior.open();
     behavior.expectLegalMoves(enabled: false);
 
-    await settings.back();
-    await settings.back();
+    await settings.backToHome();
     await board.open();
     board.expectShowsLegalMoves(enabled: false);
   });

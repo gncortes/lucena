@@ -14,6 +14,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -22,6 +23,8 @@ import '../../core/widgets/figurine.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -95,22 +98,13 @@ class ReviewSummary extends StatelessWidget {
         key: GameDetailsKeys.reviewProgress,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (state.viktor case final viktor?
-              when state.stories.isNotEmpty) ...[
-            _StoryTeller(
-              viktor: viktor,
-              stories: state.stories,
-              first: state.attempt?.playedAt.millisecond ?? 0,
-            ),
-            const SizedBox(height: 14),
-          ],
           Text(
             l10n.reviewRunning(math.min(done + 1, total), total),
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppShape.small),
             child: LinearProgressIndicator(
               value: state.reviewProgress,
               minHeight: 8,
@@ -203,21 +197,46 @@ class ReviewSummary extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       color: colors.surfaceContainerLow,
-      child: Padding(padding: const EdgeInsets.all(14), child: child),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.viktor case final viktor? when state.stories.isNotEmpty)
+              _StoryTeller(
+                viktor: viktor,
+                stories: state.stories,
+                first: state.attempt?.playedAt.millisecond ?? 0,
+                running: state.reviewing,
+              ),
+            child,
+          ],
+        ),
+      ),
     );
   }
 
-  /// Os botões das revisões mais pesadas que [above].
+  /// As três revisões: as já feitas (até [above]) marcadas com o ✓ e sem
+  /// toque; as mais pesadas, para fazer. Os nomes numa linha só, que
+  /// encolhe se faltar largura.
   Widget _speedButtons(BuildContext context, int above) {
     final l10n = context.l10n;
     final speeds = [
       (ReviewSpeed.quick, GameDetailsKeys.reviewQuick, l10n.reviewQuick),
       (ReviewSpeed.medium, GameDetailsKeys.reviewButton, l10n.reviewMedium),
       (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
-    ].where((s) => GameDetailsCubit.reviewWeights[s.$1]! > above);
+    ];
     final style = FilledButton.styleFrom(
       minimumSize: const Size.fromHeight(46),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
     );
+    // A próxima a fazer fica em destaque.
+    final next = speeds
+        .firstWhere(
+          (s) => GameDetailsCubit.reviewWeights[s.$1]! > above,
+          orElse: () => speeds.last,
+        )
+        .$1;
     return Row(
       children: [
         for (final (i, (speed, key, label)) in speeds.indexed) ...[
@@ -226,19 +245,29 @@ class ReviewSummary extends StatelessWidget {
             child: () {
               void onPressed() =>
                   context.read<GameDetailsCubit>().review(speed: speed);
-              final enabled = state.moves.isNotEmpty;
-              return speed == ReviewSpeed.medium
+              final done = GameDetailsCubit.reviewWeights[speed]! <= above;
+              final enabled = state.moves.isNotEmpty && !done;
+              if (done) {
+                return OutlinedButton.icon(
+                  key: key,
+                  style: style,
+                  onPressed: null,
+                  icon: const Icon(Icons.check_rounded, size: 18),
+                  label: OneLine(label),
+                );
+              }
+              return speed == next
                   ? FilledButton(
                       key: key,
                       style: style,
                       onPressed: enabled ? onPressed : null,
-                      child: Text(label),
+                      child: OneLine(label),
                     )
                   : FilledButton.tonal(
                       key: key,
                       style: style,
                       onPressed: enabled ? onPressed : null,
-                      child: Text(label),
+                      child: OneLine(label),
                     );
             }(),
           ),
@@ -258,12 +287,14 @@ class ReviewSummary extends StatelessWidget {
 }
 
 /// Enquanto a revisão roda, o Viktor conta uma história de xadrez, e troca
-/// de história de tempos em tempos.
+/// de história de tempos em tempos. Pronta a revisão, a história do momento
+/// fica até o ✕ no balão (ninguém perde o fim dela).
 class _StoryTeller extends StatefulWidget {
   const _StoryTeller({
     required this.viktor,
     required this.stories,
     required this.first,
+    required this.running,
   });
 
   final Character viktor;
@@ -271,6 +302,9 @@ class _StoryTeller extends StatefulWidget {
 
   /// A primeira história (cada partida começa por uma).
   final int first;
+
+  /// A revisão está rodando (só então a história troca).
+  final bool running;
 
   /// Quanto tempo cada história fica.
   static const every = Duration(seconds: 18);
@@ -281,11 +315,33 @@ class _StoryTeller extends StatefulWidget {
 
 class _StoryTellerState extends State<_StoryTeller> {
   late int _index = widget.first;
-  late final Timer _timer;
+  Timer? _timer;
+
+  /// Já houve revisão rodando nesta tela (abrir uma partida já revisada
+  /// não conta história).
+  late bool _told = widget.running;
+  bool _closed = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.running) _start();
+  }
+
+  @override
+  void didUpdateWidget(_StoryTeller old) {
+    super.didUpdateWidget(old);
+    if (widget.running && !old.running) {
+      _told = true;
+      _closed = false;
+      _start();
+    } else if (!widget.running && old.running) {
+      _timer?.cancel();
+    }
+  }
+
+  void _start() {
+    _timer?.cancel();
     _timer = Timer.periodic(
       _StoryTeller.every,
       (_) => setState(() => _index++),
@@ -294,19 +350,32 @@ class _StoryTellerState extends State<_StoryTeller> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => TeacherSpeech(
-    key: GameDetailsKeys.story,
-    teacher: widget.viktor,
-    text: widget.stories[_index % widget.stories.length],
-    avatarSize: 40,
-    stacked: true,
-    typed: true,
-  );
+  Widget build(BuildContext context) {
+    if (!_told || _closed) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: TeacherSpeech(
+        key: GameDetailsKeys.story,
+        teacher: widget.viktor,
+        text: widget.stories[_index % widget.stories.length],
+        avatarSize: 40,
+        speechContext: SpeechContext.teaching,
+        typed: true,
+        closeKey: GameDetailsKeys.storyClose,
+        onClose: () async {
+          _timer?.cancel();
+          setState(() => _closed = true);
+          final text = widget.stories[_index % widget.stories.length];
+          await TeacherSpeech.speechOf(context)?.stopIf(text);
+        },
+      ),
+    );
+  }
 }
 
 /// No fim da tela: o que cada símbolo quer dizer e, depois da revisão,
@@ -454,7 +523,7 @@ class _AccuracyBox extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: light ? const Color(0xFFF2F2F0) : const Color(0xFF2B2B2B),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Text(
         text,
@@ -473,7 +542,8 @@ class _AccuracyBox extends StatelessWidget {
 /// O tabuleiro da revisão: a posição do lance mostrado, a anotação dele na
 /// casa de destino e, com a engine ligada, a seta do melhor lance; sem a
 /// engine, depois de um erro, a seta do lance que era melhor. Ao lado, a
-/// barra de avaliação.
+/// barra de avaliação. Como num tabuleiro de análise, dá para jogar a partir
+/// da posição mostrada: os lances viram uma variante.
 class ReviewBoard extends StatefulWidget {
   const ReviewBoard({
     required this.state,
@@ -501,19 +571,28 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final position = state.shownPosition!;
     return GameData(
       fen: position.fen,
-      playerSide: PlayerSide.none,
+      playerSide: position.isGameOver ? PlayerSide.none : PlayerSide.both,
       sideToMove: position.turn,
-      validMoves: const {},
+      validMoves: GameRules.legalMoves(position),
       lastMove: state.shownMove,
+      kingSquareInCheck: GameRules.checkedKing(position),
     );
   }
 
   @override
   void didUpdateWidget(ReviewBoard old) {
     super.didUpdateWidget(old);
-    if (old.state.shownIndex != widget.state.shownIndex) {
-      final forward = widget.state.shownIndex == old.state.shownIndex + 1;
-      _controller.updatePosition(_game(widget.state), animate: forward);
+    final before = old.state.shownPosition;
+    final after = widget.state.shownPosition;
+    if (!identical(before, after)) {
+      // Só anima o lance seguinte (na partida ou na variante); os saltos
+      // trocam a posição de uma vez.
+      final forward = identical(widget.state.shownBefore, before);
+      _controller.updatePosition(
+        _game(widget.state),
+        animate: forward,
+        resetPremove: true,
+      );
     }
   }
 
@@ -585,10 +664,14 @@ class _ReviewBoardState extends State<ReviewBoard> {
             controller: _controller,
             orientation: widget.orientation,
             settings: settings.chessground.copyWith(
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AppShape.small),
+              ),
             ),
             annotations: annotations,
             shapes: shapes,
+            onMove: (move, {viaDragAndDrop}) =>
+                context.read<GameDetailsCubit>().play(move),
           ),
         ],
       ),
@@ -645,14 +728,14 @@ class _EvalBar extends StatelessWidget {
     final white = Container(color: const Color(0xFFF2F2F0));
     final black = Container(color: const Color(0xFF3A3A3A));
     return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(AppShape.small),
       child: SizedBox(
         width: width,
         height: height,
         child: TweenAnimationBuilder<double>(
           tween: Tween(end: share),
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOutCubic,
+          duration: AppMotion.component,
+          curve: AppMotion.enter,
           builder: (context, value, _) {
             final whitePart = (height * value).clamp(0.0, height);
             final bar = Column(
@@ -724,7 +807,30 @@ class MoveExplanation extends StatelessWidget {
     Widget? subtitle;
     Widget? trailing;
     Widget? leading;
-    if (index < 0) {
+    if (state.variationPly case final ply?) {
+      // Um lance da variante: sem anotação, com a avaliação da engine.
+      final move = state.variation[ply];
+      final before = state.shownBefore!;
+      final number = before.turn == Side.white
+          ? '${before.fullmoves}.'
+          : '${before.fullmoves}...';
+      leading = Icon(Icons.call_split, color: colors.onSurfaceVariant);
+      title = SanText('$number ${move.san}', style: theme.textTheme.titleSmall);
+      subtitle = Text(
+        l10n.reviewVariation,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
+      );
+      if (state.shownScore case final score?) {
+        trailing = Text(
+          formatScore(score, locale),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      }
+    } else if (index < 0) {
       title = Text(l10n.reviewStartPosition, style: theme.textTheme.titleSmall);
     } else {
       final move = state.moves[index];
@@ -796,7 +902,7 @@ class MoveExplanation extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Row(
         children: [
@@ -886,18 +992,28 @@ class ReviewNavigation extends StatelessWidget {
               onPressed: state.atEnd ? null : cubit.last,
               icon: const Icon(Icons.last_page),
             ),
-            const Spacer(),
-            FilterChip(
-              key: GameDetailsKeys.engineButton,
-              selected: state.engine,
-              showCheckmark: false,
-              avatar: Icon(
-                Icons.memory,
-                size: 18,
-                color: state.engine ? colors.onSecondaryContainer : null,
+            // Em tela estreita ou com fonte grande, o nome da engine encolhe
+            // (reticências) e os botões de lance ficam inteiros.
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: FilterChip(
+                  key: GameDetailsKeys.engineButton,
+                  selected: state.engine,
+                  showCheckmark: false,
+                  avatar: Icon(
+                    Icons.memory,
+                    size: 18,
+                    color: state.engine ? colors.onSecondaryContainer : null,
+                  ),
+                  label: Text(
+                    l10n.reviewEngine,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onSelected: (_) => cubit.toggleEngine(),
+                ),
               ),
-              label: Text(l10n.reviewEngine),
-              onSelected: (_) => cubit.toggleEngine(),
             ),
             PopupMenuButton<_Export>(
               key: GameDetailsKeys.moreButton,
@@ -1043,7 +1159,7 @@ class EngineLinesPanel extends StatelessWidget {
                     color: line.score.whiteWinPercent >= 50
                         ? const Color(0xFFF2F2F0)
                         : const Color(0xFF2B2B2B),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Text(
                     formatScore(line.score, locale),
@@ -1083,7 +1199,7 @@ class EngineLinesPanel extends StatelessWidget {
             ...children,
             const SizedBox(height: 4),
             Text(
-              'Stockfish · ${l10n.reviewDepth(state.engineDepths[state.shownIndex] ?? GameDetailsCubit.engineDepths.first)}',
+              'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),

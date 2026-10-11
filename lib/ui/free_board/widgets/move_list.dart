@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/free_board_keys.dart';
 import '../../core/widgets/figurine.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Os lances numa faixa que rola para o lado, como no chess.com: o número e
 /// os dois lances de cada jogada, com o lance que está no tabuleiro em
@@ -73,11 +75,7 @@ class _MoveListState extends State<MoveList> {
     if (!mounted || !_scroll.hasClients) return;
     final selected = _selected;
     if (selected < 0) {
-      _scroll.animateTo(
-        0,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+      _scroll.animateTo(0, duration: AppMotion.state, curve: AppMotion.enter);
       return;
     }
     final context = selected < _cells.length
@@ -87,8 +85,8 @@ class _MoveListState extends State<MoveList> {
     Scrollable.ensureVisible(
       context,
       alignment: 0.5,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      duration: AppMotion.state,
+      curve: AppMotion.enter,
     );
   }
 
@@ -118,7 +116,10 @@ class _MoveListState extends State<MoveList> {
     // A notação de xadrez é sempre da esquerda para a direita.
     return Directionality(
       textDirection: TextDirection.ltr,
+      // A faixa ocupa a largura toda e os lances começam na esquerda, como no
+      // chess.com: com poucos lances, eles não ficam no meio.
       child: SizedBox(
+        width: double.infinity,
         height: MoveList.height,
         child: SingleChildScrollView(
           key: FreeBoardKeys.moveList,
@@ -209,18 +210,18 @@ class _MoveCell extends StatelessWidget {
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppShape.small),
         child: Padding(
           // A área de toque passa da marca do lance.
           padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.state,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: selected
                   ? theme.colorScheme.secondaryContainer
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppShape.small),
             ),
             // O figurino é um caractere: tem a cor e a linha de base do texto.
             child: Text.rich(

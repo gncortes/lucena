@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// Uma barra de progresso que enche aos poucos quando o valor muda (ao
 /// voltar de uma vitória, por exemplo). Na primeira vez, já aparece no
 /// valor; com "remover animações", sempre.
@@ -21,10 +23,8 @@ class AnimatedProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween(end: value),
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 700),
-      curve: Curves.easeOutCubic,
+      duration: AppMotion.of(context).screen,
+      curve: AppMotion.enter,
       builder: (context, value, _) => LinearProgressIndicator(
         value: value,
         minHeight: minHeight,

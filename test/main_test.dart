@@ -137,15 +137,19 @@ void main() {
     await tester.pumpAndSettle();
     expect(textOf(tester, SettingsKeys.title), 'Settings');
 
+    await tester.tap(find.byKey(SettingsKeys.appearanceTile));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(SettingsKeys.languageTile));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(SettingsKeys.languageOption('es')));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
+    expect(textOf(tester, SettingsKeys.languageValue), 'Español');
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
 
     expect(textOf(tester, SettingsKeys.title), 'Ajustes');
-    expect(textOf(tester, SettingsKeys.languageValue), 'Español');
     expect(settings.saved, [const AppSettings(languageCode: 'es')]);
   });
 
@@ -191,6 +195,8 @@ void main() {
 
     await tester.tap(find.byKey(HomeKeys.settingsButton));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.appearanceTile));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(SettingsKeys.themeTile));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(SettingsKeys.themeOption(AppThemeMode.dark)));
@@ -208,6 +214,8 @@ void main() {
     await pumpApp(tester, settings: settings);
 
     await tester.tap(find.byKey(HomeKeys.settingsButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SettingsKeys.appearanceTile));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(SettingsKeys.themeTile));
     await tester.pumpAndSettle();

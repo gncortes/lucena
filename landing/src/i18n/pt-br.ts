@@ -4,7 +4,7 @@ const pt: Dictionary = {
   meta: {
     title: 'Lucena: treine finais de xadrez contra o Maia e o Stockfish',
     description:
-      'Aprenda xadrez pelos finais. Treine finais de xadrez contra o Maia, que joga como gente do seu nível, até o Stockfish na força máxima, com aulas interativas de dama contra torre, mate de bispo e cavalo e muito mais.',
+      'Aprenda xadrez pelos finais. Faça o teste de nível, estude 38 aulas de finais com o Mestre Viktor e jogue contra o Maia, que joga como gente do seu nível, até o Stockfish na força máxima. Com speedrun, Maratona e partidas às cegas.',
     ogAlt:
       'O app Lucena aberto num celular, com um final de xadrez no tabuleiro.',
   },
@@ -22,16 +22,18 @@ const pt: Dictionary = {
     eyebrow: 'App gratuito para treinar finais de xadrez',
     title: 'Treine finais de xadrez até virar',
     titleAccent: 'técnica',
-    lead: 'O Lucena coloca você para jogar finais contra o Maia, que joga como gente do seu nível, e depois contra o Stockfish na força máxima.',
+    lead: 'O Lucena ensina finais com o Mestre Viktor, do movimento das peças à posição de Lucena, e coloca você para jogá-los contra o Maia, que joga como gente do seu nível, e depois contra o Stockfish na força máxima.',
     cta: 'Quero ser testador',
     secondary: 'Ver como funciona',
     note: 'Android, versão de testes. Em breve no Google Play.',
-    chips: ['Maia 1000–2600', 'Stockfish', 'Aulas interativas'],
+    chips: ['Maia 1000–2600', 'Stockfish', '38 aulas de finais'],
   },
   stats: [
     { value: '9', label: 'níveis do Maia, de 1000 a 2600' },
-    { value: '12', label: 'aulas de finais clássicos' },
-    { value: '25', label: 'aulas para quem está começando' },
+    { value: '38', label: 'aulas de finais, em 7 módulos' },
+    { value: '39', label: 'aulas na Escola do Viktor, para quem está começando' },
+    { value: '250', label: 'exercícios nos testes finais das aulas' },
+    { value: '80', label: 'partidas de mestres citadas nas aulas' },
     { value: '55', label: 'finais para treinar quantas vezes quiser' },
   ],
   marquee: [
@@ -43,6 +45,10 @@ const pt: Dictionary = {
     'Oposição à distância',
     'Defesa pela última fileira',
     'Defesa pelo lado curto',
+    'Triangulação',
+    'Manobra de Réti',
+    'Peão passado afastado',
+    'Bispo errado',
   ],
   message: {
     kicker: 'Aprender xadrez pelos finais',
@@ -80,62 +86,127 @@ const pt: Dictionary = {
     items: {
       progression: {
         title: 'Do Maia ao Stockfish',
-        body: 'Jogue contra o Maia, um motor de xadrez com rede neural criado por pesquisadores da Universidade de Toronto e treinado em milhões de partidas de pessoas no Lichess. Ele erra e acerta como gente de verdade, do 1000 ao 2600, e cada nível é um adversário com personalidade. Escolha o ritmo, suba degrau por degrau e, quando estiver pronto, enfrente o Stockfish na força máxima.',
+        body: 'Jogue contra o Maia, um motor de xadrez com rede neural criado por pesquisadores da Universidade de Toronto e treinado em milhões de partidas de pessoas no Lichess. Ele erra e acerta como gente de verdade, do 1000 ao 2600, e cada nível é um adversário com personalidade. Escolha o ritmo, suba degrau por degrau e, quando estiver pronto, enfrente o Stockfish na força máxima. Tudo roda no celular, sem internet.',
         bullets: [
           'Níveis humanos de 1000 a 2600',
           'Relógio com tempo e incremento',
           'Stockfish na força máxima',
+          'Tabuleiro livre e posição personalizada',
+        ],
+      },
+      placement: {
+        title: 'Teste de nível: descubra por onde começar',
+        body: 'São 20 perguntas, sem relógio, em uns 8 minutos: para onde a peça pode ir, se é mate ou afogamento, se ainda dá para rocar, quem ganha com o melhor jogo. Não sabe? Toque em "Não sei" em vez de chutar. No fim, o Viktor mostra a sua faixa de rating, o que você já domina e o que falta estudar.',
+        bullets: [
+          '20 perguntas, sem relógio',
+          'O mapa do que você já domina e do que falta',
+          'Finais para você: as aulas que faltam, na ordem certa',
+        ],
+      },
+      school: {
+        title: 'Escola do Viktor: do zero ao primeiro mate',
+        body: 'Para quem está começando. O Mestre Viktor ensina como cada peça se move pegando estrelas no tabuleiro e segue com captura, xeque, roque, en passant, empates, notação, os primeiros mates e as armadilhas em que todo iniciante cai, como o mate do pastor. Cada aula é curta, com dica na hora certa, e a última é uma prova final que vale diploma.',
+        bullets: [
+          '39 aulas em 8 módulos',
+          'Peças, regras, notação e primeiros mates',
+          'Prova final e diploma',
         ],
       },
       lessons: {
-        title: 'Aulas que dividem o difícil em passos simples',
-        body: 'Finais complexos viram etapas curtas e interativas. Você aprende cada ideia, pratica na hora e só segue quando acertar.',
+        title: 'Aulas de finais aprofundadas',
+        body: 'São 38 aulas em 7 módulos: finais básicos, mates difíceis, finais de peões, finais de dama, torre contra peões, finais de torre e peças menores. Da posição de Lucena e da defesa de Philidor à triangulação e à manobra de Réti. Cada aula é dividida em capítulos curtos, com uma ideia só em cada um, e muitas posições vêm de partidas reais de mestres, com link para você ver a partida inteira.',
         bullets: [
-          'Dama contra torre',
-          'Mate de bispo e cavalo',
-          'Finais de torre e de peões',
+          'Teste final de exercícios, de 1 a 3 estrelas, com nota mínima para passar',
+          'Dica quando travar, ao custo de um ponto',
+          'Aprovado, o desafio: jogar o final de verdade contra o Maia ou o Stockfish',
+          'Fontes de cada aula: livros, estudos do Lichess e partidas de mestres',
         ],
       },
-      levels: {
-        title: 'Treino para iniciantes e intermediários',
-        body: 'Quem está começando aprende as peças com aulas guiadas. Quem já joga segue a Jornada: desafios por nível de rating, com adversários que têm personalidade.',
+      journey: {
+        title: 'Jornada: um adversário de cada vez',
+        body: 'O passo seguinte às aulas: vença os desafios de cada personagem para liberar o próximo, do Coco, no 1000, até o Stockfish. Cada um tem personalidade e comenta a partida num balão de fala. No caminho, desafios especiais: às cegas, um speedrun curto e uma maratona curta.',
         bullets: [
-          'Aulas guiadas para quem está começando',
-          'Jornada por nível de rating',
+          '10 adversários, do 1000 ao Stockfish',
+          'Desafios especiais às cegas e contra o relógio',
           'Estrelas e conquistas para acompanhar o progresso',
         ],
       },
       speedrun: {
         title: 'Speedrun: contra o relógio',
-        body: 'Resolva uma sequência de finais o mais rápido que conseguir. Bata o seu recorde e veja a técnica ficar automática.',
-        bullets: ['Parciais por etapa', 'Recorde pessoal', 'Vários ritmos'],
+        body: 'Vença uma série de etapas o mais rápido que puder: um final contra todos os adversários, do mais fraco até o Stockfish, todos os desafios de um adversário, séries de exercícios ou a Jornada completa. Só o seu relógio conta, dá para pausar entre as etapas, e etapa perdida é jogada de novo com o cronômetro correndo.',
+        bullets: ['Parciais por etapa', 'Recorde pessoal e histórico de tempos', 'Do Ultra Bullet ao Clássico'],
+      },
+      marathon: {
+        title: 'Maratona: um relógio só',
+        body: 'Do 1000 ao Stockfish com um relógio só: cada etapa começa com o tempo que sobrou da anterior, e uma partida emenda na outra. Perdeu, empatou ou o tempo acabou: fim da Maratona. Você escolhe o final, a dificuldade e o ritmo.',
+        bullets: ['Finais de iniciante, intermediário e avançado', 'Recorde: o tempo que sobrou no fim'],
+      },
+      blind: {
+        title: 'Às cegas',
+        body: 'Treine a visualização: jogue de olhos fechados contra o Maia ou o Stockfish, falando os lances em voz alta. Antes de começar, ouça onde estão as peças; durante a partida, peça para repetir o lance do adversário. Na Nova partida, escolha o modo Às cegas e, no topo da partida, quanto quer ver. Ainda é experimental.',
+        bullets: ['Contra o Maia ou o Stockfish', 'Lances por voz, teclado ou toque', 'Com tabuleiro, só com as casas ou sem tabuleiro'],
+      },
+      voice: {
+        title: 'O professor fala com você',
+        body: 'Ligue a voz e o Mestre Viktor e os adversários leem as falas em voz alta. Cada personagem já vem com a sua voz; você escolhe a do professor, troca a de quem quiser e ajusta a velocidade e o tom.',
+        bullets: ['Voz do professor e dos adversários', 'Velocidade e tom ajustáveis'],
+      },
+      stars: {
+        title: 'Desafios das estrelas',
+        body: 'Pegue as estrelas com cada peça contra o relógio: uma estrela aparece, você leva a peça até ela e outra acende. Quantas você pega antes de o tempo acabar? Três níveis por peça e mais o às cegas, em que a estrela vem só pelo nome da casa.',
+        bullets: ['Três níveis por peça', 'Às cegas, pelo nome da casa', 'Recorde em cada desafio'],
       },
       analysis: {
         title: 'Análise da partida',
-        body: 'Depois de jogar, reveja lance a lance com a avaliação da engine e descubra onde a vitória escapou ou onde a defesa segurou.',
+        body: 'Depois de jogar, reveja lance a lance com o Stockfish e descubra onde a vitória escapou ou onde a defesa segurou. Escolha a profundidade da análise, veja a melhor linha com o Stockfish no seu lugar e abra a partida no Lichess ou no chess.com.',
         bullets: [
           'Barra de avaliação',
-          'Melhores lances da engine',
-          'Precisão de cada jogador',
+          'Precisão e qualidade de cada lance',
+          'Copiar a posição (FEN) e a partida (PGN)',
         ],
+      },
+      progress: {
+        title: 'Seu progresso',
+        body: 'Um rating de finais que muda a cada partida contra o Maia ou o Stockfish, levando em conta o quanto a posição ajudava, com o histórico ao longo do tempo. Conquistas para desbloquear, os seus números na tela inicial e cada partida guardada para rever.',
+        bullets: ['Rating de finais com histórico', '50 conquistas', 'Partidas, vitórias e dias seguidos'],
       },
       custom: {
         title: 'Do seu jeito',
-        body: 'Tema claro ou escuro, cores do app, peças e tabuleiro, relógio em cima ou embaixo. O app se adapta a você.',
+        body: 'Tema claro ou escuro, seis cores para o app, peças e cores do tabuleiro, relógio acima, abaixo ou um de cada lado. Escolha o que aparece na tela inicial e em que ordem. O app está em 19 idiomas.',
         bullets: [],
       },
+      realGames: {
+        title: 'Partidas reais, contadas como história',
+        body: 'Muitas posições das aulas saíram de partidas de mestres. Antes do lance, o Mestre Viktor conta quem jogou, onde e quando, o que estava em jogo e o que olhar no tabuleiro. Um toque abre a partida inteira no Lichess, sem sair do app.',
+        bullets: ['80 partidas de mestres citadas nas aulas', 'Link para ver a partida inteira no Lichess'],
+      },
+      exercises: {
+        title: 'Exercícios com a explicação do Viktor',
+        body: 'No teste final de cada aula, os lances são só seus: o professor não fala enquanto você joga. Resolveu? Aí o Viktor explica o lance e as alternativas, com as casas marcadas no comentário.',
+        bullets: ['De 1 a 3 estrelas, conforme a dificuldade', 'A explicação aparece depois de resolver'],
+      },
     },
+    route: {
+      label: 'Cada capítulo segue o mesmo roteiro',
+      steps: [
+        { title: 'Pense', body: 'Antes de qualquer explicação, você olha a posição e procura o plano sozinho.' },
+        { title: 'Veja', body: 'O Mestre Viktor comenta a ideia, com setas e casas marcadas, e mostra a linha lance a lance.' },
+        { title: 'Jogue', body: 'Agora os lances são seus: o capítulo só segue quando você acerta.' },
+        { title: 'Teste na prática', body: 'Você joga a posição até o fim contra o motor.' },
+      ],
+    },
+    blindShots: ['Escolha o modo', 'Tabuleiro', 'Só as casas', 'Sem tabuleiro'],
   },
   levels: {
     kicker: 'Para todos os níveis',
     title: 'Sabe pouco ou já joga bem? Tem desafio para você',
     beginner: {
       title: 'Está começando',
-      body: 'Aprenda como cada peça se move e dá mate com aulas curtas, dicas na hora certa e adversários que jogam no seu ritmo.',
+      body: 'Faça o teste de nível ou vá direto à Escola do Viktor: como cada peça se move, xeque, mate e os primeiros finais, com aulas curtas, dicas na hora certa e adversários que jogam no seu ritmo.',
     },
     advanced: {
       title: 'Já joga bem',
-      body: 'Converta finais teóricos contra o Maia 2600 e o Stockfish. Se você ganhar a dama contra a torre do Stockfish, a técnica é sua.',
+      body: 'Vá às aulas de finais e converta posições teóricas contra o Maia 2600 e o Stockfish. Se você ganhar a dama contra a torre do Stockfish, a técnica é sua.',
     },
   },
   roadmap: {
@@ -208,21 +279,93 @@ const pt: Dictionary = {
     tagline: 'Treine finais de xadrez contra o Maia e o Stockfish.',
     dev: 'Sou programador. Se você precisa de uma landing page, de um aplicativo ou quer conhecer meus serviços, fale comigo:',
     contact: 'Contato',
+    privacy: 'Política de privacidade',
   },
   media: {
+    blindMode: 'Nova partida no Lucena: a escolha entre o modo normal e o às cegas',
+    blindBoard: 'Partida às cegas com o tabuleiro à vista',
+    blindSquares: 'Partida às cegas só com as casas: a grade e as coordenadas, sem as peças',
+    blindNone: 'Partida às cegas sem tabuleiro, só com os lances',
     hero: 'Escolha do nível do Maia e do ritmo, e a partida contra ele no Lucena',
     school: 'Primeira aula da escola do Viktor no Lucena: a torre e as estrelas',
+    placement: 'Teste de nível do Lucena: uma pergunta de cada vez, com a opção "Não sei"',
+    lesson: 'Capítulo de uma aula de finais do Lucena, a posição de Lucena: pense, veja e jogue',
     journey: 'A Jornada do Lucena: o adversário atual e os desafios',
-    queenRook: 'Aula interativa de dama contra torre no Lucena',
     speedrun: 'Speedrun do Lucena: as etapas e a partida contra o relógio',
-    theme: 'Escolha do tema escuro e da cor do app no Lucena',
+    marathon: 'Maratona do Lucena: uma partida emenda na outra com um relógio só',
+    theme: 'Escolha do tema e da cor do app no Lucena',
+    home: 'Tela inicial do Lucena no tema escuro',
     journeyChallenge: 'Desafio da Jornada no Lucena: mate de dama contra o Tito, nível 1200',
-    exercise: 'Exercício de dama contra torre numa aula de finais do Lucena',
-    queenRookLesson: 'Aula de finais do Lucena: dama contra torre, como chegar a Philidor',
-    shortSide: 'Aula de finais do Lucena: a defesa pelo lado curto',
-    stars: 'Desafio das estrelas do Lucena com a torre, no nível difícil',
+    placementResult: 'Resultado do teste de nível: a faixa de rating e o mapa do que você já domina',
+    lessonChapters: 'Aula de finais do Lucena dividida em capítulos: Ruptura, nos finais de peões',
+    realGame: 'Capítulo com uma partida real, Andersson contra Åkesson em 1999, e o link para ela no Lichess',
+    solvedExercise: 'Exercício resolvido numa aula de finais, com o comentário do Viktor',
+    stars: 'Desafio das estrelas do Lucena com a torre',
+    profile: 'Rating de finais no Lucena, com o gráfico e o histórico de partidas',
+    achievements: 'Conquistas do Lucena: as concluídas e as que faltam',
+    record: 'Fim da Maratona no Lucena: o tempo total e um novo recorde pessoal',
+    gameEnd: 'Fim de partida no Lucena: vitória contra o Tito, o rating e a melhor linha do Stockfish',
     play: 'Reproduzir vídeo',
     pause: 'Pausar vídeo',
+  },
+  privacy: {
+    slug: 'privacidade',
+    title: 'Política de privacidade',
+    description: 'Como o Lucena trata os seus dados: o app funciona offline, não tem conta nem anúncios e não coleta, não envia nem vende dados pessoais.',
+    updated: 'Versão de 10 de outubro de 2026',
+    back: 'Voltar para o início',
+    sections: [
+      {
+        title: 'Em resumo',
+        body: [
+          'O Lucena é um app gratuito para treinar finais de xadrez no Android. Ele funciona sem internet e <strong>não coleta, não envia e não vende dados pessoais</strong>. Não tem conta, login, anúncios nem ferramentas de rastreamento.',
+        ],
+      },
+      {
+        title: 'O que fica no seu aparelho',
+        body: [
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
+        ],
+      },
+      {
+        title: 'Internet',
+        body: [
+          'O app pede permissão de internet só para abrir, dentro dele, as páginas externas que você toca: artigos da Wikipedia e partidas no Lichess. Essas páginas são de outros sites e seguem as políticas de privacidade deles (<a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" rel="noopener">Wikipedia</a> e <a href="https://lichess.org/privacy" rel="noopener">Lichess</a>).',
+          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. Quando você toca em compartilhar uma partida, o texto vai só para o app que você escolher.',
+        ],
+      },
+      {
+        title: 'Microfone',
+        body: [
+          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem guarda o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
+        ],
+      },
+      {
+        title: 'Google Play',
+        body: [
+          'O Lucena é distribuído pela Google Play. A Google trata os dados da sua conta e da instalação conforme a <a href="https://policies.google.com/privacy" rel="noopener">política de privacidade dela</a>. Eu recebo só as estatísticas anônimas e agregadas que a Google Play mostra a todo desenvolvedor, como o número de instalações.',
+        ],
+      },
+      {
+        title: 'Crianças',
+        body: [
+          'Como o app não coleta dados pessoais de ninguém, também não coleta de crianças. Ele pode ser usado por pessoas de qualquer idade.',
+        ],
+      },
+      {
+        title: 'Mudanças nesta política',
+        body: [
+          'Se algo mudar, esta página é atualizada e a data da versão, lá em cima, muda junto.',
+        ],
+      },
+      {
+        title: 'Contato',
+        body: [
+          'Dúvidas sobre privacidade? Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
   },
 };
 

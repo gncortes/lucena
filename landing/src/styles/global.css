@@ -1201,6 +1201,91 @@ section {
   max-width: 330px;
 }
 
+.feature-duo + .feature-duo {
+  padding-top: 0;
+}
+
+/* Ícone dos cartões sem captura. */
+.feature__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: var(--primary-soft);
+  color: var(--on-primary-soft);
+}
+
+.feature__icon svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.feature__icon img {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}
+
+/* Roteiro dos capítulos das aulas de finais. */
+.route__label {
+  margin: 24px 0 12px;
+  color: var(--ink) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700;
+}
+
+.route {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  counter-reset: route;
+}
+
+.route li {
+  position: relative;
+  padding: 12px 14px 12px 54px;
+  border-radius: 14px;
+  background: var(--bg-alt);
+  counter-increment: route;
+}
+
+.route li::before {
+  content: counter(route);
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 750;
+  font-size: 0.9rem;
+}
+
+.route strong {
+  display: block;
+  font-weight: 700;
+}
+
+.route span {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 /* ---------- Níveis ---------- */
 
 .levels {
@@ -1604,7 +1689,7 @@ section {
 
 @media (min-width: 860px) {
   .stats__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
 }
@@ -1675,6 +1760,8 @@ section {
 .stats__grid li:nth-child(2) { --delay: 90ms; }
 .stats__grid li:nth-child(3) { --delay: 180ms; }
 .stats__grid li:nth-child(4) { --delay: 270ms; }
+.stats__grid li:nth-child(5) { --delay: 360ms; }
+.stats__grid li:nth-child(6) { --delay: 450ms; }
 .feature__media { --delay: 120ms; }
 
 @keyframes rise {
@@ -1791,4 +1878,147 @@ section {
 
 .tester__panel a:not(.btn) {
   color: #8ee6b8;
+}
+
+/* ---------- Política de privacidade ---------- */
+
+.legal {
+  padding-block: clamp(32px, 6vw, 72px) clamp(56px, 8vw, 96px);
+}
+
+.legal__doc {
+  max-width: 720px;
+}
+
+.legal__back {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal__back:hover {
+  color: var(--ink);
+}
+
+.legal h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.legal__date {
+  margin: 8px 0 32px;
+  color: var(--ink-soft);
+}
+
+.legal section {
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.legal h2 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+}
+
+.legal section p {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.legal section p:last-child {
+  margin-bottom: 0;
+}
+
+.legal strong {
+  color: var(--ink);
+}
+
+/* ---------- Carrossel (às cegas) ---------- */
+
+.carousel {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.feature__media .carousel__phone {
+  max-width: 290px;
+}
+
+.carousel__phone .phone__screen {
+  position: relative;
+}
+
+.carousel__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s ease-in-out;
+  will-change: transform;
+}
+
+.carousel__track img {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.carousel__caption {
+  margin: 0;
+  min-height: 1.5em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.carousel__dots {
+  display: flex;
+  gap: 4px;
+}
+
+.carousel__dots button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.carousel__dots button::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--line);
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+  transition: width 0.3s, background 0.3s;
+}
+
+.carousel__dots button[aria-current]::before {
+  width: 22px;
+  background: var(--primary);
+  box-shadow: none;
+}
+
+.carousel__dots button:focus-visible {
+  outline: 2px solid var(--primary);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track,
+  .carousel__dots button::before {
+    transition: none;
+  }
+}
+
+.feature-duo--single {
+  grid-template-columns: 1fr !important;
 }

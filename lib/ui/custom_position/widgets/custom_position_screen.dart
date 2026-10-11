@@ -17,6 +17,8 @@ import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 
 /// Montar uma posição: no editor (tocar na peça da paleta e depois nas casas)
 /// ou colando um FEN. A posição só segue quando é jogável.
@@ -229,10 +231,10 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
           excludeSemantics: true,
           child: InkWell(
             key: key,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppShape.small),
             onTap: onTap,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: AppMotion.tap,
               width: 46,
               height: 46,
               padding: const EdgeInsets.all(4),
@@ -240,7 +242,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                 color: selected
                     ? colors.primaryContainer
                     : colors.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppShape.small),
                 border: Border.all(
                   width: 2,
                   color: selected ? colors.primary : Colors.transparent,
@@ -417,7 +419,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             ),
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.state,
             alignment: Alignment.topCenter,
             child: problem == null
                 ? const SizedBox(width: double.infinity)

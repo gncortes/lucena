@@ -6,10 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/game_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
+import '../../core/theme/app_motion.dart';
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de
@@ -90,35 +92,39 @@ class CharacterBar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(
-                    scale: Tween(begin: 0.92, end: 1.0).animate(animation),
-                    alignment: AlignmentDirectional.bottomStart.resolve(
-                      Directionality.of(context),
-                    ),
-                    child: child,
-                  ),
-                ),
-                child: line == null
-                    ? const SizedBox(key: ValueKey('none'))
-                    : _spoken(
-                        context,
-                        line.id,
-                        line.text,
-                        _Bubble(
-                          lineId: line.id,
-                          text: line.text,
-                          semantics: context.l10n.characterSays(
-                            character.name,
-                            line.text,
-                          ),
-                          monospace: talk.isEngine,
-                          small: small,
-                        ),
+              // Na entrada da partida, o balão chega por último.
+              child: GameEntrance(
+                part: GameEntrancePart.speech,
+                child: AnimatedSwitcher(
+                  duration: AppMotion.state,
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: Tween(begin: 0.92, end: 1.0).animate(animation),
+                      alignment: AlignmentDirectional.bottomStart.resolve(
+                        Directionality.of(context),
                       ),
+                      child: child,
+                    ),
+                  ),
+                  child: line == null
+                      ? const SizedBox(key: ValueKey('none'))
+                      : _spoken(
+                          context,
+                          line.id,
+                          line.text,
+                          _Bubble(
+                            lineId: line.id,
+                            text: line.text,
+                            semantics: context.l10n.characterSays(
+                              character.name,
+                              line.text,
+                            ),
+                            monospace: talk.isEngine,
+                            small: small,
+                          ),
+                        ),
+                ),
               ),
             ),
           ],
@@ -398,7 +404,7 @@ class _TypewriterTextState extends State<TypewriterText>
   @override
   Widget build(BuildContext context) {
     // Com menos movimento pedido ao sistema, o texto já aparece inteiro.
-    final instant = MediaQuery.disableAnimationsOf(context);
+    final instant = AppMotion.of(context).disabled;
     return LayoutBuilder(
       builder: (context, constraints) {
         // Fala longa no espaço do balão: a letra diminui até caber inteira,

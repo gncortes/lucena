@@ -20,6 +20,7 @@ import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/test_app.dart';
+import 'one_line_check.dart';
 
 void main() {
   late FakeProgressRepository progress;
@@ -61,18 +62,27 @@ void main() {
     }
   }
 
-  Future<void> pumpScreen(WidgetTester tester, {Locale? locale}) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    Locale? locale,
+    double width = 600,
+    int? highlightedGame,
+  }) async {
     // Tela de celular larga (a fonte de teste é mais larga que a real): o
     // histórico cabe embaixo do gráfico.
-    tester.view.physicalSize = const Size(600, 1600);
+    tester.view.physicalSize = Size(width, 1600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       TestApp(
         locale: locale ?? const Locale('en'),
         child: BlocProvider(
-          create: (_) =>
-              RatingCubit(rating, progress: progress, now: now)..load(),
+          create: (_) => RatingCubit(
+            rating,
+            progress: progress,
+            now: now,
+            highlightedGame: highlightedGame,
+          )..load(),
           child: const RatingScreen(),
         ),
       ),
@@ -80,12 +90,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Toca no período (a fileira rola para o lado em tela estreita).
+  /// Abre o filtro do período e escolhe [period] no painel.
   Future<void> choose(WidgetTester tester, RatingPeriod period) async {
-    final chip = find.byKey(RatingKeys.period(period.name));
-    await tester.ensureVisible(chip);
+    final button = find.byKey(RatingKeys.periods);
+    await tester.ensureVisible(button);
     await tester.pumpAndSettle();
-    await tester.tap(chip);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(RatingKeys.period(period.name)));
     await tester.pumpAndSettle();
   }
 
@@ -268,9 +280,6 @@ void main() {
     now.advance(const Duration(days: 60));
     await pumpScreen(tester);
 
-    await tester.ensureVisible(
-      find.byKey(RatingKeys.period(RatingPeriod.week.name)),
-    );
     await choose(tester, RatingPeriod.week);
 
     expect(find.byKey(RatingKeys.chart), findsNothing);
@@ -293,5 +302,237 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byKey(RatingKeys.entry(0)), findsOneWidget);
+  });
+
+  testWidgets('a barra de resultados: uma só, na proporção, com a contagem e '
+      'a porcentagem de cada parte embaixo', (tester) async {
+    await play([
+      AttemptOutcome.win,
+      AttemptOutcome.win,
+      AttemptOutcome.draw,
+      AttemptOutcome.loss,
+    ]);
+    await pumpScreen(tester);
+
+    final bar = find.byKey(RatingKeys.resultsBar);
+    final parts = tester
+        .widgetList<ColoredBox>(
+          find.descendant(of: bar, matching: find.byType(ColoredBox)),
+        )
+        .toList();
+    expect(parts, hasLength(3));
+    final widths = [
+      for (final box
+          in find
+              .descendant(of: bar, matching: find.byType(ColoredBox))
+              .evaluate())
+        box.size!.width,
+    ];
+    // Cada parte com a altura da barra (sem esticar, a cor some).
+    for (final box
+        in find
+            .descendant(of: bar, matching: find.byType(ColoredBox))
+            .evaluate()) {
+      expect(box.size!.height, tester.getSize(bar).height);
+    }
+    // Vitórias, empates e derrotas: 2, 1 e 1.
+    expect(widths[0], closeTo(widths[1] * 2, 1));
+    expect(widths[1], closeTo(widths[2], 1));
+    expect(
+      widths.reduce((a, b) => a + b),
+      closeTo(tester.getSize(bar).width, 1),
+    );
+    for (final (name, count, label) in [
+      ('win', '2', 'Win · 50%'),
+      ('draw', '1', 'Draw · 25%'),
+      ('loss', '1', 'Loss · 25%'),
+    ]) {
+      final part = find.byKey(RatingKeys.resultsPart(name));
+      expect(find.descendant(of: part, matching: find.text(count)), findsOne);
+      expect(find.descendant(of: part, matching: find.text(label)), findsOne);
+      // Os números logo embaixo da barra.
+      expect(
+        tester.getTopLeft(part).dy,
+        greaterThan(tester.getBottomLeft(bar).dy),
+      );
+    }
+    // Sem espaço vazio em cima: o título logo no alto do cartão.
+    final card = tester.getRect(find.byKey(RatingKeys.results));
+    final title = tester.getRect(find.text('Results'));
+    expect(title.top - card.top, lessThan(24));
+  });
+
+  testWidgets('o período fica num botão de filtro: abre em "tudo", o painel '
+      'marca o escolhido e o botão mostra o novo', (tester) async {
+    await play([
+      for (var game = 0; game < 6; game++)
+        game.isEven ? AttemptOutcome.win : AttemptOutcome.loss,
+    ], daysApart: 10);
+    await pumpScreen(tester);
+
+    String buttonLabel() => tester
+        .widget<Text>(
+          find.descendant(
+            of: find.byKey(RatingKeys.periods),
+            matching: find.byType(Text),
+          ),
+        )
+        .data!;
+    expect(buttonLabel(), 'All');
+
+    await tester.tap(find.byKey(RatingKeys.periods));
+    await tester.pumpAndSettle();
+    expect(find.text('Period'), findsOneWidget);
+    expect(
+      tester.widget<ListTile>(find.byKey(RatingKeys.period('all'))).selected,
+      isTrue,
+    );
+    await tester.tap(find.byKey(RatingKeys.period(RatingPeriod.month.name)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Period'), findsNothing);
+    expect(buttonLabel(), '30 days');
+  });
+
+  testWidgets('a explicação fica no ⓘ, não no fim da tela', (tester) async {
+    await play([AttemptOutcome.win, AttemptOutcome.loss]);
+    await pumpScreen(tester);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byKey(RatingKeys.screen)),
+    );
+
+    expect(find.text(l10n.profileRatingHint), findsNothing);
+    await tester.tap(find.byKey(RatingKeys.help));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RatingKeys.helpText), findsOneWidget);
+    expect(textOf(tester, RatingKeys.helpText), l10n.profileRatingHint);
+  });
+
+  testWidgets('o histórico começa com o cabeçalho e a última partida sai de '
+      'trás da barra do sistema', (tester) async {
+    await play([
+      for (var game = 0; game < 12; game++)
+        game.isEven ? AttemptOutcome.win : AttemptOutcome.draw,
+    ]);
+    tester.view.padding = const FakeViewPadding(bottom: 48);
+    await pumpScreen(tester, width: 412);
+    // Altura de celular: a lista tem que rolar.
+    tester.view.physicalSize = const Size(412, 800);
+    await tester.pumpAndSettle();
+
+    final header = find.byKey(RatingKeys.historyHeader);
+    await tester.ensureVisible(header);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: header, matching: find.text('Game history')),
+      findsOne,
+    );
+    expect(
+      find.descendant(of: header, matching: find.byKey(RatingKeys.gamesCount)),
+      findsOne,
+    );
+    expect(textOf(tester, RatingKeys.gamesCount), '12');
+
+    // Rola até o fim: a última partida acima da barra de navegação.
+    await tester.drag(find.byType(ListView), const Offset(0, -5000));
+    await tester.pumpAndSettle();
+    final last = tester.getRect(find.byKey(RatingKeys.entry(11)));
+    expect(last.bottom, lessThanOrEqualTo(800 - 48));
+  });
+
+  const locales = [
+    Locale('pt'),
+    Locale('de'),
+    Locale('ar'),
+    Locale('en', 'XA'),
+  ];
+  for (final width in [320.0, 412.0]) {
+    for (final locale in locales) {
+      testWidgets('em $locale, ${width.round()} dp: números, resultados e '
+          'períodos sem quebrar nem estourar', (tester) async {
+        await play([
+          AttemptOutcome.win,
+          AttemptOutcome.draw,
+          AttemptOutcome.loss,
+          AttemptOutcome.win,
+        ], daysApart: 3);
+        await pumpScreen(tester, locale: locale, width: width);
+
+        expect(tester.takeException(), isNull);
+        expectNoWrappedText(tester, find.byKey(RatingKeys.stats));
+        expectNoWrappedText(tester, find.byKey(RatingKeys.results));
+        expectNoWrappedText(tester, find.byKey(RatingKeys.periods));
+        // Grade de 2 × 2 com os cartões da mesma altura.
+        final first = tester.getRect(find.byKey(RatingKeys.stat(0)));
+        for (var index = 1; index < 4; index++) {
+          expect(
+            tester.getSize(find.byKey(RatingKeys.stat(index))).height,
+            closeTo(first.height, 0.01),
+          );
+        }
+        expect(tester.getRect(find.byKey(RatingKeys.stat(1))).top, first.top);
+      });
+    }
+  }
+
+  group('vindo da conclusão (T51 B)', () {
+    // Três partidas: a do meio é de outro final.
+    Future<List<int>> playMixed() async {
+      final ids = <int>[];
+      final last = DateTime.utc(2026, 10, 5, 12);
+      for (final (index, position) in [
+        'basic.queen.0001',
+        'basic.rook.0001',
+        'basic.queen.0001',
+      ].indexed) {
+        final game = Attempt(
+          positionId: position,
+          playedAt: last.add(Duration(minutes: index)),
+          outcome: AttemptOutcome.win,
+          fulfilled: true,
+          opponent: OpponentKind.maia,
+          opponentLevel: 1000,
+        );
+        final id = await progress.addAttempt(game);
+        ids.add(id);
+        await rating.rate(
+          game,
+          userSide: Side.white,
+          drawGoal: false,
+          gameId: id,
+        );
+      }
+      return ids;
+    }
+
+    testWidgets('a partida em destaque: a linha tingida e o ponto no '
+        'gráfico', (tester) async {
+      final ids = await playMixed();
+      await pumpScreen(tester, highlightedGame: ids[1]);
+
+      // A mais recente é a 0; a do meio, a 1.
+      expect(
+        find.descendant(
+          of: find.byKey(RatingKeys.entryHighlighted),
+          matching: find.byKey(RatingKeys.entry(1)),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<RatingChart>(find.byKey(RatingKeys.chart)).highlighted,
+        1,
+      );
+    });
+
+    testWidgets('id que não existe: nada em destaque', (tester) async {
+      await playMixed();
+      await pumpScreen(tester, highlightedGame: 999);
+
+      expect(find.byKey(RatingKeys.entryHighlighted), findsNothing);
+      expect(
+        tester.widget<RatingChart>(find.byKey(RatingKeys.chart)).highlighted,
+        isNull,
+      );
+    });
   });
 }

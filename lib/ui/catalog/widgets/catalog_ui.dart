@@ -60,6 +60,11 @@ String goalLabel(AppLocalizations l10n, PositionGoal goal) => switch (goal) {
 /// tela da categoria para a amostra da configuração da partida.
 String catalogBoardTag(String positionId) => 'catalog.board.$positionId';
 
+/// O Hero do tabuleiro da preparação da partida: o da posição do catálogo
+/// ou, sem ela, o da própria posição [fen] (o final de uma aula).
+String setupBoardTag({String? positionId, required String fen}) =>
+    positionId == null ? 'setup.board.$fen' : catalogBoardTag(positionId);
+
 /// O material de uma subcategoria em figurino: as peças de um lado em
 /// contorno, as do outro cheias (`♕ – ♜♟`). Vale em qualquer idioma.
 class SubcategoryMaterialText extends StatelessWidget {

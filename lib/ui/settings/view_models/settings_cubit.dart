@@ -49,6 +49,11 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(board: board));
   }
 
+  /// Mostra ou esconde as marcações do professor no tabuleiro das aulas.
+  Future<void> setLessonMarks({required bool shown}) {
+    return _update((state ?? const AppSettings()).copyWith(lessonMarks: shown));
+  }
+
   /// Troca as preferências do relógio.
   Future<void> setClock(ClockSettings clock) {
     return _update((state ?? const AppSettings()).copyWith(clock: clock));
@@ -67,6 +72,10 @@ class SettingsCubit extends Cubit<AppSettings?> {
     await _update((state ?? const AppSettings()).copyWith(sound: enabled));
     if (enabled) await _sound?.play(GameSound.move);
   }
+
+  /// Liga ou desliga a vibração do app.
+  Future<void> setVibration({required bool enabled}) =>
+      _update((state ?? const AppSettings()).copyWith(vibration: enabled));
 
   /// Mostra ou esconde a barra de avaliação na revisão da partida.
   Future<void> setEvalBar({required bool enabled}) =>

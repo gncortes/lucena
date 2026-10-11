@@ -194,9 +194,14 @@ class TalkCubit extends Cubit<TalkState> {
     if (end != null && !_ended) {
       _ended = true;
       final winner = end.winner;
+      // Empatou (ou propôs empate) depois de ter tido mate na mão: "eu
+      // sabia que era empate".
+      final toldYou = winner == null && GameEvents.playerHadMate(_memory);
       _say([
         GameEvent(
-          end.reason == GameEndReason.drawAgreed
+          toldYou
+              ? LineCategory.toldYouDraw
+              : end.reason == GameEndReason.drawAgreed
               ? LineCategory.drawAccepted
               : winner == null
               ? LineCategory.draw

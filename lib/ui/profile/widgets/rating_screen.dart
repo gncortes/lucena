@@ -16,12 +16,19 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/rating_chart.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/skeleton.dart';
 import '../view_models/rating_cubit.dart';
+import 'rating_parts.dart';
 import 'stats_row.dart';
+import '../../core/widgets/one_line.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Os detalhes do rating de finais: o número, o gráfico com a escolha do
 /// período e as partidas que mexeram nele, da mais recente para a mais antiga.
@@ -38,39 +45,71 @@ class RatingScreen extends StatelessWidget {
     final log = state.log;
     return Scaffold(
       key: RatingKeys.screen,
-      appBar: AppBar(title: Text(l10n.profileEndgameRating)),
+      appBar: AppBar(
+        title: Text(l10n.profileEndgameRating),
+        actions: [
+          // A explicação do rating, antes um parágrafo fixo no fim da tela.
+          IconButton(
+            key: RatingKeys.help,
+            icon: const Icon(Icons.info_outline),
+            tooltip: l10n.ratingHelp,
+            onPressed: () => showRatingHelp(context),
+          ),
+        ],
+      ),
       body: current == null
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
+          // Carregando: o cartão e a lista em esqueleto, no lugar certo.
+          ? ListView(
+              key: RatingKeys.loading,
               padding: scrollPadding(context),
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(AppSpacing.screen),
+                  child: SkeletonBlock(height: 220, radius: AppShape.large),
+                ),
+                SkeletonList(),
+              ],
+            )
+          : ListView(
+              // Espaço no fim: a última partida rola até sair da barra do
+              // sistema.
+              padding: scrollPadding(context, bottom: 48),
               children: [
                 // Como no chess.com: o rating e o gráfico num cartão, com o
                 // período embaixo; depois os números e os resultados.
                 _RatingCard(state: state),
                 if (state.numbers case final numbers?) ...[
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screen,
+                      AppSpacing.betweenCards,
+                      AppSpacing.screen,
+                      0,
+                    ),
                     child: StatsRow(numbers: numbers),
                   ),
                   if (state.allGames.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.screen,
+                        AppSpacing.betweenCards,
+                        AppSpacing.screen,
+                        0,
+                      ),
                       child: _Results(games: state.allGames.values),
                     ),
                 ],
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Text(
-                    l10n.profileRatingHint,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
                 // Todas as partidas, de qualquer modo, da mais recente para a
-                // mais antiga: a lista segue enquanto houver partida.
+                // mais antiga: a lista segue enquanto houver partida. O
+                // cabeçalho diz o que é e quantas são.
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 8),
+                  key: RatingKeys.historyHeader,
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.screen,
+                    AppSpacing.xxl,
+                    AppSpacing.screen,
+                    AppSpacing.sm,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -79,27 +118,31 @@ class RatingScreen extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 l10n.statsGamesTitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: AppSpacing.sm),
                             if (log.isNotEmpty)
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3,
+                                  horizontal: AppSpacing.sm,
+                                  vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: colors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(
+                                    AppShape.full,
+                                  ),
                                 ),
                                 child: Text(
                                   '${log.length}',
                                   key: RatingKeys.gamesCount,
                                   style: theme.textTheme.labelLarge?.copyWith(
-                                    color: colors.onSurfaceVariant,
+                                    color: colors.onPrimaryContainer,
                                     fontWeight: FontWeight.w700,
                                     fontFeatures: const [
                                       FontFeature.tabularFigures(),
@@ -114,6 +157,7 @@ class RatingScreen extends StatelessWidget {
                       if (log.any((game) => game.rated != null))
                         Text(
                           l10n.reportRatingLabel,
+                          maxLines: 1,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: colors.onSurfaceVariant,
                             fontWeight: FontWeight.w400,
@@ -123,26 +167,13 @@ class RatingScreen extends StatelessWidget {
                   ),
                 ),
                 if (log.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.history_rounded,
-                          size: 40,
-                          color: colors.outline,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.statsGamesEmpty,
-                          key: RatingKeys.emptyHistory,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                  EmptyState(
+                    icon: Icons.history_rounded,
+                    message: l10n.statsGamesEmpty,
+                    messageKey: RatingKeys.emptyHistory,
+                    actionLabel: l10n.emptyPlayNow,
+                    actionKey: RatingKeys.emptyHistoryAction,
+                    onAction: () => context.go(Routes.catalog),
                   )
                 else
                   for (final (index, game) in log.indexed) ...[
@@ -157,6 +188,7 @@ class RatingScreen extends StatelessWidget {
                       index: index,
                       game: game,
                       characters: state.characters,
+                      highlighted: game.id == state.highlighted,
                     ),
                   ],
               ],
@@ -165,8 +197,6 @@ class RatingScreen extends StatelessWidget {
   }
 }
 
-/// O gráfico com a escolha do período: as últimas 10, as últimas 30 ou todas
-/// as partidas.
 /// O rating, quanto ele mudou no período, o mais alto e o gráfico, com a
 /// escolha do período (7, 30 e 90 dias, um ano ou tudo).
 class _RatingCard extends StatefulWidget {
@@ -187,6 +217,50 @@ class _RatingCardState extends State<_RatingCard> {
     _ => l10n.ratingPeriodDays(period.days!),
   };
 
+  // O painel do filtro: os períodos, o escolhido marcado. Tocar escolhe e
+  // fecha.
+  Future<void> _choosePeriod(BuildContext context) async {
+    final l10n = context.l10n;
+    final chosen = await showModalBottomSheet<RatingPeriod>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      builder: (context) => SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screen,
+                0,
+                AppSpacing.screen,
+                AppSpacing.sm,
+              ),
+              child: Text(
+                l10n.ratingPeriodTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            for (final period in RatingPeriod.values)
+              ListTile(
+                key: RatingKeys.period(period.name),
+                title: Text(_label(l10n, period)),
+                selected: period == _period,
+                trailing: period == _period
+                    ? const Icon(Icons.check_rounded)
+                    : null,
+                onTap: () => Navigator.of(context).pop(period),
+              ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+      ),
+    );
+    if (chosen != null && mounted) setState(() => _period = chosen);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -198,12 +272,22 @@ class _RatingCardState extends State<_RatingCard> {
     final entries = _period.entries(state.history, now);
     final change = _period.change(state.history, now);
     final highest = highestRating(state.history);
+    // A partida em destaque, se ela está no período escolhido.
+    final highlightedGame = state.highlighted;
+    final highlighted = highlightedGame == null
+        ? -1
+        : entries.indexWhere((entry) => entry.gameId == highlightedGame);
     final locale = Localizations.localeOf(context).toString();
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.sm,
+        AppSpacing.screen,
+        0,
+      ),
       color: colors.surfaceContainerLow,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -214,19 +298,18 @@ class _RatingCardState extends State<_RatingCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 10,
-                        children: [
-                          RatingValue(
-                            rating: current.rounded,
-                            // A variação do período escolhido.
-                            change: change,
-                            large: true,
-                            valueKey: RatingKeys.value,
-                            changeKey: RatingKeys.delta,
-                          ),
-                        ],
+                      // Numa linha só: em tela estreita, o número diminui.
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: RatingValue(
+                          rating: current.rounded,
+                          // A variação do período escolhido.
+                          change: change,
+                          large: true,
+                          valueKey: RatingKeys.value,
+                          changeKey: RatingKeys.delta,
+                        ),
                       ),
                       Text(
                         state.history.isEmpty
@@ -241,19 +324,23 @@ class _RatingCardState extends State<_RatingCard> {
                   ),
                 ),
                 // O mais alto, como no chess.com.
-                if (highest != null && state.history.length > 1)
+                // Na ponta direita do cartão, o número do outro lado.
+                if (highest != null && state.history.length > 1) ...[
+                  const SizedBox(width: AppSpacing.sm),
                   Column(
                     key: RatingKeys.highest,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         l10n.ratingHighest,
+                        maxLines: 1,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),
                       Text(
                         '${highest.rating.rounded}',
+                        maxLines: 1,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w800,
                           fontFeatures: const [FontFeature.tabularFigures()],
@@ -261,23 +348,24 @@ class _RatingCardState extends State<_RatingCard> {
                       ),
                       Text(
                         DateFormat.yMMMd(locale).format(highest.at.toLocal()),
+                        maxLines: 1,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
+                ],
               ],
             ),
             if (state.history.length > 1) ...[
               const SizedBox(height: 12),
               AnimatedSwitcher(
-                duration: MediaQuery.disableAnimationsOf(context)
-                    ? Duration.zero
-                    : const Duration(milliseconds: 250),
+                duration: AppMotion.of(context).state,
                 child: entries.length > 1
                     ? RatingChart(
                         key: RatingKeys.chart,
+                        highlighted: highlighted < 0 ? null : highlighted,
                         ratings: [
                           for (final entry in entries) entry.rating.rating,
                         ],
@@ -296,25 +384,15 @@ class _RatingCardState extends State<_RatingCard> {
                         ),
                       ),
               ),
-              const SizedBox(height: 8),
-              // Os períodos numa fileira que rola para o lado em tela
-              // estreita.
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final period in RatingPeriod.values) ...[
-                      if (period != RatingPeriod.values.first)
-                        const SizedBox(width: 6),
-                      ChoiceChip(
-                        key: RatingKeys.period(period.name),
-                        label: Text(_label(l10n, period)),
-                        showCheckmark: false,
-                        selected: _period == period,
-                        onSelected: (_) => setState(() => _period = period),
-                      ),
-                    ],
-                  ],
+              const SizedBox(height: AppSpacing.md),
+              // O período num botão de filtro: abre o painel com as opções.
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: OutlinedButton.icon(
+                  key: RatingKeys.periods,
+                  icon: const Icon(Icons.filter_list_rounded),
+                  label: Text(_label(l10n, _period), maxLines: 1),
+                  onPressed: () => _choosePeriod(context),
                 ),
               ),
             ],
@@ -350,27 +428,58 @@ class _Results extends StatelessWidget {
     }
     final total = wins + draws + losses;
     final parts = [
-      (wins, l10n.attemptWin, ChangeColors.of(context, up: true)),
-      (draws, l10n.attemptDraw, colors.outline),
-      (losses, l10n.attemptLoss, ChangeColors.of(context, up: false)),
+      ('win', wins, l10n.attemptWin, ChangeColors.of(context, up: true)),
+      ('draw', draws, l10n.attemptDraw, colors.outline),
+      ('loss', losses, l10n.attemptLoss, ChangeColors.of(context, up: false)),
     ];
     return Container(
       key: RatingKeys.results,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.insideCard),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppShape.large),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // O título e o total na mesma linha, logo acima da barra.
+          Row(
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OneLine(
+                    l10n.ratingResultsTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                '$total',
+                maxLines: 1,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          // Uma barra só, cada parte na proporção do seu resultado.
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(AppShape.full),
             child: SizedBox(
-              height: 10,
+              key: RatingKeys.resultsBar,
+              height: 12,
+              // Esticado: sem filho, a cor sozinha teria altura zero.
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  for (final (count, _, color) in parts)
+                  for (final (_, count, _, color) in parts)
                     if (count > 0)
                       Expanded(
                         flex: count,
@@ -380,24 +489,49 @@ class _Results extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
+          // A legenda presa às pontas da barra: vitórias à esquerda (onde a
+          // barra começa), derrotas à direita e empates no meio.
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final (count, label, color) in parts)
+              for (final (index, (name, count, label, color)) in parts.indexed)
                 Expanded(
+                  key: RatingKeys.resultsPart(name),
                   child: Column(
+                    crossAxisAlignment: switch (index) {
+                      0 => CrossAxisAlignment.start,
+                      1 => CrossAxisAlignment.center,
+                      _ => CrossAxisAlignment.end,
+                    },
                     children: [
-                      Text(
-                        '$count',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: color,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            '$count',
+                            maxLines: 1,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
+                      OneLine(
                         '$label · ${(100 * count / total).round()}%',
-                        style: theme.textTheme.labelSmall?.copyWith(
+                        style: theme.textTheme.labelMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),
@@ -420,11 +554,15 @@ class _GameRow extends StatelessWidget {
     required this.index,
     required this.game,
     required this.characters,
+    this.highlighted = false,
   });
 
   final int index;
   final LoggedGame game;
   final List<Character> characters;
+
+  /// A partida que a conclusão abriu: o fundo tingido.
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -461,7 +599,7 @@ class _GameRow extends StatelessWidget {
     };
     final rated = game.rated;
     final change = rated?.change;
-    return InkWell(
+    final row = InkWell(
       key: RatingKeys.entry(index),
       // Na volta, a partida pode ter ganhado a revisão (e a precisão).
       onTap: () => context.push(Routes.game(game.id)).then((_) {
@@ -489,9 +627,9 @@ class _GameRow extends StatelessWidget {
                 height: 36,
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(AppShape.small),
                 ),
-                child: Icon(Icons.person_outline, color: colors.outline),
+                child: Icon(Icons.smart_toy_outlined, color: colors.outline),
               ),
             const SizedBox(width: 12),
             Expanded(
@@ -534,7 +672,7 @@ class _GameRow extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: colors.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Text(
                     formatAccuracy(
@@ -558,7 +696,7 @@ class _GameRow extends StatelessWidget {
               height: 22,
               decoration: BoxDecoration(
                 color: resultColor,
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(AppShape.small),
               ),
               child: Icon(
                 resultIcon,
@@ -615,6 +753,12 @@ class _GameRow extends StatelessWidget {
           ],
         ),
       ),
+    );
+    if (!highlighted) return row;
+    return Material(
+      key: RatingKeys.entryHighlighted,
+      color: colors.primaryContainer.withValues(alpha: 0.5),
+      child: row,
     );
   }
 }

@@ -1,0 +1,34 @@
+---
+import { asset } from '../i18n';
+
+// Cartão de recurso sem captura: um ícone (traço SVG [icon] ou a imagem
+// [image] de landing/assets), o título, o texto e os itens.
+interface Props {
+  title: string;
+  body: string;
+  bullets: string[];
+  icon?: string;
+  image?: string;
+}
+
+const { title, body, bullets, icon, image } = Astro.props;
+---
+
+<article class="feature feature--card feature--card-text" data-reveal>
+  <div class="feature__text">
+    <span class="feature__icon" aria-hidden="true">
+      {
+        image ? (
+          <img src={asset(image)} alt="" width="80" height="80" loading="lazy" />
+        ) : (
+          <svg viewBox="0 0 24 24">
+            <path d={icon} />
+          </svg>
+        )
+      }
+    </span>
+    <h3>{title}</h3>
+    <p>{body}</p>
+    {bullets.length > 0 && <ul class="ticks">{bullets.map((b) => <li>{b}</li>)}</ul>}
+  </div>
+</article>

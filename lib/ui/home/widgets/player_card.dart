@@ -5,8 +5,9 @@ import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
-import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/home_cubit.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// O jogador no alto da tela inicial: o apelido e a faixa, e o rating em
 /// destaque com a variação da última partida. Tocar abre os detalhes do
@@ -48,13 +49,6 @@ class PlayerCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    if (state.level case final level?)
-                      Text(
-                        level.name(l10n),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -67,40 +61,25 @@ class PlayerCard extends StatelessWidget {
                     state.ratingChange ?? 0,
                   ),
                   excludeSemantics: true,
-                  child: Column(
+                  // Só o número e a seta: o card inteiro já abre o rating.
+                  child: Row(
                     key: HomeKeys.rating,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.reportRatingLabel,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 18,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
                       // Ao voltar de uma partida, o número conta até o
                       // rating novo.
                       TweenAnimationBuilder<double>(
                         tween: Tween(end: rating.toDouble()),
-                        duration: MediaQuery.disableAnimationsOf(context)
-                            ? Duration.zero
-                            : const Duration(milliseconds: 900),
-                        curve: Curves.easeOutCubic,
+                        duration: AppMotion.of(context).celebrate,
+                        curve: AppMotion.enter,
                         builder: (context, value, _) => RatingValue(
                           rating: value.round(),
                           change: state.ratingChange,
                           valueKey: HomeKeys.ratingValue,
                         ),
                       ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
                     ],
                   ),
                 ),

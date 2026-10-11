@@ -14,6 +14,7 @@ import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
+import '../../core/theme/app_shape.dart';
 
 /// A lista dos desafios das estrelas: uma peça por cartão, três níveis em
 /// cada, com a melhor marca.
@@ -161,10 +162,10 @@ class _LevelButton extends StatelessWidget {
       color: played
           ? colors.secondaryContainer
           : colors.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppShape.medium),
       child: InkWell(
         key: StarChallengeKeys.challenge(piece.name, level.name),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppShape.medium),
         onTap: () => context.push(Routes.starChallenge(piece.name, level.name)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -216,7 +217,7 @@ class _PieceTile extends StatelessWidget {
     );
     final settings = boardSettings.chessground;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppShape.medium),
       child: ColoredBox(
         color: settings.colorScheme.lightSquare,
         child: Padding(

@@ -31,6 +31,10 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _journeyTimeKey = 'clock.journeyTime';
   static const _characterTalkKey = 'characters.talk';
   static const _soundKey = 'sound.enabled';
+  static const _vibrationKey = 'haptics.enabled';
+  static const _endgamesAllKey = 'endgames.all';
+  static const _endgamesHideDoneKey = 'endgames.hideDone';
+  static const _lessonMarksKey = 'lesson.marks';
   static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
@@ -66,9 +70,16 @@ class LocalSettingsRepository implements SettingsRepository {
           await _preferences.getBool(_characterTalkKey) ??
           const AppSettings().characterTalk,
       sound: await _preferences.getBool(_soundKey) ?? const AppSettings().sound,
+      vibration:
+          await _preferences.getBool(_vibrationKey) ??
+          const AppSettings().vibration,
       evalBar:
           await _preferences.getBool(_evalBarKey) ??
           const AppSettings().evalBar,
+      endgamesAll: await _preferences.getBool(_endgamesAllKey) ?? false,
+      endgamesHideDone:
+          await _preferences.getBool(_endgamesHideDoneKey) ?? false,
+      lessonMarks: await _preferences.getBool(_lessonMarksKey) ?? true,
     );
   }
 
@@ -151,7 +162,14 @@ class LocalSettingsRepository implements SettingsRepository {
       value: settings.characterTalk,
     );
     await _preferences.setBool(_soundKey, value: settings.sound);
+    await _preferences.setBool(_vibrationKey, value: settings.vibration);
     await _preferences.setBool(_evalBarKey, value: settings.evalBar);
+    await _preferences.setBool(_endgamesAllKey, value: settings.endgamesAll);
+    await _preferences.setBool(
+      _endgamesHideDoneKey,
+      value: settings.endgamesHideDone,
+    );
+    await _preferences.setBool(_lessonMarksKey, value: settings.lessonMarks);
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

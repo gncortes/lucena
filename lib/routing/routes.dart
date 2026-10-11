@@ -154,7 +154,24 @@ abstract final class Routes {
   static const allModes = '/modes';
 
   /// Os detalhes do rating: o gráfico e o histórico das partidas.
+  /// A conclusão de uma partida gravada (T51, frente B); sem id, a de uma
+  /// partida que não se grava, com a conclusão no `extra`.
+  /// [fresh]: a partida acabou agora (os avisos de conquista aparecem); sem
+  /// ele (o app reaberto na conclusão), não.
+  static String conclusion(int gameId, {bool fresh = false}) => Uri(
+    path: '/result/$gameId',
+    queryParameters: fresh ? {'fresh': '1'} : null,
+  ).toString();
+  static const conclusionNow = '/result';
+
   static const rating = '/rating';
+
+  /// O rating com a partida [game] em destaque no gráfico e no histórico
+  /// (a conclusão, T51 B).
+  static String ratingAt({int? game}) => Uri(
+    path: rating,
+    queryParameters: {'game': ?game?.toString()},
+  ).toString();
 
   /// Os detalhes de uma partida gravada, pelo id dela.
   static String game(int id) => '/rating/game/$id';
@@ -169,14 +186,35 @@ abstract final class Routes {
   /// As aulas de finais: a trilha, uma aula, a lição dela, as informações e
   /// um exercício.
   static const endgames = '/endgames';
+
+  /// As aulas de finais já num filtro: "Para você" ([forYou]) ou "Todos".
+  static String endgamesFiltered({required bool forYou}) =>
+      '/endgames?filter=${forYou ? 'forYou' : 'all'}';
   static String endgameLesson(String id) => '/endgames/$id';
-  static String endgameLessonSteps(String id) => '/endgames/$id/lesson';
+
+  /// A lição de uma aula de final; numa aula em partes, a parte [part].
+  static String endgameLessonSteps(String id, {String? part}) => Uri(
+    path: '/endgames/$id/lesson',
+    queryParameters: part == null ? null : {'part': part},
+  ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
 
+  /// A introdução aos exercícios da aula, antes do primeiro (ou do próximo).
+  static String endgameExercisesIntro(String id) => '/endgames/$id/intro';
+
+  /// O resultado dos exercícios da aula, depois do último.
+  static String endgameExercisesDone(String id) => '/endgames/$id/done';
+
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
+
+  /// O teste de nível (T52). [from] diz de onde veio: no tour, a tela
+  /// oferece escolher a faixa na mão.
+  static const placement = '/placement';
+  static String placementFrom(String from) =>
+      Uri(path: placement, queryParameters: {'from': from}).toString();
 
   static const catalog = '/catalog';
   static String catalogCategory(String category) => '/catalog/$category';
@@ -192,16 +230,20 @@ abstract final class Routes {
   static const customPosition = '/custom';
 
   static const settings = '/settings';
-  static const settingsLanguage = '/settings/language';
-  static const settingsTheme = '/settings/theme';
+  static const settingsAppearance = '/settings/appearance';
+  static const settingsGame = '/settings/game';
+  static const settingsSound = '/settings/sound';
+  static const settingsAbout = '/settings/about';
+  static const settingsLanguage = '/settings/appearance/language';
+  static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
-  static const settingsBoardAppearance = '/settings/board-appearance';
-  static const settingsBoardBehavior = '/settings/board-behavior';
-  static const settingsClock = '/settings/clock';
-  static const settingsVoice = '/settings/voice';
+  static const settingsBoardAppearance = '/settings/appearance/board';
+  static const settingsBoardBehavior = '/settings/game/board';
+  static const settingsClock = '/settings/game/clock';
+  static const settingsVoice = '/settings/sound/voice';
 
   /// A configuração da tela inicial: os caminhos e a ordem.
-  static const homeLayout = '/settings/home';
+  static const homeLayout = '/settings/appearance/home';
 
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';

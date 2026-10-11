@@ -22,7 +22,24 @@ abstract final class RatingKeys {
   static const highest = Key('rating.highest');
   static const results = Key('rating.results');
 
+  /// A barra empilhada e cada parte dela (`win`, `draw`, `loss`), com a
+  /// contagem e a porcentagem embaixo.
+  static const resultsBar = Key('rating.results.bar');
+  static Key resultsPart(String outcome) => Key('rating.results.$outcome');
+
+  /// O seletor segmentado dos períodos do gráfico.
+  static const periods = Key('rating.periods');
+
+  /// O ⓘ da barra do topo e a explicação do rating no painel que ele abre.
+  static const help = Key('rating.help');
+  static const helpText = Key('rating.help.text');
+
+  /// O cabeçalho do histórico de partidas (título e total).
+  static const historyHeader = Key('rating.history.header');
+
   static const emptyHistory = Key('rating.history.empty');
+  static const emptyHistoryAction = Key('rating.history.empty.action');
+  static const loading = Key('rating.loading');
 
   /// Quantas partidas há no histórico.
   static const gamesCount = Key('rating.history.count');
@@ -38,4 +55,8 @@ abstract final class RatingKeys {
 
   /// A precisão do jogador na partida, se ela já foi revisada.
   static Key entryAccuracy(int index) => Key('rating.history.$index.accuracy');
+
+  /// A partida em destaque no histórico (a que a conclusão abriu): o fundo
+  /// tingido da linha dela.
+  static const entryHighlighted = Key('rating.history.highlighted');
 }

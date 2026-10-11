@@ -33,7 +33,20 @@ abstract class AppSettings with _$AppSettings {
     /// Os sons do jogo: o das peças a cada lance e o aviso do relógio.
     @Default(true) bool sound,
 
+    /// O retorno tátil: lances, vitórias, conquistas e o aviso do relógio.
+    @Default(true) bool vibration,
+
     /// A barra de avaliação da engine na revisão da partida.
     @Default(true) bool evalBar,
+
+    /// Nas aulas de finais, com o teste de nível feito: a trilha inteira
+    /// ("Todos") em vez do roteiro ("Para você") (T52).
+    @Default(false) bool endgamesAll,
+
+    /// Nas aulas de finais, em "Para você": esconder as aulas já concluídas.
+    @Default(false) bool endgamesHideDone,
+
+    /// Nas aulas, as marcações do professor no tabuleiro (setas e casas).
+    @Default(true) bool lessonMarks,
   }) = _AppSettings;
 }

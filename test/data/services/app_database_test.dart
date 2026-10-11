@@ -198,6 +198,11 @@ void main() {
               "opponent, moves) VALUES ('basic.queen.0001', 1767268800, "
               "'win', 1, 'maia', 'c1c7 d7e6')",
             )
+            // A das conquistas, como a versão 5 criou (a 7 mexe nela).
+            ..execute(
+              'CREATE TABLE unlocked_achievements (achievement_id TEXT NOT '
+              'NULL, at INTEGER NOT NULL, PRIMARY KEY (achievement_id))',
+            )
             ..execute('PRAGMA user_version = 5');
         },
       ),

@@ -4,6 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'package:lucena/config/dependencies.dart';
+import 'package:lucena/data/repositories/placement/placement_repository_local.dart';
+import 'package:lucena/data/repositories/conclusion/conclusion_repository_local.dart';
 import 'package:lucena/data/repositories/journey/journey_repository_asset.dart';
 import 'package:lucena/data/repositories/maia/maia_repository_device.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
@@ -61,9 +63,11 @@ import 'fakes/fake_speech_input_repository.dart';
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
+import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_now.dart';
@@ -110,6 +114,12 @@ Future<int> seedAttempt(Attempt attempt) =>
 
 /// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
 final e2eSound = FakeSoundRepository();
+
+/// A vibração dos cenários: nada vibra; os pedidos ficam guardados.
+final e2eHaptics = FakeHapticsRepository();
+
+/// O que foi compartilhado (o menu do sistema não abre nos testes).
+final e2eShare = FakeShareRepository();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
@@ -207,11 +217,17 @@ Future<Dependencies> e2eDependencies() async {
     now: e2eNow,
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
-    hapticsRepository: FakeHapticsRepository(),
+    hapticsRepository: e2eHaptics,
+    shareRepository: e2eShare,
+    placementRepository: LocalPlacementRepository(
+      const AssetService(),
+      PreferencesService(),
+    ),
     soundRepository: e2eSound,
     analysisRepository: e2eAnalysis,
     gameReviewRepository: LocalGameReviewRepository(PreferencesService()),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
+    conclusionRepository: LocalConclusionRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
@@ -264,6 +280,7 @@ Future<Dependencies> e2eDependencies() async {
     ),
     speechInputRepository: e2eSpeechInput,
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
+    wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
     languages: AppLanguage.values,
   );
 }
@@ -318,6 +335,7 @@ Future<void> resetE2EData() async {
   e2eOpponent.reset();
   e2eMaia.reset();
   e2eSound.played.clear();
+  e2eHaptics.events.clear();
   e2eTts.reset();
   e2eAnalysis
     ..useStockfish = false
@@ -384,6 +402,9 @@ class E2EJourneyRepository implements JourneyRepository {
       id: 'e2e.ending',
       kind: SpeedrunKind.ending,
       positionId: mateInOne.id,
+      // Mate de dama, como os de verdade: na lista de iniciante (sem a
+      // categoria, o Stockfish na última etapa o mandaria para a avançada).
+      category: SpeedrunCategory.beginner,
       time: time,
       stages: [
         for (final rung in opponents)

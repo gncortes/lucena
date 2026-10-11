@@ -134,6 +134,35 @@ void main() {
       'Exercise 2 of 3',
     );
     expect(find.byKey(HomeKeys.endgameContinue), findsOneWidget);
+    // A miniatura do exercício toma o lugar do retrato e voa até ele.
+    expect(find.byKey(HomeKeys.endgameBoard), findsOneWidget);
+  });
+
+  testWidgets('teste começado e nada aberto: o cartão mostra o exercício da '
+      'vez em miniatura', (tester) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: Locale('en'),
+        child: _Home(
+          HomeScreen(),
+          endgames: EndgameProgress(
+            lessons: {
+              'rook.lucena': EndgameLessonProgress(
+                lessonDone: true,
+                stars: {'e01': 1, 'e02': 1},
+              ),
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.endgameWhere)).data,
+      'Exercise 3 of 3',
+    );
+    expect(find.byKey(HomeKeys.endgameBoard), findsOneWidget);
   });
 
   // Uma tela alta, para a lista montar todos os caminhos de uma vez.

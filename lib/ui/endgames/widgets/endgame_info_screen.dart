@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/position_board.dart';
+import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 
 /// As informações de uma aula de final: a história, as posições-base com o
@@ -43,7 +45,7 @@ class EndgameInfoScreen extends StatelessWidget {
                   ),
                 ),
                 _header(theme, l10n.endgameInfoHistory),
-                Text(
+                LinkedText(
                   texts.say('${lesson.id}.history') ?? '',
                   key: EndgameInfoKeys.history,
                   style: theme.textTheme.bodyMedium,
@@ -59,9 +61,25 @@ class EndgameInfoScreen extends StatelessWidget {
                         PositionBoard(fen: position.fen, size: 120, radius: 6),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(
-                            texts.say('${lesson.id}.key.${position.id}') ?? '',
-                            style: theme.textTheme.bodyMedium,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              LinkedText(
+                                texts.say('${lesson.id}.key.${position.id}') ??
+                                    '',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              // A partida ou o estudo de onde ela vem.
+                              if (lesson.reference(position.ref)
+                                  case final reference?
+                                  when reference.url != null)
+                                ReferenceLink(
+                                  key: EndgameInfoKeys.keyPositionLink(
+                                    position.id,
+                                  ),
+                                  reference: reference,
+                                ),
+                            ],
                           ),
                         ),
                       ],
@@ -115,12 +133,12 @@ class _ReferenceTile extends StatelessWidget {
     };
     final icon = switch (reference.kind) {
       'book' => Icons.menu_book_outlined,
-      'study' => Icons.school_outlined,
+      'study' => Icons.library_books_outlined,
       'game' => Icons.sports_esports_outlined,
       'tablebase' => Icons.table_chart_outlined,
       _ => Icons.link,
     };
-    // Com link, a referência abre no navegador do aparelho.
+    // Com link, a referência abre dentro do app, na folha da página.
     final uri = url == null ? null : Uri.tryParse(url);
     return ListTile(
       key: EndgameInfoKeys.reference(reference.id),
@@ -140,9 +158,7 @@ class _ReferenceTile extends StatelessWidget {
       trailing: uri == null
           ? null
           : Icon(Icons.open_in_new, size: 18, color: colors.primary),
-      onTap: uri == null
-          ? null
-          : () => launchUrl(uri, mode: LaunchMode.externalApplication),
+      onTap: uri == null ? null : () => showExternalPage(context, uri),
     );
   }
 }

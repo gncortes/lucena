@@ -35,9 +35,12 @@ class LocalRatingRepository implements RatingRepository {
       ..limit(1);
     final row = await query.getSingleOrNull();
     if (row != null) return _ratingOf(row);
-    final profile = await _profile.load();
-    return PlayerRating.start(profile.rating);
+    return start();
   }
+
+  @override
+  Future<PlayerRating> start() async =>
+      PlayerRating.start((await _profile.load()).rating);
 
   @override
   Future<List<RatingEntry>> history() async {

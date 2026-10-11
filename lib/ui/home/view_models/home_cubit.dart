@@ -148,21 +148,35 @@ class EndgameSummary {
     required this.maxScore,
     required this.teacher,
     this.openExerciseId,
+    this.exerciseFen,
     this.exerciseNumber,
     this.exerciseCount,
     this.lessonOpen = false,
     this.step,
     this.stepCount,
+    this.partId,
+    this.partNumber,
+    this.partCount,
   });
 
   final String lessonId;
+
+  /// Numa aula em partes: a parte em que o aluno parou (T51).
+  final String? partId;
+  final int? partNumber;
+  final int? partCount;
   final String title;
   final int score;
   final int maxScore;
   final Character? teacher;
 
-  /// O exercício aberto quando o app fechou, com a posição dele na lista.
+  /// O exercício da vez, com a posição dele na lista: o aberto quando o app
+  /// fechou ou, com o teste começado, o próximo por resolver.
   final String? openExerciseId;
+
+  /// A posição do exercício da vez, para a miniatura do cartão (que voa até
+  /// o tabuleiro dele).
+  final String? exerciseFen;
   final int? exerciseNumber;
   final int? exerciseCount;
 
@@ -329,7 +343,8 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       for (final each in trail.lessons) {
         final done = progress.of(each.id);
-        final started = done.lessonDone || done.stars.isNotEmpty;
+        final started =
+            done.lessonDone || done.parts.isNotEmpty || done.stars.isNotEmpty;
         if (started && !EndgameLessonRules.passed(each, done)) {
           lesson = each;
           break;
@@ -339,32 +354,55 @@ class HomeCubit extends Cubit<HomeState> {
     if (lesson == null) return null;
     final texts = await _endgameLessons.texts(language);
     final done = progress.of(lesson.id);
-    final exerciseIndex = openExercise == null
-        ? -1
-        : lesson.exercises.indexWhere(
-            (each) => each.id == openExercise.$2.exerciseId,
-          );
     final lessonOpen =
         openExercise == null &&
         ongoing != null &&
         ongoing.lessonId == lesson.id &&
         !done.lessonDone;
+    // O teste começado (um exercício resolvido ou aberto antes): o cartão
+    // leva ao exercício da vez, não à tela da aula.
+    final testStarted = done.stars.isNotEmpty || done.exercise != null;
+    final exercise = openExercise != null
+        ? lesson.exercise(openExercise.$2.exerciseId)
+        : !lessonOpen && testStarted
+        ? EndgameLessonRules.nextExercise(lesson, done)
+        : null;
+    final exerciseIndex = exercise == null
+        ? -1
+        : lesson.exercises.indexOf(exercise);
     Character? teacher;
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
     }
+    // Numa aula em partes, o passo conta dentro da parte.
+    final checkpoint = lessonOpen
+        ? EndgameLessonRules.migrate(lesson, ongoing)
+        : null;
+    final part = lesson.lesson.parts.isEmpty || checkpoint?.part == null
+        ? null
+        : lesson.lesson.part(checkpoint!.part!);
     return EndgameSummary(
       lessonId: lesson.id,
       title: texts.lessonTitle(lesson.id),
-      score: done.score,
+      score: done.scoreOf(lesson),
       maxScore: lesson.maxScore,
       teacher: teacher,
-      openExerciseId: exerciseIndex < 0 ? null : openExercise!.$2.exerciseId,
+      openExerciseId: exercise?.id,
+      exerciseFen: exercise?.fen,
       exerciseNumber: exerciseIndex < 0 ? null : exerciseIndex + 1,
       exerciseCount: exerciseIndex < 0 ? null : lesson.exercises.length,
       lessonOpen: lessonOpen,
-      step: lessonOpen ? ongoing.step + 1 : null,
-      stepCount: lessonOpen ? lesson.lesson.steps.length : null,
+      step: !lessonOpen
+          ? null
+          : part != null
+          ? checkpoint!.step + 1
+          : ongoing.step + 1,
+      stepCount: !lessonOpen
+          ? null
+          : part?.steps.length ?? lesson.lesson.steps.length,
+      partId: part?.id,
+      partNumber: part == null ? null : lesson.lesson.parts.indexOf(part) + 1,
+      partCount: part == null ? null : lesson.lesson.parts.length,
     );
   }
 }
