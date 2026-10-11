@@ -54,3 +54,4 @@ tools/*
 !tools/check_l10n.py
 !tools/gen_pseudo_l10n.py
 !tools/check_lines.py
+CLAUDE.md
