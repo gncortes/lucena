@@ -187,7 +187,7 @@
   "ex.e06": "{{Whitaker|norman-whitaker}} against Ferriz, 1959, with colours reversed. The rook on e6 is not protected by the pawn. Only one move wins.",
   "ex.e06.hint": "A check on the diagonal that reaches h7. Then another attack on the rook, with or without check.",
   "ex.e06.solution": "1.Qc2+. If 1...Kg8, 2.Qc8+ and 3.Qxe6. If 1...Kh6, 2.h5 (2.Qd3 and king moves such as 2.Kg4 also win): the pawn takes g6 from the black king, 2...Kxh5 runs into mate in a few moves, and with no squares for the king the rook falls in the end. In the game, the side with the rook announced a draw in a lost position.",
-  "ex.e07": "{{Vaganian|rafael-vaganian}} against {{Bologan|viktor-bologan}}, 1997. Queen against rook and a bishop pawn on the fourth. Only one move wins.",
+  "ex.e07": "{{Vaganian|rafael-vaganian}} against {{Bologan|viktor-bologan}}, 1997. Queen against rook and a bishop pawn on the fifth rank. Only one move wins.",
   "ex.e07.hint": "Checks hand the fortress back to the defender. Bring the king closer.",
   "ex.e07.solution": "95.Kf4, the only move: the king heads for e3 and d3, behind the pawn. In the game {{Vaganian|rafael-vaganian}} checked, let the fortress come back twice, and only won because {{Bologan|viktor-bologan}} made the last mistake.",
   "ex.e08": "The second-rank fortress is set up, but our king is already past the sixth rank. Only one move wins.",
