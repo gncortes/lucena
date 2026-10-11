@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/placement.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 
-import '../../tools/placement/simulation.dart';
-import '../../tools/placement/synthetic.dart';
+import '../../testing/placement_simulation.dart';
+import '../../testing/placement_synthetic.dart';
 
 /// A simulação da T52 (Parte 4.5) em tamanho de CI: 40 jogadores de cada tipo
 /// (Rasch puro, que também refaz o teste; desatento; e os três cenários de

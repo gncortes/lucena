@@ -14,7 +14,7 @@ import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
-import '../../../tools/placement/synthetic.dart';
+import '../../../testing/placement_synthetic.dart';
 
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());
@@ -90,6 +90,30 @@ void main() {
     expect(done, isTrue);
     expect(profile.profile.rating, cubit.state.result!.theta);
   });
+
+  for (final size in [const Size(360, 640), const Size(412, 915)]) {
+    testWidgets('T64, $size: o tabuleiro no centro do espaço entre a barra '
+        'do app e as respostas, com a pergunta colada nele', (tester) async {
+      final (cubit, _) = await pump(tester, size: size);
+      await cubit.start();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 6; i++) {
+        final appBar = tester.getRect(find.byType(AppBar));
+        final answers = tester.getRect(find.byKey(PlacementKeys.answers));
+        final board = tester.getRect(find.byKey(PlacementKeys.board));
+        final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
+        expect(board.center.dy, closeTo((appBar.bottom + answers.top) / 2, 1));
+        expect(
+          prompt.bottom <= board.top || prompt.top >= board.bottom,
+          isTrue,
+        );
+        expect(answers.top, greaterThanOrEqualTo(board.bottom));
+        expect(tester.takeException(), isNull);
+        await cubit.answer(PlacementOutcome.dontKnow);
+        await tester.pumpAndSettle();
+      }
+    });
+  }
 
   testWidgets('no tour, "prefiro informar meu rating" aparece e avisa', (
     tester,

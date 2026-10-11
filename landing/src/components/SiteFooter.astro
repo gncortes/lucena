@@ -1,0 +1,28 @@
+---
+import { asset, links, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = locales[locale].dict;
+---
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <a class="brand" href={pageUrl(locale)}>
+        <img src={asset('logo.webp')} alt="" width="32" height="32" loading="lazy" />
+        <span>Lucena</span>
+      </a>
+      <p>{t.footer.tagline}</p>
+    </div>
+    <ul class="foot__links">
+      <li><a href={privacyUrl(locale)}>{t.footer.privacy}</a></li>
+    </ul>
+    <p class="foot__dev">
+      {t.footer.dev} <a href={`mailto:${links.email}?subject=Lucena`}>{links.email}</a>
+    </p>
+  </div>
+</footer>

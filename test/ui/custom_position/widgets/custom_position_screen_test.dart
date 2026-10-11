@@ -125,4 +125,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(cubit.state.board, CustomPositionCubit.startBoard);
   });
+
+  testWidgets('o tabuleiro fica em cima (sem centralizar) e não voa para a '
+      'tela seguinte', (tester) async {
+    await pump(tester);
+    // Na edição o tabuleiro fica no alto, logo abaixo da barra do app.
+    final appBar = tester.getRect(find.byType(AppBar));
+    final editorRect = tester.getRect(find.byKey(CustomPositionKeys.editor));
+    expect(editorRect.top, closeTo(appBar.bottom, 1));
+
+    await typeFen(tester, '8/8/8/4k3/8/r7/4P3/4K2R b - - 0 1');
+    expect(cubit.state.position, isNotNull);
+    // "Continuar" é uma navegação comum: nada de Hero em volta do editor.
+    expect(
+      find.ancestor(
+        of: find.byKey(CustomPositionKeys.editor),
+        matching: find.byType(Hero),
+      ),
+      findsNothing,
+    );
+  });
 }

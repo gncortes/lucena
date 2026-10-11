@@ -80,6 +80,7 @@ class ClockRow extends StatelessWidget {
     return PlayersRow(
       players: [for (final side in sides) entry(side)],
       board: board,
+      enterClocks: true,
     );
   }
 }

@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -14,13 +16,19 @@ import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_wiki.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
-  Future<ExerciseCubit> pump(WidgetTester tester, String exercise) async {
+  Future<ExerciseCubit> pump(
+    WidgetTester tester,
+    String exercise, {
+    FakeWebPages? webPages,
+    EndgameProgress progress = const EndgameProgress(),
+  }) async {
     final cubit = ExerciseCubit(
       lessons: FakeEndgameLessonRepository(),
-      progress: FakeEndgameProgressRepository(),
+      progress: FakeEndgameProgressRepository(progress),
       characters: FakeCharacterRepository(),
       replyDelay: Duration.zero,
     );
@@ -35,6 +43,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
+        webPages: webPages,
         child: BlocProvider.value(value: cubit, child: const ExerciseScreen()),
       ),
     );
@@ -126,7 +135,7 @@ void main() {
   });
 
   testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '
-      'tabuleiro no centro da tela, a vez embaixo e o cronômetro no canto '
+      'tabuleiro no centro do espaço útil, a vez embaixo e o cronômetro no canto '
       'inferior direito; resolvido, o tabuleiro sobe e o resultado entra '
       'embaixo', (tester) async {
     tester.view
@@ -137,7 +146,17 @@ void main() {
     final board = tester.getRect(find.byKey(ExerciseKeys.board));
     final goal = tester.getRect(find.byKey(ExerciseKeys.goal));
     expect(board.center.dx, closeTo(200, 1));
-    expect(board.center.dy, closeTo(450, 2));
+    // No centro do espaço útil (T64): entre a barra do app e o rodapé.
+    final appBar = tester.getRect(find.byType(AppBar));
+    final footer = tester.getRect(
+      find
+          .ancestor(
+            of: find.byKey(ExerciseKeys.timer),
+            matching: find.byType(AnimatedSwitcher),
+          )
+          .first,
+    );
+    expect(board.center.dy, closeTo((appBar.bottom + footer.top) / 2, 1));
     expect(goal.top, greaterThan(board.bottom));
     expect(find.byKey(ExerciseKeys.speech), findsNothing);
     final timer = tester.getRect(find.byKey(ExerciseKeys.timer));
@@ -183,5 +202,34 @@ void main() {
       tester.getRect(find.byKey(ExerciseKeys.speech)).bottom,
       lessThanOrEqualTo(before.top),
     );
+  });
+
+  testWidgets('treino livre: "Analisar no Lichess" abre a posição dentro do '
+      'app e o X volta ao exercício', (tester) async {
+    final pages = FakeWebPages(title: 'Analysis board • lichess.org');
+    await pump(
+      tester,
+      'e03',
+      webPages: pages,
+      // Todos resolvidos: a nota fechada põe o botão do Lichess na tela.
+      progress: const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            stars: {'e01': 1, 'e02': 2, 'e03': 1},
+          ),
+        },
+      ),
+    );
+    await tester.ensureVisible(find.byKey(ExerciseKeys.lichessButton));
+    await tester.tap(find.byKey(ExerciseKeys.lichessButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExternalPageKeys.sheet), findsOneWidget);
+    expect(pages.opened.single.host, 'lichess.org');
+    expect(find.text('Analysis board • lichess.org'), findsOneWidget);
+
+    await tester.tap(find.byKey(ExternalPageKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExternalPageKeys.sheet), findsNothing);
+    expect(find.byKey(ExerciseKeys.lichessButton), findsOneWidget);
   });
 }

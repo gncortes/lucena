@@ -35,9 +35,12 @@ runs:
         npm install --global --no-fund --no-audit firebase-tools@15.32.1
 
         notes="$RUNNER_TEMP/release_notes.txt"
+        # As notas vêm do NOVIDADES.md (o que mudou na versão e o resumo do
+        # app, para quem pula versões); sem ele, o título do último commit.
         {
           echo "$GITHUB_REF_NAME"
-          git log -1 --pretty=%s
+          echo
+          if [ -f NOVIDADES.md ]; then cat NOVIDADES.md; else git log -1 --pretty=%s; fi
         } > "$notes"
 
         firebase appdistribution:distribute "$APK" \

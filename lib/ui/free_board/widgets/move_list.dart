@@ -116,7 +116,10 @@ class _MoveListState extends State<MoveList> {
     // A notação de xadrez é sempre da esquerda para a direita.
     return Directionality(
       textDirection: TextDirection.ltr,
+      // A faixa ocupa a largura toda e os lances começam na esquerda, como no
+      // chess.com: com poucos lances, eles não ficam no meio.
       child: SizedBox(
+        width: double.infinity,
         height: MoveList.height,
         child: SingleChildScrollView(
           key: FreeBoardKeys.moveList,

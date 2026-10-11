@@ -473,7 +473,6 @@
   "challengeLevelHard": "Moeilijk",
   "starChallengeBest": "Record: {count}",
   "starChallengeNotPlayed": "Nog niet gespeeld",
-  "starChallengeRule": "{seconds} seconden. Breng het stuk naar elke ster die verschijnt.",
   "starChallengeGo": "Start!",
   "starChallengeTimeUp": "Tijd is om!",
   "starChallengeNewBest": "Nieuw record!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Sterrenuitdaging: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punt} other{{count} punten}}",
   "starChallengePointsTotal": "{count} punten in totaal",
-  "starChallengeLegend": "Elke ster verdwijnt na een tijdje: de gouden het eerst.",
   "starChallengeObstacles": "De zwarte pionnen staan alleen in de weg: je kunt ze niet slaan. Je verzamelt de sterren.",
   "settingsSound": "Geluiden",
   "settingsSoundHint": "Zetten van de stukken en een waarschuwing als je tijd bijna op is",
@@ -1013,5 +1011,12 @@
   "exerciseTurn": "{side, select, white{Wit aan zet} other{Zwart aan zet}}",
   "exerciseYourTurn": "{side, select, white{Jij bent aan zet: wit speelt} other{Jij bent aan zet: zwart speelt}}",
   "exercisesIntroAfter": "Zodra je ze allemaal hebt opgelost, blijft de lijst in de les open: ga terug naar elke oefening om die te bekijken en de stelling op Lichess te analyseren.",
-  "exerciseScoreLocked": "Vrij oefenen: je cijfer verandert niet. Om weer mee te tellen, doe je de oefeningen over vanuit de les."
+  "exerciseScoreLocked": "Vrij oefenen: je cijfer verandert niet. Om weer mee te tellen, doe je de oefeningen over vanuit de les.",
+  "externalPageOfflineTitle": "Hiervoor is internet nodig",
+  "externalPageOfflineBody": "Maak verbinding met internet om deze pagina te lezen. De les gaat gewoon verder.",
+  "wikiOpen": "{name} openen op Wikipedia",
+  "starChallengeIntroTitle": "Sterrenjacht",
+  "starChallengeIntroBody": "Je hebt {seconds} seconden. Breng je stuk naar elke ster voordat die dooft. De gouden dooft het eerst en is daarom meer waard.",
+  "starChallengeWorth": "{points, plural, =1{telt 1} other{telt {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{punt} other{punten}}"
 }

@@ -27,6 +27,7 @@ dependencies:
   sound_effect: ^0.2.0
   speech_to_text: ^7.5.0
   url_launcher: ^6.3.3
+  webview_flutter: ^4.14.1
 
 dev_dependencies:
   flutter_test:
@@ -72,14 +73,14 @@ flutter:
     - assets/lines/pt/
     # As aulas do Viktor (tools/build_lessons.py) e as falas dele
     - assets/lessons/course.json
+    - assets/lessons/links.json
     - assets/lessons/en/
     - assets/lessons/pt/
-    # As aulas de finais (.claude/skills/aula-final) e as falas delas
+    # As aulas de finais (geradas) e as falas delas
     - assets/lessons/endgames/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas
-    # (tools/placement/check_skills.py e build_items.py)
     - assets/placement/
     # Pesos do Maia-3 (tools/maia/export_weights.py)
     - assets/models/maia3-5m.bin

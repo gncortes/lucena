@@ -43,7 +43,7 @@ runs:
         KEY_PASSWORD: ${{ inputs.key-password }}
       run: |
         if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
-          echo "::error::Segredos de assinatura ausentes no ambiente release (ver .claude/skills/qa-release/SETUP.md)"
+          echo "::error::Segredos de assinatura ausentes no ambiente release"
           exit 1
         fi
         umask 077

@@ -473,7 +473,6 @@
   "challengeLevelHard": "سخت",
   "starChallengeBest": "بهترین: {count}",
   "starChallengeNotPlayed": "هنوز بازی نشده",
-  "starChallengeRule": "{seconds} ثانیه. مهره را به هر ستاره‌ای که ظاهر می‌شود برسان.",
   "starChallengeGo": "برو!",
   "starChallengeTimeUp": "وقت تمام شد!",
   "starChallengeNewBest": "رکورد جدید!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "چالش ستاره: {piece}",
   "starChallengePoints": "{count} امتیاز",
   "starChallengePointsTotal": "در مجموع {count} امتیاز",
-  "starChallengeLegend": "هر ستاره پس از مدتی ناپدید می‌شود: طلایی زودتر.",
   "starChallengeObstacles": "پیاده‌های سیاه فقط سد راه‌اند: نمی‌توان آن‌ها را زد. چیزی که جمع می‌کنی ستاره‌هاست.",
   "settingsSound": "صداها",
   "settingsSoundHint": "حرکت مهره‌ها و هشدار وقتی زمان شما رو به پایان است",
@@ -1013,5 +1011,12 @@
   "exerciseTurn": "{side, select, white{نوبت سفید} other{نوبت سیاه}}",
   "exerciseYourTurn": "{side, select, white{نوبت توست: سفید بازی می‌کند} other{نوبت توست: سیاه بازی می‌کند}}",
   "exercisesIntroAfter": "وقتی همه را حل کنید فهرست در درس باز می‌ماند: به هر تمرینی برگردید تا دوباره ببینید و وضعیت را در Lichess تحلیل کنید.",
-  "exerciseScoreLocked": "تمرین آزاد: نمره تغییر نمی‌کند. برای اینکه دوباره حساب شود، تمرین‌ها را از درس دوباره انجام دهید."
+  "exerciseScoreLocked": "تمرین آزاد: نمره تغییر نمی‌کند. برای اینکه دوباره حساب شود، تمرین‌ها را از درس دوباره انجام دهید.",
+  "externalPageOfflineTitle": "این بخش به اینترنت نیاز دارد",
+  "externalPageOfflineBody": "برای خواندن این صفحه به اینترنت وصل شوید. درس به‌طور عادی ادامه دارد.",
+  "wikiOpen": "باز کردن {name} در ویکی‌پدیا",
+  "starChallengeIntroTitle": "شکار ستاره",
+  "starChallengeIntroBody": "{seconds} ثانیه وقت دارید. مهره‌تان را پیش از خاموش شدن هر ستاره به آن برسانید. ستارهٔ طلایی زودتر خاموش می‌شود و برای همین ارزش بیشتری دارد.",
+  "starChallengeWorth": "{points, plural, =1{ارزش ۱} other{ارزش {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{امتیاز} other{امتیاز}}"
 }

@@ -8,6 +8,9 @@ abstract final class BlindKeys {
   static const status = Key('blind.status');
   static const mic = Key('blind.mic');
   static const board = Key('blind.board');
+
+  /// O espaço do tabuleiro, entre a barra do app e o painel de baixo.
+  static const boardArea = Key('blind.boardArea');
   static const heard = Key('blind.heard');
   static const lastMoves = Key('blind.lastMoves');
   static const toggleMoves = Key('blind.toggleMoves');

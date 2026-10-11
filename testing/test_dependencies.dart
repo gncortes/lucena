@@ -64,6 +64,7 @@ import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_progress_repository.dart';
 import 'fakes/fake_settings_repository.dart';
 import 'fakes/fake_voice_repository.dart';
+import 'fakes/fake_wiki.dart';
 import 'fakes/fake_speech_input_repository.dart';
 import 'fakes/fake_blind_log_repository.dart';
 
@@ -155,6 +156,7 @@ Dependencies testDependencies({
     voiceRepository: voiceRepository ?? FakeVoiceRepository(),
     speechInputRepository: FakeSpeechInputRepository(),
     blindLogRepository: FakeBlindLogRepository(),
+    wikiLinksRepository: FakeWikiLinksRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

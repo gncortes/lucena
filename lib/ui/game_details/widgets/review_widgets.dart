@@ -992,18 +992,28 @@ class ReviewNavigation extends StatelessWidget {
               onPressed: state.atEnd ? null : cubit.last,
               icon: const Icon(Icons.last_page),
             ),
-            const Spacer(),
-            FilterChip(
-              key: GameDetailsKeys.engineButton,
-              selected: state.engine,
-              showCheckmark: false,
-              avatar: Icon(
-                Icons.memory,
-                size: 18,
-                color: state.engine ? colors.onSecondaryContainer : null,
+            // Em tela estreita ou com fonte grande, o nome da engine encolhe
+            // (reticências) e os botões de lance ficam inteiros.
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: FilterChip(
+                  key: GameDetailsKeys.engineButton,
+                  selected: state.engine,
+                  showCheckmark: false,
+                  avatar: Icon(
+                    Icons.memory,
+                    size: 18,
+                    color: state.engine ? colors.onSecondaryContainer : null,
+                  ),
+                  label: Text(
+                    l10n.reviewEngine,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onSelected: (_) => cubit.toggleEngine(),
+                ),
               ),
-              label: Text(l10n.reviewEngine),
-              onSelected: (_) => cubit.toggleEngine(),
             ),
             PopupMenuButton<_Export>(
               key: GameDetailsKeys.moreButton,

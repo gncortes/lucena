@@ -1879,3 +1879,146 @@ section {
 .tester__panel a:not(.btn) {
   color: #8ee6b8;
 }
+
+/* ---------- Política de privacidade ---------- */
+
+.legal {
+  padding-block: clamp(32px, 6vw, 72px) clamp(56px, 8vw, 96px);
+}
+
+.legal__doc {
+  max-width: 720px;
+}
+
+.legal__back {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal__back:hover {
+  color: var(--ink);
+}
+
+.legal h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.legal__date {
+  margin: 8px 0 32px;
+  color: var(--ink-soft);
+}
+
+.legal section {
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.legal h2 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+}
+
+.legal section p {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.legal section p:last-child {
+  margin-bottom: 0;
+}
+
+.legal strong {
+  color: var(--ink);
+}
+
+/* ---------- Carrossel (às cegas) ---------- */
+
+.carousel {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.feature__media .carousel__phone {
+  max-width: 290px;
+}
+
+.carousel__phone .phone__screen {
+  position: relative;
+}
+
+.carousel__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s ease-in-out;
+  will-change: transform;
+}
+
+.carousel__track img {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.carousel__caption {
+  margin: 0;
+  min-height: 1.5em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.carousel__dots {
+  display: flex;
+  gap: 4px;
+}
+
+.carousel__dots button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.carousel__dots button::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--line);
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
+  transition: width 0.3s, background 0.3s;
+}
+
+.carousel__dots button[aria-current]::before {
+  width: 22px;
+  background: var(--primary);
+  box-shadow: none;
+}
+
+.carousel__dots button:focus-visible {
+  outline: 2px solid var(--primary);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track,
+  .carousel__dots button::before {
+    transition: none;
+  }
+}
+
+.feature-duo--single {
+  grid-template-columns: 1fr !important;
+}

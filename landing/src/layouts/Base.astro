@@ -4,18 +4,24 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '../styles/global.css';
 import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import jakartaUrl from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
-import { asset, defaultLocale, fallbackLocale, links, locales, pageUrl, type Locale } from '../i18n';
+import { asset, defaultLocale, fallbackLocale, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
 import { mediaDir } from '../media';
 
 interface Props {
   locale: Locale;
+  /** A página: a landing (padrão) ou a política de privacidade. */
+  page?: 'home' | 'privacy';
 }
 
-const { locale } = Astro.props;
+const { locale, page = 'home' } = Astro.props;
 const t = locales[locale].dict;
+const home = page === 'home';
+const urlOf = (l: Locale) => (home ? pageUrl(l) : privacyUrl(l));
+const title = home ? t.meta.title : `${t.privacy.title} · Lucena`;
+const description = home ? t.meta.description : t.privacy.description;
 const site = Astro.site!;
 const absolute = (path: string) => new URL(path, site).href;
-const canonical = absolute(pageUrl(locale));
+const canonical = absolute(urlOf(locale));
 const ogImage = absolute(asset(locale === defaultLocale ? 'og-image.png' : `og-image-${locale}.png`));
 
 const jsonLd = {
@@ -23,7 +29,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'Lucena',
   description: t.meta.description,
-  url: canonical,
+  url: absolute(pageUrl(locale)),
   image: ogImage,
   screenshot: absolute(asset(`${mediaDir(locale)}/desafio-jornada.webp`)),
   applicationCategory: 'EducationalApplication',
@@ -41,29 +47,29 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.meta.title}</title>
-    <meta name="description" content={t.meta.description} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {
       Object.entries(locales).map(([key, l]) => (
-        <link rel="alternate" hreflang={l.hreflang} href={absolute(pageUrl(key as Locale))} />
+        <link rel="alternate" hreflang={l.hreflang} href={absolute(urlOf(key as Locale))} />
       ))
     }
-    <link rel="alternate" hreflang="x-default" href={absolute(pageUrl(fallbackLocale))} />
+    <link rel="alternate" hreflang="x-default" href={absolute(urlOf(fallbackLocale))} />
 
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#F5F7F4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14211B" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/png" sizes="32x32" href={asset('favicon-32.png')} />
     <link rel="apple-touch-icon" href={asset('apple-touch-icon.png')} />
-    <link rel="preload" href={asset(`${mediaDir(locale)}/maia-partida-poster.webp`)} as="image" fetchpriority="high" />
+    {home && <link rel="preload" href={asset(`${mediaDir(locale)}/maia-partida-poster.webp`)} as="image" fetchpriority="high" />}
     <link rel="preload" href={jakartaUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Lucena" />
-    <meta property="og:title" content={t.meta.title} />
-    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
@@ -76,12 +82,12 @@ const jsonLd = {
         .map(([, l]) => <meta property="og:locale:alternate" content={l.og} />)
     }
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={t.meta.title} />
-    <meta name="twitter:description" content={t.meta.description} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={t.meta.ogAlt} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {home && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <!-- Aplica o tema salvo antes de pintar, para não piscar. -->
     <script is:inline>
       document.documentElement.classList.add('js');
@@ -94,5 +100,19 @@ const jsonLd = {
   <body>
     <a class="skip" href="#main">{t.nav.skip}</a>
     <slot />
+    <script>
+      // Tema: alterna entre claro e escuro e guarda a escolha neste navegador.
+      const root = document.documentElement;
+      document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+        const current =
+          root.dataset.theme ??
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('theme', next);
+        } catch {}
+      });
+    </script>
   </body>
 </html>

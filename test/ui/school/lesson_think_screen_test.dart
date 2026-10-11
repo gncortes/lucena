@@ -121,20 +121,17 @@ void main() {
     return cubit;
   }
 
-  /// O tabuleiro no centro da tela (400 × 800), a não ser que ali ele
-  /// cobrisse o enunciado: então logo abaixo dele. Nunca sobre o rodapé.
+  /// O tabuleiro no centro do espaço útil (T64): entre o fim da barra do
+  /// app e o rodapé, sem cobrir o enunciado nem o rodapé.
   void expectCentered(WidgetTester tester) {
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final prompt = tester.getRect(find.byKey(LessonKeys.prompt));
     final footer = tester.getRect(find.byKey(LessonKeys.footer));
+    final appBar = tester.getRect(find.byType(AppBar));
     expect(board.center.dx, closeTo(200, 1));
     expect(board.top, greaterThanOrEqualTo(prompt.bottom));
     expect(board.bottom, lessThanOrEqualTo(footer.top));
-    if (board.top > prompt.bottom + 8.5) {
-      expect(board.center.dy, closeTo(400, 1));
-    } else {
-      expect(board.center.dy, greaterThan(400));
-    }
+    expect(board.center.dy, closeTo((appBar.bottom + footer.top) / 2, 1));
   }
 
   String timerText(WidgetTester tester) => tester

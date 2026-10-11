@@ -1,3 +1,5 @@
+import type { Clip, Still } from '../media';
+
 type Feature = { title: string; body: string; bullets: string[] };
 type Block = { title: string; body: string };
 
@@ -57,11 +59,15 @@ export type Dictionary = {
       | 'stars'
       | 'analysis'
       | 'progress'
-      | 'custom',
+      | 'custom'
+      | 'realGames'
+      | 'exercises',
       Feature
     >;
     /** O roteiro de cada capítulo das aulas de finais. */
     route: { label: string; steps: Block[] };
+    /** As legendas das quatro telas do carrossel do modo às cegas, na ordem. */
+    blindShots: string[];
   };
   levels: { kicker: string; title: string; beginner: Block; advanced: Block };
   roadmap: {
@@ -92,21 +98,17 @@ export type Dictionary = {
   };
   vision: { kicker: string; title: string; body: string; cta: string };
   refs: { kicker: string; title: string; items: { name: string; body: string }[] };
-  footer: { tagline: string; dev: string; contact: string };
-  media: Record<
-    | 'hero'
-    | 'school'
-    | 'journey'
-    | 'queenRook'
-    | 'speedrun'
-    | 'theme'
-    | 'journeyChallenge'
-    | 'exercise'
-    | 'queenRookLesson'
-    | 'shortSide'
-    | 'stars'
-    | 'play'
-    | 'pause',
-    string
-  >;
+  footer: { tagline: string; dev: string; contact: string; privacy: string };
+  media: Record<Clip | Still | 'play' | 'pause', string>;
+  /** A política de privacidade, em <idioma>/<slug>/. */
+  privacy: {
+    slug: string;
+    title: string;
+    description: string;
+    /** A data da versão, já por extenso. */
+    updated: string;
+    back: string;
+    /** Parágrafos com HTML simples (links e ênfase), escritos aqui. */
+    sections: { title: string; body: string[] }[];
+  };
 };

@@ -473,7 +473,6 @@
   "challengeLevelHard": "Difícil",
   "starChallengeBest": "Melhor: {count}",
   "starChallengeNotPlayed": "Ainda não jogou",
-  "starChallengeRule": "{seconds} segundos. Leve a peça até cada estrela que aparecer.",
   "starChallengeGo": "Vai!",
   "starChallengeTimeUp": "Acabou o tempo!",
   "starChallengeNewBest": "Novo recorde!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Desafio das estrelas: {piece}",
   "starChallengePoints": "{count, plural, =1{1 ponto} other{{count} pontos}}",
   "starChallengePointsTotal": "{count} pontos no total",
-  "starChallengeLegend": "Cada estrela desaparece ao fim de um tempo: a de ouro vai primeiro.",
   "starChallengeObstacles": "Os peões pretos só atrapalham: não é possível capturá-los. O que apanha são as estrelas.",
   "settingsSound": "Sons",
   "settingsSoundHint": "Lances das peças e um aviso quando o seu tempo estiver a acabar",
@@ -1013,5 +1011,12 @@
   "exerciseTurn": "{side, select, white{Jogam as brancas} other{Jogam as pretas}}",
   "exerciseYourTurn": "{side, select, white{É a sua vez: jogam as brancas} other{É a sua vez: jogam as pretas}}",
   "exercisesIntroAfter": "Depois de resolver todos, a lista fica aberta na aula: volte a qualquer exercício para rever e analisar a posição no Lichess.",
-  "exerciseScoreLocked": "Treino livre: a nota não muda. Para contar de novo, refaça os exercícios na aula."
+  "exerciseScoreLocked": "Treino livre: a nota não muda. Para contar de novo, refaça os exercícios na aula.",
+  "externalPageOfflineTitle": "Esta consulta precisa de Internet",
+  "externalPageOfflineBody": "Ligue-se à Internet para ler esta página. A aula continua normalmente.",
+  "wikiOpen": "Abrir {name} na Wikipédia",
+  "starChallengeIntroTitle": "Caça às estrelas",
+  "starChallengeIntroBody": "Tem {seconds} segundos. Leve a sua peça até cada estrela antes que ela se apague. A de ouro apaga-se primeiro, por isso vale mais.",
+  "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{ponto} other{pontos}}"
 }

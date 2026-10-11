@@ -265,7 +265,7 @@ class _ModuleSection extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      state.texts.say('endgames.module.${module.id}') ??
+                      state.texts.plain('endgames.module.${module.id}') ??
                           module.id,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: colors.onPrimaryContainer,

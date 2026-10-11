@@ -8,7 +8,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
-import '../../../tools/placement/synthetic.dart';
+import '../../../testing/placement_synthetic.dart';
 
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());

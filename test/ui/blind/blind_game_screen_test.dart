@@ -138,6 +138,25 @@ void main() {
     );
   });
 
+  testWidgets('T64: o tabuleiro (com peças ou só as casas) no centro do '
+      'espaço entre a barra do app e o painel de baixo', (tester) async {
+    await pump(tester);
+    final appBar = tester.getRect(find.byType(AppBar));
+    final area = tester.getRect(find.byKey(BlindKeys.boardArea));
+    expect(area.top, appBar.bottom);
+    final empty = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+    expect(empty.center.dy, closeTo(area.center.dy, 1));
+    expect(
+      tester.getRect(find.byKey(BlindKeys.status)).top,
+      greaterThanOrEqualTo(empty.bottom),
+    );
+    await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
+    await tester.pumpAndSettle();
+    final board = tester.getRect(find.byKey(BlindKeys.board));
+    expect(board.center.dy, closeTo(area.center.dy, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('o tabuleiro com as peças aceita o toque', (tester) async {
     await pump(tester);
     await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
