@@ -675,7 +675,7 @@
   "tricks.principles.center": "Three rules to start well. First: take the center, the squares d4, e4, d5 and e5. A piece in the center watches more squares.",
   "tricks.principles.develop": "Now play. A pawn in the center, then the knight, the bishop and finally castling: the king goes to the corner, safe.",
   "tricks.principles.develop.hint": "A good order: center pawn, knight to f3, bishop out, castle.",
-  "tricks.principles.develop.done": "That is a healthy opening: center, two pieces in play and the king safe. In four moves.",
+  "tricks.principles.develop.done": "That is a healthy opening: center, pieces in play and a safe king. In this position, 4.c3 is good too: it prepares d4.",
   "tricks.principles.rules": "Summary: take the center, develop the knights and bishops, castle early. And don't move the same piece twice without a reason.",
   "tricks.principles.online": "Now comes the fun part: playing against people. Create a free account on Lichess, at lichess.org, and use these tricks in your first games, including defending against them. Then come back here: endgames are what win games."
 }

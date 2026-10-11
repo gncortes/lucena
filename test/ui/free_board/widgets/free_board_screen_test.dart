@@ -23,7 +23,6 @@ import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
-import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
@@ -66,11 +65,16 @@ void main() {
     AppSettings? appSettings,
     bool withReporter = false,
     Size screen = const Size(1080, 2400),
+    bool systemBars = false,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
+    if (systemBars) {
+      tester.view.viewPadding = const FakeViewPadding(top: 63, bottom: 84);
+      tester.view.padding = const FakeViewPadding(top: 63, bottom: 84);
+    }
     final repository = FakeSettingsRepository(
       appSettings ?? AppSettings(board: board, clock: clockSettings),
     );
@@ -934,6 +938,100 @@ void main() {
   });
 
   group('treino', () {
+    for (final position in ClockPosition.values) {
+      testWidgets(
+        'B6b P2: $position preserva nome, avatar único e relógios escolhidos',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            screen: const Size(360, 640) * 2.625,
+            systemBars: true,
+            mode: const GameMode(
+              opponent: OpponentKind.maia,
+              level: 1600,
+              userSide: Side.white,
+            ),
+            clock: ClockConfig.same(
+              const TimeControl(initial: Duration(minutes: 3)),
+            ),
+            clockSettings: ClockSettings(position: position),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final board = boardRect(tester);
+          final avatar = tester.getRect(find.byType(CharacterAvatar));
+          final white = tester.getRect(
+            find.byKey(FreeBoardKeys.clock(Side.white)),
+          );
+          final black = tester.getRect(
+            find.byKey(FreeBoardKeys.clock(Side.black)),
+          );
+          final name = tester.getRect(find.text('Valdini'));
+          expect(find.byType(CharacterAvatar), findsOneWidget);
+          expect(find.text('Valdini'), findsOneWidget);
+          expect(name.width, greaterThan(40));
+          expect(avatar.height, 44);
+          expect(avatar.center.dy, closeTo(black.center.dy, 1));
+          expect(board.width, greaterThanOrEqualTo(200));
+          expect(board.center.dy, closeTo(316, 1));
+          if (position == ClockPosition.bottom) {
+            expect(avatar.top, greaterThanOrEqualTo(board.bottom));
+            expect(white.top, greaterThanOrEqualTo(board.bottom));
+            expect(black.top, greaterThanOrEqualTo(board.bottom));
+          } else {
+            expect(avatar.bottom, lessThanOrEqualTo(board.top));
+            expect(black.bottom, lessThanOrEqualTo(board.top));
+            if (position == ClockPosition.top) {
+              expect(white.bottom, lessThanOrEqualTo(board.top));
+            } else {
+              expect(white.top, greaterThanOrEqualTo(board.bottom));
+            }
+          }
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+
+    for (final size in [
+      const Size(360, 640),
+      const Size(360, 800),
+      const Size(412, 915),
+    ]) {
+      testWidgets(
+        'B6b $size: centro real e fala flutuante não desloca a partida',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            screen: size * 2.625,
+            systemBars: true,
+            mode: const GameMode(
+              opponent: OpponentKind.maia,
+              level: 1600,
+              userSide: Side.white,
+            ),
+            clock: ClockConfig.same(
+              const TimeControl(initial: Duration(minutes: 3)),
+            ),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final board = boardRect(tester);
+          expect(board.center.dy, closeTo((24 + size.height - 32) / 2, 1));
+          expect(board.width, greaterThanOrEqualTo(200));
+          expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
+          await tester.pump(const Duration(seconds: 20));
+          await tester.pumpAndSettle();
+          expect(boardRect(tester), board);
+          opponent.hold();
+          await move(tester, 'e2', 'e4');
+          await talk.settled();
+          await tester.pumpAndSettle();
+          expect(boardRect(tester), board);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+
     const vsMachine = GameMode(
       opponent: OpponentKind.stockfish,
       userSide: Side.white,
@@ -1010,7 +1108,7 @@ void main() {
       },
     );
 
-    testWidgets('celular pequeno: o tabuleiro ainda ocupa a largura toda', (
+    testWidgets('celular pequeno: tabuleiro utilizável e avatar legível', (
       tester,
     ) async {
       // 360 x 640, com o relógio dos lados e o personagem.
@@ -1029,7 +1127,7 @@ void main() {
       await talk.settled();
       await tester.pumpAndSettle();
 
-      expect(boardRect(tester).width, 360);
+      expect(boardRect(tester).width, inInclusiveRange(200, 360));
       expect(tester.takeException(), isNull);
     });
 
@@ -1055,7 +1153,10 @@ void main() {
       // O centro conta a partir do topo da faixa de lances, que começa vazia.
       expect(
         board.center.dy,
-        closeTo((area.top - MoveList.height + area.bottom) / 2, 1),
+        closeTo(
+          tester.view.physicalSize.height / tester.view.devicePixelRatio / 2,
+          1,
+        ),
       );
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,
@@ -1148,8 +1249,8 @@ void main() {
       expect(find.text('Black'), findsNothing);
     });
 
-    testWidgets('contra um personagem: retrato e balão numa linha, o relógio '
-        'na de baixo, sem cobrir o tabuleiro', (tester) async {
+    testWidgets('contra um personagem: retrato e relógio na mesma linha, '
+        'balão em overlay sem deslocar o tabuleiro', (tester) async {
       await pumpScreen(
         tester,
         fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
@@ -1164,23 +1265,34 @@ void main() {
       expect(find.byKey(FreeBoardKeys.characterBar), findsOneWidget);
       // O retrato fica só em cima, com o nome para o leitor de tela.
       expect(find.byType(CharacterAvatar), findsOneWidget);
-      expect(find.bySemanticsLabel('Valdini'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp(r'^Valdini(?:\n|$)')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(FreeBoardKeys.speechText('magician.gameStart.1')),
         findsOneWidget,
       );
       final bar = tester.getRect(find.byKey(FreeBoardKeys.characterBar));
-      // O relógio da máquina fica numa linha própria, entre o personagem e o
-      // tabuleiro.
+      // O relógio e o retrato compartilham a linha acima do tabuleiro.
       final clock = tester.getRect(find.byKey(FreeBoardKeys.clock(Side.black)));
       final board = boardRect(tester);
-      expect(clock.top, greaterThanOrEqualTo(bar.bottom));
+      expect(clock.top, greaterThanOrEqualTo(bar.top));
+      expect(clock.bottom, lessThanOrEqualTo(bar.bottom));
       expect(clock.bottom, lessThanOrEqualTo(board.top));
       final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
-      expect(bubble.bottom, lessThanOrEqualTo(board.top));
-      // Um respiro entre o retrato e a linha de baixo.
+      expect(
+        bubble.bottom <= bar.top || (bubble.top - board.top).abs() <= 1,
+        isTrue,
+      );
+      final unchanged = boardRect(tester);
+      await tester.pump(const Duration(seconds: 20));
+      await tester.pumpAndSettle();
+      expect(boardRect(tester), unchanged);
+      // O avatar permanece legível e alinhado ao relógio.
       final avatar = tester.getRect(find.byType(CharacterAvatar));
-      expect(bar.bottom - avatar.bottom, greaterThanOrEqualTo(8));
+      expect(avatar.height, 44);
+      expect(avatar.center.dy, closeTo(clock.center.dy, 1));
       // O tabuleiro ocupa a largura toda.
       expect(board.width, tester.getSize(find.byType(Scaffold)).width);
     });

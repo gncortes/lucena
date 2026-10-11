@@ -27,13 +27,19 @@ import 'rating_parts.dart';
 import 'stats_row.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/widgets/container_navigation.dart';
+import '../../core/widgets/staggered_entrance.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// Os detalhes do rating de finais: o número, o gráfico com a escolha do
 /// período e as partidas que mexeram nele, da mais recente para a mais antiga.
 class RatingScreen extends StatelessWidget {
-  const RatingScreen({super.key});
+  const RatingScreen({this.gameDestinationBuilder, super.key});
+
+  /// The host supplies the same provider factory used by canonical routes.
+  /// Without a destination factory, entries retain canonical navigation.
+  final Widget Function(BuildContext, int)? gameDestinationBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +52,9 @@ class RatingScreen extends StatelessWidget {
     return Scaffold(
       key: RatingKeys.screen,
       appBar: AppBar(
+        leading: ContainerNavigation.canClose(context)
+            ? BackButton(onPressed: () => ContainerNavigation.close(context))
+            : null,
         title: Text(l10n.profileEndgameRating),
         actions: [
           // A explicação do rating, antes um parágrafo fixo no fim da tela.
@@ -77,7 +86,7 @@ class RatingScreen extends StatelessWidget {
               children: [
                 // Como no chess.com: o rating e o gráfico num cartão, com o
                 // período embaixo; depois os números e os resultados.
-                _RatingCard(state: state),
+                _RatingEntrance(index: 0, child: _RatingCard(state: state)),
                 if (state.numbers case final numbers?) ...[
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -86,7 +95,10 @@ class RatingScreen extends StatelessWidget {
                       AppSpacing.screen,
                       0,
                     ),
-                    child: StatsRow(numbers: numbers),
+                    child: _RatingEntrance(
+                      index: 1,
+                      child: StatsRow(numbers: numbers),
+                    ),
                   ),
                   if (state.allGames.isNotEmpty)
                     Padding(
@@ -96,7 +108,10 @@ class RatingScreen extends StatelessWidget {
                         AppSpacing.screen,
                         0,
                       ),
-                      child: _Results(games: state.allGames.values),
+                      child: _RatingEntrance(
+                        index: 2,
+                        child: _Results(games: state.allGames.values),
+                      ),
                     ),
                 ],
                 // Todas as partidas, de qualquer modo, da mais recente para a
@@ -171,9 +186,17 @@ class RatingScreen extends StatelessWidget {
                     icon: Icons.history_rounded,
                     message: l10n.statsGamesEmpty,
                     messageKey: RatingKeys.emptyHistory,
-                    actionLabel: l10n.emptyPlayNow,
+                    actionLabel: l10n.emptyFirstEndgame,
+                    primaryAction: true,
+                    actionIcon: Icons.play_arrow_rounded,
                     actionKey: RatingKeys.emptyHistoryAction,
-                    onAction: () => context.go(Routes.catalog),
+                    onAction: () {
+                      final router = GoRouter.of(context);
+                      ContainerNavigation.leave(
+                        context,
+                        () => router.go(Routes.catalog),
+                      );
+                    },
                   )
                 else
                   for (final (index, game) in log.indexed) ...[
@@ -184,16 +207,44 @@ class RatingScreen extends StatelessWidget {
                         endIndent: 16,
                         color: colors.outlineVariant.withValues(alpha: 0.4),
                       ),
-                    _GameRow(
-                      index: index,
-                      game: game,
-                      characters: state.characters,
-                      highlighted: game.id == state.highlighted,
+                    _RatingEntrance(
+                      key: ValueKey(game.id),
+                      index: index + 3,
+                      child: _GameRow(
+                        destinationBuilder: gameDestinationBuilder,
+                        index: index,
+                        game: game,
+                        characters: state.characters,
+                        highlighted: game.id == state.highlighted,
+                      ),
                     ),
                   ],
               ],
             ),
     );
+  }
+}
+
+/// Preserve the entrance and period state when the list recycles offscreen
+/// children, or a detail closes and refreshes accuracies.
+class _RatingEntrance extends StatefulWidget {
+  const _RatingEntrance({required this.index, required this.child, super.key});
+  final int index;
+  final Widget child;
+
+  @override
+  State<_RatingEntrance> createState() => _RatingEntranceState();
+}
+
+class _RatingEntranceState extends State<_RatingEntrance>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return StaggeredEntrance(index: widget.index, child: widget.child);
   }
 }
 
@@ -225,36 +276,39 @@ class _RatingCardState extends State<_RatingCard> {
       context: context,
       showDragHandle: true,
       useSafeArea: true,
+      isScrollControlled: true,
       builder: (context) => SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screen,
-                0,
-                AppSpacing.screen,
-                AppSpacing.sm,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screen,
+                  0,
+                  AppSpacing.screen,
+                  AppSpacing.sm,
+                ),
+                child: Text(
+                  l10n.ratingPeriodTitle,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
-              child: Text(
-                l10n.ratingPeriodTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            for (final period in RatingPeriod.values)
-              ListTile(
-                key: RatingKeys.period(period.name),
-                title: Text(_label(l10n, period)),
-                selected: period == _period,
-                trailing: period == _period
-                    ? const Icon(Icons.check_rounded)
-                    : null,
-                onTap: () => Navigator.of(context).pop(period),
-              ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
+              for (final period in RatingPeriod.values)
+                ListTile(
+                  key: RatingKeys.period(period.name),
+                  title: Text(_label(l10n, period)),
+                  selected: period == _period,
+                  trailing: period == _period
+                      ? const Icon(Icons.check_rounded)
+                      : null,
+                  onTap: () => Navigator.of(context).pop(period),
+                ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+          ),
         ),
       ),
     );
@@ -307,6 +361,7 @@ class _RatingCardState extends State<_RatingCard> {
                           // A variação do período escolhido.
                           change: change,
                           large: true,
+                          animateOnce: true,
                           valueKey: RatingKeys.value,
                           changeKey: RatingKeys.delta,
                         ),
@@ -551,12 +606,14 @@ class _Results extends StatelessWidget {
 /// quanto o rating mudou. Tocar abre os detalhes.
 class _GameRow extends StatelessWidget {
   const _GameRow({
+    this.destinationBuilder,
     required this.index,
     required this.game,
     required this.characters,
     this.highlighted = false,
   });
 
+  final Widget Function(BuildContext, int)? destinationBuilder;
   final int index;
   final LoggedGame game;
   final List<Character> characters;
@@ -599,12 +656,18 @@ class _GameRow extends StatelessWidget {
     };
     final rated = game.rated;
     final change = rated?.change;
-    final row = InkWell(
+    void reload() {
+      if (context.mounted) context.read<RatingCubit>().load();
+    }
+
+    Future<void> canonical() async {
+      await context.push<void>(Routes.game(game.id));
+    }
+
+    final builder = destinationBuilder;
+    Widget content(VoidCallback open) => InkWell(
       key: RatingKeys.entry(index),
-      // Na volta, a partida pode ter ganhado a revisão (e a precisão).
-      onTap: () => context.push(Routes.game(game.id)).then((_) {
-        if (context.mounted) context.read<RatingCubit>().load();
-      }),
+      onTap: open,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -754,6 +817,19 @@ class _GameRow extends StatelessWidget {
         ),
       ),
     );
+    final row = builder == null
+        ? content(() async {
+            await canonical();
+            reload();
+          })
+        : ContainerNavigation(
+            color: highlighted ? colors.primaryContainer : colors.surface,
+            routeName: Routes.game(game.id),
+            openBuilder: (context) => builder(context, game.id),
+            onFallback: canonical,
+            onClosed: reload,
+            closedBuilder: (_, open) => content(open),
+          );
     if (!highlighted) return row;
     return Material(
       key: RatingKeys.entryHighlighted,

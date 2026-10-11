@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/home_suggestion.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 
@@ -48,6 +51,120 @@ void main() {
       await tour.next();
     }
   }
+
+  test(
+    'default, abrir faixas, Próximo, Pular e finish não são escolha',
+    () async {
+      final tour = cubit();
+      await tour.load('en');
+      await tour.skip();
+      expect(tour.state.step, TourStep.level);
+      await tour.next();
+      await tour.finish();
+      await tour.chooseByHand();
+      await tour.next();
+      await tour.skip();
+      expect(tour.state.step, TourStep.level);
+      expect(tour.state.levelChosen, isFalse);
+      expect(onboarding.saved.selectedRating, isNull);
+      expect(onboarding.saved.done, isFalse);
+      expect(profile.saved, isEmpty);
+      expect(home.layout, isNull);
+    },
+  );
+
+  test('retomada fria preserva faixa explícita, origem e passo', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await toLevel(tour);
+    await tour.setLevel(RatingLevel.expert);
+    await tour.next();
+    final reopened = cubit();
+    await reopened.load('en');
+    expect(reopened.state.step, TourStep.goals);
+    expect(reopened.state.levelChosen, isTrue);
+    expect(reopened.state.byHand, isTrue);
+    expect(reopened.state.rating, RatingLevel.expert.rating);
+    await reopened.finish();
+    expect(profile.profile.rating, RatingLevel.expert.rating);
+  });
+
+  test('rating exato usado no teste sobrevive à retomada', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await toLevel(tour);
+    profile.profile = profile.profile.copyWith(rating: 1530);
+    await tour.usePlacement();
+    final reopened = cubit();
+    await reopened.load('en');
+    expect(reopened.state.step, TourStep.goals);
+    expect(reopened.state.placed, 1530);
+    expect(reopened.state.levelChosen, isTrue);
+    await reopened.finish();
+    expect(profile.profile.rating, 1530);
+  });
+
+  test('replay exige nova escolha e retoma sem apagar done legado', () async {
+    onboarding.saved = const Onboarding(done: true, selectedRating: 1530);
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.levelChosen, isFalse);
+    expect(onboarding.saved.done, isTrue);
+    await tour.skip();
+    await tour.setLevel(RatingLevel.advanced);
+    final reopened = cubit();
+    await reopened.load('en');
+    expect(reopened.state.step, TourStep.level);
+    expect(reopened.state.rating, RatingLevel.advanced.rating);
+    expect(reopened.state.levelChosen, isTrue);
+    expect(onboarding.saved.done, isTrue);
+  });
+
+  test('passo legado posterior sem escolha volta ao nível', () async {
+    onboarding.saved = Onboarding(step: TourStep.goals.index);
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.step, TourStep.level);
+    expect(tour.state.levelChosen, isFalse);
+  });
+
+  test('gravações lentas respeitam última seleção antes de concluir', () async {
+    final delayed = _DelayedOnboarding();
+    onboarding = delayed;
+    final tour = cubit();
+    await tour.load('en');
+    await toLevel(tour);
+    delayed.gate = Completer<void>();
+    final first = tour.setLevel(RatingLevel.intermediate);
+    final last = tour.setLevel(RatingLevel.expert);
+    final finish = tour.finish();
+    expect(tour.state.finished, isFalse);
+    delayed.gate!.complete();
+    await Future.wait([first, last, finish]);
+    expect(delayed.saved.selectedRating, RatingLevel.expert.rating);
+    expect(delayed.saved.done, isTrue);
+    expect(profile.profile.rating, RatingLevel.expert.rating);
+  });
+
+  test(
+    'resultado tardio do teste não sobrescreve escolha manual posterior',
+    () async {
+      final delayed = _DelayedProfile();
+      profile = delayed;
+      final tour = cubit();
+      await tour.load('en');
+      await toLevel(tour);
+      delayed.gate = Completer<UserProfile>();
+      final placement = tour.usePlacement();
+      await tour.setLevel(RatingLevel.expert);
+      delayed.gate!.complete(const UserProfile(rating: 1530));
+      await placement;
+      expect(tour.state.step, TourStep.level);
+      expect(tour.state.byHand, isTrue);
+      expect(tour.state.rating, RatingLevel.expert.rating);
+      expect(onboarding.saved.selectedRating, RatingLevel.expert.rating);
+    },
+  );
 
   test('cada passo é gravado e volta ao reabrir', () async {
     final tour = cubit();
@@ -110,13 +227,16 @@ void main() {
     expect((await profile.load()).level, RatingLevel.intermediate);
   });
 
-  test('pular: o tour não aparece de novo e o degrau não muda', () async {
+  test('pular exige escolha e grava o degrau escolhido', () async {
     final tour = cubit();
     await tour.load('en');
     await tour.skip();
-
+    expect(tour.state.step, TourStep.level);
+    expect(onboarding.saved.done, isFalse);
+    await tour.setLevel(RatingLevel.intermediate);
+    await tour.skip();
     expect(onboarding.saved.done, isTrue);
-    expect(onboarding.saved.startRung, isNull);
+    expect(onboarding.saved.startRung, '1400');
   });
 
   test('rever o tour já visto começa do primeiro passo', () async {
@@ -222,6 +342,7 @@ void main() {
     test('pular grava a sugestão do nível, que segue o nível', () async {
       final tour = cubit();
       await tour.load('en');
+      await tour.setLevel(RatingLevel.casual);
       await tour.skip();
       expect(home.layout, HomeSuggestion.of(RatingLevel.casual));
       expect(home.layout!.custom, isFalse);
@@ -262,4 +383,22 @@ void main() {
       expect(profile.profile.rating, RatingLevel.advanced.rating);
     });
   });
+}
+
+class _DelayedOnboarding extends FakeOnboardingRepository {
+  _DelayedOnboarding() : super(const Onboarding());
+  Completer<void>? gate;
+
+  @override
+  Future<void> save(Onboarding value) async {
+    await gate?.future;
+    await super.save(value);
+  }
+}
+
+class _DelayedProfile extends FakeProfileRepository {
+  Completer<UserProfile>? gate;
+
+  @override
+  Future<UserProfile> load() => gate?.future ?? super.load();
 }

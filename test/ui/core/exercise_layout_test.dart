@@ -79,6 +79,38 @@ void main() {
     expect(rect.top - ExerciseLayout.gutter, closeTo(room, 0.001));
   });
 
+  for (final area in [
+    const Size(360, 528),
+    const Size(360, 688),
+    const Size(412, 803),
+  ]) {
+    test('centro explícito preserva retângulo e folha em $area', () {
+      final center = area.height / 2 - 28;
+      final playing = ExerciseLayout.solvingRect(
+        area,
+        footer: 96,
+        centerY: center,
+      );
+      final explaining = ExerciseLayout.explainingRect(
+        area,
+        sheetRoom: 280,
+        footer: 96,
+        centerY: center,
+      );
+      expect(explaining, playing);
+      expect(
+        ExerciseLayout.sheetTop(
+          area,
+          sheetRoom: 280,
+          footer: 96,
+          centerY: center,
+        ),
+        playing.bottom + ExerciseLayout.gutter,
+      );
+      expect(playing.width, greaterThanOrEqualTo(200));
+    });
+  }
+
   test('explainingRect, escola: no centro do espaço acima da folha', () {
     const area = Size(412, 900);
     final rect = ExerciseLayout.explainingRect(

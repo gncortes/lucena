@@ -8,6 +8,7 @@ environment:
   sdk: ^3.13.3
 
 dependencies:
+  animations: 2.1.2
   chessground: ^10.3.0
   dartchess: ^0.14.0
   drift: ^2.35.1
@@ -78,6 +79,7 @@ flutter:
     - assets/lessons/pt/
     # As aulas de finais (geradas) e as falas delas
     - assets/lessons/endgames/
+    - assets/lessons/feedback/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas

@@ -81,6 +81,67 @@ void main() {
   ThemeData theme(WidgetTester tester) =>
       Theme.of(tester.element(find.byKey(TourKeys.screen)));
 
+  testWidgets('Próximo e Pular só habilitam após selecionar uma faixa', (
+    tester,
+  ) async {
+    await pumpTour(tester, step: TourStep.level);
+    expect(
+      tester
+          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<ButtonStyleButton>(find.byKey(TourKeys.skipButton))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.byKey(TourKeys.chooseByHand));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TourKeys.startRung), findsNothing);
+    expect(
+      tester
+          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
+          .onPressed,
+      isNull,
+    );
+    await tester.ensureVisible(find.byKey(TourKeys.level(RatingLevel.casual)));
+    await tester.tap(find.byKey(TourKeys.level(RatingLevel.casual)));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
+          .onPressed,
+      isNotNull,
+    );
+    expect(
+      tester
+          .widget<ButtonStyleButton>(find.byKey(TourKeys.skipButton))
+          .onPressed,
+      isNotNull,
+    );
+    await tester.tap(find.byKey(TourKeys.nextButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TourKeys.step(TourStep.goals)), findsOneWidget);
+  });
+
+  testWidgets('Pular antes do nível abre a escolha em vez de sair', (
+    tester,
+  ) async {
+    await pumpTour(tester);
+    await tester.tap(find.byKey(TourKeys.skipButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TourKeys.step(TourStep.level)), findsOneWidget);
+    expect(
+      tester
+          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
+          .onPressed,
+      isNull,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('os passos em ordem e o nível no fim, em português', (
     tester,
   ) async {

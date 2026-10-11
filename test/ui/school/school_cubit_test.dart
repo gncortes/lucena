@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/school/view_models/school_cubit.dart';
@@ -66,4 +67,38 @@ void main() {
     expect(state.graduated, isTrue);
     expect(state.next, isNull);
   });
+  test(
+    'C12c: carregar novamente preserva grupo aberto ao retornar da aula',
+    () async {
+      final cubit = SchoolCubit(
+        lessons: FakeLessonRepository(),
+        progress: FakeSchoolProgressRepository(),
+        characters: FakeCharacterRepository(),
+        profile: FakeProfileRepository(),
+      );
+      addTearDown(cubit.close);
+      await cubit.load('en');
+      cubit.toggleSkipped();
+      await cubit.load('en');
+      expect(cubit.state.showSkipped, isTrue);
+      cubit.toggleSkipped();
+      await cubit.load('en');
+      expect(cubit.state.showSkipped, isFalse);
+    },
+  );
+
+  test(
+    'C12c: terminar aula solta oferece a próxima aula do mesmo módulo',
+    () async {
+      final lessons = FakeLessonRepository();
+      final progress = FakeSchoolProgressRepository();
+      final source = SchoolLessonSource(lessons, progress);
+      final outcome = await source.complete('pieces.rook');
+      final course = await lessons.course();
+      final module = course.modules.first;
+      expect(outcome.next, 'pieces.mate');
+      expect(module.lessons.map((lesson) => lesson.id), contains(outcome.next));
+      expect((await progress.load()).completed, contains('pieces.rook'));
+    },
+  );
 }

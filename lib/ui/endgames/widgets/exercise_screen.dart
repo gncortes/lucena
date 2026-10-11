@@ -14,6 +14,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/exercise_layout.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -22,11 +23,13 @@ import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/viktor_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// Um exercício: o Viktor dá o enunciado, o aluno acha os lances no
@@ -51,7 +54,7 @@ class ExerciseScreen extends StatefulWidget {
 }
 
 class _ExerciseScreenState extends State<ExerciseScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   ChessboardController? _board;
 
   late final _shake = AnimationController(
@@ -81,11 +84,31 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   final _elapsed = ValueNotifier(Duration.zero);
   Timer? _ticker;
 
+  bool _background = false;
+  final _sheetExpanded = ValueNotifier(false);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final background = state != AppLifecycleState.resumed;
+    if (background == _background) return;
+    _background = background;
+    final cubit = context.read<ExerciseCubit>();
+    final speech = TeacherSpeech.speechOf(context);
+    if (background) {
+      unawaited(cubit.pauseForBackground());
+      unawaited(speech?.pauseForBackground());
+    } else {
+      unawaited(cubit.resumeFromBackground());
+      unawaited(speech?.resumeFromBackground());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
-      if (!mounted) return;
+      if (!mounted || _background) return;
       final cubit = context.read<ExerciseCubit>();
       if (cubit.state.layout == ExerciseLayoutMode.solving) {
         _elapsed.value = cubit.elapsed;
@@ -116,9 +139,11 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
     _mode.dispose();
     _elapsed.dispose();
+    _sheetExpanded.dispose();
     _board?.dispose();
     _shake.dispose();
     _wrongFlash.dispose();
@@ -149,6 +174,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   void _onState(BuildContext context, ExerciseState state) {
     final previous = _previous;
     _previous = state;
+    if (state.speech == null || state.viktor == null) {
+      _sheetExpanded.value = false;
+    }
     _setMode(context, state, animate: previous.ready);
     // Resolvendo: o cronômetro já com o tempo do exercício (ao reabrir o
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
@@ -226,7 +254,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ),
               ],
             ),
-            body: SafeArea(child: _body(context, state, boardSettings)),
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              child: SafeArea(child: _body(context, state, boardSettings)),
+            ),
           );
         },
       ),
@@ -257,105 +288,168 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         child: Text(l10n.exerciseMissing, key: ExerciseKeys.missing),
       );
     }
-    return Column(
+    return Stack(
+      fit: StackFit.expand,
       children: [
         SizedBox.shrink(key: ExerciseKeys.open(state.lesson!.id, exercise.id)),
-        Expanded(child: _area(context, state, boardSettings)),
-        // Resolvendo: a dica e o cronômetro. Resolvido: o próximo passo.
-        AnimatedSwitcher(
-          duration: AppMotion.of(context).component,
-          child: KeyedSubtree(
-            key: ValueKey(state.phase == ExercisePhase.done),
-            child: state.phase == ExercisePhase.done
-                ? _actions(context, state)
-                : _solvingFooter(context, state),
+        Positioned.fill(child: _area(context, state, boardSettings)),
+        PositionedDirectional(
+          start: 0,
+          end: 0,
+          bottom: 0,
+          child: ValueListenableBuilder(
+            valueListenable: _sheetExpanded,
+            builder: (context, expanded, _) => IgnorePointer(
+              ignoring: expanded,
+              child: ExcludeSemantics(
+                excluding: expanded,
+                child: AnimatedSlide(
+                  duration: AppMotion.of(context).component,
+                  offset: expanded ? const Offset(0, 1) : Offset.zero,
+                  child: AnimatedOpacity(
+                    duration: AppMotion.of(context).component,
+                    opacity: expanded ? 0 : 1,
+                    child: AnimatedSwitcher(
+                      duration: AppMotion.of(context).component,
+                      child: KeyedSubtree(
+                        key: ValueKey(state.phase == ExercisePhase.done),
+                        child: state.phase == ExercisePhase.done
+                            ? _actions(context, state)
+                            : _solvingFooter(context, state),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],
     );
   }
 
-  /// O espaço do tabuleiro (T60). Resolvendo: o Viktor com o enunciado em
-  /// cima e o tabuleiro no centro do espaço útil. Resolvido: o tabuleiro sobe e
-  /// entram embaixo as estrelas, a solução e a fala dele.
+  /// O mesmo tabuleiro em todos os estados; dica e explicação apenas
+  /// sobrepõem uma folha expansível abaixo dele.
   Widget _area(
     BuildContext context,
     ExerciseState state,
     BoardSettings boardSettings,
-  ) {
-    final exercise = state.exercise;
-    return LayoutBuilder(
-      builder: (context, box) => AnimatedBuilder(
-        animation: _mode,
-        builder: (context, _) {
-          final t = _mode.value;
-          return CustomMultiChildLayout(
-            delegate: _AreaDelegate(mode: _mode),
-            children: [
-              if (t < 1 && state.ready && exercise != null)
-                LayoutId(
-                  id: _Slot.prompt,
-                  child: FadeTransition(
-                    opacity: ReverseAnimation(_mode),
-                    // Com rolagem, o enunciado mede só o que ocupa (e rola
-                    // se for comprido demais).
-                    child: SingleChildScrollView(
-                      child: _prompt(context, state),
-                    ),
-                  ),
-                ),
-              LayoutId(
-                id: _Slot.board,
-                child: LayoutBuilder(
-                  builder: (context, slot) => KeyedSubtree(
-                    key: _boardAreaKey,
-                    child: _boardArea(
-                      context,
-                      state,
-                      boardSettings,
-                      size: slot.maxWidth,
-                    ),
-                  ),
-                ),
+  ) => LayoutBuilder(
+    builder: (context, box) {
+      final rect = ExerciseLayout.solvingRect(
+        Size(box.maxWidth, box.maxHeight),
+        footer: ViktorSheet.peekHeight,
+        centerY: BoardViewport.centerYOf(context),
+      );
+      final hasSpeech = state.viktor != null && state.speech != null;
+      return Stack(
+        children: [
+          Positioned.fromRect(
+            rect: rect,
+            child: KeyedSubtree(
+              key: _boardAreaKey,
+              child: _boardArea(
+                context,
+                state,
+                boardSettings,
+                size: rect.width,
               ),
-              // A vez, enquanto o aluno joga; some enquanto o outro lado
-              // pensa e volta depois da resposta.
-              if (t == 0 &&
-                  state.ready &&
-                  exercise != null &&
-                  state.phase == ExercisePhase.active)
-                LayoutId(
-                  id: _Slot.turn,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      context.l10n.exerciseYourTurn(
-                        state.side == Side.white ? 'white' : 'black',
-                      ),
-                      key: ExerciseKeys.goal,
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (!hasSpeech && state.phase == ExercisePhase.active && state.ready)
+            PositionedDirectional(
+              start: 16,
+              end: 16,
+              top: rect.bottom + ExerciseLayout.gutter,
+              child: Text(
+                context.l10n.exerciseYourTurn(
+                  state.side == Side.white ? 'white' : 'black',
+                ),
+                key: ExerciseKeys.goal,
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+          // Resolvido sem fala (acerto limpo): o selo "Correto!" logo abaixo
+          // do tabuleiro, sem cobri-lo.
+          if (!hasSpeech && state.phase == ExercisePhase.done)
+            PositionedDirectional(
+              start: 16,
+              end: 16,
+              top: rect.bottom + ExerciseLayout.gutter,
+              child: Center(child: _correctBadge(context)),
+            ),
+          if (hasSpeech)
+            Positioned.fill(
+              child: ViktorSheet(
+                key: ExerciseKeys.viktorSheet,
+                top: rect.bottom + ExerciseLayout.gutter,
+                scrollKey: ExerciseKeys.scroll,
+                closeKey: ExerciseKeys.closeSheet,
+                onExpanded: (value) => _sheetExpanded.value = value,
+                children: [
+                  state.phase == ExercisePhase.done
+                      ? _result(context, state, boardSettings)
+                      : _prompt(context, state),
+                ],
+              ),
+            ),
+        ],
+      );
+    },
+  );
+
+  /// O selo de acerto: entra com fade e um leve rebote (parado com
+  /// "remover animações").
+  Widget _correctBadge(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final motion = AppMotion.of(context);
+    return Semantics(
+      liveRegion: true,
+      child: TweenAnimationBuilder<double>(
+        key: ExerciseKeys.correct,
+        tween: Tween(begin: 0, end: 1),
+        duration: motion.component,
+        curve: AppMotion.enter,
+        builder: (context, value, child) => Opacity(
+          opacity: value,
+          child: Transform.scale(scale: 0.8 + 0.2 * value, child: child),
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.primaryContainer,
+            borderRadius: BorderRadius.circular(AppShape.full),
+          ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 16, 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: colors.primary,
+                  size: 24,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Flexible(
+                  child: Text(
+                    context.l10n.exerciseCorrect,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colors.onPrimaryContainer,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-              if (t > 0 && state.ready && exercise != null)
-                LayoutId(
-                  id: _Slot.below,
-                  child: FadeTransition(
-                    opacity: _mode,
-                    child: _result(context, state, boardSettings),
-                  ),
-                ),
-            ],
-          );
-        },
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  /// Em cima, enquanto o aluno resolve: o Viktor pequeno e o balão ao lado,
-  /// só quando ele fala (erro, dica). De quem é a vez fica embaixo, junto da
-  /// dica e do cronômetro.
+  /// A fala solicitada pelo estado fica na folha abaixo do tabuleiro.
   Widget _prompt(BuildContext context, ExerciseState state) {
     final viktor = state.viktor;
     if (viktor == null || state.speech == null) return const SizedBox.shrink();
@@ -368,6 +462,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         text: speech,
         emotion: state.emotion,
         avatarSize: 40,
+        compactInSheet: false,
         bubbleKey: ExerciseKeys.speech,
         onLink: (link) => _flash.toggle(
           link,
@@ -392,36 +487,34 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     BoardSettings boardSettings,
   ) {
     final viktor = state.viktor;
-    return SingleChildScrollView(
-      key: ExerciseKeys.scroll,
-      child: Column(
-        children: [
-          _belowBoard(context, state, boardSettings),
-          if (viktor != null && state.speech != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: TeacherSpeech(
-                speechContext: SpeechContext.teaching,
-                teacher: viktor,
-                text: state.speech,
-                emotion: state.emotion,
-                avatarSize: 56,
-                bubbleKey: ExerciseKeys.speech,
-                onLink: (link) => _flash.toggle(
-                  link,
-                  fen: state.fen,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                onSpoken: (link) => _flash.show(
-                  link,
-                  fen: state.fen,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                speaks: true,
+    return Column(
+      children: [
+        if (viktor != null && state.speech != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TeacherSpeech(
+              speechContext: SpeechContext.teaching,
+              teacher: viktor,
+              text: state.speech,
+              emotion: state.emotion,
+              avatarSize: 56,
+              compactInSheet: false,
+              bubbleKey: ExerciseKeys.speech,
+              onLink: (link) => _flash.toggle(
+                link,
+                fen: state.fen,
+                color: Theme.of(context).colorScheme.primary,
               ),
+              onSpoken: (link) => _flash.show(
+                link,
+                fen: state.fen,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              speaks: true,
             ),
-        ],
-      ),
+          ),
+        _belowBoard(context, state, boardSettings),
+      ],
     );
   }
 
@@ -433,12 +526,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     BoardSettings boardSettings,
   ) {
     if (widget.previewFen == null) return const SizedBox.shrink();
-    return Column(
-      children: [
-        Expanded(child: _area(context, state, boardSettings)),
-        const SizedBox(height: 64),
-      ],
-    );
+    return _area(context, state, boardSettings);
   }
 
   /// Resolvendo: a dica (com o que ela custa) à esquerda e o cronômetro à
@@ -468,6 +556,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                             key: ExerciseKeys.hintButton,
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(0, 48),
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surface,
                             ),
                             onPressed: cubit.askHint,
                             icon: const Icon(Icons.lightbulb_outline),
@@ -506,7 +597,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppShape.small),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+                ),
+              ),
             ],
           ),
         ],
@@ -638,13 +738,98 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         label: Text(context.l10n.exerciseLichess),
       );
 
+  /// O botão principal do resolvido: o próximo exercício, a volta à aula
+  /// (treino avulso) ou o resultado (o último da série).
+  Widget _primaryButton(BuildContext context, ExerciseState state) {
+    final l10n = context.l10n;
+    final lesson = state.lesson!;
+    final next = state.nextExercise;
+    final style = FilledButton.styleFrom(minimumSize: const Size(140, 48));
+    if (next != null) {
+      return FilledButton(
+        key: ExerciseKeys.nextButton,
+        style: style,
+        onPressed: () =>
+            context.pushReplacement(Routes.endgameExercise(lesson.id, next)),
+        child: Text(l10n.exerciseNext, maxLines: 1),
+      );
+    }
+    if (state.locked) {
+      // Treino avulso: a nota já está fechada, volta à aula.
+      return FilledButton(
+        key: ExerciseKeys.backButton,
+        style: style,
+        onPressed: () => context.pop(),
+        child: Text(l10n.exerciseBack, maxLines: 1),
+      );
+    }
+    // O último da série: a tela de resultado, que volta à aula.
+    return FilledButton(
+      key: ExerciseKeys.resultButton,
+      style: style,
+      onPressed: () =>
+          context.pushReplacement(Routes.endgameExercisesDone(lesson.id)),
+      child: Text(l10n.exerciseSeeResult, maxLines: 1),
+    );
+  }
+
+  /// "Ver explicação" (tonal, com o mesmo tamanho do principal) e o próximo
+  /// passo. Lado a lado, em metades iguais, quando os textos cabem inteiros
+  /// na fonte do aparelho; senão, um sobre o outro. O texto nunca encolhe:
+  /// antes ficava num `FittedBox` dentro de um `Flexible` que dividia a sobra
+  /// com um `Spacer`, e a letra chegava a ~10 px.
+  Widget _solvedButtons(BuildContext context, ExerciseState state) {
+    final l10n = context.l10n;
+    final cubit = context.read<ExerciseCubit>();
+    final explain = state.canExplain
+        ? FilledButton.tonalIcon(
+            key: ExerciseKeys.explainButton,
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+            onPressed: cubit.showExplanation,
+            icon: const Icon(Icons.forum_outlined),
+            // Empilhado com fonte grande, quebra em duas linhas; lado a lado
+            // só fica quando cabe numa.
+            label: Text(
+              l10n.lessonSeeExplanation,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+            ),
+          )
+        : null;
+    final lichess = state.locked ? _lichessButton(context, state) : null;
+    final primary = _primaryButton(context, state);
+    if (explain == null) {
+      return Row(children: [?lichess, const Spacer(), primary]);
+    }
+    final stacked = Column(
+      key: ExerciseKeys.solvedStacked,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        explain,
+        const SizedBox(height: AppSpacing.sm),
+        if (lichess == null)
+          primary
+        else
+          Row(
+            children: [
+              Flexible(child: lichess),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(child: primary),
+            ],
+          ),
+      ],
+    );
+    // Com o Lichess (nota fechada), três botões não cabem numa linha.
+    if (lichess != null) return stacked;
+    return _HalvesOrStack(gap: AppSpacing.sm, children: [explain, primary]);
+  }
+
   Widget _actions(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<ExerciseCubit>();
-    final lesson = state.lesson!;
     if (state.phase == ExercisePhase.done) {
-      final next = state.nextExercise;
       // Com fundo: o Patrol confere o painel pelo toque no centro dele.
       return Container(
         key: ExerciseKeys.solved,
@@ -666,59 +851,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ),
                 ),
               ),
-            // Uma linha só: "Ver explicação" fixo à esquerda (a pedido, sem
-            // empurrar o tabuleiro) e o próximo passo à direita. Sem
-            // "Resolvido!": a estrela da barra já diz.
-            Row(
-              children: [
-                if (state.canExplain)
-                  Flexible(
-                    child: TextButton.icon(
-                      key: ExerciseKeys.explainButton,
-                      onPressed: cubit.showExplanation,
-                      icon: const Icon(Icons.forum_outlined),
-                      label: OneLine(l10n.lessonSeeExplanation),
-                    ),
-                  ),
-                if (state.locked)
-                  Flexible(child: _lichessButton(context, state)),
-                const Spacer(),
-                if (next != null)
-                  FilledButton(
-                    key: ExerciseKeys.nextButton,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(140, 48),
-                    ),
-                    onPressed: () => context.pushReplacement(
-                      Routes.endgameExercise(lesson.id, next),
-                    ),
-                    child: Text(l10n.exerciseNext),
-                  )
-                else if (state.locked)
-                  // Treino avulso: a nota já está fechada, volta à aula.
-                  FilledButton(
-                    key: ExerciseKeys.backButton,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(140, 48),
-                    ),
-                    onPressed: () => context.pop(),
-                    child: Text(l10n.exerciseBack),
-                  )
-                else
-                  FilledButton(
-                    // O último da série: a tela de resultado, que volta à
-                    // aula.
-                    key: ExerciseKeys.resultButton,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(140, 48),
-                    ),
-                    onPressed: () => context.pushReplacement(
-                      Routes.endgameExercisesDone(lesson.id),
-                    ),
-                    child: Text(l10n.exerciseSeeResult),
-                  ),
-              ],
-            ),
+            _solvedButtons(context, state),
           ],
         ),
       );
@@ -763,58 +896,64 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 }
 
-/// As partes do espaço do tabuleiro do exercício.
-enum _Slot { prompt, board, turn, below }
+/// Dois botões em metades iguais lado a lado se a largura natural de cada um
+/// (intrínseca, medida nos próprios botões) cabe na metade; senão, um sobre
+/// o outro, inteiros.
+class _HalvesOrStack extends StatefulWidget {
+  const _HalvesOrStack({required this.children, required this.gap});
 
-/// Posiciona o enunciado, o tabuleiro e o resultado pelo andamento de
-/// [mode] (0 resolvendo, 1 resolvido).
-class _AreaDelegate extends MultiChildLayoutDelegate {
-  _AreaDelegate({required this.mode}) : super(relayout: mode);
-
-  final Animation<double> mode;
+  final List<Widget> children;
+  final double gap;
 
   @override
-  void performLayout(Size size) {
-    final t = mode.value;
-    final hasPrompt = hasChild(_Slot.prompt);
-    // O tabuleiro no centro do espaço útil (T64), do mesmo tamanho em todo
-    // passo; o enunciado fica com o espaço acima dele e rola se não couber.
-    final solving = ExerciseLayout.solvingRect(
-      size,
-      header: ExerciseLayout.promptReserve,
-    );
-    if (hasPrompt) {
-      layoutChild(
-        _Slot.prompt,
-        BoxConstraints(
-          maxWidth: size.width,
-          maxHeight: max(0.0, solving.top - ExerciseLayout.gutter),
-        ),
-      );
+  State<_HalvesOrStack> createState() => _HalvesOrStackState();
+}
+
+class _HalvesOrStackState extends State<_HalvesOrStack> {
+  final _keys = [GlobalKey(), GlobalKey()];
+  bool? _fits;
+  double? _width;
+
+  void _measure() {
+    if (!mounted || _width == null) return;
+    var widest = 0.0;
+    for (final key in _keys) {
+      final box = key.currentContext?.findRenderObject();
+      if (box is! RenderBox) return;
+      widest = max(widest, box.getMaxIntrinsicWidth(double.infinity));
     }
-    if (hasPrompt) positionChild(_Slot.prompt, Offset(0, -t * 24));
-    final explaining = ExerciseLayout.explainingRect(
-      size,
-      sheetRoom: size.height * 0.4,
-    );
-    final rect = Rect.lerp(solving, explaining, t)!;
-    layoutChild(_Slot.board, BoxConstraints.tight(rect.size));
-    positionChild(_Slot.board, rect.topLeft);
-    if (hasChild(_Slot.turn)) {
-      // De quem é a vez, logo abaixo do tabuleiro.
-      layoutChild(_Slot.turn, BoxConstraints.loose(Size(size.width, 80)));
-      positionChild(_Slot.turn, Offset(0, rect.bottom + ExerciseLayout.gutter));
-    }
-    if (hasChild(_Slot.below)) {
-      final below = explaining.bottom + ExerciseLayout.gutter;
-      layoutChild(
-        _Slot.below,
-        BoxConstraints.tight(Size(size.width, max(0, size.height - below))),
-      );
-      positionChild(_Slot.below, Offset(0, below + (1 - t) * 48));
-    }
+    final fits = 2 * widest + widget.gap <= _width! + .5;
+    if (fits != _fits) setState(() => _fits = fits);
   }
 
   @override
-  bool shouldRelayout(_AreaDelegate old) => old.mode != mode;
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      _width = box.maxWidth;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+      final first = KeyedSubtree(key: _keys[0], child: widget.children[0]);
+      final second = KeyedSubtree(key: _keys[1], child: widget.children[1]);
+      if (_fits == false) {
+        return Column(
+          key: ExerciseKeys.solvedStacked,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            first,
+            SizedBox(height: widget.gap),
+            second,
+          ],
+        );
+      }
+      final row = Row(
+        children: [
+          Expanded(child: first),
+          SizedBox(width: widget.gap),
+          Expanded(child: second),
+        ],
+      );
+      // Antes da primeira medida, invisível: não pisca cortado.
+      return _fits == null ? Opacity(opacity: 0, child: row) : row;
+    },
+  );
 }

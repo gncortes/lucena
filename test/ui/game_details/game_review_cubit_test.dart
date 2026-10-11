@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -9,6 +12,7 @@ import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
 
 void main() {
   late FakeProgressRepository progress;
@@ -41,7 +45,23 @@ void main() {
     ),
   );
 
-  GameDetailsCubit build(int id) {
+  GameDetailsCubit build(int id, {bool previouslyReviewed = true}) {
+    if (previouslyReviewed) {
+      reviews.reviews.putIfAbsent(
+        id,
+        () => GameReview(
+          moves: [
+            for (final _ in progress.attempts[id - 1].moves)
+              const ReviewedMove(
+                before: EngineScore(centipawns: 0),
+                after: EngineScore(centipawns: 0),
+                quality: MoveQuality.best,
+                accuracy: 100,
+              ),
+          ],
+        ),
+      );
+    }
     final cubit = GameDetailsCubit(
       id,
       progress: progress,
@@ -61,6 +81,125 @@ void main() {
   /// Deixa a engine de mentira terminar o que já foi pedido.
   Future<void> settle() => Future<void>.delayed(Duration.zero);
 
+  test(
+    'C12f: abrir sem análise inicia Rápida e grava precisão sem bloquear load',
+    () async {
+      final id = await save(['g1g2', 'h8h7', 'g2g7']);
+      analysis.hold = Completer<void>();
+      final gate = analysis.hold!;
+      addTearDown(() {
+        if (!gate.isCompleted) gate.complete();
+      });
+      final cubit = build(id, previouslyReviewed: false);
+      final states = <GameDetailsState>[];
+      final subscription = cubit.stream.listen(states.add);
+      addTearDown(subscription.cancel);
+      await cubit.load();
+      expect(cubit.state.ready, isTrue);
+      expect(cubit.state.reviewing, isTrue);
+      expect(
+        cubit.state.reviewWeight,
+        GameDetailsCubit.reviewWeights[ReviewSpeed.quick],
+      );
+      expect(analysis.preemptible, [
+        (start, GameDetailsCubit.budgets[1].depth),
+      ]);
+      expect(reviews.reviews[id], isNull);
+      analysis.hold = null;
+      gate.complete();
+      await settle();
+      expect(cubit.state.reviewing, isFalse);
+      expect(cubit.state.review!.depth, 1);
+      expect(cubit.state.review!.whiteAccuracy, isNotNull);
+      expect(reviews.reviews[id], isNotNull);
+      expect(
+        states.map((state) => state.reviewProgress),
+        containsAllInOrder([1 / 3, 2 / 3, 1]),
+      );
+    },
+  );
+
+  test(
+    'C12f: load concorrente, retomada e toque Rápida não duplicam job',
+    () async {
+      final id = await save(['g1g2', 'h8h7', 'g2g7']);
+      analysis.hold = Completer<void>();
+      final gate = analysis.hold!;
+      addTearDown(() {
+        if (!gate.isCompleted) gate.complete();
+      });
+      final cubit = build(id, previouslyReviewed: false);
+      await Future.wait([cubit.load(), cubit.load()]);
+      expect(analysis.requests, [start]);
+      await cubit.load();
+      await cubit.review(speed: ReviewSpeed.quick);
+      expect(analysis.requests, [start]);
+      expect(cubit.state.reviewing, isTrue);
+      analysis.hold = null;
+      gate.complete();
+      await settle();
+      final count = analysis.requests.length;
+      final saved = cubit.state.review;
+      await cubit.load();
+      await settle();
+      expect(analysis.requests.length, count);
+      expect(cubit.state.review, same(saved));
+    },
+  );
+
+  test('C12f: análise salva não recalcula ao abrir ou reabrir', () async {
+    final id = await save(['g1g2', 'h8h7', 'g2g7']);
+    final saved = GameReview(
+      moves: [
+        for (var i = 0; i < 3; i++)
+          const ReviewedMove(
+            before: EngineScore(centipawns: 0),
+            after: EngineScore(centipawns: 0),
+            quality: MoveQuality.good,
+            accuracy: 100,
+            weight: 1,
+          ),
+      ],
+      depth: 1,
+    );
+    reviews.reviews[id] = saved;
+    final first = build(id, previouslyReviewed: false);
+    await first.load();
+    await first.load();
+    final again = build(id, previouslyReviewed: false);
+    await again.load();
+    await settle();
+    expect(first.state.review, same(saved));
+    expect(again.state.review, same(saved));
+    expect(first.state.reviewing, isFalse);
+    expect(again.state.reviewing, isFalse);
+    expect(analysis.requests, isEmpty);
+  });
+
+  test(
+    'C12f: falha da engine libera a UI e permite tentar de novo manualmente',
+    () async {
+      analysis = _FailOnceAnalysis();
+      final id = await save(['g1g2', 'h8h7', 'g2g7']);
+      final cubit = build(id, previouslyReviewed: false);
+      await cubit.load();
+      await settle();
+      expect(cubit.state.ready, isTrue);
+      expect(cubit.state.reviewing, isFalse);
+      expect(cubit.state.annotating, isEmpty);
+      expect(cubit.state.review, isNull);
+      expect(reviews.reviews[id], isNull);
+      final calls = (analysis as _FailOnceAnalysis).calls;
+      await cubit.load();
+      await settle();
+      expect((analysis as _FailOnceAnalysis).calls, calls);
+      await cubit.review(speed: ReviewSpeed.quick);
+      await settle();
+      expect(cubit.state.reviewing, isFalse);
+      expect(reviews.reviews[id], isNotNull);
+    },
+  );
+
   test('a revisão anda com o tabuleiro, anota lance a lance com o peso dela '
       'e guarda', () async {
     analysis.answer[start] = [line('g1g7', mate: 1)];
@@ -70,7 +209,7 @@ void main() {
     // Abre no início; a tela do último lance é a que já tinha anotação.
     cubit.last();
     await settle();
-    expect(cubit.state.review, isNull);
+    expect(cubit.state.review, isNotNull);
 
     final shown = <int>[];
     final progress = <double>[];
@@ -162,6 +301,41 @@ void main() {
     expect(cubit.state.shownIndex, 2);
   });
 
+  for (final on in [true, false]) {
+    test('a engine (e a barra) abre como ficou gravada: '
+        '${on ? 'ligada' : 'desligada'}', () async {
+      final id = await save(['g1g2', 'h8h7']);
+      build(id);
+      final cubit = GameDetailsCubit(
+        id,
+        progress: progress,
+        characters: FakeCharacterRepository(),
+        analysis: analysis,
+        reviews: reviews,
+        settings: FakeSettingsRepository(AppSettings(evalBar: on)),
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      await settle();
+      expect(cubit.state.engine, on);
+      // Ligada, as linhas da posição de início já saem ao abrir.
+      expect(cubit.state.engineLines.containsKey(-1), on);
+    });
+  }
+
+  test('setEngine liga e desliga só quando muda', () async {
+    final id = await save(['g1g2', 'h8h7']);
+    final cubit = build(id);
+    await cubit.load();
+    await cubit.setEngine(on: true);
+    expect(cubit.state.engine, isTrue);
+    final count = analysis.requests.length;
+    await cubit.setEngine(on: true);
+    expect(analysis.requests.length, count);
+    await cubit.setEngine(on: false);
+    expect(cubit.state.engine, isFalse);
+  });
+
   test('a engine ligada calcula as linhas da posição mostrada', () async {
     final id = await save(['g1g2', 'h8h7']);
     final cubit = build(id);
@@ -192,7 +366,7 @@ void main() {
     cubit.last();
     await settle();
     expect(cubit.state.live[2], isNotNull);
-    expect(cubit.state.review, isNull);
+    expect(cubit.state.review, isNotNull);
 
     cubit.select(0);
     await settle();
@@ -296,4 +470,27 @@ void main() {
       expect(cubit.state.review, isNotNull);
     },
   );
+}
+
+class _FailOnceAnalysis extends FakeAnalysisRepository {
+  int calls = 0;
+  @override
+  Future<List<EngineLine>> analyse(
+    Position position, {
+    required int depth,
+    int lines = 1,
+    bool urgent = false,
+    Duration? time,
+    bool preemptible = false,
+  }) {
+    if (calls++ == 0) return Future.error(StateError('engine unavailable'));
+    return super.analyse(
+      position,
+      depth: depth,
+      lines: lines,
+      urgent: urgent,
+      time: time,
+      preemptible: preemptible,
+    );
+  }
 }

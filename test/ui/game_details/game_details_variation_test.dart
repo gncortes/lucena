@@ -168,6 +168,7 @@ void main() {
     cubit.select(0);
     await settle();
     final live = cubit.state.live;
+    final savedReview = await reviews.load(1);
 
     cubit.play(uci('c7c5'));
     await settle();
@@ -179,7 +180,7 @@ void main() {
     expect(cubit.state.shownDepth, GameDetailsCubit.engineDepth);
     expect(cubit.state.shownScore, isNotNull);
     expect(cubit.state.live.keys, live.keys);
-    expect(cubit.state.review, isNull);
-    expect(await reviews.load(1), isNull);
+    expect(cubit.state.review, isNotNull);
+    expect(await reviews.load(1), same(savedReview));
   });
 }

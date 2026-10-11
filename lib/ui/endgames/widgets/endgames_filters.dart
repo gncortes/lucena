@@ -1,0 +1,314 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/models/rating_level.dart';
+import '../../core/keys/endgames_keys.dart';
+import '../../core/l10n/l10n.dart';
+import '../../profile/widgets/rating_level_ui.dart';
+import '../view_models/endgames_cubit.dart';
+
+/// Como cada tipo de final aparece nas telas.
+extension EndgameKindUi on EndgameKind {
+  String label(AppLocalizations l10n) => switch (this) {
+    EndgameKind.pawn => l10n.endgamesKindPawn,
+    EndgameKind.queen => l10n.endgamesKindQueen,
+    EndgameKind.rook => l10n.endgamesKindRook,
+    EndgameKind.bishop => l10n.endgamesKindBishop,
+    EndgameKind.knight => l10n.endgamesKindKnight,
+    EndgameKind.minor => l10n.endgamesKindMinor,
+  };
+
+  String get code => 'kind.$name';
+}
+
+/// Como cada situação de aula aparece no filtro.
+extension EndgameLessonStatusUi on EndgameLessonStatus {
+  String label(AppLocalizations l10n) => switch (this) {
+    EndgameLessonStatus.open => l10n.endgamesStatusOpen,
+    EndgameLessonStatus.started => l10n.endgamesStatusStarted,
+    EndgameLessonStatus.passed => l10n.endgamesStatusPassed,
+  };
+
+  String get code => 'status.$name';
+}
+
+String _levelCode(RatingLevel level) => 'level.${EnumName(level).name}';
+
+/// O botão de filtro da barra, com o número de filtros ativos.
+class EndgamesFilterButton extends StatelessWidget {
+  const EndgamesFilterButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.select<EndgamesCubit, int>(
+      (cubit) => cubit.state.filter.count,
+    );
+    return IconButton(
+      key: EndgamesKeys.filtersButton,
+      tooltip: context.l10n.endgamesFilters,
+      isSelected: count > 0,
+      icon: Badge(
+        isLabelVisible: count > 0,
+        label: Text(context.l10n.endgamesFiltersCount(count)),
+        child: const Icon(Icons.filter_list),
+      ),
+      onPressed: () => showEndgamesFilterSheet(context),
+    );
+  }
+}
+
+/// Abre o modal dos filtros. Cada toque já vale (e fica gravado); o botão
+/// de baixo fecha mostrando quantas aulas sobraram.
+Future<void> showEndgamesFilterSheet(BuildContext context) {
+  final cubit = context.read<EndgamesCubit>();
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => BlocProvider.value(
+      value: cubit,
+      child: const SafeArea(top: false, child: _FilterSheet()),
+    ),
+  );
+}
+
+class _FilterSheet extends StatelessWidget {
+  const _FilterSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return BlocBuilder<EndgamesCubit, EndgamesState>(
+      builder: (context, state) {
+        final cubit = context.read<EndgamesCubit>();
+        final filter = state.filter;
+        final levels = state.availableLevels;
+        final shown = state.filteredLessons.length;
+        return Column(
+          key: EndgamesKeys.filtersSheet,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 12, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.endgamesFilters,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ),
+                  if (!filter.isEmpty)
+                    TextButton(
+                      key: EndgamesKeys.filtersSheetClear,
+                      onPressed: cubit.clearFilter,
+                      child: Text(l10n.endgamesFiltersClear),
+                    ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                children: [
+                  if (levels.isNotEmpty) ...[
+                    _Heading(l10n.endgamesFilterOrder),
+                    _Options(
+                      children: [
+                        for (final sort in EndgameSort.values)
+                          ChoiceChip(
+                            key: EndgamesKeys.filterOption('sort.${sort.name}'),
+                            label: Text(switch (sort) {
+                              EndgameSort.trail => l10n.endgamesSortTrail,
+                              EndgameSort.easiest => l10n.endgamesSortEasiest,
+                            }),
+                            selected: filter.sort == sort,
+                            onSelected: (_) => cubit.setSort(sort),
+                          ),
+                      ],
+                    ),
+                    _Heading(l10n.endgamesFilterLevel),
+                    _Options(
+                      children: [
+                        for (final level in levels)
+                          FilterChip(
+                            key: EndgamesKeys.filterOption(_levelCode(level)),
+                            label: Text(level.name(l10n)),
+                            selected: filter.levels.contains(level),
+                            onSelected: (_) => cubit.toggleLevel(level),
+                          ),
+                      ],
+                    ),
+                  ],
+                  _Heading(l10n.endgamesFilterKind),
+                  _Options(
+                    children: [
+                      for (final kind in state.availableKinds)
+                        FilterChip(
+                          key: EndgamesKeys.filterOption(kind.code),
+                          label: Text(kind.label(l10n)),
+                          selected: filter.kinds.contains(kind),
+                          onSelected: (_) => cubit.toggleKind(kind),
+                        ),
+                    ],
+                  ),
+                  _Heading(l10n.endgamesFilterStatus),
+                  _Options(
+                    children: [
+                      for (final status in EndgameLessonStatus.values)
+                        FilterChip(
+                          key: EndgamesKeys.filterOption(status.code),
+                          label: Text(status.label(l10n)),
+                          selected: filter.statuses.contains(status),
+                          onSelected: (_) => cubit.toggleStatus(status),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              child: FilledButton(
+                key: EndgamesKeys.filtersApply,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n.endgamesFiltersShow(shown)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _Heading extends StatelessWidget {
+  const _Heading(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 8),
+      child: Text(
+        text,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+class _Options extends StatelessWidget {
+  const _Options({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) =>
+      Wrap(spacing: 8, runSpacing: 8, children: children);
+}
+
+/// Os filtros ativos, como chips com X, e o "Limpar".
+class EndgamesActiveFilters extends StatelessWidget {
+  const EndgamesActiveFilters({super.key, required this.state});
+
+  final EndgamesState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<EndgamesCubit>();
+    final filter = state.filter;
+    Widget chip(String code, String label, VoidCallback onDeleted) => InputChip(
+      key: EndgamesKeys.filterChip(code),
+      label: Text(label),
+      onPressed: () => showEndgamesFilterSheet(context),
+      onDeleted: onDeleted,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          if (filter.sort == EndgameSort.easiest)
+            chip(
+              'sort.easiest',
+              l10n.endgamesSortEasiest,
+              () => cubit.setSort(EndgameSort.trail),
+            ),
+          for (final level in RatingLevel.values)
+            if (filter.levels.contains(level))
+              chip(
+                _levelCode(level),
+                level.name(l10n),
+                () => cubit.toggleLevel(level),
+              ),
+          for (final kind in EndgameKind.values)
+            if (filter.kinds.contains(kind))
+              chip(kind.code, kind.label(l10n), () => cubit.toggleKind(kind)),
+          for (final status in EndgameLessonStatus.values)
+            if (filter.statuses.contains(status))
+              chip(
+                status.code,
+                status.label(l10n),
+                () => cubit.toggleStatus(status),
+              ),
+          TextButton(
+            key: EndgamesKeys.filtersClear,
+            onPressed: cubit.clearFilter,
+            child: Text(l10n.endgamesFiltersClear),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Nenhuma aula com os filtros ativos.
+class EndgamesFiltersEmpty extends StatelessWidget {
+  const EndgamesFiltersEmpty({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      key: EndgamesKeys.filtersEmpty,
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Column(
+        children: [
+          Icon(Icons.filter_list_off, size: 48, color: colors.outline),
+          const SizedBox(height: 12),
+          Text(
+            l10n.endgamesFiltersEmpty,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            key: EndgamesKeys.filtersEmptyClear,
+            icon: const Icon(Icons.filter_list_off),
+            label: Text(l10n.endgamesFiltersClearAll),
+            onPressed: context.read<EndgamesCubit>().clearFilter,
+          ),
+        ],
+      ),
+    );
+  }
+}

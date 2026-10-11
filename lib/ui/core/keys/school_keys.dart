@@ -5,8 +5,10 @@ abstract final class SchoolKeys {
   static const placementTest = Key('school.placementTest');
   static const skippedGroup = Key('school.skippedGroup');
   static const reviewSkipped = Key('school.reviewSkipped');
+  static Key skippedLesson(String id) => Key('school.skippedLesson.$id');
 
   static const screen = Key('school.screen');
+  static const scroll = Key('school.scroll');
   static const continueButton = Key('school.continue');
   static const graduated = Key('school.graduated');
   static const diploma = Key('school.graduation.diploma');
@@ -49,6 +51,7 @@ abstract final class LessonKeys {
   static const missing = Key('lesson.missing');
   static const board = Key('lesson.board');
   static const speech = Key('lesson.speech');
+  static const viktorSheet = Key('lesson.viktorSheet');
   static const scroll = Key('lesson.scroll');
 
   /// Volta ao passo anterior, para rever.
@@ -71,6 +74,19 @@ abstract final class LessonKeys {
   static const demoForward = Key('lesson.demo.forward');
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');
+
+  /// A variante citada na fala, lance a lance no tabuleiro.
+  static const variationShow = Key('lesson.variation.show');
+  static const variationExit = Key('lesson.variation.exit');
+  static const variationBack = Key('lesson.variation.back');
+  static const variationForward = Key('lesson.variation.forward');
+
+  /// O selo de linha errada: junto ao tabuleiro e nos controles.
+  static const wrongLine = Key('lesson.wrongLine.board');
+  static const wrongLineControls = Key('lesson.wrongLine.controls');
+
+  /// Depois de um lance errado previsto: rever o ponto da lição.
+  static const reviewPoint = Key('lesson.reviewPoint');
   static const partFinished = Key('lesson.part.finished');
   static const nextPartButton = Key('lesson.part.next');
   static const reviewPartButton = Key('lesson.part.review');

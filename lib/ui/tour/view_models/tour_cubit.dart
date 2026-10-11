@@ -59,11 +59,15 @@ class TourState {
     this.characters = const [],
     this.byHand = false,
     this.placed,
+    this.levelChosen = false,
   });
 
   /// No passo do nível: o jogador preferiu escolher a faixa na mão (a lista
   /// das seis aparece no lugar do cartão do teste).
   final bool byHand;
+  final bool levelChosen;
+
+  bool get canAdvance => step.index < TourStep.level.index || levelChosen;
 
   /// O rating que o teste de nível deu, se o jogador o fez e usou.
   final int? placed;
@@ -138,9 +142,11 @@ class TourState {
     bool? forward,
     Set<HomePath>? goals,
     bool? byHand,
+    bool? levelChosen,
     int? Function()? placed,
   }) => TourState(
     byHand: byHand ?? this.byHand,
+    levelChosen: levelChosen ?? this.levelChosen,
     placed: placed == null ? this.placed : placed(),
     ready: ready ?? this.ready,
     step: step ?? this.step,
@@ -181,10 +187,16 @@ class TourCubit extends Cubit<TourState> {
   String _language = 'en';
   Onboarding _saved = const Onboarding();
   Future<void> _nicknameSaved = Future.value();
+  Future<void> _onboardingSaved = Future.value();
+  bool _finishing = false;
+  int _selectionRevision = 0;
+  int _navigationRevision = 0;
 
   /// As falas do Viktor vêm em [language] (as que faltam, em inglês).
   Future<void> load(String language) async {
     _language = language;
+    await _onboardingSaved;
+    await _nicknameSaved;
     _saved = await _onboarding.load();
     final profile = await _profile.load();
     final characters = await _characters.characters();
@@ -194,59 +206,108 @@ class TourCubit extends Cubit<TourState> {
     for (final character in characters) {
       if (character.id == 'master') viktor = character;
     }
-    // Revendo o tour (já visto), ele começa do primeiro passo.
-    final saved = _saved.done
-        ? 0
-        : _saved.step.clamp(0, TourStep.values.length - 1);
-    final step = await _shown(saved, forward: true);
+    // A new replay requires a fresh explicit choice; an unfinished replay
+    // resumes without changing the legacy done flag used by Home/router.
+    if (_saved.done && !_saved.inProgress) {
+      _saved = _saved.copyWith(
+        step: 0,
+        selectedRating: () => null,
+        byHand: false,
+      );
+    }
+    final selected = _saved.selectedRating;
+    final level = selected == null ? profile.level : RatingLevel.of(selected);
+    final saved = _saved.step.clamp(0, TourStep.values.length - 1);
+    final step = selected == null && saved > TourStep.level.index
+        ? TourStep.level.index
+        : await _shown(saved, forward: true);
     final first = await _shown(0, forward: true);
     emit(
       TourState(
         ready: true,
         step: TourStep.values[step],
         first: TourStep.values[first],
-        level: profile.level,
-        goals: HomeSuggestion.of(profile.level).visible,
+        level: level,
+        levelChosen: selected != null,
+        byHand: _saved.byHand,
+        placed: _saved.byHand ? null : selected,
+        goals: HomeSuggestion.of(level).visible,
         nickname: profile.nickname,
         viktor: viktor,
         texts: texts,
         characters: characters,
       ),
     );
+    await _save(_saved.copyWith(step: step, inProgress: true));
   }
 
-  Future<void> next() => _goTo(state.step.index + 1);
+  Future<void> next() async {
+    if (!state.ready || state.finished || _finishing || !state.canAdvance) {
+      return;
+    }
+    await _goTo(state.step.index + 1);
+  }
 
   Future<void> back() => _goTo(state.step.index - 1);
 
   /// Marca a faixa: os caminhos voltam à sugestão dela.
-  void setLevel(RatingLevel level) => emit(
-    state.copyWith(
-      level: level,
-      goals: HomeSuggestion.of(level).visible,
-      // A faixa escolhida na mão vale mais que a do teste.
-      placed: () => null,
-      byHand: true,
-    ),
-  );
+  Future<void> setLevel(RatingLevel level) async {
+    if (!state.ready || state.finished || _finishing) return;
+    _selectionRevision++;
+    emit(
+      state.copyWith(
+        level: level,
+        goals: HomeSuggestion.of(level).visible,
+        placed: () => null,
+        byHand: true,
+        levelChosen: true,
+      ),
+    );
+    await _save(
+      _saved.copyWith(selectedRating: () => level.rating, byHand: true),
+    );
+  }
 
-  /// "Prefiro escolher minha faixa" (ou, com [byHand] falso, voltar ao
-  /// cartão do teste).
-  void chooseByHand({bool byHand = true}) =>
-      emit(state.copyWith(byHand: byHand));
+  /// Opening the manual list is not a level choice. Switching modes clears
+  /// the earlier choice so an unselected/default band never becomes consent.
+  Future<void> chooseByHand({bool byHand = true}) async {
+    if (!state.ready ||
+        state.finished ||
+        _finishing ||
+        state.byHand == byHand) {
+      return;
+    }
+    _selectionRevision++;
+    emit(
+      state.copyWith(byHand: byHand, levelChosen: false, placed: () => null),
+    );
+    await _save(_saved.copyWith(byHand: byHand, selectedRating: () => null));
+  }
 
-  /// Voltou do teste com o resultado usado: o perfil já tem o rating dele
-  /// (e a Jornada, o degrau). A faixa fica marcada e o tour segue.
+  /// Called only when placement returns a result explicitly used by the user.
   Future<void> usePlacement() async {
+    if (!state.ready || state.finished || _finishing) return;
+    final revision = ++_selectionRevision;
     final profile = await _profile.load();
+    if (isClosed ||
+        state.finished ||
+        _finishing ||
+        revision != _selectionRevision) {
+      return;
+    }
     emit(
       state.copyWith(
         level: profile.level,
         goals: HomeSuggestion.of(profile.level).visible,
         placed: () => profile.rating,
+        byHand: false,
+        levelChosen: true,
       ),
     );
-    await next();
+    await _save(
+      _saved.copyWith(selectedRating: () => profile.rating, byHand: false),
+    );
+    if (!isClosed && revision == _selectionRevision) await next();
   }
 
   /// Marca ou desmarca um caminho. O último marcado não sai.
@@ -270,36 +331,54 @@ class TourCubit extends Cubit<TourState> {
     });
   }
 
-  /// Pula o resto: o tour não aparece de novo.
+  /// Skipping still requires an explicit level; before that it opens the choice.
   Future<void> skip() async {
-    await _nicknameSaved;
-    // A tela inicial fica com a sugestão do nível (segue o nível depois).
-    final level = (await _profile.load()).level;
-    await _home?.save(HomeSuggestion.of(level));
-    await _home?.markNoticeSeen();
-    await _save(_saved.copyWith(done: true, step: 0));
-    emit(state.copyWith(finished: true));
+    if (!state.ready || state.finished || _finishing) return;
+    if (!state.levelChosen) {
+      await _goTo(TourStep.level.index);
+      return;
+    }
+    await _finish(skipped: true);
   }
 
-  /// Confirma a faixa e os caminhos: o perfil fica com a faixa, a Jornada
-  /// começa no degrau dela e a tela inicial mostra os caminhos marcados.
   Future<void> finish() async {
-    await _nicknameSaved;
-    final profile = await _profile.load();
-    await _profile.save(profile.copyWith(rating: state.rating));
-    // A tela inicial com os caminhos marcados, na ordem do nível.
-    await _home?.save(
-      HomeSuggestion.withVisible(
-        HomeSuggestion.of(state.level),
-        state.goals,
-        state.level,
-      ),
-    );
-    await _home?.markNoticeSeen();
-    await _save(
-      _saved.copyWith(done: true, step: 0, startRung: state.startRung),
-    );
-    emit(state.copyWith(finished: true));
+    if (!state.ready || state.finished || _finishing) return;
+    if (!state.levelChosen) {
+      await _goTo(TourStep.level.index);
+      return;
+    }
+    await _finish(skipped: false);
+  }
+
+  Future<void> _finish({required bool skipped}) async {
+    _finishing = true;
+    try {
+      await _nicknameSaved;
+      await _onboardingSaved;
+      final profile = await _profile.load();
+      await _profile.save(profile.copyWith(rating: state.rating));
+      await _home?.save(
+        skipped
+            ? HomeSuggestion.of(state.level)
+            : HomeSuggestion.withVisible(
+                HomeSuggestion.of(state.level),
+                state.goals,
+                state.level,
+              ),
+      );
+      await _home?.markNoticeSeen();
+      await _save(
+        _saved.copyWith(
+          done: true,
+          step: 0,
+          startRung: state.startRung,
+          inProgress: false,
+        ),
+      );
+      if (!isClosed) emit(state.copyWith(finished: true));
+    } finally {
+      _finishing = false;
+    }
   }
 
   /// O passo [index] ou, se ele não se aplica, o próximo que se aplica no
@@ -329,23 +408,33 @@ class TourCubit extends Cubit<TourState> {
   }
 
   Future<void> _goTo(int requested) async {
-    final index = await _shown(
-      requested,
-      forward: requested > state.step.index,
-    );
-    if (index < 0 || index >= TourStep.values.length) return;
+    if (!state.ready || state.finished || _finishing) return;
+    final revision = ++_navigationRevision;
+    final target = !state.levelChosen && requested > TourStep.level.index
+        ? TourStep.level.index
+        : requested;
+    final index = await _shown(target, forward: requested > state.step.index);
+    if (isClosed ||
+        state.finished ||
+        _finishing ||
+        revision != _navigationRevision ||
+        index < 0 ||
+        index >= TourStep.values.length) {
+      return;
+    }
     emit(
       state.copyWith(
         step: TourStep.values[index],
         forward: index > state.step.index,
       ),
     );
-    // Revendo o tour, o passo não precisa ser lembrado.
-    if (!_saved.done) await _save(_saved.copyWith(step: index));
+    await _save(_saved.copyWith(step: index));
   }
 
-  Future<void> _save(Onboarding onboarding) async {
+  Future<void> _save(Onboarding onboarding) {
     _saved = onboarding;
-    await _onboarding.save(onboarding);
+    return _onboardingSaved = _onboardingSaved.then(
+      (_) => _onboarding.save(onboarding),
+    );
   }
 }

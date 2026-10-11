@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/endgames/view_models/endgames_cubit.dart';
@@ -8,6 +9,7 @@ import 'package:lucena/ui/endgames/widgets/endgames_screen.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -81,5 +83,72 @@ void main() {
       Directionality.of(tester.element(find.byKey(EndgamesKeys.overview))),
       TextDirection.rtl,
     );
+  });
+
+  testWidgets('filtros: modal, chip com X, estado vazio e limpar', (
+    tester,
+  ) async {
+    final settings = FakeSettingsRepository();
+    final cubit = EndgamesCubit(
+      lessons: FakeEndgameLessonRepository(),
+      progress: FakeEndgameProgressRepository(),
+      characters: FakeCharacterRepository(),
+      settings: settings,
+    );
+    addTearDown(cubit.close);
+    await cubit.load('en');
+    await tester.pumpWidget(
+      TestApp(
+        child: BlocProvider.value(value: cubit, child: const EndgamesScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(EndgamesKeys.filtersButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(EndgamesKeys.filtersSheet), findsOneWidget);
+    // Só os tipos que têm aula; sem o mapa de habilidades, sem dificuldade.
+    expect(find.byKey(EndgamesKeys.filterOption('kind.rook')), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.filterOption('kind.pawn')), findsNothing);
+    expect(find.byKey(EndgamesKeys.filterOption('sort.easiest')), findsNothing);
+
+    await tester.tap(find.byKey(EndgamesKeys.filterOption('status.passed')));
+    await tester.pumpAndSettle();
+    expect(find.text('No lessons'), findsOneWidget);
+    await tester.tap(find.byKey(EndgamesKeys.filtersApply));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(EndgamesKeys.filterChip('status.passed')),
+      findsOneWidget,
+    );
+    expect(find.byKey(EndgamesKeys.filtersEmpty), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.module('rook')), findsNothing);
+    expect((await settings.load()).endgamesFilter.statuses, {
+      EndgameLessonStatus.passed,
+    });
+
+    // O X do chip tira o filtro.
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(EndgamesKeys.filterChip('status.passed')),
+        matching: find.byIcon(Icons.clear),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(EndgamesKeys.filtersEmpty), findsNothing);
+    expect(find.byKey(EndgamesKeys.module('rook')), findsOneWidget);
+
+    // Dois filtros e o "Limpar".
+    await cubit.toggleKind(EndgameKind.rook);
+    await cubit.toggleStatus(EndgameLessonStatus.open);
+    await tester.pumpAndSettle();
+    expect(find.byKey(EndgamesKeys.filterChip('kind.rook')), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.lesson('rook.lucena')), findsOneWidget);
+    await tester.tap(find.byKey(EndgamesKeys.filtersClear));
+    await tester.pumpAndSettle();
+    expect(find.byKey(EndgamesKeys.filterChip('kind.rook')), findsNothing);
+    expect(cubit.state.filter, const EndgameFilter());
+    expect(const AppSettings().endgamesFilter, const EndgameFilter());
   });
 }

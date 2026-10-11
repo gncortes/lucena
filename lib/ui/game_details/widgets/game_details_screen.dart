@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
@@ -22,8 +21,9 @@ import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/rating_value.dart';
+import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/sheet_close_button.dart';
+import '../../core/widgets/viktor_sheet.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';
 import '../../core/theme/app_motion.dart';
@@ -47,7 +47,12 @@ class GameDetailsScreen extends StatelessWidget {
     final attempt = state.attempt;
     return Scaffold(
       key: GameDetailsKeys.screen,
-      appBar: AppBar(title: Text(l10n.gameDetailsTitle)),
+      appBar: AppBar(
+        leading: ContainerNavigation.canClose(context)
+            ? BackButton(onPressed: () => ContainerNavigation.close(context))
+            : null,
+        title: Text(l10n.gameDetailsTitle),
+      ),
       body: !state.ready
           // Carregando: o tabuleiro e os lances em esqueleto.
           ? ListView(
@@ -133,75 +138,6 @@ class _ReviewBodyState extends State<_ReviewBody> {
   /// A folha recolhida nunca passa disso: o tabuleiro tem o resto.
   static const _maxPeekFraction = 0.75;
 
-  /// A folha aberta.
-  static const _sheetMax = 0.94;
-
-  final _sheet = DraggableScrollableController();
-
-  // A altura de todo o conteúdo da folha (com o puxador): aberta, ela para
-  // aí, sem vazio embaixo em tela alta.
-  double? _contentHeight;
-
-  bool _onContentMetrics(ScrollMetricsNotification notification) {
-    final metrics = notification.metrics;
-    final content =
-        metrics.viewportDimension +
-        metrics.maxScrollExtent -
-        metrics.minScrollExtent;
-    if (_contentHeight == null || (content - _contentHeight!).abs() > 1) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => _contentHeight = content);
-      });
-    }
-    return false;
-  }
-
-  // O tamanho da folha, para o "x". A folha avisa até durante a montagem;
-  // o aviso passa para depois do quadro.
-  final _sheetSize = ValueNotifier<double?>(null);
-
-  // O controle de rolagem do conteúdo (o da folha) e o tamanho recolhido.
-  ScrollController? _scroll;
-  double _minSheet = 0.3;
-
-  /// Recolhida, o conteúdo fica sempre no topo: só assim puxar (pela alça
-  /// ou pelo conteúdo) abre a folha, em vez de rolar o conteúdo escondido.
-  void _scrollToTop() {
-    final scroll = _scroll;
-    if (scroll != null && scroll.hasClients && scroll.offset > 0) {
-      scroll.jumpTo(0);
-    }
-  }
-
-  void _onSheetChanged() {
-    void update() {
-      if (!mounted || !_sheet.isAttached) return;
-      _sheetSize.value = _sheet.size;
-      if (_sheet.size <= _minSheet + 0.005) _scrollToTop();
-    }
-
-    if (SchedulerBinding.instance.schedulerPhase ==
-        SchedulerPhase.persistentCallbacks) {
-      SchedulerBinding.instance.addPostFrameCallback((_) => update());
-    } else {
-      update();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _sheet.addListener(_onSheetChanged);
-  }
-
-  @override
-  void dispose() {
-    _sheet.removeListener(_onSheetChanged);
-    _sheet.dispose();
-    _sheetSize.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -214,10 +150,12 @@ class _ReviewBodyState extends State<_ReviewBody> {
       Side.black => (widget.opponent, you),
       null => (l10n.sideWhite, l10n.sideBlack),
     };
-    final header = [
-      _Header(state: state, attempt: attempt),
-      ReviewSummary(state: state, whiteName: whiteName, blackName: blackName),
-    ];
+    final summary = ReviewSummary(
+      state: state,
+      whiteName: whiteName,
+      blackName: blackName,
+    );
+    final header = [_Header(state: state, attempt: attempt)];
     final footer = [
       _MoveTable(state: state),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
@@ -225,7 +163,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
     if (state.shownPosition == null) {
       return ListView(
         padding: scrollPadding(context),
-        children: [...header, ...footer],
+        children: [summary, ...header, ...footer],
       );
     }
     return LayoutBuilder(
@@ -246,15 +184,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
           math.min(minPeek, _maxPeekFraction * height),
           _maxPeekFraction * height,
         );
-        final minSheet = (peek / height).toDouble();
         final boardArea = height - peek;
-        _minSheet = minSheet;
-        // Aberta, a folha para na altura do conteúdo, até [_sheetMax].
-        final content = _contentHeight;
-        final maxSheet = content == null
-            ? _sheetMax
-            : (content / height).clamp(minSheet, _sheetMax).toDouble();
-        final opens = maxSheet > minSheet + 0.01;
         return Stack(
           children: [
             Positioned(
@@ -279,126 +209,24 @@ class _ReviewBodyState extends State<_ReviewBody> {
               ),
             ),
             Positioned.fill(
-              child: DraggableScrollableSheet(
+              child: ViktorSheet(
                 key: GameDetailsKeys.sheet,
-                controller: _sheet,
-                initialChildSize: minSheet,
-                minChildSize: minSheet,
-                maxChildSize: opens ? maxSheet : minSheet,
-                snap: opens,
-                snapSizes: opens ? [minSheet, maxSheet] : null,
-                builder: (context, scroll) =>
-                    _sheetContent(context, _scroll = scroll, [
-                      MoveExplanation(state: state),
-                      if (state.engine) EngineLinesPanel(state: state),
-                      ...header,
-                      ...footer,
-                    ]),
+                top: boardArea,
+                scrollKey: GameDetailsKeys.panel,
+                closeKey: GameDetailsKeys.closeSheet,
+                padding: scrollPadding(context),
+                children: [
+                  summary,
+                  MoveExplanation(state: state),
+                  if (state.engine) EngineLinesPanel(state: state),
+                  ...header,
+                  ...footer,
+                ],
               ),
-            ),
-            // Folha cobrindo o tabuleiro: um "x" logo acima dela, para
-            // descer de uma vez.
-            ValueListenableBuilder(
-              valueListenable: _sheetSize,
-              builder: (context, size, _) {
-                final open = size ?? minSheet;
-                final covering = open > minSheet + 0.03;
-                return PositionedDirectional(
-                  end: SheetCloseButton.margin,
-                  top: math.max(
-                    0.0,
-                    height * (1 - open) - SheetCloseButton.lift,
-                  ),
-                  child: IgnorePointer(
-                    ignoring: !covering,
-                    child: AnimatedOpacity(
-                      duration: AppMotion.of(context).component,
-                      opacity: covering ? 1 : 0,
-                      child: SheetCloseButton(
-                        key: GameDetailsKeys.closeSheet,
-                        onPressed: () {
-                          // O conteúdo volta ao topo junto com a folha.
-                          final scroll = _scroll;
-                          if (scroll != null &&
-                              scroll.hasClients &&
-                              scroll.offset > 0) {
-                            scroll.animateTo(
-                              0,
-                              duration: AppMotion.of(context).component,
-                              curve: AppMotion.enter,
-                            );
-                          }
-                          _sheet.animateTo(
-                            minSheet,
-                            duration: AppMotion.of(context).component,
-                            curve: AppMotion.enter,
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              },
             ),
           ],
         );
       },
-    );
-  }
-
-  /// A folha: o puxador e o conteúdo, rolando por [scroll] (puxar sobe a
-  /// folha antes de rolar o conteúdo). O mesmo visual da folha da fala.
-  Widget _sheetContent(
-    BuildContext context,
-    ScrollController scroll,
-    List<Widget> children,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-    const radius = BorderRadius.vertical(top: Radius.circular(AppShape.large));
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: radius,
-        boxShadow: [
-          BoxShadow(
-            color: colors.shadow.withValues(alpha: 0.12),
-            blurRadius: 12,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: radius,
-        // A lista toda montada (sem preguiça): a altura dela é exata, e a
-        // folha aberta para nela.
-        child: NotificationListener<ScrollMetricsNotification>(
-          onNotification: _onContentMetrics,
-          child: SingleChildScrollView(
-            key: GameDetailsKeys.panel,
-            controller: scroll,
-            padding: scrollPadding(context),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: colors.outlineVariant,
-                        borderRadius: BorderRadius.circular(AppShape.full),
-                      ),
-                    ),
-                  ),
-                ),
-                ...children,
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -580,6 +408,45 @@ class _MoveTable extends StatelessWidget {
 
   final GameDetailsState state;
 
+  TextStyle _moveStyle(BuildContext context, int index) {
+    final theme = Theme.of(context);
+    final quality = state.reviewOf(index)?.quality;
+    return theme.textTheme.titleSmall!.copyWith(
+      fontWeight: FontWeight.w700,
+      height: 1.4,
+      color:
+          quality?.listColor(theme.brightness) ?? theme.colorScheme.onSurface,
+    );
+  }
+
+  TextSpan _notation(int index) => TextSpan(
+    children: [
+      for (final char in state.moves[index].san.split(''))
+        if (Figurine.ofLetter[char] case final figurine?)
+          TextSpan(
+            text: figurine,
+            style: const TextStyle(
+              fontFamily: Figurine.fontFamily,
+              fontWeight: FontWeight.w400,
+            ),
+          )
+        else
+          TextSpan(text: char),
+      TextSpan(text: state.reviewOf(index)?.quality.listAnnotation ?? ''),
+    ],
+  );
+
+  double _width(BuildContext context, InlineSpan span, TextStyle style) {
+    final painter = TextPainter(
+      text: TextSpan(style: style, children: [span]),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final width = painter.width;
+    painter.dispose();
+    return width;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -590,130 +457,232 @@ class _MoveTable extends StatelessWidget {
     }
     final offset = start.turn == Side.black ? 1 : 0;
     final rows = (state.moves.length + offset + 1) ~/ 2;
-    // A variante fica sob a linha do lance da partida que ela troca (ou da
-    // última, se sai do fim).
     final replaced = math.min(state.variationFrom + 1, state.moves.length - 1);
     final variationRow = state.variation.isEmpty
         ? null
         : math.max(0, (replaced + offset) ~/ 2);
     final variation = _VariationLine(state: state);
+    final numberWidth =
+        _width(
+          context,
+          TextSpan(text: '${start.fullmoves + rows}.'),
+          theme.textTheme.titleSmall!,
+        ) +
+        8;
+    final moveWidths = [
+      for (var i = 0; i < state.moves.length; i++)
+        _width(context, _notation(i), _moveStyle(context, i)),
+    ];
+    final longest = moveWidths.fold(0.0, math.max);
+    final timeStyle = theme.textTheme.labelMedium!.copyWith(
+      color: colors.onSurfaceVariant,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    final timeWidth = state.moves
+        .where((move) => move.time != null)
+        .fold(
+          0.0,
+          (width, move) => math.max(
+            width,
+            _width(
+              context,
+              TextSpan(text: _seconds(context, move.time!)),
+              timeStyle,
+            ),
+          ),
+        );
     return Directionality(
-      // A notação de xadrez é sempre da esquerda para a direita.
       textDirection: TextDirection.ltr,
       child: Card(
         margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
         color: colors.surfaceContainerLow,
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            if (variationRow != null && rows == 0) variation,
-            for (var row = 0; row < rows; row++) ...[
-              Container(
-                color: row.isOdd
-                    ? colors.onSurface.withValues(alpha: 0.04)
-                    : null,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: Text(
-                        '${start.fullmoves + row}.',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                          fontWeight: FontWeight.w400,
+        child: LayoutBuilder(
+          builder: (context, box) {
+            // Se nem o SAN sozinho cabe em meia linha, cada lado ganha uma
+            // linha inteira. Tempos continuam alinhados no mesmo limite direito.
+            final singleColumn =
+                (box.maxWidth - 16 - numberWidth) / 2 < longest + 24;
+            return Column(
+              children: [
+                if (variationRow != null && rows == 0) variation,
+                for (var row = 0; row < rows; row++) ...[
+                  Container(
+                    color: row.isOdd
+                        ? colors.onSurface.withValues(alpha: 0.04)
+                        : null,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: numberWidth,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 14),
+                            child: Text(
+                              '${start.fullmoves + row}.',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        if (singleColumn)
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _cell(
+                                  context,
+                                  row * 2 - offset,
+                                  timeWidth,
+                                  timeStyle,
+                                  moveWidths,
+                                ),
+                                _cell(
+                                  context,
+                                  row * 2 + 1 - offset,
+                                  timeWidth,
+                                  timeStyle,
+                                  moveWidths,
+                                ),
+                              ],
+                            ),
+                          )
+                        else ...[
+                          Expanded(
+                            child: _cell(
+                              context,
+                              row * 2 - offset,
+                              timeWidth,
+                              timeStyle,
+                              moveWidths,
+                            ),
+                          ),
+                          Expanded(
+                            child: _cell(
+                              context,
+                              row * 2 + 1 - offset,
+                              timeWidth,
+                              timeStyle,
+                              moveWidths,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    Expanded(child: _cell(context, row * 2 - offset)),
-                    Expanded(child: _cell(context, row * 2 + 1 - offset)),
-                  ],
-                ),
-              ),
-              if (row == variationRow) variation,
-            ],
-          ],
+                  ),
+                  if (row == variationRow) variation,
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _cell(BuildContext context, int index) {
+  Widget _cell(
+    BuildContext context,
+    int index,
+    double timeWidth,
+    TextStyle timeStyle,
+    List<double> moveWidths,
+  ) {
     if (index < 0 || index >= state.moves.length) {
       return const SizedBox(height: 44);
     }
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
     final move = state.moves[index];
+    final quality = state.reviewOf(index)?.quality;
     final selected = index == state.shownIndex;
     final time = move.time;
-    return InkWell(
-      key: GameDetailsKeys.move(index),
-      borderRadius: BorderRadius.circular(AppShape.small),
-      onTap: () => context.read<GameDetailsCubit>().select(index),
-      child: AnimatedContainer(
-        duration: AppMotion.state,
-        constraints: const BoxConstraints(minHeight: 44),
-        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: selected ? colors.secondaryContainer : Colors.transparent,
+    final style = _moveStyle(context, index);
+    final label = [
+      move.san,
+      if (quality != null) quality.label(context.l10n),
+      if (time != null) _seconds(context, time),
+    ].join(', ');
+    void select() => context.read<GameDetailsCubit>().select(index);
+    return Semantics(
+      label: label,
+      button: true,
+      selected: selected,
+      onTap: select,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: InkWell(
+          key: GameDetailsKeys.move(index),
           borderRadius: BorderRadius.circular(AppShape.small),
-        ),
-        // O lance nunca é cortado: sem espaço na linha (tela estreita ou
-        // fonte grande), o selo e o tempo descem para baixo dele.
-        alignment: AlignmentDirectional.centerStart,
-        child: Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text.rich(
-              TextSpan(
-                children: [
-                  for (final char in move.san.split(''))
-                    if (Figurine.ofLetter[char] case final figurine?)
-                      TextSpan(
-                        text: figurine,
-                        style: const TextStyle(
-                          fontFamily: Figurine.fontFamily,
-                          fontWeight: FontWeight.w400,
+          onTap: select,
+          child: AnimatedContainer(
+            duration: AppMotion.of(context).state,
+            constraints: const BoxConstraints(minHeight: 44),
+            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: selected ? colors.secondaryContainer : Colors.transparent,
+              borderRadius: BorderRadius.circular(AppShape.small),
+              border: Border.all(
+                color: selected ? colors.outline : Colors.transparent,
+              ),
+            ),
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final notation = Text.rich(
+                  _notation(index),
+                  key: quality == null
+                      ? null
+                      : GameDetailsKeys.moveQuality(index),
+                  style: style,
+                  strutStyle: StrutStyle.fromTextStyle(
+                    style,
+                    forceStrutHeight: true,
+                  ),
+                  softWrap: false,
+                );
+                final clock = SizedBox(
+                  width: timeWidth,
+                  child: time == null
+                      ? null
+                      : Text(
+                          _seconds(context, time),
+                          key: GameDetailsKeys.moveTime(index),
+                          textAlign: TextAlign.right,
+                          style: timeStyle,
+                          softWrap: false,
                         ),
-                      )
-                    else
-                      TextSpan(text: char),
-                ],
-              ),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: selected ? colors.onSecondaryContainer : null,
-              ),
-              softWrap: false,
+                );
+                if (box.maxWidth < moveWidths[index] + timeWidth + 12) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      notation,
+                      if (time != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: clock,
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(child: notation),
+                    const SizedBox(width: 12),
+                    clock,
+                  ],
+                );
+              },
             ),
-            // O selo e o tempo; sem espaço, o tempo quebra a linha.
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                if (state.reviewOf(index) case final reviewed?) ...[
-                  MoveQualityBadge(
-                    reviewed.quality,
-                    size: 18,
-                    key: GameDetailsKeys.moveQuality(index),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                // Quanto o lance levou, discreto à direita.
-                if (time != null)
-                  Text(
-                    _seconds(context, time),
-                    key: GameDetailsKeys.moveTime(index),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

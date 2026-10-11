@@ -30,7 +30,9 @@ RatingLevel? _level(BuildContext context) {
 /// Todos os modos do app num lugar só, mesmo os que o jogador tirou do
 /// destaque da tela inicial: aprender, jogar, ferramentas e o progresso.
 class AllModesScreen extends StatelessWidget {
-  const AllModesScreen({super.key});
+  const AllModesScreen({super.key, this.hasBlindCheckpoint});
+
+  final Future<bool> Function()? hasBlindCheckpoint;
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +166,21 @@ class AllModesScreen extends StatelessWidget {
                     icon: item.icon,
                     title: item.title,
                     body: item.body,
-                    onTap: () => item.route == _lichess
-                        ? launchUrl(
-                            LichessInvite.url,
-                            mode: LaunchMode.externalApplication,
-                          )
-                        : context.go(item.route),
+                    onTap: () async {
+                      if (item.route == _lichess) {
+                        await launchUrl(
+                          LichessInvite.url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                        return;
+                      }
+                      final resume =
+                          item.id == 'blind' &&
+                          (await hasBlindCheckpoint?.call() ?? false);
+                      if (context.mounted) {
+                        context.go(resume ? Routes.blind : item.route);
+                      }
+                    },
                   ),
                 ),
               ),

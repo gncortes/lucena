@@ -117,6 +117,38 @@ class SpeechCubit extends Cubit<SpeechState> {
 
   // O idioma da fala do momento, para recomeçá-la noutra velocidade.
   String? _language;
+  bool _background = false;
+  int _lifecycleGeneration = 0;
+  int _spokenStart = 0;
+  int _spokenBase = 0;
+  Future<void>? _stopping;
+
+  /// Mantém a identidade da fala; volta à última palavra reportada pelo TTS.
+  /// Sem eventos de progresso, a fala inteira é repetida para não pular texto.
+  Future<void> pauseForBackground() async {
+    _lifecycleGeneration++;
+    if (_background) return;
+    _background = true;
+    if (state.speaking != null) {
+      await (_stopping = _voice.stop());
+    }
+  }
+
+  Future<void> resumeFromBackground() async {
+    final generation = ++_lifecycleGeneration;
+    if (!_background) return;
+    await _stopping;
+    if (isClosed || !_background || generation != _lifecycleGeneration) return;
+    _background = false;
+    final utterance = _utterance;
+    final speaker = state.speakerId;
+    final language = _language;
+    if (utterance == null || speaker == null || language == null) return;
+    final voice = state.voiceOf(speaker, language);
+    if (voice == null) return;
+    _spokenBase = _spokenStart.clamp(0, utterance.text.length);
+    await _voice.speak(utterance.text.substring(_spokenBase), voice);
+  }
 
   Future<void> load() async {
     final settings = await _voice.load();
@@ -151,6 +183,7 @@ class SpeechCubit extends Cubit<SpeechState> {
     if (voice == null) return;
     final utterance = _utterance = SpokenText.utterance(text, language);
     _language = language;
+    _spokenStart = _spokenBase = 0;
     emit(
       state.copyWith(
         speaking: () => text,
@@ -158,7 +191,7 @@ class SpeechCubit extends Cubit<SpeechState> {
         revealed: () => null,
       ),
     );
-    await _voice.speak(utterance.text, voice);
+    if (!_background) await _voice.speak(utterance.text, voice);
   }
 
   /// O botão de áudio: fala [text] ou, se já está falando, para.
@@ -210,8 +243,10 @@ class SpeechCubit extends Cubit<SpeechState> {
   }) async {
     final voices = state.voicesFor(language);
     final voice = voices.where((v) => v.id == voiceId).firstOrNull;
-    if (voice == null) return;
+    if (voice == null || _background) return;
     _utterance = SpokenText.utterance(text, language);
+    _language = language;
+    _spokenStart = _spokenBase = 0;
     emit(
       state.copyWith(
         speaking: () => text,
@@ -336,14 +371,19 @@ class SpeechCubit extends Cubit<SpeechState> {
   }
 
   void _onEvent(TtsEvent event) {
-    if (isClosed || state.speaking == null) return;
+    if (isClosed || _background || state.speaking == null) return;
     switch (event) {
       case TtsStarted():
         break;
-      case TtsProgress(:final end):
+      case TtsProgress(:final start, :final end):
+        _spokenStart = _spokenBase + start;
         final utterance = _utterance;
         if (utterance == null) return;
-        emit(state.copyWith(revealed: () => utterance.displayOffset(end)));
+        emit(
+          state.copyWith(
+            revealed: () => utterance.displayOffset(_spokenBase + end),
+          ),
+        );
       case TtsFinished():
         _utterance = null;
         emit(

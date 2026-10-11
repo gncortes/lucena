@@ -2386,9 +2386,17 @@
   "@referenceLinkStudy": {
     "description": "Link that opens, in the browser, the Lichess study the position comes from."
   },
-  "referenceLinkWeb": "View on Lichess",
+  "referenceLinkLichess": "View on Lichess",
+  "@referenceLinkLichess": {
+    "description": "Link that opens a Lichess page."
+  },
+  "referenceLinkWikipedia": "View on Wikipedia",
+  "@referenceLinkWikipedia": {
+    "description": "Link that opens a Wikipedia article."
+  },
+  "referenceLinkWeb": "Open reference",
   "@referenceLinkWeb": {
-    "description": "Link that opens, in the browser, the web page the position comes from (on Lichess)."
+    "description": "Link that opens a reference on another website."
   },
   "exerciseTitle": "Exercise {number} of {count}",
   "@exerciseTitle": {
@@ -2402,6 +2410,8 @@
       }
     }
   },
+  "exerciseCorrect": "Correct!",
+  "@exerciseCorrect": {"description": "Badge that pops up below the exercise board when the student solves it with the right moves."},
   "exerciseSolved": "Solved!",
   "@exerciseSolved": {
     "description": "Title of the card after solving an exercise."
@@ -3765,6 +3775,44 @@
       }
     }
   },
+  "lessonWrongLine": "Wrong line",
+  "@lessonWrongLine": {
+    "description": "Lesson badge by the board and in the move controls: the moves shown are the WRONG line (what not to do)."
+  },
+  "lessonReviewPoint": "Review this point",
+  "@lessonReviewPoint": {
+    "description": "Lesson button after a wrong move in a practice step: open the lesson step that explains this point."
+  },
+  "lessonBackToTest": "Back to the test",
+  "@lessonBackToTest": {
+    "description": "Lesson button while reviewing a point: go back to the practice step where the student made the mistake."
+  },
+  "lessonMistakeGeneric": "Not that one. Think about what the lesson showed about “{topic}”.",
+  "@lessonMistakeGeneric": {
+    "description": "Teacher speech after a wrong move with no specific explanation. topic is the title of the lesson part (or of the lesson).",
+    "placeholders": {
+      "topic": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonThinkMistakeGeneric": "Your move {move} doesn't work here. Here is why:",
+  "@lessonThinkMistakeGeneric": {
+    "description": "Teacher speech that opens the explanation of a think step after a wrong move with no specific explanation. move is the move in numbered algebraic notation (1...Kd7).",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonVariationShow": "See the line",
+  "@lessonVariationShow": {
+    "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
+  },
+  "lessonVariationExit": "Back to the lesson position",
+  "@lessonVariationExit": {
+    "description": "Lesson footer button (tooltip): leave the cited line and show the lesson step position again."
+  },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
     "description": "Tooltip: go back one move in the demonstration."
@@ -3803,7 +3851,7 @@
   "@lessonToFinalTest": {
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
-  "lessonReviewPart": "Review this chapter",
+  "lessonReviewPart": "Review",
   "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
   "lessonPartNext": "Next",
   "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
@@ -5181,5 +5229,97 @@
         "type": "int"
       }
     }
+  },
+  "speedrunQuitProgress": "Give up this speedrun? You lose the {count} stages won.",
+  "@speedrunQuitProgress": {"description": "Warning before abandoning a speedrun, including completed stages.", "placeholders": {"count": {"type": "int"}}},
+  "emptyFirstEndgame": "Play my first endgame",
+  "@emptyFirstEndgame": {
+    "description": "Primary action inviting a player with no game history to choose their first endgame."
+  },
+  "speedrunHelpClassic": "Each game has separate clocks. Only the time spent on your clock is added to the total, including unsuccessful stages. Repeat an unsuccessful stage without resetting the accumulated time.",
+  "@speedrunHelpClassic": {
+    "description": "Help: Classic separate clocks, player time summed across retries."
+  },
+  "speedrunHelpMarathon": "One time bank for all stages. Each game starts with the time left from the previous one; increments are added to that bank. A loss, a draw or running out of time ends the Marathon. The next stage starts without a pause.",
+  "@speedrunHelpMarathon": {
+    "description": "Help: Marathon shared time bank, increments, failure and continuous stages."
+  },
+  "speedrunHelpClock": "{time} initially. {increment, plural, =0{No time is added after a move.} =1{After each move you make, 1 second is added to your clock.} other{After each move you make, {increment} seconds are added to your clock.}} In Classic, each game starts with the full time; in Marathon, this is the initial bank for the whole run.",
+  "@speedrunHelpClock": {
+    "description": "Help: selected initial time and per-move increment; distinction between modes.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "increment": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunHelpLevels": "Levels · endgames and opponents",
+  "@speedrunHelpLevels": {
+    "description": "Help heading above real speedrun series grouped using their existing category."
+  },
+  "speedrunHelpPause": "In Classic, the timer stops between games. You can leave and return later. In Marathon, stages follow each other without a pause.",
+  "@speedrunHelpPause": {
+    "description": "Help: pause is available between Classic games, not between Marathon stages."
+  },
+  "endgamesFilters": "Filters",
+  "@endgamesFilters": {"description": "Endgame lessons: tooltip of the filter button and title of the filter sheet."},
+  "endgamesFilterOrder": "Order",
+  "@endgamesFilterOrder": {"description": "Filter sheet: heading of the order options."},
+  "endgamesSortTrail": "Course order",
+  "@endgamesSortTrail": {"description": "Filter sheet: order of the course (by module)."},
+  "endgamesSortEasiest": "Easiest first",
+  "@endgamesSortEasiest": {"description": "Filter sheet: order from the easiest lesson to the hardest."},
+  "endgamesFilterLevel": "Difficulty",
+  "@endgamesFilterLevel": {"description": "Filter sheet: heading of the difficulty options (rating bands)."},
+  "endgamesFilterKind": "Type of endgame",
+  "@endgamesFilterKind": {"description": "Filter sheet: heading of the endgame type options."},
+  "endgamesFilterStatus": "Progress",
+  "@endgamesFilterStatus": {"description": "Filter sheet: heading of the lesson progress options."},
+  "endgamesKindPawn": "Pawn endgames",
+  "@endgamesKindPawn": {"description": "Endgame type: only kings and pawns."},
+  "endgamesKindQueen": "Queen endgames",
+  "@endgamesKindQueen": {"description": "Endgame type: with a queen."},
+  "endgamesKindRook": "Rook endgames",
+  "@endgamesKindRook": {"description": "Endgame type: with a rook."},
+  "endgamesKindBishop": "Bishop endgames",
+  "@endgamesKindBishop": {"description": "Endgame type: with a bishop."},
+  "endgamesKindKnight": "Knight endgames",
+  "@endgamesKindKnight": {"description": "Endgame type: with a knight."},
+  "endgamesKindMinor": "Minor pieces",
+  "@endgamesKindMinor": {"description": "Endgame type: bishops or knights, without queens or rooks."},
+  "endgamesStatusOpen": "Not started",
+  "@endgamesStatusOpen": {"description": "Lesson progress filter: nothing done yet."},
+  "endgamesStatusStarted": "In progress",
+  "@endgamesStatusStarted": {"description": "Lesson progress filter: started but not passed."},
+  "endgamesStatusPassed": "Completed",
+  "@endgamesStatusPassed": {"description": "Lesson progress filter: passed."},
+  "endgamesFiltersClear": "Clear",
+  "@endgamesFiltersClear": {"description": "Removes every active filter (short button)."},
+  "endgamesFiltersShow": "{count, plural, =0{No lessons} =1{Show 1 lesson} other{Show {count} lessons}}",
+  "@endgamesFiltersShow": {"description": "Filter sheet: closes it showing how many lessons match.", "placeholders": {"count": {"type": "int"}}},
+  "endgamesFiltersEmpty": "No lesson matches these filters.",
+  "@endgamesFiltersEmpty": {"description": "Endgame lessons: no lesson matches the active filters."},
+  "endgamesFiltersClearAll": "Clear filters",
+  "@endgamesFiltersClearAll": {"description": "Button in the empty state: remove every filter."},
+  "endgamesLevelSection": "{level} · {range}",
+  "@endgamesLevelSection": {"description": "Section heading when sorted by difficulty: the band name and its rating range.", "placeholders": {"level": {"type": "String"}, "range": {"type": "String"}}},
+  "endgamesLevelNone": "Other lessons",
+  "@endgamesLevelNone": {"description": "Section heading for lessons without a difficulty band."},
+  "endgamesFiltersCount": "{count}",
+  "@endgamesFiltersCount": {"description": "Badge on the filter button: how many filters are active.", "placeholders": {"count": {"type": "int"}}},
+  "endgameLessonFailed": "Lesson failed review: it will be redone.",
+  "@endgameLessonFailed": {
+    "description": "Banner on an endgame lesson whose content failed review and will be rewritten."
+  },
+  "endgamesTagFailed": "Failed",
+  "@endgamesTagFailed": {
+    "description": "Short tag on a lesson card: the lesson failed content review."
+  },
+  "endgamesTagInReview": "Under review",
+  "@endgamesTagInReview": {
+    "description": "Short tag on a lesson card: the lesson content is still under review."
   }
 }

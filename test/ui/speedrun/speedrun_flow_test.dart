@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/domain/models/conclusion.dart';
@@ -18,6 +20,8 @@ import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
+import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/test_dependencies.dart';
 
 /// O caminho de uma tentativa pelo app: as telas de cima mostram o resultado
@@ -51,6 +55,89 @@ void main() {
     await openList(tester);
     await tester.tap(find.byKey(SpeedrunKeys.item(id)));
     await tester.pumpAndSettle();
+  }
+
+  for (final marathon in [false, true]) {
+    for (final systemBack in [false, true]) {
+      testWidgets(
+        '${marathon ? "Maratona" : "Clássico"}: '
+        '${systemBack ? "voltar" : "X"} do resultado mantém duas etapas vencidas',
+        (tester) async {
+          final now = FakeNow(DateTime.utc(2026, 10, 11, 12));
+          final progress = FakeProgressRepository();
+          final speedruns = FakeSpeedrunRepository(progress);
+          final games = FakeOngoingGameRepository();
+          final template = marathon ? sampleMarathon : sampleSpeedruns[1];
+          final base = SpeedrunPaces.withTime(template, sampleSpeedrunTime);
+          final attempt = await speedruns.start(base.id, now());
+          for (final stage in [0, 1]) {
+            now.advance(const Duration(seconds: 20));
+            await progress.addAttempt(
+              Attempt(
+                positionId: samplePositions[0].id,
+                playedAt: now(),
+                outcome: AttemptOutcome.win,
+                fulfilled: true,
+                opponent: OpponentKind.maia,
+                opponentLevel: 1000,
+                userClock: const Duration(seconds: 20),
+                userTime: base.time,
+                startFen: samplePositions[0].fen,
+                endReason: GameEndReason.checkmate,
+                speedrunAttemptId: attempt.id,
+                speedrunStage: stage,
+              ),
+            );
+          }
+          await tester.pumpWidget(
+            LucenaApp(
+              dependencies: testDependencies(
+                now: now,
+                progressRepository: progress,
+                speedrunRepository: speedruns,
+                ongoingGameRepository: games,
+                journeyRepository: FakeJourneyRepository(speedruns: [template]),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          final context = tester.element(find.byKey(HomeKeys.screen));
+          GoRouter.of(context).go(Routes.conclusion(2));
+          await tester.pumpAndSettle();
+          expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
+          expect(games.snapshot, isNull);
+          if (systemBack) {
+            await tester.binding.handlePopRoute();
+          } else {
+            await tester.tap(find.byKey(ConclusionKeys.close));
+          }
+          await tester.pumpAndSettle();
+          final game = tester
+              .element(find.byKey(FreeBoardKeys.screen))
+              .read<FreeBoardCubit>();
+          expect(game.state.mode.speedrunAttemptId, attempt.id);
+          expect(game.state.mode.speedrunStage, 2);
+          expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
+          if (marathon) {
+            expect(
+              game.state.clock!.config.of(game.state.mode.userSide!).initial,
+              base.time.initial - const Duration(seconds: 40),
+            );
+          }
+          // Tanto o X quanto o voltar levam à mesma confirmação explícita.
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(
+            find.text('Give up this speedrun? You lose the 2 stages won.'),
+            findsOneWidget,
+          );
+          await tester.tap(find.byKey(FreeBoardKeys.speedrunQuitCancel));
+          await tester.pumpAndSettle();
+          expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+          expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
+        },
+      );
+    }
   }
 
   testWidgets('ao voltar da tentativa concluída, o recorde aparece', (

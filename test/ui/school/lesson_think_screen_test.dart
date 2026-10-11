@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
@@ -81,6 +83,8 @@ void main() {
     Size size = const Size(400, 800),
     Locale locale = const Locale('en'),
     double scale = 1.0,
+    bool systemBars = false,
+    bool reducedMotion = false,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -108,12 +112,23 @@ void main() {
       TestApp(
         locale: locale,
         settingsCubit: settings,
-        child: MediaQuery(
-          data: MediaQueryData(
-            size: size,
-            textScaler: TextScaler.linear(scale),
+        child: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              padding: systemBars
+                  ? const EdgeInsets.only(top: 52, bottom: 24)
+                  : EdgeInsets.zero,
+              viewPadding: systemBars
+                  ? const EdgeInsets.only(top: 52, bottom: 24)
+                  : EdgeInsets.zero,
+              textScaler: TextScaler.linear(scale),
+              disableAnimations: reducedMotion,
+            ),
+            child: BlocProvider.value(
+              value: cubit,
+              child: const LessonScreen(),
+            ),
           ),
-          child: BlocProvider.value(value: cubit, child: const LessonScreen()),
         ),
       ),
     );
@@ -121,17 +136,73 @@ void main() {
     return cubit;
   }
 
-  /// O tabuleiro no centro do espaço útil (T64): entre o fim da barra do
-  /// app e o rodapé, sem cobrir o enunciado nem o rodapé.
+  testWidgets('B5: trocar o passo recolhe a folha com movimento reduzido', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, reducedMotion: true);
+    await tester.tapAt(
+      tester.getTopLeft(find.byKey(LessonKeys.scroll)) + const Offset(40, 12),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(LessonKeys.closeSheet).hitTestable(), findsOneWidget);
+    cubit.next();
+    await tester.pumpAndSettle();
+    expect(cubit.state.step, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('B5: recolhida mantém ações após alterar altura da tela', (
+    tester,
+  ) async {
+    await pump(tester, systemBars: true);
+    for (final height in [640.0, 800.0, 915.0, 800.0]) {
+      tester.view.physicalSize = Size(360, height);
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(LessonKeys.nextButton).hitTestable(),
+        findsOneWidget,
+        reason: 'altura=$height',
+      );
+      expect(find.byKey(LessonKeys.closeSheet).hitTestable(), findsNothing);
+      expect(
+        tester.getRect(find.byKey(LessonKeys.scroll)).top,
+        greaterThan(tester.getRect(find.byKey(LessonKeys.board)).bottom),
+        reason: 'a folha recolhida não cobre o tabuleiro; altura=$height',
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   void expectCentered(WidgetTester tester) {
     final board = tester.getRect(find.byKey(LessonKeys.board));
-    final prompt = tester.getRect(find.byKey(LessonKeys.prompt));
-    final footer = tester.getRect(find.byKey(LessonKeys.footer));
-    final appBar = tester.getRect(find.byType(AppBar));
-    expect(board.center.dx, closeTo(200, 1));
-    expect(board.top, greaterThanOrEqualTo(prompt.bottom));
-    expect(board.bottom, lessThanOrEqualTo(footer.top));
-    expect(board.center.dy, closeTo((appBar.bottom + footer.top) / 2, 1));
+    final size = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(board.center.dx, closeTo(size.width / 2, 1));
+    expect(board.center.dy, closeTo(size.height / 2, 1));
+    expect(find.byKey(LessonKeys.prompt), findsNothing);
+    expect(
+      tester.getRect(find.byKey(LessonKeys.scroll)).top,
+      greaterThan(board.bottom),
+    );
+  }
+
+  void expectPeek(WidgetTester tester) {
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.byKey(LessonKeys.speech),
+    );
+    final first = paragraph
+        .getBoxesForSelection(
+          const TextSelection(baseOffset: 0, extentOffset: 1),
+        )
+        .first;
+    final bottom = paragraph.localToGlobal(Offset(0, first.bottom)).dy;
+    expect(
+      bottom,
+      lessThanOrEqualTo(tester.getRect(find.byKey(LessonKeys.footer)).top),
+    );
+    final avatar = tester.widget<CharacterAvatar>(
+      find.byType(CharacterAvatar).first,
+    );
+    expect(avatar.size, 56);
   }
 
   String timerText(WidgetTester tester) => tester
@@ -143,11 +214,34 @@ void main() {
       )
       .data!;
 
+  testWidgets('T65: lifecycle congela timer, lance e fala e retoma', (
+    tester,
+  ) async {
+    final cubit = await pump(tester);
+    final fen = cubit.state.fen;
+    final speech = cubit.state.speech;
+    now.advance(const Duration(seconds: 7));
+    await tester.pump(const Duration(milliseconds: 250));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    now.advance(const Duration(minutes: 2));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(seconds: 10));
+    expect(timerText(tester), '0:07');
+    expect(cubit.state.fen, fen);
+    expect(cubit.state.speech, speech);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    now.advance(const Duration(seconds: 2));
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(timerText(tester), '0:09');
+  });
+
   testWidgets('pensar: sem seletor de tempo, o tabuleiro no centro do espaço '
       'livre e o cronômetro no canto de início, contando', (tester) async {
     await pump(tester);
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
-    expect(find.byKey(LessonKeys.prompt), findsOneWidget);
+    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
+    expect(find.byKey(LessonKeys.prompt), findsNothing);
     expectCentered(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     // O cronômetro no canto inferior direito, do zero.
@@ -163,7 +257,7 @@ void main() {
     now.advance(const Duration(minutes: 5));
     await tester.pump(const Duration(milliseconds: 300));
     expect(timerText(tester), '6:30');
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
+    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.byKey(LessonKeys.moreHintButton), findsOneWidget);
     expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
   });
@@ -223,14 +317,14 @@ void main() {
     await tester.tap(find.byKey(LessonKeys.moreHintButton));
     await tester.pumpAndSettle();
     expect(find.text('Think about a bridge.'), findsOneWidget);
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
+    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
 
     await tester.tap(find.byKey(LessonKeys.nextButton));
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'try')), findsOneWidget);
     // O passo de lance também se resolve: segue no centro (o enunciado
     // mudou de altura, então o centro também), com o cronômetro do zero.
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
+    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(timerText(tester), '0:00');
     expectCentered(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
@@ -268,7 +362,9 @@ void main() {
 
     expect(find.byKey(LessonKeys.stepTimer), findsNothing);
     expect(find.byKey(LessonKeys.prompt), findsNothing);
+    // Explicando, o tabuleiro sobe (mesmo tamanho) e a folha fica com o resto.
     final raised = tester.getRect(find.byKey(LessonKeys.board));
+    expect(raised.size, centered.size);
     expect(raised.top, lessThan(centered.top));
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.text('Perfect, that is the bridge.'), findsOneWidget);
@@ -282,9 +378,51 @@ void main() {
     await tester.tap(find.byKey(LessonKeys.backButton));
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'think')), findsOneWidget);
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
+    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expectCentered(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
     expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
   });
+  for (final size in [
+    const Size(360, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    testWidgets(
+      'B5 $size: pensar e jogar no centro; explicar sobe o tabuleiro',
+      (tester) async {
+        final cubit = await pump(tester, size: size, systemBars: true);
+        final board = tester.getRect(find.byKey(LessonKeys.board));
+        expect(board.center.dy, closeTo((52 + size.height - 24) / 2, 1));
+        expect(board.width, greaterThanOrEqualTo(200));
+        expect(find.byKey(LessonKeys.prompt), findsNothing);
+        expect(
+          tester.getRect(find.byKey(LessonKeys.scroll)).top,
+          greaterThan(board.bottom),
+        );
+        expectPeek(tester);
+        // Explicando, o tabuleiro sobe com o mesmo tamanho; jogando, volta ao
+        // centro.
+        void raised() {
+          final rect = tester.getRect(find.byKey(LessonKeys.board));
+          expect(rect.size, board.size);
+          expect(rect.top, lessThan(board.top));
+        }
+
+        await cubit.next();
+        await tester.pumpAndSettle();
+        expect(tester.getRect(find.byKey(LessonKeys.board)), board);
+        expectPeek(tester);
+        await cubit.play(Move.parse('c1c4')!);
+        await tester.pumpAndSettle();
+        raised();
+        expect(
+          tester.getRect(find.byKey(LessonKeys.scroll)).top,
+          greaterThan(tester.getRect(find.byKey(LessonKeys.board)).bottom),
+        );
+        expectPeek(tester);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 }

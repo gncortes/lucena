@@ -77,7 +77,7 @@ class SettingsCubit extends Cubit<AppSettings?> {
   Future<void> setVibration({required bool enabled}) =>
       _update((state ?? const AppSettings()).copyWith(vibration: enabled));
 
-  /// Mostra ou esconde a barra de avaliação na revisão da partida.
+  /// Liga ou desliga a engine (e a barra de avaliação) na revisão da partida.
   Future<void> setEvalBar({required bool enabled}) =>
       _update((state ?? const AppSettings()).copyWith(evalBar: enabled));
 

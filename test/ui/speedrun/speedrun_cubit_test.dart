@@ -112,8 +112,7 @@ void main() {
     expect(cubit.state.selected!.abandoned, isEmpty);
   });
 
-  test('sem "continuar depois": a tentativa pela metade sem a etapa no '
-      'tabuleiro fica abandonada no histórico', () async {
+  test('entre etapas: a tentativa sem tabuleiro mantém progresso', () async {
     final cubit = build();
     await cubit.load(speedrunId: 'rung.1000');
     final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
@@ -122,13 +121,48 @@ void main() {
 
     await cubit.load(speedrunId: 'rung.1000', attemptId: id);
 
-    expect(cubit.state.run!.abandoned, isTrue);
-    expect(cubit.state.run!.attempt.abandonedAt, now());
-    expect(cubit.state.selected!.ongoing, isNull);
-    // A desistência fica no resumo, para o histórico dizer até onde foi.
-    expect(cubit.state.selected!.abandoned.map((run) => run.attempt.id), [id]);
+    expect(cubit.state.run!.abandoned, isFalse);
+    expect(cubit.state.run!.currentStage, 1);
+    expect(cubit.state.selected!.ongoing!.attempt.id, id);
+    expect(cubit.state.selected!.abandoned, isEmpty);
+    final route = Uri.parse((await cubit.resume())!);
+    expect(route.queryParameters['stage'], '1');
+    expect(route.queryParameters['attempt'], id.toString());
     expect(cubit.state.selected!.records.completed, isEmpty);
   });
+
+  for (final marathon in [false, true]) {
+    test('${marathon ? "Maratona" : "Clássico"}: reconstrução entre etapas '
+        'retoma terceira etapa e preserva tempo', () async {
+      final template = marathon ? sampleMarathon : sampleSpeedruns[1];
+      // O ritmo escolhido pertence ao ID persistido; ID sem sufixo é 5+3.
+      final base = SpeedrunPaces.withTime(template, sampleSpeedrunTime);
+      final attempt = await speedruns.start(base.id, now());
+      await win(attempt.id, 0, 20);
+      await win(attempt.id, 1, 30);
+      // Cubit novo, mesmos repositórios persistidos, sem GameSnapshot.
+      final restored = SpeedrunCubit(
+        journey: FakeJourneyRepository(speedruns: [template]),
+        speedruns: speedruns,
+        games: games,
+        now: now,
+      );
+      addTearDown(restored.close);
+      await restored.load(speedrunId: base.id);
+      expect(restored.state.selected!.ongoing!.currentStage, 2);
+      final route = Uri.parse((await restored.resume())!);
+      expect(route.queryParameters['stage'], '2');
+      expect(route.queryParameters['attempt'], attempt.id.toString());
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
+      if (marathon) {
+        final remaining = base.time.initial - const Duration(seconds: 50);
+        expect(
+          route.queryParameters['white'],
+          base.time.copyWith(initial: remaining).code,
+        );
+      }
+    });
+  }
 
   test('concluída: vira recorde e mostra o recorde de antes', () async {
     final cubit = build();
@@ -192,7 +226,7 @@ void main() {
       expect(cubit.state.all!.first.records.best, isNull);
     });
 
-    test('a tentativa pela metade de outro ritmo também é largada', () async {
+    test('trocar ritmo preserva a tentativa pela metade', () async {
       final cubit = build();
       await cubit.load(speedrunId: 'rung.1000');
       final (speedrun, attempt) = (await cubit.startWith(threeTwo))!;
@@ -202,7 +236,7 @@ void main() {
 
       final attempts = await speedruns.attempts(speedrun.id);
       expect(attempts.single.id, attempt);
-      expect(attempts.single.abandonedAt, isNotNull);
+      expect(attempts.single.abandonedAt, isNull);
     });
   });
 

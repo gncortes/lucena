@@ -141,9 +141,9 @@ class _Body extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            if (lesson.inReview) ...[
+            if (lesson.failed || lesson.inReview) ...[
               const SizedBox(height: AppSpacing.sm),
-              _InReview(),
+              _InReview(failed: lesson.failed),
             ],
             if (viktor != null) ...[
               const SizedBox(height: AppSpacing.md),
@@ -213,36 +213,47 @@ class _Body extends StatelessWidget {
   }
 }
 
-/// O aviso de que a aula ainda está em revisão e pode mudar.
+/// O aviso de que a aula ainda está em revisão e pode mudar ou, com
+/// [failed], de que a revisão a reprovou e ela será refeita.
 class _InReview extends StatelessWidget {
+  const _InReview({required this.failed});
+
+  final bool failed;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final background = failed
+        ? colors.errorContainer
+        : colors.secondaryContainer;
+    final foreground = failed
+        ? colors.onErrorContainer
+        : colors.onSecondaryContainer;
     return Container(
-      key: EndgameLessonKeys.inReview,
+      key: failed ? EndgameLessonKeys.reviewFailed : EndgameLessonKeys.inReview,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: colors.secondaryContainer,
+        color: background,
         borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.rate_review_outlined,
+            failed ? Icons.cancel_outlined : Icons.rate_review_outlined,
             size: 18,
-            color: colors.onSecondaryContainer,
+            color: foreground,
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              context.l10n.endgameLessonInReview,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSecondaryContainer,
-              ),
+              failed
+                  ? context.l10n.endgameLessonFailed
+                  : context.l10n.endgameLessonInReview,
+              style: theme.textTheme.bodySmall?.copyWith(color: foreground),
             ),
           ),
         ],

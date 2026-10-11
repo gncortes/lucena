@@ -45,13 +45,13 @@ abstract final class GameDetailsKeys {
   static Key count(String quality, {required bool white}) =>
       Key('gameDetails.review.count.$quality.${white ? 'white' : 'black'}');
 
-  /// A explicação do lance mostrado e a barra de avaliação.
+  /// A explicação do lance mostrado e a barra de avaliação (só com a
+  /// engine ligada).
   static const explanation = Key('gameDetails.explanation');
   static const evalBar = Key('gameDetails.evalBar');
 
-  /// A legenda dos símbolos, no fim, e a opção de mostrar a barra.
+  /// A legenda dos símbolos, no fim.
   static const legend = Key('gameDetails.legend');
-  static const evalBarToggle = Key('gameDetails.more.evalBar');
 
   /// A navegação entre os lances.
   static const first = Key('gameDetails.nav.first');

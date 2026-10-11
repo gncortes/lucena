@@ -112,6 +112,24 @@ void main() {
     expect(textOf(tester, RatingKeys.value), '1150');
     expect(find.byKey(RatingKeys.chart), findsNothing);
     expect(find.byKey(RatingKeys.emptyHistory), findsOneWidget);
+    final action = tester.widget<FilledButton>(
+      find.byKey(RatingKeys.emptyHistoryAction),
+    );
+    final actionContext = tester.element(
+      find.byKey(RatingKeys.emptyHistoryAction),
+    );
+    expect(
+      action.defaultStyleOf(actionContext).backgroundColor!.resolve({}),
+      Theme.of(actionContext).colorScheme.primary,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(RatingKeys.emptyHistoryAction),
+        matching: find.byIcon(Icons.play_arrow_rounded),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Play my first endgame'), findsOneWidget);
     // Os números do jogador, zerados.
     expect(find.byKey(RatingKeys.stats), findsOneWidget);
     expect(
@@ -535,4 +553,109 @@ void main() {
       );
     });
   });
+  for (final size in [
+    const Size(360, 640),
+    const Size(360, 800),
+    const Size(412, 915),
+  ]) {
+    for (final reduced in [false, true]) {
+      testWidgets(
+        'C12g $size reduced=$reduced: container keeps id, period and scroll; one reload on return',
+        (tester) async {
+          await play(List.filled(18, AttemptOutcome.win), daysApart: 1);
+          tester.view
+            ..physicalSize = size
+            ..devicePixelRatio = 1;
+          tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+          addTearDown(tester.view.reset);
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+          final cubit = RatingCubit(rating, progress: progress, now: now);
+          addTearDown(cubit.close);
+          await cubit.load();
+          var reloads = 0;
+          final subscription = cubit.stream.listen((_) => reloads++);
+          addTearDown(subscription.cancel);
+          var openings = 0;
+          int? selected;
+          await tester.pumpWidget(
+            TestApp(
+              child: MediaQuery(
+                data: MediaQueryData(
+                  size: size,
+                  disableAnimations: reduced,
+                  textScaler: const TextScaler.linear(1.6),
+                ),
+                child: BlocProvider.value(
+                  value: cubit,
+                  child: RatingScreen(
+                    gameDestinationBuilder: (context, id) {
+                      openings++;
+                      selected = id;
+                      return Scaffold(
+                        appBar: AppBar(title: const Text('details')),
+                        body: TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('close details'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          await choose(tester, RatingPeriod.month);
+          final l10n = tester.element(find.byKey(RatingKeys.periods)).l10n;
+          final periodLabel = l10n.ratingPeriodDays(30);
+          expect(
+            find.descendant(
+              of: find.byKey(RatingKeys.periods),
+              matching: find.text(periodLabel),
+            ),
+            findsOneWidget,
+          );
+          final row = find.byKey(RatingKeys.entry(8));
+          await tester.scrollUntilVisible(
+            row,
+            300,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          final position = Scrollable.of(tester.element(row)).position;
+          final offset = position.pixels;
+          final expected = cubit.state.log[8].id;
+          expect(row.hitTestable(), findsOneWidget);
+          final open = tester.widget<InkWell>(row).onTap!;
+          open();
+          open();
+          await tester.pumpAndSettle();
+          expect(openings, 1);
+          expect(selected, expected);
+          expect(find.text('close details').hitTestable(), findsOneWidget);
+          await tester.tap(find.text('close details'));
+          await tester.pumpAndSettle();
+          expect(reloads, 1);
+          expect(
+            Scrollable.of(tester.element(row)).position.pixels,
+            closeTo(offset, 1),
+          );
+          await tester.scrollUntilVisible(
+            find.byKey(RatingKeys.periods),
+            -300,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          expect(
+            find.descendant(
+              of: find.byKey(RatingKeys.periods),
+              matching: find.text(periodLabel),
+            ),
+            findsOneWidget,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
 }

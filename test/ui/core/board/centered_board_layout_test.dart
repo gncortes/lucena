@@ -12,6 +12,8 @@ void main() {
     double topHeight = 60,
     double bottomHeight = 40,
     double footerHeight = 80,
+    double? centerY,
+    double? minBoardSide,
   }) async {
     tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 1;
@@ -21,6 +23,8 @@ void main() {
         home: Scaffold(
           appBar: AppBar(),
           body: CenteredBoardLayout(
+            centerY: centerY,
+            minBoardSide: minBoardSide,
             gutter: 8,
             top: SizedBox(key: BoardLayoutKeys.top, height: topHeight),
             board: const ColoredBox(
@@ -76,6 +80,46 @@ void main() {
     expect(top.top, greaterThanOrEqualTo(kToolbarHeight));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('centro explícito inclui a barra e o rodapé sem sobreposição', (
+    tester,
+  ) async {
+    const screen = Size(400, 800);
+    await pump(tester, screen, centerY: 400 - kToolbarHeight);
+    final board = tester.getRect(find.byKey(BoardLayoutKeys.board));
+    final footer = tester.getRect(find.byKey(BoardLayoutKeys.footer));
+    expect(board.center.dy, 400);
+    expect(board.bottom, lessThanOrEqualTo(footer.top));
+    await pump(tester, screen, centerY: 380 - kToolbarHeight);
+    expect(tester.getCenter(find.byKey(BoardLayoutKeys.board)).dy, 380);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'altura inviável preserva o tabuleiro e permite rolar ao rodapé',
+    (tester) async {
+      await pump(
+        tester,
+        const Size(800, 360),
+        topHeight: 80,
+        footerHeight: 192,
+        centerY: 96,
+        minBoardSide: 240,
+      );
+      final board = tester.getRect(find.byKey(BoardLayoutKeys.board));
+      expect(board.width, 240);
+      expect(board.height, 240);
+      expect(
+        tester.getBottomLeft(find.byKey(BoardLayoutKeys.top)).dy,
+        lessThanOrEqualTo(board.top),
+      );
+      await tester.ensureVisible(find.byKey(BoardLayoutKeys.footer));
+      final footer = tester.getRect(find.byKey(BoardLayoutKeys.footer));
+      expect(footer.top, greaterThanOrEqualTo(kToolbarHeight));
+      expect(footer.bottom, lessThanOrEqualTo(360));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   test('BoardCentering: reserva grande encolhe o tabuleiro até o mínimo', () {
     final centering = BoardCentering(

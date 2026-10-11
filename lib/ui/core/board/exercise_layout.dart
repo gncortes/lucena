@@ -81,7 +81,13 @@ abstract final class ExerciseLayout {
     Size area, {
     required double sheetRoom,
     bool lowered = false,
+    double footer = 0,
+    double? centerY,
   }) {
+    if (centerY != null) {
+      return solvingRect(area, footer: footer, centerY: centerY).bottom +
+          gutter;
+    }
     final size = _explainingSize(area, sheetRoom);
     final high = 2 * gutter + size;
     return lowered ? max(high, area.height - sheetRoom + gutter) : high;
@@ -94,7 +100,12 @@ abstract final class ExerciseLayout {
     Size area, {
     required double sheetRoom,
     bool lowered = false,
+    double footer = 0,
+    double? centerY,
   }) {
+    if (centerY != null) {
+      return solvingRect(area, footer: footer, centerY: centerY);
+    }
     final size = _explainingSize(area, sheetRoom);
     final sheet = sheetTop(area, sheetRoom: sheetRoom, lowered: lowered);
     final top = max(gutter, (sheet - size) / 2);

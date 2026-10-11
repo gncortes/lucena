@@ -14,6 +14,8 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../domain/use_cases/default_pace.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/marathon.dart';
+import '../../../routing/routes.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 
 part 'speedrun_cubit.freezed.dart';
@@ -107,11 +109,6 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
   /// a tentativa.
   Future<void> load({String? speedrunId, int? attemptId}) async {
     final bases = await _journey.speedruns();
-    final snapshot = await _games.load();
-    // Não há "continuar depois": a tentativa que ficou pela metade sem a
-    // etapa dela no tabuleiro foi largada, e fica no histórico como
-    // abandonada.
-    await _abandonStale(bases, playing: snapshot?.mode.speedrunAttemptId);
     final clock = (await _settings?.load())?.clock;
     // Sem ritmo escolhido, o do nível do jogador (sem perfil, o padrão).
     final level = (await _profile?.load())?.level;
@@ -170,23 +167,6 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     );
   }
 
-  // Encerra as tentativas em andamento, em qualquer ritmo, menos a que tem
-  // a etapa no tabuleiro ([playing]).
-  Future<void> _abandonStale(List<Speedrun> bases, {int? playing}) async {
-    final now = _now();
-    for (final base in bases) {
-      for (final time in SpeedrunPaces.all) {
-        final speedrun = SpeedrunPaces.withTime(base, time);
-        for (final attempt in await _speedruns.attempts(speedrun.id)) {
-          if (attempt.id == playing) continue;
-          if (SpeedrunScore.run(speedrun, attempt).inProgress) {
-            await _speedruns.abandon(attempt.id, now);
-          }
-        }
-      }
-    }
-  }
-
   Future<SpeedrunSummary> _summary(Speedrun speedrun) async {
     final attempts = await _speedruns.attempts(speedrun.id);
     final runs = [
@@ -200,6 +180,29 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
         ..sort(
           (a, b) => b.attempt.abandonedAt!.compareTo(a.attempt.abandonedAt!),
         ),
+    );
+  }
+
+  /// Retoma a partida gravada ou a próxima etapa, entre dois resultados.
+  Future<String?> resume() async {
+    final summary = state.selected;
+    final run = summary?.ongoing;
+    if (summary == null || run == null) return null;
+    final snapshot = await _games.load();
+    if (snapshot?.mode.speedrunAttemptId == run.attempt.id) {
+      return Routes.freeBoard;
+    }
+    final speedrun = summary.speedrun;
+    final stage = run.currentStage;
+    if (stage >= speedrun.stages.length) return null;
+    return Routes.challengeGame(
+      speedrun.stages[stage],
+      speedrunId: speedrun.id,
+      attemptId: run.attempt.id,
+      stage: stage,
+      userTime: speedrun.kind == SpeedrunKind.marathon
+          ? Marathon.stageTime(speedrun.time, Marathon.bank(run, speedrun.time))
+          : null,
     );
   }
 

@@ -30,7 +30,7 @@ void main() {
     const fen = '7k/8/5K2/8/8/8/8/6Q1 w - - 0 1';
     expect(
       GameExport.lichess(fen).toString(),
-      'https://lichess.org/analysis/standard/7k/8/5K2/8/8/8/8/6Q1_w_-_-_0_1',
+      'https://lichess.org/analysis/7k/8/5K2/8/8/8/8/6Q1_w_-_-_0_1',
     );
     final chessCom = GameExport.chessCom(fen);
     expect(chessCom.host, 'www.chess.com');

@@ -147,10 +147,7 @@ void main() {
     final link = find.byKey(LessonKeys.referenceLink);
     expect(link, findsOneWidget);
     expect(
-      find.descendant(
-        of: link,
-        matching: find.text('View the game on Lichess'),
-      ),
+      find.descendant(of: link, matching: find.text('View on Lichess')),
       findsOneWidget,
     );
     expect(

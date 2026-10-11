@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/blind/speech_input_repository.dart';
@@ -8,6 +10,10 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 
 import '../../../testing/fakes/fake_blind_log_repository.dart';
+import '../../../testing/fakes/fake_blind_checkpoint_repository.dart';
+
+import 'package:lucena/domain/models/blind_checkpoint.dart';
+
 import '../../../testing/fakes/fake_draw_offer_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -52,30 +58,89 @@ void main() {
     String fen, {
     Side user = Side.white,
     Duration releaseWait = Duration.zero,
+    FakeBlindCheckpointRepository? checkpoints,
+    FakeNow? time,
+    ClockConfig? clock,
+    bool restore = true,
+    bool resumeAny = false,
+    bool begin = true,
   }) async {
     final cubit = BlindGameCubit(
       releaseWait: releaseWait,
+      checkpoints: checkpoints,
       opponent: opponent,
       voice: voice,
       input: input,
       log: log,
-      now: FakeNow(DateTime.utc(2026, 10, 7)),
+      now: time ?? FakeNow(DateTime.utc(2026, 10, 7)),
       thinkTime: Duration.zero,
       restartDelay: Duration.zero,
     );
     addTearDown(cubit.close);
     await cubit.load(
       fen: fen,
+      restore: restore,
+      resumeAny: resumeAny,
+      clock: clock,
       userSide: user,
       kind: OpponentKind.maia,
       level: 1000,
       language: 'pt-BR',
       phrases: phrases,
     );
-    await cubit.start();
-    await cubit.release();
+    if (begin) {
+      await cubit.start();
+      await cubit.release();
+    }
     return cubit;
   }
+
+  test('T65: novo inactive invalida retomada às cegas pendente', () async {
+    final delayed = _DelayedStopVoice()..autoFinish = true;
+    voice = delayed;
+    final cubit = await open('8/8/8/8/8/8/4k3/6KR w - - 0 1');
+    delayed.autoFinish = false;
+    final narration = cubit.narratePosition();
+    await pumpEventQueue();
+    final gate = delayed.stopGate = Completer<void>();
+    final pause = cubit.pauseForBackground();
+    final resume = cubit.resumeFromBackground();
+    await cubit.pauseForBackground();
+    final count = delayed.spoken.length;
+    gate.complete();
+    await pause;
+    await resume;
+    expect(delayed.spoken.length, count);
+    await cubit.resumeFromBackground();
+    expect(delayed.spoken.length, count + 1);
+    delayed.emit(const TtsFinished());
+    await narration;
+  });
+
+  test(
+    'T65: voz suspensa não conclui sequência e volta à palavra atual',
+    () async {
+      final cubit = await open('8/8/8/8/8/8/4k3/6KR w - - 0 1');
+      voice.autoFinish = false;
+      var finished = false;
+      final narration = cubit.narratePosition().then((_) => finished = true);
+      await pumpEventQueue();
+      final text = voice.spoken.last.$1;
+      voice.emit(const TtsProgress(3, 5));
+      await pumpEventQueue();
+      await cubit.pauseForBackground();
+      await cubit.pauseForBackground();
+      await pumpEventQueue();
+      expect(finished, isFalse);
+      final count = voice.spoken.length;
+      await cubit.resumeFromBackground();
+      expect(voice.spoken.length, count + 1);
+      expect(voice.spoken.last.$1, text.substring(3));
+      voice.emit(const TtsFinished());
+      await narration;
+      expect(finished, isTrue);
+    },
+  );
 
   // Segura, fala e solta: espera o app reagir.
   Future<void> say(BlindGameCubit cubit, List<String> heard) async {
@@ -94,6 +159,191 @@ void main() {
   }
 
   List<String> spoken() => [for (final (text, _) in voice.spoken) text];
+
+  test('checkpoint restores proposal, preferences and legal history', () async {
+    const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+    final repository = FakeBlindCheckpointRepository();
+    final cubit = await open(fen, checkpoints: repository);
+    await cubit.playTyped('Ta7');
+    await say(cubit, ['torre a6']);
+    cubit.setView(BlindView.hidden);
+    cubit.toggleMoves();
+    cubit.toggleTyping();
+    await cubit.pauseForBackground();
+    final restored = await open(fen, checkpoints: repository);
+    expect(restored.state.position!.fen, cubit.state.position!.fen);
+    expect(restored.state.sans, cubit.state.sans);
+    expect(restored.state.phase, BlindPhase.proposing);
+    expect(restored.state.proposal!.move.uci, cubit.state.proposal!.move.uci);
+    expect(restored.state.view, BlindView.hidden);
+    expect(restored.state.showMoves, false);
+    expect(restored.state.typing, true);
+  });
+
+  test(
+    'restored narration resumes at persisted word without opening microphone',
+    () async {
+      const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+      final repository = FakeBlindCheckpointRepository();
+      final first = await open(fen, checkpoints: repository);
+      voice.autoFinish = false;
+      unawaited(first.narratePosition());
+      await pumpEventQueue();
+      final text = voice.spoken.last.$1;
+      voice.emit(const TtsProgress(3, 5));
+      await pumpEventQueue();
+      await first.pauseForBackground();
+      final restored = await open(fen, checkpoints: repository);
+      await pumpEventQueue();
+      expect(voice.spoken.last.$1, text.substring(3));
+      expect(restored.state.phase, BlindPhase.playerTurn);
+      voice.emit(const TtsFinished());
+      await pumpEventQueue();
+    },
+  );
+
+  test('new setup and ended session never resurrect an old game', () async {
+    const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+    final repository = FakeBlindCheckpointRepository();
+    final first = await open(fen, checkpoints: repository);
+    await first.playTyped('Ta7');
+    await first.pauseForBackground();
+    final fresh = await open(
+      fen,
+      checkpoints: repository,
+      restore: false,
+      begin: false,
+    );
+    expect(fresh.state.phase, BlindPhase.intro);
+    expect(fresh.state.sans, isEmpty);
+    await fresh.resign();
+    await fresh.pauseForBackground();
+    expect(repository.checkpoint, isNull);
+    final afterEnd = await open(fen, checkpoints: repository, begin: false);
+    expect(afterEnd.state.phase, BlindPhase.intro);
+  });
+
+  test(
+    'paused clock excludes background; running checkpoint charges elapsed time',
+    () async {
+      const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+      final repository = FakeBlindCheckpointRepository();
+      final time = FakeNow(DateTime.utc(2026, 10, 7));
+      final clock = ClockConfig.same(
+        const TimeControl(initial: Duration(minutes: 5)),
+      );
+      final first = await open(
+        fen,
+        checkpoints: repository,
+        time: time,
+        clock: clock,
+      );
+      await pumpEventQueue();
+      final abrupt = repository.checkpoint!;
+      time.advance(const Duration(minutes: 2));
+      final restored = await open(
+        fen,
+        checkpoints: repository,
+        time: time,
+        clock: clock,
+      );
+      expect(restored.state.white, const Duration(minutes: 3));
+      await restored.pauseForBackground();
+      time.advance(const Duration(hours: 1));
+      final paused = await open(
+        fen,
+        checkpoints: repository,
+        time: time,
+        clock: clock,
+      );
+      expect(paused.state.white, const Duration(minutes: 3));
+      expect(abrupt.state['running'], 'white');
+      // Keep the original object from persisting over the restored session in teardown.
+      await first.pauseForBackground();
+    },
+  );
+
+  test(
+    'late corruption restores only requested setup and initial clock',
+    () async {
+      const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+      final repository = FakeBlindCheckpointRepository();
+      final old = await open(
+        fen,
+        checkpoints: repository,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 5)),
+        ),
+      );
+      await old.pauseForBackground();
+      final checkpoint = repository.checkpoint!;
+      repository.checkpoint = BlindCheckpoint(
+        setup: checkpoint.setup,
+        moves: checkpoint.moves,
+        state: {...checkpoint.state, 'view': 'obsolete'},
+      );
+      final fresh = await open(
+        '8/8/8/8/8/8/4k3/6KR w - - 0 1',
+        checkpoints: repository,
+        resumeAny: true,
+        begin: false,
+      );
+      expect(fresh.state.phase, BlindPhase.intro);
+      expect(fresh.state.hasClock, false);
+      await fresh.pauseForBackground();
+      expect(repository.checkpoint!.setup['fen'], fresh.startFen);
+      expect(repository.checkpoint!.state['whiteMs'], isNull);
+    },
+  );
+
+  test(
+    'slow save cannot delay voice suspension past immediate resume',
+    () async {
+      final repository = _DelayedCheckpointRepository();
+      final cubit = await open(
+        '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
+        checkpoints: repository,
+      );
+      voice.autoFinish = false;
+      final narration = cubit.narratePosition();
+      await pumpEventQueue();
+      final gate = repository.gate = Completer<void>();
+      final pause = cubit.pauseForBackground();
+      await cubit.resumeFromBackground();
+      final spoken = voice.spoken.length;
+      gate.complete();
+      await pause;
+      expect(voice.spoken.length, spoken);
+      voice.emit(const TtsFinished());
+      await narration;
+    },
+  );
+
+  test(
+    'clock move checkpoint publishes history, proposal and phase atomically',
+    () async {
+      final repository = _RecordingCheckpointRepository();
+      final cubit = await open(
+        '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
+        checkpoints: repository,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 5)),
+        ),
+      );
+      await say(cubit, ['torre a7']);
+      await cubit.confirm();
+      await cubit.pauseForBackground();
+      for (final checkpoint in repository.saved.where(
+        (c) => c.moves.isNotEmpty,
+      )) {
+        expect(checkpoint.state['proposal'], isNull);
+        expect(checkpoint.state['phase'], isNot('proposing'));
+        if (checkpoint.moves.length.isOdd) {
+          expect(checkpoint.state['phase'], 'opponentThinking');
+        }
+      }
+    },
+  );
 
   test(
     'abre na vez do jogador: diz "sua vez" e começa com o tabuleiro vazio',
@@ -608,4 +858,32 @@ void main() {
       );
     },
   );
+}
+
+class _DelayedStopVoice extends FakeVoiceRepository {
+  Completer<void>? stopGate;
+
+  @override
+  Future<void> stop() async {
+    await stopGate?.future;
+    await super.stop();
+  }
+}
+
+class _DelayedCheckpointRepository extends FakeBlindCheckpointRepository {
+  Completer<void>? gate;
+  @override
+  Future<void> save(BlindCheckpoint value) async {
+    await gate?.future;
+    await super.save(value);
+  }
+}
+
+class _RecordingCheckpointRepository extends FakeBlindCheckpointRepository {
+  final saved = <BlindCheckpoint>[];
+  @override
+  Future<void> save(BlindCheckpoint value) async {
+    saved.add(value);
+    await super.save(value);
+  }
 }

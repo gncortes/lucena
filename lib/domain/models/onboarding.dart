@@ -1,7 +1,14 @@
 /// O tour da primeira abertura: em que passo está, se terminou e o degrau
 /// escolhido para começar a Jornada.
 class Onboarding {
-  const Onboarding({this.done = false, this.step = 0, this.startRung});
+  const Onboarding({
+    this.done = false,
+    this.step = 0,
+    this.startRung,
+    this.selectedRating,
+    this.byHand = false,
+    this.inProgress = false,
+  });
 
   /// O tour já foi visto ou pulado.
   final bool done;
@@ -12,7 +19,27 @@ class Onboarding {
   /// O degrau da Jornada escolhido no tour. Nulo: começa do primeiro.
   final String? startRung;
 
-  Onboarding copyWith({bool? done, int? step, String? startRung}) => Onboarding(
+  /// Explicit tour choice, never inferred from the profile's initial rating.
+  /// Null means neither a manual band nor a used placement result was chosen.
+  final int? selectedRating;
+  final bool byHand;
+
+  /// Also records an unfinished replay without making old done users repeat it.
+  final bool inProgress;
+
+  Onboarding copyWith({
+    bool? done,
+    int? step,
+    String? startRung,
+    int? Function()? selectedRating,
+    bool? byHand,
+    bool? inProgress,
+  }) => Onboarding(
+    selectedRating: selectedRating == null
+        ? this.selectedRating
+        : selectedRating(),
+    byHand: byHand ?? this.byHand,
+    inProgress: inProgress ?? this.inProgress,
     done: done ?? this.done,
     step: step ?? this.step,
     startRung: startRung ?? this.startRung,
@@ -23,8 +50,12 @@ class Onboarding {
       other is Onboarding &&
       other.done == done &&
       other.step == step &&
-      other.startRung == startRung;
+      other.startRung == startRung &&
+      other.selectedRating == selectedRating &&
+      other.byHand == byHand &&
+      other.inProgress == inProgress;
 
   @override
-  int get hashCode => Object.hash(done, step, startRung);
+  int get hashCode =>
+      Object.hash(done, step, startRung, selectedRating, byHand, inProgress);
 }

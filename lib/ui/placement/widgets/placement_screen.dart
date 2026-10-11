@@ -75,14 +75,8 @@ class PlacementScreen extends StatelessWidget {
           duration: AppMotion.of(context).component,
           switchInCurve: AppMotion.enter,
           switchOutCurve: AppMotion.exit,
-          // A próxima pergunta entra deslizando da direita.
-          transitionBuilder: (child, animation) => SlideTransition(
-            position: Tween(
-              begin: const Offset(0.15, 0),
-              end: Offset.zero,
-            ).animate(animation),
-            child: FadeTransition(opacity: animation, child: child),
-          ),
+          transitionBuilder: (child, animation) =>
+              FadeTransition(opacity: animation, child: child),
           child: switch (state.view) {
             PlacementView.loading => const SkeletonList(),
             PlacementView.intro => _Intro(
@@ -93,6 +87,9 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
               state: state,
+              usefulHeight:
+                  MediaQuery.sizeOf(context).height -
+                  MediaQuery.viewPaddingOf(context).vertical,
             ),
             PlacementView.result => PlacementResultView(
               key: const ValueKey('result'),
@@ -196,13 +193,13 @@ class _Intro extends StatelessWidget {
   }
 }
 
-/// Uma pergunta: o progresso em 20 segmentos, o enunciado, o tabuleiro na
-/// largura toda e, embaixo, as opções (escolha), "Confirmar" (casas) e
-/// "Não sei".
+/// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
+/// as barras do sistema e respostas no rodapé.
 class _Question extends StatelessWidget {
-  const _Question({required this.state, super.key});
+  const _Question({required this.state, required this.usefulHeight, super.key});
 
   final PlacementViewState state;
+  final double usefulHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -211,14 +208,6 @@ class _Question extends StatelessWidget {
     final cubit = context.read<PlacementCubit>();
     final item = state.item;
     if (item == null) return const SizedBox.shrink();
-    // Com duas linhas de opções, o bloco de baixo é alto: a pergunta sobe
-    // para cima do tabuleiro. Com poucas, ela fica embaixo, como nos
-    // exercícios. Nos dois casos o tabuleiro fica no meio da tela.
-    final promptAbove =
-        item.type == PlacementItemType.choice && item.options.length > 2;
-    // O tabuleiro no centro do espaço útil (T64), entre a barra do app (com
-    // o progresso) e as respostas no rodapé; a pergunta colada nele, em cima
-    // ou embaixo, diminuindo se não couber.
     final prompt = Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
       child: Text(
@@ -230,20 +219,29 @@ class _Question extends StatelessWidget {
         ),
       ),
     );
-    return CenteredBoardLayout(
-      gap: AppSpacing.md,
-      reserveTop: promptAbove ? _promptReserve : 0,
-      reserveBottom: promptAbove ? 0 : _promptReserve,
-      top: promptAbove ? prompt : null,
-      board: LayoutBuilder(
-        builder: (context, box) => _Board(state: state, size: box.maxWidth),
-      ),
-      bottom: promptAbove ? null : prompt,
-      footer: Padding(
-        key: PlacementKeys.answers,
-        padding: const EdgeInsets.only(top: AppSpacing.md),
-        child: _Answers(state: state, cubit: cubit),
-      ),
+    return LayoutBuilder(
+      builder: (context, box) {
+        // A altura vem de fora do SafeArea, que remove o padding das barras
+        // nos descendentes. O centro inclui o AppBar e as respostas.
+        return CenteredBoardLayout(
+          // Em retrato compacto aceita casas de 20 dp; em paisagem a
+          // rolagem preserva um tabuleiro de 240 dp.
+          minBoardSide: box.maxWidth.clamp(0, 480) / 2,
+          centerY: box.maxHeight - usefulHeight / 2,
+          gap: AppSpacing.md,
+          reserveTop: _promptReserve,
+          topAlignment: Alignment.topCenter,
+          top: prompt,
+          board: LayoutBuilder(
+            builder: (context, box) => _Board(state: state, size: box.maxWidth),
+          ),
+          footer: Padding(
+            key: PlacementKeys.answers,
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: _Answers(state: state, cubit: cubit),
+          ),
+        );
+      },
     );
   }
 

@@ -20,6 +20,7 @@ abstract final class FreeBoardKeys {
 
   /// A confirmação de sair no meio de um speedrun.
   static const speedrunQuitConfirm = Key('freeBoard.speedrun.quit.confirm');
+  static const speedrunQuitCancel = Key('freeBoard.speedrun.quit.cancel');
 
   /// Rever a partida: um lance para trás e um para a frente.
   static const movePrevious = Key('freeBoard.moves.previous');

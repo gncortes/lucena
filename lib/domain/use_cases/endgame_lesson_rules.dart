@@ -183,6 +183,10 @@ abstract final class EndgameLessonRules {
       moves: checkpoint.moves,
       open: checkpoint.open,
       part: part.id,
+      stepId: checkpoint.stepId,
+      stepStartedAt: checkpoint.stepStartedAt,
+      hintsShown: checkpoint.hintsShown,
+      demoMove: checkpoint.demoMove,
     );
   }
 }

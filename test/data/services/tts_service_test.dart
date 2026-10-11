@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -10,6 +12,8 @@ class _FakeFlutterTts implements FlutterTts {
 
   final Object? rawVoices;
   final calls = <String>[];
+  Completer<void>? voiceGate;
+  final voiceEntered = Completer<void>();
   @override
   VoidCallback? startHandler;
   @override
@@ -49,8 +53,12 @@ class _FakeFlutterTts implements FlutterTts {
   @override
   Future<dynamic> stop() async => calls.add('stop');
   @override
-  Future<dynamic> setVoice(Map<String, String> voice) async =>
-      calls.add('voice ${voice['name']} ${voice['locale']}');
+  Future<dynamic> setVoice(Map<String, String> voice) async {
+    if (!voiceEntered.isCompleted) voiceEntered.complete();
+    await voiceGate?.future;
+    calls.add('voice ${voice['name']} ${voice['locale']}');
+  }
+
   @override
   Future<dynamic> setPitch(double pitch) async => calls.add('pitch $pitch');
   @override
@@ -64,6 +72,25 @@ class _FakeFlutterTts implements FlutterTts {
 }
 
 void main() {
+  test('T65: stop cancela speak aguardando configuração da voz', () async {
+    final fake = _FakeFlutterTts(const []);
+    final gate = fake.voiceGate = Completer<void>();
+    final tts = TtsService(fake);
+    const voice = ResolvedVoice(
+      voice: TtsVoice(id: 'a', locale: 'en'),
+      pitch: 1,
+      rate: 1,
+    );
+    final pending = tts.speak('Antiga', voice);
+    await fake.voiceEntered.future;
+    await tts.stop();
+    gate.complete();
+    await pending;
+    expect(fake.calls.where((call) => call.startsWith('speak')), isEmpty);
+    await tts.speak('Retomada', voice);
+    expect(fake.calls.last, 'speak Retomada focus=false');
+  });
+
   test('as vozes: só as que falam sem internet e estão instaladas', () async {
     final tts = TtsService(
       _FakeFlutterTts([

@@ -147,11 +147,11 @@ void main() {
       'da concluída', (tester) async {
     await cubit.load(speedrunId: id);
     final total = cubit.state.selected!.speedrun.stages.length;
-    // A primeira: venceu uma etapa e saiu (sem a etapa no tabuleiro, ela é
-    // largada ao abrir).
+    // A primeira: venceu uma etapa e confirmou a desistência.
     final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await win(first, 0, 20);
     now.advance(const Duration(minutes: 5));
+    await speedruns.abandon(first, now());
     await cubit.load(speedrunId: id);
     // A segunda: concluída, 10 s por etapa.
     now.advance(const Duration(minutes: 5));
@@ -190,6 +190,7 @@ void main() {
     final (_, first) = (await cubit.startWith(SpeedrunPaces.standard))!;
     await win(first, 0, 20);
     now.advance(const Duration(minutes: 5));
+    await speedruns.abandon(first, now());
     await cubit.load(speedrunId: id);
     now.advance(const Duration(minutes: 5));
     final (_, second) = (await cubit.startWith(SpeedrunPaces.standard))!;

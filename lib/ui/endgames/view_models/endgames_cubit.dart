@@ -7,25 +7,19 @@ import '../../../data/repositories/placement/placement_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_filter.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/endgame_lesson_filter.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../placement/view_models/roadmap_loader.dart';
 import '../../school/view_models/lesson_cubit.dart';
 
-/// A situação de uma aula de final na trilha.
-enum EndgameLessonStatus {
-  /// Nada feito ainda.
-  open,
-
-  /// A lição foi feita ou há exercícios resolvidos, mas a nota não passou.
-  started,
-
-  /// Lição feita e nota mínima alcançada.
-  passed,
-}
+export '../../../domain/models/endgame_filter.dart';
 
 class EndgamesState {
   const EndgamesState({
@@ -37,7 +31,93 @@ class EndgamesState {
     this.roadmap,
     this.showAll = false,
     this.hideDone = false,
+    this.filter = const EndgameFilter(),
+    this.levels = const {},
   });
+
+  /// Os filtros e a ordem da lista da trilha (gravados).
+  final EndgameFilter filter;
+
+  /// A faixa de cada aula, pelo mapa de habilidades. Vazio sem o mapa.
+  final Map<String, RatingLevel> levels;
+
+  /// A faixa de uma aula. Nula se nenhum nó a liga.
+  RatingLevel? level(String lessonId) => levels[lessonId];
+
+  /// Os tipos de final de uma aula.
+  Set<EndgameKind> kinds(EndgameLesson lesson) =>
+      EndgameLessonFilter.kinds(lesson);
+
+  /// Os tipos que têm ao menos uma aula, na ordem do enum.
+  List<EndgameKind> get availableKinds {
+    final found = {for (final lesson in trail.lessons) ...kinds(lesson)};
+    return [
+      for (final kind in EndgameKind.values)
+        if (found.contains(kind)) kind,
+    ];
+  }
+
+  /// As faixas que têm ao menos uma aula, da mais fácil à mais difícil.
+  List<RatingLevel> get availableLevels {
+    final found = {for (final lesson in trail.lessons) ?levels[lesson.id]};
+    return [
+      for (final level in RatingLevel.values)
+        if (found.contains(level)) level,
+    ];
+  }
+
+  /// Se a aula passa pelos filtros.
+  bool shows(EndgameLesson lesson) => filter.matches(
+    kinds: kinds(lesson),
+    level: levels[lesson.id],
+    status: status(lesson.id),
+  );
+
+  /// As aulas que passam pelos filtros, na ordem da trilha.
+  List<EndgameLesson> get filteredLessons => [
+    for (final lesson in trail.lessons)
+      if (shows(lesson)) lesson,
+  ];
+
+  /// A lista da trilha, já filtrada, em seções: por módulo (na ordem da
+  /// trilha) ou por faixa (das mais fáceis às mais difíceis). Seções vazias
+  /// ficam de fora; aulas sem faixa vão para o fim, numa seção sem faixa.
+  List<EndgameSection> get sections {
+    if (filter.sort == EndgameSort.easiest) {
+      final byLevel = <RatingLevel?, List<EndgameLesson>>{};
+      for (final lesson in filteredLessons) {
+        byLevel.putIfAbsent(levels[lesson.id], () => []).add(lesson);
+      }
+      return [
+        for (final level in [...RatingLevel.values, null])
+          if (byLevel[level] case final lessons?)
+            EndgameSection(level: level, lessons: lessons),
+      ];
+    }
+    return [
+      for (final (index, module) in trail.modules.indexed)
+        if (module.lessons.where(shows).toList() case final lessons
+            when lessons.isNotEmpty)
+          EndgameSection(module: module, number: index + 1, lessons: lessons),
+    ];
+  }
+
+  EndgamesState copyWith({
+    bool? showAll,
+    bool? hideDone,
+    EndgameFilter? filter,
+  }) => EndgamesState(
+    ready: ready,
+    trail: trail,
+    texts: texts,
+    progress: progress,
+    viktor: viktor,
+    roadmap: roadmap,
+    showAll: showAll ?? this.showAll,
+    hideDone: hideDone ?? this.hideDone,
+    filter: filter ?? this.filter,
+    levels: levels,
+  );
 
   /// "Para você": esconde as aulas já concluídas.
   final bool hideDone;
@@ -109,6 +189,26 @@ class EndgamesState {
   }
 }
 
+/// Uma seção da lista filtrada: um módulo da trilha ou uma faixa de
+/// dificuldade (nula: aulas sem faixa).
+class EndgameSection {
+  const EndgameSection({
+    required this.lessons,
+    this.module,
+    this.number = 0,
+    this.level,
+  });
+
+  final EndgameModule? module;
+
+  /// O número do módulo na trilha (1, 2...).
+  final int number;
+  final RatingLevel? level;
+  final List<EndgameLesson> lessons;
+
+  String get id => module?.id ?? 'level.${level?.name ?? 'none'}';
+}
+
 /// A trilha das aulas de finais: os módulos e as aulas, com o que já foi
 /// feito. Toda aula fica aberta: a ordem é uma sugestão.
 class EndgamesCubit extends Cubit<EndgamesState> {
@@ -126,42 +226,41 @@ class EndgamesCubit extends Cubit<EndgamesState> {
 
   /// Troca entre "Para você" e "Todos", e grava a escolha.
   Future<void> setShowAll(bool showAll) async {
-    emit(
-      EndgamesState(
-        ready: state.ready,
-        trail: state.trail,
-        texts: state.texts,
-        progress: state.progress,
-        viktor: state.viktor,
-        roadmap: state.roadmap,
-        showAll: showAll,
-        hideDone: state.hideDone,
-      ),
-    );
-    final settings = _settings;
-    if (settings == null) return;
-    await settings.save((await settings.load()).copyWith(endgamesAll: showAll));
+    emit(state.copyWith(showAll: showAll));
+    await _save((settings) => settings.copyWith(endgamesAll: showAll));
   }
 
   /// Mostra ou esconde as aulas concluídas em "Para você", e grava a escolha.
   Future<void> setHideDone(bool hideDone) async {
-    emit(
-      EndgamesState(
-        ready: state.ready,
-        trail: state.trail,
-        texts: state.texts,
-        progress: state.progress,
-        viktor: state.viktor,
-        roadmap: state.roadmap,
-        showAll: state.showAll,
-        hideDone: hideDone,
-      ),
-    );
+    emit(state.copyWith(hideDone: hideDone));
+    await _save((settings) => settings.copyWith(endgamesHideDone: hideDone));
+  }
+
+  /// Troca os filtros da lista da trilha, e grava.
+  Future<void> setFilter(EndgameFilter filter) async {
+    emit(state.copyWith(filter: filter));
+    await _save((settings) => settings.copyWith(endgamesFilter: filter));
+  }
+
+  Future<void> toggleKind(EndgameKind kind) =>
+      setFilter(state.filter.toggleKind(kind));
+
+  Future<void> toggleLevel(RatingLevel level) =>
+      setFilter(state.filter.toggleLevel(level));
+
+  Future<void> toggleStatus(EndgameLessonStatus status) =>
+      setFilter(state.filter.toggleStatus(status));
+
+  Future<void> setSort(EndgameSort sort) =>
+      setFilter(state.filter.withSort(sort));
+
+  /// Tira todos os filtros (e volta à ordem da trilha).
+  Future<void> clearFilter() => setFilter(const EndgameFilter());
+
+  Future<void> _save(AppSettings Function(AppSettings) change) async {
     final settings = _settings;
     if (settings == null) return;
-    await settings.save(
-      (await settings.load()).copyWith(endgamesHideDone: hideDone),
-    );
+    await settings.save(change(await settings.load()));
   }
 
   final PlacementRepository? _placement;
@@ -182,6 +281,8 @@ class EndgamesCubit extends Cubit<EndgamesState> {
     final saved = await _settings?.load();
     final all = showAll ?? saved?.endgamesAll ?? false;
     final hideDone = saved?.endgamesHideDone ?? false;
+    final filter = saved?.endgamesFilter ?? state.filter;
+    final skills = await _placement?.skills();
     final placement = _placement;
     final school = _school;
     final schoolProgress = _schoolProgress;
@@ -210,6 +311,8 @@ class EndgamesCubit extends Cubit<EndgamesState> {
         roadmap: roadmap,
         showAll: all,
         hideDone: hideDone,
+        filter: filter,
+        levels: skills == null ? const {} : EndgameLessonFilter.levels(skills),
       ),
     );
   }

@@ -3,6 +3,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
+import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_voice_repository.dart';
@@ -44,6 +46,49 @@ void main() {
 
   String shown(WidgetTester tester) =>
       tester.widget<Text>(find.byKey(speech)).data!;
+
+  testWidgets(
+    'folha compacta: avatar e texto juntos, controles completos no modal',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: ViktorSheet(
+              top: 400,
+              children: [
+                TeacherSpeech(
+                  teacher: FakeCharacterRepository.viktor,
+                  text: long,
+                  speechContext: SpeechContext.teaching,
+                  compactInSheet: true,
+                  bubbleKey: speech,
+                  headerAction: const Icon(Icons.layers, key: Key('marks')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final avatar = tester.getRect(find.byType(CharacterAvatar));
+      final words = tester.getRect(find.byKey(speech));
+      expect(avatar.width, 32);
+      expect(words.left, greaterThan(avatar.right));
+      expect(words.top - avatar.top, lessThan(12));
+      expect(find.byKey(const Key('marks')), findsNothing);
+      final fontSize = tester.widget<Text>(find.byKey(speech)).style!.fontSize;
+      await tester.tapAt(
+        tester.getTopLeft(find.byKey(ViktorSheetKeys.scroll)) +
+            const Offset(40, 12),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('marks')).hitTestable(), findsOneWidget);
+      expect(tester.getRect(find.byType(CharacterAvatar)).width, 64);
+      expect(tester.widget<Text>(find.byKey(speech)).style!.fontSize, fontSize);
+      expect(shown(tester), long);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('ao lado: o balão começa à direita do retrato', (tester) async {
     await pump(tester);

@@ -165,7 +165,13 @@ class SchoolCubit extends Cubit<SchoolState> {
         tested: roadmap != null,
         skipped: roadmap?.skippedSchool ?? const {},
         placedNext: roadmap?.nextSchool,
-        showSkipped: state.showSkipped,
+        showSkipped:
+            state.showSkipped ||
+            (progress.ongoing != null &&
+                (roadmap?.skippedSchool.containsKey(
+                      progress.ongoing!.lessonId,
+                    ) ??
+                    false)),
       ),
     );
   }

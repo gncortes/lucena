@@ -7,6 +7,8 @@ import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
+import 'package:lucena/domain/models/endgame_filter.dart';
+import 'package:lucena/domain/models/rating_level.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -156,6 +158,18 @@ void main() {
       expect((await reopen().load()).characterTalk, isFalse);
     },
   );
+
+  test('os filtros das aulas de finais voltam ao reabrir', () async {
+    expect((await reopen().load()).endgamesFilter, const EndgameFilter());
+    const filter = EndgameFilter(
+      kinds: {EndgameKind.rook, EndgameKind.pawn},
+      levels: {RatingLevel.intermediate},
+      statuses: {EndgameLessonStatus.open},
+      sort: EndgameSort.easiest,
+    );
+    await reopen().save(const AppSettings(endgamesFilter: filter));
+    expect((await reopen().load()).endgamesFilter, filter);
+  });
 
   test('sons: ligados de fábrica, desligar fica gravado', () async {
     expect((await reopen().load()).sound, isTrue);

@@ -22,6 +22,7 @@ class PlayerEntry {
     this.timeKey,
     this.turnLabel,
     this.turnKey,
+    this.portrait,
   });
 
   final Side side;
@@ -36,6 +37,9 @@ class PlayerEntry {
   /// Sem relógio, a etiqueta de quem joga ("Sua vez"). Nula: nada.
   final String? turnLabel;
   final Key? turnKey;
+
+  /// Retrato do personagem, quando existe; os demais jogadores usam o peão.
+  final Widget? portrait;
 }
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
@@ -46,6 +50,7 @@ class PlayersRow extends StatelessWidget {
     required this.players,
     required this.board,
     this.enterClocks = false,
+    this.compactClocks = false,
     super.key,
   });
 
@@ -61,8 +66,67 @@ class PlayersRow extends StatelessWidget {
   /// Os relógios dão um pop na entrada da tela (a da partida).
   final bool enterClocks;
 
+  /// Dois relógios junto do tabuleiro em telas pequenas.
+  final bool compactClocks;
+
   @override
   Widget build(BuildContext context) {
+    // Relógios juntos: um único retrato do adversário e seu nome, sem
+    // repetir a foto numa faixa separada. Relógios compactos deixam o nome
+    // legível mesmo em 360 dp; os demais chamadores mantêm a apresentação.
+    if (players.length == 2 &&
+        players.any((player) => player.portrait != null)) {
+      final character = players.firstWhere((player) => player.portrait != null);
+      return SizedBox(
+        height: height,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Semantics(
+            container: true,
+            label: character.name,
+            child: Row(
+              children: [
+                character.portrait!,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ExcludeSemantics(
+                    child: Text(
+                      character.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                for (final (index, player) in players.indexed) ...[
+                  if (index > 0) const SizedBox(width: 8),
+                  if (player.time != null)
+                    Semantics(
+                      label: player.name,
+                      child: _entering(
+                        GameClock(
+                          key: player.clockKey,
+                          timeKey: player.timeKey,
+                          side: player.side,
+                          time: player.time!,
+                          running: player.running,
+                          width: 96,
+                        ),
+                      ),
+                    )
+                  else if (player.turnLabel != null)
+                    TurnBadge(
+                      label: player.turnLabel!,
+                      labelKey: player.turnKey,
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final single = players.length == 1;
     return SizedBox(
       height: height,
@@ -96,7 +160,7 @@ class PlayersRow extends StatelessWidget {
     final time = player.time;
     final turn = player.turnLabel;
     final children = [
-      PlayerPortrait(side: player.side, board: board),
+      player.portrait ?? PlayerPortrait(side: player.side, board: board),
       const SizedBox(width: 12),
       if (showName)
         Expanded(
@@ -120,6 +184,7 @@ class PlayersRow extends StatelessWidget {
             side: player.side,
             time: time,
             running: player.running,
+            width: compactClocks ? 96 : GameClock._width,
           ),
         )
       else if (turn != null)
@@ -211,11 +276,13 @@ class GameClock extends StatelessWidget {
     required this.side,
     required this.time,
     required this.running,
+    this.width = _width,
     super.key,
   });
 
   final Side side;
   final Duration time;
+  final double width;
 
   /// A key do texto do tempo, para os testes lerem.
   final Key? timeKey;
@@ -244,7 +311,7 @@ class GameClock extends StatelessWidget {
       opacity: running ? 1 : 0.55,
       child: AnimatedContainer(
         duration: AppMotion.state,
-        width: _width,
+        width: width,
         height: _height,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(

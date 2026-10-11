@@ -18,8 +18,28 @@ import '../../core/theme/app_shape.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com
 /// as aulas em caminho (feitas, liberadas e bloqueadas).
-class SchoolScreen extends StatelessWidget {
+class SchoolScreen extends StatefulWidget {
   const SchoolScreen({super.key});
+
+  @override
+  State<SchoolScreen> createState() => _SchoolScreenState();
+}
+
+class _SchoolScreenState extends State<SchoolScreen> {
+  final _currentLesson = GlobalKey();
+  String? _scrolledLesson;
+
+  void _revealCurrent(String? lesson) {
+    if (lesson == null || lesson == _scrolledLesson) return;
+    _scrolledLesson = lesson;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _scrolledLesson != lesson) return;
+      final target = _currentLesson.currentContext;
+      if (target != null) {
+        Scrollable.ensureVisible(target, alignment: 0.4);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +51,7 @@ class SchoolScreen extends StatelessWidget {
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
           final next = state.next;
+          _revealCurrent(next);
           final viktor = state.viktor;
           final texts = state.texts;
           final greeting = state.graduated
@@ -44,7 +65,8 @@ class SchoolScreen extends StatelessWidget {
               : state.done == 0 && state.ongoing == null
               ? texts.say('school.welcome')
               : texts.say('school.welcomeBack', state.done);
-          return ListView(
+          return SingleChildScrollView(
+            key: SchoolKeys.scroll,
             padding: scrollPadding(
               context,
               left: 16,
@@ -52,72 +74,78 @@ class SchoolScreen extends StatelessWidget {
               right: 16,
               bottom: 32,
             ),
-            children: [
-              if (viktor != null)
-                TeacherSpeech(
-                  speechContext: SpeechContext.teaching,
-                  teacher: viktor,
-                  text: greeting,
-                  avatarSize: 56,
-                ),
-              // Sem a contagem de aulas: o iniciante não vê quanto falta.
-              if (next != null) ...[
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  key: SchoolKeys.continueButton,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+            // Todas as âncoras estão montadas: a aula atual pode estar em
+            // um módulo distante, fora da primeira janela visível.
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (viktor != null)
+                  TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
+                    teacher: viktor,
+                    text: greeting,
+                    avatarSize: 56,
                   ),
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(
-                    state.ongoing != null ||
-                            state.done > 0 ||
-                            state.skipped.isNotEmpty
-                        ? l10n.schoolContinue(texts.lessonTitle(next))
-                        : l10n.schoolStart,
+                // Sem a contagem de aulas: o iniciante não vê quanto falta.
+                if (next != null) ...[
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    key: SchoolKeys.continueButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                    ),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: Text(
+                      state.ongoing != null ||
+                              state.done > 0 ||
+                              state.skipped.isNotEmpty
+                          ? l10n.schoolContinue(texts.lessonTitle(next))
+                          : l10n.schoolStart,
+                    ),
+                    onPressed: () => context.go(Routes.lesson(next)),
                   ),
-                  onPressed: () => context.go(Routes.lesson(next)),
-                ),
-              ],
-              if (state.graduated) ...[
-                const SizedBox(height: 12),
-                FilledButton.tonalIcon(
-                  key: SchoolKeys.endgamesButton,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+                ],
+                if (state.graduated) ...[
+                  const SizedBox(height: 12),
+                  FilledButton.tonalIcon(
+                    key: SchoolKeys.endgamesButton,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(52),
+                    ),
+                    icon: const Icon(Icons.auto_stories_outlined),
+                    label: Text(l10n.endgamesTitle),
+                    onPressed: () => context.push(Routes.endgames),
                   ),
-                  icon: const Icon(Icons.auto_stories_outlined),
-                  label: Text(l10n.endgamesTitle),
-                  onPressed: () => context.push(Routes.endgames),
-                ),
-              ],
-              if (!state.tested && !state.graduated) ...[
+                ],
+                if (!state.tested && !state.graduated) ...[
+                  const SizedBox(height: 12),
+                  _TestCard(
+                    onTap: () async {
+                      final cubit = context.read<SchoolCubit>();
+                      final language = Localizations.localeOf(context)
+                          .languageCode;
+                      final used = await context.push<bool>(
+                        Routes.placementFrom('school'),
+                      );
+                      if (used == true) await cubit.load(language);
+                    },
+                  ),
+                ],
                 const SizedBox(height: 12),
-                _TestCard(
-                  onTap: () async {
-                    final cubit = context.read<SchoolCubit>();
-                    final language = Localizations.localeOf(context)
-                        .languageCode;
-                    final used = await context.push<bool>(
-                      Routes.placementFrom('school'),
-                    );
-                    if (used == true) await cubit.load(language);
-                  },
-                ),
+                _ChallengesCard(),
+                if (state.skipped.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _SkippedGroup(state: state),
+                ],
+                for (final (index, module) in state.course.modules.indexed)
+                  _ModuleSection(
+                    index: index,
+                    module: module,
+                    state: state,
+                    currentLesson: _currentLesson,
+                  ),
               ],
-              const SizedBox(height: 12),
-              _ChallengesCard(),
-              if (state.skipped.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                _SkippedGroup(state: state),
-              ],
-              for (final (index, module) in state.course.modules.indexed)
-                // Um módulo todo dispensado sai da trilha (fica no grupo).
-                if (module.lessons.any(
-                  (lesson) => !state.skipped.containsKey(lesson.id),
-                ))
-                  _ModuleSection(index: index, module: module, state: state),
-            ],
+            ),
           );
         },
       ),
@@ -130,8 +158,10 @@ class _ModuleSection extends StatelessWidget {
     required this.index,
     required this.module,
     required this.state,
+    required this.currentLesson,
   });
 
+  final GlobalKey currentLesson;
   final int index;
   final CourseModule module;
   final SchoolState state;
@@ -178,13 +208,15 @@ class _ModuleSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         for (final (position, lesson) in module.lessons.indexed)
-          if (!state.skipped.containsKey(lesson.id))
-            _LessonNode(
+          KeyedSubtree(
+            key: state.next == lesson.id ? currentLesson : null,
+            child: _LessonNode(
               lesson: lesson,
               state: state,
               // O caminho serpenteia de um lado para o outro.
               offset: sin(position * pi / 2.5) * 0.55,
             ),
+          ),
       ],
     );
   }
@@ -466,7 +498,7 @@ class _SkippedGroup extends StatelessWidget {
                 const SizedBox(height: 12),
                 for (final (lesson, reason) in lessons)
                   _KnownLesson(
-                    key: SchoolKeys.lesson(lesson.id),
+                    key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
                     onTap: () => context.go(Routes.lesson(lesson.id)),
@@ -529,14 +561,21 @@ class _KnownLesson extends StatelessWidget {
               color: colors.primary,
             ),
             const SizedBox(width: 12),
-            Expanded(child: Text(title, style: theme.textTheme.bodyLarge)),
-            const SizedBox(width: 8),
-            Text(
-              confirmed
-                  ? l10n.schoolSkippedConfirmed
-                  : l10n.schoolSkippedLikely,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: theme.textTheme.bodyLarge),
+                  const SizedBox(height: 2),
+                  Text(
+                    confirmed
+                        ? l10n.schoolSkippedConfirmed
+                        : l10n.schoolSkippedLikely,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 4),

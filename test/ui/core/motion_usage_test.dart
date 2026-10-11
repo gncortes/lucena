@@ -27,6 +27,8 @@ void main() {
     },
     'lib/ui/free_board/widgets/character_bar.dart': {
       'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
+      'Duration(milliseconds: math.max(6000, widget.text.length * 60))':
+          'tempo disponível para ler a fala flutuante antes de ocultá-la',
     },
     'lib/ui/core/widgets/teacher_speech.dart': {
       'Duration(milliseconds: (_length': 'ritmo de leitura da fala',

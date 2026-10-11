@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class CharacterBar extends StatelessWidget {
     required this.talk,
     this.avatarSize = maxAvatar,
     this.showName = true,
+    this.speechTop,
+    this.playerRow,
     super.key,
   });
 
@@ -43,12 +46,64 @@ class CharacterBar extends StatelessWidget {
   /// logo abaixo já mostra o nome.
   final bool showName;
 
+  /// Posição do balão flutuante em relação ao retrato. Sem valor, mantém
+  /// a faixa usada pelos outros contextos.
+  final double? speechTop;
+
+  /// Barra única com retrato, nome e relógio, já pronta pelo chamador.
+  final Widget? playerRow;
+
   @override
   Widget build(BuildContext context) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
     // Retrato pequeno: a fala também diminui, para caber no balão.
     final small = avatarSize < 72;
+    if (speechTop case final top?) {
+      return SizedBox(
+        height: playerRow == null ? heightFor(avatarSize) : 56,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            if (playerRow != null)
+              KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
+            else
+              CharacterBar(
+                talk: talk.copyWith(clearLine: true),
+                avatarSize: avatarSize,
+                showName: showName,
+              ),
+            if (line != null)
+              PositionedDirectional(
+                start: avatarSize + 16,
+                end: 12,
+                top: top,
+                height: 80,
+                child: _TransientSpeech(
+                  key: ValueKey(line.id),
+                  text: line.text,
+                  child: _spoken(
+                    context,
+                    line.id,
+                    line.text,
+                    _Bubble(
+                      lineId: line.id,
+                      text: line.text,
+                      semantics: context.l10n.characterSays(
+                        character.name,
+                        line.text,
+                      ),
+                      monospace: talk.isEngine,
+                      small: small,
+                      opacity: .94,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
     return SizedBox(
       key: FreeBoardKeys.characterBar,
       height: heightFor(avatarSize),
@@ -152,6 +207,64 @@ class CharacterBar extends StatelessWidget {
   }
 }
 
+/// A fala flutua sem receber toques nem mudar o tamanho da faixa. A duração
+/// acompanha a leitura; o esmaecer respeita a preferência de movimento.
+class _TransientSpeech extends StatefulWidget {
+  const _TransientSpeech({required this.text, required this.child, super.key});
+
+  final String text;
+  final Widget child;
+
+  @override
+  State<_TransientSpeech> createState() => _TransientSpeechState();
+}
+
+class _TransientSpeechState extends State<_TransientSpeech> {
+  Timer? _hide;
+  bool _visible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _restart();
+  }
+
+  @override
+  void didUpdateWidget(_TransientSpeech oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) _restart();
+  }
+
+  void _restart() {
+    _hide?.cancel();
+    _visible = true;
+    _hide = Timer(
+      Duration(milliseconds: math.max(6000, widget.text.length * 60)),
+      () {
+        if (mounted) setState(() => _visible = false);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _hide?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    child: ExcludeSemantics(
+      excluding: !_visible,
+      child: AnimatedOpacity(
+        duration: AppMotion.of(context).component,
+        opacity: _visible ? 1 : 0,
+        child: widget.child,
+      ),
+    ),
+  );
+}
+
 /// O botão de som do personagem, na barra da partida: cala a voz dele (e a
 /// fala que estiver no meio) ou volta a ouvi-la. A escolha fica gravada. Sem
 /// voz no idioma do app, não aparece.
@@ -228,6 +341,7 @@ class _Bubble extends StatelessWidget {
     required this.semantics,
     required this.monospace,
     required this.small,
+    this.opacity = 1,
   });
 
   final String lineId;
@@ -235,6 +349,7 @@ class _Bubble extends StatelessWidget {
   final String semantics;
   final bool monospace;
   final bool small;
+  final double opacity;
 
   static const _tail = 10.0;
 
@@ -253,7 +368,7 @@ class _Bubble extends StatelessWidget {
       child: CustomPaint(
         key: FreeBoardKeys.speechBubble,
         painter: BubblePainter(
-          color: background,
+          color: background.withValues(alpha: opacity),
           shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
           tail: _tail,
           tailOnRight: rtl,

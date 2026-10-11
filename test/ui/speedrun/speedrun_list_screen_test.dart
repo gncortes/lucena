@@ -9,6 +9,10 @@ import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/pace/pace_ui.dart';
+import 'package:lucena/domain/use_cases/speedrun_category.dart';
+import 'package:lucena/ui/speedrun/widgets/speedrun_ui.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
@@ -44,9 +48,15 @@ void main() {
   });
   tearDown(() => cubit.close());
 
-  Future<void> pump(WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1080, 4000);
-    tester.view.devicePixelRatio = 2.625;
+  Future<void> pump(
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+    bool small = false,
+  }) async {
+    tester.view.physicalSize = small
+        ? const Size(360, 640)
+        : const Size(1080, 4000);
+    tester.view.devicePixelRatio = small ? 1 : 2.625;
     addTearDown(tester.view.reset);
     await cubit.load();
     final settingsCubit = SettingsCubit(
@@ -57,6 +67,7 @@ void main() {
     await settingsCubit.load();
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
         settingsCubit: settingsCubit,
         child: BlocProvider.value(
           value: cubit,
@@ -219,4 +230,108 @@ void main() {
     expect(find.text('Pace: 3 min + 0 s'), findsOneWidget);
     expect((await settings.load()).clock.speedrunTime!.code, '180+0');
   });
+  for (final locale in [
+    const Locale('en'),
+    const Locale('pt'),
+    const Locale('es'),
+  ]) {
+    for (final marathon in [false, true]) {
+      for (final time in [
+        const TimeControl(initial: Duration(seconds: 10)),
+        const TimeControl(initial: Duration(seconds: 15)),
+        const TimeControl(initial: Duration(seconds: 30)),
+        const TimeControl(
+          initial: Duration(minutes: 3),
+          increment: Duration(seconds: 2),
+        ),
+      ]) {
+        testWidgets(
+          'C12b $locale maratona=$marathon ${time.code}: ajuda usa ritmo atual, modos e rolagem com fonte grande',
+          (tester) async {
+            tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+            addTearDown(
+              tester.platformDispatcher.clearTextScaleFactorTestValue,
+            );
+            await settings.save(
+              AppSettings(
+                clock: ClockSettings(
+                  speedrunTime: marathon
+                      ? const TimeControl(
+                          initial: Duration(minutes: 5),
+                          increment: Duration(seconds: 3),
+                        )
+                      : time,
+                  marathonTime: marathon
+                      ? time
+                      : const TimeControl(
+                          initial: Duration(minutes: 5),
+                          increment: Duration(seconds: 3),
+                        ),
+                  speedrunMarathon: marathon,
+                ),
+              ),
+            );
+            await pump(tester, locale: locale, small: true);
+            final l10n = tester.element(find.byKey(SpeedrunKeys.help)).l10n;
+            await tester.tap(find.byKey(SpeedrunKeys.help));
+            await tester.pumpAndSettle();
+            expect(find.text(l10n.speedrunHelpClassic), findsOneWidget);
+            expect(find.text(l10n.speedrunHelpMarathon), findsOneWidget);
+            expect(
+              find.text(l10n.speedrunPaceLine(paceShort(l10n, time))),
+              findsOneWidget,
+            );
+            final initial = time.initial < const Duration(minutes: 1)
+                ? l10n.paceSeconds(time.initial.inSeconds)
+                : l10n.setupPaceCustomMinutes(time.initial.inMinutes);
+            expect(
+              tester.widget<Text>(find.byKey(SpeedrunKeys.paceHelp)).data,
+              l10n.speedrunHelpClock(initial, time.increment.inSeconds),
+            );
+            // A ajuda exibe os mesmos nomes e agrupamentos da lista, inclusive
+            // as séries de adversário, sem outra classificação paralela.
+            final scroll = find.ancestor(
+              of: find.byKey(SpeedrunKeys.paceHelp),
+              matching: find.byType(SingleChildScrollView),
+            );
+            expect(scroll, findsOneWidget);
+            for (final summary in cubit.state.all!) {
+              if (SpeedrunCategories.of(summary.speedrun) != null) {
+                final name = speedrunName(
+                  l10n,
+                  cubit.state.characters,
+                  summary.speedrun,
+                );
+                expect(
+                  find.descendant(
+                    of: scroll,
+                    matching: find.byWidgetPredicate(
+                      (widget) =>
+                          widget is Text &&
+                          (widget.data?.contains(name) ?? false),
+                    ),
+                  ),
+                  findsWidgets,
+                );
+              }
+            }
+            final pause = find.text(l10n.speedrunHelpPause);
+            expect(pause.hitTestable(), findsNothing);
+            await tester.ensureVisible(pause);
+            await tester.pumpAndSettle();
+            expect(pause.hitTestable(), findsOneWidget);
+            expect(tester.takeException(), isNull);
+            // Retornar ao início continua possível após ler a última seção.
+            await tester.ensureVisible(find.byKey(SpeedrunKeys.intro));
+            await tester.pumpAndSettle();
+            expect(
+              find.byKey(SpeedrunKeys.intro).hitTestable(),
+              findsOneWidget,
+            );
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
+    }
+  }
 }

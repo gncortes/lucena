@@ -4,6 +4,8 @@ import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
+import '../data/repositories/endgames/exercise_feedback_repository.dart';
+import '../data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/share/share_repository.dart';
 import '../data/repositories/placement/placement_repository.dart';
@@ -43,6 +45,7 @@ import '../data/services/sound_service.dart';
 import '../data/services/tts_service.dart';
 import '../data/services/speech_input_service.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
+import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/voice/voice_repository_local.dart';
@@ -124,10 +127,12 @@ class Dependencies {
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
     required this.endgameProgressRepository,
+    this.exerciseFeedbackRepository = const EmptyExerciseFeedbackRepository(),
     required this.drawOfferRepository,
     required this.voiceRepository,
     required this.speechInputRepository,
     required this.blindLogRepository,
+    required this.blindCheckpointRepository,
     required this.wikiLinksRepository,
     required this.languages,
   });
@@ -190,6 +195,7 @@ class Dependencies {
         school: lessons,
       ),
       endgameProgressRepository: LocalEndgameProgressRepository(preferences),
+      exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
         evaluation: evaluation,
@@ -197,6 +203,7 @@ class Dependencies {
       voiceRepository: LocalVoiceRepository(preferences, assets, TtsService()),
       speechInputRepository: DeviceSpeechInputRepository(SpeechInputService()),
       blindLogRepository: LocalBlindLogRepository(preferences),
+      blindCheckpointRepository: LocalBlindCheckpointRepository(preferences),
       wikiLinksRepository: AssetWikiLinksRepository(assets),
       languages: AppLanguage.selectable,
     );
@@ -234,10 +241,12 @@ class Dependencies {
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
   final EndgameProgressRepository endgameProgressRepository;
+  final ExerciseFeedbackRepository exerciseFeedbackRepository;
   final DrawOfferRepository drawOfferRepository;
   final VoiceRepository voiceRepository;
   final SpeechInputRepository speechInputRepository;
   final BlindLogRepository blindLogRepository;
+  final BlindCheckpointRepository blindCheckpointRepository;
 
   /// As páginas da Wikipedia dos nomes marcados nas falas das aulas.
   final WikiLinksRepository wikiLinksRepository;

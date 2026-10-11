@@ -4,6 +4,7 @@ import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/clock_settings.dart';
+import '../../../domain/models/endgame_filter.dart';
 import '../../services/preferences_service.dart';
 import 'settings_repository.dart';
 
@@ -34,6 +35,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _vibrationKey = 'haptics.enabled';
   static const _endgamesAllKey = 'endgames.all';
   static const _endgamesHideDoneKey = 'endgames.hideDone';
+  static const _endgamesFilterKey = 'endgames.filter';
   static const _lessonMarksKey = 'lesson.marks';
   static const _evalBarKey = 'review.evalBar';
 
@@ -79,6 +81,9 @@ class LocalSettingsRepository implements SettingsRepository {
       endgamesAll: await _preferences.getBool(_endgamesAllKey) ?? false,
       endgamesHideDone:
           await _preferences.getBool(_endgamesHideDoneKey) ?? false,
+      endgamesFilter: EndgameFilter.fromCode(
+        await _preferences.getString(_endgamesFilterKey),
+      ),
       lessonMarks: await _preferences.getBool(_lessonMarksKey) ?? true,
     );
   }
@@ -168,6 +173,10 @@ class LocalSettingsRepository implements SettingsRepository {
     await _preferences.setBool(
       _endgamesHideDoneKey,
       value: settings.endgamesHideDone,
+    );
+    await _preferences.setString(
+      _endgamesFilterKey,
+      settings.endgamesFilter.code,
     );
     await _preferences.setBool(_lessonMarksKey, value: settings.lessonMarks);
   }
