@@ -473,7 +473,6 @@
   "challengeLevelHard": "Difícil",
   "starChallengeBest": "Mejor: {count}",
   "starChallengeNotPlayed": "Aún no jugado",
-  "starChallengeRule": "{seconds} segundos. Lleva la pieza a cada estrella que aparezca.",
   "starChallengeGo": "¡Vamos!",
   "starChallengeTimeUp": "¡Se acabó el tiempo!",
   "starChallengeNewBest": "¡Nuevo récord!",
@@ -483,7 +482,6 @@
   "lessonToChallenge": "Desafío de estrellas: {piece}",
   "starChallengePoints": "{count, plural, =1{1 punto} other{{count} puntos}}",
   "starChallengePointsTotal": "{count} puntos en total",
-  "starChallengeLegend": "Cada estrella desaparece tras un rato: la de oro va primero.",
   "starChallengeObstacles": "Los peones negros solo estorban: no se pueden capturar. Lo que recoges son las estrellas.",
   "settingsSound": "Sonidos",
   "settingsSoundHint": "Movimientos de las piezas y un aviso cuando se te acaba el tiempo",
@@ -1013,5 +1011,12 @@
   "exerciseTurn": "{side, select, white{Juegan las blancas} other{Juegan las negras}}",
   "exerciseYourTurn": "{side, select, white{Tu turno: juegan las blancas} other{Tu turno: juegan las negras}}",
   "exercisesIntroAfter": "Cuando los resuelvas todos, la lista queda abierta en la lección: vuelve a cualquier ejercicio para repasarlo y analizar la posición en Lichess.",
-  "exerciseScoreLocked": "Práctica libre: la nota no cambia. Para que cuente de nuevo, rehaz los ejercicios desde la lección."
+  "exerciseScoreLocked": "Práctica libre: la nota no cambia. Para que cuente de nuevo, rehaz los ejercicios desde la lección.",
+  "externalPageOfflineTitle": "Esta consulta necesita internet",
+  "externalPageOfflineBody": "Conéctate a internet para leer esta página. La clase sigue con normalidad.",
+  "wikiOpen": "Abrir {name} en Wikipedia",
+  "starChallengeIntroTitle": "Caza de estrellas",
+  "starChallengeIntroBody": "Tienes {seconds} segundos. Lleva tu pieza a cada estrella antes de que se apague. La de oro se apaga primero, por eso vale más.",
+  "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
+  "starChallengePointsLabel": "{count, plural, =1{punto} other{puntos}}"
 }

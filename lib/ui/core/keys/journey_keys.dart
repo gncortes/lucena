@@ -29,6 +29,10 @@ abstract final class JourneyKeys {
   /// Na tela do desafio: o cartão do adversário.
   static const opponentCard = Key('journey.challenge.opponent');
 
+  /// Na tela do desafio: o tabuleiro e o painel embaixo dele.
+  static const challengeBoard = Key('journey.challenge.board');
+  static const challengePanel = Key('journey.challenge.panel');
+
   static Key rung(String id) => Key('journey.rung.$id');
   static Key rungLocked(String id) => Key('journey.rung.$id.locked');
   static Key rungCompleted(String id) => Key('journey.rung.$id.completed');

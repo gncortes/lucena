@@ -82,11 +82,15 @@ abstract class GameSetupState with _$GameSetupState {
   /// O nível do Maia: o escolhido ou, sem escolha, o sugerido pelo perfil.
   int get maiaLevel => setup.maiaLevel ?? suggestedLevel;
 
+  /// A partida é às cegas (sem o tabuleiro de jogar): só contra a máquina.
+  bool get blindGame =>
+      setup.blind && setup.opponent != OpponentKind.twoPlayers;
+
   /// Onde a partida abre: a posição, o lado, o adversário, o relógio e, no
   /// treino, o objetivo.
   String get gameRoute {
     final clocks = clockCodes;
-    if (setup.blind && setup.opponent != OpponentKind.twoPlayers) {
+    if (blindGame) {
       return Routes.blindAt(
         position.fen,
         user: userSide.name,

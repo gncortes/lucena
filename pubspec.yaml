@@ -27,6 +27,7 @@ dependencies:
   sound_effect: ^0.2.0
   speech_to_text: ^7.5.0
   url_launcher: ^6.3.3
+  webview_flutter: ^4.14.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
     - assets/lines/pt/
     # As aulas do Viktor (tools/build_lessons.py) e as falas dele
     - assets/lessons/course.json
+    - assets/lessons/links.json
     - assets/lessons/en/
     - assets/lessons/pt/
     # As aulas de finais (.claude/skills/aula-final) e as falas delas

@@ -50,6 +50,7 @@ import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 import 'ui/voice/view_models/speech_cubit.dart';
+import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
 void main() {
   runApp(LucenaApp(dependencies: Dependencies.normal()));
@@ -248,6 +249,10 @@ class _LucenaAppState extends State<LucenaApp> {
           BlocProvider(
             create: (context) =>
                 ProfileCubit(dependencies.profileRepository)..load(),
+          ),
+          BlocProvider(
+            create: (context) =>
+                WikiLinksCubit(dependencies.wikiLinksRepository)..load(),
           ),
           BlocProvider(
             create: (context) => SpeechCubit(

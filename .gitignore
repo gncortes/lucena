@@ -71,3 +71,10 @@ test/goldens/failures/
 # Planos, tarefas e pesquisas: só na máquina de quem desenvolve (fora do repositório público).
 docs/
 scratchpad/
+
+# Pasta do Claude (skills, agentes): local, fora do git
+.claude/
+
+# Copilot: instruções locais do Gabriel (não sobem)
+.github/copilot-instructions.md
+.github/prompts/

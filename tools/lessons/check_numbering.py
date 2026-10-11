@@ -34,6 +34,9 @@ import urllib.parse
 
 import chess
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from wiki_markup import plain_texts  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SRC = ROOT / 'tools' / 'lessons' / 'endgames'
 TEXTS = ROOT / 'assets' / 'lessons'
@@ -413,11 +416,12 @@ def check_text(key, text, lang, states, current):
 def check_lesson(lesson_id):
     source = json.loads((SRC / f'{lesson_id}.json').read_text())
     warnings = []
-    pt = json.loads((TEXTS / 'pt' / 'endgames' / f'{lesson_id}.json').read_text())
+    # Os nomes marcados ({{Andersson|ulf-andersson}}) só com o texto visível.
+    pt = plain_texts(json.loads((TEXTS / 'pt' / 'endgames' / f'{lesson_id}.json').read_text()))
     ctx = contexts(source, warnings, pt)
     found = 0
     for lang in LANGS:
-        texts = json.loads((TEXTS / lang / 'endgames' / f'{lesson_id}.json').read_text())
+        texts = plain_texts(json.loads((TEXTS / lang / 'endgames' / f'{lesson_id}.json').read_text()))
         for key, text in texts.items():
             if SKIP_KEY.match(key) or not isinstance(text, str):
                 continue

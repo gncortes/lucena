@@ -1,0 +1,66 @@
+---
+import SiteFooter from './SiteFooter.astro';
+import { asset, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+
+// A política de privacidade do app, com o cabeçalho enxuto do site.
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = locales[locale].dict;
+const p = t.privacy;
+---
+
+<header class="top">
+  <div class="wrap top__bar">
+    <a class="brand" href={pageUrl(locale)} aria-label="Lucena">
+      <img src={asset('logo.webp')} alt="" width="36" height="36" />
+      <span>Lucena</span>
+    </a>
+    <div class="top__tools">
+      <nav class="langs" aria-label={t.nav.language}>
+        {
+          Object.entries(locales).map(([key, l]) => (
+            <a
+              href={privacyUrl(key as Locale)}
+              hreflang={l.hreflang}
+              lang={l.hreflang}
+              aria-current={key === locale ? 'page' : undefined}
+              title={l.label}
+            >
+              {key === 'pt-br' ? 'PT' : key.toUpperCase()}
+            </a>
+          ))
+        }
+      </nav>
+      <button class="theme-toggle" type="button" aria-label={t.nav.theme} data-theme-toggle>
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 1.8v2.6M12 19.6v2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M1.8 12h2.6M19.6 12h2.6M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8"></path>
+        </svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="legal">
+  <article class="wrap legal__doc">
+    <a class="legal__back" href={pageUrl(locale)}>← {p.back}</a>
+    <h1>{p.title}</h1>
+    <p class="legal__date">{p.updated}</p>
+    {
+      p.sections.map((section) => (
+        <section>
+          <h2>{section.title}</h2>
+          {section.body.map((paragraph) => <p set:html={paragraph} />)}
+        </section>
+      ))
+    }
+  </article>
+</main>
+
+<SiteFooter locale={locale} />

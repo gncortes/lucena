@@ -63,6 +63,7 @@ import 'fakes/fake_speech_input_repository.dart';
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
@@ -279,6 +280,7 @@ Future<Dependencies> e2eDependencies() async {
     ),
     speechInputRepository: e2eSpeechInput,
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
+    wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
     languages: AppLanguage.values,
   );
 }

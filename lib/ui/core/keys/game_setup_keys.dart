@@ -11,6 +11,9 @@ abstract final class GameSetupKeys {
   static const preview = Key('setup.preview');
   static const goal = Key('setup.goal');
 
+  /// O painel das opções, embaixo do tabuleiro.
+  static const panel = Key('setup.panel');
+
   static Key side(Side side) => Key('setup.side.${side.name}');
   static Key opponent(OpponentKind kind) => Key('setup.opponent.${kind.code}');
 

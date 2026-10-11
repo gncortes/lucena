@@ -39,7 +39,8 @@ abstract final class AppMotion {
   /// Progresso contínuo (anel de tempo, barra que anda sozinha).
   static const linear = Easing.linear;
 
-  /// Rebote: só em celebração, com [celebrate].
+  /// Rebote: em celebração, com [celebrate], e no pop do relógio na entrada
+  /// da partida (`GameEntrance`).
   static const pop = Curves.easeOutBack;
 
   /// Rebote elástico: só em celebração, com [celebrate].

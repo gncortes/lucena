@@ -24,6 +24,7 @@ Plano completo: `docs/PLANO.md`. Tarefa atual: `docs/tasks/TXX.md` (use a skill 
 - **Fala didática**: cada fala se entende sozinha por quem está aprendendo. Partida real é apresentada como história
   (quem jogou, onde e quando, o que estava em jogo, o que olhar na posição) antes do lance; termo novo é explicado na
   primeira vez. Se precisar de mais espaço, a fala cresce: clareza vale mais que concisão.
+- **Registro (pedido do Gabriel, 2026-10-10):** português formal e didático, de professor que explica com calma: frases completas e claras, sem gíria e sem contrações coloquiais ("em um", "em uma", nunca "num", "numa"). Formal não é rebuscado: palavra simples, uma ideia por frase.
 - **"Sobre este final"** (`history`, `key.*`): para leigo. O que é o final, por que importa, que parece simples e não é, uma
   curiosidade. Sem lance solto, sem notação, sem "tabela"/motor, sem bastidores de produção nem crédito de usuário.
 - **Passo de pensar**: o app só mostra "Jogam as brancas. Pense com calma: ..."; o texto do passo abre a explicação (sem

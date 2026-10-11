@@ -2533,15 +2533,6 @@
   "@starChallengeNotPlayed": {
     "description": "Challenge never played."
   },
-  "starChallengeRule": "{seconds} seconds. Take the piece to each star as it appears.",
-  "@starChallengeRule": {
-    "description": "Before starting a challenge: the time and what to do.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "starChallengeGo": "Go!",
   "@starChallengeGo": {
     "description": "Button that starts the challenge."
@@ -2584,7 +2575,6 @@
   },
   "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points in all",
-  "starChallengeLegend": "Each star fades after a while: the gold one goes first.",
   "@starChallengePoints": {
     "description": "Points of a star challenge.",
     "placeholders": {
@@ -2600,9 +2590,6 @@
         "type": "int"
       }
     }
-  },
-  "@starChallengeLegend": {
-    "description": "Before starting: stars fade after a while, the gold one fastest."
   },
   "starChallengeObstacles": "The black pawns only get in the way: you cannot capture them. You collect the stars.",
   "@starChallengeObstacles": {
@@ -5157,5 +5144,42 @@
   "exercisesDoneFinish": "Finish",
   "@exercisesDoneFinish": {"description": "Button on the exercises-done screen: close it and go back to the lesson."},
   "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
-  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."}
+  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."},
+  "externalPageOfflineTitle": "This needs the internet",
+  "@externalPageOfflineTitle": {"description": "Title shown in the in-app page sheet (Wikipedia, Lichess) when the page cannot load (no internet)."},
+  "externalPageOfflineBody": "Connect to the internet to read this page. The lesson goes on as normal.",
+  "@externalPageOfflineBody": {"description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."},
+  "wikiOpen": "Open {name} on Wikipedia",
+  "@wikiOpen": {"description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.", "placeholders": {"name": {"type": "String"}}},
+  "starChallengeIntroTitle": "Star hunt",
+  "@starChallengeIntroTitle": {
+    "description": "Title of the card before starting a star challenge: the name of the game."
+  },
+  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away. The gold one fades first, which is why it is worth more.",
+  "@starChallengeIntroBody": {
+    "description": "Card before starting a star challenge: the rule in one or two friendly sentences (take the piece to each star before it fades; the gold one fades first and is worth more).",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengeWorth": "{points, plural, =1{worth 1} other{worth {points}}}",
+  "@starChallengeWorth": {
+    "description": "Under each kind of star in the star counter: how many points that star is worth.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "starChallengePointsLabel": "{count, plural, =1{point} other{points}}",
+  "@starChallengePointsLabel": {
+    "description": "Under the big total number in the star counter: the word 'points'.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

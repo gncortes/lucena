@@ -103,9 +103,15 @@ abstract final class StarChallengeKeys {
   static const listScreen = Key('starChallenges.screen');
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');
+
+  /// O "Vai!" flutuante, no canto de baixo, antes de começar.
   static const goButton = Key('starChallenge.go');
+
+  /// O cartão do convite, sob o relógio, antes de começar.
+  static const intro = Key('starChallenge.intro');
   static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
+
   /// O total de pontos no painel embaixo do tabuleiro.
   static const collected = Key('starChallenge.collected');
 
@@ -120,6 +126,8 @@ abstract final class StarChallengeKeys {
   static const result = Key('starChallenge.result');
   static const earned = Key('starChallenge.earned');
   static const best = Key('starChallenge.best');
+
+  /// O "Jogar de novo" flutuante, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
   static const backButton = Key('starChallenge.back');
 

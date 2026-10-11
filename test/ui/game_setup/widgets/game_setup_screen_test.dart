@@ -30,9 +30,13 @@ void main() {
     WidgetTester tester, {
     Locale locale = const Locale('en'),
     GameSetup setup = const GameSetup(),
+    Size screen = const Size(1080, 2400),
+    double textScale = 1,
   }) async {
-    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 2.625;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     addTearDown(tester.view.reset);
     cubit = GameSetupCubit(
       FakeTrainingRepository(setup: setup),
@@ -57,6 +61,36 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  for (final (screen, scale) in [
+    (const Size(1080, 2400), 1.0),
+    (const Size(945, 1680), 1.0),
+    (const Size(945, 1680), 1.6),
+  ]) {
+    testWidgets('T64, $screen × $scale: o tabuleiro no centro do espaço '
+        'entre a barra do app e o painel das opções, que rola', (tester) async {
+      await pump(tester, screen: screen, textScale: scale);
+      final appBar = tester.getRect(find.byType(AppBar));
+      final panel = tester.getRect(find.byKey(GameSetupKeys.panel));
+      final board = tester.getRect(find.byKey(GameSetupKeys.preview));
+      expect(board.center.dy, closeTo((appBar.bottom + panel.top) / 2, 1));
+      expect(
+        tester.getRect(find.byKey(GameSetupKeys.goal)).bottom,
+        lessThanOrEqualTo(panel.top),
+      );
+      // As opções e o botão de começar ficam ao alcance.
+      expect(find.byKey(GameSetupKeys.startButton).hitTestable(), findsOne);
+      await tester.scrollUntilVisible(
+        find.byKey(GameSetupKeys.customPace),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.byKey(GameSetupKeys.customPace));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameSetupKeys.customPace).hitTestable(), findsOne);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   Future<void> tap(WidgetTester tester, Key key, {int times = 1}) async {

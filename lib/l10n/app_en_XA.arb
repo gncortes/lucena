@@ -472,7 +472,6 @@
   "challengeLevelHard": "[Håŕd one]",
   "starChallengeBest": "[Béšt: {count} one two]",
   "starChallengeNotPlayed": "[Ñöt plåýéd ýét one two]",
-  "starChallengeRule": "[{seconds} šéçöñdš. Tåké thé pîéçé tö éåçh štåŕ åš ît åppéåŕš. one two three four five six]",
   "starChallengeGo": "[Ĝö! one]",
   "starChallengeTimeUp": "[Tîmé'š ûp! one]",
   "starChallengeNewBest": "[Ñéw béšt! one]",
@@ -482,7 +481,6 @@
   "lessonToChallenge": "[Štåŕ çhålléñĝé: {piece} one two three]",
   "starChallengePoints": "{count, plural, =1{[1 pöîñt one]} other{[{count} pöîñtš one two]}}",
   "starChallengePointsTotal": "[{count} pöîñtš îñ åll one two three]",
-  "starChallengeLegend": "[Éåçh štåŕ fådéš åftéŕ å whîlé: thé ĝöld öñé ĝöéš fîŕšt. one two three four five]",
   "starChallengeObstacles": "[Thé blåçk påwñš öñlý ĝét îñ thé wåý: ýöû çåññöt çåptûŕé thém. Ýöû çölléçt thé štåŕš. one two three four five six seven]",
   "settingsSound": "[Šöûñdš one]",
   "settingsSoundHint": "[Pîéçé mövéš åñd å wåŕñîñĝ whéñ ýöûŕ tîmé îš ŕûññîñĝ öût one two three four five]",
@@ -1012,5 +1010,12 @@
   "endgamesHideDone": "[Hîdé çömplétéd léššöñš one two three]",
   "exercisesDonePractice": "[Pŕåçtîšé thîš éñdĝåmé one two three]",
   "exercisesDoneFinish": "[Fîñîšh one]",
-  "exercisesDoneRetrySpeech": "[Ñöt thîš tîmé, åñd thåt îš fîñé: évéŕý mîštåké šhöwéd ýöû šöméthîñĝ tö löök åt åĝåîñ. Ŕévîéw thé léššöñ îf ýöû ñééd tö, tåké ýöûŕ tîmé öñ éåçh pöšîtîöñ, åñd tŕý åĝåîñ. Ñéxt tîmé thöšé pöîñtš wîll bé ýöûŕš. one two three four five six seven eight nine ten one two three four five six seven]"
+  "exercisesDoneRetrySpeech": "[Ñöt thîš tîmé, åñd thåt îš fîñé: évéŕý mîštåké šhöwéd ýöû šöméthîñĝ tö löök åt åĝåîñ. Ŕévîéw thé léššöñ îf ýöû ñééd tö, tåké ýöûŕ tîmé öñ éåçh pöšîtîöñ, åñd tŕý åĝåîñ. Ñéxt tîmé thöšé pöîñtš wîll bé ýöûŕš. one two three four five six seven eight nine ten one two three four five six seven]",
+  "externalPageOfflineTitle": "[Thîš ñéédš thé îñtéŕñét one two three]",
+  "externalPageOfflineBody": "[Çöññéçt tö thé îñtéŕñét tö ŕéåd thîš påĝé. Thé léššöñ ĝöéš öñ åš ñöŕmål. one two three four five six seven]",
+  "wikiOpen": "[Öpéñ {name} öñ Wîkîpédîå one two three]",
+  "starChallengeIntroTitle": "[Štåŕ hûñt one]",
+  "starChallengeIntroBody": "[Ýöû håvé {seconds} šéçöñdš. Tåké ýöûŕ pîéçé tö éåçh štåŕ béföŕé ît fådéš åwåý. Thé ĝöld öñé fådéš fîŕšt, whîçh îš whý ît îš wöŕth möŕé. one two three four five six seven eight nine ten one two]",
+  "starChallengeWorth": "{points, plural, =1{[wöŕth 1 one]} other{[wöŕth {points} one two]}}",
+  "starChallengePointsLabel": "{count, plural, =1{[pöîñt one]} other{[pöîñtš one]}}"
 }

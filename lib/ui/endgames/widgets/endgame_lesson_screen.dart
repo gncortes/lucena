@@ -19,6 +19,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
@@ -115,7 +116,8 @@ class _Body extends StatelessWidget {
               // O módulo e a posição nele ("Mates básicos · 1 de 4"): o
               // número na trilha inteira diz pouco.
               l10n.endgameModulePlace(
-                texts.say('endgames.module.${lesson.module}') ?? lesson.module,
+                texts.plain('endgames.module.${lesson.module}') ??
+                    lesson.module,
                 state.moduleNumber,
                 state.moduleCount,
               ),
@@ -866,7 +868,7 @@ class _FinalCardState extends State<_FinalCard> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
+                  child: LinkedText(
                     state.texts.say('${lesson.id}.practice') ?? '',
                     style: theme.textTheme.bodyMedium,
                   ),

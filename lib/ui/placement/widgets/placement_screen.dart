@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/placement.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -40,10 +39,6 @@ class PlacementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PlacementCubit>().state;
-    // Onde o corpo começa na tela (barra de status, barra do app e a de
-    // progresso), medido aqui fora: dentro do Scaffold a margem de cima já
-    // foi descontada.
-    final bodyTop = MediaQuery.paddingOf(context).top + kToolbarHeight + 4;
     return Scaffold(
       key: PlacementKeys.screen,
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
@@ -98,7 +93,6 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
               state: state,
-              bodyTop: bodyTop,
             ),
             PlacementView.result => PlacementResultView(
               key: const ValueKey('result'),
@@ -206,12 +200,9 @@ class _Intro extends StatelessWidget {
 /// largura toda e, embaixo, as opções (escolha), "Confirmar" (casas) e
 /// "Não sei".
 class _Question extends StatelessWidget {
-  const _Question({required this.state, required this.bodyTop, super.key});
+  const _Question({required this.state, super.key});
 
   final PlacementViewState state;
-
-  /// Onde o corpo começa na tela, para achar o centro da tela inteira.
-  final double bodyTop;
 
   @override
   Widget build(BuildContext context) {
@@ -225,87 +216,39 @@ class _Question extends StatelessWidget {
     // exercícios. Nos dois casos o tabuleiro fica no meio da tela.
     final promptAbove =
         item.type == PlacementItemType.choice && item.options.length > 2;
-    // O centro da tela inteira, nas coordenadas do corpo (que começa
-    // abaixo da barra do app e da barra de progresso), como nos exercícios.
-    final screen = MediaQuery.sizeOf(context);
-    return CustomMultiChildLayout(
-      delegate: _QuestionLayout(
-        promptAbove: promptAbove,
-        centerY: screen.height / 2 - bodyTop,
+    // O tabuleiro no centro do espaço útil (T64), entre a barra do app (com
+    // o progresso) e as respostas no rodapé; a pergunta colada nele, em cima
+    // ou embaixo, diminuindo se não couber.
+    final prompt = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+      child: Text(
+        placementPrompt(l10n, item),
+        key: PlacementKeys.prompt,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
-      children: [
-        LayoutId(
-          id: _QuestionSlot.prompt,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
-            child: Text(
-              placementPrompt(l10n, item),
-              key: PlacementKeys.prompt,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-        LayoutId(
-          id: _QuestionSlot.board,
-          child: LayoutBuilder(
-            builder: (context, box) => _Board(state: state, size: box.maxWidth),
-          ),
-        ),
-        LayoutId(
-          id: _QuestionSlot.answers,
-          child: _Answers(state: state, cubit: cubit),
-        ),
-      ],
     );
-  }
-}
-
-enum _QuestionSlot { prompt, board, answers }
-
-/// O tabuleiro com o centro no centro da tela, a pergunta colada nele (em cima ou
-/// embaixo) e as respostas no rodapé. Se não couber no meio, o tabuleiro
-/// desliza (e só então encolhe) para não encostar no resto.
-class _QuestionLayout extends MultiChildLayoutDelegate {
-  _QuestionLayout({required this.promptAbove, required this.centerY});
-
-  final bool promptAbove;
-  final double centerY;
-
-  @override
-  void performLayout(Size size) {
-    const gap = AppSpacing.md;
-    // Largura toda: o texto centraliza e as opções se estendem.
-    final loose = BoxConstraints.tightFor(width: size.width);
-    final answers = layoutChild(_QuestionSlot.answers, loose);
-    final prompt = layoutChild(_QuestionSlot.prompt, loose);
-    final free = size.height - answers.height - prompt.height - 3 * gap;
-    final side = math.max(0.0, math.min(size.width, free));
-    layoutChild(_QuestionSlot.board, BoxConstraints.tight(Size(side, side)));
-    final minTop = promptAbove ? gap + prompt.height + gap : gap;
-    final maxTop = promptAbove
-        ? size.height - answers.height - gap - side
-        : size.height - answers.height - gap - prompt.height - gap - side;
-    final top = (centerY - side / 2)
-        .clamp(minTop, math.max(minTop, maxTop))
-        .toDouble();
-    final left = (size.width - side) / 2;
-    positionChild(_QuestionSlot.board, Offset(left, top));
-    positionChild(
-      _QuestionSlot.prompt,
-      Offset(0, promptAbove ? top - gap - prompt.height : top + side + gap),
-    );
-    positionChild(
-      _QuestionSlot.answers,
-      Offset(0, size.height - answers.height),
+    return CenteredBoardLayout(
+      gap: AppSpacing.md,
+      reserveTop: promptAbove ? _promptReserve : 0,
+      reserveBottom: promptAbove ? 0 : _promptReserve,
+      top: promptAbove ? prompt : null,
+      board: LayoutBuilder(
+        builder: (context, box) => _Board(state: state, size: box.maxWidth),
+      ),
+      bottom: promptAbove ? null : prompt,
+      footer: Padding(
+        key: PlacementKeys.answers,
+        padding: const EdgeInsets.only(top: AppSpacing.md),
+        child: _Answers(state: state, cubit: cubit),
+      ),
     );
   }
 
-  @override
-  bool shouldRelayout(_QuestionLayout oldDelegate) =>
-      oldDelegate.promptAbove != promptAbove || oldDelegate.centerY != centerY;
+  /// O espaço guardado para a pergunta: duas linhas.
+  static const _promptReserve = 48.0;
 }
 
 class _Answers extends StatelessWidget {

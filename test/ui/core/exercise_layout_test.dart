@@ -36,7 +36,7 @@ void main() {
     );
   });
 
-  test('solvingRect: no centro da tela quando cabe', () {
+  test('solvingRect: no centro dado quando cabe', () {
     const area = Size(412, 800);
     final rect = ExerciseLayout.solvingRect(
       area,
@@ -48,26 +48,47 @@ void main() {
     expect(rect.center.dy, 380);
   });
 
-  test('solvingRect: enunciado alto, desce só o necessário', () {
+  test('solvingRect: enunciado alto encolhe o tabuleiro, sem tirá-lo do '
+      'centro', () {
     const area = Size(412, 800);
-    final rect = ExerciseLayout.solvingRect(
-      area,
-      header: 200,
-      footer: footer,
-      centerY: 300,
-    );
-    expect(rect.top, 200 + ExerciseLayout.gutter);
+    final rect = ExerciseLayout.solvingRect(area, header: 200, footer: footer);
+    expect(rect.center.dy, (800 - footer) / 2);
+    expect(rect.top, greaterThanOrEqualTo(200 + ExerciseLayout.gutter));
     expect(rect.bottom, lessThanOrEqualTo(800 - footer));
   });
 
-  test('solvingRect: sem centro dado, no meio do espaço livre', () {
+  test('solvingRect: sem centro dado, no centro do espaço útil', () {
     const area = Size(412, 800);
     final rect = ExerciseLayout.solvingRect(
       area,
       header: header,
       footer: footer,
     );
-    expect(rect.center.dy, header + (800 - header - footer) / 2);
+    expect(rect.center.dy, (800 - footer) / 2);
+  });
+
+  test('headerRoom: o enunciado fica com o que sobra acima do menor '
+      'tabuleiro', () {
+    const area = Size(412, 800);
+    final room = ExerciseLayout.headerRoom(area, footer: footer);
+    final rect = ExerciseLayout.solvingRect(
+      area,
+      header: 10000,
+      footer: footer,
+    );
+    expect(rect.top - ExerciseLayout.gutter, closeTo(room, 0.001));
+  });
+
+  test('explainingRect, escola: no centro do espaço acima da folha', () {
+    const area = Size(412, 900);
+    final rect = ExerciseLayout.explainingRect(
+      area,
+      sheetRoom: 280,
+      lowered: true,
+    );
+    final sheet = ExerciseLayout.sheetTop(area, sheetRoom: 280, lowered: true);
+    expect(sheet, 900 - 280 + ExerciseLayout.gutter);
+    expect(rect.center.dy, sheet / 2);
   });
 
   test('explainingRect: no alto, deixando a folha da fala', () {

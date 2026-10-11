@@ -36,3 +36,7 @@ export const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 export const pageUrl = (locale: Locale) =>
   `${import.meta.env.BASE_URL}${locales[locale].path}`;
+
+/** A política de privacidade em [locale] (o caminho muda com o idioma). */
+export const privacyUrl = (locale: Locale) =>
+  `${pageUrl(locale)}${locales[locale].dict.privacy.slug}/`;

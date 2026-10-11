@@ -142,8 +142,8 @@ const en: Dictionary = {
       },
       blind: {
         title: 'Blindfold',
-        body: 'Play without seeing the pieces: speak, type or tap your moves. Hear where the pieces are before you start, ask for the opponent\'s move again and choose how much you want to see. Your voice is recognised by the phone itself and is not recorded. It is still experimental.',
-        bullets: ['With the board, just the squares or no board', 'Moves by voice, keyboard or tap'],
+        body: 'Train your visualization: play with your eyes closed against Maia or Stockfish, saying your moves out loud. Before you start, hear where the pieces are; during the game, ask to repeat the opponent\'s move. In New game, pick Blindfold mode and, at the top of the game, how much you want to see. Still experimental.',
+        bullets: ['Against Maia or Stockfish', 'Moves by voice, keyboard or tap', 'With the board, squares only or no board'],
       },
       voice: {
         title: 'The teacher talks to you',
@@ -174,6 +174,16 @@ const en: Dictionary = {
         body: 'Light or dark theme, six app colors, pieces and board colors, clock above, below or one on each side. Choose what shows on the home screen and in which order. The app is available in 19 languages.',
         bullets: [],
       },
+      realGames: {
+        title: 'Real games, told as stories',
+        body: 'Many lesson positions come from master games. Before the move, Master Viktor tells you who played, where and when, what was at stake and what to look at on the board. One tap opens the whole game on Lichess, without leaving the app.',
+        bullets: ['80 master games cited in the lessons', 'A link to see the whole game on Lichess'],
+      },
+      exercises: {
+        title: "Exercises with Viktor's explanation",
+        body: 'In the final test of each lesson, the moves are yours alone: the teacher stays quiet while you play. Solved it? Then Viktor explains the move and the alternatives, with the squares highlighted in the comment.',
+        bullets: ['From 1 to 3 stars, by difficulty', 'The explanation comes after you solve it'],
+      },
     },
     route: {
       label: 'Every chapter follows the same path',
@@ -184,6 +194,7 @@ const en: Dictionary = {
         { title: 'Test it in practice', body: 'You play the position to the end against the engine.' },
       ],
     },
+    blindShots: ['Choose the mode', 'Board', 'Squares only', 'No board'],
   },
   levels: {
     kicker: 'For every level',
@@ -267,21 +278,93 @@ const en: Dictionary = {
     tagline: 'Train chess endgames against Maia and Stockfish.',
     dev: 'I am a programmer. If you need a landing page, an app, or want to learn more about my services, get in touch:',
     contact: 'Contact',
+    privacy: 'Privacy policy',
   },
   media: {
+    blindMode: 'New game in Lucena: choosing between normal and blindfold mode',
+    blindBoard: 'A blindfold game with the board visible',
+    blindSquares: 'A blindfold game with squares only: the grid and coordinates, no pieces',
+    blindNone: 'A blindfold game with no board, only the moves',
     hero: 'Choosing the Maia level and time control, then playing against it in Lucena',
     school: "The first lesson in Viktor's school in Lucena: the rook and the stars",
+    placement: 'The Lucena level test: one question at a time, with an "I don\'t know" option',
+    lesson: 'A chapter of a Lucena endgame lesson, the Lucena position: think, watch and play',
     journey: 'The Lucena Journey: the current opponent and the challenges',
-    queenRook: 'Interactive queen vs rook lesson in Lucena',
     speedrun: 'Lucena speedrun: the stages and the game against the clock',
-    theme: 'Choosing the dark theme and the app color in Lucena',
+    marathon: 'Lucena Marathon: one game after another on a single clock',
+    theme: 'Choosing the theme and the app color in Lucena',
+    home: 'The Lucena home screen in the dark theme',
     journeyChallenge: 'A Journey challenge in Lucena: queen mate against Tito, level 1200',
-    exercise: 'A queen vs rook exercise in a Lucena endgame lesson',
-    queenRookLesson: 'Lucena endgame lesson: queen vs rook, reaching Philidor',
-    shortSide: 'Lucena endgame lesson: the short-side defence',
-    stars: 'Lucena star challenge with the rook, on hard',
+    placementResult: 'Level test result: your rating range and a map of what you already master',
+    lessonChapters: 'A Lucena endgame lesson split into chapters: Breakthrough, in pawn endgames',
+    realGame: 'A chapter with a real game, Andersson vs Åkesson in 1999, and its Lichess link',
+    solvedExercise: "A solved exercise in an endgame lesson, with Viktor's comment",
+    stars: 'Lucena star challenge with the rook',
+    profile: 'Endgame rating in Lucena, with the chart and the game history',
+    achievements: 'Lucena achievements: the ones unlocked and the ones left',
+    record: 'End of a Marathon in Lucena: the total time and a new personal best',
+    gameEnd: "End of a game in Lucena: a win against Tito, the rating and Stockfish's best line",
     play: 'Play video',
     pause: 'Pause video',
+  },
+  privacy: {
+    slug: 'privacy',
+    title: 'Privacy policy',
+    description: 'How Lucena handles your data: the app works offline, has no account or ads, and does not collect, send or sell personal data.',
+    updated: 'Version of October 10, 2026',
+    back: 'Back to home',
+    sections: [
+      {
+        title: 'In short',
+        body: [
+          'Lucena is a free Android app for training chess endgames. It works offline and <strong>does not collect, send or sell personal data</strong>. It has no account, no login, no ads and no tracking tools.',
+        ],
+      },
+      {
+        title: 'What stays on your device',
+        body: [
+          'Your progress (lessons, games, rating, achievements and records) and your preferences (theme, language, voice, board) are stored only in the app’s storage on your phone. None of it goes to a server: Lucena has no server.',
+          'To erase everything, clear Lucena’s data in the Android settings or uninstall the app.',
+        ],
+      },
+      {
+        title: 'Internet',
+        body: [
+          'The app asks for internet permission only to open, inside the app, the external pages you tap: Wikipedia articles and games on Lichess. Those pages belong to other sites and follow their own privacy policies (<a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" rel="noopener">Wikipedia</a> and <a href="https://lichess.org/privacy" rel="noopener">Lichess</a>).',
+          'The chess engines, the lessons and the voices run on the device itself. When you tap share on a game, the text goes only to the app you choose.',
+        ],
+      },
+      {
+        title: 'Microphone',
+        body: [
+          'In blindfold mode you can speak your moves. Only then does the app ask for microphone access. Lucena does not record or keep the audio. Recognition is done by the Android speech service: on the device whenever possible; if the offline speech pack for your language is not installed, Android may use Google’s online service. Without the permission, you play with the keyboard or by tapping.',
+        ],
+      },
+      {
+        title: 'Google Play',
+        body: [
+          'Lucena is distributed through Google Play. Google handles your account and install data under its <a href="https://policies.google.com/privacy" rel="noopener">own privacy policy</a>. I only receive the anonymous, aggregated statistics Google Play shows every developer, such as the number of installs.',
+        ],
+      },
+      {
+        title: 'Children',
+        body: [
+          'Since the app collects no personal data from anyone, it collects none from children either. It can be used by people of any age.',
+        ],
+      },
+      {
+        title: 'Changes to this policy',
+        body: [
+          'If anything changes, this page is updated and the version date at the top changes with it.',
+        ],
+      },
+      {
+        title: 'Contact',
+        body: [
+          'Questions about privacy? Write to <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
   },
 };
 

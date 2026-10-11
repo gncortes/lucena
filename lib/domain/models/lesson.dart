@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import 'game_setup.dart';
 import 'journey.dart';
+import '../use_cases/wiki_markup.dart';
 
 /// A Escola do Viktor: as aulas do iniciante, em módulos, na ordem em que se
 /// aprende. As falas de cada passo ficam à parte, por idioma ([LessonTexts]).
@@ -374,11 +375,19 @@ class LessonTexts {
     return texts[index % texts.length];
   }
 
-  String moduleTitle(String moduleId) => say('module.$moduleId') ?? moduleId;
+  /// A fala de [key] só com o texto visível, sem a marcação dos nomes
+  /// (`{{Andersson|ulf-andersson}}`): para títulos, resumos e o que não
+  /// desenha o link. Nula se não há.
+  String? plain(String key, [int index = 0]) {
+    final text = say(key, index);
+    return text == null ? null : WikiMarkup.plain(text);
+  }
 
-  String lessonTitle(String lessonId) => say('$lessonId.title') ?? lessonId;
+  String moduleTitle(String moduleId) => plain('module.$moduleId') ?? moduleId;
 
-  String? lessonSummary(String lessonId) => say('$lessonId.summary');
+  String lessonTitle(String lessonId) => plain('$lessonId.title') ?? lessonId;
+
+  String? lessonSummary(String lessonId) => plain('$lessonId.summary');
 
   /// O que o Viktor diz ao abrir o passo.
   String? step(String lessonId, String stepId) => say('$lessonId.$stepId');
@@ -399,9 +408,9 @@ class LessonTexts {
 
   /// O título e o resumo de uma parte.
   String? partTitle(String lessonId, String partId) =>
-      say('$lessonId.part.$partId.title');
+      plain('$lessonId.part.$partId.title');
   String? partSummary(String lessonId, String partId) =>
-      say('$lessonId.part.$partId.summary');
+      plain('$lessonId.part.$partId.summary');
 
   /// Junta [fallback] por baixo: chave que falta aqui vem dele.
   LessonTexts over(LessonTexts fallback) =>
