@@ -5421,5 +5421,9 @@
   "lessonTeacherVoiceHint": "Read the explanations aloud",
   "@lessonTeacherVoiceHint": {"description": "Explains automatic lesson narration."},
   "lessonSoundHint": "Piece sounds and Viktor’s voice",
-  "@lessonSoundHint": {"description": "Describes the global sound toggle in a lesson."}
+  "@lessonSoundHint": {"description": "Describes the global sound toggle in a lesson."},
+  "lessonSoundOn": "Sound and voice: on, speed {speed}",
+  "lessonSoundOff": "Sound and voice: off",
+  "@lessonSoundOn": {"description": "Accessible label for the enabled lesson sound button and its localized speed.", "placeholders": {"speed": {"type": "String"}}},
+  "@lessonSoundOff": {"description": "Accessible label for the disabled lesson sound button."}
 }

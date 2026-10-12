@@ -1093,5 +1093,7 @@
   "lessonReturn": "Geri",
   "lessonTeacherVoice": "Viktor’un sesi",
   "lessonTeacherVoiceHint": "Açıklamaları sesli oku",
-  "lessonSoundHint": "Taş sesleri ve Viktor’un sesi"
+  "lessonSoundHint": "Taş sesleri ve Viktor’un sesi",
+  "lessonSoundOn": "Ses ve konuşma: açık, hız {speed}",
+  "lessonSoundOff": "Ses ve konuşma: kapalı"
 }

@@ -1093,5 +1093,7 @@
   "lessonReturn": "Kembali",
   "lessonTeacherVoice": "Suara Viktor",
   "lessonTeacherVoiceHint": "Bacakan penjelasan",
-  "lessonSoundHint": "Suara bidak dan suara Viktor"
+  "lessonSoundHint": "Suara bidak dan suara Viktor",
+  "lessonSoundOn": "Suara dan ucapan: aktif, kecepatan {speed}",
+  "lessonSoundOff": "Suara dan ucapan: nonaktif"
 }

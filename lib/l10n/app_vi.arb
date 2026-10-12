@@ -1093,5 +1093,7 @@
   "lessonReturn": "Quay lại",
   "lessonTeacherVoice": "Giọng của Viktor",
   "lessonTeacherVoiceHint": "Đọc thành tiếng phần giải thích",
-  "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor"
+  "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor",
+  "lessonSoundOn": "Âm thanh và giọng nói: bật, tốc độ {speed}",
+  "lessonSoundOff": "Âm thanh và giọng nói: tắt"
 }

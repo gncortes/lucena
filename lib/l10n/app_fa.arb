@@ -1093,5 +1093,7 @@
   "lessonReturn": "بازگشت",
   "lessonTeacherVoice": "صدای ویکتور",
   "lessonTeacherVoiceHint": "خواندن توضیحات با صدای بلند",
-  "lessonSoundHint": "صدای مهره‌ها و صدای ویکتور"
+  "lessonSoundHint": "صدای مهره‌ها و صدای ویکتور",
+  "lessonSoundOn": "صدا و گفتار: روشن، سرعت {speed}",
+  "lessonSoundOff": "صدا و گفتار: خاموش"
 }

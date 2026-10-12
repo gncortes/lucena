@@ -1093,5 +1093,7 @@
   "lessonReturn": "返回",
   "lessonTeacherVoice": "维克托的语音",
   "lessonTeacherVoiceHint": "朗读讲解",
-  "lessonSoundHint": "棋子音效和维克托的语音"
+  "lessonSoundHint": "棋子音效和维克托的语音",
+  "lessonSoundOn": "声音和语音: 开启，速度 {speed}",
+  "lessonSoundOff": "声音和语音: 关闭"
 }
