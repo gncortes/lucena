@@ -1270,6 +1270,12 @@ class _LessonScreenState extends State<LessonScreen>
     return TeacherSpeech(
       part: part,
       lessonV2: true,
+      lessonPromptBubble:
+          step is ThinkStep &&
+          state.layout == LessonLayoutMode.solving &&
+          (state.explanation == null ||
+              state.explanation?.state == ExplanationState.intro) &&
+          _authoredVariation == null,
       onSoundSettings: () => showLessonSoundDialog(context),
       teacher: viktor,
       explanation:

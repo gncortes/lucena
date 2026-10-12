@@ -4,6 +4,9 @@ import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
+import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
@@ -22,6 +25,23 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+
+class _ThinkFeedback extends EmptyExerciseFeedbackRepository
+    implements ExplanationRepository {
+  const _ThinkFeedback(this.payload);
+  final ExplanationPayload payload;
+  @override
+  Future<ExplanationPayload?> findPayload({
+    required String lessonId,
+    required String exerciseId,
+    required String kind,
+    required int turn,
+    required String fen,
+    required String language,
+    required ExplanationState state,
+    String? playedUci,
+  }) async => payload.forState(state, playedUci: playedUci);
+}
 
 /// T60: o modo exercício da lição. Resolvendo, o enunciado curto em cima, o
 /// tabuleiro no centro e o cronômetro (contando para cima) no canto de
@@ -86,6 +106,8 @@ void main() {
     double scale = 1.0,
     bool systemBars = false,
     bool reducedMotion = false,
+    ExerciseFeedbackRepository? feedback,
+    LessonTexts? promptTexts,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -93,10 +115,11 @@ void main() {
     addTearDown(tester.view.reset);
     final cubit = LessonCubit(
       source: EndgameLessonSource(
-        FakeEndgameLessonRepository(trail: trail, texts: texts),
+        FakeEndgameLessonRepository(trail: trail, texts: promptTexts ?? texts),
         FakeEndgameProgressRepository(),
       ),
       characters: FakeCharacterRepository(),
+      feedback: feedback,
       opponent: FakeOpponentRepository(),
       now: now,
       replyDelay: Duration.zero,
@@ -149,6 +172,146 @@ void main() {
     cubit.next();
     await tester.pumpAndSettle();
     expect(cubit.state.step, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Pensar keeps its bubble until entering the next step', (
+    tester,
+  ) async {
+    final cubit = await pump(tester);
+    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      ),
+    );
+    expect(teacher().lessonPromptBubble, isTrue);
+    final speech = find.byKey(LessonKeys.speech);
+    final bubble = tester
+        .widgetList<Container>(
+          find.ancestor(of: speech, matching: find.byType(Container)),
+        )
+        .firstWhere((widget) => widget.decoration is BoxDecoration);
+    final colors = Theme.of(tester.element(speech)).colorScheme;
+    expect(
+      (bubble.decoration! as BoxDecoration).color,
+      colors.surfaceContainerHighest,
+    );
+    expect(
+      bubble.padding,
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+    );
+    await cubit.next();
+    await tester.pumpAndSettle();
+    expect(teacher().lessonPromptBubble, isFalse);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'Pensar authored intro keeps one bubble and excludes variations',
+    (tester) async {
+      final line = ExplanationVariation(
+        id: 'main',
+        label: '1.Rc4',
+        outcome: VariationOutcome.accepted,
+        texts: const ['The rook moves.'],
+        originFen: fen,
+        movesUci: const ['c1c4'],
+        movesSan: const ['1.Rc4'],
+        validated: true,
+      );
+      final cubit = await pump(
+        tester,
+        feedback: _ThinkFeedback(
+          ExplanationPayload(
+            positionId: 'think',
+            state: ExplanationState.intro,
+            explanations: [
+              ExplanationBlock(
+                id: 'context',
+                kind: ExplanationKind.context,
+                texts: [
+                  'First context paragraph.',
+                  'Second context paragraph.',
+                ],
+              ),
+              ExplanationBlock(
+                id: 'solution',
+                kind: ExplanationKind.mainSolution,
+                texts: const ['The solution.'],
+                variations: [line],
+              ),
+            ],
+          ),
+        ),
+      );
+      TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+        ),
+      );
+      expect(cubit.state.explanation?.state, ExplanationState.intro);
+      expect(teacher().lessonPromptBubble, isTrue);
+      expect(
+        teacher().explanation?.explanations.single.kind,
+        ExplanationKind.context,
+      );
+      final step = cubit.state.step;
+      teacher().onVariation!(line.open());
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      teacher().onVariation!(null);
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isTrue);
+      expect(cubit.state.step, step);
+      await cubit.next();
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      teacher().onVariation!(line.open());
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      teacher().onVariation!(null);
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Pensar SAN replay and restore retain prompt and progress', (
+    tester,
+  ) async {
+    final cubit = await pump(
+      tester,
+      promptTexts: LessonTexts.fromJson({
+        ...texts.toJson(),
+        'rook.lucena.think.hint1': 'Consider 1.Rc4.',
+      }),
+    );
+    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      ),
+    );
+    final step = cubit.state.step;
+    final reached = cubit.state.reached;
+    await cubit.moreHint();
+    await tester.pumpAndSettle();
+    final link = SpeechLinks.find(
+      'Consider 1.Rc4.',
+      SpeechLinks.english,
+    ).single;
+    teacher().onLink!(link);
+    await tester.pumpAndSettle();
+    expect(find.byKey(LessonKeys.variationExit), findsOneWidget);
+    expect(teacher().lessonPromptBubble, isTrue);
+    teacher().onLink!(link);
+    await tester.pumpAndSettle();
+    expect(find.byKey(LessonKeys.variationExit), findsNothing);
+    expect(teacher().lessonPromptBubble, isTrue);
+    expect(cubit.state.step, step);
+    expect(cubit.state.reached, reached);
     expect(tester.takeException(), isNull);
   });
 

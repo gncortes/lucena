@@ -52,6 +52,7 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
+    this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
     required this.teacher,
@@ -75,6 +76,9 @@ class TeacherSpeech extends StatelessWidget {
   final Character teacher;
   final ExplanationPayload? explanation;
   final bool lessonV2;
+
+  /// Pensar keeps its speech bubble; explanation sections remain unboxed.
+  final bool lessonPromptBubble;
   final ValueChanged<VariationCursor?>? onVariation;
   final VariationCursor? activeVariation;
 
@@ -439,7 +443,7 @@ class TeacherSpeech extends StatelessWidget {
               Expanded(child: _header(context)),
             ],
           ),
-          SizedBox(height: lessonV2 ? 8 : 2),
+          SizedBox(height: lessonV2 && !lessonPromptBubble ? 8 : 2),
           _closable(context),
         ],
       );
@@ -481,12 +485,24 @@ class TeacherSpeech extends StatelessWidget {
   /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
   Widget _closable(BuildContext context) {
     final onClose = this.onClose;
-    if (onClose == null || _plain == null) return _speech(context);
+    Widget speech = _speech(context);
+    if (lessonPromptBubble && _plain != null) {
+      speech = Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
+        child: speech,
+      );
+    }
+    if (onClose == null || _plain == null) return speech;
     final colors = Theme.of(context).colorScheme;
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _speech(context),
+        speech,
         PositionedDirectional(
           // No ensino, a ponta do balão fica em cima: o ✕ desce com ela.
           top: (_stacked ? _tail.height : 0) - 20,
