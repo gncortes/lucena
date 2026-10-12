@@ -1093,5 +1093,7 @@
   "lessonReturn": "뒤로",
   "lessonTeacherVoice": "빅토르의 음성",
   "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",
-  "lessonSoundHint": "기물 효과음과 빅토르의 음성"
+  "lessonSoundHint": "기물 효과음과 빅토르의 음성",
+  "lessonSoundOn": "소리와 음성: 켜짐, 속도 {speed}",
+  "lessonSoundOff": "소리와 음성: 꺼짐"
 }

@@ -1093,5 +1093,7 @@
   "lessonReturn": "Zurück",
   "lessonTeacherVoice": "Viktors Stimme",
   "lessonTeacherVoiceHint": "Erklärungen vorlesen",
-  "lessonSoundHint": "Figurengeräusche und Viktors Stimme"
+  "lessonSoundHint": "Figurengeräusche und Viktors Stimme",
+  "lessonSoundOn": "Ton und Stimme: an, Geschwindigkeit {speed}",
+  "lessonSoundOff": "Ton und Stimme: aus"
 }

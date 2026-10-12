@@ -1093,5 +1093,7 @@
   "lessonReturn": "رجوع",
   "lessonTeacherVoice": "صوت فيكتور",
   "lessonTeacherVoiceHint": "قراءة الشروحات بصوت عالٍ",
-  "lessonSoundHint": "أصوات القطع وصوت فيكتور"
+  "lessonSoundHint": "أصوات القطع وصوت فيكتور",
+  "lessonSoundOn": "الصوت والكلام: مفعّل، السرعة {speed}",
+  "lessonSoundOff": "الصوت والكلام: متوقف"
 }

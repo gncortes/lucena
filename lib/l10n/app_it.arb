@@ -1093,5 +1093,7 @@
   "lessonReturn": "Indietro",
   "lessonTeacherVoice": "Voce di Viktor",
   "lessonTeacherVoiceHint": "Leggere le spiegazioni ad alta voce",
-  "lessonSoundHint": "Suoni dei pezzi e voce di Viktor"
+  "lessonSoundHint": "Suoni dei pezzi e voce di Viktor",
+  "lessonSoundOn": "Suono e voce: attivo, velocità {speed}",
+  "lessonSoundOff": "Suono e voce: disattivato"
 }

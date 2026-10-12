@@ -1093,5 +1093,7 @@
   "lessonReturn": "戻る",
   "lessonTeacherVoice": "ヴィクトルの声",
   "lessonTeacherVoiceHint": "解説を読み上げる",
-  "lessonSoundHint": "駒の効果音とヴィクトルの声"
+  "lessonSoundHint": "駒の効果音とヴィクトルの声",
+  "lessonSoundOn": "サウンドと音声: オン、速度 {speed}",
+  "lessonSoundOff": "サウンドと音声: オフ"
 }

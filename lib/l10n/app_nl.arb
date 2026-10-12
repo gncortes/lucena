@@ -1093,5 +1093,7 @@
   "lessonReturn": "Terug",
   "lessonTeacherVoice": "Stem van Viktor",
   "lessonTeacherVoiceHint": "De uitleg voorlezen",
-  "lessonSoundHint": "Stukgeluiden en de stem van Viktor"
+  "lessonSoundHint": "Stukgeluiden en de stem van Viktor",
+  "lessonSoundOn": "Geluid en stem: aan, snelheid {speed}",
+  "lessonSoundOff": "Geluid en stem: uit"
 }

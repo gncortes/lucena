@@ -1093,5 +1093,7 @@
   "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Виктора",
   "lessonTeacherVoiceHint": "Читать объяснения вслух",
-  "lessonSoundHint": "Звуки фигур и голос Виктора"
+  "lessonSoundHint": "Звуки фигур и голос Виктора",
+  "lessonSoundOn": "Звук и голос: включено, скорость {speed}",
+  "lessonSoundOff": "Звук и голос: выключено"
 }

@@ -1093,5 +1093,7 @@
   "lessonReturn": "वापस",
   "lessonTeacherVoice": "विक्टर की आवाज़",
   "lessonTeacherVoiceHint": "व्याख्याएँ ज़ोर से पढ़ें",
-  "lessonSoundHint": "मोहरे की ध्वनियाँ और विक्टर की आवाज़"
+  "lessonSoundHint": "मोहरे की ध्वनियाँ और विक्टर की आवाज़",
+  "lessonSoundOn": "ध्वनि और आवाज़: चालू, गति {speed}",
+  "lessonSoundOff": "ध्वनि और आवाज़: बंद"
 }

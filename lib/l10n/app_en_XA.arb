@@ -1092,5 +1092,7 @@
   "lessonReturn": "[Båçk one]",
   "lessonTeacherVoice": "[Vîktöŕ'š vöîçé one two]",
   "lessonTeacherVoiceHint": "[Ŕéåd thé éxplåñåtîöñš ålöûd one two three]",
-  "lessonSoundHint": "[Pîéçé šöûñdš åñd Vîktöŕ’š vöîçé one two three]"
+  "lessonSoundHint": "[Pîéçé šöûñdš åñd Vîktöŕ’š vöîçé one two three]",
+  "lessonSoundOn": "[Šöûñd åñd vöîçé: öñ, špééd {speed} one two three]",
+  "lessonSoundOff": "[Šöûñd åñd vöîçé: öff one two]"
 }
