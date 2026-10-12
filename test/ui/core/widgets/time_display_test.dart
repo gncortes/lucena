@@ -49,6 +49,51 @@ void main() {
               .decoration!
           as BoxDecoration;
 
+  testWidgets('plain countdown fits a 40 dp band and preserves RTL semantics', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    for (final direction in TextDirection.values) {
+      for (final scale in [1.0, 2.0]) {
+        for (final state in TimeDisplayState.values) {
+          await tester.pumpWidget(
+            app(
+              TimeDisplay(
+                value: '0:05',
+                semanticsLabel: 'Tempo restante: 0:05, ${state.name}',
+                type: TimeDisplayType.countdown,
+                size: TimeDisplaySize.inline,
+                presentation: TimeDisplayPresentation.plain,
+                state: state,
+                textKey: textKey,
+              ),
+              scale: scale,
+              direction: direction,
+            ),
+          );
+          expect(tester.takeException(), isNull);
+          expect(find.byType(Icon), findsNothing);
+          expect(find.byType(Container), findsNothing);
+          expect(tester.getSize(find.byType(TimeDisplay)).height, 24 * scale);
+          if (scale == 1) {
+            expect(tester.getSize(find.byType(TimeDisplay)).height + 16, 40);
+          }
+          final text = tester.widget<Text>(find.byKey(textKey));
+          expect(text.textDirection, TextDirection.ltr);
+          expect(
+            text.style!.color,
+            state == TimeDisplayState.low ? scheme.error : scheme.onSurface,
+          );
+          expect(
+            find.bySemanticsLabel('Tempo restante: 0:05, ${state.name}'),
+            findsOneWidget,
+          );
+        }
+      }
+    }
+    handle.dispose();
+  });
+
   testWidgets('compact clocks keep 96/124 widths and caller tenths', (
     tester,
   ) async {
