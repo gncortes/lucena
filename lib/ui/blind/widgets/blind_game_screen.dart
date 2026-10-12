@@ -668,15 +668,17 @@ class _ViewPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return SizedBox(
-      width: 112,
-      height: 36,
+      // Accessibility adaptation approved for the compact Canvas selector.
+      width: 132,
+      height: 44,
       child: SegmentedButton<BlindView>(
         expandedInsets: EdgeInsets.zero,
         showSelectedIcon: false,
         style: SegmentedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          minimumSize: const Size(0, 36),
-          visualDensity: const VisualDensity(vertical: -1),
+          minimumSize: const Size(44, 44),
+          // SegmentedButton derives its inner target from40 + density.dy.
+          visualDensity: const VisualDensity(vertical: 1),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         segments: [
