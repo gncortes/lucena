@@ -48,6 +48,9 @@ void main() {
     Size size = const Size(412, 915),
     double textScale = 1,
     bool systemBars = false,
+    ThemeMode themeMode = ThemeMode.light,
+    TextDirection direction = TextDirection.ltr,
+    Locale locale = const Locale('en'),
   }) async {
     // Tela de celular: o tabuleiro ocupa a largura.
     tester.view.physicalSize = size * 3;
@@ -69,10 +72,15 @@ void main() {
     await cubit.load(ChallengePiece.rook, level);
     await tester.pumpWidget(
       TestApp(
+        themeMode: themeMode,
+        locale: locale,
         settingsCubit: await settings(),
         child: BlocProvider.value(
           value: cubit,
-          child: const StarChallengeScreen(),
+          child: Directionality(
+            textDirection: direction,
+            child: const StarChallengeScreen(),
+          ),
         ),
       ),
     );
@@ -256,7 +264,7 @@ void main() {
           expect(action.left, 16);
           expect(action.width, size.width - 32);
           expect(action.height, greaterThanOrEqualTo(52));
-          expect(action.bottom, closeTo(size.height - 32 - 16, 1));
+          expect(action.bottom, closeTo(size.height - 32 - 8, 1));
           expect(action.overlaps(before), isFalse);
           expect(action.overlaps(score), isFalse);
           expect(
@@ -272,12 +280,19 @@ void main() {
           now.advance(const Duration(seconds: 61));
           cubit.tick();
           await tester.pumpAndSettle();
-          expect(tester.getRect(find.byKey(StarChallengeKeys.board)), running);
+          final finished = tester.getRect(find.byKey(StarChallengeKeys.board));
+          expect(finished.center, running.center);
           final retry = tester.getRect(
             find.byKey(StarChallengeKeys.retryButton),
           );
           expect(retry, action);
-          expect(retry.overlaps(score), isFalse);
+          expect(retry.overlaps(finished), isFalse);
+          expect(
+            retry.overlaps(
+              tester.getRect(find.byKey(StarChallengeKeys.scoreboard)),
+            ),
+            isFalse,
+          );
           expect(tester.takeException(), isNull);
         },
       );
@@ -353,7 +368,7 @@ void main() {
           closeTo(1, .01),
         );
         final scroll = find
-            .ancestor(of: intro, matching: find.byType(SingleChildScrollView))
+            .descendant(of: intro, matching: find.byType(SingleChildScrollView))
             .first;
         final scrollable = find
             .descendant(of: scroll, matching: find.byType(Scrollable))
@@ -364,7 +379,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(position.pixels, closeTo(position.maxScrollExtent, 1));
         expect(
-          tester.getBottomLeft(intro).dy,
+          tester.getBottomLeft(text).dy,
           lessThanOrEqualTo(tester.getBottomLeft(scroll).dy + 1),
         );
         expect(tester.getRect(find.byKey(StarChallengeKeys.board)), board);
@@ -419,7 +434,11 @@ void main() {
       cubit.tick();
       await tester.pumpAndSettle();
       expect(find.byKey(StarChallengeKeys.result), findsOneWidget);
-      expect(card(), running);
+      expect(card().size, running.size);
+      expect(
+        card().top - tester.getRect(find.byKey(StarChallengeKeys.board)).bottom,
+        closeTo(8, .01),
+      );
     },
   );
 
@@ -476,12 +495,133 @@ void main() {
     cubit.tick();
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), running);
+    final finishedScore = tester.getRect(
+      find.byKey(StarChallengeKeys.scoreboard),
+    );
+    expect(finishedScore.size, running.size);
     // No fim, o "Jogar de novo" fica no mesmo rodapé, também sem cobrir.
     final retry = tester.getRect(find.byKey(StarChallengeKeys.retryButton));
-    expect(retry.overlaps(board), isFalse);
-    expect(retry.overlaps(ready), isFalse);
+    expect(
+      retry.overlaps(tester.getRect(find.byKey(StarChallengeKeys.board))),
+      isFalse,
+    );
+    expect(retry.overlaps(finishedScore), isFalse);
   });
+
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+    testWidgets('V2 sem insets: componentes e centro em $size', (tester) async {
+      final cubit = await pump(tester, size: size, locale: const Locale('pt'));
+      final board = tester.getRect(find.byKey(StarChallengeKeys.board));
+      final score = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+      final intro = tester.getRect(find.byKey(StarChallengeKeys.intro));
+      expect(board.center.dy, size.height / 2);
+      expect(board.width, size.width == 360 ? 284 : 412);
+      expect(score.top - board.bottom, closeTo(8, .01));
+      expect(score.height, closeTo(68, .01));
+      expect(score.left, 16);
+      expect(score.width, size.width - 32);
+      expect(intro.bottom, closeTo(board.top - 8, .01));
+      expect(intro.height, 108);
+      final introScroll = find.descendant(
+        of: find.byKey(StarChallengeKeys.intro),
+        matching: find.byType(SingleChildScrollView),
+      );
+      expect(introScroll, findsOneWidget);
+      await tester.drag(introScroll, const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byKey(StarChallengeKeys.intro)), intro);
+      expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 72);
+      expect(find.text('Fácil · Caça às estrelas'), findsOneWidget);
+      final go = tester.getRect(find.byKey(StarChallengeKeys.goButton));
+      expect(go.height, 52);
+      expect(go.bottom, size.height - 8);
+      await tester.tap(find.byKey(StarChallengeKeys.goButton));
+      await tester.pumpAndSettle();
+      final running = tester.getRect(find.byKey(StarChallengeKeys.board));
+      expect(running.width, size.width);
+      expect(running.top, closeTo(size.width == 360 ? 190 : 252, .5));
+      expect(find.byKey(StarChallengeKeys.goButton), findsNothing);
+      expect(find.text('Sua vez'), findsNothing);
+      expect(
+        tester.getRect(find.byKey(StarChallengeKeys.scoreboard)).height,
+        closeTo(68, .01),
+      );
+      cubit.pause();
+      await tester.pumpAndSettle();
+      expect(find.text('Em pausa'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+    for (final direction in TextDirection.values) {
+      testWidgets('V2 cartões/resultado legíveis $mode $direction fonte2,4', (
+        tester,
+      ) async {
+        final cubit = await pump(
+          tester,
+          size: const Size(360, 740),
+          textScale: 2.4,
+          themeMode: mode,
+          direction: direction,
+        );
+        final introFinder = find.byKey(StarChallengeKeys.intro);
+        final context = tester.element(introFinder);
+        final colors = Theme.of(context).colorScheme;
+        final intro = tester.widget<Container>(introFinder);
+        final score = tester.widget<Container>(
+          find.byKey(StarChallengeKeys.scoreboard),
+        );
+        expect(
+          (intro.decoration! as BoxDecoration).color,
+          mode == ThemeMode.light
+              ? colors.surfaceContainerLowest
+              : colors.surfaceContainerLow,
+        );
+        expect(
+          (score.decoration! as BoxDecoration).color,
+          mode == ThemeMode.light
+              ? colors.surfaceContainerLowest
+              : colors.surfaceContainerHigh,
+        );
+        final padding = intro.padding! as EdgeInsets;
+        expect(padding, const EdgeInsets.all(16));
+        await tester.tap(find.byKey(StarChallengeKeys.goButton));
+        await tester.pumpAndSettle();
+        now.advance(const Duration(seconds: 61));
+        cubit.tick();
+        await tester.pumpAndSettle();
+        final result = find.byKey(StarChallengeKeys.result);
+        final text = find
+            .descendant(of: result, matching: find.byType(Text))
+            .first;
+        final screen = tester.renderObject(
+          find.byKey(StarChallengeKeys.screen),
+        );
+        expect(
+          tester.renderObject(text).getTransformTo(screen).getMaxScaleOnAxis(),
+          closeTo(1, .01),
+        );
+        final scroll = find
+            .ancestor(of: result, matching: find.byType(SingleChildScrollView))
+            .first;
+        await tester.drag(scroll, const Offset(0, -1000));
+        await tester.pumpAndSettle();
+        expect(
+          tester.getBottomLeft(result).dy,
+          lessThanOrEqualTo(tester.getBottomLeft(scroll).dy + 1),
+        );
+        final retry = tester.getRect(find.byKey(StarChallengeKeys.retryButton));
+        expect(
+          retry.overlaps(
+            tester.getRect(find.byKey(StarChallengeKeys.scoreboard)),
+          ),
+          isFalse,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 
   testWidgets('a lista: seis peças, três níveis, a melhor marca', (
     tester,
