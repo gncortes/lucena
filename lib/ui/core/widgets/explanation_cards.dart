@@ -349,6 +349,18 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                     context.l10n.explanationUnavailable,
                     key: ExplanationKeys.unavailable,
                   ),
+                if (cursor != null &&
+                    cursor.variation.parentId != null &&
+                    block.variations.any(
+                      (variation) => variation.id == cursor.variation.id,
+                    ))
+                  TextButton.icon(
+                    key: ExplanationKeys.parent,
+                    onPressed: () =>
+                        _move(widget.payload.parentCursor(cursor.variation)),
+                    icon: const Icon(Icons.chevron_left),
+                    label: Text(context.l10n.explanationPrevious),
+                  ),
                 // Authored text need not mention every verified ply. Keep
                 // replay access until the replacement interaction is defined.
                 if (cursor != null &&

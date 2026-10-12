@@ -245,6 +245,71 @@ void main() {
     },
   );
   testWidgets(
+    'single-ply child returns to its parent origin separately from the lesson',
+    (tester) async {
+      const origin = '6k1/8/8/8/8/8/3P4/7K w - - 0 1';
+      final parent = ExplanationVariation(
+        id: 'A',
+        label: 'A',
+        outcome: VariationOutcome.accepted,
+        texts: ['Advance the pawn two squares.'],
+        originFen: origin,
+        movesUci: ['d2d4'],
+        movesSan: ['1.d4'],
+        validated: true,
+      );
+      final child = ExplanationVariation(
+        id: 'A.1',
+        label: 'A.1',
+        parentId: 'A',
+        parentPly: 0,
+        outcome: VariationOutcome.accepted,
+        texts: ['Advance the pawn one square.'],
+        originFen: origin,
+        movesUci: ['d2d3'],
+        movesSan: ['1.d3'],
+        validated: true,
+      );
+      final payload = ExplanationPayload(
+        positionId: 'intro',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'main',
+            kind: ExplanationKind.mainSolution,
+            variations: [parent, child],
+          ),
+        ],
+      );
+      final cubit = await pump(
+        tester,
+        'Explore the alternatives.',
+        feedback: _AuthoredFeedback(payload),
+      );
+      final snapshot = cubit.state;
+      final lessonFen = fen(tester);
+      expect(lessonFen, isNot(origin));
+      Future<void> activate(Key key) async {
+        await tester.ensureVisible(find.byKey(key));
+        await press(tester, key);
+      }
+
+      await activate(ExplanationKeys.variation('A'));
+      expect(fen(tester), parent.open()!.fen);
+      await activate(ExplanationKeys.variation('A.1'));
+      expect(fen(tester), child.open()!.fen);
+      expect(find.byKey(ExplanationKeys.first), findsNothing);
+      await activate(ExplanationKeys.parent);
+      expect(fen(tester), payload.parentCursor(child)!.fen);
+      expect(fen(tester), origin);
+      expect(find.byKey(ExplanationKeys.parent), findsNothing);
+      expect(identical(cubit.state, snapshot), isTrue);
+      await activate(ExplanationKeys.restore);
+      expect(fen(tester), lessonFen);
+      expect(identical(cubit.state, snapshot), isTrue);
+    },
+  );
+  testWidgets(
     'interactive lesson shows authored context then error before the solution',
     (tester) async {
       ExplanationVariation variant(
