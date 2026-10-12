@@ -9,6 +9,8 @@ enum TimeDisplaySize { inline, pill, block }
 
 enum TimeDisplayState { normal, active, low, paused, highlight }
 
+enum TimeDisplayPresentation { decorated, plain }
+
 /// Presentation only: callers format [value] and localize [semanticsLabel],
 /// including the type, value, label and any meaningful running/low state.
 /// Numbers remain LTR while labels inherit the surrounding direction.
@@ -19,6 +21,7 @@ class TimeDisplay extends StatelessWidget {
     this.type = TimeDisplayType.stopwatch,
     this.size = TimeDisplaySize.pill,
     this.state = TimeDisplayState.normal,
+    this.presentation = TimeDisplayPresentation.decorated,
     this.label,
     this.textKey,
     this.progress,
@@ -34,6 +37,11 @@ class TimeDisplay extends StatelessWidget {
   final TimeDisplayType type;
   final TimeDisplaySize size;
   final TimeDisplayState state;
+
+  /// Plain numbers for callers that provide their own icon and surrounding
+  /// layout. No capsule, internal padding or icon; text grows with accessibility
+  /// settings. Existing presentations remain decorated by default.
+  final TimeDisplayPresentation presentation;
   final String? label;
   final Key? textKey;
 
@@ -53,6 +61,7 @@ class TimeDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final plain = presentation == TimeDisplayPresentation.plain;
     final clock = type == TimeDisplayType.clock;
     final block = size == TimeDisplaySize.block;
     final inline = size == TimeDisplaySize.inline;
@@ -131,8 +140,15 @@ class TimeDisplay extends StatelessWidget {
                         ? theme.textTheme.labelLarge
                         : theme.textTheme.titleLarge)
                     ?.copyWith(
-                      color: foreground,
-                      fontSize: block ? 44 : (inline ? 14 : (clock ? 22 : 20)),
+                      color: plain
+                          ? state == TimeDisplayState.low
+                                ? colors.error
+                                : colors.onSurface
+                          : foreground,
+                      fontSize: plain
+                          ? 16
+                          : (block ? 44 : (inline ? 14 : (clock ? 22 : 20))),
+                      height: plain ? 1.5 : null,
                       fontWeight: inline ? FontWeight.w700 : FontWeight.w800,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
@@ -141,6 +157,17 @@ class TimeDisplay extends StatelessWidget {
             textDirection: TextDirection.ltr,
             child: KeyedSubtree(key: textKey, child: valueWidget!),
           );
+    if (plain) {
+      return Semantics(
+        container: true,
+        label: semanticsLabel,
+        excludeSemantics: true,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 24),
+          child: numbers,
+        ),
+      );
+    }
     final children = <Widget>[
       if (state == TimeDisplayState.low)
         DecoratedBox(
