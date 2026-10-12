@@ -1073,6 +1073,7 @@
   "explanationUnavailable": "Esta variante está indisponível.",
   "explanationFirst": "Início da variante",
   "explanationPrevious": "Lance anterior",
+  "explanationParent": "Voltar à variante pai",
   "explanationNext": "Próximo lance",
   "explanationLast": "Fim da variante",
   "explanationReturn": "Voltar à posição",

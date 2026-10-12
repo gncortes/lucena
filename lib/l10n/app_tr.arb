@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Bu varyant kullanılamıyor.",
   "explanationFirst": "Varyantın başı",
   "explanationPrevious": "Önceki hamle",
+  "explanationParent": "Üst varyanta dön",
   "explanationNext": "Sonraki hamle",
   "explanationLast": "Varyantın sonu",
   "explanationReturn": "Konuma dön",

@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "هذا التفرع غير متاح.",
   "explanationFirst": "بداية التفرع",
   "explanationPrevious": "النقلة السابقة",
+  "explanationParent": "العودة إلى التفرع الأعلى",
   "explanationNext": "النقلة التالية",
   "explanationLast": "نهاية التفرع",
   "explanationReturn": "العودة إلى الوضع الأصلي",

@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Diese Variante ist nicht verfügbar.",
   "explanationFirst": "Variantenanfang",
   "explanationPrevious": "Vorheriger Zug",
+  "explanationParent": "Zur übergeordneten Variante zurückkehren",
   "explanationNext": "Nächster Zug",
   "explanationLast": "Variantenende",
   "explanationReturn": "Zur Stellung zurück",

@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Deze variant is niet beschikbaar.",
   "explanationFirst": "Begin van de variant",
   "explanationPrevious": "Vorige zet",
+  "explanationParent": "Terug naar de bovenliggende variant",
   "explanationNext": "Volgende zet",
   "explanationLast": "Einde van de variant",
   "explanationReturn": "Terug naar de stelling",

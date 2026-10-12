@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "यह क्रम उपलब्ध नहीं है।",
   "explanationFirst": "क्रम की शुरुआत",
   "explanationPrevious": "पिछली चाल",
+  "explanationParent": "ऊपरी शाखा पर वापस जाएँ",
   "explanationNext": "अगली चाल",
   "explanationLast": "क्रम का अंत",
   "explanationReturn": "मूल स्थिति पर लौटें",

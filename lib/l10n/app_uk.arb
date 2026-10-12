@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Цей варіант недоступний.",
   "explanationFirst": "Початок варіанта",
   "explanationPrevious": "Попередній хід",
+  "explanationParent": "Повернутися до батьківського варіанта",
   "explanationNext": "Наступний хід",
   "explanationLast": "Кінець варіанта",
   "explanationReturn": "Повернутися до позиції",

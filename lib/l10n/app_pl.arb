@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Ten wariant jest niedostępny.",
   "explanationFirst": "Początek wariantu",
   "explanationPrevious": "Poprzedni ruch",
+  "explanationParent": "Wróć do wariantu nadrzędnego",
   "explanationNext": "Następny ruch",
   "explanationLast": "Koniec wariantu",
   "explanationReturn": "Wróć do pozycji",
