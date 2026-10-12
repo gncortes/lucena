@@ -196,9 +196,9 @@ void main() {
     );
     expect(material.color?.a, 1);
     expect(
-      tester.getRect(timer).overlaps(
-        tester.getRect(find.byKey(LessonKeys.hintButton)),
-      ),
+      tester
+          .getRect(timer)
+          .overlaps(tester.getRect(find.byKey(LessonKeys.hintButton))),
       isFalse,
     );
     expect(tester.takeException(), isNull);
@@ -235,9 +235,7 @@ void main() {
         isFalse,
       );
       expect(
-        tester
-            .widget<Switch>(find.byKey(LessonSoundKeys.teacherVoice))
-            .value,
+        tester.widget<Switch>(find.byKey(LessonSoundKeys.teacherVoice)).value,
         isTrue,
       );
       expect(find.byKey(LessonSoundKeys.speeds), findsNothing);

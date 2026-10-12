@@ -292,7 +292,9 @@ class TeacherSpeech extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: colors.primary,
-                                borderRadius: BorderRadius.circular(AppShape.full),
+                                borderRadius: BorderRadius.circular(
+                                  AppShape.full,
+                                ),
                               ),
                               child: Text(
                                 context.l10n.voiceSpeedValue(

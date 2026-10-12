@@ -126,7 +126,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(selected!.variation.id, 'A.1.1');
       expect(
-        tester.getSemantics(find.byKey(ExplanationKeys.variation('A.1.1'))).label,
+        tester
+            .getSemantics(find.byKey(ExplanationKeys.variation('A.1.1')))
+            .label,
         contains('A.1.1'),
       );
       expect(selected!.fen, data.openVariation(grandchild)!.fen);
