@@ -88,7 +88,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
   // O espaço guardado acima do tabuleiro para o seletor de visão e abaixo
   // para "Sua vez": o tabuleiro não diminui por causa deles.
   static const _pickerHeight = 48.0;
-  static const _statusHeight = 30.0;
+  static const _statusHeight = 24.0;
 
   ChessboardController? _board;
 
@@ -267,31 +267,34 @@ class _BlindGameScreenState extends State<BlindGameScreen>
         // Respondeu por voz: o diálogo fecha sozinho.
         listenWhen: (a, b) => b.phase != BlindPhase.confirming,
         listener: (context, _) => Navigator.of(context).maybePop(),
-        child: SimpleDialog(
-          title: Text(l10n.blindStatusWhich),
-          children: [
-            for (final option in options)
-              SimpleDialogOption(
-                key: BlindKeys.option(option.san),
-                onPressed: () => Navigator.pop(context, option.move),
-                child: Text(
-                  _capitalized(SpokenText.san(option.san, language)),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16, top: 8),
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
+        child: _BlindDialogFrame(
+          child: SimpleDialog(
+            insetPadding: EdgeInsets.zero,
+            title: Text(l10n.blindStatusWhich),
+            children: [
+              for (final option in options)
+                SimpleDialogOption(
+                  key: BlindKeys.option(option.san),
+                  onPressed: () => Navigator.pop(context, option.move),
                   child: Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel,
+                    _capitalized(SpokenText.san(option.san, language)),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16, top: 8),
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      MaterialLocalizations.of(context).cancelButtonLabel,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -308,20 +311,23 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final l10n = context.l10n;
     final sure = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.gameResignTitle),
-        content: Text(l10n.gameResignHint),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-          ),
-          FilledButton(
-            key: BlindKeys.resignConfirm,
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.gameResign),
-          ),
-        ],
+      builder: (context) => _BlindDialogFrame(
+        child: AlertDialog(
+          insetPadding: EdgeInsets.zero,
+          title: Text(l10n.gameResignTitle),
+          content: Text(l10n.gameResignHint),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            FilledButton(
+              key: BlindKeys.resignConfirm,
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.gameResign),
+            ),
+          ],
+        ),
       ),
     );
     if (sure == true) await cubit.resign();
@@ -332,22 +338,25 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final cubit = context.read<BlindGameCubit>();
     final allow = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.mic_none),
-        title: Text(l10n.blindMicTitle),
-        content: Text(l10n.blindMicBody),
-        actions: [
-          TextButton(
-            key: BlindKeys.micDeny,
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.blindMicDeny),
-          ),
-          FilledButton(
-            key: BlindKeys.micAllow,
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.blindMicAllow),
-          ),
-        ],
+      builder: (context) => _BlindDialogFrame(
+        child: AlertDialog(
+          insetPadding: EdgeInsets.zero,
+          icon: const Icon(Icons.mic_none),
+          title: Text(l10n.blindMicTitle),
+          content: Text(l10n.blindMicBody),
+          actions: [
+            TextButton(
+              key: BlindKeys.micDeny,
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.blindMicDeny),
+            ),
+            FilledButton(
+              key: BlindKeys.micAllow,
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.blindMicAllow),
+            ),
+          ],
+        ),
       ),
     );
     if (allow ?? false) {
@@ -372,6 +381,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
         key: BlindKeys.screen,
         appBar: AppBar(
           centerTitle: true,
+          toolbarHeight: 64,
           title: Text(l10n.blindTitleShort, overflow: TextOverflow.ellipsis),
           actions: [
             if (state.started && state.phase != BlindPhase.finished) ...[
@@ -426,8 +436,14 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                 (above ? PlayersRow.height : 0.0);
                             final reserveBottom =
                                 (below ? PlayersRow.height : 0.0) +
-                                (state.started ? _statusHeight : 0.0);
-                            const gutter = 16.0;
+                                (state.started
+                                    ? MediaQuery.textScalerOf(context)
+                                              .scale(_statusHeight) +
+                                          (below ? 6 : 0)
+                                    : 0.0);
+                            // O Canvas usa toda a largura; a altura disponível
+                            // limita o lado sem deslocar o centro global.
+                            const gutter = 0.0;
                             final size = BoardCentering(
                               constraints.biggest,
                               centerY: BoardViewport.centerYOf(context),
@@ -452,7 +468,12 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                       width: size,
                                       child: Align(
                                         alignment: AlignmentDirectional.center,
-                                        child: _ViewPicker(state: state),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 4,
+                                          ),
+                                          child: _ViewPicker(state: state),
+                                        ),
                                       ),
                                     ),
                                     if (above) const SizedBox(height: 8),
@@ -493,7 +514,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                     // "Sua vez" fica à vista (sem tabuleiro, é
                                     // o que orienta), fora da fileira do relógio.
                                     if (state.started) ...[
-                                      const SizedBox(height: 6),
+                                      if (below) const SizedBox(height: 6),
                                       _Status(state: state),
                                     ],
                                     if (state.offlineMissing)
@@ -646,27 +667,38 @@ class _ViewPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return SegmentedButton<BlindView>(
-      showSelectedIcon: false,
-      style: SegmentedButton.styleFrom(
-        visualDensity: VisualDensity.compact,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return SizedBox(
+      width: 112,
+      height: 36,
+      child: SegmentedButton<BlindView>(
+        expandedInsets: EdgeInsets.zero,
+        showSelectedIcon: false,
+        style: SegmentedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          minimumSize: const Size(0, 36),
+          visualDensity: const VisualDensity(vertical: -1),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        segments: [
+          for (final (view, label, icon) in [
+            (BlindView.board, l10n.blindViewBoard, Icons.grid_on),
+            (BlindView.empty, l10n.blindViewEmpty, Icons.grid_4x4),
+            (
+              BlindView.hidden,
+              l10n.blindViewHidden,
+              Icons.visibility_off_outlined,
+            ),
+          ])
+            ButtonSegment(
+              value: view,
+              tooltip: label,
+              icon: Icon(icon, key: BlindKeys.view(view), size: 20),
+            ),
+        ],
+        selected: {state.view},
+        onSelectionChanged: (selected) =>
+            context.read<BlindGameCubit>().setView(selected.single),
       ),
-      segments: [
-        for (final (view, label, icon) in [
-          (BlindView.board, l10n.blindViewBoard, Icons.grid_on),
-          (BlindView.empty, l10n.blindViewEmpty, Icons.grid_4x4),
-          (BlindView.hidden, l10n.blindViewHidden, Icons.visibility_off),
-        ])
-          ButtonSegment(
-            value: view,
-            tooltip: label,
-            icon: Icon(icon, key: BlindKeys.view(view), size: 20),
-          ),
-      ],
-      selected: {state.view},
-      onSelectionChanged: (selected) =>
-          context.read<BlindGameCubit>().setView(selected.single),
     );
   }
 }
@@ -788,16 +820,19 @@ class _Clocks extends StatelessWidget {
 
 /// A moldura das partes de baixo: o fundo da barra, com a borda de cima.
 class _BottomSheetFrame extends StatelessWidget {
-  const _BottomSheetFrame({required this.child});
+  const _BottomSheetFrame({required this.child, this.minHeight = 0});
 
   final Widget child;
+  final double minHeight;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.white
+            : colors.surfaceContainerLow,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppShape.large),
         ),
@@ -809,9 +844,13 @@ class _BottomSheetFrame extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-        child: child,
+      child: ConstrainedBox(
+        // Content may grow with accessible text.
+        constraints: BoxConstraints(minHeight: minHeight),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          child: child,
+        ),
       ),
     );
   }
@@ -933,6 +972,7 @@ class _TalkBarState extends State<_TalkBar> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final textScaler = MediaQuery.textScalerOf(context);
     final listening = state.phase == BlindPhase.listening;
     final processing = state.processing;
     final enabled = (listening || state.canListen) && !processing;
@@ -964,7 +1004,7 @@ class _TalkBarState extends State<_TalkBar> {
             for (final (index, chip) in [
               _ActionChip(
                 key: BlindKeys.narratePosition,
-                icon: Icons.hearing,
+                icon: Icons.hearing_outlined,
                 label: l10n.blindListenPosition,
                 onPressed: cubit.narratePosition,
               ),
@@ -983,7 +1023,7 @@ class _TalkBarState extends State<_TalkBar> {
                 ),
               _ActionChip(
                 key: BlindKeys.copyLog,
-                icon: Icons.content_copy,
+                icon: Icons.content_copy_outlined,
                 label: l10n.blindCopyLog,
                 onPressed: () => copyLog(context),
               ),
@@ -1057,12 +1097,15 @@ class _TalkBarState extends State<_TalkBar> {
             ),
           ),
           // Como falar e digitar os lances.
-          IconButton(
-            key: BlindKeys.help,
-            tooltip: l10n.blindHelpTitle,
-            visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.info_outline, color: colors.primary),
-            onPressed: () => _showHelp(context),
+          SizedBox.square(
+            dimension: 32,
+            child: IconButton(
+              key: BlindKeys.help,
+              tooltip: l10n.blindHelpTitle,
+              visualDensity: VisualDensity.compact,
+              icon: Icon(Icons.info_outline, color: colors.primary),
+              onPressed: () => _showHelp(context),
+            ),
           ),
         ],
       );
@@ -1082,6 +1125,7 @@ class _TalkBarState extends State<_TalkBar> {
         onPressed: cubit.reject,
       );
       middle = _Pill(
+        padding: const EdgeInsetsDirectional.fromSTEB(14, 2, 6, 2),
         child: Row(
           children: [
             Expanded(
@@ -1098,7 +1142,13 @@ class _TalkBarState extends State<_TalkBar> {
             IconButton(
               key: BlindKeys.sayProposal,
               tooltip: l10n.blindHearAgain,
-              visualDensity: VisualDensity.compact,
+              style: IconButton.styleFrom(
+                fixedSize: const Size.square(44),
+                minimumSize: const Size.square(44),
+                maximumSize: const Size.square(44),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.standard,
+              ),
               icon: const Icon(Icons.volume_up_outlined),
               onPressed: cubit.sayProposal,
             ),
@@ -1128,7 +1178,14 @@ class _TalkBarState extends State<_TalkBar> {
           children: [
             Icon(Icons.graphic_eq, size: 20, color: colors.error),
             const SizedBox(width: 8),
-            Text(l10n.blindStatusListening, style: theme.textTheme.titleSmall),
+            Flexible(
+              child: Text(
+                l10n.blindStatusListening,
+                style: theme.textTheme.titleSmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       );
@@ -1173,30 +1230,69 @@ class _TalkBarState extends State<_TalkBar> {
     }
 
     return _BottomSheetFrame(
+      minHeight: 160,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 40, child: actions),
+          SizedBox(height: max(40, textScaler.scale(20) + 16), child: actions),
           const SizedBox(height: 4),
-          SizedBox(
-            height: 32,
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: audio,
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // A dica determina uma reserva comum a todos os estados. Assim
+              // a proposta não move o tabuleiro e a fonte ampliada pode usar
+              // quantas linhas forem necessárias na largura real, sem o ⓘ.
+              final hint = TextPainter(
+                text: TextSpan(
+                  text: l10n.blindMicHint,
+                  style: DefaultTextStyle.of(context).style.merge(
+                    theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                textDirection: Directionality.of(context),
+                textScaler: textScaler,
+                locale: Localizations.localeOf(context),
+              )..layout(maxWidth: max(0, constraints.maxWidth - 32));
+              final body = theme.textTheme.bodyMedium;
+              final height = max(
+                32.0,
+                max(
+                  hint.height,
+                  textScaler.scale(body?.fontSize ?? 14) * (body?.height ?? 1),
+                ),
+              );
+              hint.dispose();
+              return SizedBox(
+                height: height,
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: audio,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 6),
           // Os filhos sempre nas mesmas vagas: o microfone segurado continua
           // o mesmo widget quando a gravação começa.
-          Row(
-            children: [
-              leading,
-              SizedBox(width: leading is SizedBox ? 0 : 8),
-              Expanded(child: middle),
-              const SizedBox(width: 8),
-              trailing,
-            ],
+          SizedBox(
+            // The typed field and proposal keep the same space when text grows.
+            height: max(
+              48,
+              textScaler.scale(theme.textTheme.bodyLarge?.fontSize ?? 16) *
+                      (theme.textTheme.bodyLarge?.height ?? 1.5) +
+                  24,
+            ),
+            child: Row(
+              children: [
+                leading,
+                SizedBox(width: leading is SizedBox ? 0 : 8),
+                Expanded(child: middle),
+                const SizedBox(width: 8),
+                trailing,
+              ],
+            ),
           ),
         ],
       ),
@@ -1206,14 +1302,18 @@ class _TalkBarState extends State<_TalkBar> {
 
 /// O "balão" do meio da barra.
 class _Pill extends StatelessWidget {
-  const _Pill({required this.child});
+  const _Pill({
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+  });
 
   final Widget child;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) => Container(
     constraints: const BoxConstraints(minHeight: 44),
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+    padding: padding,
     alignment: AlignmentDirectional.centerStart,
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1223,13 +1323,68 @@ class _Pill extends StatelessWidget {
   );
 }
 
+/// O X externo cancela o modal; nunca confirma um lance ou uma desistência.
+class _BlindModalFrame extends StatelessWidget {
+  const _BlindModalFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(right: 12, bottom: 12),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            color: Colors.white,
+            elevation: 2,
+            shape: const CircleBorder(),
+            child: IconButton(
+              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+              style: IconButton.styleFrom(
+                foregroundColor: Colors.black87,
+                fixedSize: const Size.square(44),
+                minimumSize: const Size.square(44),
+                maximumSize: const Size.square(44),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+      ),
+      Flexible(child: child),
+    ],
+  );
+}
+
+class _BlindDialogFrame extends StatelessWidget {
+  const _BlindDialogFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+    child: IntrinsicHeight(child: _BlindModalFrame(child: child)),
+  );
+}
+
 /// Como falar e digitar os lances, na notação do idioma do app.
 void _showHelp(BuildContext context) {
   final l10n = context.l10n;
   final theme = Theme.of(context);
   showModalBottomSheet<void>(
     context: context,
-    showDragHandle: true,
+    backgroundColor: Colors.transparent,
+    showDragHandle: false,
+    useSafeArea: true,
     isScrollControlled: true,
     builder: (context) {
       Widget item(IconData icon, String text) => Padding(
@@ -1243,28 +1398,40 @@ void _showHelp(BuildContext context) {
           ],
         ),
       );
-      return SafeArea(
-        child: SingleChildScrollView(
-          key: BlindKeys.helpSheet,
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                l10n.blindHelpIntro,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+      return _BlindModalFrame(
+        child: Material(
+          color: theme.colorScheme.surfaceContainerLow,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppShape.large),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              key: BlindKeys.helpSheet,
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.blindHelpIntro,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  item(Icons.extension_outlined, l10n.blindHelpPieces),
+                  item(Icons.keyboard_outlined, l10n.blindHelpTyped),
+                  item(Icons.mic_none, l10n.blindHelpVoice),
+                  item(
+                    Icons.record_voice_over_outlined,
+                    l10n.blindHelpCommands,
+                  ),
+                  item(Icons.touch_app_outlined, l10n.blindHelpTouch),
+                ],
               ),
-              const SizedBox(height: 16),
-              item(Icons.extension_outlined, l10n.blindHelpPieces),
-              item(Icons.keyboard_outlined, l10n.blindHelpTyped),
-              item(Icons.mic_none, l10n.blindHelpVoice),
-              item(Icons.record_voice_over_outlined, l10n.blindHelpCommands),
-              item(Icons.touch_app_outlined, l10n.blindHelpTouch),
-            ],
+            ),
           ),
         ),
       );
@@ -1296,6 +1463,10 @@ class _RoundButton extends StatelessWidget {
       backgroundColor: color,
       foregroundColor: foreground,
       fixedSize: const Size.square(44),
+      minimumSize: const Size.square(44),
+      maximumSize: const Size.square(44),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.standard,
     ),
     icon: Icon(icon, size: 22),
     onPressed: onPressed,
@@ -1317,8 +1488,17 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ActionChip(
-    visualDensity: VisualDensity.compact,
-    avatar: Icon(icon, size: 16),
+    visualDensity: MediaQuery.textScalerOf(context).scale(14) <= 14
+        ? const VisualDensity(horizontal: -2, vertical: -3)
+        : VisualDensity.standard,
+    padding: EdgeInsets.zero,
+    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    avatar: Icon(
+      icon,
+      size: 16,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    ),
     label: Text(label),
     onPressed: onPressed,
   );
@@ -1424,6 +1604,15 @@ class _MicButtonState extends State<_MicButton> {
       button: true,
       enabled: enabled,
       label: listening ? l10n.blindSend : l10n.blindMicTooltip,
+      onTap: !enabled
+          ? null
+          : () {
+              if (listening) {
+                unawaited(widget.cubit.stopListening());
+              } else {
+                unawaited(widget.cubit.listen());
+              }
+            },
       child: Listener(
         key: BlindKeys.mic,
         onPointerDown: _down,
@@ -1651,6 +1840,7 @@ class _EmptyBoard extends StatelessWidget {
               PositionBoard(
                 fen: '8/8/8/8/8/8/8/8 w - - 0 1',
                 size: size,
+                radius: 0,
                 orientation: orientation,
                 coordinates: true,
               ),
