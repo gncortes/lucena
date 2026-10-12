@@ -349,7 +349,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                     onPressed: () =>
                         _move(widget.payload.parentCursor(cursor.variation)),
                     icon: const Icon(Icons.chevron_left),
-                    label: Text(context.l10n.explanationPrevious),
+                    label: Text(context.l10n.explanationParent),
                   ),
                 // Authored text need not mention every verified ply. Keep
                 // replay access until the replacement interaction is defined.
@@ -502,7 +502,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                           widget.payload.parentCursor(cursor.variation),
                         ),
                         icon: const Icon(Icons.chevron_left),
-                        label: Text(context.l10n.explanationPrevious),
+                        label: Text(context.l10n.explanationParent),
                       ),
                     Text(
                       cursor.variation.outcomeText ??

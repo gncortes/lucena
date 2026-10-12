@@ -147,6 +147,53 @@ void main() {
     },
   );
 
+  testWidgets('parent return and previous ply have distinct accessible names', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final main = root();
+    final child = ExplanationVariation(
+      id: 'A.1',
+      label: 'A.1',
+      parentId: 'A',
+      parentPly: 1,
+      outcome: VariationOutcome.accepted,
+      texts: ['Child explanation.'],
+      originFen: main.open()!.fen,
+      movesUci: ['g8f7', 'h1h2'],
+      movesSan: ['1...Kf7', '2.Kh2'],
+      validated: true,
+    );
+    final data = payload([main, child]);
+    VariationCursor? selected;
+    await tester.pumpWidget(
+      app(data, onVariation: (value) => selected = value),
+    );
+    await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ExplanationKeys.variation('A.1')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(find.byKey(ExplanationKeys.parent)).label,
+      contains('Return to parent variation'),
+    );
+    expect(
+      tester
+          .getSemantics(find.byKey(ExplanationKeys.previous))
+          .getSemanticsData()
+          .tooltip,
+      contains('Previous move'),
+    );
+    await tester.tap(find.byKey(ExplanationKeys.next));
+    await tester.pumpAndSettle();
+    expect(selected!.fen, data.openVariation(child)!.at(2).fen);
+    await tester.tap(find.byKey(ExplanationKeys.parent));
+    await tester.pumpAndSettle();
+    expect(selected!.fen, data.parentCursor(child)!.fen);
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
+  });
+
   testWidgets(
     'V2 replay reaches every verified ply even when authored text has no SAN',
     (tester) async {
