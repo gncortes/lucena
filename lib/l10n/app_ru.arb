@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Верный ход",
   "lessonFailedAlternatives": "Эти ходы тоже не работают",
   "lessonStillUnsure": "Остались сомнения?",
-  "lessonOpenFreeBoard": "Открыть на свободной доске"
+  "lessonOpenFreeBoard": "Открыть на свободной доске",
+  "lessonReturn": "Назад",
+  "lessonTeacherVoice": "Голос Виктора",
+  "lessonTeacherVoiceHint": "Читать объяснения вслух",
+  "lessonSoundHint": "Звуки фигур и голос Виктора"
 }

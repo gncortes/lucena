@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Lance certo",
   "lessonFailedAlternatives": "Também não funcionam",
   "lessonStillUnsure": "Ainda com dúvidas?",
-  "lessonOpenFreeBoard": "Abrir no tabuleiro livre"
+  "lessonOpenFreeBoard": "Abrir no tabuleiro livre",
+  "lessonReturn": "Voltar",
+  "lessonTeacherVoice": "Voz do Viktor",
+  "lessonTeacherVoiceHint": "Ler as explicações em voz alta",
+  "lessonSoundHint": "Sons das peças e voz do Viktor"
 }

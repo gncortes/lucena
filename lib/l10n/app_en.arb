@@ -5413,5 +5413,13 @@
   },
   "@lessonOpenFreeBoard": {
     "description": "Canvas V2 lesson feedback heading; presentation only."
-  }
+  },
+  "lessonReturn": "Back",
+  "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},
+  "lessonTeacherVoice": "Viktor's voice",
+  "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
+  "lessonTeacherVoiceHint": "Read the explanations aloud",
+  "@lessonTeacherVoiceHint": {"description": "Explains automatic lesson narration."},
+  "lessonSoundHint": "Piece sounds and Viktor’s voice",
+  "@lessonSoundHint": {"description": "Describes the global sound toggle in a lesson."}
 }

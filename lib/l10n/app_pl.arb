@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Poprawny ruch",
   "lessonFailedAlternatives": "Te również nie działają",
   "lessonStillUnsure": "Nadal masz wątpliwości?",
-  "lessonOpenFreeBoard": "Otwórz na swobodnej szachownicy"
+  "lessonOpenFreeBoard": "Otwórz na swobodnej szachownicy",
+  "lessonReturn": "Wróć",
+  "lessonTeacherVoice": "Głos Viktora",
+  "lessonTeacherVoiceHint": "Czytaj wyjaśnienia na głos",
+  "lessonSoundHint": "Dźwięki figur i głos Viktora"
 }

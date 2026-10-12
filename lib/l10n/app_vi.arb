@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Nước đi đúng",
   "lessonFailedAlternatives": "Những nước này cũng không hiệu quả",
   "lessonStillUnsure": "Vẫn còn thắc mắc?",
-  "lessonOpenFreeBoard": "Mở trên bàn cờ tự do"
+  "lessonOpenFreeBoard": "Mở trên bàn cờ tự do",
+  "lessonReturn": "Quay lại",
+  "lessonTeacherVoice": "Giọng của Viktor",
+  "lessonTeacherVoiceHint": "Đọc thành tiếng phần giải thích",
+  "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor"
 }

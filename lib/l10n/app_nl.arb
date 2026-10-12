@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Juiste zet",
   "lessonFailedAlternatives": "Deze werken ook niet",
   "lessonStillUnsure": "Nog twijfels?",
-  "lessonOpenFreeBoard": "Openen op het vrije bord"
+  "lessonOpenFreeBoard": "Openen op het vrije bord",
+  "lessonReturn": "Terug",
+  "lessonTeacherVoice": "Stem van Viktor",
+  "lessonTeacherVoiceHint": "De uitleg voorlezen",
+  "lessonSoundHint": "Stukgeluiden en de stem van Viktor"
 }

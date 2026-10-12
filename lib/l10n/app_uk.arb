@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Правильний хід",
   "lessonFailedAlternatives": "Ці ходи також не працюють",
   "lessonStillUnsure": "Залишилися сумніви?",
-  "lessonOpenFreeBoard": "Відкрити на вільній дошці"
+  "lessonOpenFreeBoard": "Відкрити на вільній дошці",
+  "lessonReturn": "Назад",
+  "lessonTeacherVoice": "Голос Віктора",
+  "lessonTeacherVoiceHint": "Читати пояснення вголос",
+  "lessonSoundHint": "Звуки фігур і голос Віктора"
 }

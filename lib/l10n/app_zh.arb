@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "正确着法",
   "lessonFailedAlternatives": "这些着法也不行",
   "lessonStillUnsure": "还有疑问？",
-  "lessonOpenFreeBoard": "在自由棋盘中打开"
+  "lessonOpenFreeBoard": "在自由棋盘中打开",
+  "lessonReturn": "返回",
+  "lessonTeacherVoice": "维克托的语音",
+  "lessonTeacherVoiceHint": "朗读讲解",
+  "lessonSoundHint": "棋子音效和维克托的语音"
 }

@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Richtiger Zug",
   "lessonFailedAlternatives": "Diese funktionieren auch nicht",
   "lessonStillUnsure": "Noch unsicher?",
-  "lessonOpenFreeBoard": "Auf dem freien Brett öffnen"
+  "lessonOpenFreeBoard": "Auf dem freien Brett öffnen",
+  "lessonReturn": "Zurück",
+  "lessonTeacherVoice": "Viktors Stimme",
+  "lessonTeacherVoiceHint": "Erklärungen vorlesen",
+  "lessonSoundHint": "Figurengeräusche und Viktors Stimme"
 }

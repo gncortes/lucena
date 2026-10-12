@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "حرکت درست",
   "lessonFailedAlternatives": "این حرکت‌ها هم کار نمی‌کنند",
   "lessonStillUnsure": "هنوز مطمئن نیستید؟",
-  "lessonOpenFreeBoard": "باز کردن در صفحهٔ آزاد"
+  "lessonOpenFreeBoard": "باز کردن در صفحهٔ آزاد",
+  "lessonReturn": "بازگشت",
+  "lessonTeacherVoice": "صدای ویکتور",
+  "lessonTeacherVoiceHint": "خواندن توضیحات با صدای بلند",
+  "lessonSoundHint": "صدای مهره‌ها و صدای ویکتور"
 }
