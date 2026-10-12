@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "{seconds}초가 주어집니다. 별이 사라지기 전에 기물을 각 별까지 옮기세요.",
   "starChallengeWorth": "{points, plural, =1{1점} other{{points}점}}",
   "starChallengePointsLabel": "{count, plural, =1{점} other{점}}",
-  "speedrunQuitProgress": "이 스피드런을 포기할까요? 승리한 {count}개 단계를 잃습니다.",
   "emptyFirstEndgame": "첫 엔드게임 두기",
   "speedrunHelpClassic": "각 대국에는 별도의 시계가 있습니다. 이기지 못한 단계도 포함하여 내 시계에서 사용한 시간만 합산합니다. 누적 시간을 초기화하지 않고 해당 단계를 다시 플레이하세요.",
   "speedrunHelpMarathon": "모든 단계에 하나의 시간 잔고를 사용합니다. 각 대국은 이전 대국의 남은 시간으로 시작하고 추가 시간도 잔고에 더해집니다. 패배, 무승부 또는 시간 초과로 마라톤이 끝납니다. 다음 단계는 쉬지 않고 시작됩니다.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",
   "lessonSoundHint": "기물 효과음과 빅토르의 음성",
   "lessonSoundOn": "소리와 음성: 켜짐, 속도 {speed}",
-  "lessonSoundOff": "소리와 음성: 꺼짐"
+  "lessonSoundOff": "소리와 음성: 꺼짐",
+  "gameDrawOfferHintNamed": "{name}은(는) 수락하거나 거절할 수 있습니다. 거절하면 대국이 계속됩니다.",
+  "gameKeepPlaying": "계속 두기",
+  "speedrunQuitHint": "{count, plural, =0{시도는 여기서 끝나고 기록에 남습니다.} =1{이번 시도에서 이긴 단계를 잃습니다.} other{이번 시도에서 이긴 단계 {count}개를 잃습니다.}}"
 }

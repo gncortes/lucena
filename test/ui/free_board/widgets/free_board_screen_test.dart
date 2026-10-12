@@ -18,13 +18,14 @@ import 'package:lucena/domain/models/game_mode.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_sound_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
+import 'package:lucena/ui/free_board/widgets/clock_row.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
-import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
@@ -43,6 +44,7 @@ import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/visible_center.dart';
 
 void main() {
   late FreeBoardCubit cubit;
@@ -68,6 +70,7 @@ void main() {
     bool withReporter = false,
     Size screen = const Size(1080, 2400),
     bool systemBars = false,
+    ThemeMode themeMode = ThemeMode.light,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = screen;
@@ -164,6 +167,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         locale: locale,
+        themeMode: themeMode,
         settingsCubit: settings,
         router: router,
         child: const SizedBox.shrink(),
@@ -939,6 +943,404 @@ void main() {
     });
   });
 
+  group('T65 Speedrun V2', () {
+    const speedrun = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1600,
+      userSide: Side.white,
+      positionId: 'basic.queen.0001',
+      speedrunId: 'queen',
+      speedrunAttemptId: 1,
+      speedrunStage: 0,
+    );
+
+    /// A etapa aberta, já com o rating do jogador lido.
+    Future<void> pumpStage(
+      WidgetTester tester, {
+      required Size size,
+      double scale = 1,
+      ThemeMode theme = ThemeMode.light,
+      Locale locale = const Locale('en'),
+    }) async {
+      tester.platformDispatcher.textScaleFactorTestValue = scale;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpScreen(
+        tester,
+        screen: size * 2.625,
+        systemBars: true,
+        mode: speedrun,
+        locale: locale,
+        themeMode: theme,
+        withReporter: true,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+    }
+
+    Rect stripOf(WidgetTester tester, Side side) => tester.getRect(
+      find.ancestor(
+        of: find.byKey(FreeBoardKeys.clock(side)),
+        matching: find.byType(ClockRow),
+      ),
+    );
+
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      for (final scale in const [1.0, 2.0]) {
+        for (final theme in const [ThemeMode.light, ThemeMode.dark]) {
+          for (final locale in const [Locale('en'), Locale('ar')]) {
+            testWidgets('etapa $size, fonte $scale, ${theme.name}, '
+                '${locale.languageCode}: centro, faixas de 68, detalhe e '
+                'alvos', (tester) async {
+              await pumpStage(
+                tester,
+                size: size,
+                scale: scale,
+                theme: theme,
+                locale: locale,
+              );
+              final l10n = lookupAppLocalizations(locale);
+              expect(tester.takeException(), isNull);
+              expect(textOf(tester, FreeBoardKeys.title), l10n.speedrunTitle);
+              final board = boardRect(tester);
+              // Centro da tela visível; largura toda em 412, e pelo menos
+              // 330 em 360×740 com as barras do sistema.
+              expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+              expect(board.center.dx, closeTo(size.width / 2, 1));
+              if (size.width == 412) {
+                expect(board.width, closeTo(412, 1));
+              } else {
+                expect(board.width, greaterThanOrEqualTo(330));
+              }
+              // As faixas: 68 de altura e 8 até o tabuleiro dos dois lados.
+              final top = stripOf(tester, Side.black);
+              final bottom = stripOf(tester, Side.white);
+              expect(top.height, closeTo(68, 1));
+              expect(bottom.height, closeTo(68, 1));
+              expect(board.top - top.bottom, closeTo(8, 1));
+              expect(bottom.top - board.bottom, closeTo(8, 1));
+              // O balão não cobre o tabuleiro.
+              final bubble = find.byKey(FreeBoardKeys.speechBubble);
+              if (bubble.evaluate().isNotEmpty) {
+                expect(
+                  tester.getRect(bubble).bottom,
+                  lessThanOrEqualTo(board.top),
+                );
+              }
+              // A linha de detalhe: o nível do personagem e o rating.
+              expect(
+                textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+                l10n.journeyOpponentLevel('1600'),
+              );
+              expect(
+                textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+                '1150',
+              );
+              final detail = tester.getRect(
+                find.byKey(FreeBoardKeys.playerDetail(Side.black)),
+              );
+              expect(detail.top, greaterThanOrEqualTo(top.top));
+              expect(detail.bottom, lessThanOrEqualTo(top.bottom));
+              // Retrato no começo da linha e relógio no fim: espelha em
+              // árabe.
+              final avatar = tester.getRect(find.byType(CharacterAvatar));
+              final clock = tester.getRect(
+                find.byKey(FreeBoardKeys.clock(Side.black)),
+              );
+              if (locale.languageCode == 'ar') {
+                expect(avatar.center.dx, greaterThan(clock.center.dx));
+                expect(avatar.right, closeTo(size.width - 16, 1));
+              } else {
+                expect(avatar.center.dx, lessThan(clock.center.dx));
+                expect(avatar.left, closeTo(16, 1));
+              }
+              // O tempo fica em m:ss, da esquerda para a direita.
+              final time = tester.widget<Directionality>(
+                find
+                    .ancestor(
+                      of: find.byKey(FreeBoardKeys.clockTime(Side.black)),
+                      matching: find.byType(Directionality),
+                    )
+                    .first,
+              );
+              expect(time.textDirection, TextDirection.ltr);
+              // Alvos de toque da barra de ações.
+              for (final key in [
+                FreeBoardKeys.resignButton,
+                FreeBoardKeys.drawButton,
+                FreeBoardKeys.soundButton,
+              ]) {
+                final target = tester.getRect(find.byKey(key));
+                expect(target.height, greaterThanOrEqualTo(48));
+                expect(target.width, greaterThanOrEqualTo(48));
+              }
+              final actions = tester.getRect(
+                find.byKey(FreeBoardKeys.actionsBar),
+              );
+              expect(actions.bottom, closeTo(size.height - 32, 1));
+              expect(bottom.bottom, lessThanOrEqualTo(actions.top));
+            });
+          }
+        }
+      }
+    }
+
+    // As duas folhas de jogo e a de sair do speedrun: o mesmo molde.
+    final sheets = <String, (Key, Key, Key, Key?)>{
+      'desistir': (
+        FreeBoardKeys.resignButton,
+        FreeBoardKeys.resignSheet,
+        FreeBoardKeys.resignConfirmButton,
+        FreeBoardKeys.confirmationCancel,
+      ),
+      'empate': (
+        FreeBoardKeys.drawButton,
+        FreeBoardKeys.drawSheet,
+        FreeBoardKeys.drawConfirmButton,
+        FreeBoardKeys.confirmationCancel,
+      ),
+      'sair': (
+        FreeBoardKeys.screen,
+        FreeBoardKeys.speedrunQuitSheet,
+        FreeBoardKeys.speedrunQuitConfirm,
+        FreeBoardKeys.speedrunQuitCancel,
+      ),
+    };
+
+    Future<void> openSheet(WidgetTester tester, String name, Key opener) async {
+      if (name == 'sair') {
+        await tester.binding.handlePopRoute();
+      } else {
+        await tester.tap(find.byKey(opener));
+      }
+      await tester.pumpAndSettle();
+    }
+
+    for (final MapEntry(key: name, value: keys) in sheets.entries) {
+      final (opener, sheetKey, confirmKey, cancelKey) = keys;
+      for (final size in const [Size(360, 740), Size(412, 917)]) {
+        for (final scale in const [1.0, 2.0]) {
+          for (final locale in const [Locale('en'), Locale('ar')]) {
+            testWidgets('folha $name $size, fonte $scale, '
+                '${locale.languageCode}: alça, X no canto final e dois '
+                'botões de 52', (tester) async {
+              await pumpStage(tester, size: size, scale: scale, locale: locale);
+              await openSheet(tester, name, opener);
+              expect(tester.takeException(), isNull);
+              final sheet = tester.getRect(find.byKey(sheetKey));
+              final close = tester.getRect(
+                find.byKey(FreeBoardKeys.confirmationClose),
+              );
+              expect(close.size, const Size(44, 44));
+              expect(sheet.top - close.bottom, closeTo(12, 1));
+              if (locale.languageCode == 'ar') {
+                expect(close.left, closeTo(16, 1));
+              } else {
+                expect(close.right, closeTo(size.width - 16, 1));
+              }
+              expect(
+                tester
+                    .widget<IconButton>(
+                      find.byKey(FreeBoardKeys.confirmationClose),
+                    )
+                    .tooltip,
+                isNotEmpty,
+              );
+              // Os dois botões: pílula, largura toda menos 24 de cada lado,
+              // 52 de altura (cresce com a fonte), ao alcance do dedo.
+              for (final key in [confirmKey, cancelKey!]) {
+                await tester.ensureVisible(find.byKey(key));
+                await tester.pumpAndSettle();
+                final button = tester.getRect(find.byKey(key));
+                expect(find.byKey(key).hitTestable(), findsOneWidget);
+                expect(button.width, closeTo(size.width - 48, 1));
+                if (scale == 1) {
+                  expect(button.height, closeTo(52, 1));
+                } else {
+                  expect(button.height, greaterThanOrEqualTo(52));
+                }
+              }
+              expect(
+                find.descendant(
+                  of: find.byKey(cancelKey),
+                  matching: find.byType(Text),
+                ),
+                findsOneWidget,
+              );
+              expect(
+                tester.widget(find.byKey(cancelKey)),
+                isA<OutlinedButton>(),
+              );
+              final gap =
+                  tester.getRect(find.byKey(cancelKey)).top -
+                  tester.getRect(find.byKey(confirmKey)).bottom;
+              expect(gap, closeTo(8, 1));
+              // "Continuar jogando" fecha sem fazer nada.
+              final fen = cubit.state.position.fen;
+              await tester.tap(find.byKey(cancelKey));
+              await tester.pumpAndSettle();
+              expect(find.byKey(sheetKey), findsNothing);
+              expect(cubit.state.end, isNull);
+              expect(cubit.state.drawOffer, DrawOffer.none);
+              expect(cubit.state.position.fen, fen);
+              expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+              // O X também, mesmo tocado na borda da área de 48.
+              await openSheet(tester, name, opener);
+              final x = tester.getRect(
+                find.byKey(FreeBoardKeys.confirmationClose),
+              );
+              await tester.tapAt(Offset(x.center.dx, x.top - 1.5));
+              await tester.pumpAndSettle();
+              expect(find.byKey(sheetKey), findsNothing);
+              expect(cubit.state.end, isNull);
+              expect(tester.takeException(), isNull);
+            });
+          }
+        }
+      }
+    }
+
+    testWidgets('textos das folhas: o nome do personagem no empate e os '
+        'botões do canvas', (tester) async {
+      await pumpStage(tester, size: const Size(412, 917));
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Offer a draw?'), findsOneWidget);
+      expect(
+        find.text(
+          'Valdini can accept or decline. If they decline, the game goes on.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Keep playing'), findsOneWidget);
+      // O desistir é destrutivo, com a bandeira.
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationCancel));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final resign = tester.widget<ButtonStyleButton>(
+        find.byKey(FreeBoardKeys.resignConfirmButton),
+      );
+      final context = tester.element(find.byKey(FreeBoardKeys.resignSheet));
+      expect(
+        resign.style?.backgroundColor?.resolve({}),
+        Theme.of(context).colorScheme.error,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(FreeBoardKeys.resignConfirmButton),
+          matching: find.byIcon(Icons.flag_outlined),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Desistir da partida?'), findsNothing);
+      // Confirmar desiste de verdade.
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pump();
+      expect(cubit.state.end?.reason, GameEndReason.resign);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('em português: "Oferecer empate" e a folha de sair sem '
+        'etapas vencidas', (tester) async {
+      await pumpStage(
+        tester,
+        size: const Size(360, 740),
+        locale: const Locale('pt'),
+      );
+      expect(
+        textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+        'Nível 1600',
+      );
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Oferecer empate?'), findsOneWidget);
+      expect(find.text('Oferecer empate'), findsOneWidget);
+      expect(
+        find.text(
+          'O Valdini pode aceitar ou recusar. Se recusar, a partida continua.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Continuar jogando'), findsOneWidget);
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationCancel));
+      await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Desistir desta speedrun?'), findsNothing);
+      expect(
+        find.text('A tentativa termina aqui e fica no histórico.'),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget(find.byKey(FreeBoardKeys.speedrunQuitConfirm)),
+        isA<FilledButton>(),
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(FreeBoardKeys.speedrunQuitConfirm),
+          matching: find.byType(Icon),
+        ),
+        findsNothing,
+      );
+    });
+
+    test('plural da folha de sair com 0, 1 e 3 etapas', () {
+      final pt = lookupAppLocalizations(const Locale('pt'));
+      final en = lookupAppLocalizations(const Locale('en'));
+      expect(
+        pt.speedrunQuitHint(0),
+        'A tentativa termina aqui e fica no histórico.',
+      );
+      expect(
+        pt.speedrunQuitHint(1),
+        'Você perde a etapa vencida desta tentativa.',
+      );
+      expect(
+        pt.speedrunQuitHint(3),
+        'Você perde as 3 etapas vencidas desta tentativa.',
+      );
+      expect(
+        en.speedrunQuitHint(0),
+        'The attempt ends here and stays in your history.',
+      );
+      expect(
+        en.speedrunQuitHint(1),
+        'You lose the stage you won in this attempt.',
+      );
+      expect(
+        en.speedrunQuitHint(3),
+        'You lose the 3 stages you won in this attempt.',
+      );
+    });
+
+    testWidgets('a etapa sobrevive a fechar à força e o rating volta na '
+        'faixa', (tester) async {
+      await pumpStage(tester, size: const Size(412, 917));
+      final saved = games.snapshot;
+      expect(saved, isNotNull);
+      // Reabre a partida gravada: posição, relógio e linha de detalhe.
+      await pumpScreen(
+        tester,
+        screen: const Size(412, 917) * 2.625,
+        systemBars: true,
+        saved: saved,
+        withReporter: true,
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+      expect(cubit.state.mode.speedrunAttemptId, 1);
+      expect(textOf(tester, FreeBoardKeys.title), 'Speedrun');
+      expect(textOf(tester, FreeBoardKeys.playerDetail(Side.white)), '1150');
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('D11 V2', () {
     const sizes = [
       Size(360, 740),
@@ -986,18 +1388,24 @@ void main() {
           expect(appbar.actions, isNull);
           expect(appbar.centerTitle, isTrue);
           final appBarRect = tester.getRect(find.byType(AppBar));
-          expect(
-            board.center.dy,
-            closeTo(
-              (appBarRect.bottom - MoveList.height + actions.top) / 2,
-              .01,
-            ),
-          );
-          expect(
-            board.top - (appBarRect.bottom - MoveList.height),
-            closeTo(actions.top - board.bottom, .01),
-          );
+          // O centro do tabuleiro é o centro da tela visível.
+          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expect(board.top, greaterThanOrEqualTo(appBarRect.bottom));
+          expect(board.bottom, lessThanOrEqualTo(actions.top));
           expect(board.width, greaterThanOrEqualTo(280));
+          // Faixas dos jogadores com 68 e o mesmo respiro de 8 até o
+          // tabuleiro, em cima e embaixo (PropV2EtapaSpeedrunP360).
+          final strips = tester
+              .widgetList<ClockRow>(find.byType(ClockRow))
+              .map((row) => tester.getRect(find.byWidget(row)))
+              .toList();
+          expect(strips, hasLength(2));
+          final above = strips.firstWhere((r) => r.bottom <= board.top);
+          final below = strips.firstWhere((r) => r.top >= board.bottom);
+          expect(above.height, closeTo(68, .01));
+          expect(below.height, closeTo(68, .01));
+          expect(board.top - above.bottom, closeTo(8, .01));
+          expect(below.top - board.bottom, closeTo(8, .01));
           expect(actions.bottom, closeTo(size.height - 32, .01));
           final actionKey = mode.opponent.isMachine
               ? FreeBoardKeys.resignButton
@@ -1013,8 +1421,8 @@ void main() {
             final bottom = tester.getRect(
               find.byKey(FreeBoardKeys.clock(Side.white)),
             );
-            expect(board.top - top.bottom, closeTo(18, .01));
-            expect(bottom.top - board.bottom, closeTo(18, .01));
+            expect(board.top - top.bottom, closeTo(20, .01));
+            expect(bottom.top - board.bottom, closeTo(20, .01));
             final bubble = tester.getRect(
               find.byKey(FreeBoardKeys.speechBubble),
             );
@@ -1166,10 +1574,9 @@ void main() {
           expect(board.width, greaterThanOrEqualTo(200));
           final appBar = tester.getRect(find.byType(AppBar));
           final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-          expect(
-            board.center.dy,
-            closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
-          );
+          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expect(board.top, greaterThanOrEqualTo(appBar.bottom));
+          expect(board.bottom, lessThanOrEqualTo(actions.top));
           if (position == ClockPosition.bottom) {
             expect(avatar.top, greaterThanOrEqualTo(board.bottom));
             expect(white.top, greaterThanOrEqualTo(board.bottom));
@@ -1214,10 +1621,9 @@ void main() {
           final board = boardRect(tester);
           final appBar = tester.getRect(find.byType(AppBar));
           final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-          expect(
-            board.center.dy,
-            closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
-          );
+          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expect(board.top, greaterThanOrEqualTo(appBar.bottom));
+          expect(board.bottom, lessThanOrEqualTo(actions.top));
           expect(board.width, greaterThanOrEqualTo(200));
           expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
           await tester.pump(const Duration(seconds: 20));
@@ -1352,10 +1758,8 @@ void main() {
       final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
       expect(appBar.bottom, area.top);
       final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-      expect(
-        board.center.dy,
-        closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
-      );
+      expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+      expect(board.bottom, lessThanOrEqualTo(actions.top));
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,
         lessThanOrEqualTo(board.top + 0.5),

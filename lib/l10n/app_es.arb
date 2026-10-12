@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "Tienes {seconds} segundos. Lleva tu pieza a cada estrella antes de que se apague.",
   "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punto} other{puntos}}",
-  "speedrunQuitProgress": "¿Abandonar esta speedrun? Pierdes las {count} etapas ganadas.",
   "emptyFirstEndgame": "Jugar mi primer final",
   "speedrunHelpClassic": "Cada partida tiene relojes separados. El tiempo total suma solo lo que gastas en tu reloj, incluidas las etapas no ganadas. Repite una etapa no ganada sin reiniciar el tiempo acumulado.",
   "speedrunHelpMarathon": "Una reserva de tiempo para todas las etapas. Cada partida empieza con el tiempo restante de la anterior; los incrementos se añaden a esa reserva. Una derrota, unas tablas o agotar el tiempo termina la Maratón. La siguiente etapa empieza sin pausa.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "Leer las explicaciones en voz alta",
   "lessonSoundHint": "Sonidos de las piezas y voz de Viktor",
   "lessonSoundOn": "Sonido y voz: activado, velocidad {speed}",
-  "lessonSoundOff": "Sonido y voz: desactivado"
+  "lessonSoundOff": "Sonido y voz: desactivado",
+  "gameDrawOfferHintNamed": "{name} puede aceptar o rechazar. Si rechaza, la partida sigue.",
+  "gameKeepPlaying": "Seguir jugando",
+  "speedrunQuitHint": "{count, plural, =0{El intento termina aquí y queda en tu historial.} =1{Pierdes la etapa ganada en este intento.} other{Pierdes las {count} etapas ganadas en este intento.}}"
 }

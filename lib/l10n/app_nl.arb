@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "Je hebt {seconds} seconden. Breng je stuk naar elke ster voordat die dooft.",
   "starChallengeWorth": "{points, plural, =1{telt 1} other{telt {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punt} other{punten}}",
-  "speedrunQuitProgress": "Deze speedrun opgeven? Je verliest de {count} gewonnen etappes.",
   "emptyFirstEndgame": "Mijn eerste eindspel spelen",
   "speedrunHelpClassic": "Elke partij heeft aparte klokken. Alleen de tijd op jouw klok wordt opgeteld, ook bij niet gewonnen etappes. Herhaal een niet gewonnen etappe zonder de totaaltijd te wissen.",
   "speedrunHelpMarathon": "Eén tijdvoorraad voor alle etappes. Elke partij begint met de resterende tijd van de vorige; incrementen komen erbij. Verlies, remise of tijdsoverschrijding beëindigt de Marathon. De volgende etappe begint zonder pauze.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "De uitleg voorlezen",
   "lessonSoundHint": "Stukgeluiden en de stem van Viktor",
   "lessonSoundOn": "Geluid en stem: aan, snelheid {speed}",
-  "lessonSoundOff": "Geluid en stem: uit"
+  "lessonSoundOff": "Geluid en stem: uit",
+  "gameDrawOfferHintNamed": "{name} kan accepteren of weigeren. Bij weigering gaat de partij door.",
+  "gameKeepPlaying": "Doorspelen",
+  "speedrunQuitHint": "{count, plural, =0{De poging eindigt hier en blijft in je geschiedenis.} =1{Je verliest de etappe die je in deze poging hebt gewonnen.} other{Je verliest de {count} etappes die je in deze poging hebt gewonnen.}}"
 }

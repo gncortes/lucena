@@ -5230,8 +5230,6 @@
       }
     }
   },
-  "speedrunQuitProgress": "Give up this speedrun? You lose the {count} stages won.",
-  "@speedrunQuitProgress": {"description": "Warning before abandoning a speedrun, including completed stages.", "placeholders": {"count": {"type": "int"}}},
   "emptyFirstEndgame": "Play my first endgame",
   "@emptyFirstEndgame": {
     "description": "Primary action inviting a player with no game history to choose their first endgame."
@@ -5427,5 +5425,11 @@
   "lessonSoundOn": "Sound and voice: on, speed {speed}",
   "lessonSoundOff": "Sound and voice: off",
   "@lessonSoundOn": {"description": "Accessible label for the enabled lesson sound button and its localized speed.", "placeholders": {"speed": {"type": "String"}}},
-  "@lessonSoundOff": {"description": "Accessible label for the disabled lesson sound button."}
+  "@lessonSoundOff": {"description": "Accessible label for the disabled lesson sound button."},
+  "gameDrawOfferHintNamed": "{name} can accept or decline. If they decline, the game goes on.",
+  "@gameDrawOfferHintNamed": {"description": "Draw offer sheet: what happens after the player offers a draw to the named opponent character.", "placeholders": {"name": {"type": "String"}}},
+  "gameKeepPlaying": "Keep playing",
+  "@gameKeepPlaying": {"description": "Secondary button of the resign and draw sheets: closes the sheet and the game goes on."},
+  "speedrunQuitHint": "{count, plural, =0{The attempt ends here and stays in your history.} =1{You lose the stage you won in this attempt.} other{You lose the {count} stages you won in this attempt.}}",
+  "@speedrunQuitHint": {"description": "Hint of the sheet that confirms leaving a speedrun in the middle: what is lost, by how many stages were already won in this attempt.", "placeholders": {"count": {"type": "int"}}}
 }

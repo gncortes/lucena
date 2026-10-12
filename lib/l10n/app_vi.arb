@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "Bạn có {seconds} giây. Hãy đưa quân của bạn đến từng ngôi sao trước khi nó tắt.",
   "starChallengeWorth": "{points, plural, =1{giá trị 1} other{giá trị {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{điểm} other{điểm}}",
-  "speedrunQuitProgress": "Bỏ speedrun này? Bạn mất {count} chặng đã thắng.",
   "emptyFirstEndgame": "Chơi tàn cuộc đầu tiên",
   "speedrunHelpClassic": "Mỗi ván có đồng hồ riêng. Tổng thời gian chỉ cộng thời gian đã dùng trên đồng hồ của bạn, kể cả các chặng chưa thắng. Chơi lại chặng chưa thắng mà không đặt lại thời gian tích lũy.",
   "speedrunHelpMarathon": "Một quỹ thời gian cho tất cả các chặng. Mỗi ván bắt đầu với thời gian còn lại của ván trước; thời gian cộng thêm được đưa vào quỹ. Thua, hòa hoặc hết giờ sẽ kết thúc Marathon. Chặng tiếp theo bắt đầu không nghỉ.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "Đọc thành tiếng phần giải thích",
   "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor",
   "lessonSoundOn": "Âm thanh và giọng nói: bật, tốc độ {speed}",
-  "lessonSoundOff": "Âm thanh và giọng nói: tắt"
+  "lessonSoundOff": "Âm thanh và giọng nói: tắt",
+  "gameDrawOfferHintNamed": "{name} có thể chấp nhận hoặc từ chối. Nếu từ chối, ván đấu tiếp tục.",
+  "gameKeepPlaying": "Chơi tiếp",
+  "speedrunQuitHint": "{count, plural, =0{Lượt thử kết thúc tại đây và vẫn nằm trong lịch sử.} =1{Bạn mất chặng đã thắng trong lượt thử này.} other{Bạn mất {count} chặng đã thắng trong lượt thử này.}}"
 }

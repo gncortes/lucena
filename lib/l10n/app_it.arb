@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "Hai {seconds} secondi. Porta il tuo pezzo su ogni stella prima che si spenga.",
   "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punto} other{punti}}",
-  "speedrunQuitProgress": "Abbandonare questa speedrun? Perdi le {count} tappe vinte.",
   "emptyFirstEndgame": "Gioca il mio primo finale",
   "speedrunHelpClassic": "Ogni partita ha orologi separati. Il totale somma solo il tempo consumato sul tuo orologio, comprese le tappe non vinte. Ripeti una tappa non vinta senza azzerare il tempo accumulato.",
   "speedrunHelpMarathon": "Una riserva di tempo per tutte le tappe. Ogni partita inizia con il tempo rimasto dalla precedente; gli incrementi si aggiungono alla riserva. Una sconfitta, una patta o il tempo esaurito termina la Maratona. La tappa successiva inizia senza pausa.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "Leggere le spiegazioni ad alta voce",
   "lessonSoundHint": "Suoni dei pezzi e voce di Viktor",
   "lessonSoundOn": "Suono e voce: attivo, velocità {speed}",
-  "lessonSoundOff": "Suono e voce: disattivato"
+  "lessonSoundOff": "Suono e voce: disattivato",
+  "gameDrawOfferHintNamed": "{name} può accettare o rifiutare. Se rifiuta, la partita continua.",
+  "gameKeepPlaying": "Continua a giocare",
+  "speedrunQuitHint": "{count, plural, =0{Il tentativo finisce qui e resta nella cronologia.} =1{Perdi la tappa vinta in questo tentativo.} other{Perdi le {count} tappe vinte in questo tentativo.}}"
 }

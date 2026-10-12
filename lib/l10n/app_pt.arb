@@ -111,7 +111,7 @@
   "freeBoardWhiteWins": "Vitória das brancas",
   "gameDrawDeclined": "Empate recusado",
   "gameMachineThinking": "{name} está pensando…",
-  "gameOfferDraw": "Propor empate",
+  "gameOfferDraw": "Oferecer empate",
   "gameResign": "Desistir",
   "gameResignHint": "A partida termina agora e conta como derrota.",
   "gameResignTitle": "Desistir da partida?",
@@ -1028,7 +1028,6 @@
   "starChallengeIntroBody": "Você tem {seconds} segundos. Leve a sua peça até cada estrela antes que ela se apague.",
   "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{ponto} other{pontos}}",
-  "speedrunQuitProgress": "Desistir desta speedrun? Você perde as {count} etapas vencidas.",
   "emptyFirstEndgame": "Jogar meu primeiro final",
   "speedrunHelpClassic": "Cada partida tem relógios separados. O tempo total soma apenas o que você gastou no seu relógio, incluindo as etapas não vencidas. Repita uma etapa não vencida sem zerar o tempo acumulado.",
   "speedrunHelpMarathon": "Um banco de tempo para todas as etapas. Cada partida começa com o tempo que sobrou da anterior; os acréscimos entram nesse banco. Perder, empatar ou esgotar o tempo encerra a Maratona. A próxima etapa começa sem pausa.",
@@ -1078,7 +1077,7 @@
   "explanationLast": "Fim da variante",
   "explanationReturn": "Voltar à posição",
   "gameChallengeTitle": "Desafio do {opponent}",
-  "gameDrawOfferTitle": "Propor empate?",
+  "gameDrawOfferTitle": "Oferecer empate?",
   "gameDrawOfferHint": "O adversário pode aceitar ou recusar a proposta.",
   "gameSoundAndVoice": "Som e voz",
   "gameSpeechHint": "Você pode desligar as falas do {opponent} quando quiser.",
@@ -1095,5 +1094,8 @@
   "lessonTeacherVoiceHint": "Ler as explicações em voz alta",
   "lessonSoundHint": "Sons das peças e voz do Viktor",
   "lessonSoundOn": "Som e voz: ligado, velocidade {speed}",
-  "lessonSoundOff": "Som e voz: desligado"
+  "lessonSoundOff": "Som e voz: desligado",
+  "gameDrawOfferHintNamed": "O {name} pode aceitar ou recusar. Se recusar, a partida continua.",
+  "gameKeepPlaying": "Continuar jogando",
+  "speedrunQuitHint": "{count, plural, =0{A tentativa termina aqui e fica no histórico.} =1{Você perde a etapa vencida desta tentativa.} other{Você perde as {count} etapas vencidas desta tentativa.}}"
 }

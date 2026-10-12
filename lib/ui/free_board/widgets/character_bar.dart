@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import 'sound_dialog.dart';
+import 'clock_row.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -94,7 +95,7 @@ class CharacterBar extends StatelessWidget {
                 ),
               ),
         child: SizedBox(
-          height: playerRow == null ? heightFor(avatarSize) : 56,
+          height: playerRow == null ? heightFor(avatarSize) : ClockRow.height,
           child: playerRow != null
               ? KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
               : CharacterBar(
