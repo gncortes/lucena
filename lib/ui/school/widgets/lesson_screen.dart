@@ -34,6 +34,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
 import '../../core/board/exercise_layout.dart';
@@ -1269,6 +1270,7 @@ class _LessonScreenState extends State<LessonScreen>
     return TeacherSpeech(
       part: part,
       lessonV2: true,
+      onSoundSettings: () => showLessonSoundDialog(context),
       teacher: viktor,
       explanation:
           state.layout == LessonLayoutMode.solving && state.explanation == null
@@ -1467,7 +1469,7 @@ class _LessonScreenState extends State<LessonScreen>
           ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
-          label: Text(l10n.explanationReturn),
+          label: Text(l10n.lessonReturn),
         ),
       );
     }
@@ -1598,7 +1600,7 @@ class _LessonScreenState extends State<LessonScreen>
           ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
-          label: Text(context.l10n.explanationReturn),
+          label: Text(context.l10n.lessonReturn),
         ),
       );
     }

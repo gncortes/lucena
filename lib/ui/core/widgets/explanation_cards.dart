@@ -226,7 +226,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                 key: ExplanationKeys.variation(variation.id),
                 style: TextButton.styleFrom(
                   minimumSize: const Size(44, 44),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: EdgeInsets.zero,
                   alignment: AlignmentDirectional.centerStart,
                   backgroundColor: selected ? colors.primaryContainer : null,
                   textStyle: const TextStyle(
@@ -243,7 +243,9 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                     Expanded(
                       child: Text(
                         labelled
-                            ? '${variation.label}) ${variation.movesSan.first}'
+                            ? principal
+                                  ? '${variation.label}) ${variation.movesSan.first}'
+                                  : variation.movesSan.first
                             : variation.label,
                       ),
                     ),
@@ -261,41 +263,28 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           ),
       ],
     );
-    // Recursive data, flat presentation: every marker and every paragraph
-    // stays in the same column regardless of ancestry depth.
-    return Stack(
+    // Canvas D14: full-width principal lines, with each child and its replies
+    // grouped in one soft block. Ancestry stays in semantics, without a rail.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showText && children.isNotEmpty)
-          PositionedDirectional(
-            start: 9,
-            top: 22,
-            bottom: 0,
-            width: 1,
-            child: ColoredBox(color: colors.outlineVariant),
-          ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 20,
-                  height: 44,
-                  child: Icon(
-                    Icons.circle,
-                    size: 8,
-                    color: selected ? colors.primary : colors.outline,
-                  ),
+        body,
+        if (showText)
+          for (final child in children)
+            if (principal)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                Expanded(child: body),
-              ],
-            ),
-            if (showText)
-              for (final child in children)
-                _line(context, block, child, principal: false),
-          ],
-        ),
+                child: _line(context, block, child, principal: false),
+              )
+            else ...[
+              const Divider(height: 24, indent: 0, endIndent: 0),
+              _line(context, block, child, principal: false),
+            ],
       ],
     );
   }

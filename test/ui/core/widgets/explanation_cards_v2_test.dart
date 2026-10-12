@@ -118,11 +118,17 @@ void main() {
       );
       expect(find.text('Child explanation.'), findsOneWidget);
       expect(find.text('Reply explanation.'), findsOneWidget);
+      expect(find.byIcon(Icons.circle), findsNothing);
+      expect(find.text('1...Kf7'), findsOneWidget);
       expect(find.byIcon(Icons.expand_less), findsOneWidget);
       expect(find.byIcon(Icons.expand_more), findsNothing);
       await tester.tap(find.byKey(ExplanationKeys.variation('A.1.1')));
       await tester.pumpAndSettle();
       expect(selected!.variation.id, 'A.1.1');
+      expect(
+        tester.getSemantics(find.byKey(ExplanationKeys.variation('A.1.1'))).label,
+        contains('A.1.1'),
+      );
       expect(selected!.fen, data.openVariation(grandchild)!.fen);
       expect(find.byKey(ExplanationKeys.restore), findsNothing);
       expect(find.byKey(ExplanationKeys.last), findsNothing);

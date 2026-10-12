@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
@@ -10,6 +15,7 @@ import 'package:lucena/ui/core/keys/explanation_keys.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_voice_repository.dart';
+import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository.dart';
@@ -17,7 +23,248 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+class _DelayedVoiceRepository extends FakeVoiceRepository {
+  _DelayedVoiceRepository()
+    : super(settings: const VoiceSettings(enabled: false));
+  final saved = Completer<void>();
+
+  @override
+  Future<void> save(VoiceSettings settings) async {
+    await saved.future;
+    await super.save(settings);
+  }
+}
+
 void main() {
+  for (final (available, enabled) in [
+    (true, false),
+    (true, true),
+    (false, false),
+  ]) {
+    testWidgets(
+      'V2 panel and badge fit with voice=$enabled, TTS=$available, RTL and enlarged text',
+      (tester) async {
+        final voice = FakeVoiceRepository(
+          settings: VoiceSettings(enabled: enabled),
+          voices: available ? null : [],
+        );
+        final speech = SpeechCubit(voice);
+        addTearDown(speech.close);
+        await speech.load();
+        var opened = 0;
+        await tester.pumpWidget(
+          TestApp(
+            speechCubit: speech,
+            child: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 360,
+                  child: MediaQuery(
+                    data: const MediaQueryData(
+                      textScaler: TextScaler.linear(2),
+                    ),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: TeacherSpeech(
+                        teacher: FakeCharacterRepository.viktor,
+                        text: 'The panel remains available.',
+                        speechContext: SpeechContext.teaching,
+                        part: TeacherSpeechPart.header,
+                        lessonV2: true,
+                        onSoundSettings: () => opened++,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+        expect(
+          find.text('1×'),
+          available && enabled ? findsOneWidget : findsNothing,
+        );
+        if (available && enabled) {
+          final label = tester.renderObject<RenderParagraph>(find.text('1×'));
+          final boxes = label.getBoxesForSelection(
+            const TextSelection(baseOffset: 0, extentOffset: 2),
+          );
+          expect(boxes, isNotEmpty);
+          for (final box in boxes) {
+            expect(box.top, greaterThanOrEqualTo(0));
+            expect(box.bottom, lessThanOrEqualTo(label.size.height));
+          }
+          expect(label.size.height, lessThanOrEqualTo(16));
+        }
+        await tester.tap(find.byKey(VoiceKeys.speakButton));
+        await tester.pump();
+        expect(opened, 1);
+        expect(voice.spoken, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'mute during delayed voice preference save prevents manual playback',
+    (tester) async {
+      final voice = _DelayedVoiceRepository();
+      final speech = SpeechCubit(voice);
+      final settings = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(speech.close);
+      addTearDown(settings.close);
+      await speech.load();
+      await settings.load();
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'The teacher must stay muted.',
+              speechContext: SpeechContext.teaching,
+              speaks: true,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await settings.setSound(enabled: false);
+      await tester.pump();
+      voice.saved.complete();
+      await tester.pump();
+      await tester.pump();
+      expect(voice.spoken, isEmpty);
+      expect(speech.state.speaking, isNull);
+      expect(voice.settings.enabled, isTrue);
+    },
+  );
+
+  testWidgets(
+    'V2 sound button opens settings; general mute gates current and future teacher speech',
+    (tester) async {
+      final voice = FakeVoiceRepository(
+        settings: const VoiceSettings(enabled: true, charactersMuted: true),
+      );
+      final speech = SpeechCubit(voice);
+      final settings = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      final text = ValueNotifier('First teaching sentence.');
+      addTearDown(text.dispose);
+      addTearDown(speech.close);
+      addTearDown(settings.close);
+      await speech.load();
+      await settings.load();
+      var opened = 0;
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: ValueListenableBuilder<String>(
+              valueListenable: text,
+              builder: (_, value, _) => TeacherSpeech(
+                teacher: FakeCharacterRepository.viktor,
+                text: value,
+                speechContext: SpeechContext.teaching,
+                lessonV2: true,
+                speaks: true,
+                onSoundSettings: () => opened++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(voice.spoken, hasLength(1));
+      expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+      expect(find.text('1×'), findsOneWidget);
+      expect(find.byTooltip('Sound and voice: on, speed 1×'), findsOneWidget);
+      expect(
+        tester.getSize(find.byKey(VoiceKeys.speakButton)).height,
+        greaterThanOrEqualTo(48),
+      );
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(opened, 1);
+      expect(voice.spoken, hasLength(1));
+      await settings.setSound(enabled: false);
+      await tester.pump();
+      expect(speech.state.speaking, isNull);
+      expect(find.text('1×'), findsNothing);
+      expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
+      expect(find.byTooltip('Sound and voice: off'), findsOneWidget);
+      text.value = 'Next teaching sentence while muted.';
+      await tester.pump();
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(opened, 2);
+      expect(voice.spoken, hasLength(1));
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.charactersMuted, isTrue);
+      await settings.setSound(enabled: true);
+      await tester.pump();
+      expect(voice.spoken, hasLength(1));
+      text.value = 'A new sentence after unmuting.';
+      await tester.pump();
+      await tester.pump();
+      expect(voice.spoken, hasLength(2));
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.charactersMuted, isTrue);
+    },
+  );
+
+  testWidgets('muted teacher does not autoplay initially or play manually', (
+    tester,
+  ) async {
+    final voice = FakeVoiceRepository(
+      settings: const VoiceSettings(enabled: true),
+    );
+    final speech = SpeechCubit(voice);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings(sound: false)),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(speech.close);
+    addTearDown(settings.close);
+    await speech.load();
+    await settings.load();
+    Future<void> show({required bool auto}) async {
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'Muted teacher sentence.',
+              speechContext: SpeechContext.teaching,
+              speaks: auto,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton), warnIfMissed: false);
+      await tester.pump();
+    }
+
+    await show(auto: true);
+    await show(auto: false);
+    expect(voice.spoken, isEmpty);
+    expect(voice.settings.enabled, isTrue);
+  });
+
   testWidgets(
     'V2 paragraphs keep an eight pixel gap and supplied quality colors',
     (tester) async {

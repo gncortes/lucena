@@ -12,12 +12,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../../wiki/view_models/wiki_links_cubit.dart';
 import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
@@ -64,6 +66,7 @@ class TeacherSpeech extends StatelessWidget {
     this.onLink,
     this.onSpoken,
     this.headerAction,
+    this.onSoundSettings,
     this.onClose,
     this.closeKey,
     super.key,
@@ -89,6 +92,9 @@ class TeacherSpeech extends StatelessWidget {
   /// Um botão a mais no cabeçalho, antes dos de voz (ex.: as marcações da
   /// lição).
   final Widget? headerAction;
+
+  /// Lesson V2 opens its dedicated sound panel without changing preferences.
+  final VoidCallback? onSoundSettings;
 
   /// Um ✕ no canto do balão, que fecha a fala (ex.: a história da revisão).
   final VoidCallback? onClose;
@@ -162,13 +168,40 @@ class TeacherSpeech extends StatelessWidget {
       child: _layout(context, avatar),
     );
     if (speech == null) return content;
-    return AutoSpeak(
+    final soundEnabled = _soundEnabled(context);
+    final speakingContent = AutoSpeak(
       speech: speech,
       text: text,
-      auto: speaks,
+      auto: speaks && soundEnabled,
       speakerId: teacher.id,
       child: content,
     );
+    final settings = _settingsOf(context);
+    if (!_stacked || settings == null) return speakingContent;
+    return BlocListener<SettingsCubit, AppSettings?>(
+      bloc: settings,
+      listenWhen: (before, after) =>
+          (before?.sound ?? true) && !(after?.sound ?? true),
+      listener: (_, _) => speech.stopIf(text),
+      child: speakingContent,
+    );
+  }
+
+  SettingsCubit? _settingsOf(BuildContext context) {
+    try {
+      return context.read<SettingsCubit>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  bool _soundEnabled(BuildContext context) {
+    if (!_stacked) return true;
+    try {
+      return context.watch<SettingsCubit>().state?.sound ?? true;
+    } on ProviderNotFoundException {
+      return true;
+    }
   }
 
   /// A voz do app, se houver (fora do app, nos testes de um widget só, não
@@ -194,6 +227,7 @@ class TeacherSpeech extends StatelessWidget {
   /// O nome e, havendo voz no idioma, o botão de áudio.
   Widget _header(BuildContext context) {
     final speech = speechOf(context);
+    final soundEnabled = _soundEnabled(context);
     final text = _plain;
     final action = headerAction;
     if (speech == null || text == null) {
@@ -219,6 +253,69 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
+            if (lessonV2) {
+              final audible =
+                  soundEnabled &&
+                  state.settings.enabled &&
+                  state.availableFor(language);
+              final colors = Theme.of(context).colorScheme;
+              return IconButton(
+                key: VoiceKeys.speakButton,
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                tooltip: audible
+                    ? context.l10n.lessonSoundOn(
+                        context.l10n.voiceSpeedValue(state.settings.speed),
+                      )
+                    : context.l10n.lessonSoundOff,
+                onPressed: onSoundSettings,
+                icon: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        audible
+                            ? Icons.volume_up_outlined
+                            : Icons.volume_off_outlined,
+                      ),
+                      if (audible)
+                        PositionedDirectional(
+                          start: -4,
+                          top: -4,
+                          child: ExcludeSemantics(
+                            child: Container(
+                              height: 16,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                context.l10n.voiceSpeedValue(
+                                  state.settings.speed,
+                                ),
+                                // Decorative badge: the button tooltip exposes
+                                // the full speed using the user's text scale.
+                                textScaler: TextScaler.noScaling,
+                                style: TextStyle(
+                                  color: colors.onPrimary,
+                                  fontSize: 10,
+                                  height: 1.6,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            }
             // Sem voz no idioma, o botão de som continua à vista: o toque
             // leva aos ajustes de voz, onde se instala uma.
             if (!state.availableFor(language)) {
@@ -247,7 +344,7 @@ class TeacherSpeech extends StatelessWidget {
                     minimumSize: Size(48, lessonV2 ? 48 : 36),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                   ),
-                  onPressed: speech.nextSpeed,
+                  onPressed: soundEnabled ? speech.nextSpeed : null,
                   child: Tooltip(
                     message: l10n.voiceSpeed,
                     child: Text(l10n.voiceSpeedValue(state.settings.speed)),
@@ -269,11 +366,21 @@ class TeacherSpeech extends StatelessWidget {
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const Icon(Icons.volume_off_outlined),
                     onPressed: () async {
+                      if (_stacked &&
+                          !(_settingsOf(context)?.state?.sound ?? true)) {
+                        return;
+                      }
                       if (state.settings.enabled) {
                         await speech.setEnabled(enabled: false);
                         return;
                       }
                       await speech.setEnabled(enabled: true);
+                      if (!context.mounted ||
+                          !speech.state.settings.enabled ||
+                          (_stacked &&
+                              !(_settingsOf(context)?.state?.sound ?? true))) {
+                        return;
+                      }
                       await speech.say(
                         text,
                         speakerId: teacher.id,
@@ -291,11 +398,13 @@ class TeacherSpeech extends StatelessWidget {
                     isSelected: speaking,
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const Icon(Icons.stop_circle_outlined),
-                    onPressed: () => speech.toggle(
-                      text,
-                      speakerId: teacher.id,
-                      language: language,
-                    ),
+                    onPressed: soundEnabled
+                        ? () => speech.toggle(
+                            text,
+                            speakerId: teacher.id,
+                            language: language,
+                          )
+                        : null,
                   ),
               ],
             );
