@@ -97,7 +97,8 @@ void main() {
       'dela, acima das ações', (tester) async {
     await pump(tester);
     final speech = find.byKey(LessonKeys.speech);
-    expect(tester.widget<Text>(speech).data, long);
+    final words = tester.widget<Text>(speech);
+    expect(words.data ?? words.textSpan?.toPlainText(), long);
     // Só a tela rola: nada rola dentro do balão.
     expect(
       find.descendant(

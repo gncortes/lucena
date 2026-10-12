@@ -328,7 +328,7 @@ class TeacherSpeech extends StatelessWidget {
               Expanded(child: _header(context)),
             ],
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: lessonV2 ? 8 : 2),
           _closable(context),
         ],
       );
@@ -633,12 +633,42 @@ class TeacherSpeech extends StatelessWidget {
           cursor.ply == active.ply;
     }
 
+    Color moveColor(SpeechLink link) {
+      if (!lessonV2) return theme.colorScheme.primary;
+      final notation = link.text;
+      if (notation.endsWith('??')) return const Color(0xFFB3261E);
+      if (notation.endsWith('?!')) return const Color(0xFF8A5A00);
+      if (notation.endsWith('?')) return const Color(0xFFC2410C);
+      if (notation.endsWith('!!')) return const Color(0xFF2D5C82);
+      if (notation.endsWith('!')) return const Color(0xFF3B6E1C);
+      return theme.colorScheme.primary;
+    }
+
+    Iterable<InlineSpan> plainSpans(String value) sync* {
+      if (!lessonV2) {
+        yield TextSpan(text: value);
+        return;
+      }
+      final paragraphs = value.split('\n\n');
+      for (final (index, paragraph) in paragraphs.indexed) {
+        if (index > 0) {
+          yield const TextSpan(text: '\n');
+          yield const TextSpan(
+            text: '\n',
+            style: TextStyle(fontSize: 8, height: 1),
+          );
+        }
+        yield TextSpan(text: paragraph);
+      }
+    }
+
     final spans = [
       for (final link in links)
         (
           link.start,
           link.end,
           linkStyle.copyWith(
+            color: moveColor(link),
             backgroundColor: isActiveMove(link)
                 ? theme.colorScheme.primaryContainer
                 : null,
@@ -646,22 +676,21 @@ class TeacherSpeech extends StatelessWidget {
         ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
-    final words = spans.isEmpty
+    final words = spans.isEmpty && !lessonV2
         ? Text(text, key: useBubbleKey ? bubbleKey : null, style: style)
         : Text.rich(
             TextSpan(
               children: [
                 for (final (index, (start, end, spanStyle))
                     in spans.indexed) ...[
-                  TextSpan(
-                    text: text.substring(
-                      index == 0 ? 0 : spans[index - 1].$2,
-                      start,
-                    ),
+                  ...plainSpans(
+                    text.substring(index == 0 ? 0 : spans[index - 1].$2, start),
                   ),
                   TextSpan(text: text.substring(start, end), style: spanStyle),
                 ],
-                TextSpan(text: text.substring(spans.last.$2)),
+                ...plainSpans(
+                  text.substring(spans.isEmpty ? 0 : spans.last.$2),
+                ),
               ],
             ),
             key: useBubbleKey ? bubbleKey : null,
