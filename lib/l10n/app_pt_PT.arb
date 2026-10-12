@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "Também não funcionam",
   "lessonStillUnsure": "Ainda com dúvidas?",
   "lessonOpenFreeBoard": "Abrir no tabuleiro livre",
+  "lessonExplanationShort": "Explicação",
+  "lessonFreeBoardInvite": "Ainda com dúvidas? Teste outras ideias a partir desta posição, do seu lado do tabuleiro.",
   "lessonReturn": "Voltar",
   "lessonTeacherVoice": "Voz do Viktor",
   "lessonTeacherVoiceHint": "Ler as explicações em voz alta",

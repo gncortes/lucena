@@ -40,84 +40,142 @@ void main() {
     'editorial text direction preserves fallback SAN and Arabic links',
     (tester) async {
       const key = Key('directional-editorial');
+      const lri = '\u2066';
+      const pdi = '\u2069';
       for (final typed in [false, true]) {
-        for (final (text, direction) in [
+        for (final (text, direction, moves) in [
           (
             '1.Ke3 allows a draw and does not meet the goal.',
             TextDirection.ltr,
+            ['1.Ke3'],
           ),
-          ('النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة.', TextDirection.rtl),
+          (
+            'النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة.',
+            TextDirection.rtl,
+            ['1.Ke3'],
+          ),
+          (
+            'بعد 1...Rh7 يلعب الأبيض Kxe3+ ثم 2.Rd7 ويفوز.',
+            TextDirection.rtl,
+            ['1...Rh7', 'Kxe3+', '2.Rd7'],
+          ),
         ]) {
-          final tapped = <String>[];
-          await tester.pumpWidget(
-            TestApp(
-              locale: const Locale('ar'),
-              child: Scaffold(
-                body: TeacherSpeech(
-                  teacher: FakeCharacterRepository.viktor,
-                  text: null,
-                  bubbleKey: key,
-                  typed: typed,
-                  speechContext: SpeechContext.teaching,
-                  lessonV2: true,
-                  onLink: (link) => tapped.add('${link.start}:${link.text}'),
-                  explanation: ExplanationPayload(
-                    positionId: 'direction',
-                    state: ExplanationState.incorrect,
-                    explanations: [
-                      ExplanationBlock(
-                        id: 'played',
-                        kind: ExplanationKind.playedIncorrect,
-                        texts: [text],
-                      ),
-                    ],
+          for (final move in moves) {
+            final tapped = <String>[];
+            await tester.pumpWidget(
+              TestApp(
+                locale: const Locale('ar'),
+                child: Scaffold(
+                  body: TeacherSpeech(
+                    teacher: FakeCharacterRepository.viktor,
+                    text: null,
+                    bubbleKey: key,
+                    typed: typed,
+                    speechContext: SpeechContext.teaching,
+                    lessonV2: true,
+                    onLink: (link) => tapped.add('${link.start}:${link.text}'),
+                    explanation: ExplanationPayload(
+                      positionId: 'direction',
+                      state: ExplanationState.incorrect,
+                      explanations: [
+                        ExplanationBlock(
+                          id: 'played',
+                          kind: ExplanationKind.playedIncorrect,
+                          texts: [text],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-          await tester.pumpAndSettle();
-          final rich = find.descendant(
-            of: find.byKey(key),
-            matching: find.byType(RichText),
-          );
-          final paragraph = tester.renderObject<RenderParagraph>(rich);
-          expect(paragraph.text.toPlainText(), text);
-          expect(paragraph.textDirection, direction);
-          expect(
-            Directionality.of(tester.element(find.byType(TeacherSpeech))),
-            TextDirection.rtl,
-          );
-          final offset = text.indexOf('1.Ke3');
-          final boxes = [
-            for (var i = 0; i < 5; i++)
-              paragraph
-                  .getBoxesForSelection(
-                    TextSelection(
-                      baseOffset: offset + i,
-                      extentOffset: offset + i + 1,
-                    ),
-                  )
-                  .single,
-          ];
-          for (var i = 1; i < boxes.length; i++) {
-            expect(
-              boxes[i].left,
-              greaterThanOrEqualTo(boxes[i - 1].right - .1),
             );
+            await tester.pumpAndSettle();
+            final rich = find.descendant(
+              of: find.byKey(key),
+              matching: find.byType(RichText),
+            );
+            final paragraph = tester.renderObject<RenderParagraph>(rich);
+            final drawn = paragraph.text.toPlainText();
+            // The source text is drawn whole; only isolates are added.
+            expect(drawn.replaceAll(lri, '').replaceAll(pdi, ''), text);
+            if (direction == TextDirection.ltr) {
+              expect(drawn, text, reason: 'LTR paragraphs need no isolates');
+            } else {
+              for (final notation in moves) {
+                expect(drawn, contains('$lri$notation$pdi'));
+              }
+            }
+            expect(paragraph.textDirection, direction);
+            expect(
+              Directionality.of(tester.element(find.byType(TeacherSpeech))),
+              TextDirection.rtl,
+            );
+            // Boxes are measured in the drawn text; the tap reports the
+            // offset of the source text.
+            final drawnOffset = drawn.indexOf(move);
+            final boxes = [
+              for (var i = 0; i < move.length; i++)
+                paragraph
+                    .getBoxesForSelection(
+                      TextSelection(
+                        baseOffset: drawnOffset + i,
+                        extentOffset: drawnOffset + i + 1,
+                      ),
+                    )
+                    .single,
+            ];
+            // The whole notation runs left to right, number attached.
+            for (var i = 1; i < boxes.length; i++) {
+              expect(
+                boxes[i].left,
+                greaterThanOrEqualTo(boxes[i - 1].right - .1),
+                reason: '$move char $i in "$text"',
+              );
+            }
+            final san = boxes[move.length ~/ 2];
+            await tester.tapAt(
+              paragraph.localToGlobal(
+                Offset((san.left + san.right) / 2, (san.top + san.bottom) / 2),
+              ),
+            );
+            expect(tapped, ['${text.indexOf(move)}:$move']);
+            expect(tester.takeException(), isNull);
           }
-          final san = boxes[2];
-          await tester.tapAt(
-            paragraph.localToGlobal(
-              Offset((san.left + san.right) / 2, (san.top + san.bottom) / 2),
-            ),
-          );
-          expect(tapped, ['$offset:1.Ke3']);
-          expect(tester.takeException(), isNull);
         }
       }
     },
   );
+  testWidgets('RTL isolates leave Semantics with the source text', (
+    tester,
+  ) async {
+    const text = 'النقلة 1.Ke3 تحافظ على الوضع.';
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('ar'),
+        child: Scaffold(
+          body: TeacherSpeech(
+            teacher: FakeCharacterRepository.viktor,
+            text: text,
+            speechContext: SpeechContext.teaching,
+            lessonV2: true,
+            onLink: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final labels = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .map((widget) => widget.properties.label ?? '')
+        .where((label) => label.contains('1.Ke3'));
+    expect(labels, isNotEmpty);
+    for (final label in labels) {
+      expect(label, isNot(contains('\u2066')));
+      expect(label, contains(text));
+    }
+    handle.dispose();
+  });
   for (final (available, enabled) in [
     (true, false),
     (true, true),
@@ -1167,6 +1225,66 @@ void main() {
       voice.emit(TtsProgress(said.indexOf('Tf7') + 1, said.indexOf('Tf7') + 2));
       await tester.pump();
       expect(tapped, ['e4', 'Tf7']);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('RTL: the voice position (source) reveals the whole isolated '
+        'move and announces it', (tester) async {
+      const arabic = 'النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة طويلة جدا.';
+      final voice = FakeVoiceRepository(
+        settings: const VoiceSettings(enabled: true),
+        voices: const [TtsVoice(id: 'ar-a', locale: 'ar')],
+      );
+      final speech = SpeechCubit(voice);
+      addTearDown(speech.close);
+      await speech.load();
+      final spoken = <String>[];
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('ar'),
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: arabic,
+              bubbleKey: speech_,
+              speechContext: SpeechContext.teaching,
+              lessonV2: true,
+              typed: true,
+              speaks: true,
+              onLink: (_) {},
+              onSpoken: (link) => spoken.add('${link.start}:${link.text}'),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(voice.spoken.single.$1, arabic, reason: 'voice reads the source');
+      final end = arabic.indexOf('1.Ke3') + '1.Ke3'.length;
+      voice.emit(TtsProgress(end - 1, end));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(spoken, ['${arabic.indexOf('1.Ke3')}:1.Ke3']);
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.descendant(
+          of: find.byKey(speech_),
+          matching: find.byType(RichText),
+        ),
+      );
+      final drawn = paragraph.text.toPlainText();
+      final at = drawn.indexOf('1.Ke3');
+      final clip = tester.widget<ClipPath>(find.byType(ClipPath));
+      final path = clip.clipper!.getClip(paragraph.size);
+      for (var i = 0; i < 5; i++) {
+        final box = paragraph
+            .getBoxesForSelection(
+              TextSelection(baseOffset: at + i, extentOffset: at + i + 1),
+            )
+            .single
+            .toRect();
+        expect(path.contains(box.center), isTrue, reason: 'char $i revealed');
+      }
+      voice.emit(const TtsFinished());
       await tester.pumpAndSettle();
     });
   });

@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "Ini juga tidak berhasil",
   "lessonStillUnsure": "Masih ragu?",
   "lessonOpenFreeBoard": "Buka di papan bebas",
+  "lessonExplanationShort": "Penjelasan",
+  "lessonFreeBoardInvite": "Masih ragu? Uji ide lain dari posisi ini, dari sisi papanmu.",
   "lessonReturn": "Kembali",
   "lessonTeacherVoice": "Suara Viktor",
   "lessonTeacherVoiceHint": "Bacakan penjelasan",

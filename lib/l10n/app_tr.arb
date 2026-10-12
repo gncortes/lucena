@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "Bunlar da işe yaramıyor",
   "lessonStillUnsure": "Hâlâ emin değil misin?",
   "lessonOpenFreeBoard": "Serbest tahtada aç",
+  "lessonExplanationShort": "Açıklama",
+  "lessonFreeBoardInvite": "Hâlâ emin değil misin? Bu konumdan, tahtanın kendi tarafından başka fikirleri dene.",
   "lessonReturn": "Geri",
   "lessonTeacherVoice": "Viktor’un sesi",
   "lessonTeacherVoiceHint": "Açıklamaları sesli oku",

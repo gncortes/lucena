@@ -735,6 +735,11 @@ class LessonCubit extends Cubit<LessonState> {
                 demoMove: saved.demoMove,
                 demoPlaying: saved.demoPlaying,
                 reviewReturn: saved.reviewReturn,
+                attempt: saved.attempt,
+                failed: saved.failed,
+                reviewStep: saved.reviewStep,
+                attemptedSan: saved.attemptedSan,
+                thinkMistake: saved.thinkMistake,
               );
       }
       opened =
@@ -763,7 +768,20 @@ class LessonCubit extends Cubit<LessonState> {
     );
     if (saved != null && saved.step < lesson.steps.length) {
       _reviewReturn = saved.reviewReturn;
-      emit(_restore(base, saved).copyWith(returnTo: _reviewReturn?.step));
+      emit(
+        _resumeAttempt(
+          _restore(base, saved).copyWith(returnTo: _reviewReturn?.step),
+          saved,
+        ),
+      );
+      // A wrong move keeps its explanation: emit() does not fetch it for a
+      // move answered at the same step (the live path asks it explicitly).
+      if (_decision case final decision?
+          when decision.incorrect &&
+              decision.kind != 'think' &&
+              decision.step == state.step) {
+        await _loadExplanation(state);
+      }
     } else {
       emit(_open(base, 0));
     }
@@ -1048,34 +1066,113 @@ class LessonCubit extends Cubit<LessonState> {
     }
     final opened = _open(state, state.step + 1);
     if (said != null) {
-      emit(
-        opened.copyWith(
-          speech: [said, ?opened.speech].join('\n\n'),
-          explanation: ExplanationPayload(
-            positionId: step.id,
-            state: ExplanationState.incorrect,
-            explanations: [
-              ExplanationBlock(
-                id: 'played',
-                kind: ExplanationKind.playedIncorrect,
-                texts: [said],
-              ),
-              if (opened.speech case final text?)
-                ExplanationBlock(
-                  id: 'context',
-                  kind: ExplanationKind.context,
-                  texts: [text],
-                ),
-            ],
-          ),
-          emotion: Emotion.focused,
-        ),
-      );
+      emit(_thinkSaid(opened, step, said));
       return true;
     }
     final numbered = _numbered(step.fen, move);
     emit(opened.copyWith(thinkMistake: numbered, emotion: Emotion.focused));
     return true;
+  }
+
+  /// The step after a think step, opened by a wrong move that has its own
+  /// speech: the speech first, then the context of the step.
+  static LessonState _thinkSaid(
+    LessonState opened,
+    ThinkStep step,
+    String said,
+  ) => opened.copyWith(
+    speech: [said, ?opened.speech].join('\n\n'),
+    explanation: ExplanationPayload(
+      positionId: step.id,
+      state: ExplanationState.incorrect,
+      explanations: [
+        ExplanationBlock(
+          id: 'played',
+          kind: ExplanationKind.playedIncorrect,
+          texts: [said],
+        ),
+        if (opened.speech case final text?)
+          ExplanationBlock(
+            id: 'context',
+            kind: ExplanationKind.context,
+            texts: [text],
+          ),
+      ],
+    ),
+    emotion: Emotion.focused,
+  );
+
+  /// Reopening the app on a wrong answer (T65 §7): the failed phase, the
+  /// numbered move and the explanation come back. The decision is restored
+  /// too, so the repository returns the same payload for the step id.
+  LessonState _resumeAttempt(LessonState restored, LessonCheckpoint saved) {
+    final attempt = saved.attempt;
+    final steps = restored.lesson?.steps ?? const <LessonStep>[];
+    if (attempt == null ||
+        attempt.step < 0 ||
+        attempt.step >= steps.length ||
+        steps[attempt.step].id != attempt.id ||
+        !(attempt.step == restored.step ||
+            (attempt.kind == 'think' && restored.step == attempt.step + 1))) {
+      return restored;
+    }
+    _decision = (
+      step: attempt.step,
+      id: attempt.id,
+      kind: attempt.kind,
+      fen: attempt.fen,
+      turn: attempt.turn,
+      uci: attempt.uci,
+      incorrect: attempt.incorrect,
+    );
+    if (!attempt.incorrect) return restored;
+    final texts = restored.texts;
+    final lessonId = restored.lesson!.id;
+    final answered = steps[attempt.step];
+    if (attempt.kind == 'think' && answered is ThinkStep) {
+      final said = _mistakeTextIn(
+        texts,
+        lessonId,
+        answered.mistakes[attempt.uci]?.say,
+      );
+      if (said != null) return _thinkSaid(restored, answered, said);
+      return restored.copyWith(
+        thinkMistake: saved.thinkMistake,
+        emotion: Emotion.focused,
+      );
+    }
+    final step = restored.current;
+    final mistake = switch (step) {
+      MoveStep(:final mistakes) ||
+      PlayStep(:final mistakes) => mistakes[attempt.uci],
+      _ => null,
+    };
+    if (saved.failed) {
+      final text = _mistakeTextIn(texts, lessonId, mistake?.say);
+      return restored.copyWith(
+        phase: StepPhase.failed,
+        speech: text ?? texts.say('coach.wrong'),
+        genericMistake: mistake != null && text == null,
+        reviewStep: saved.reviewStep,
+        clearReview: saved.reviewStep == null,
+        clearHint: true,
+        attemptedSan: saved.attemptedSan,
+        emotion: Emotion.focused,
+      );
+    }
+    if (step is! MoveStep) return restored;
+    // A wrong move in a move step: the piece went back, the hint speaks and,
+    // from the second mistake, the arrow shows the move.
+    final hint = texts.hint(lessonId, step.id);
+    return restored.copyWith(
+      speech: hint ?? texts.say('coach.wrong'),
+      genericMistake: hint == null,
+      hint: restored.mistakes >= 2 && restored.turn < step.line.length
+          ? Move.parse(step.line[restored.turn].accept.first)
+          : null,
+      attemptedSan: saved.attemptedSan,
+      emotion: Emotion.focused,
+    );
   }
 
   /// A explicação [next] mostra um lance (seta, demonstração ou passo de
@@ -1418,6 +1515,7 @@ class LessonCubit extends Cubit<LessonState> {
         ),
       );
       await _loadExplanation(state);
+      await _save();
       return;
     }
     final played = GameRules.play(position, move);
@@ -1709,14 +1807,21 @@ class LessonCubit extends Cubit<LessonState> {
 
   /// A fala de um lance errado: `step.x` do arquivo de falas da aula vira
   /// `<aula>.x`; outra chave vale como está.
-  String? _mistakeText(String? key) {
+  String? _mistakeText(String? key) =>
+      _mistakeTextIn(state.texts, _lessonId, key);
+
+  static String? _mistakeTextIn(
+    LessonTexts texts,
+    String lessonId,
+    String? key,
+  ) {
     if (key == null) {
       return null;
     }
     final local = key.startsWith('step.')
-        ? '$_lessonId.${key.substring('step.'.length)}'
-        : '$_lessonId.$key';
-    return state.texts.say(local) ?? state.texts.say(key);
+        ? '$lessonId.${key.substring('step.'.length)}'
+        : '$lessonId.$key';
+    return texts.say(local) ?? texts.say(key);
   }
 
   Future<void> _endPlay(PlayStep step, PlayResult result) async {
@@ -1972,6 +2077,22 @@ class LessonCubit extends Cubit<LessonState> {
     demoMove: state.demoMove,
     demoPlaying: state.demoPlaying,
     reviewReturn: _reviewReturn,
+    attempt: switch (_decision) {
+      final d? => LessonAttempt(
+        step: d.step,
+        id: d.id,
+        kind: d.kind,
+        fen: d.fen,
+        turn: d.turn,
+        uci: d.uci,
+        incorrect: d.incorrect,
+      ),
+      null => null,
+    },
+    failed: state.phase == StepPhase.failed && state.result == null,
+    reviewStep: state.reviewStep,
+    attemptedSan: state.attemptedSan,
+    thinkMistake: state.thinkMistake,
   );
 
   Position? _position() {

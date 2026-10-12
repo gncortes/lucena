@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "이 수들도 통하지 않습니다",
   "lessonStillUnsure": "아직 궁금한 점이 있나요?",
   "lessonOpenFreeBoard": "자유 보드에서 열기",
+  "lessonExplanationShort": "해설",
+  "lessonFreeBoardInvite": "아직 궁금한 점이 있나요? 이 국면에서 내 쪽 보드로 다른 아이디어를 시험해 보세요.",
   "lessonReturn": "뒤로",
   "lessonTeacherVoice": "빅토르의 음성",
   "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",

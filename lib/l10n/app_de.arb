@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "Diese funktionieren auch nicht",
   "lessonStillUnsure": "Noch unsicher?",
   "lessonOpenFreeBoard": "Auf dem freien Brett öffnen",
+  "lessonExplanationShort": "Erklärung",
+  "lessonFreeBoardInvite": "Noch unsicher? Teste andere Ideen aus dieser Stellung, von deiner Seite des Bretts aus.",
   "lessonReturn": "Zurück",
   "lessonTeacherVoice": "Viktors Stimme",
   "lessonTeacherVoiceHint": "Erklärungen vorlesen",

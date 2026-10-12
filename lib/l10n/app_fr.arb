@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "Ces coups ne fonctionnent pas non plus",
   "lessonStillUnsure": "Encore un doute ?",
   "lessonOpenFreeBoard": "Ouvrir sur l’échiquier libre",
+  "lessonExplanationShort": "Explication",
+  "lessonFreeBoardInvite": "Encore un doute ? Testez d'autres idées depuis cette position, de votre côté de l'échiquier.",
   "lessonReturn": "Retour",
   "lessonTeacherVoice": "Voix de Viktor",
   "lessonTeacherVoiceHint": "Lire les explications à voix haute",
