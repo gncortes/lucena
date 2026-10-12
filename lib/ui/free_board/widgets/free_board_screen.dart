@@ -889,7 +889,9 @@ Future<bool?> _showGameConfirmation(
         Material(
           key: sheetKey,
           color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppShape.extraLarge),
+          ),
           child: SafeArea(
             top: false,
             child: Padding(

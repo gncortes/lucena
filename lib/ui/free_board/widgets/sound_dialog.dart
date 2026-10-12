@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../core/keys/game_sound_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/talk_cubit.dart';
@@ -88,7 +89,7 @@ class _SoundDialog extends StatelessWidget {
               Material(
                 key: GameSoundKeys.dialog,
                 color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(AppShape.extraLarge),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 16, 20),
                   child: Column(
