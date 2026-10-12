@@ -72,6 +72,32 @@ void main() {
     expect(voiceRepo.settings, const VoiceSettings(enabled: true));
   });
 
+  for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+    testWidgets('painel e X usam a superfície dos painéis em $mode', (
+      tester,
+    ) async {
+      await open(tester, theme: mode);
+      final panel = find.byKey(LessonSoundKeys.dialog);
+      final theme = Theme.of(tester.element(panel));
+      final dialog = tester.widget<Dialog>(panel);
+      final closeMaterial = tester.widget<Material>(
+        find
+            .ancestor(
+              of: find.byKey(LessonSoundKeys.close),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      expect(
+        dialog.backgroundColor,
+        theme.bottomSheetTheme.modalBackgroundColor,
+      );
+      expect(dialog.surfaceTintColor, Colors.transparent);
+      expect(closeMaterial.color, dialog.backgroundColor);
+      expect(dialog.backgroundColor == Colors.white, mode == ThemeMode.light);
+    });
+  }
+
   testWidgets('som interrompe Viktor e preserva voz e adversários ao reabrir', (
     tester,
   ) async {

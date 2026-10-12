@@ -40,6 +40,10 @@ class _LessonSoundDialog extends StatelessWidget {
     final settings =
         context.watch<SettingsCubit>().state ?? const AppSettings();
     final speech = context.watch<SpeechCubit>().state;
+    final theme = Theme.of(context);
+    final panelColor =
+        theme.bottomSheetTheme.modalBackgroundColor ??
+        theme.colorScheme.surface;
     final l10n = context.l10n;
     final language = Localizations.localeOf(context).toLanguageTag();
     final speeds = {..._speeds, speech.settings.speed}.toList()..sort();
@@ -59,7 +63,7 @@ class _LessonSoundDialog extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
                   child: Material(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: panelColor,
                     elevation: 3,
                     shape: const CircleBorder(),
                     child: SizedBox.square(
@@ -76,9 +80,11 @@ class _LessonSoundDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              // O Dialog interno usa a mesma forma/cor do diálogo Material do app.
+              // A superfície segue os painéis do app, inclusive no tema escuro.
               Dialog(
                 key: LessonSoundKeys.dialog,
+                backgroundColor: panelColor,
+                surfaceTintColor: Colors.transparent,
                 insetPadding: EdgeInsets.zero,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
