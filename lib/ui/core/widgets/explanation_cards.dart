@@ -169,7 +169,10 @@ class _ExplanationCardsState extends State<ExplanationCards> {
       widget.lessonV2
           ? context.l10n.lessonCorrectMove
           : context.l10n.explanationPlayedCorrect,
-    ExplanationKind.mainSolution => context.l10n.explanationMainSolution,
+    ExplanationKind.mainSolution =>
+      widget.lessonV2
+          ? context.l10n.lessonCorrectMove
+          : context.l10n.explanationMainSolution,
     ExplanationKind.otherSolutions => context.l10n.explanationOtherSolutions,
     ExplanationKind.failedAlternatives =>
       widget.lessonV2
@@ -317,14 +320,17 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
-                      block.title.isEmpty
-                          ? _title(context, block.kind)
-                          : block.title,
+                      (block.title.isEmpty
+                              ? _title(context, block.kind)
+                              : block.title)
+                          .toUpperCase(),
                       key: ExplanationKeys.header(block.id),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontSize: 12,
                         height: 16 / 12,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -343,67 +349,50 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                     context.l10n.explanationUnavailable,
                     key: ExplanationKeys.unavailable,
                   ),
+                // Authored text need not mention every verified ply. Keep
+                // replay access until the replacement interaction is defined.
                 if (cursor != null &&
+                    cursor.moves.length > 1 &&
                     block.variations.any(
-                      (v) => v.id == cursor.variation.id,
-                    )) ...[
-                  if (cursor.variation.parentId != null)
-                    TextButton.icon(
-                      key: ExplanationKeys.parent,
-                      onPressed: () =>
-                          _move(widget.payload.parentCursor(cursor.variation)),
-                      icon: const Icon(Icons.chevron_left),
-                      label: Text(context.l10n.explanationPrevious),
-                    ),
-                  Text(
-                    cursor.variation.outcomeText ??
-                        _outcome(context, cursor.variation.outcome),
+                      (variation) => variation.id == cursor.variation.id,
+                    ))
+                  Wrap(
+                    spacing: 4,
+                    children: [
+                      IconButton(
+                        key: ExplanationKeys.first,
+                        tooltip: context.l10n.explanationFirst,
+                        onPressed: cursor.canPrevious
+                            ? () => _move(cursor.at(0))
+                            : null,
+                        icon: const Icon(Icons.first_page),
+                      ),
+                      IconButton(
+                        key: ExplanationKeys.previous,
+                        tooltip: context.l10n.explanationPrevious,
+                        onPressed: cursor.canPrevious
+                            ? () => _move(cursor.previous())
+                            : null,
+                        icon: const Icon(Icons.chevron_left),
+                      ),
+                      IconButton(
+                        key: ExplanationKeys.next,
+                        tooltip: context.l10n.explanationNext,
+                        onPressed: cursor.canNext
+                            ? () => _move(cursor.next())
+                            : null,
+                        icon: const Icon(Icons.chevron_right),
+                      ),
+                      IconButton(
+                        key: ExplanationKeys.last,
+                        tooltip: context.l10n.explanationLast,
+                        onPressed: cursor.canNext
+                            ? () => _move(cursor.at(cursor.moves.length))
+                            : null,
+                        icon: const Icon(Icons.last_page),
+                      ),
+                    ],
                   ),
-                  if (cursor.moves.length > 1)
-                    Wrap(
-                      spacing: 4,
-                      children: [
-                        IconButton(
-                          key: ExplanationKeys.first,
-                          tooltip: context.l10n.explanationFirst,
-                          onPressed: cursor.canPrevious
-                              ? () => _move(cursor.at(0))
-                              : null,
-                          icon: const Icon(Icons.first_page),
-                        ),
-                        IconButton(
-                          key: ExplanationKeys.previous,
-                          tooltip: context.l10n.explanationPrevious,
-                          onPressed: cursor.canPrevious
-                              ? () => _move(cursor.previous())
-                              : null,
-                          icon: const Icon(Icons.chevron_left),
-                        ),
-                        IconButton(
-                          key: ExplanationKeys.next,
-                          tooltip: context.l10n.explanationNext,
-                          onPressed: cursor.canNext
-                              ? () => _move(cursor.next())
-                              : null,
-                          icon: const Icon(Icons.chevron_right),
-                        ),
-                        IconButton(
-                          key: ExplanationKeys.last,
-                          tooltip: context.l10n.explanationLast,
-                          onPressed: cursor.canNext
-                              ? () => _move(cursor.at(cursor.moves.length))
-                              : null,
-                          icon: const Icon(Icons.last_page),
-                        ),
-                      ],
-                    ),
-                  TextButton.icon(
-                    key: ExplanationKeys.restore,
-                    onPressed: () => _move(null),
-                    icon: const Icon(Icons.undo),
-                    label: Text(context.l10n.explanationReturn),
-                  ),
-                ],
               ],
             ),
           ),

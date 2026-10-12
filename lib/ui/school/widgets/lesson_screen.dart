@@ -28,6 +28,7 @@ import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
+import '../../core/keys/explanation_keys.dart';
 import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
@@ -1459,9 +1460,10 @@ class _LessonScreenState extends State<LessonScreen>
       return _footer(
         context,
         child: TextButton.icon(
+          key: ExplanationKeys.restore,
           style: TextButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.surface,
-            minimumSize: const Size(48, 48),
+            minimumSize: const Size.fromHeight(48),
           ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
@@ -1589,9 +1591,10 @@ class _LessonScreenState extends State<LessonScreen>
       return _footer(
         context,
         child: TextButton.icon(
+          key: ExplanationKeys.restore,
           style: TextButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.surface,
-            minimumSize: const Size(48, 48),
+            minimumSize: const Size.fromHeight(48),
           ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
@@ -1701,7 +1704,7 @@ class _LessonScreenState extends State<LessonScreen>
               children: [
                 action(
                   LessonKeys.nextButton,
-                  Icons.visibility_outlined,
+                  Icons.lightbulb_outline,
                   l10n.lessonSeeSolution,
                   solutionCursor != null
                       ? () => _showAuthoredVariation(solutionCursor)

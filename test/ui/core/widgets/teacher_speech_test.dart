@@ -18,6 +18,49 @@ import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 void main() {
+  testWidgets(
+    'V2 paragraphs keep an eight pixel gap and supplied quality colors',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'First paragraph.\n\n1.Kh2? Second paragraph.',
+              speechContext: SpeechContext.teaching,
+              lessonV2: true,
+              onLink: (_) {},
+            ),
+          ),
+        ),
+      );
+      final rich = find.byWidgetPredicate(
+        (widget) =>
+            widget is RichText &&
+            widget.text.toPlainText() ==
+                'First paragraph.\n\n1.Kh2? Second paragraph.',
+      );
+      final paragraph = tester.renderObject<RenderParagraph>(rich);
+      final first = paragraph
+          .getBoxesForSelection(
+            const TextSelection(baseOffset: 0, extentOffset: 16),
+          )
+          .first;
+      final second = paragraph
+          .getBoxesForSelection(
+            const TextSelection(baseOffset: 18, extentOffset: 24),
+          )
+          .first;
+      // Compare line positions: a 24px line box plus the 8px paragraph gap.
+      expect(second.top - first.top, closeTo(32, 0.1));
+      TextSpan? move;
+      tester.widget<RichText>(rich).text.visitChildren((span) {
+        if (span is TextSpan && span.text == '1.Kh2?') move = span;
+        return true;
+      });
+      expect(move?.style?.color, const Color(0xFFC2410C));
+    },
+  );
   testWidgets('V2 highlights repeated SAN only at its own origin', (
     tester,
   ) async {

@@ -63,7 +63,9 @@ void main() {
       await tester.tap(find.byKey(ExplanationKeys.variation('A')));
       await tester.pumpAndSettle();
       expect(find.text('Root explanation.'), findsOneWidget);
-      expect(find.byKey(ExplanationKeys.restore), findsOneWidget);
+      expect(find.byKey(ExplanationKeys.restore), findsNothing);
+      expect(find.byKey(ExplanationKeys.first), findsNothing);
+      expect(find.byKey(ExplanationKeys.last), findsNothing);
     },
   );
 
@@ -122,9 +124,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(selected!.variation.id, 'A.1.1');
       expect(selected!.fen, data.openVariation(grandchild)!.fen);
-      await tester.tap(find.byKey(ExplanationKeys.restore));
-      await tester.pumpAndSettle();
-      expect(selected, isNull);
+      expect(find.byKey(ExplanationKeys.restore), findsNothing);
+      expect(find.byKey(ExplanationKeys.last), findsNothing);
       expect(find.text('Reply explanation.'), findsOneWidget);
       await tester.tap(find.byKey(ExplanationKeys.variation('A')));
       await tester.pumpAndSettle();
@@ -135,6 +136,52 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       semantics.dispose();
+    },
+  );
+
+  testWidgets(
+    'V2 replay reaches every verified ply even when authored text has no SAN',
+    (tester) async {
+      final line = ExplanationVariation(
+        id: 'A',
+        label: 'A',
+        outcome: VariationOutcome.accepted,
+        texts: ['Advance the pawn, then bring the king.'],
+        originFen: fen,
+        movesUci: ['d2d4', 'g8f7', 'h1h2'],
+        movesSan: ['1.d4', '1...Kf7', '2.Kh2'],
+        validated: true,
+      );
+      VariationCursor? selected;
+      await tester.pumpWidget(
+        app(payload([line]), onVariation: (value) => selected = value),
+      );
+      await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+      await tester.pumpAndSettle();
+      final verified = line.open()!;
+      expect(selected!.fen, verified.at(1).fen);
+      await tester.tap(find.byKey(ExplanationKeys.next));
+      await tester.pumpAndSettle();
+      expect(selected!.fen, verified.at(2).fen);
+      await tester.tap(find.byKey(ExplanationKeys.last));
+      await tester.pumpAndSettle();
+      expect(selected!.fen, verified.at(3).fen);
+      expect(
+        tester.widget<IconButton>(find.byKey(ExplanationKeys.next)).onPressed,
+        isNull,
+      );
+      await tester.tap(find.byKey(ExplanationKeys.previous));
+      await tester.pumpAndSettle();
+      expect(selected!.fen, verified.at(2).fen);
+      await tester.tap(find.byKey(ExplanationKeys.first));
+      await tester.pumpAndSettle();
+      expect(selected!.fen, verified.at(0).fen);
+      expect(
+        tester
+            .widget<IconButton>(find.byKey(ExplanationKeys.previous))
+            .onPressed,
+        isNull,
+      );
     },
   );
 
