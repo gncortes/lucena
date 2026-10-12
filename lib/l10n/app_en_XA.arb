@@ -1088,5 +1088,9 @@
   "lessonCorrectMove": "[Çöŕŕéçt mövé one two]",
   "lessonFailedAlternatives": "[Théšé dö ñöt wöŕk éîthéŕ one two three]",
   "lessonStillUnsure": "[Štîll ûñšûŕé? one two]",
-  "lessonOpenFreeBoard": "[Öpéñ îñ thé fŕéé böåŕd one two three]"
+  "lessonOpenFreeBoard": "[Öpéñ îñ thé fŕéé böåŕd one two three]",
+  "lessonReturn": "[Båçk one]",
+  "lessonTeacherVoice": "[Vîktöŕ'š vöîçé one two]",
+  "lessonTeacherVoiceHint": "[Ŕéåd thé éxplåñåtîöñš ålöûd one two three]",
+  "lessonSoundHint": "[Pîéçé šöûñdš åñd Vîktöŕ’š vöîçé one two three]"
 }

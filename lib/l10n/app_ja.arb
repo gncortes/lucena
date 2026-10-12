@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "正しい手",
   "lessonFailedAlternatives": "これらの手もうまくいきません",
   "lessonStillUnsure": "まだ疑問がありますか？",
-  "lessonOpenFreeBoard": "自由盤で開く"
+  "lessonOpenFreeBoard": "自由盤で開く",
+  "lessonReturn": "戻る",
+  "lessonTeacherVoice": "ヴィクトルの声",
+  "lessonTeacherVoiceHint": "解説を読み上げる",
+  "lessonSoundHint": "駒の効果音とヴィクトルの声"
 }

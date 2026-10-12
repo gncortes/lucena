@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "نقلة صحيحة",
   "lessonFailedAlternatives": "هذه النقلات لا تنجح أيضًا",
   "lessonStillUnsure": "هل ما زلت غير متأكد؟",
-  "lessonOpenFreeBoard": "افتح في الرقعة الحرة"
+  "lessonOpenFreeBoard": "افتح في الرقعة الحرة",
+  "lessonReturn": "رجوع",
+  "lessonTeacherVoice": "صوت فيكتور",
+  "lessonTeacherVoiceHint": "قراءة الشروحات بصوت عالٍ",
+  "lessonSoundHint": "أصوات القطع وصوت فيكتور"
 }

@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Langkah benar",
   "lessonFailedAlternatives": "Ini juga tidak berhasil",
   "lessonStillUnsure": "Masih ragu?",
-  "lessonOpenFreeBoard": "Buka di papan bebas"
+  "lessonOpenFreeBoard": "Buka di papan bebas",
+  "lessonReturn": "Kembali",
+  "lessonTeacherVoice": "Suara Viktor",
+  "lessonTeacherVoiceHint": "Bacakan penjelasan",
+  "lessonSoundHint": "Suara bidak dan suara Viktor"
 }

@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "Doğru hamle",
   "lessonFailedAlternatives": "Bunlar da işe yaramıyor",
   "lessonStillUnsure": "Hâlâ emin değil misin?",
-  "lessonOpenFreeBoard": "Serbest tahtada aç"
+  "lessonOpenFreeBoard": "Serbest tahtada aç",
+  "lessonReturn": "Geri",
+  "lessonTeacherVoice": "Viktor’un sesi",
+  "lessonTeacherVoiceHint": "Açıklamaları sesli oku",
+  "lessonSoundHint": "Taş sesleri ve Viktor’un sesi"
 }

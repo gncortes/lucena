@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "올바른 수",
   "lessonFailedAlternatives": "이 수들도 통하지 않습니다",
   "lessonStillUnsure": "아직 궁금한 점이 있나요?",
-  "lessonOpenFreeBoard": "자유 보드에서 열기"
+  "lessonOpenFreeBoard": "자유 보드에서 열기",
+  "lessonReturn": "뒤로",
+  "lessonTeacherVoice": "빅토르의 음성",
+  "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",
+  "lessonSoundHint": "기물 효과음과 빅토르의 음성"
 }

@@ -1089,5 +1089,9 @@
   "lessonCorrectMove": "सही चाल",
   "lessonFailedAlternatives": "ये भी काम नहीं करतीं",
   "lessonStillUnsure": "अब भी संदेह है?",
-  "lessonOpenFreeBoard": "स्वतंत्र बोर्ड में खोलें"
+  "lessonOpenFreeBoard": "स्वतंत्र बोर्ड में खोलें",
+  "lessonReturn": "वापस",
+  "lessonTeacherVoice": "विक्टर की आवाज़",
+  "lessonTeacherVoiceHint": "व्याख्याएँ ज़ोर से पढ़ें",
+  "lessonSoundHint": "मोहरे की ध्वनियाँ और विक्टर की आवाज़"
 }
