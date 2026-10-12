@@ -9,6 +9,7 @@ import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_voice_repository.dart';
+import '../../../../testing/goldens/golden_harness.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
@@ -97,7 +98,7 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     expect(
-      tester.widget<SwitchListTile>(find.byKey(LessonSoundKeys.sound)).value,
+      tester.widget<Switch>(find.byKey(LessonSoundKeys.sound)).value,
       isFalse,
     );
     await tap(tester, LessonSoundKeys.sound);
@@ -142,9 +143,52 @@ void main() {
     await open(tester, voice: const VoiceSettings(enabled: true, speed: 1.25));
     expect(
       tester
-          .widget<ChoiceChip>(find.byKey(LessonSoundKeys.speed(1.25)))
+          .widget<SegmentedButton<double>>(find.byKey(LessonSoundKeys.speeds))
           .selected,
-      isTrue,
+      {1.25},
+    );
+    expect(find.byType(ChoiceChip), findsNothing);
+  });
+
+  testWidgets('linhas compactas preservam alvos e espaçamento do Canvas', (
+    tester,
+  ) async {
+    await Goldens.loadFonts();
+    await open(tester, locale: const Locale('pt'));
+    final sound = tester.getRect(find.byKey(LessonSoundKeys.sound));
+    final voice = tester.getRect(find.byKey(LessonSoundKeys.teacherVoice));
+    final panel = tester.getRect(find.byKey(LessonSoundKeys.dialog));
+    expect(sound.height, greaterThanOrEqualTo(48));
+    expect(voice.height, greaterThanOrEqualTo(48));
+    expect(voice.center.dy - sound.center.dy, closeTo(52, 1));
+    expect(panel.width, 340);
+    expect(panel.height, lessThanOrEqualTo(280));
+    await tester.tap(find.text('Voz do Viktor'));
+    await tester.pumpAndSettle();
+    expect(voiceRepo.settings.enabled, isFalse);
+  });
+
+  testWidgets('velocidade forma uma faixa contínua com quatro alvos de 48', (
+    tester,
+  ) async {
+    await open(tester);
+    final group = find.byKey(LessonSoundKeys.speeds);
+    final buttons = find.descendant(
+      of: group,
+      matching: find.byType(TextButton),
+    );
+    expect(buttons, findsNWidgets(4));
+    final bounds = [for (var i = 0; i < 4; i++) tester.getRect(buttons.at(i))];
+    for (var i = 0; i < 4; i++) {
+      expect(bounds[i].height, greaterThanOrEqualTo(48));
+      expect(bounds[i].width, closeTo(bounds.first.width, .01));
+      if (i > 0) expect(bounds[i - 1].right, closeTo(bounds[i].left, .01));
+    }
+    final control = tester.widget<SegmentedButton<double>>(group);
+    expect(control.showSelectedIcon, isFalse);
+    expect(
+      control.style!.backgroundColor!.resolve({WidgetState.selected}),
+      Theme.of(tester.element(group)).colorScheme.secondaryContainer,
     );
   });
 
@@ -159,6 +203,10 @@ void main() {
         tester.platformDispatcher.clearTextScaleFactorTestValue();
       });
       await open(tester, locale: locale, theme: ThemeMode.dark);
+      if (find.byKey(LessonSoundKeys.speeds).evaluate().isNotEmpty) {
+        await tap(tester, LessonSoundKeys.speed(1.5));
+        expect(voiceRepo.settings.speed, 1.5);
+      }
       await tap(tester, LessonSoundKeys.teacherVoice);
       expect(voiceRepo.settings.enabled, isFalse);
       await tap(tester, LessonSoundKeys.close);

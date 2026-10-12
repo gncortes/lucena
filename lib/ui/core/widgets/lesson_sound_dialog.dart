@@ -9,6 +9,7 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_spacing.dart';
+import 'one_line.dart';
 
 /// Som da aula: usa as preferências existentes e preserva as dos adversários.
 /// A tela da aula também deve bloquear a reprodução quando o som geral está off.
@@ -47,7 +48,7 @@ class _LessonSoundDialog extends StatelessWidget {
       elevation: 0,
       insetPadding: const EdgeInsets.all(AppSpacing.xl),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 360),
+        constraints: const BoxConstraints(maxWidth: 340),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -80,7 +81,12 @@ class _LessonSoundDialog extends StatelessWidget {
                 key: LessonSoundKeys.dialog,
                 insetPadding: EdgeInsets.zero,
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg + AppSpacing.xs,
+                    AppSpacing.lg + AppSpacing.xs,
+                    AppSpacing.lg,
+                    AppSpacing.lg + AppSpacing.xs,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,17 +95,14 @@ class _LessonSoundDialog extends StatelessWidget {
                         l10n.gameSoundAndVoice,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      SwitchListTile(
-                        key: LessonSoundKeys.sound,
-                        contentPadding: EdgeInsets.zero,
-                        secondary: Icon(
-                          settings.sound
-                              ? Icons.volume_up_outlined
-                              : Icons.volume_off_outlined,
-                        ),
-                        title: Text(l10n.settingsSound),
-                        subtitle: Text(l10n.lessonSoundHint),
+                      const SizedBox(height: AppSpacing.sm),
+                      _PreferenceSwitch(
+                        switchKey: LessonSoundKeys.sound,
+                        icon: settings.sound
+                            ? Icons.volume_up_outlined
+                            : Icons.volume_off_outlined,
+                        title: l10n.settingsSound,
+                        subtitle: l10n.lessonSoundHint,
                         value: settings.sound,
                         onChanged: (value) {
                           unawaited(settingsCubit.setSound(enabled: value));
@@ -110,16 +113,14 @@ class _LessonSoundDialog extends StatelessWidget {
                           }
                         },
                       ),
-                      SwitchListTile(
-                        key: LessonSoundKeys.teacherVoice,
-                        contentPadding: EdgeInsets.zero,
-                        secondary: Icon(
-                          speech.settings.enabled
-                              ? Icons.record_voice_over_outlined
-                              : Icons.voice_over_off_outlined,
-                        ),
-                        title: Text(l10n.lessonTeacherVoice),
-                        subtitle: Text(l10n.lessonTeacherVoiceHint),
+                      const SizedBox(height: AppSpacing.xs),
+                      _PreferenceSwitch(
+                        switchKey: LessonSoundKeys.teacherVoice,
+                        icon: speech.settings.enabled
+                            ? Icons.chat_bubble_outline
+                            : Icons.speaker_notes_off_outlined,
+                        title: l10n.lessonTeacherVoice,
+                        subtitle: l10n.lessonTeacherVoiceHint,
                         value: speech.settings.enabled,
                         onChanged: (value) =>
                             unawaited(speechCubit.setEnabled(enabled: value)),
@@ -127,31 +128,108 @@ class _LessonSoundDialog extends StatelessWidget {
                       if (settings.sound &&
                           speech.settings.enabled &&
                           speech.availableFor(language)) ...[
-                        const SizedBox(height: AppSpacing.lg),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           l10n.voiceSpeed,
                           style: Theme.of(context).textTheme.labelLarge,
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        Wrap(
+                        SegmentedButton<double>(
                           key: LessonSoundKeys.speeds,
-                          spacing: AppSpacing.sm,
-                          runSpacing: AppSpacing.sm,
-                          children: [
+                          expandedInsets: EdgeInsets.zero,
+                          showSelectedIcon: false,
+                          style: SegmentedButton.styleFrom(
+                            minimumSize: const Size(0, 40),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.xs,
+                            ),
+                            tapTargetSize: MaterialTapTargetSize.padded,
+                            selectedBackgroundColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            selectedForegroundColor: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                          segments: [
                             for (final speed in speeds)
-                              ChoiceChip(
-                                key: LessonSoundKeys.speed(speed),
-                                label: Text(l10n.voiceSpeedValue(speed)),
-                                selected: speech.settings.speed == speed,
-                                onSelected: (_) =>
-                                    unawaited(speechCubit.setSpeed(speed)),
+                              ButtonSegment(
+                                value: speed,
+                                label: OneLine(
+                                  l10n.voiceSpeedValue(speed),
+                                  key: LessonSoundKeys.speed(speed),
+                                ),
                               ),
                           ],
+                          selected: {speech.settings.speed},
+                          onSelectionChanged: (values) =>
+                              unawaited(speechCubit.setSpeed(values.single)),
                         ),
                       ],
                     ],
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mantém as linhas compactas do Canvas com alvo de toque de pelo menos 48dp.
+/// Os textos podem crescer livremente com a escala de fonte e a tradução.
+class _PreferenceSwitch extends StatelessWidget {
+  const _PreferenceSwitch({
+    required this.switchKey,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final Key switchKey;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return MergeSemantics(
+      child: InkWell(
+        onTap: () => onChanged(!value),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Row(
+            children: [
+              Icon(icon, size: 22),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(subtitle, style: textTheme.bodySmall),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Switch(
+                key: switchKey,
+                value: value,
+                onChanged: onChanged,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
               ),
             ],
           ),
