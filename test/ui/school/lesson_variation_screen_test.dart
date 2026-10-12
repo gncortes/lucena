@@ -60,6 +60,7 @@ void main() {
     String intro, {
     ExerciseFeedbackRepository? feedback,
     SpeechCubit? speechCubit,
+    String? movePrompt,
   }) async {
     tester.view.physicalSize = const Size(400, 1100);
     tester.view.devicePixelRatio = 1;
@@ -70,6 +71,7 @@ void main() {
           texts: LessonTexts.fromJson({
             ...FakeEndgameLessonRepository.sampleTexts.toJson(),
             'rook.lucena.intro': intro,
+            'rook.lucena.bridge': ?movePrompt,
           }),
         ),
         FakeEndgameProgressRepository(),
@@ -173,6 +175,33 @@ void main() {
   testWidgets('fala sem variante: sem o botão', (tester) async {
     await pump(tester, 'This is the Lucena position.');
     expect(find.byKey(LessonKeys.variationShow), findsNothing);
+  });
+
+  testWidgets('long speech remains readable behind the elapsed timer', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final cubit = await pump(
+      tester,
+      said,
+      movePrompt: List.filled(30, 'Build the bridge.').join(' '),
+    );
+    await cubit.next();
+    await tester.pumpAndSettle();
+    final timer = find.byKey(LessonKeys.stepTimer);
+    expect(timer, findsOneWidget);
+    final material = tester.widget<Material>(
+      find.ancestor(of: timer, matching: find.byType(Material)).first,
+    );
+    expect(material.color?.a, 1);
+    expect(
+      tester.getRect(timer).overlaps(
+        tester.getRect(find.byKey(LessonKeys.hintButton)),
+      ),
+      isFalse,
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(

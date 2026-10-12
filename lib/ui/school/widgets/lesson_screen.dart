@@ -1557,7 +1557,14 @@ class _LessonScreenState extends State<LessonScreen>
           // Na escola, sem cronômetro: o iniciante aprende sem pressa (os
           // desafios das estrelas, contra o relógio, têm o deles).
           if (state.endgame)
-            StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
+            Material(
+              color: colors.surface,
+              shape: const StadiumBorder(),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                child: StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
+              ),
+            ),
         ],
       ),
     );
