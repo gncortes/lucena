@@ -20,7 +20,6 @@ import 'package:lucena/ui/core/widgets/game_board_hero.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
-import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 import 'package:lucena/ui/game_setup/widgets/game_setup_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -37,6 +36,7 @@ import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/visible_center.dart';
 
 /// Começar a partida na Nova partida: o tabuleiro de cima desliza e cresce
 /// até o centro da partida (um tabuleiro só no ar, sem girar), e o resto da
@@ -192,10 +192,9 @@ void main() {
     final appBar = tester.getRect(find.byType(AppBar));
     final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
     expect(board.center.dx, closeTo(area.center.dx, 1));
-    expect(
-      board.center.dy,
-      closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
-    );
+    expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+    expect(board.top, greaterThanOrEqualTo(appBar.bottom));
+    expect(board.bottom, lessThanOrEqualTo(actions.top));
     expect(find.byType(StaticChessboard), findsNothing);
     expect(find.byKey(GameSetupKeys.preview), findsNothing);
 

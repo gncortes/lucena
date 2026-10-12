@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "Masz {seconds} sekund. Doprowadź bierkę do każdej gwiazdy, zanim zgaśnie. Złota gaśnie pierwsza, dlatego jest warta więcej.",
   "starChallengeWorth": "{points, plural, =1{warta 1} other{warta {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punkt} few{punkty} many{punktów} other{punktu}}",
-  "speedrunQuitProgress": "Porzucić ten speedrun? Stracisz {count} wygranych etapów.",
   "emptyFirstEndgame": "Zagraj moją pierwszą końcówkę",
   "speedrunHelpClassic": "Każda partia ma osobne zegary. Suma obejmuje tylko czas zużyty na twoim zegarze, także w niewygranych etapach. Powtórz niewygrany etap bez zerowania łącznego czasu.",
   "speedrunHelpMarathon": "Jeden zapas czasu na wszystkie etapy. Każda partia zaczyna się z czasem pozostałym z poprzedniej; dodatek trafia do tego zapasu. Porażka, remis lub przekroczenie czasu kończy Maraton. Następny etap zaczyna się bez przerwy.",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "Czytaj wyjaśnienia na głos",
   "lessonSoundHint": "Dźwięki figur i głos Viktora",
   "lessonSoundOn": "Dźwięk i głos: włączone, prędkość {speed}",
-  "lessonSoundOff": "Dźwięk i głos: wyłączone"
+  "lessonSoundOff": "Dźwięk i głos: wyłączone",
+  "gameDrawOfferHintNamed": "{name} może przyjąć lub odrzucić. Po odmowie partia toczy się dalej.",
+  "gameKeepPlaying": "Graj dalej",
+  "speedrunQuitHint": "{count, plural, =0{Próba kończy się tutaj i zostaje w historii.} =1{Stracisz etap wygrany w tej próbie.} few{Stracisz {count} etapy wygrane w tej próbie.} other{Stracisz {count} etapów wygranych w tej próbie.}}"
 }

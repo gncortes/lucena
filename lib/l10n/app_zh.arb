@@ -1029,7 +1029,6 @@
   "starChallengeIntroBody": "你有 {seconds} 秒。在每颗星熄灭之前，把棋子走到它那里。金星最先熄灭，所以分值更高。",
   "starChallengeWorth": "{points, plural, =1{1 分} other{{points} 分}}",
   "starChallengePointsLabel": "{count, plural, =1{分} other{分}}",
-  "speedrunQuitProgress": "放弃这次速通？你将失去已赢得的 {count} 个阶段。",
   "emptyFirstEndgame": "开始我的首场残局",
   "speedrunHelpClassic": "每局都有独立的时钟。总用时只累加你自己时钟上消耗的时间，包括未获胜的阶段。重玩未获胜的阶段时，累计用时不会清零。",
   "speedrunHelpMarathon": "所有阶段共用一个时间储备。每局从上一局剩余的时间开始，每步加时也加入储备。输棋、和棋或超时都会结束马拉松。下一阶段不暂停，立即开始。",
@@ -1096,5 +1095,8 @@
   "lessonTeacherVoiceHint": "朗读讲解",
   "lessonSoundHint": "棋子音效和维克托的语音",
   "lessonSoundOn": "声音和语音: 开启，速度 {speed}",
-  "lessonSoundOff": "声音和语音: 关闭"
+  "lessonSoundOff": "声音和语音: 关闭",
+  "gameDrawOfferHintNamed": "{name}可以接受或拒绝。如果拒绝，对局继续。",
+  "gameKeepPlaying": "继续下棋",
+  "speedrunQuitHint": "{count, plural, =0{本次挑战到此结束，并保留在历史记录中。} =1{你将失去本次挑战中赢得的阶段。} other{你将失去本次挑战中赢得的 {count} 个阶段。}}"
 }

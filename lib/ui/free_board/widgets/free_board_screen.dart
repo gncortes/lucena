@@ -89,7 +89,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   Future<void> _confirmDraw() async {
     final cubit = context.read<FreeBoardCubit>();
-    final confirmed = await showDrawSheet(context);
+    final confirmed = await showDrawSheet(
+      context,
+      opponent: context.read<TalkCubit>().state.character?.name,
+    );
     if ((confirmed ?? false) && mounted && cubit.state.canOfferDraw) {
       cubit.offerDraw();
     }
@@ -126,44 +129,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final won = await cubit.speedrunStagesWon();
     if (!mounted) return;
     final l10n = context.l10n;
-    final confirmed = await showModalBottomSheet<bool>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              Text(
-                l10n.speedrunQuitTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Text(
-                l10n.speedrunQuitProgress(won),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              FilledButton(
-                key: FreeBoardKeys.speedrunQuitConfirm,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                ),
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.speedrunAbandon),
-              ),
-              TextButton(
-                key: FreeBoardKeys.speedrunQuitCancel,
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.speedrunKeepGoing),
-              ),
-            ],
-          ),
-        ),
-      ),
+    final confirmed = await _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.speedrunQuitSheet,
+      confirmKey: FreeBoardKeys.speedrunQuitConfirm,
+      cancelKey: FreeBoardKeys.speedrunQuitCancel,
+      title: l10n.speedrunQuitTitle,
+      hint: l10n.speedrunQuitHint(won),
+      action: l10n.speedrunAbandon,
+      cancel: l10n.speedrunKeepGoing,
+      destructive: true,
     );
     _confirmingQuit = false;
     if (!(confirmed ?? false) || !mounted) return;
@@ -380,10 +355,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final nickname = context.select(
                 (ProfileCubit cubit) => cubit.state?.nickname ?? '',
               );
-              // O centro fica entre o fim da barra de título e as ações.
-              // A faixa de lances pertence à área útil, mesmo quando vazia.
-              // Retrato, nome e relógio compartilham uma única linha;
-              // o balão flutua e não reserva altura.
+              // O centro do tabuleiro é o centro da tela visível (a altura
+              // menos as barras do sistema), como no às cegas e nas
+              // estrelas. Retrato, nome e relógio compartilham uma única
+              // linha; o balão flutua e não reserva altura.
+              final centerY = BoardViewport.centerYOf(context);
               final clocksAbove =
                   clocks == ClockPosition.top || clocks == ClockPosition.sides
                   ? ClockRow.height
@@ -396,11 +372,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final reserveTop = clocksAbove;
               final centering = BoardCentering(
                 constraints.biggest,
-                gap: 12,
+                gap: _boardGap,
                 reserveTop: reserveTop,
                 reserveBottom: clocksBelow,
                 footer: 76,
-                aboveInset: MoveList.height,
+                centerY: centerY,
               );
               const both = [Side.white, Side.black];
               final end = state.end;
@@ -411,8 +387,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 children: [
                   CenteredBoardLayout(
                     key: FreeBoardKeys.scrollArea,
-                    gap: 12,
-                    aboveInset: MoveList.height,
+                    gap: _boardGap,
+                    centerY: centerY,
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
                     footer: GameActionsBar(
@@ -568,7 +544,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               ),
                               // Mesmo com os relógios embaixo, a fala ocupa
                               // apenas a região acima do tabuleiro.
-                              speechTop: -(centering.side + 24 + 80),
+                              speechTop: -(centering.side + 2 * _boardGap + 80),
                             ),
                           if (clocks == ClockPosition.bottom &&
                               character == null)
@@ -687,6 +663,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   /// Quanto o resultado fica em destaque antes da conclusão.
   static const _flashTime = AppMotion.celebrate;
+
+  /// Entre as faixas dos jogadores e o tabuleiro (PropV2EtapaSpeedrunP360:
+  /// faixa até 184, tabuleiro de 192 a 548, faixa a partir de 556).
+  static const _boardGap = 8.0;
 }
 
 /// O resultado em destaque por um instante, no meio do tabuleiro, quando a
@@ -822,104 +802,192 @@ Future<bool?> showResignSheet(BuildContext context) => _showGameConfirmation(
   context,
   sheetKey: FreeBoardKeys.resignSheet,
   confirmKey: FreeBoardKeys.resignConfirmButton,
+  cancelKey: FreeBoardKeys.confirmationCancel,
   title: context.l10n.gameResignTitle,
   hint: context.l10n.gameResignHint,
   action: context.l10n.gameResign,
+  cancel: context.l10n.gameKeepPlaying,
   icon: Icons.flag_outlined,
   destructive: true,
 );
 
-/// A oferta só chega ao adversário depois da confirmação explícita.
-Future<bool?> showDrawSheet(BuildContext context) => _showGameConfirmation(
-  context,
-  sheetKey: FreeBoardKeys.drawSheet,
-  confirmKey: FreeBoardKeys.drawConfirmButton,
-  title: context.l10n.gameDrawOfferTitle,
-  hint: context.l10n.gameDrawOfferHint,
-  action: context.l10n.gameOfferDraw,
-  icon: Icons.handshake_outlined,
-);
+/// A oferta só chega ao adversário depois da confirmação explícita. Com
+/// [opponent], a dica diz o nome do personagem.
+Future<bool?> showDrawSheet(BuildContext context, {String? opponent}) =>
+    _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.drawSheet,
+      confirmKey: FreeBoardKeys.drawConfirmButton,
+      cancelKey: FreeBoardKeys.confirmationCancel,
+      title: context.l10n.gameDrawOfferTitle,
+      hint: opponent == null
+          ? context.l10n.gameDrawOfferHint
+          : context.l10n.gameDrawOfferHintNamed(opponent),
+      action: context.l10n.gameOfferDraw,
+      cancel: context.l10n.gameKeepPlaying,
+      icon: Icons.handshake_outlined,
+    );
 
+/// A folha de confirmação das telas de jogo (CompCabecalhoFolha + CompBotao):
+/// o X branco fora, acima do canto final; a alça; título e dica; a ação
+/// principal e o "continuar" contornado, os dois em pílula de 52 na largura
+/// toda. Fechar de qualquer jeito que não seja a ação devolve falso.
 Future<bool?> _showGameConfirmation(
   BuildContext context, {
   required Key sheetKey,
   required Key confirmKey,
+  required Key cancelKey,
   required String title,
   required String hint,
   required String action,
-  required IconData icon,
+  required String cancel,
+  IconData? icon,
   bool destructive = false,
 }) => showModalBottomSheet<bool>(
   context: context,
   backgroundColor: Colors.transparent,
   useSafeArea: true,
+  isScrollControlled: true,
   builder: (context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    const buttonHeight = 52.0;
+    const pill = StadiumBorder();
+    final confirmStyle = FilledButton.styleFrom(
+      minimumSize: const Size.fromHeight(buttonHeight),
+      shape: pill,
+      backgroundColor: destructive ? colors.error : null,
+      foregroundColor: destructive ? colors.onError : null,
+    );
+    void confirm() => Navigator.of(context).pop(true);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // O X fica no canto final: espelha nos idiomas da direita para a
+        // esquerda. O círculo tem 44 (12 acima da folha, 16 da borda) e a
+        // área de toque, 48.
         Padding(
-          padding: const EdgeInsets.only(right: 16, bottom: 12),
+          padding: const EdgeInsetsDirectional.only(end: 14, bottom: 10),
           child: Align(
-            alignment: Alignment.centerRight,
-            child: Material(
-              color: Colors.white,
-              elevation: 4,
-              shape: const CircleBorder(),
-              child: IconButton(
-                key: FreeBoardKeys.confirmationClose,
-                style: IconButton.styleFrom(
-                  minimumSize: const Size(44, 44),
-                  maximumSize: const Size(44, 44),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            alignment: AlignmentDirectional.centerEnd,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              excludeFromSemantics: true,
+              onTap: () => Navigator.of(context).pop(false),
+              child: SizedBox.square(
+                dimension: kMinInteractiveDimension,
+                child: Center(
+                  child: Material(
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      key: FreeBoardKeys.confirmationClose,
+                      style: IconButton.styleFrom(
+                        minimumSize: const Size(44, 44),
+                        maximumSize: const Size(44, 44),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      constraints: const BoxConstraints.tightFor(
+                        width: 44,
+                        height: 44,
+                      ),
+                      color: Colors.black87,
+                      tooltip: MaterialLocalizations.of(context)
+                          .closeButtonTooltip,
+                      onPressed: () => Navigator.of(context).pop(false),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ),
                 ),
-                constraints: const BoxConstraints.tightFor(
-                  width: 44,
-                  height: 44,
-                ),
-                color: Colors.black87,
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                onPressed: () => Navigator.of(context).pop(false),
-                icon: const Icon(Icons.close),
               ),
             ),
           ),
         ),
-        Material(
-          key: sheetKey,
-          color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppShape.extraLarge),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(title, style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 12),
-                  Text(hint, style: theme.textTheme.bodyMedium),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    key: confirmKey,
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(48),
-                      backgroundColor: destructive
-                          ? theme.colorScheme.error
-                          : null,
-                      foregroundColor: destructive
-                          ? theme.colorScheme.onError
-                          : null,
+        Flexible(
+          child: Material(
+            key: sheetKey,
+            color: colors.surfaceContainerLow,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppShape.extraLarge),
+            ),
+            child: SafeArea(
+              top: false,
+              // Com fonte grande, a folha rola: os dois botões continuam ao
+              // alcance.
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // A alça, 32×4 numa faixa de 48.
+                    SizedBox(
+                      height: 48,
+                      child: Center(
+                        child: Container(
+                          width: 32,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: colors.onSurfaceVariant.withValues(
+                              alpha: .4,
+                            ),
+                            borderRadius: BorderRadius.circular(AppShape.full),
+                          ),
+                        ),
+                      ),
                     ),
-                    icon: Icon(icon),
-                    onPressed: () => Navigator.of(context).pop(true),
-                    label: Text(action),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 4,
+                        children: [
+                          Text(title, style: theme.textTheme.titleLarge),
+                          Text(
+                            hint,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 8,
+                        children: [
+                          if (icon == null)
+                            FilledButton(
+                              key: confirmKey,
+                              style: confirmStyle,
+                              onPressed: confirm,
+                              child: Text(action, textAlign: TextAlign.center),
+                            )
+                          else
+                            FilledButton.icon(
+                              key: confirmKey,
+                              style: confirmStyle,
+                              icon: Icon(icon),
+                              onPressed: confirm,
+                              label: Text(action, textAlign: TextAlign.center),
+                            ),
+                          OutlinedButton(
+                            key: cancelKey,
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(buttonHeight),
+                              shape: pill,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: Text(cancel, textAlign: TextAlign.center),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

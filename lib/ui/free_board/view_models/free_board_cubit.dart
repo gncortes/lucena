@@ -146,6 +146,11 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       tick();
     }
     _changed();
+    // O rating do jogador, na linha de detalhe da faixa dele.
+    final rating = await _reporter?.currentRating();
+    if (rating != null && !isClosed) {
+      emit(state.copyWith(userRating: rating));
+    }
     await _saving;
   }
 
@@ -473,7 +478,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         clock: clock,
         mode: state.mode,
         now: _now(),
-      ),
+      ).copyWith(userRating: state.userRating),
     );
     _changed();
   }

@@ -121,6 +121,9 @@ class GameReporter {
   /// O degrau de início do tour: os de baixo já começam liberados.
   final OnboardingRepository? _onboarding;
 
+  /// O rating atual do jogador, como a tela mostra.
+  Future<int> currentRating() async => (await _rating.current()).rounded;
+
   Future<GameReport> report(
     Attempt game, {
     required int gameId,

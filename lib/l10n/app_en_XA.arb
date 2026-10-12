@@ -1028,7 +1028,6 @@
   "starChallengeIntroBody": "[Ýöû håvé {seconds} šéçöñdš. Tåké ýöûŕ pîéçé tö éåçh štåŕ béföŕé ît fådéš åwåý. Thé ĝöld öñé fådéš fîŕšt, whîçh îš whý ît îš wöŕth möŕé. one two three four five six seven eight nine ten one two]",
   "starChallengeWorth": "{points, plural, =1{[wöŕth 1 one]} other{[wöŕth {points} one two]}}",
   "starChallengePointsLabel": "{count, plural, =1{[pöîñt one]} other{[pöîñtš one]}}",
-  "speedrunQuitProgress": "[Ĝîvé ûp thîš špéédŕûñ? Ýöû löšé thé {count} štåĝéš wöñ. one two three four five]",
   "emptyFirstEndgame": "[Plåý mý fîŕšt éñdĝåmé one two three]",
   "speedrunHelpClassic": "[Éåçh ĝåmé håš šépåŕåté çlöçkš. Öñlý thé tîmé špéñt öñ ýöûŕ çlöçk îš åddéd tö thé tötål, îñçlûdîñĝ ûñšûççéššfûl štåĝéš. Ŕépéåt åñ ûñšûççéššfûl štåĝé wîthöût ŕéšéttîñĝ thé åççûmûlåtéd tîmé. one two three four five six seven eight nine ten one two three four five six]",
   "speedrunHelpMarathon": "[Öñé tîmé båñk föŕ åll štåĝéš. Éåçh ĝåmé štåŕtš wîth thé tîmé léft fŕöm thé pŕévîöûš öñé; îñçŕéméñtš åŕé åddéd tö thåt båñk. Å löšš, å dŕåw öŕ ŕûññîñĝ öût öf tîmé éñdš thé Måŕåthöñ. Thé ñéxt štåĝé štåŕtš wîthöût å påûšé. one two three four five six seven eight nine ten one two three four five six seven eight]",
@@ -1095,5 +1094,8 @@
   "lessonTeacherVoiceHint": "[Ŕéåd thé éxplåñåtîöñš ålöûd one two three]",
   "lessonSoundHint": "[Pîéçé šöûñdš åñd Vîktöŕ’š vöîçé one two three]",
   "lessonSoundOn": "[Šöûñd åñd vöîçé: öñ, špééd {speed} one two three]",
-  "lessonSoundOff": "[Šöûñd åñd vöîçé: öff one two]"
+  "lessonSoundOff": "[Šöûñd åñd vöîçé: öff one two]",
+  "gameDrawOfferHintNamed": "[{name} çåñ åççépt öŕ déçlîñé. Îf théý déçlîñé, thé ĝåmé ĝöéš öñ. one two three four five six]",
+  "gameKeepPlaying": "[Kéép plåýîñĝ one two]",
+  "speedrunQuitHint": "{count, plural, =0{[Thé åttémpt éñdš héŕé åñd štåýš îñ ýöûŕ hîštöŕý. one two three four five]} =1{[Ýöû löšé thé štåĝé ýöû wöñ îñ thîš åttémpt. one two three four]} other{[Ýöû löšé thé {count} štåĝéš ýöû wöñ îñ thîš åttémpt. one two three four five]}}"
 }

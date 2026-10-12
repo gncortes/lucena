@@ -128,9 +128,10 @@ void main() {
           await tester.binding.handlePopRoute();
           await tester.pumpAndSettle();
           expect(
-            find.text('Give up this speedrun? You lose the 2 stages won.'),
+            find.text('You lose the 2 stages you won in this attempt.'),
             findsOneWidget,
           );
+          expect(find.byKey(FreeBoardKeys.speedrunQuitSheet), findsOneWidget);
           await tester.tap(find.byKey(FreeBoardKeys.speedrunQuitCancel));
           await tester.pumpAndSettle();
           expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
