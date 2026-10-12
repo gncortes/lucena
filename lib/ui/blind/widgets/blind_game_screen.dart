@@ -828,28 +828,33 @@ class _BottomSheetFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.light
-            ? Colors.white
-            : colors.surfaceContainerLow,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppShape.large),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, -2),
+    return ConstrainedBox(
+      // A reserva estabiliza o tabuleiro; a superfície mantém sua altura
+      // natural e se prende à borda inferior, como nos dois estados Canvas.
+      constraints: BoxConstraints(minHeight: minHeight),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        heightFactor: 1,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : colors.surfaceContainerLow,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppShape.large),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: ConstrainedBox(
-        // Content may grow with accessible text.
-        constraints: BoxConstraints(minHeight: minHeight),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-          child: child,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: child,
+          ),
         ),
       ),
     );
@@ -1125,7 +1130,7 @@ class _TalkBarState extends State<_TalkBar> {
         onPressed: cubit.reject,
       );
       middle = _Pill(
-        padding: const EdgeInsetsDirectional.fromSTEB(14, 2, 6, 2),
+        padding: const EdgeInsetsDirectional.fromSTEB(14, 0, 6, 0),
         child: Row(
           children: [
             Expanded(
@@ -1277,13 +1282,20 @@ class _TalkBarState extends State<_TalkBar> {
           // Os filhos sempre nas mesmas vagas: o microfone segurado continua
           // o mesmo widget quando a gravação começa.
           SizedBox(
-            // The typed field and proposal keep the same space when text grows.
-            height: max(
-              48,
-              textScaler.scale(theme.textTheme.bodyLarge?.fontSize ?? 16) *
-                      (theme.textTheme.bodyLarge?.height ?? 1.5) +
-                  24,
-            ),
+            // Com texto ampliado, entrada e proposta usam a mesma altura.
+            // Na escala padrão, a superfície segue os 48/44 dp do Canvas.
+            height: textScaler.scale(14) <= 14
+                ? proposed != null
+                      ? 44
+                      : 48
+                : max(
+                    48,
+                    textScaler.scale(
+                              theme.textTheme.bodyLarge?.fontSize ?? 16,
+                            ) *
+                            (theme.textTheme.bodyLarge?.height ?? 1.5) +
+                        24,
+                  ),
             child: Row(
               children: [
                 leading,
