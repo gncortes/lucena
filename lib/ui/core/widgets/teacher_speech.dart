@@ -1,6 +1,7 @@
 import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show Bidi;
 
 import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
@@ -584,6 +585,7 @@ class TeacherSpeech extends StatelessWidget {
             context,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
+            emphasizeFirstParagraph: lessonV2 && !lessonPromptBubble,
             originOf: originOf,
             onLinkOverride: (link) {
               final origin = originOf(link);
@@ -700,6 +702,7 @@ class TeacherSpeech extends StatelessWidget {
     BuildContext context,
     MarkedText marked, {
     bool useBubbleKey = true,
+    bool emphasizeFirstParagraph = false,
     ValueChanged<SpeechLink>? onLinkOverride,
     ExplanationVariation? Function(SpeechLink)? originOf,
   }) {
@@ -771,12 +774,16 @@ class TeacherSpeech extends StatelessWidget {
       return theme.colorScheme.primary;
     }
 
-    Iterable<InlineSpan> plainSpans(String value) sync* {
+    final firstParagraphEnd = text.contains('\n\n')
+        ? text.indexOf('\n\n')
+        : text.length;
+    Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
       if (!lessonV2) {
         yield TextSpan(text: value);
         return;
       }
       final paragraphs = value.split('\n\n');
+      var consumed = 0;
       for (final (index, paragraph) in paragraphs.indexed) {
         if (index > 0) {
           yield const TextSpan(text: '\n');
@@ -785,7 +792,14 @@ class TeacherSpeech extends StatelessWidget {
             style: TextStyle(fontSize: 8, height: 1),
           );
         }
-        yield TextSpan(text: paragraph);
+        yield TextSpan(
+          text: paragraph,
+          style:
+              emphasizeFirstParagraph && offset + consumed < firstParagraphEnd
+              ? const TextStyle(fontWeight: FontWeight.w500)
+              : null,
+        );
+        consumed += paragraph.length + 2;
       }
     }
 
@@ -812,16 +826,26 @@ class TeacherSpeech extends StatelessWidget {
                     in spans.indexed) ...[
                   ...plainSpans(
                     text.substring(index == 0 ? 0 : spans[index - 1].$2, start),
+                    index == 0 ? 0 : spans[index - 1].$2,
                   ),
                   TextSpan(text: text.substring(start, end), style: spanStyle),
                 ],
                 ...plainSpans(
                   text.substring(spans.isEmpty ? 0 : spans.last.$2),
+                  spans.isEmpty ? 0 : spans.last.$2,
                 ),
               ],
             ),
             key: useBubbleKey ? bubbleKey : null,
             style: style,
+            // Authored fallback prose keeps its own reading direction while
+            // the surrounding controls follow the selected app locale.
+            textDirection:
+                lessonV2 && !lessonPromptBubble && explanation != null
+                ? Bidi.detectRtlDirectionality(text)
+                      ? TextDirection.rtl
+                      : TextDirection.ltr
+                : null,
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
@@ -1075,7 +1099,7 @@ class _TypedTextState extends State<_TypedText>
     _width = width;
     return _painter = TextPainter(
       text: TextSpan(style: style, children: [_span]),
-      textDirection: Directionality.of(context),
+      textDirection: widget.text.textDirection ?? Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       locale: Localizations.maybeLocaleOf(context),
     )..layout(maxWidth: width);
@@ -1177,7 +1201,7 @@ class _LinkTapper extends StatelessWidget {
               style: style,
               children: [text.textSpan ?? TextSpan(text: text.data)],
             ),
-            textDirection: Directionality.of(context),
+            textDirection: text.textDirection ?? Directionality.of(context),
             textScaler: MediaQuery.textScalerOf(context),
             locale: Localizations.maybeLocaleOf(context),
           )..layout(maxWidth: constraints.maxWidth);

@@ -36,6 +36,88 @@ class _DelayedVoiceRepository extends FakeVoiceRepository {
 }
 
 void main() {
+  testWidgets(
+    'editorial text direction preserves fallback SAN and Arabic links',
+    (tester) async {
+      const key = Key('directional-editorial');
+      for (final typed in [false, true]) {
+        for (final (text, direction) in [
+          (
+            '1.Ke3 allows a draw and does not meet the goal.',
+            TextDirection.ltr,
+          ),
+          ('النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة.', TextDirection.rtl),
+        ]) {
+          final tapped = <String>[];
+          await tester.pumpWidget(
+            TestApp(
+              locale: const Locale('ar'),
+              child: Scaffold(
+                body: TeacherSpeech(
+                  teacher: FakeCharacterRepository.viktor,
+                  text: null,
+                  bubbleKey: key,
+                  typed: typed,
+                  speechContext: SpeechContext.teaching,
+                  lessonV2: true,
+                  onLink: (link) => tapped.add('${link.start}:${link.text}'),
+                  explanation: ExplanationPayload(
+                    positionId: 'direction',
+                    state: ExplanationState.incorrect,
+                    explanations: [
+                      ExplanationBlock(
+                        id: 'played',
+                        kind: ExplanationKind.playedIncorrect,
+                        texts: [text],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          final rich = find.descendant(
+            of: find.byKey(key),
+            matching: find.byType(RichText),
+          );
+          final paragraph = tester.renderObject<RenderParagraph>(rich);
+          expect(paragraph.text.toPlainText(), text);
+          expect(paragraph.textDirection, direction);
+          expect(
+            Directionality.of(tester.element(find.byType(TeacherSpeech))),
+            TextDirection.rtl,
+          );
+          final offset = text.indexOf('1.Ke3');
+          final boxes = [
+            for (var i = 0; i < 5; i++)
+              paragraph
+                  .getBoxesForSelection(
+                    TextSelection(
+                      baseOffset: offset + i,
+                      extentOffset: offset + i + 1,
+                    ),
+                  )
+                  .single,
+          ];
+          for (var i = 1; i < boxes.length; i++) {
+            expect(
+              boxes[i].left,
+              greaterThanOrEqualTo(boxes[i - 1].right - .1),
+            );
+          }
+          final san = boxes[2];
+          await tester.tapAt(
+            paragraph.localToGlobal(
+              Offset((san.left + san.right) / 2, (san.top + san.bottom) / 2),
+            ),
+          );
+          expect(tapped, ['$offset:1.Ke3']);
+          expect(tester.takeException(), isNull);
+        }
+      }
+    },
+  );
   for (final (available, enabled) in [
     (true, false),
     (true, true),
@@ -371,6 +453,56 @@ void main() {
     expect(background('Second: 1.Kh2.'), isNull);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'editorial opening emphasizes prose without changing SAN or prompt',
+    (tester) async {
+      const text = 'Before 1.Kh2 after.\n\nSecond paragraph.';
+      for (final prompt in [false, true]) {
+        await tester.pumpWidget(
+          TestApp(
+            child: Scaffold(
+              body: TeacherSpeech(
+                teacher: FakeCharacterRepository.viktor,
+                text: null,
+                speechContext: SpeechContext.teaching,
+                lessonV2: true,
+                lessonPromptBubble: prompt,
+                onLink: (_) {},
+                explanation: ExplanationPayload(
+                  positionId: 'opening',
+                  state: ExplanationState.incorrect,
+                  explanations: [
+                    ExplanationBlock(
+                      id: 'played',
+                      kind: ExplanationKind.playedIncorrect,
+                      texts: const ['Before 1.Kh2 after.', 'Second paragraph.'],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final rich = tester
+            .widgetList<RichText>(find.byType(RichText))
+            .singleWhere((widget) => widget.text.toPlainText() == text);
+        final pieces = <String, FontWeight?>{};
+        rich.text.visitChildren((span) {
+          if (span is TextSpan && span.text != null) {
+            pieces[span.text!] = span.style?.fontWeight;
+          }
+          return true;
+        });
+        expect(pieces['Before '], prompt ? isNull : FontWeight.w500);
+        expect(pieces[' after.'], prompt ? isNull : FontWeight.w500);
+        expect(pieces['Second paragraph.'], isNull);
+        expect(pieces['1.Kh2'], FontWeight.w700);
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
   testWidgets(
     'one bubble joins paragraphs and verified inline move replaces SAN button',
     (tester) async {
