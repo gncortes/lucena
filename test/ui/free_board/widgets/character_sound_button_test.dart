@@ -3,6 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+
+import '../../../../testing/fakes/fake_settings_repository.dart';
+
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/character_bar.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
@@ -15,14 +22,22 @@ void main() {
   Future<(SpeechCubit, FakeVoiceRepository)> pump(
     WidgetTester tester, {
     VoiceSettings settings = const VoiceSettings(enabled: true),
+    List<TtsVoice>? voices,
   }) async {
-    final voice = FakeVoiceRepository(settings: settings);
+    final appSettings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(appSettings.close);
+    await appSettings.load();
+    final voice = FakeVoiceRepository(settings: settings, voices: voices);
     final speech = SpeechCubit(voice);
     addTearDown(speech.close);
     await speech.load();
     await tester.pumpWidget(
       TestApp(
         speechCubit: speech,
+        settingsCubit: appSettings,
         child: Scaffold(
           appBar: AppBar(actions: const [CharacterSoundButton()]),
         ),
@@ -32,37 +47,62 @@ void main() {
     return (speech, voice);
   }
 
-  bool heard(WidgetTester tester) => tester
-      .widget<IconButton>(find.byKey(FreeBoardKeys.soundButton))
-      .isSelected!;
-
-  testWidgets('o botão cala o personagem no meio da fala, e fica gravado', (
+  testWidgets('abrir som não cala; switch persiste e X externo fecha', (
     tester,
   ) async {
     final (speech, voice) = await pump(tester);
     await speech.sayIfEnabled('Oi!', speakerId: 'grandpa', language: 'en');
-    expect(heard(tester), isTrue);
-
     await tester.tap(find.byKey(FreeBoardKeys.soundButton));
-    await tester.pump();
-    expect(heard(tester), isFalse);
-    expect(voice.stops, 1);
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+    expect(voice.settings.charactersMuted, isFalse);
+    expect(
+      tester.getRect(find.byKey(GameSoundKeys.close)).bottom,
+      lessThan(tester.getRect(find.byKey(GameSoundKeys.dialog)).top),
+    );
+    await tester.tap(find.byKey(GameSoundKeys.sound));
+    await tester.pumpAndSettle();
     expect(voice.settings.charactersMuted, isTrue);
-    // A voz continua ligada: o professor das aulas segue falando.
+    expect(voice.stops, greaterThanOrEqualTo(1));
     expect(voice.settings.enabled, isTrue);
+    await tester.tap(find.byKey(GameSoundKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSoundKeys.dialog), findsNothing);
+    expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
   });
 
-  testWidgets('calado (ou com a voz desligada), o botão volta a ouvir', (
+  testWidgets('velocidade muda pelo diálogo e aparece no botão', (
     tester,
   ) async {
-    final (_, voice) = await pump(tester, settings: const VoiceSettings());
-    expect(heard(tester), isFalse);
-
+    final (_, voice) = await pump(tester);
     await tester.tap(find.byKey(FreeBoardKeys.soundButton));
-    await tester.pump();
-    expect(heard(tester), isTrue);
-    expect(voice.settings.enabled, isTrue);
-    expect(voice.settings.charactersMuted, isFalse);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameSoundKeys.speed(1.5)));
+    await tester.pumpAndSettle();
+    expect(voice.settings.speed, 1.5);
+    await tester.tap(find.byKey(GameSoundKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.text('1.5×'), findsOneWidget);
+  });
+
+  testWidgets('sem TTS botão mantém som e falas, sem velocidade', (
+    tester,
+  ) async {
+    await pump(tester, voices: const []);
+    expect(find.byKey(FreeBoardKeys.soundButton), findsOneWidget);
+    await tester.tap(find.byKey(FreeBoardKeys.soundButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSoundKeys.sound), findsOneWidget);
+    expect(find.byKey(GameSoundKeys.comments), findsOneWidget);
+    expect(find.byKey(GameSoundKeys.speeds), findsNothing);
+  });
+
+  testWidgets('botão Som cabe com texto ampliado sem overflow', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await pump(tester);
+    expect(find.byKey(FreeBoardKeys.soundButton), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('calado, a fala nova do personagem só aparece no balão', (
@@ -105,5 +145,45 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     final heard = await open(const VoiceSettings(enabled: true));
     expect(heard.spoken, hasLength(1));
+  });
+
+  testWidgets('som global desligado preserva balão e impede voz automática', (
+    tester,
+  ) async {
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings(sound: false)),
+      languages: const [],
+    );
+    final voice = FakeVoiceRepository(
+      settings: const VoiceSettings(enabled: true),
+    );
+    final speech = SpeechCubit(voice);
+    addTearDown(settings.close);
+    addTearDown(speech.close);
+    await settings.load();
+    await speech.load();
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: settings,
+        speechCubit: speech,
+        child: const Scaffold(
+          body: CharacterBar(
+            talk: TalkState(
+              character: FakeCharacterRepository.viktor,
+              line: CharacterLine(
+                id: 'global-off',
+                category: LineCategory.gameStart,
+                intensity: 1,
+                emotion: Emotion.calm,
+                text: 'Hello!',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
+    expect(voice.spoken, isEmpty);
   });
 }

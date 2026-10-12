@@ -2,12 +2,11 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../board/board_settings_ui.dart';
-import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import 'game_entrance.dart';
+import 'time_display.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,
 /// na ponta, o relógio ou de quem é a vez. Só apresentação: quem usa dá os
@@ -269,7 +268,7 @@ class TurnBadge extends StatelessWidget {
 /// O relógio de um lado (T51, A1: o mesmo na partida e no às cegas): uma
 /// caixa compacta com o tempo alinhado à direita. A
 /// caixa tem a cor do lado (clara para as brancas, escura para as pretas); a
-/// de quem está na vez fica acesa, com o ícone de relógio, e a outra apagada.
+/// de quem está na vez ganha contorno e o ícone, sem mudar a cor do lado.
 class GameClock extends StatelessWidget {
   const GameClock({
     this.timeKey,
@@ -298,59 +297,34 @@ class GameClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isLow = time < ClockEngine.lowTime;
-    final (background, foreground) = switch ((running && isLow, side)) {
-      // Pouco tempo na vez de jogar: a caixa fica vermelha.
-      (true, _) => (colors.error, colors.onError),
-      (false, Side.white) => (_light, _dark),
-      (false, Side.black) => (_dark, _light),
-    };
-    return AnimatedOpacity(
-      duration: AppMotion.state,
-      opacity: running ? 1 : 0.55,
-      child: AnimatedContainer(
-        duration: AppMotion.state,
-        width: width,
-        height: _height,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(AppShape.small),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        // Os números do relógio são sempre da esquerda para a direita.
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Row(
-            children: [
-              AnimatedOpacity(
-                duration: AppMotion.state,
-                opacity: running ? 1 : 0,
-                child: Icon(
-                  Icons.av_timer_outlined,
-                  size: 18,
-                  color: foreground,
-                ),
+    final value = ClockFormat.format(time);
+    final foreground = side == Side.white ? _dark : _light;
+    // O adaptador conserva a geometria da faixa e os décimos do relógio;
+    // o componente comum possui caixa, borda, ícone e cores por lado.
+    return SizedBox(
+      width: width,
+      height: _height,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: TimeDisplay(
+          value: value,
+          semanticsLabel: value,
+          type: TimeDisplayType.clock,
+          state: running ? TimeDisplayState.active : TimeDisplayState.normal,
+          side: side,
+          width: width,
+          valueWidget: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: ClockText(
+              value,
+              key: timeKey,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w700,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerRight,
-                  child: ClockText(
-                    ClockFormat.format(time),
-                    key: timeKey,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w700,
-                      // Algarismos da mesma largura: o texto não treme ao
-                      // contar.
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

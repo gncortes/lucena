@@ -27,6 +27,7 @@ class TalkState {
     this.line,
     this.emotion = Emotion.calm,
     this.enabled = true,
+    this.speechHintVersion = 0,
   });
 
   /// O adversário como personagem (o Stockfish também aparece, com o logo).
@@ -43,17 +44,23 @@ class TalkState {
   /// As falas estão ligadas em Configurações.
   final bool enabled;
 
+  /// Evento da dica: muda somente quando um novo aviso deve aparecer.
+  /// Não é restaurado como evento ao reabrir o app.
+  final int speechHintVersion;
+
   TalkState copyWith({
     Character? character,
     CharacterLine? line,
     bool clearLine = false,
     Emotion? emotion,
     bool? enabled,
+    int? speechHintVersion,
   }) => TalkState(
     character: character ?? this.character,
     line: clearLine ? null : line ?? this.line,
     emotion: emotion ?? this.emotion,
     enabled: enabled ?? this.enabled,
+    speechHintVersion: speechHintVersion ?? this.speechHintVersion,
   );
 }
 
@@ -88,12 +95,15 @@ class TalkCubit extends Cubit<TalkState> {
 
   // O trabalho em fila: um lance é visto depois do outro.
   Future<void> _work = Future.value();
+  Future<void> _writes = Future.value();
 
   List<CharacterLine> _lines = const [];
   TalkMemory _memory = TalkMemory.empty;
   DateTime? _game;
   int _plies = 0;
   bool _ended = false;
+  Set<String> _dismissedLineIds = {};
+  bool _speechHintShown = false;
 
   /// O Stockfish na fileira de cima: o logo e nenhuma emoção.
   static const stockfish = Character.stockfish;
@@ -114,6 +124,55 @@ class TalkCubit extends Cubit<TalkState> {
 
   /// Espera o que está em andamento (para os testes).
   Future<void> settled() => _work;
+
+  /// A preferência é persistida pelo SettingsCubit; a partida reage na hora.
+  void setEnabled({required bool enabled}) =>
+      emit(state.copyWith(enabled: enabled));
+
+  /// Fecha apenas a fala exibida; uma fala de um evento posterior volta.
+  /// O id permite à tela ignorar um toque tardio num balão já substituído.
+  void dismissLine({String? lineId}) {
+    final dismissed = lineId ?? state.line?.id;
+    final game = _game;
+    if (dismissed == null || game == null) return;
+    _work = _work
+        .then((_) async {
+          if (isClosed ||
+              _game != game ||
+              state.line?.id != dismissed ||
+              !state.enabled) {
+            return;
+          }
+          emit(state.copyWith(clearLine: true));
+          final distinct = _dismissedLineIds.add(dismissed);
+          // O fechamento deve sobreviver à saída durante a leitura da dica.
+          await _save();
+          if (isClosed || _game != game || !state.enabled) return;
+          if (distinct &&
+              _dismissedLineIds.length >= 3 &&
+              !_speechHintShown &&
+              !state.isEngine) {
+            final last = await _talk.loadSpeechHintShownAt();
+            if (isClosed || _game != game || !state.enabled) return;
+            final now = _now();
+            if (last == null ||
+                now.difference(last) >= const Duration(days: 7)) {
+              await _talk.saveSpeechHintShownAt(now);
+              _speechHintShown = true;
+              await _save();
+              if (!isClosed) {
+                emit(
+                  state.copyWith(
+                    speechHintVersion: state.speechHintVersion + 1,
+                  ),
+                );
+              }
+              return;
+            }
+          }
+        })
+        .onError((_, _) {});
+  }
 
   /// O relógio andou: falas de tempo (pouco tempo, demora para jogar).
   void tick(FreeBoardState game) {
@@ -221,6 +280,8 @@ class TalkCubit extends Cubit<TalkState> {
     _plies = game.ucis.length;
     _ended = game.end != null;
     _thinkingSaidAt = null;
+    _dismissedLineIds = {};
+    _speechHintShown = false;
     final mode = game.mode;
     final character = switch (mode.opponent) {
       OpponentKind.maia => (await _characters.characters()).forLevel(
@@ -231,12 +292,23 @@ class TalkCubit extends Cubit<TalkState> {
     };
     final settings = await _settings.load();
     if (character == stockfish) {
-      emit(TalkState(character: stockfish, enabled: settings.characterTalk));
+      emit(
+        TalkState(
+          character: stockfish,
+          enabled: settings.characterTalk,
+          speechHintVersion: state.speechHintVersion,
+        ),
+      );
       _beep();
       return;
     }
     if (character == null) {
-      emit(TalkState(enabled: settings.characterTalk));
+      emit(
+        TalkState(
+          enabled: settings.characterTalk,
+          speechHintVersion: state.speechHintVersion,
+        ),
+      );
       return;
     }
     _lines = await _characters.lines(character.id, _language);
@@ -245,6 +317,8 @@ class TalkCubit extends Cubit<TalkState> {
     if (isClosed) return;
     if (saved != null && saved.gameStartedAt == game.startedAt) {
       _memory = saved.memory;
+      _dismissedLineIds = saved.dismissedLineIds.toSet();
+      _speechHintShown = saved.speechHintShown;
       _plies = saved.plies.clamp(0, game.ucis.length);
       emit(
         TalkState(
@@ -252,6 +326,7 @@ class TalkCubit extends Cubit<TalkState> {
           line: _lineById(saved.lineId),
           emotion: _memory.emotion ?? EmotionRules.of(_memory),
           enabled: settings.characterTalk,
+          speechHintVersion: state.speechHintVersion,
         ),
       );
       // Lances jogados com o app fechado (a máquina pode ter respondido).
@@ -259,7 +334,13 @@ class TalkCubit extends Cubit<TalkState> {
       return;
     }
     _memory = TalkMemory.empty;
-    emit(TalkState(character: character, enabled: settings.characterTalk));
+    emit(
+      TalkState(
+        character: character,
+        enabled: settings.characterTalk,
+        speechHintVersion: state.speechHintVersion,
+      ),
+    );
     if (game.ucis.isEmpty) {
       _say(const [GameEvent(LineCategory.gameStart)]);
     }
@@ -368,13 +449,17 @@ class TalkCubit extends Cubit<TalkState> {
   Future<void> _save() async {
     final game = _game;
     if (game == null || state.character == null) return;
-    await _talk.save(
-      TalkSnapshot(
-        gameStartedAt: game,
-        plies: _plies,
-        memory: _memory.copyWith(emotion: state.emotion),
-        lineId: state.line?.id,
-      ),
+    final snapshot = TalkSnapshot(
+      gameStartedAt: game,
+      plies: _plies,
+      memory: _memory.copyWith(emotion: state.emotion),
+      lineId: state.line?.id,
+      dismissedLineIds: _dismissedLineIds.toList(),
+      speechHintShown: _speechHintShown,
     );
+    // _say também grava em segundo plano. Preserva a ordem para uma fala
+    // antiga não reaparecer no snapshot depois de o jogador fechá-la.
+    _writes = _writes.onError((_, _) {}).then((_) => _talk.save(snapshot));
+    await _writes;
   }
 }

@@ -8,6 +8,11 @@ abstract final class FreeBoardKeys {
   static const endFlash = Key('freeBoard.endFlash');
   static const screen = Key('freeBoard.screen');
   static const board = Key('freeBoard.board');
+  static const actionsBar = Key('freeBoard.actions');
+  static const title = Key('freeBoard.title');
+  static const drawSheet = Key('freeBoard.draw.sheet');
+  static const drawConfirmButton = Key('freeBoard.draw.confirm');
+  static const confirmationClose = Key('freeBoard.confirmation.close');
 
   /// De quem é a vez, enquanto a partida continua.
   static const turn = Key('freeBoard.turn');
@@ -56,7 +61,7 @@ abstract final class FreeBoardKeys {
   static Key clockIncrement(Side side, int seconds) =>
       Key('freeBoard.clock.sheet.${side.name}.increment.$seconds');
 
-  /// Botão da barra superior, sempre visível.
+  /// Botão da barra inferior, sempre visível no tabuleiro livre.
   static const newGameButton = Key('freeBoard.newGame');
 
   static const endPanel = Key('freeBoard.end');
@@ -68,6 +73,9 @@ abstract final class FreeBoardKeys {
   /// balão com a fala (pelo id da fala).
   static const characterBar = Key('freeBoard.character');
   static const speechBubble = Key('freeBoard.character.bubble');
+  static const speechClose = Key('freeBoard.character.close');
+  static const speechHint = Key('freeBoard.character.hint');
+  static const speechHintAdjust = Key('freeBoard.character.hint.adjust');
   static Key characterAvatar(Emotion emotion) =>
       Key('freeBoard.character.avatar.${emotion.name}');
   static Key speechText(String lineId) =>

@@ -5351,5 +5351,67 @@
   "@explanationPrevious": {"description": "Explanation panel: Previous"},
   "@explanationNext": {"description": "Explanation panel: Next"},
   "@explanationLast": {"description": "Explanation panel: Last"},
-  "@explanationReturn": {"description": "Explanation panel: Return"}
+  "@explanationReturn": {"description": "Explanation panel: Return"},
+  "gameChallengeTitle": "{opponent} Challenge",
+  "gameDrawOfferTitle": "Offer a draw?",
+  "gameDrawOfferHint": "Your opponent can accept or decline the offer.",
+  "gameSoundAndVoice": "Sound and voice",
+  "gameSpeechHint": "You can turn off {opponent}’s comments whenever you like.",
+  "gameSpeechAdjust": "Adjust",
+  "lessonReviewIdea": "Review the idea",
+  "lessonSeeSolution": "View solution",
+  "@gameChallengeTitle": {
+    "description": "Title of a Journey game against the named opponent.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "@gameDrawOfferTitle": {
+    "description": "Title of the confirmation sheet before offering a draw."
+  },
+  "@gameDrawOfferHint": {
+    "description": "Explains that offering a draw does not immediately end the game."
+  },
+  "@gameSoundAndVoice": {
+    "description": "Title of the in-game sound and voice dialog."
+  },
+  "@gameSpeechHint": {
+    "description": "Suggestion after dismissing three distinct opponent comments; at most once every seven days.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "@gameSpeechAdjust": {
+    "description": "Snackbar action opening the sound and voice preferences."
+  },
+  "@lessonReviewIdea": {
+    "description": "Lesson error footer action to revisit the associated lesson idea."
+  },
+  "@lessonSeeSolution": {
+    "description": "Lesson error footer action to show the solution while keeping retry available."
+  },
+  "lessonIncorrectMove": "Incorrect move",
+  "lessonCorrectMove": "Correct move",
+  "lessonFailedAlternatives": "These do not work either",
+  "@lessonIncorrectMove": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonCorrectMove": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonFailedAlternatives": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "lessonStillUnsure": "Still unsure?",
+  "lessonOpenFreeBoard": "Open in the free board",
+  "@lessonStillUnsure": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonOpenFreeBoard": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  }
 }

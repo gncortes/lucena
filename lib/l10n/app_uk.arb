@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Попередній хід",
   "explanationNext": "Наступний хід",
   "explanationLast": "Кінець варіанта",
-  "explanationReturn": "Повернутися до позиції"
+  "explanationReturn": "Повернутися до позиції",
+  "gameChallengeTitle": "Виклик від {opponent}",
+  "gameDrawOfferTitle": "Запропонувати нічию?",
+  "gameDrawOfferHint": "Суперник може прийняти або відхилити пропозицію.",
+  "gameSoundAndVoice": "Звук і голос",
+  "gameSpeechHint": "Ви можете будь-коли вимкнути коментарі: {opponent}.",
+  "gameSpeechAdjust": "Налаштувати",
+  "lessonReviewIdea": "Повторити ідею",
+  "lessonSeeSolution": "Переглянути розв’язок",
+  "lessonIncorrectMove": "Неправильний хід",
+  "lessonCorrectMove": "Правильний хід",
+  "lessonFailedAlternatives": "Ці ходи також не працюють",
+  "lessonStillUnsure": "Залишилися сумніви?",
+  "lessonOpenFreeBoard": "Відкрити на вільній дошці"
 }

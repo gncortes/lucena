@@ -1075,5 +1075,18 @@
   "explanationPrevious": "Lance anterior",
   "explanationNext": "Próximo lance",
   "explanationLast": "Fim da variante",
-  "explanationReturn": "Voltar à posição"
+  "explanationReturn": "Voltar à posição",
+  "gameChallengeTitle": "Desafio do {opponent}",
+  "gameDrawOfferTitle": "Propor empate?",
+  "gameDrawOfferHint": "O adversário pode aceitar ou recusar a proposta.",
+  "gameSoundAndVoice": "Som e voz",
+  "gameSpeechHint": "Você pode desligar as falas do {opponent} quando quiser.",
+  "gameSpeechAdjust": "Ajustar",
+  "lessonReviewIdea": "Rever a ideia",
+  "lessonSeeSolution": "Ver solução",
+  "lessonIncorrectMove": "Lance errado",
+  "lessonCorrectMove": "Lance certo",
+  "lessonFailedAlternatives": "Também não funcionam",
+  "lessonStillUnsure": "Ainda com dúvida?",
+  "lessonOpenFreeBoard": "Abrir no tabuleiro livre"
 }

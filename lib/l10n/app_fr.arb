@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Coup précédent",
   "explanationNext": "Coup suivant",
   "explanationLast": "Fin de la variante",
-  "explanationReturn": "Revenir à la position"
+  "explanationReturn": "Revenir à la position",
+  "gameChallengeTitle": "Défi de {opponent}",
+  "gameDrawOfferTitle": "Proposer la nulle ?",
+  "gameDrawOfferHint": "Votre adversaire peut accepter ou refuser la proposition.",
+  "gameSoundAndVoice": "Son et voix",
+  "gameSpeechHint": "Vous pouvez désactiver les commentaires de {opponent} à tout moment.",
+  "gameSpeechAdjust": "Régler",
+  "lessonReviewIdea": "Revoir l’idée",
+  "lessonSeeSolution": "Voir la solution",
+  "lessonIncorrectMove": "Coup incorrect",
+  "lessonCorrectMove": "Coup correct",
+  "lessonFailedAlternatives": "Ces coups ne fonctionnent pas non plus",
+  "lessonStillUnsure": "Encore un doute ?",
+  "lessonOpenFreeBoard": "Ouvrir sur l’échiquier libre"
 }

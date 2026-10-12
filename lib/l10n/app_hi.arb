@@ -1076,5 +1076,18 @@
   "explanationPrevious": "पिछली चाल",
   "explanationNext": "अगली चाल",
   "explanationLast": "क्रम का अंत",
-  "explanationReturn": "मूल स्थिति पर लौटें"
+  "explanationReturn": "मूल स्थिति पर लौटें",
+  "gameChallengeTitle": "{opponent} की चुनौती",
+  "gameDrawOfferTitle": "ड्रॉ की पेशकश करें?",
+  "gameDrawOfferHint": "आपका प्रतिद्वंद्वी पेशकश स्वीकार या अस्वीकार कर सकता है।",
+  "gameSoundAndVoice": "ध्वनि और आवाज़",
+  "gameSpeechHint": "आप जब चाहें {opponent} की टिप्पणियाँ बंद कर सकते हैं।",
+  "gameSpeechAdjust": "बदलें",
+  "lessonReviewIdea": "विचार दोहराएँ",
+  "lessonSeeSolution": "समाधान देखें",
+  "lessonIncorrectMove": "गलत चाल",
+  "lessonCorrectMove": "सही चाल",
+  "lessonFailedAlternatives": "ये भी काम नहीं करतीं",
+  "lessonStillUnsure": "अब भी संदेह है?",
+  "lessonOpenFreeBoard": "स्वतंत्र बोर्ड में खोलें"
 }

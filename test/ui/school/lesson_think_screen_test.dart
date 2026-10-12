@@ -12,6 +12,7 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:dartchess/dartchess.dart';
 
@@ -173,11 +174,18 @@ void main() {
     }
   });
 
-  void expectCentered(WidgetTester tester) {
+  void expectBoardAboveSpeech(WidgetTester tester) {
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final size = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(board.center.dx, closeTo(size.width / 2, 1));
-    expect(board.center.dy, closeTo(size.height / 2, 1));
+    final progress = tester.getRect(find.byKey(LessonKeys.progress));
+    expect(board.top, greaterThanOrEqualTo(progress.bottom));
+    expect(board.top - progress.bottom, lessThanOrEqualTo(16));
+    final teacher = find.byWidgetPredicate(
+      (widget) =>
+          widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+    );
+    expect(tester.getTopLeft(teacher).dy, greaterThan(board.bottom));
     expect(find.byKey(LessonKeys.prompt), findsNothing);
     expect(
       tester.getRect(find.byKey(LessonKeys.scroll)).top,
@@ -242,7 +250,7 @@ void main() {
     await pump(tester);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.byKey(LessonKeys.prompt), findsNothing);
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     // O cronômetro no canto inferior direito, do zero.
     final timer = tester.getRect(find.byKey(LessonKeys.stepTimer));
@@ -326,7 +334,7 @@ void main() {
     // mudou de altura, então o centro também), com o cronômetro do zero.
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(timerText(tester), '0:00');
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
   });
 
@@ -365,7 +373,7 @@ void main() {
     // Explicando, o tabuleiro sobe (mesmo tamanho) e a folha fica com o resto.
     final raised = tester.getRect(find.byKey(LessonKeys.board));
     expect(raised.size, centered.size);
-    expect(raised.top, lessThan(centered.top));
+    expect(raised.top, closeTo(centered.top, 1));
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.text('Perfect, that is the bridge.'), findsOneWidget);
     expect(
@@ -379,21 +387,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'think')), findsOneWidget);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
     expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
   });
   for (final size in [
     const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
     testWidgets(
-      'B5 $size: pensar e jogar no centro; explicar sobe o tabuleiro',
+      'D15 $size: pensar, jogar e explicar mantêm tabuleiro acima do Viktor',
       (tester) async {
         final cubit = await pump(tester, size: size, systemBars: true);
         final board = tester.getRect(find.byKey(LessonKeys.board));
-        expect(board.center.dy, closeTo((52 + size.height - 24) / 2, 1));
+        expectBoardAboveSpeech(tester);
         expect(board.width, greaterThanOrEqualTo(200));
         expect(find.byKey(LessonKeys.prompt), findsNothing);
         expect(
@@ -406,7 +418,8 @@ void main() {
         void raised() {
           final rect = tester.getRect(find.byKey(LessonKeys.board));
           expect(rect.size, board.size);
-          expect(rect.top, lessThan(board.top));
+          expect(rect.top, closeTo(board.top, 1));
+          expectBoardAboveSpeech(tester);
         }
 
         await cubit.next();

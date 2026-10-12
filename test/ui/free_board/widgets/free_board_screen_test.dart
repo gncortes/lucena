@@ -19,6 +19,7 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
@@ -937,6 +938,184 @@ void main() {
     });
   });
 
+  group('D11 V2', () {
+    const sizes = [
+      Size(360, 740),
+      Size(360, 800),
+      Size(384, 832),
+      Size(393, 873),
+      Size(412, 915),
+      Size(414, 896),
+    ];
+    const machine = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1600,
+      userSide: Side.white,
+      positionId: 'basic.queen.0001',
+    );
+    for (final size in sizes) {
+      for (final mode in [
+        const GameMode(),
+        machine,
+        machine.copyWith(
+          speedrunId: 'queen',
+          speedrunAttemptId: 1,
+          speedrunStage: 0,
+        ),
+      ]) {
+        testWidgets('$size / $mode: centro útil, respiro e ações inferiores', (
+          tester,
+        ) async {
+          await pumpScreen(
+            tester,
+            screen: size * 2.625,
+            systemBars: true,
+            mode: mode,
+            clock: mode.opponent.isMachine
+                ? ClockConfig.same(
+                    const TimeControl(initial: Duration(minutes: 3)),
+                  )
+                : null,
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final board = boardRect(tester);
+          final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
+          final appbar = tester.widget<AppBar>(find.byType(AppBar));
+          expect(appbar.actions, isNull);
+          expect(appbar.centerTitle, isTrue);
+          expect(board.center.dy, closeTo((24 + size.height - 32) / 2, .01));
+          expect(board.width, greaterThanOrEqualTo(280));
+          expect(actions.bottom, closeTo(size.height - 32, .01));
+          final actionKey = mode.opponent.isMachine
+              ? FreeBoardKeys.resignButton
+              : FreeBoardKeys.flipButton;
+          expect(
+            tester.getRect(find.byKey(actionKey)).top,
+            greaterThanOrEqualTo(actions.top),
+          );
+          if (mode.opponent.isMachine) {
+            final top = tester.getRect(
+              find.byKey(FreeBoardKeys.clock(Side.black)),
+            );
+            final bottom = tester.getRect(
+              find.byKey(FreeBoardKeys.clock(Side.white)),
+            );
+            expect(board.top - top.bottom, closeTo(18, .01));
+            expect(bottom.top - board.bottom, closeTo(18, .01));
+            final bubble = tester.getRect(
+              find.byKey(FreeBoardKeys.speechBubble),
+            );
+            expect(bubble.bottom, lessThanOrEqualTo(top.top));
+            expect(
+              find.text(mode.isSpeedrun ? 'Speedrun' : 'Queen mate'),
+              findsOneWidget,
+            );
+          } else {
+            expect(find.byKey(FreeBoardKeys.resignButton), findsNothing);
+            expect(find.byKey(FreeBoardKeys.drawButton), findsNothing);
+          }
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
+
+    for (final size in sizes) {
+      testWidgets('D12 $size: X em overlay recebe toque e dica abre ajustes', (
+        tester,
+      ) async {
+        await pumpScreen(
+          tester,
+          screen: size * 2.625,
+          systemBars: true,
+          mode: machine,
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(minutes: 3)),
+          ),
+        );
+        await talk.settled();
+        await tester.pumpAndSettle();
+        final board = boardRect(tester);
+        for (var dismissal = 0; dismissal < 3; dismissal++) {
+          final close = find.byKey(FreeBoardKeys.speechClose);
+          expect(close.hitTestable(), findsOneWidget);
+          final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
+          expect(bubble.bottom, lessThanOrEqualTo(board.top));
+          await tester.tap(close);
+          await talk.settled();
+          await tester.pumpAndSettle();
+          expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
+          expect(talk.state.enabled, isTrue);
+          expect(boardRect(tester), board);
+          expect(board.width, greaterThanOrEqualTo(280));
+          if (dismissal < 2) {
+            talk.update(
+              cubit.state.copyWith(
+                drawOffer: DrawOffer.declined,
+                drawDeclinedAt: dismissal,
+              ),
+            );
+            await talk.settled();
+            await tester.pumpAndSettle();
+            expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
+          }
+        }
+        expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
+        await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+        await tester.pumpAndSettle();
+        expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets(
+      'empate exige confirmação; X e toque fora preservam a partida',
+      (tester) async {
+        await pumpScreen(tester, mode: machine);
+        final original = cubit.state.position.fen;
+        await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+        await tester.pumpAndSettle();
+        expect(find.byKey(FreeBoardKeys.drawSheet), findsOneWidget);
+        expect(cubit.state.drawOffer, DrawOffer.none);
+        final close = tester.getRect(
+          find.byKey(FreeBoardKeys.confirmationClose),
+        );
+        final sheet = tester.getRect(find.byKey(FreeBoardKeys.drawSheet));
+        expect(close.bottom, lessThan(sheet.top));
+        await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+        await tester.pumpAndSettle();
+        expect(cubit.state.position.fen, original);
+        expect(cubit.state.drawOffer, DrawOffer.none);
+        await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+        await tester.pumpAndSettle();
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
+        expect(cubit.state.drawOffer, DrawOffer.none);
+        await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(FreeBoardKeys.drawConfirmButton));
+        await tester.pumpAndSettle();
+        expect(find.byKey(FreeBoardKeys.drawSheet), findsNothing);
+        expect(cubit.state.drawOffer, isNot(DrawOffer.none));
+      },
+    );
+
+    testWidgets('X de desistir fica fora da folha e cancela sem perda', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: machine);
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final close = tester.getRect(find.byKey(FreeBoardKeys.confirmationClose));
+      final sheet = tester.getRect(find.byKey(FreeBoardKeys.resignSheet));
+      expect(close.size, const Size(44, 44));
+      expect(close.bottom, lessThan(sheet.top));
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+      await tester.pumpAndSettle();
+      expect(cubit.state.end, isNull);
+    });
+  });
+
   group('treino', () {
     for (final position in ClockPosition.values) {
       testWidgets(
@@ -1293,7 +1472,7 @@ void main() {
       final avatar = tester.getRect(find.byType(CharacterAvatar));
       expect(avatar.height, 44);
       expect(avatar.center.dy, closeTo(clock.center.dy, 1));
-      // O tabuleiro ocupa a largura toda.
+      // O tabuleiro usa a largura disponível quando a altura comporta o rodapé.
       expect(board.width, tester.getSize(find.byType(Scaffold)).width);
     });
 

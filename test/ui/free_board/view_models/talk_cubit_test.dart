@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
+import 'package:lucena/data/repositories/characters/talk_repository.dart';
 import 'package:flutter_test/flutter_test.dart' hide Evaluation;
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/character.dart';
@@ -33,6 +35,7 @@ void main() {
   late FakeEvaluationRepository evaluation;
   late FakeTalkRepository talk;
   late FakeSettingsRepository settings;
+  late FakeNow now;
 
   TalkCubit cubit() {
     final cubit = TalkCubit(
@@ -40,7 +43,7 @@ void main() {
       evaluation: evaluation,
       talk: talk,
       settings: settings,
-      now: FakeNow(startedAt),
+      now: now,
       language: 'pt',
       random: Random(3),
     );
@@ -67,9 +70,223 @@ void main() {
   const shuffle = ['a1a2', 'e8d8', 'a2a1', 'd8e8'];
 
   setUp(() {
+    now = FakeNow(startedAt);
     evaluation = FakeEvaluationRepository();
     talk = FakeTalkRepository();
     settings = FakeSettingsRepository();
+  });
+
+  Future<void> dismissThree(
+    TalkCubit talking, {
+    DateTime? at,
+    int? level,
+  }) async {
+    FreeBoardState current() => game(
+      [],
+      at: at,
+    ).copyWith(mode: level == null ? mode : mode.copyWith(level: level));
+    talking.update(current());
+    await talking.settled();
+    for (var index = 0; index < 3; index++) {
+      expect(talking.state.line, isNotNull);
+      talking.dismissLine(lineId: talking.state.line!.id);
+      await talking.settled();
+      if (index < 2) {
+        talking.update(
+          current().copyWith(
+            drawOffer: DrawOffer.declined,
+            drawDeclinedAt: index,
+          ),
+        );
+        await talking.settled();
+      }
+    }
+  }
+
+  group('D12 fechamentos e dica', () {
+    test(
+      'fechar Cubit durante leitura não consome intervalo da dica',
+      () async {
+        final deferred = _DeferredHintRepository();
+        talk = deferred;
+        final talking = cubit();
+        final pending = dismissThree(talking);
+        await deferred.started.future;
+        await talking.close();
+        deferred.release.complete();
+        await pending;
+        expect(deferred.speechHintShownAt, isNull);
+        expect(talking.state.speechHintVersion, 0);
+        expect(deferred.saved!.lineId, isNull);
+        expect(deferred.saved!.dismissedLineIds, hasLength(3));
+      },
+    );
+    test(
+      'fechar só fala atual; próximo evento volta, 3 IDs dão uma dica',
+      () async {
+        final talking = cubit()..update(game([]));
+        await talking.settled();
+        final firstId = talking.state.line!.id;
+        talking.dismissLine(lineId: firstId);
+        talking.dismissLine(lineId: firstId);
+        await talking.settled();
+        expect(talking.state.line, isNull);
+        expect(talk.saved!.dismissedLineIds, [firstId]);
+        expect(talking.state.enabled, isTrue);
+        talking.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 0),
+        );
+        await talking.settled();
+        expect(talking.state.line, isNotNull);
+        talking.dismissLine(lineId: firstId); // toque atrasado.
+        await talking.settled();
+        expect(talking.state.line, isNotNull);
+        talking.dismissLine();
+        await talking.settled();
+        expect(talking.state.speechHintVersion, 0);
+        talking.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 1),
+        );
+        await talking.settled();
+        talking.dismissLine();
+        await talking.settled();
+        expect(talk.saved!.dismissedLineIds, hasLength(3));
+        expect(talk.saved!.speechHintShown, isTrue);
+        expect(talking.state.speechHintVersion, 1);
+        expect(talk.speechHintShownAt, now.value);
+      },
+    );
+
+    test(
+      'duas falas fechadas persistem; terceira após reload emite dica',
+      () async {
+        final first = cubit()..update(game([]));
+        await first.settled();
+        first.dismissLine();
+        await first.settled();
+        first.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 0),
+        );
+        await first.settled();
+        first.dismissLine();
+        await first.settled();
+        final second = cubit()..update(game([]));
+        await second.settled();
+        expect(second.state.line, isNull);
+        expect(talk.saved!.dismissedLineIds, hasLength(2));
+        second.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 1),
+        );
+        await second.settled();
+        second.dismissLine();
+        await second.settled();
+        expect(second.state.speechHintVersion, 1);
+      },
+    );
+
+    test('mesmo ID reexibido depois de reload não conta de novo', () async {
+      final first = cubit()..update(game([]));
+      await first.settled();
+      final line = first.state.line!;
+      first.dismissLine();
+      await first.settled();
+      final saved = talk.saved!;
+      talk.saved = TalkSnapshot(
+        gameStartedAt: saved.gameStartedAt,
+        plies: saved.plies,
+        memory: saved.memory,
+        lineId: line.id,
+        dismissedLineIds: saved.dismissedLineIds,
+      );
+      final second = cubit()..update(game([]));
+      await second.settled();
+      second.dismissLine();
+      await second.settled();
+      expect(second.state.line, isNull);
+      expect(talk.saved!.dismissedLineIds, [line.id]);
+      expect(second.state.speechHintVersion, 0);
+    });
+
+    test(
+      'reload não reemite dica mesmo passados 7 dias na mesma partida',
+      () async {
+        final first = cubit();
+        await dismissThree(first);
+        now.advance(const Duration(days: 8));
+        final second = cubit()..update(game([]));
+        await second.settled();
+        expect(second.state.speechHintVersion, 0);
+        second.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 2),
+        );
+        await second.settled();
+        second.dismissLine();
+        await second.settled();
+        expect(second.state.speechHintVersion, 0);
+        expect(talk.speechHintShownAt, startedAt);
+      },
+    );
+
+    test('nova partida zera contagem e preserva intervalo global entre personagens', () async {
+      final talking = cubit();
+      await dismissThree(talking);
+      final next = startedAt.add(const Duration(hours: 1));
+      talking.update(
+        game([], at: next).copyWith(mode: mode.copyWith(level: 1000)),
+      );
+      await talking.settled();
+      expect(talk.saved!.dismissedLineIds, isEmpty);
+      expect(talk.saved!.speechHintShown, isFalse);
+      expect(talking.state.speechHintVersion, 1); // sem evento ao trocar.
+      await dismissThree(talking, at: next, level: 1000);
+      expect(talking.state.speechHintVersion, 1);
+      expect(talk.speechHintShownAt, startedAt);
+    });
+
+    test('intervalo é de 7 dias exatos e persiste entre instâncias', () async {
+      await dismissThree(cubit());
+      now.advance(const Duration(days: 7) - Duration(microseconds: 1));
+      final early = cubit();
+      await dismissThree(early, at: now.value);
+      expect(early.state.speechHintVersion, 0);
+      now.advance(const Duration(microseconds: 1));
+      final eligible = cubit();
+      await dismissThree(eligible, at: now.value);
+      expect(eligible.state.speechHintVersion, 1);
+      expect(talk.speechHintShownAt, now.value);
+    });
+
+    test(
+      'gravações lentas permanecem ordenadas e não reabrem balão fechado',
+      () async {
+        final deferred = _DeferredTalkRepository();
+        talk = deferred;
+        final talking = cubit()..update(game([]));
+        await talking.settled();
+        deferred.deferNext = true;
+        talking.update(
+          game([]).copyWith(drawOffer: DrawOffer.declined, drawDeclinedAt: 0),
+        );
+        await deferred.started.future;
+        talking.dismissLine();
+        deferred.release.complete();
+        await talking.settled();
+        expect(deferred.maxConcurrentWrites, 1);
+        expect(talking.state.line, isNull);
+        expect(deferred.saved!.lineId, isNull);
+        expect(deferred.saved!.dismissedLineIds, hasLength(1));
+      },
+    );
+
+    test('falas desligadas não contam fechamento nem disparam dica', () async {
+      final talking = cubit()..update(game([]));
+      await talking.settled();
+      talking.setEnabled(enabled: false);
+      talking.dismissLine();
+      await talking.settled();
+      expect(talk.saved!.dismissedLineIds, isEmpty);
+      expect(talking.state.speechHintVersion, 0);
+    });
   });
 
   test('o personagem é o do nível do Maia e abre a partida falando', () async {
@@ -248,4 +465,37 @@ void main() {
     await talking.settled();
     expect(talking.state.line?.category, LineCategory.drawAccepted);
   });
+}
+
+class _DeferredTalkRepository extends FakeTalkRepository {
+  bool deferNext = false;
+  final started = Completer<void>();
+  final release = Completer<void>();
+  int _activeWrites = 0;
+  int maxConcurrentWrites = 0;
+
+  @override
+  Future<void> save(TalkSnapshot snapshot) async {
+    _activeWrites++;
+    maxConcurrentWrites = max(maxConcurrentWrites, _activeWrites);
+    if (deferNext) {
+      deferNext = false;
+      started.complete();
+      await release.future;
+    }
+    await super.save(snapshot);
+    _activeWrites--;
+  }
+}
+
+class _DeferredHintRepository extends FakeTalkRepository {
+  final started = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<DateTime?> loadSpeechHintShownAt() async {
+    started.complete();
+    await release.future;
+    return super.loadSpeechHintShownAt();
+  }
 }

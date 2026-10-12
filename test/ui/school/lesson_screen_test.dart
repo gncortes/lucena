@@ -37,6 +37,7 @@ void main() {
     String? intro,
     Size size = const Size(400, 800),
     bool endgame = false,
+    Course? course,
     bool systemBars = false,
   }) async {
     tester.view.physicalSize = size;
@@ -65,7 +66,9 @@ void main() {
               FakeEndgameProgressRepository(),
             )
           : null,
-      lessons: endgame ? null : FakeLessonRepository(texts: texts),
+      lessons: endgame
+          ? null
+          : FakeLessonRepository(texts: texts, course: course),
       progress: endgame ? null : FakeSchoolProgressRepository(),
       characters: FakeCharacterRepository(),
       opponent: FakeOpponentRepository(),
@@ -393,23 +396,97 @@ void main() {
     expect(find.text('Take the rook to the stars.'), findsOneWidget);
   });
 
+  testWidgets(
+    'D16 erro: grade 2x2 preserva disponibilidade e tentar novamente',
+    (tester) async {
+      // Exercise the authored-mistake path: generic wrong moves stay active.
+      const course = Course(
+        modules: [
+          CourseModule(
+            id: 'pieces',
+            lessons: [
+              Lesson(
+                id: 'pieces.rook',
+                steps: [
+                  TalkStep(
+                    id: 'intro',
+                    fen: FakeEndgameLessonRepository.lucenaFen,
+                  ),
+                  MoveStep(
+                    id: 'bridge',
+                    fen: FakeEndgameLessonRepository.lucenaFen,
+                    line: [
+                      MoveTurn(accept: {'c1c4'}),
+                    ],
+                    mistakes: {'c1c3': StepMistake(say: 'coach.illegal.rook')},
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      await pump(tester, intro: 'Short.', course: course);
+      await tester.tap(find.byKey(LessonKeys.nextButton));
+      await tester.pumpAndSettle();
+      await dragPiece(tester, Square.c1, Square.c3);
+      expect(lessonCubit.state.phase, StepPhase.failed);
+      final back = find.byKey(LessonKeys.backButton);
+      final review = find.byKey(LessonKeys.reviewPoint);
+      final solution = find.byKey(LessonKeys.nextButton);
+      final retry = find.byKey(LessonKeys.retryButton);
+      expect(tester.getRect(back).top, closeTo(tester.getRect(review).top, 1));
+      expect(
+        tester.getRect(solution).top,
+        closeTo(tester.getRect(retry).top, 1),
+      );
+      expect(
+        tester.getRect(solution).top,
+        greaterThan(tester.getRect(back).bottom),
+      );
+      expect(tester.widget<OutlinedButton>(review).onPressed, isNull);
+      expect(tester.widget<FilledButton>(solution).onPressed, isNull);
+      expect(find.byKey(LessonKeys.variationShow), findsNothing);
+      final board = tester.getRect(find.byKey(LessonKeys.board));
+      final teacher = find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      );
+      expect(tester.getTopLeft(teacher).dy, greaterThan(board.bottom));
+      await tester.tap(retry);
+      await tester.pumpAndSettle();
+      expect(lessonCubit.state.phase, StepPhase.active);
+      expect(lessonCubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final size in [
     const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
-    testWidgets('B6b $size: escola no centro real enquanto joga', (
+    testWidgets('D15 $size: tabuleiro no topo com enunciado e Viktor embaixo', (
       tester,
     ) async {
       await pump(tester, intro: 'Short.', size: size, systemBars: true);
       final explaining = tester.getRect(find.byKey(LessonKeys.board));
       await toStars(tester);
       final board = tester.getRect(find.byKey(LessonKeys.board));
-      expect(board.center.dy, closeTo((24 + size.height - 32) / 2, 1));
+      expect(board.top, closeTo(explaining.top, 1));
+      final teacher = find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      );
+      expect(tester.getTopLeft(teacher).dy, greaterThan(board.bottom));
       expect(board.width, greaterThanOrEqualTo(200));
       // Explicando, o tabuleiro fica no alto; jogando, desce ao centro.
       expect(explaining.size, board.size);
-      expect(explaining.top, lessThan(board.top));
+      expect(explaining.top, closeTo(board.top, 1));
       expect(
         tester.getTopLeft(find.byKey(LessonKeys.scroll)).dy,
         greaterThan(board.bottom),
@@ -422,30 +499,32 @@ void main() {
     });
   }
 
-  testWidgets('escola: o tabuleiro no centro do espaço útil resolvendo e, '
-      'explicando, no alto, com a folha abaixo da fileira 1', (tester) async {
-    await pump(tester, intro: 'Short.', size: const Size(412, 860));
-    final talk = tester.getRect(find.byKey(LessonKeys.board));
-    // A folha fechada começa abaixo do tabuleiro, com um vão.
-    expect(
-      tester.getRect(find.byKey(LessonKeys.scroll)).top,
-      greaterThanOrEqualTo(talk.bottom + 8 - 0.5),
-    );
-    await toStars(tester);
-    final stars = tester.getRect(find.byKey(LessonKeys.board));
-    expect(find.byKey(LessonKeys.prompt), findsNothing);
-    final footer = tester.getRect(find.byKey(LessonKeys.footer));
-    expect(stars.size, talk.size);
-    // No centro do espaço útil (T64): entre a barra do app e o rodapé, sem
-    // cobrir o enunciado.
-    expect(stars.center.dy, closeTo(430, 1));
-    expect(stars.bottom, lessThanOrEqualTo(footer.top));
-    expect(
-      tester.getRect(find.byKey(LessonKeys.scroll)).top,
-      greaterThan(stars.bottom),
-    );
-    // Explicando (pedido do Gabriel, 2026-10-11), ele sobe para o alto e a
-    // folha da fala fica com o resto da tela.
-    expect(talk.top, lessThan(stars.top));
-  });
+  testWidgets(
+    'D15 escola: explicação e enunciado mantêm tabuleiro no alto e fala abaixo',
+    (tester) async {
+      await pump(tester, intro: 'Short.', size: const Size(412, 860));
+      final talk = tester.getRect(find.byKey(LessonKeys.board));
+      // A folha fechada começa abaixo do tabuleiro, com um vão.
+      expect(
+        tester.getRect(find.byKey(LessonKeys.scroll)).top,
+        greaterThanOrEqualTo(talk.bottom + 8 - 0.5),
+      );
+      await toStars(tester);
+      final stars = tester.getRect(find.byKey(LessonKeys.board));
+      expect(find.byKey(LessonKeys.prompt), findsNothing);
+      final footer = tester.getRect(find.byKey(LessonKeys.footer));
+      expect(stars.size, talk.size);
+      // No centro do espaço útil (T64): entre a barra do app e o rodapé, sem
+      // cobrir o enunciado.
+      expect(stars.top, closeTo(talk.top, 1));
+      expect(stars.bottom, lessThanOrEqualTo(footer.top));
+      expect(
+        tester.getRect(find.byKey(LessonKeys.scroll)).top,
+        greaterThan(stars.bottom),
+      );
+      // Explicando (pedido do Gabriel, 2026-10-11), ele sobe para o alto e a
+      // folha da fala fica com o resto da tela.
+      expect(talk.top, closeTo(stars.top, 1));
+    },
+  );
 }

@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Langkah sebelumnya",
   "explanationNext": "Langkah berikutnya",
   "explanationLast": "Akhir variasi",
-  "explanationReturn": "Kembali ke posisi"
+  "explanationReturn": "Kembali ke posisi",
+  "gameChallengeTitle": "Tantangan {opponent}",
+  "gameDrawOfferTitle": "Tawarkan remis?",
+  "gameDrawOfferHint": "Lawan Anda dapat menerima atau menolak tawaran.",
+  "gameSoundAndVoice": "Suara dan ucapan",
+  "gameSpeechHint": "Anda dapat menonaktifkan komentar {opponent} kapan saja.",
+  "gameSpeechAdjust": "Atur",
+  "lessonReviewIdea": "Tinjau idenya",
+  "lessonSeeSolution": "Lihat solusi",
+  "lessonIncorrectMove": "Langkah salah",
+  "lessonCorrectMove": "Langkah benar",
+  "lessonFailedAlternatives": "Ini juga tidak berhasil",
+  "lessonStillUnsure": "Masih ragu?",
+  "lessonOpenFreeBoard": "Buka di papan bebas"
 }

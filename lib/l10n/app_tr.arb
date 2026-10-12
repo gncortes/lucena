@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Önceki hamle",
   "explanationNext": "Sonraki hamle",
   "explanationLast": "Varyantın sonu",
-  "explanationReturn": "Konuma dön"
+  "explanationReturn": "Konuma dön",
+  "gameChallengeTitle": "{opponent} meydan okuması",
+  "gameDrawOfferTitle": "Beraberlik teklif edilsin mi?",
+  "gameDrawOfferHint": "Rakibiniz teklifi kabul edebilir veya reddedebilir.",
+  "gameSoundAndVoice": "Ses ve konuşma",
+  "gameSpeechHint": "{opponent} yorumlarını istediğiniz zaman kapatabilirsiniz.",
+  "gameSpeechAdjust": "Ayarla",
+  "lessonReviewIdea": "Fikri gözden geçir",
+  "lessonSeeSolution": "Çözümü gör",
+  "lessonIncorrectMove": "Yanlış hamle",
+  "lessonCorrectMove": "Doğru hamle",
+  "lessonFailedAlternatives": "Bunlar da işe yaramıyor",
+  "lessonStillUnsure": "Hâlâ emin değil misin?",
+  "lessonOpenFreeBoard": "Serbest tahtada aç"
 }

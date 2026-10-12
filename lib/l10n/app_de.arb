@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Vorheriger Zug",
   "explanationNext": "Nächster Zug",
   "explanationLast": "Variantenende",
-  "explanationReturn": "Zur Stellung zurück"
+  "explanationReturn": "Zur Stellung zurück",
+  "gameChallengeTitle": "Herausforderung von {opponent}",
+  "gameDrawOfferTitle": "Remis anbieten?",
+  "gameDrawOfferHint": "Dein Gegner kann das Angebot annehmen oder ablehnen.",
+  "gameSoundAndVoice": "Ton und Stimme",
+  "gameSpeechHint": "Du kannst die Kommentare von {opponent} jederzeit ausschalten.",
+  "gameSpeechAdjust": "Anpassen",
+  "lessonReviewIdea": "Idee wiederholen",
+  "lessonSeeSolution": "Lösung ansehen",
+  "lessonIncorrectMove": "Falscher Zug",
+  "lessonCorrectMove": "Richtiger Zug",
+  "lessonFailedAlternatives": "Diese funktionieren auch nicht",
+  "lessonStillUnsure": "Noch unsicher?",
+  "lessonOpenFreeBoard": "Auf dem freien Brett öffnen"
 }

@@ -1076,5 +1076,18 @@
   "explanationPrevious": "前の手",
   "explanationNext": "次の手",
   "explanationLast": "変化の最後",
-  "explanationReturn": "元の局面に戻る"
+  "explanationReturn": "元の局面に戻る",
+  "gameChallengeTitle": "{opponent}のチャレンジ",
+  "gameDrawOfferTitle": "引き分けを提案しますか？",
+  "gameDrawOfferHint": "対戦相手は提案を承諾または拒否できます。",
+  "gameSoundAndVoice": "サウンドと音声",
+  "gameSpeechHint": "{opponent}のコメントはいつでもオフにできます。",
+  "gameSpeechAdjust": "調整",
+  "lessonReviewIdea": "考え方を復習",
+  "lessonSeeSolution": "解答を見る",
+  "lessonIncorrectMove": "誤った手",
+  "lessonCorrectMove": "正しい手",
+  "lessonFailedAlternatives": "これらの手もうまくいきません",
+  "lessonStillUnsure": "まだ疑問がありますか？",
+  "lessonOpenFreeBoard": "自由盤で開く"
 }

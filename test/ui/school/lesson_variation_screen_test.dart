@@ -131,12 +131,15 @@ void main() {
     expect(find.byKey(LessonKeys.variationExit), findsNothing);
   });
 
-  testWidgets('o botão do rodapé abre a variante e as setas andam por ela', (
+  testWidgets('o lance no texto abre a variante e as setas andam por ela', (
     tester,
   ) async {
-    await pump(tester, said);
+    final cubit = await pump(tester, said);
+    final originalStep = cubit.state.step;
+    final originalReached = cubit.state.reached;
     final start = fen(tester);
-    await press(tester, LessonKeys.variationShow);
+    expect(find.byKey(LessonKeys.variationShow), findsNothing);
+    await tapText(tester, 'Rd1+');
     // O primeiro lance já jogado.
     expect(fen(tester), startsWith('1K1k4/1P6/8/8/8/8/r7/3R4'));
     // A linha deste passo não é a errada: sem o selo.
@@ -155,7 +158,9 @@ void main() {
     expect(fen(tester), startsWith('1K6/1P2k3/8/8/8/8/r7/3R4'));
     await press(tester, LessonKeys.variationExit);
     expect(fen(tester), start);
-    expect(find.byKey(LessonKeys.variationShow), findsOneWidget);
+    expect(find.byKey(LessonKeys.variationShow), findsNothing);
+    expect(cubit.state.step, originalStep);
+    expect(cubit.state.reached, originalReached);
   });
 
   testWidgets('fala sem variante: sem o botão', (tester) async {

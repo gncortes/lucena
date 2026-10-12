@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Poprzedni ruch",
   "explanationNext": "Następny ruch",
   "explanationLast": "Koniec wariantu",
-  "explanationReturn": "Wróć do pozycji"
+  "explanationReturn": "Wróć do pozycji",
+  "gameChallengeTitle": "Wyzwanie: {opponent}",
+  "gameDrawOfferTitle": "Zaproponować remis?",
+  "gameDrawOfferHint": "Przeciwnik może przyjąć lub odrzucić propozycję.",
+  "gameSoundAndVoice": "Dźwięk i głos",
+  "gameSpeechHint": "Możesz w każdej chwili wyłączyć komentarze: {opponent}.",
+  "gameSpeechAdjust": "Dostosuj",
+  "lessonReviewIdea": "Powtórz ideę",
+  "lessonSeeSolution": "Zobacz rozwiązanie",
+  "lessonIncorrectMove": "Błędny ruch",
+  "lessonCorrectMove": "Poprawny ruch",
+  "lessonFailedAlternatives": "Te również nie działają",
+  "lessonStillUnsure": "Nadal masz wątpliwości?",
+  "lessonOpenFreeBoard": "Otwórz na swobodnej szachownicy"
 }

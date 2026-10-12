@@ -49,6 +49,7 @@ class TeacherSpeech extends StatelessWidget {
   const TeacherSpeech({
     this.part = TeacherSpeechPart.all,
     this.explanation,
+    this.lessonV2 = false,
     this.onVariation,
     this.activeVariation,
     required this.teacher,
@@ -70,6 +71,7 @@ class TeacherSpeech extends StatelessWidget {
 
   final Character teacher;
   final ExplanationPayload? explanation;
+  final bool lessonV2;
   final ValueChanged<VariationCursor?>? onVariation;
   final VariationCursor? activeVariation;
 
@@ -400,6 +402,7 @@ class TeacherSpeech extends StatelessWidget {
       var paragraphIndex = 0;
       return ExplanationCards(
         payload: payload,
+        lessonV2: lessonV2,
         onVariation: onVariation,
         activeCursor: activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
@@ -430,21 +433,25 @@ class TeacherSpeech extends StatelessWidget {
             ),
         groupedParagraph: (paragraphs) {
           final text = paragraphs.map((p) => p.text).join('\n\n');
+          ExplanationVariation? originOf(SpeechLink link) {
+            var start = 0;
+            for (final paragraph in paragraphs) {
+              final end = start + WikiMarkup.plain(paragraph.text).length;
+              if (link.start >= start && link.start < end) {
+                return paragraph.variation;
+              }
+              start = end + 2;
+            }
+            return null;
+          }
+
           return _bubble(
             context,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
+            originOf: originOf,
             onLinkOverride: (link) {
-              var start = 0;
-              ExplanationVariation? origin;
-              for (final paragraph in paragraphs) {
-                final end = start + WikiMarkup.plain(paragraph.text).length;
-                if (link.start >= start && link.start < end) {
-                  origin = paragraph.variation;
-                  break;
-                }
-                start = end + 2;
-              }
+              final origin = originOf(link);
               final cursor = link.isMove
                   ? payload.cursorForNotation(
                       link.text,
@@ -469,6 +476,7 @@ class TeacherSpeech extends StatelessWidget {
           context,
           WikiMarkup.parse(text),
           useBubbleKey: paragraphIndex++ == 0,
+          originOf: (_) => variation,
           onLinkOverride: variation == null
               ? null
               : (link) {
@@ -558,6 +566,7 @@ class TeacherSpeech extends StatelessWidget {
     MarkedText marked, {
     bool useBubbleKey = true,
     ValueChanged<SpeechLink>? onLinkOverride,
+    ExplanationVariation? Function(SpeechLink)? originOf,
   }) {
     final text = marked.text;
     final theme = Theme.of(context);
@@ -567,7 +576,8 @@ class TeacherSpeech extends StatelessWidget {
     final wiki = wikiOf(context);
     final pages = [
       for (final mark in marked.marks)
-        if (wiki.url(mark.key, language) case final url?) (mark, url),
+        if (!lessonV2)
+          if (wiki.url(mark.key, language) case final url?) (mark, url),
     ];
     final onLink = onLinkOverride ?? this.onLink;
     final links = onLink == null
@@ -583,7 +593,11 @@ class TeacherSpeech extends StatelessWidget {
               ))
                 link,
           ];
-    final style = theme.textTheme.bodyLarge;
+    final section = lessonV2;
+    final style = theme.textTheme.bodyLarge?.copyWith(
+      fontSize: section ? 16 : null,
+      height: section ? 1.5 : null,
+    );
     // As casas e os lances em seminegrito, na cor primária: tocáveis sem
     // parecer link de site.
     final linkStyle = TextStyle(
@@ -596,8 +610,32 @@ class TeacherSpeech extends StatelessWidget {
       decoration: TextDecoration.underline,
       decorationColor: theme.colorScheme.primary,
     );
+    bool isActiveMove(SpeechLink link) {
+      final active = activeVariation;
+      if (!lessonV2 || !link.isMove || active == null) return false;
+      final origin = originOf?.call(link);
+      final cursor = explanation?.cursorForNotation(
+        link.text,
+        preferred: origin,
+        strictPreferred: origin != null,
+      );
+      return cursor != null &&
+          cursor.variation.id == active.variation.id &&
+          cursor.fen == active.fen &&
+          cursor.ply == active.ply;
+    }
+
     final spans = [
-      for (final link in links) (link.start, link.end, linkStyle),
+      for (final link in links)
+        (
+          link.start,
+          link.end,
+          linkStyle.copyWith(
+            backgroundColor: isActiveMove(link)
+                ? theme.colorScheme.primaryContainer
+                : null,
+          ),
+        ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     final words = spans.isEmpty
@@ -642,18 +680,22 @@ class TeacherSpeech extends StatelessWidget {
     final tappable = spans.isEmpty ? null : tapAt;
     final bubble = Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: _stacked
-            ? BorderRadius.circular(AppShape.large)
-            : const BorderRadiusDirectional.only(
-                topEnd: Radius.circular(AppShape.large),
-                bottomStart: Radius.circular(AppShape.large),
-                bottomEnd: Radius.circular(AppShape.large),
-                topStart: Radius.circular(AppShape.small),
-              ),
-      ),
+      padding: section
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: section
+          ? null
+          : BoxDecoration(
+              color: color,
+              borderRadius: _stacked
+                  ? BorderRadius.circular(AppShape.large)
+                  : const BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(AppShape.large),
+                      bottomStart: Radius.circular(AppShape.large),
+                      bottomEnd: Radius.circular(AppShape.large),
+                      topStart: Radius.circular(AppShape.small),
+                    ),
+            ),
       child: Semantics(
         liveRegion: true,
         label: context.l10n.characterSays(teacher.name, text),
@@ -683,7 +725,10 @@ class TeacherSpeech extends StatelessWidget {
         ),
       ),
     );
-    if (!_stacked || _compact(context) || part == TeacherSpeechPart.bubble) {
+    if (section ||
+        !_stacked ||
+        _compact(context) ||
+        part == TeacherSpeechPart.bubble) {
       return bubble;
     }
     return Column(

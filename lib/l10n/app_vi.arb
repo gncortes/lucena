@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Nước trước",
   "explanationNext": "Nước tiếp theo",
   "explanationLast": "Cuối biến",
-  "explanationReturn": "Trở về thế cờ"
+  "explanationReturn": "Trở về thế cờ",
+  "gameChallengeTitle": "Thử thách của {opponent}",
+  "gameDrawOfferTitle": "Đề nghị hòa?",
+  "gameDrawOfferHint": "Đối thủ có thể chấp nhận hoặc từ chối đề nghị.",
+  "gameSoundAndVoice": "Âm thanh và giọng nói",
+  "gameSpeechHint": "Bạn có thể tắt lời bình của {opponent} bất cứ lúc nào.",
+  "gameSpeechAdjust": "Điều chỉnh",
+  "lessonReviewIdea": "Ôn lại ý tưởng",
+  "lessonSeeSolution": "Xem lời giải",
+  "lessonIncorrectMove": "Nước đi sai",
+  "lessonCorrectMove": "Nước đi đúng",
+  "lessonFailedAlternatives": "Những nước này cũng không hiệu quả",
+  "lessonStillUnsure": "Vẫn còn thắc mắc?",
+  "lessonOpenFreeBoard": "Mở trên bàn cờ tự do"
 }

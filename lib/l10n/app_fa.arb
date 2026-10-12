@@ -1076,5 +1076,18 @@
   "explanationPrevious": "حرکت قبلی",
   "explanationNext": "حرکت بعدی",
   "explanationLast": "پایان شاخه",
-  "explanationReturn": "بازگشت به وضعیت اصلی"
+  "explanationReturn": "بازگشت به وضعیت اصلی",
+  "gameChallengeTitle": "چالش {opponent}",
+  "gameDrawOfferTitle": "پیشنهاد تساوی؟",
+  "gameDrawOfferHint": "حریف می‌تواند پیشنهاد را بپذیرد یا رد کند.",
+  "gameSoundAndVoice": "صدا و گفتار",
+  "gameSpeechHint": "هر زمان بخواهید می‌توانید نظرهای {opponent} را خاموش کنید.",
+  "gameSpeechAdjust": "تنظیم",
+  "lessonReviewIdea": "مرور ایده",
+  "lessonSeeSolution": "دیدن راه‌حل",
+  "lessonIncorrectMove": "حرکت نادرست",
+  "lessonCorrectMove": "حرکت درست",
+  "lessonFailedAlternatives": "این حرکت‌ها هم کار نمی‌کنند",
+  "lessonStillUnsure": "هنوز مطمئن نیستید؟",
+  "lessonOpenFreeBoard": "باز کردن در صفحهٔ آزاد"
 }

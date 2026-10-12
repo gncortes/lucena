@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Mossa precedente",
   "explanationNext": "Mossa successiva",
   "explanationLast": "Fine della variante",
-  "explanationReturn": "Torna alla posizione"
+  "explanationReturn": "Torna alla posizione",
+  "gameChallengeTitle": "Sfida di {opponent}",
+  "gameDrawOfferTitle": "Offrire la patta?",
+  "gameDrawOfferHint": "Il tuo avversario può accettare o rifiutare la proposta.",
+  "gameSoundAndVoice": "Suono e voce",
+  "gameSpeechHint": "Puoi disattivare i commenti di {opponent} quando vuoi.",
+  "gameSpeechAdjust": "Regola",
+  "lessonReviewIdea": "Rivedi l’idea",
+  "lessonSeeSolution": "Vedi soluzione",
+  "lessonIncorrectMove": "Mossa errata",
+  "lessonCorrectMove": "Mossa corretta",
+  "lessonFailedAlternatives": "Neanche queste funzionano",
+  "lessonStillUnsure": "Hai ancora dubbi?",
+  "lessonOpenFreeBoard": "Apri sulla scacchiera libera"
 }

@@ -1076,5 +1076,18 @@
   "explanationPrevious": "النقلة السابقة",
   "explanationNext": "النقلة التالية",
   "explanationLast": "نهاية التفرع",
-  "explanationReturn": "العودة إلى الوضع الأصلي"
+  "explanationReturn": "العودة إلى الوضع الأصلي",
+  "gameChallengeTitle": "تحدي {opponent}",
+  "gameDrawOfferTitle": "عرض التعادل؟",
+  "gameDrawOfferHint": "يمكن لخصمك قبول العرض أو رفضه.",
+  "gameSoundAndVoice": "الصوت والكلام",
+  "gameSpeechHint": "يمكنك إيقاف تعليقات {opponent} متى شئت.",
+  "gameSpeechAdjust": "ضبط",
+  "lessonReviewIdea": "مراجعة الفكرة",
+  "lessonSeeSolution": "عرض الحل",
+  "lessonIncorrectMove": "نقلة خاطئة",
+  "lessonCorrectMove": "نقلة صحيحة",
+  "lessonFailedAlternatives": "هذه النقلات لا تنجح أيضًا",
+  "lessonStillUnsure": "هل ما زلت غير متأكد؟",
+  "lessonOpenFreeBoard": "افتح في الرقعة الحرة"
 }

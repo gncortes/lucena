@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Jugada anterior",
   "explanationNext": "Jugada siguiente",
   "explanationLast": "Final de la variante",
-  "explanationReturn": "Volver a la posición"
+  "explanationReturn": "Volver a la posición",
+  "gameChallengeTitle": "Desafío de {opponent}",
+  "gameDrawOfferTitle": "¿Ofrecer tablas?",
+  "gameDrawOfferHint": "El rival puede aceptar o rechazar la oferta.",
+  "gameSoundAndVoice": "Sonido y voz",
+  "gameSpeechHint": "Puedes desactivar los comentarios de {opponent} cuando quieras.",
+  "gameSpeechAdjust": "Ajustar",
+  "lessonReviewIdea": "Repasar la idea",
+  "lessonSeeSolution": "Ver solución",
+  "lessonIncorrectMove": "Jugada incorrecta",
+  "lessonCorrectMove": "Jugada correcta",
+  "lessonFailedAlternatives": "Tampoco funcionan",
+  "lessonStillUnsure": "¿Aún tienes dudas?",
+  "lessonOpenFreeBoard": "Abrir en el tablero libre"
 }

@@ -1075,5 +1075,18 @@
   "explanationPrevious": "[Pŕévîöûš mövé one two]",
   "explanationNext": "[Ñéxt mövé one]",
   "explanationLast": "[Éñd öf lîñé one two]",
-  "explanationReturn": "[Ŕétûŕñ tö pöšîtîöñ one two]"
+  "explanationReturn": "[Ŕétûŕñ tö pöšîtîöñ one two]",
+  "gameChallengeTitle": "[{opponent} Çhålléñĝé one two]",
+  "gameDrawOfferTitle": "[Öfféŕ å dŕåw? one two]",
+  "gameDrawOfferHint": "[Ýöûŕ öppöñéñt çåñ åççépt öŕ déçlîñé thé öfféŕ. one two three four]",
+  "gameSoundAndVoice": "[Šöûñd åñd vöîçé one two]",
+  "gameSpeechHint": "[Ýöû çåñ tûŕñ öff {opponent}’š çömméñtš whéñévéŕ ýöû lîké. one two three four five]",
+  "gameSpeechAdjust": "[Ådjûšt one]",
+  "lessonReviewIdea": "[Ŕévîéw thé îdéå one two]",
+  "lessonSeeSolution": "[Vîéw šölûtîöñ one two]",
+  "lessonIncorrectMove": "[Îñçöŕŕéçt mövé one two]",
+  "lessonCorrectMove": "[Çöŕŕéçt mövé one two]",
+  "lessonFailedAlternatives": "[Théšé dö ñöt wöŕk éîthéŕ one two three]",
+  "lessonStillUnsure": "[Štîll ûñšûŕé? one two]",
+  "lessonOpenFreeBoard": "[Öpéñ îñ thé fŕéé böåŕd one two three]"
 }

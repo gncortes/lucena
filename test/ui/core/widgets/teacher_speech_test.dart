@@ -18,6 +18,69 @@ import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 void main() {
+  testWidgets('V2 highlights repeated SAN only at its own origin', (
+    tester,
+  ) async {
+    ExplanationVariation line(String id, String fen, String text) =>
+        ExplanationVariation(
+          id: id,
+          label: id,
+          outcome: VariationOutcome.accepted,
+          texts: [text],
+          originFen: fen,
+          movesUci: const ['h1h2'],
+          movesSan: const ['1.Kh2'],
+          validated: true,
+        );
+    final a = line('A', '6k1/8/8/8/8/8/3P4/7K w - - 0 1', 'First: 1.Kh2.');
+    final b = line('B', '5k2/8/8/8/8/8/3P4/7K w - - 0 1', 'Second: 1.Kh2.');
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: TeacherSpeech(
+            teacher: FakeCharacterRepository.viktor,
+            text: null,
+            speechContext: SpeechContext.teaching,
+            lessonV2: true,
+            activeVariation: a.open(),
+            onVariation: (_) {},
+            explanation: ExplanationPayload(
+              positionId: 'repeated-san',
+              state: ExplanationState.review,
+              explanations: [
+                for (final variation in [a, b])
+                  ExplanationBlock(
+                    id: variation.id,
+                    kind: ExplanationKind.mainSolution,
+                    texts: variation.texts,
+                    variations: [variation],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    Color? background(String paragraph) {
+      final rich = tester
+          .widgetList<RichText>(find.byType(RichText))
+          .singleWhere((widget) => widget.text.toPlainText() == paragraph);
+      TextSpan? move;
+      rich.text.visitChildren((span) {
+        if (span is TextSpan && (span.text?.contains('Kh2') ?? false)) {
+          move = span;
+        }
+        return true;
+      });
+      expect(move, isNotNull);
+      return move!.style?.backgroundColor;
+    }
+
+    expect(background('First: 1.Kh2.'), isNotNull);
+    expect(background('Second: 1.Kh2.'), isNull);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'one bubble joins paragraphs and verified inline move replaces SAN button',
     (tester) async {

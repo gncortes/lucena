@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Предыдущий ход",
   "explanationNext": "Следующий ход",
   "explanationLast": "Конец варианта",
-  "explanationReturn": "Вернуться к позиции"
+  "explanationReturn": "Вернуться к позиции",
+  "gameChallengeTitle": "Испытание: {opponent}",
+  "gameDrawOfferTitle": "Предложить ничью?",
+  "gameDrawOfferHint": "Соперник может принять или отклонить предложение.",
+  "gameSoundAndVoice": "Звук и голос",
+  "gameSpeechHint": "Вы можете в любой момент отключить комментарии: {opponent}.",
+  "gameSpeechAdjust": "Настроить",
+  "lessonReviewIdea": "Повторить идею",
+  "lessonSeeSolution": "Посмотреть решение",
+  "lessonIncorrectMove": "Неверный ход",
+  "lessonCorrectMove": "Верный ход",
+  "lessonFailedAlternatives": "Эти ходы тоже не работают",
+  "lessonStillUnsure": "Остались сомнения?",
+  "lessonOpenFreeBoard": "Открыть на свободной доске"
 }

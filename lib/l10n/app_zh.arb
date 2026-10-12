@@ -1076,5 +1076,18 @@
   "explanationPrevious": "上一步",
   "explanationNext": "下一步",
   "explanationLast": "变化终点",
-  "explanationReturn": "返回原局面"
+  "explanationReturn": "返回原局面",
+  "gameChallengeTitle": "{opponent}的挑战",
+  "gameDrawOfferTitle": "提议和棋？",
+  "gameDrawOfferHint": "对手可以接受或拒绝提议。",
+  "gameSoundAndVoice": "声音和语音",
+  "gameSpeechHint": "你可以随时关闭{opponent}的评论。",
+  "gameSpeechAdjust": "调整",
+  "lessonReviewIdea": "复习思路",
+  "lessonSeeSolution": "查看解答",
+  "lessonIncorrectMove": "错误着法",
+  "lessonCorrectMove": "正确着法",
+  "lessonFailedAlternatives": "这些着法也不行",
+  "lessonStillUnsure": "还有疑问？",
+  "lessonOpenFreeBoard": "在自由棋盘中打开"
 }

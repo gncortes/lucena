@@ -27,7 +27,10 @@ import '../../conclusion/view_models/conclusion_cubit.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
 import 'clock_row.dart';
+import 'game_actions_bar.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import 'character_bar.dart';
+import 'sound_dialog.dart';
 import 'clock_sheet.dart';
 import '../../core/widgets/versus_intro.dart';
 import 'move_list.dart';
@@ -84,10 +87,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     }
   }
 
+  Future<void> _confirmDraw() async {
+    final cubit = context.read<FreeBoardCubit>();
+    final confirmed = await showDrawSheet(context);
+    if ((confirmed ?? false) && mounted && cubit.state.canOfferDraw) {
+      cubit.offerDraw();
+    }
+  }
+
   Future<void> _confirmResign() async {
     final cubit = context.read<FreeBoardCubit>();
     final confirmed = await showResignSheet(context);
-    if (confirmed ?? false) cubit.resign();
+    if ((confirmed ?? false) && mounted) cubit.resign();
   }
 
   @override
@@ -221,73 +232,94 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
           (cubit.state?.clock ?? const ClockSettings()).position,
     );
     final talk = context.watch<TalkCubit>().state;
-    return BlocListener<FreeBoardCubit, FreeBoardState>(
-      // O personagem vê cada lance, o fim e a partida nova.
+    return BlocListener<TalkCubit, TalkState>(
       listenWhen: (previous, current) =>
-          previous.ready != current.ready ||
-          previous.ucis.length != current.ucis.length ||
-          previous.end != current.end ||
-          previous.startedAt != current.startedAt ||
-          previous.drawOffer != current.drawOffer,
-      listener: (context, state) => context.read<TalkCubit>().update(state),
-      child: BlocListener<FreeBoardCubit, FreeBoardState>(
-        // A máquina recusou o empate: um aviso curto, além da fala.
-        listenWhen: (previous, current) =>
-            previous.drawOffer != current.drawOffer &&
-            current.drawOffer == DrawOffer.declined,
-        listener: (context, state) => ScaffoldMessenger.of(context)
+          previous.speechHintVersion != current.speechHintVersion,
+      listener: (context, state) {
+        final name = state.character?.name;
+        if (name == null) return;
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
-              key: FreeBoardKeys.drawDeclined,
-              content: Text(context.l10n.gameDrawDeclined),
+              key: FreeBoardKeys.speechHint,
+              content: Text(context.l10n.gameSpeechHint(name)),
+              action: SnackBarAction(
+                key: FreeBoardKeys.speechHintAdjust,
+                label: context.l10n.gameSpeechAdjust,
+                onPressed: () => showGameSoundDialog(context),
+              ),
             ),
-          ),
+          );
+      },
+      child: BlocListener<FreeBoardCubit, FreeBoardState>(
+        // O personagem vê cada lance, o fim e a partida nova.
+        listenWhen: (previous, current) =>
+            previous.ready != current.ready ||
+            previous.ucis.length != current.ucis.length ||
+            previous.end != current.end ||
+            previous.startedAt != current.startedAt ||
+            previous.drawOffer != current.drawOffer,
+        listener: (context, state) => context.read<TalkCubit>().update(state),
         child: BlocListener<FreeBoardCubit, FreeBoardState>(
-          // A partida contra a máquina terminou agora: a tela de conclusão
-          // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
-          // fica embaixo do tabuleiro.
-          listenWhen: (previous, current) => previous.end != current.end,
-          listener: (context, state) {
-            if (state.end == null || !state.mode.opponent.isMachine) return;
-            unawaited(_conclude(context, cubit, state));
-          },
-          child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
-            // O tabuleiro só é refeito quando a partida muda, não a cada tique do
-            // relógio.
-            listenWhen: (previous, current) =>
-                !identical(previous.position, current.position) ||
-                previous.moves.length != current.moves.length ||
-                previous.viewedPly != current.viewedPly ||
-                previous.end != current.end ||
-                previous.playerSide != current.playerSide ||
-                previous.machineThinking != current.machineThinking,
-            listener: (context, state) => _onStateChanged(state),
-            builder: (context, state) {
-              // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-              // guarda a partida. No meio de um speedrun, sair encerra a
-              // tentativa: antes, a confirmação.
-              final speedrunOpen =
-                  state.mode.isSpeedrun && state.end == null && !_quitting;
-              return PopScope(
-                canPop: !speedrunOpen,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (didPop) {
-                    if (!state.mode.isSpeedrun) unawaited(cubit.leave());
-                  } else {
-                    unawaited(_confirmQuitSpeedrun(cubit));
-                  }
-                },
-                child: _scaffold(
-                  context,
-                  cubit,
-                  state,
-                  boardSettings,
-                  clockPosition,
-                  talk,
-                ),
-              );
+          // A máquina recusou o empate: um aviso curto, além da fala.
+          listenWhen: (previous, current) =>
+              previous.drawOffer != current.drawOffer &&
+              current.drawOffer == DrawOffer.declined,
+          listener: (context, state) => ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                key: FreeBoardKeys.drawDeclined,
+                content: Text(context.l10n.gameDrawDeclined),
+              ),
+            ),
+          child: BlocListener<FreeBoardCubit, FreeBoardState>(
+            // A partida contra a máquina terminou agora: a tela de conclusão
+            // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
+            // fica embaixo do tabuleiro.
+            listenWhen: (previous, current) => previous.end != current.end,
+            listener: (context, state) {
+              if (state.end == null || !state.mode.opponent.isMachine) return;
+              unawaited(_conclude(context, cubit, state));
             },
+            child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
+              // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+              // relógio.
+              listenWhen: (previous, current) =>
+                  !identical(previous.position, current.position) ||
+                  previous.moves.length != current.moves.length ||
+                  previous.viewedPly != current.viewedPly ||
+                  previous.end != current.end ||
+                  previous.playerSide != current.playerSide ||
+                  previous.machineThinking != current.machineThinking,
+              listener: (context, state) => _onStateChanged(state),
+              builder: (context, state) {
+                // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+                // guarda a partida. No meio de um speedrun, sair encerra a
+                // tentativa: antes, a confirmação.
+                final speedrunOpen =
+                    state.mode.isSpeedrun && state.end == null && !_quitting;
+                return PopScope(
+                  canPop: !speedrunOpen,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (didPop) {
+                      if (!state.mode.isSpeedrun) unawaited(cubit.leave());
+                    } else {
+                      unawaited(_confirmQuitSpeedrun(cubit));
+                    }
+                  },
+                  child: _scaffold(
+                    context,
+                    cubit,
+                    state,
+                    boardSettings,
+                    clockPosition,
+                    talk,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -307,10 +339,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     if (!state.ready) {
       return Scaffold(
         key: FreeBoardKeys.screen,
-        appBar: AppBar(title: Text(context.l10n.freeBoardTitle)),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(context.l10n.freeBoardTitle),
+        ),
       );
     }
-    final goal = state.mode.goal;
     final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
@@ -328,51 +362,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
           ),
         ),
-        // No treino a barra fica só com os botões: o objetivo aparece no fim.
-        title: goal == null ? Text(context.l10n.freeBoardTitle) : null,
-        // No treino, só propor empate e desistir; virar, trocar o relógio e
-        // recomeçar ficam no tabuleiro livre.
-        actions: training
-            ? [
-                // O som do personagem: liga e desliga a voz dele, e fica
-                // gravado.
-                if (talk.character != null && !talk.isEngine)
-                  const CharacterSoundButton(),
-                if (state.end == null && state.mode.opponent.isMachine) ...[
-                  IconButton(
-                    key: FreeBoardKeys.drawButton,
-                    icon: const Icon(Icons.handshake_outlined),
-                    tooltip: context.l10n.gameOfferDraw,
-                    onPressed: state.canOfferDraw ? cubit.offerDraw : null,
-                  ),
-                  IconButton(
-                    key: FreeBoardKeys.resignButton,
-                    icon: const Icon(Icons.flag_outlined),
-                    tooltip: context.l10n.gameResign,
-                    onPressed: _confirmResign,
-                  ),
-                ],
-              ]
-            : [
-                IconButton(
-                  key: FreeBoardKeys.flipButton,
-                  icon: const Icon(Icons.swap_vert),
-                  tooltip: context.l10n.freeBoardFlip,
-                  onPressed: cubit.flip,
-                ),
-                IconButton(
-                  key: FreeBoardKeys.clockButton,
-                  icon: const Icon(Icons.av_timer_outlined),
-                  tooltip: context.l10n.freeBoardClock,
-                  onPressed: _pickClock,
-                ),
-                IconButton(
-                  key: FreeBoardKeys.newGameButton,
-                  icon: const Icon(Icons.add),
-                  tooltip: context.l10n.freeBoardNewGame,
-                  onPressed: cubit.newGame,
-                ),
-              ],
+        centerTitle: true,
+        title: Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: BoardViewport(
         usefulHeight: BoardViewport.usefulHeightOf(context),
@@ -389,7 +380,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final nickname = context.select(
                 (ProfileCubit cubit) => cubit.state?.nickname ?? '',
               );
-              // A referência inclui a barra do app e a faixa de lances.
+              // A referência inclui a barra do app, a faixa de lances e ações.
               // Retrato, nome e relógio compartilham uma única linha;
               // o balão flutua e não reserva altura.
               final clocksAbove =
@@ -404,9 +395,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final reserveTop = clocksAbove;
               final centering = BoardCentering(
                 constraints.biggest,
-                gap: 0,
+                gap: 12,
                 reserveTop: reserveTop,
                 reserveBottom: clocksBelow,
+                footer: 76,
                 centerY: BoardViewport.centerYOf(context),
               );
               const both = [Side.white, Side.black];
@@ -418,10 +410,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 children: [
                   CenteredBoardLayout(
                     key: FreeBoardKeys.scrollArea,
-                    gap: 0,
+                    gap: 12,
                     centerY: BoardViewport.centerYOf(context),
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
+                    footer: GameActionsBar(
+                      training: training,
+                      onResign:
+                          state.end == null && state.mode.opponent.isMachine
+                          ? _confirmResign
+                          : null,
+                      onDraw: state.canOfferDraw ? _confirmDraw : null,
+                      onFlip: cubit.flip,
+                      onClock: _pickClock,
+                      onNewGame: cubit.newGame,
+                      showSound: true,
+                    ),
                     // Enquanto o tabuleiro termina o voo, a barra do
                     // adversário desce do alto e a do jogador sobe de baixo.
                     top: GameEntrance(
@@ -444,10 +448,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 board: boardSettings,
                                 talk: talk,
                               ),
-                              speechTop:
-                                  centering.roomAbove - ClockRow.height >= 80
-                                  ? -80
-                                  : ClockRow.height,
+                              speechTop: -80,
                             ),
                           if (character == null && clocks == ClockPosition.top)
                             ClockRow(
@@ -564,8 +565,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 board: boardSettings,
                                 talk: talk,
                               ),
-                              // O balão acompanha a barra escolhida pelo jogador.
-                              speechTop: -80,
+                              // Mesmo com os relógios embaixo, a fala ocupa
+                              // apenas a região acima do tabuleiro.
+                              speechTop: -(centering.side + 24 + 80),
                             ),
                           if (clocks == ClockPosition.bottom &&
                               character == null)
@@ -599,6 +601,17 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         ),
       ),
     );
+  }
+
+  String _title(BuildContext context, FreeBoardState state, TalkState talk) {
+    final l10n = context.l10n;
+    if (state.mode.isSpeedrun) return l10n.speedrunTitle;
+    if (state.mode.challengeId != null && talk.character != null) {
+      return l10n.gameChallengeTitle(talk.character!.name);
+    }
+    final parts = state.mode.positionId?.split('.');
+    if (parts != null && parts.length > 1) return endgameName(l10n, parts[1]);
+    return l10n.freeBoardTitle;
   }
 
   static bool _ultraBullet(FreeBoardState state) {
@@ -804,47 +817,111 @@ class _TwoPlayersEnd extends StatelessWidget {
 }
 
 /// Pergunta antes de desistir. Devolve verdadeiro se o jogador confirmou.
-Future<bool?> showResignSheet(BuildContext context) {
-  return showModalBottomSheet<bool>(
-    context: context,
-    showDragHandle: true,
-    useSafeArea: true,
-    builder: (context) {
-      final theme = Theme.of(context);
-      final l10n = context.l10n;
-      return SafeArea(
-        top: false,
-        child: Padding(
-          key: FreeBoardKeys.resignSheet,
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(l10n.gameResignTitle, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                l10n.gameResignHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+Future<bool?> showResignSheet(BuildContext context) => _showGameConfirmation(
+  context,
+  sheetKey: FreeBoardKeys.resignSheet,
+  confirmKey: FreeBoardKeys.resignConfirmButton,
+  title: context.l10n.gameResignTitle,
+  hint: context.l10n.gameResignHint,
+  action: context.l10n.gameResign,
+  icon: Icons.flag_outlined,
+  destructive: true,
+);
+
+/// A oferta só chega ao adversário depois da confirmação explícita.
+Future<bool?> showDrawSheet(BuildContext context) => _showGameConfirmation(
+  context,
+  sheetKey: FreeBoardKeys.drawSheet,
+  confirmKey: FreeBoardKeys.drawConfirmButton,
+  title: context.l10n.gameDrawOfferTitle,
+  hint: context.l10n.gameDrawOfferHint,
+  action: context.l10n.gameOfferDraw,
+  icon: Icons.handshake_outlined,
+);
+
+Future<bool?> _showGameConfirmation(
+  BuildContext context, {
+  required Key sheetKey,
+  required Key confirmKey,
+  required String title,
+  required String hint,
+  required String action,
+  required IconData icon,
+  bool destructive = false,
+}) => showModalBottomSheet<bool>(
+  context: context,
+  backgroundColor: Colors.transparent,
+  useSafeArea: true,
+  builder: (context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16, bottom: 12),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Material(
+              color: Colors.white,
+              elevation: 4,
+              shape: const CircleBorder(),
+              child: IconButton(
+                key: FreeBoardKeys.confirmationClose,
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(44, 44),
+                  maximumSize: const Size(44, 44),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                key: FreeBoardKeys.resignConfirmButton,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  backgroundColor: theme.colorScheme.error,
-                  foregroundColor: theme.colorScheme.onError,
+                constraints: const BoxConstraints.tightFor(
+                  width: 44,
+                  height: 44,
                 ),
-                icon: const Icon(Icons.flag),
-                onPressed: () => Navigator.of(context).pop(true),
-                label: Text(l10n.gameResign),
+                color: Colors.black87,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () => Navigator.of(context).pop(false),
+                icon: const Icon(Icons.close),
               ),
-            ],
+            ),
           ),
         ),
-      );
-    },
-  );
-}
+        Material(
+          key: sheetKey,
+          color: theme.colorScheme.surfaceContainerLow,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(title, style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 12),
+                  Text(hint, style: theme.textTheme.bodyMedium),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    key: confirmKey,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(48),
+                      backgroundColor: destructive
+                          ? theme.colorScheme.error
+                          : null,
+                      foregroundColor: destructive
+                          ? theme.colorScheme.onError
+                          : null,
+                    ),
+                    icon: Icon(icon),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    label: Text(action),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  },
+);

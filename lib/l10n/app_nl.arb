@@ -1076,5 +1076,18 @@
   "explanationPrevious": "Vorige zet",
   "explanationNext": "Volgende zet",
   "explanationLast": "Einde van de variant",
-  "explanationReturn": "Terug naar de stelling"
+  "explanationReturn": "Terug naar de stelling",
+  "gameChallengeTitle": "Uitdaging van {opponent}",
+  "gameDrawOfferTitle": "Remise aanbieden?",
+  "gameDrawOfferHint": "Je tegenstander kan het aanbod accepteren of weigeren.",
+  "gameSoundAndVoice": "Geluid en stem",
+  "gameSpeechHint": "Je kunt de opmerkingen van {opponent} op elk moment uitschakelen.",
+  "gameSpeechAdjust": "Aanpassen",
+  "lessonReviewIdea": "Het idee herhalen",
+  "lessonSeeSolution": "Oplossing bekijken",
+  "lessonIncorrectMove": "Onjuiste zet",
+  "lessonCorrectMove": "Juiste zet",
+  "lessonFailedAlternatives": "Deze werken ook niet",
+  "lessonStillUnsure": "Nog twijfels?",
+  "lessonOpenFreeBoard": "Openen op het vrije bord"
 }

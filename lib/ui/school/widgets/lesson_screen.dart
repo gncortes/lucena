@@ -28,6 +28,7 @@ import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
+import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/step_timer.dart';
@@ -265,8 +266,24 @@ class _LessonScreenState extends State<LessonScreen>
   LessonState _previous = const LessonState();
 
   /// O layout que o estado pede: 0 resolvendo, 1 explicando.
-  static double _targetOf(LessonState state) =>
-      state.fen != null && state.layout == LessonLayoutMode.solving ? 0 : 1;
+  double _targetOf(BuildContext context, LessonState state) {
+    final step = state.current;
+    final speech = state.layout == LessonLayoutMode.solving && step != null
+        ? _promptText(context, state, step)
+        : _said(context, state);
+    final hasSpeech =
+        state.viktor != null &&
+        ((speech?.trim().isNotEmpty ?? false) ||
+            (state.explanation?.explanations.any(
+                  (b) => b.texts.isNotEmpty || b.variations.isNotEmpty,
+                ) ??
+                false));
+    return state.fen != null &&
+            state.layout == LessonLayoutMode.solving &&
+            !hasSpeech
+        ? 0
+        : 1;
+  }
 
   /// Leva o tabuleiro ao layout [target]: animado, ou direto na abertura da
   /// tela e com "reduzir movimento" ligado.
@@ -299,7 +316,7 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.layout == LessonLayoutMode.solving) {
       _elapsed.value = cubit.stepElapsed;
     }
-    final target = _targetOf(state);
+    final target = _targetOf(context, state);
     final modeChanged = target != _target;
     if (modeChanged) {
       _setMode(context, target, animate: previous.current != null);
@@ -385,15 +402,6 @@ class _LessonScreenState extends State<LessonScreen>
       bases,
     );
     return _lines;
-  }
-
-  /// A primeira variante de verdade da fala (dois lances ou mais), para o
-  /// botão do rodapé.
-  SpeechLine? _mainLine(BuildContext context, LessonState state) {
-    for (final line in _linesOf(context, state)) {
-      if (line.length >= 2) return line;
-    }
-    return null;
   }
 
   /// O toque num trecho da fala: o lance de uma variante abre o tabuleiro
@@ -580,7 +588,7 @@ class _LessonScreenState extends State<LessonScreen>
         builder: (context, state) {
           if (state.fen != null && state.current != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
-            _setMode(context, _targetOf(state), animate: false);
+            _setMode(context, _targetOf(context, state), animate: false);
             _elapsed.value = cubit.stepElapsed;
           }
           final lesson = state.lesson;
@@ -1259,6 +1267,7 @@ class _LessonScreenState extends State<LessonScreen>
     final theme = Theme.of(context);
     return TeacherSpeech(
       part: part,
+      lessonV2: true,
       teacher: viktor,
       explanation:
           state.layout == LessonLayoutMode.solving && state.explanation == null
@@ -1349,19 +1358,55 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           ),
         if (step is TapStep) _guide(context, state, step),
-        if (state.link case final reference?)
+        if (state.layout == LessonLayoutMode.explaining && state.fen != null)
           Padding(
-            // No canto de início, logo abaixo do balão (alinhado à
-            // borda dele).
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
-            child: ReferenceLink(
-              key: LessonKeys.referenceLink,
-              reference: reference,
-              blackBelow: step?.side == Side.black,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.lessonStillUnsure,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  key: LessonV2Keys.openFreeBoard,
+                  onPressed: () => context.push(
+                    Routes.freeBoardAt(
+                      _authoredVariation?.fen ??
+                          _variation.value?.fen ??
+                          state.fen!,
+                      view: (step?.side ?? Side.white).name,
+                    ),
+                  ),
+                  icon: const Icon(Icons.grid_on),
+                  label: Text(context.l10n.lessonOpenFreeBoard),
+                ),
+              ],
             ),
           ),
+        if (state.link case final reference?)
+          if (state.fen == null || !_isWikipedia(reference.url))
+            Padding(
+              // No canto de início, logo abaixo do balão (alinhado à
+              // borda dele).
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
+              child: ReferenceLink(
+                key: LessonKeys.referenceLink,
+                reference: reference,
+                blackBelow: step?.side == Side.black,
+              ),
+            ),
       ],
     );
+  }
+
+  bool _isWikipedia(String? url) {
+    final host = url == null ? null : Uri.tryParse(url)?.host.toLowerCase();
+    return host == 'wikipedia.org' ||
+        (host?.endsWith('.wikipedia.org') ?? false);
   }
 
   /// O esmaecer no fim da tela, por trás dos botões: a fala usa a tela até
@@ -1557,9 +1602,118 @@ class _LessonScreenState extends State<LessonScreen>
       );
     }
     final review = state.phase == StepPhase.failed && state.reviewStep != null;
-    final line = state.phase == StepPhase.waiting || review
-        ? null
-        : _mainLine(context, state);
+    if (state.phase == StepPhase.failed) {
+      VariationCursor? solution;
+      for (final block
+          in state.explanation?.explanations ?? const <ExplanationBlock>[]) {
+        if (block.kind != ExplanationKind.mainSolution &&
+            block.kind != ExplanationKind.playedCorrect &&
+            block.kind != ExplanationKind.otherSolutions) {
+          continue;
+        }
+        for (final variation in block.variations) {
+          if (variation.parentId != null) continue;
+          solution = state.explanation?.openVariation(variation);
+          if (solution != null) break;
+        }
+        if (solution != null) break;
+      }
+      final solutionCursor = solution;
+      Widget action(
+        Key key,
+        IconData icon,
+        String label,
+        VoidCallback? onPressed, {
+        bool primary = false,
+        bool tonal = false,
+      }) {
+        final style = FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          textStyle: Theme.of(context).textTheme.labelLarge,
+        );
+        final content = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(width: 8),
+            Flexible(child: Text(label, textAlign: TextAlign.center)),
+          ],
+        );
+        return Expanded(
+          child: primary
+              ? FilledButton(
+                  key: key,
+                  style: style,
+                  onPressed: onPressed,
+                  child: content,
+                )
+              : tonal
+              ? FilledButton.tonal(
+                  key: key,
+                  style: style,
+                  onPressed: onPressed,
+                  child: content,
+                )
+              : OutlinedButton(
+                  key: key,
+                  style: style,
+                  onPressed: onPressed,
+                  child: content,
+                ),
+        );
+      }
+
+      return _footer(
+        context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                action(
+                  LessonKeys.backButton,
+                  Icons.arrow_back,
+                  l10n.lessonPrevious,
+                  state.canGoBack ? cubit.back : null,
+                ),
+                const SizedBox(width: 8),
+                action(
+                  LessonKeys.reviewPoint,
+                  Icons.auto_stories_outlined,
+                  l10n.lessonReviewIdea,
+                  review ? cubit.reviewPoint : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                action(
+                  LessonKeys.nextButton,
+                  Icons.visibility_outlined,
+                  l10n.lessonSeeSolution,
+                  solutionCursor != null
+                      ? () => _showAuthoredVariation(solutionCursor)
+                      : state.canContinue
+                      ? cubit.next
+                      : null,
+                  tonal: true,
+                ),
+                const SizedBox(width: 8),
+                action(
+                  LessonKeys.retryButton,
+                  Icons.replay,
+                  l10n.lessonRetry,
+                  cubit.retry,
+                  primary: true,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
     return _footer(
       context,
       child: Row(
@@ -1580,45 +1734,7 @@ class _LessonScreenState extends State<LessonScreen>
             const SizedBox(width: 8),
           ],
           if (state.phase == StepPhase.waiting) _waiting(context),
-          // A variante citada na fala: o aluno anda por ela com as setas,
-          // sem ler a linha até o fim.
-          if (line != null)
-            Flexible(
-              flex: 4,
-              child: _FooterAction(
-                key: LessonKeys.variationShow,
-                onPressed: () => _showLine(context, SpeechLineCursor(line, 1)),
-                icon: Icons.call_split,
-                label: l10n.lessonVariationShow,
-                background: colors.surface,
-                foreground: colors.primary,
-              ),
-            ),
-          // O lance errado previsto: rever o ponto da lição que o explica.
-          if (review)
-            Flexible(
-              flex: 4,
-              child: _FooterAction(
-                key: LessonKeys.reviewPoint,
-                onPressed: cubit.reviewPoint,
-                icon: Icons.auto_stories_outlined,
-                label: l10n.lessonReviewPoint,
-                background: colors.surface,
-                foreground: colors.primary,
-              ),
-            ),
           const Spacer(),
-          if (state.phase == StepPhase.failed)
-            FloatingActionButton.extended(
-              key: LessonKeys.retryButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              onPressed: cubit.retry,
-              icon: const Icon(Icons.replay),
-              label: Text(l10n.lessonRetry),
-            ),
           if (state.canContinue)
             FloatingActionButton.extended(
               key: LessonKeys.nextButton,

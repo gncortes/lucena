@@ -1076,5 +1076,18 @@
   "explanationPrevious": "이전 수",
   "explanationNext": "다음 수",
   "explanationLast": "변화 끝",
-  "explanationReturn": "원래 포지션으로 돌아가기"
+  "explanationReturn": "원래 포지션으로 돌아가기",
+  "gameChallengeTitle": "{opponent}의 도전",
+  "gameDrawOfferTitle": "무승부를 제안할까요?",
+  "gameDrawOfferHint": "상대는 제안을 수락하거나 거절할 수 있습니다.",
+  "gameSoundAndVoice": "소리와 음성",
+  "gameSpeechHint": "언제든지 {opponent}의 해설을 끌 수 있습니다.",
+  "gameSpeechAdjust": "조정",
+  "lessonReviewIdea": "아이디어 복습",
+  "lessonSeeSolution": "해답 보기",
+  "lessonIncorrectMove": "잘못된 수",
+  "lessonCorrectMove": "올바른 수",
+  "lessonFailedAlternatives": "이 수들도 통하지 않습니다",
+  "lessonStillUnsure": "아직 궁금한 점이 있나요?",
+  "lessonOpenFreeBoard": "자유 보드에서 열기"
 }
