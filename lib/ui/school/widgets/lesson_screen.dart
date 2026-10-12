@@ -1,3 +1,5 @@
+import '../../../domain/models/explanation.dart';
+
 import 'dart:async';
 import 'dart:math';
 
@@ -76,6 +78,8 @@ class _LessonScreenState extends State<LessonScreen>
   // A variante citada na fala, aberta no tabuleiro (lance a lance). Nula: o
   // tabuleiro mostra o passo. Fica na tela: sobrevive ao segundo plano e
   // sai sozinha quando o passo, a posição ou a fala mudam.
+  VariationCursor? _authoredVariation;
+
   final _variation = ValueNotifier<SpeechLineCursor?>(null);
 
   // As variantes da fala mostrada, guardadas pela fala e pelas posições.
@@ -130,7 +134,9 @@ class _LessonScreenState extends State<LessonScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final background = state != AppLifecycleState.resumed;
-    if (background == _background) return;
+    if (background == _background) {
+      return;
+    }
     _background = background;
     final cubit = context.read<LessonCubit>();
     final speech = TeacherSpeech.speechOf(context);
@@ -151,10 +157,14 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   void _tick() {
-    if (!mounted || _background) return;
+    if (!mounted || _background) {
+      return;
+    }
     final cubit = context.read<LessonCubit>();
     final state = cubit.state;
-    if (state.finished) return;
+    if (state.finished) {
+      return;
+    }
     final elapsed = cubit.stepElapsed;
     final difference = elapsed - (_lastTickElapsed ?? elapsed);
     final delta = difference.isNegative ? Duration.zero : difference;
@@ -175,6 +185,9 @@ class _LessonScreenState extends State<LessonScreen>
   /// com a voz, espera ela terminar e mais uma pausa; sem voz, um tempo de
   /// leitura pelo tamanho da fala. A velocidade da voz vale para os dois.
   void _paceDemo(LessonCubit cubit, LessonState state, Duration delta) {
+    if (_authoredVariation != null || _variation.value != null) {
+      return;
+    }
     final at = '${state.current!.id}:${state.demoMove}';
     if (_demoAt != at) {
       _demoAt = at;
@@ -272,6 +285,12 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
+    if (state.fen != previous.fen ||
+        state.step != previous.step ||
+        state.speech != previous.speech ||
+        state.layout != previous.layout) {
+      _authoredVariation = null;
+    }
     _previous = state;
     final cubit = context.read<LessonCubit>();
     // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
@@ -315,10 +334,17 @@ class _LessonScreenState extends State<LessonScreen>
           state.fen != previous.fen ||
           state.speech != previous.speech ||
           state.layout != previous.layout;
-      if (!changed) return;
+      if (!changed) {
+        return;
+      }
       _variation.value = null;
     }
-    if (state.fen == null || state.current == null) return;
+    if (state.fen == null || state.current == null) {
+      return;
+    }
+    if (_authoredVariation != null) {
+      return;
+    }
     final board = _board;
     if (board == null) {
       _board = ChessboardController(game: _gameData(state));
@@ -374,6 +400,24 @@ class _LessonScreenState extends State<LessonScreen>
   /// nela, com o lance jogado (de novo no mesmo lance, volta ao passo); a
   /// casa, ou o lance que não se joga ali, só se destaca.
   void _onLink(BuildContext context, LessonState state, SpeechLink link) {
+    if (state.explanation != null || _authoredVariation != null) {
+      final cursor = link.isMove
+          ? state.explanation?.cursorForNotation(
+              link.text,
+              preferred: _authoredVariation?.variation,
+            )
+          : null;
+      if (cursor != null) {
+        _showAuthoredVariation(cursor);
+      } else {
+        _flash.toggle(
+          link,
+          fen: _authoredVariation?.fen ?? state.fen,
+          color: Theme.of(context).colorScheme.primary,
+        );
+      }
+      return;
+    }
     final line = link.isMove
         ? SpeechLines.lineOf(_linesOf(context, state), link)
         : null;
@@ -418,12 +462,46 @@ class _LessonScreenState extends State<LessonScreen>
     }
   }
 
+  void _showAuthoredVariation(VariationCursor? cursor) {
+    _flash.clear();
+    _variation.value = null;
+    setState(() => _authoredVariation = cursor);
+    final state = context.read<LessonCubit>().state;
+    if (cursor == null) {
+      _board?.updatePosition(
+        _gameData(state),
+        animate: true,
+        resetPremove: true,
+      );
+    } else {
+      final position = GameRules.fromFen(cursor.fen);
+      _board?.updatePosition(
+        GameData(
+          fen: cursor.fen,
+          playerSide: PlayerSide.none,
+          sideToMove: position?.turn ?? Side.white,
+          validMoves: const {},
+          lastMove: cursor.lastMove,
+          kingSquareInCheck: position == null
+              ? null
+              : GameRules.checkedKing(position),
+        ),
+        animate: true,
+        resetPremove: true,
+      );
+    }
+  }
+
   /// Fecha a variante: o tabuleiro volta à posição do passo.
   void _exitLine() {
-    if (_variation.value == null) return;
+    if (_variation.value == null) {
+      return;
+    }
     _variation.value = null;
     final state = context.read<LessonCubit>().state;
-    if (state.fen == null || state.current == null) return;
+    if (state.fen == null || state.current == null) {
+      return;
+    }
     _board?.updatePosition(_gameData(state), animate: true, resetPremove: true);
   }
 
@@ -454,6 +532,10 @@ class _LessonScreenState extends State<LessonScreen>
         ?state.speech,
       ].join('\n\n');
     }
+    return _baseSpeech(context, state);
+  }
+
+  String? _baseSpeech(BuildContext context, LessonState state) {
     if (!state.genericMistake) return state.speech;
     final lesson = state.lesson;
     final part = state.part;
@@ -996,6 +1078,7 @@ class _LessonScreenState extends State<LessonScreen>
           listenable: Listenable.merge([_flash, _variation]),
           builder: (context, _) {
             final variation = _variation.value;
+            final previewFen = _authoredVariation?.fen ?? variation?.fen;
             final chessboard = Chessboard(
               key: LessonKeys.board,
               size: size,
@@ -1007,13 +1090,14 @@ class _LessonScreenState extends State<LessonScreen>
               orientation: step.side,
               // O destaque da fala, só na posição em que foi tocado.
               // Na variante, só o destaque dela: as marcações são do passo.
-              shapes: variation != null
-                  ? _flash.shapesFor(variation.fen)
+              shapes: previewFen != null
+                  ? _flash.shapesFor(previewFen)
                   : {...shapes, ..._flash.shapesFor(state.fen ?? step.fen)},
-              onMove: (move, {viaDragAndDrop}) =>
-                  context.read<LessonCubit>().play(move),
+              onMove: (move, {viaDragAndDrop}) => _authoredVariation == null
+                  ? context.read<LessonCubit>().play(move)
+                  : null,
               // No passo de tocar, o toque na casa é a resposta.
-              onTouchedSquare: step is TapStep && variation == null
+              onTouchedSquare: step is TapStep && previewFen == null
                   ? (square) => context.read<LessonCubit>().tap(square.name)
                   : null,
             );
@@ -1133,6 +1217,36 @@ class _LessonScreenState extends State<LessonScreen>
           child: child,
         );
 
+  ExplanationPayload _explanationFor(BuildContext context, LessonState state) {
+    final payload =
+        state.explanation ??
+        ExplanationPayload.context([?_baseSpeech(context, state)]);
+    final attempted = state.attemptedSan ?? state.thinkMistake;
+    if (attempted == null ||
+        payload.explanations.any(
+          (b) => b.kind == ExplanationKind.playedIncorrect,
+        )) {
+      return payload;
+    }
+    final letters = MoveNotation.letters.pieceLetters(context.l10n)!;
+    final local = attempted.replaceAllMapped(
+      RegExp('[KQRBN]'),
+      (m) => letters[m[0]] ?? m[0]!,
+    );
+    return ExplanationPayload(
+      positionId: payload.positionId,
+      state: ExplanationState.incorrect,
+      explanations: [
+        ExplanationBlock(
+          id: 'played-unmapped',
+          kind: ExplanationKind.playedIncorrect,
+          texts: ['$local: ${context.l10n.explanationDoesNotMeetGoal}.'],
+        ),
+        ...payload.explanations,
+      ],
+    );
+  }
+
   /// O Viktor da lição: inteiro, só o cabeçalho (acima do tabuleiro) ou só
   /// o balão (na folha).
   Widget _teacher(
@@ -1146,6 +1260,12 @@ class _LessonScreenState extends State<LessonScreen>
     return TeacherSpeech(
       part: part,
       teacher: viktor,
+      explanation:
+          state.layout == LessonLayoutMode.solving && state.explanation == null
+          ? null
+          : _explanationFor(context, state),
+      onVariation: _showAuthoredVariation,
+      activeVariation: _authoredVariation,
       text: state.layout == LessonLayoutMode.solving && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
@@ -1156,7 +1276,7 @@ class _LessonScreenState extends State<LessonScreen>
       onLink: (link) => _onLink(context, state, link),
       onSpoken: (link) => _flash.show(
         link,
-        fen: state.fen ?? state.current?.fen,
+        fen: _authoredVariation?.fen ?? state.fen ?? state.current?.fen,
         color: theme.colorScheme.primary,
       ),
       speaks: true,
@@ -1290,6 +1410,16 @@ class _LessonScreenState extends State<LessonScreen>
   Widget _solvingFooter(BuildContext context, LessonState state) {
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
+    if (_authoredVariation != null) {
+      return _footer(
+        context,
+        child: TextButton.icon(
+          onPressed: () => _showAuthoredVariation(null),
+          icon: const Icon(Icons.undo),
+          label: Text(l10n.explanationReturn),
+        ),
+      );
+    }
     final step = state.current!;
     final colors = Theme.of(context).colorScheme;
     final canHint =
@@ -1406,6 +1536,16 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// Com o professor falando: voltar um passo, tentar de novo e continuar.
   Widget _actions(BuildContext context, LessonState state) {
+    if (_authoredVariation != null) {
+      return _footer(
+        context,
+        child: TextButton.icon(
+          onPressed: () => _showAuthoredVariation(null),
+          icon: const Icon(Icons.undo),
+          label: Text(context.l10n.explanationReturn),
+        ),
+      );
+    }
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
     final step = state.current!;
@@ -1574,7 +1714,9 @@ class _RenderSizeReporter extends RenderProxyBox {
   @override
   void performLayout() {
     super.performLayout();
-    if (size == _reported) return;
+    if (size == _reported) {
+      return;
+    }
     _reported = size;
     final measured = size;
     SchedulerBinding.instance.addPostFrameCallback((_) => onSize(measured));

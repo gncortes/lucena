@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "पाठ समीक्षा में अस्वीकृत: इसे दोबारा बनाया जाएगा।",
   "endgamesTagFailed": "अस्वीकृत",
-  "endgamesTagInReview": "समीक्षा में"
+  "endgamesTagInReview": "समीक्षा में",
+  "explanationContext": "संदर्भ और लक्ष्य",
+  "explanationPlayedIncorrect": "आपकी चाल",
+  "explanationPlayedCorrect": "आपकी सही चाल",
+  "explanationMainSolution": "मुख्य समाधान",
+  "explanationOtherSolutions": "अन्य समाधान",
+  "explanationFailedAlternatives": "असफल विकल्प",
+  "explanationAccepted": "लक्ष्य पूरा होता है",
+  "explanationLosing": "हारता है",
+  "explanationDoesNotMeetGoal": "लक्ष्य पूरा नहीं होता",
+  "explanationUnavailable": "यह क्रम उपलब्ध नहीं है।",
+  "explanationFirst": "क्रम की शुरुआत",
+  "explanationPrevious": "पिछली चाल",
+  "explanationNext": "अगली चाल",
+  "explanationLast": "क्रम का अंत",
+  "explanationReturn": "मूल स्थिति पर लौटें"
 }

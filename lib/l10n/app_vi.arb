@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Bài học không đạt khi duyệt: sẽ được làm lại.",
   "endgamesTagFailed": "Không đạt",
-  "endgamesTagInReview": "Đang duyệt"
+  "endgamesTagInReview": "Đang duyệt",
+  "explanationContext": "Bối cảnh và mục tiêu",
+  "explanationPlayedIncorrect": "Nước đi của bạn",
+  "explanationPlayedCorrect": "Nước đi đúng của bạn",
+  "explanationMainSolution": "Lời giải chính",
+  "explanationOtherSolutions": "Lời giải khác",
+  "explanationFailedAlternatives": "Các phương án thất bại",
+  "explanationAccepted": "Đạt mục tiêu",
+  "explanationLosing": "Thua",
+  "explanationDoesNotMeetGoal": "Không đạt mục tiêu",
+  "explanationUnavailable": "Biến này không khả dụng.",
+  "explanationFirst": "Đầu biến",
+  "explanationPrevious": "Nước trước",
+  "explanationNext": "Nước tiếp theo",
+  "explanationLast": "Cuối biến",
+  "explanationReturn": "Trở về thế cờ"
 }

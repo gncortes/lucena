@@ -1,3 +1,5 @@
+import 'explanation.dart';
+
 /// A frozen explanation supplied by lesson authors for one rejected move.
 /// Used by both exercises and move steps; it never evaluates moves.
 class ExerciseErrorFeedback {
@@ -9,7 +11,23 @@ class ExerciseErrorFeedback {
     required this.fen,
     required this.uci,
     required Map<String, String> texts,
+    this.payloads = const {},
+    this.paragraphs = const {},
+    this.pv = const [],
+    this.objective = const {},
+    this.evidence = const {},
   }) : texts = Map.unmodifiable(texts);
+
+  final Map<String, ExplanationPayload> payloads;
+  final Map<String, List<String>> paragraphs;
+  final List<Map<String, dynamic>> pv;
+  final Map<String, dynamic> objective, evidence;
+  ExplanationPayload? payload(String language) =>
+      payloads[language] ??
+      payloads['en'] ??
+      ExplanationPayload.context(
+        paragraphs[language] ?? paragraphs['en'] ?? [?text(language)],
+      );
 
   final String lessonId;
 
@@ -41,6 +59,26 @@ class ExerciseErrorFeedback {
       turn: row['turn'] as int,
       fen: fen,
       uci: row['uci'] as String,
+      payloads: {
+        for (final e in ((row['explanations'] as Map?) ?? {}).entries)
+          e.key as String: ExplanationPayload.fromJson(
+            Map<String, dynamic>.from(e.value as Map),
+          ),
+      },
+      paragraphs: {
+        for (final language in const ['pt', 'en'])
+          language: explanationTexts(row[language]),
+      },
+      pv: [
+        for (final v in row['pv'] as List? ?? [])
+          Map<String, dynamic>.unmodifiable(v as Map),
+      ],
+      objective: Map<String, dynamic>.unmodifiable(
+        row['objective'] as Map? ?? {},
+      ),
+      evidence: Map<String, dynamic>.unmodifiable(
+        row['evidence'] as Map? ?? {},
+      ),
       texts: {
         for (final language in const ['pt', 'en'])
           if (row[language] is String) language: row[language] as String,

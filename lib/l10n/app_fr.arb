@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Leçon recalée à la relecture : elle sera refaite.",
   "endgamesTagFailed": "Recalée",
-  "endgamesTagInReview": "En relecture"
+  "endgamesTagInReview": "En relecture",
+  "explanationContext": "Contexte et objectif",
+  "explanationPlayedIncorrect": "Votre coup",
+  "explanationPlayedCorrect": "Votre coup correct",
+  "explanationMainSolution": "Solution principale",
+  "explanationOtherSolutions": "Autres solutions",
+  "explanationFailedAlternatives": "Variantes qui échouent",
+  "explanationAccepted": "Atteint l’objectif",
+  "explanationLosing": "Perd",
+  "explanationDoesNotMeetGoal": "N’atteint pas l’objectif",
+  "explanationUnavailable": "Cette variante est indisponible.",
+  "explanationFirst": "Début de la variante",
+  "explanationPrevious": "Coup précédent",
+  "explanationNext": "Coup suivant",
+  "explanationLast": "Fin de la variante",
+  "explanationReturn": "Revenir à la position"
 }

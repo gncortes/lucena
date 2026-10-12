@@ -6,6 +6,8 @@ import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
@@ -216,6 +218,192 @@ void main() {
     expect(mistake.review, 't');
   });
 
+  group('contextual review metadata', () {
+    const initial = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const line = MoveStep(
+      id: 'line',
+      fen: initial,
+      line: [
+        MoveTurn(accept: {'e2e4'}, reply: 'e7e5'),
+        MoveTurn(accept: {'g1f3'}),
+      ],
+    );
+    LessonCubit build(
+      LessonStep step,
+      _ReviewFeedback feedback,
+      FakeSchoolProgressRepository progress,
+    ) {
+      final result = LessonCubit(
+        lessons: FakeLessonRepository(
+          course: Course(
+            modules: [
+              CourseModule(
+                id: 'm',
+                lessons: [
+                  Lesson(
+                    id: 'review',
+                    steps: [
+                      const TalkStep(id: 'intro', fen: initial),
+                      step,
+                      const TalkStep(id: 'later'),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        progress: progress,
+        feedback: feedback,
+        characters: FakeCharacterRepository(),
+        opponent: FakeOpponentRepository(),
+        replyDelay: Duration.zero,
+      );
+      addTearDown(result.close);
+      return result;
+    }
+
+    test('later MoveStep error reviews and resumes exact turn after cold reload', () async {
+      final feedback = _ReviewFeedback();
+      final progress = FakeSchoolProgressRepository();
+      var cubit = build(line, feedback, progress);
+      await cubit.load('review', 'en');
+      await cubit.next();
+      await cubit.play(move('e2e4'));
+      final origin = cubit.state.fen;
+      feedback.origin = origin;
+      feedback.turn = 2;
+      await cubit.play(move('a2a3'));
+      expect(cubit.state.phase, StepPhase.failed);
+      expect(cubit.state.reviewStep, 'intro');
+      expect(cubit.state.fen, origin);
+      expect(cubit.state.turn, 1);
+      expect(cubit.state.mistakes, 1);
+      await cubit.reviewPoint();
+      final storedProgress = await progress.load();
+      final saved = storedProgress.ongoing;
+      final roundTrip = LessonCheckpoint.fromJson(saved!.toJson())!;
+      expect(roundTrip.reviewReturn?.fen, origin);
+      expect(
+        roundTrip.copyWith(open: false).reviewReturn,
+        saved.reviewReturn,
+        reason:
+            '${roundTrip.reviewReturn?.toJson()} != ${saved.reviewReturn?.toJson()}',
+      );
+      await progress.save(storedProgress.copyWith(ongoing: roundTrip));
+      cubit = build(line, feedback, progress);
+      await cubit.load('review', 'en');
+      expect(cubit.state.current?.id, 'intro');
+      await cubit.next();
+      expect(cubit.state.current?.id, 'line');
+      expect(cubit.state.turn, 1);
+      expect(cubit.state.fen, origin);
+      expect(cubit.state.mistakes, 1);
+      await cubit.play(move('a2a3'));
+      await cubit.retry();
+      expect(cubit.state.phase, StepPhase.active);
+      expect(cubit.state.fen, origin);
+      expect(cubit.state.turn, 1);
+      await cubit.play(move('g1f3'));
+      expect(cubit.state.phase, StepPhase.done);
+    });
+
+    for (final target in <String?>[null, 'missing', 'line', 'later']) {
+      test(
+        'invalid/absent target $target preserves legacy MoveStep behavior',
+        () async {
+          final feedback = _ReviewFeedback()
+            ..target = target
+            ..origin = initial;
+          final cubit = build(line, feedback, FakeSchoolProgressRepository());
+          await cubit.load('review', 'en');
+          await cubit.next();
+          await cubit.play(move('a2a3'));
+          expect(cubit.state.phase, StepPhase.active);
+          expect(cubit.state.reviewStep, isNull);
+          expect(cubit.state.fen, initial);
+        },
+      );
+    }
+
+    test(
+      'accepted MoveStep equivalent overrides rejected contextual metadata',
+      () async {
+        final feedback = _ReviewFeedback()
+          ..origin = initial
+          ..uci = 'e2e4';
+        final cubit = build(line, feedback, FakeSchoolProgressRepository());
+        await cubit.load('review', 'en');
+        await cubit.next();
+        await cubit.play(move('e2e4'));
+        expect(cubit.state.turn, 1);
+        expect(cubit.state.mistakes, 0);
+      },
+    );
+
+    test('PlayStep rejects verified root, reviews, retries and preserves played history', () async {
+      final feedback = _ReviewFeedback()..kind = 'play';
+      final progress = FakeSchoolProgressRepository();
+      final cubit = build(
+        const PlayStep(id: 'line', fen: initial),
+        feedback,
+        progress,
+      );
+      await cubit.load('review', 'en');
+      await cubit.next();
+      await cubit.play(move('e2e4')); // Unlisted move remains playable.
+      final origin = cubit.state.fen;
+      final history = cubit.state.moves;
+      feedback.origin = origin;
+      feedback.turn = 2;
+      await cubit.play(move('a2a3'));
+      expect(cubit.state.phase, StepPhase.failed);
+      expect(cubit.state.explanation?.state, ExplanationState.incorrect);
+      expect(cubit.state.moves, history);
+      await cubit.reviewPoint();
+      await cubit.next();
+      expect(cubit.state.fen, origin);
+      expect(cubit.state.moves, history);
+      await cubit.play(move('a2a3'));
+      await cubit.retry();
+      expect(cubit.state.fen, origin);
+      expect(cubit.state.moves, history);
+      expect(cubit.state.phase, StepPhase.active);
+    });
+
+    for (final outcome in [
+      VariationOutcome.accepted,
+      VariationOutcome.losing,
+    ]) {
+      test(
+        'PlayStep $outcome metadata is never reused at changed FEN',
+        () async {
+          final feedback = _ReviewFeedback()
+            ..origin = initial
+            ..kind = 'play'
+            ..uci = 'e2e4'
+            ..outcome = outcome;
+          // A target is required before a rejected line can stop play.
+          if (outcome == VariationOutcome.losing) feedback.target = null;
+          final cubit = build(
+            const PlayStep(id: 'line', fen: initial),
+            feedback,
+            FakeSchoolProgressRepository(),
+          );
+          await cubit.load('review', 'en');
+          await cubit.next();
+          await cubit.play(move('e2e4'));
+          await Future<void>.delayed(Duration.zero);
+          expect(cubit.state.moves, hasLength(2));
+          expect(cubit.state.phase, StepPhase.active);
+          expect(feedback.queries.last.fen, cubit.state.fen);
+          expect(feedback.queries.last.turn, 2);
+          expect(cubit.state.explanation, isNull);
+        },
+      );
+    }
+  });
+
   group('na tela', () {
     Future<void> pump(WidgetTester tester) async {
       tester.view.physicalSize = const Size(400, 900);
@@ -255,9 +443,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(LessonKeys.reviewPoint), findsNothing);
       expect(
-        tester.widget<Text>(find.byKey(LessonKeys.speech)).data,
-        contains('Back rank'),
+        find.textContaining(
+          'what the lesson showed about “Back rank”',
+          findRichText: true,
+        ),
+        findsOneWidget,
       );
+      expect(find.textContaining('1.Ra6', findRichText: true), findsOneWidget);
     });
   });
 
@@ -323,4 +515,54 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.wrongLine), findsNothing);
   });
+}
+
+class _ReviewFeedback extends EmptyExerciseFeedbackRepository
+    implements ExplanationRepository {
+  String? target = 'intro', origin;
+  String uci = 'a2a3', kind = 'move';
+  int turn = 1;
+  VariationOutcome outcome = VariationOutcome.doesNotMeetGoal;
+  final queries = <({String fen, int turn})>[];
+
+  @override
+  Future<ExplanationPayload?> findPayload({
+    required String lessonId,
+    required String exerciseId,
+    required String kind,
+    required int turn,
+    required String fen,
+    required String language,
+    required ExplanationState state,
+    String? playedUci,
+  }) async {
+    queries.add((fen: fen, turn: turn));
+    if (this.kind != kind || origin != fen || this.turn != turn) return null;
+    return ExplanationPayload(
+      positionId: '$kind/$exerciseId.$turn',
+      reviewStepId: target,
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'root',
+          kind: outcome == VariationOutcome.accepted
+              ? ExplanationKind.mainSolution
+              : ExplanationKind.failedAlternatives,
+          texts: ['Authored explanation'],
+          variations: [
+            ExplanationVariation(
+              id: 'v',
+              label: 'Authored move',
+              outcome: outcome,
+              texts: ['Authored rejection'],
+              originFen: fen,
+              movesUci: [uci],
+              movesSan: [uci],
+              validated: true,
+            ),
+          ],
+        ),
+      ],
+    ).forState(state, playedUci: playedUci);
+  }
 }

@@ -1,3 +1,5 @@
+import '../../../domain/models/explanation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -151,6 +153,7 @@ class _Body extends StatelessWidget {
                 speechContext: SpeechContext.teaching,
                 teacher: viktor,
                 text: _speech(),
+                explanation: ExplanationPayload.context([?_speech()]),
                 emotion: state.passed ? Emotion.happy : Emotion.calm,
                 avatarSize: 48,
                 bubbleKey: EndgameLessonKeys.speech,

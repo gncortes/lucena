@@ -548,8 +548,10 @@ class LessonCheckpoint {
     this.stepStartedAt,
     this.stepPausedAt,
     this.hintsShown = 0,
+    this.mistakes = 0,
     this.demoMove = 0,
     this.demoPlaying = false,
+    this.reviewReturn,
   });
 
   final String lessonId;
@@ -574,10 +576,16 @@ class LessonCheckpoint {
   /// Quantas dicas do passo `think` já apareceram.
   final int hintsShown;
 
+  /// Attempts already made at the position, including before a review detour.
+  final int mistakes;
+
   /// Quantos lances da demonstração já foram jogados.
   final int demoMove;
 
   final bool demoPlaying;
+
+  /// Exact interactive position to resume after reviewing an earlier point.
+  final LessonCheckpoint? reviewReturn;
 
   /// O índice do passo.
   final int step;
@@ -611,8 +619,10 @@ class LessonCheckpoint {
     stepStartedAt: stepStartedAt,
     stepPausedAt: stepPausedAt,
     hintsShown: hintsShown,
+    mistakes: mistakes,
     demoMove: demoMove,
     demoPlaying: demoPlaying,
+    reviewReturn: reviewReturn,
   );
 
   Map<String, dynamic> toJson() => {
@@ -628,8 +638,10 @@ class LessonCheckpoint {
     'stepStartedAt': ?stepStartedAt?.toUtc().toIso8601String(),
     'stepPausedAt': ?stepPausedAt?.toUtc().toIso8601String(),
     if (hintsShown > 0) 'hintsShown': hintsShown,
+    if (mistakes > 0) 'mistakes': mistakes,
     if (demoMove > 0) 'demoMove': demoMove,
     'demoPlaying': demoPlaying,
+    'reviewReturn': ?reviewReturn?.toJson(),
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -656,8 +668,10 @@ class LessonCheckpoint {
       stepStartedAt: DateTime.tryParse(json['stepStartedAt'] as String? ?? ''),
       stepPausedAt: DateTime.tryParse(json['stepPausedAt'] as String? ?? ''),
       hintsShown: json['hintsShown'] as int? ?? 0,
+      mistakes: json['mistakes'] as int? ?? 0,
       demoMove: json['demoMove'] as int? ?? 0,
       demoPlaying: json['demoPlaying'] as bool? ?? false,
+      reviewReturn: LessonCheckpoint.fromJson(json['reviewReturn']),
     );
   }
 
@@ -673,9 +687,11 @@ class LessonCheckpoint {
       other.open == open &&
       other.part == part &&
       other.stepId == stepId &&
-      other.stepStartedAt == stepStartedAt &&
+      other.stepStartedAt?.toUtc() == stepStartedAt?.toUtc() &&
       other.hintsShown == hintsShown &&
-      other.demoMove == demoMove;
+      other.mistakes == mistakes &&
+      other.demoMove == demoMove &&
+      other.reviewReturn == reviewReturn;
 
   @override
   int get hashCode => Object.hash(
@@ -688,9 +704,11 @@ class LessonCheckpoint {
     open,
     part,
     stepId,
-    stepStartedAt,
+    stepStartedAt?.toUtc(),
     hintsShown,
+    mistakes,
     demoMove,
+    reviewReturn,
   );
 
   static bool _sameList(List<String> a, List<String> b) {

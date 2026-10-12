@@ -1,3 +1,5 @@
+import '../../../domain/models/explanation.dart';
+
 import 'dart:async';
 import 'dart:math';
 
@@ -11,6 +13,7 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/speech_links.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/exercise_layout.dart';
@@ -56,6 +59,7 @@ class ExerciseScreen extends StatefulWidget {
 class _ExerciseScreenState extends State<ExerciseScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   ChessboardController? _board;
+  VariationCursor? _variation;
 
   late final _shake = AnimationController(
     vsync: this,
@@ -90,7 +94,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final background = state != AppLifecycleState.resumed;
-    if (background == _background) return;
+    if (background == _background) {
+      return;
+    }
     _background = background;
     final cubit = context.read<ExerciseCubit>();
     final speech = TeacherSpeech.speechOf(context);
@@ -108,7 +114,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
-      if (!mounted || _background) return;
+      if (!mounted || _background) {
+        return;
+      }
       final cubit = context.read<ExerciseCubit>();
       if (cubit.state.layout == ExerciseLayoutMode.solving) {
         _elapsed.value = cubit.elapsed;
@@ -124,7 +132,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     required bool animate,
   }) {
     final target = state.layout == ExerciseLayoutMode.solving ? 0.0 : 1.0;
-    if (target == _target) return;
+    if (target == _target) {
+      return;
+    }
     _target = target;
     if (!animate || AppMotion.of(context).disabled) {
       _mode.value = target;
@@ -173,6 +183,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   void _onState(BuildContext context, ExerciseState state) {
     final previous = _previous;
+    if (state.fen != previous.fen ||
+        state.speech != previous.speech ||
+        state.phase != previous.phase ||
+        state.exercise?.id != previous.exercise?.id) {
+      _variation = null;
+    }
     _previous = state;
     if (state.speech == null || state.viktor == null) {
       _sheetExpanded.value = false;
@@ -187,7 +203,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       _shake.forward(from: 0);
       _wrongFlash.forward(from: 0);
     }
-    if (state.fen == null) return;
+    if (state.fen == null) {
+      return;
+    }
+    if (_variation != null) {
+      return;
+    }
     final board = _board;
     if (board == null) {
       _board = ChessboardController(game: _gameData(state));
@@ -362,8 +383,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               end: 16,
               top: rect.bottom + ExerciseLayout.gutter,
               child: Text(
-                context.l10n.exerciseYourTurn(
+                context.l10n.exerciseGoal(
                   state.side == Side.white ? 'white' : 'black',
+                  state.exercise!.goal.name,
                 ),
                 key: ExerciseKeys.goal,
                 style: Theme.of(context).textTheme.titleMedium
@@ -449,7 +471,58 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
+  void _showVariation(VariationCursor? cursor) {
+    _flash.clear();
+    setState(() => _variation = cursor);
+    final state = context.read<ExerciseCubit>().state;
+    if (cursor == null) {
+      _board?.updatePosition(
+        _gameData(state),
+        animate: true,
+        resetPremove: true,
+      );
+    } else {
+      final position = GameRules.fromFen(cursor.fen);
+      _board?.updatePosition(
+        GameData(
+          fen: cursor.fen,
+          playerSide: PlayerSide.none,
+          sideToMove: position?.turn ?? Side.white,
+          validMoves: const {},
+          lastMove: cursor.lastMove,
+          kingSquareInCheck: position == null
+              ? null
+              : GameRules.checkedKing(position),
+        ),
+        animate: true,
+        resetPremove: true,
+      );
+    }
+  }
+
   /// A fala solicitada pelo estado fica na folha abaixo do tabuleiro.
+  void _onExplanationLink(
+    BuildContext context,
+    ExerciseState state,
+    SpeechLink link,
+  ) {
+    final cursor = link.isMove
+        ? state.explanationPayload?.cursorForNotation(
+            link.text,
+            preferred: _variation?.variation,
+          )
+        : null;
+    if (cursor != null) {
+      _showVariation(cursor);
+    } else {
+      _flash.toggle(
+        link,
+        fen: _variation?.fen ?? state.fen,
+        color: Theme.of(context).colorScheme.primary,
+      );
+    }
+  }
+
   Widget _prompt(BuildContext context, ExerciseState state) {
     final viktor = state.viktor;
     if (viktor == null || state.speech == null) return const SizedBox.shrink();
@@ -460,6 +533,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         speechContext: SpeechContext.game,
         teacher: viktor,
         text: speech,
+        explanation:
+            state.explanationPayload ?? ExplanationPayload.context([?speech]),
         emotion: state.emotion,
         avatarSize: 40,
         compactInSheet: false,
@@ -496,18 +571,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               speechContext: SpeechContext.teaching,
               teacher: viktor,
               text: state.speech,
+              explanation:
+                  state.explanationPayload ??
+                  ExplanationPayload.context([?state.speech]),
+              onVariation: _showVariation,
+              activeVariation: _variation,
               emotion: state.emotion,
               avatarSize: 56,
               compactInSheet: false,
               bubbleKey: ExerciseKeys.speech,
-              onLink: (link) => _flash.toggle(
-                link,
-                fen: state.fen,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              onLink: (link) => _onExplanationLink(context, state, link),
               onSpoken: (link) => _flash.show(
                 link,
-                fen: state.fen,
+                fen: _variation?.fen ?? state.fen,
                 color: Theme.of(context).colorScheme.primary,
               ),
               speaks: true,
@@ -654,22 +730,25 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                     settings: boardSettings.chessground,
                     orientation: state.side,
                     shapes: {
-                      if (hint is NormalMove)
+                      if (_variation == null && hint is NormalMove)
                         Arrow(
                           color: const Color(0xcc15781b),
                           orig: hint.from,
                           dest: hint.to,
                         ),
-                      if (wrong is NormalMove && _wrongFlash.isAnimating)
+                      if (_variation == null &&
+                          wrong is NormalMove &&
+                          _wrongFlash.isAnimating)
                         Arrow(
                           color: const Color(0xccc62828),
                           orig: wrong.from,
                           dest: wrong.to,
                         ),
-                      ..._flash.shapesFor(state.fen),
+                      ..._flash.shapesFor(_variation?.fen ?? state.fen),
                     },
-                    onMove: (move, {viaDragAndDrop}) =>
-                        context.read<ExerciseCubit>().play(move),
+                    onMove: (move, {viaDragAndDrop}) => _variation == null
+                        ? context.read<ExerciseCubit>().play(move)
+                        : null,
                   ),
                 ),
               ),
@@ -915,11 +994,15 @@ class _HalvesOrStackState extends State<_HalvesOrStack> {
   double? _width;
 
   void _measure() {
-    if (!mounted || _width == null) return;
+    if (!mounted || _width == null) {
+      return;
+    }
     var widest = 0.0;
     for (final key in _keys) {
       final box = key.currentContext?.findRenderObject();
-      if (box is! RenderBox) return;
+      if (box is! RenderBox) {
+        return;
+      }
       widest = max(widest, box.getMaxIntrinsicWidth(double.infinity));
     }
     final fits = 2 * widest + widget.gap <= _width! + .5;

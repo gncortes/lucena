@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "课程未通过审核：将会重做。",
   "endgamesTagFailed": "未通过",
-  "endgamesTagInReview": "审核中"
+  "endgamesTagInReview": "审核中",
+  "explanationContext": "背景和目标",
+  "explanationPlayedIncorrect": "你的走法",
+  "explanationPlayedCorrect": "你的正确走法",
+  "explanationMainSolution": "主要解法",
+  "explanationOtherSolutions": "其他解法",
+  "explanationFailedAlternatives": "失败的变化",
+  "explanationAccepted": "达成目标",
+  "explanationLosing": "输棋",
+  "explanationDoesNotMeetGoal": "未达成目标",
+  "explanationUnavailable": "此变化不可用。",
+  "explanationFirst": "变化起点",
+  "explanationPrevious": "上一步",
+  "explanationNext": "下一步",
+  "explanationLast": "变化终点",
+  "explanationReturn": "返回原局面"
 }

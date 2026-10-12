@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "لم يجتز الدرس المراجعة: ستُعاد كتابته.",
   "endgamesTagFailed": "مرفوض",
-  "endgamesTagInReview": "قيد المراجعة"
+  "endgamesTagInReview": "قيد المراجعة",
+  "explanationContext": "السياق والهدف",
+  "explanationPlayedIncorrect": "نقلتك",
+  "explanationPlayedCorrect": "نقلتك الصحيحة",
+  "explanationMainSolution": "الحل الرئيسي",
+  "explanationOtherSolutions": "حلول أخرى",
+  "explanationFailedAlternatives": "بدائل غير ناجحة",
+  "explanationAccepted": "يحقق الهدف",
+  "explanationLosing": "يخسر",
+  "explanationDoesNotMeetGoal": "لا يحقق الهدف",
+  "explanationUnavailable": "هذا التفرع غير متاح.",
+  "explanationFirst": "بداية التفرع",
+  "explanationPrevious": "النقلة السابقة",
+  "explanationNext": "النقلة التالية",
+  "explanationLast": "نهاية التفرع",
+  "explanationReturn": "العودة إلى الوضع الأصلي"
 }

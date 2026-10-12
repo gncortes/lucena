@@ -291,6 +291,7 @@ class ExerciseCheckpoint {
     this.turn = 0,
     this.mistakes = 0,
     this.hints = 0,
+    this.hintTurn,
     this.open = true,
     this.startedAt,
     this.pausedAt,
@@ -307,6 +308,7 @@ class ExerciseCheckpoint {
   final int turn;
   final int mistakes;
   final int hints;
+  final int? hintTurn;
 
   /// O exercício estava na tela quando o app fechou: o app reabre nele.
   final bool open;
@@ -317,6 +319,7 @@ class ExerciseCheckpoint {
     'turn': turn,
     'mistakes': mistakes,
     'hints': hints,
+    'hintTurn': ?hintTurn,
     'open': open,
     'startedAt': ?startedAt?.toUtc().toIso8601String(),
     'pausedAt': ?pausedAt?.toUtc().toIso8601String(),
@@ -332,6 +335,7 @@ class ExerciseCheckpoint {
       turn: json['turn'] as int? ?? 0,
       mistakes: json['mistakes'] as int? ?? 0,
       hints: json['hints'] as int? ?? 0,
+      hintTurn: json['hintTurn'] as int?,
       open: json['open'] as bool? ?? false,
       startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
       pausedAt: DateTime.tryParse(json['pausedAt'] as String? ?? ''),
@@ -346,6 +350,7 @@ class ExerciseCheckpoint {
       other.turn == turn &&
       other.mistakes == mistakes &&
       other.hints == hints &&
+      other.hintTurn == hintTurn &&
       other.open == open &&
       other.startedAt == startedAt &&
       other.pausedAt == pausedAt;
@@ -357,6 +362,7 @@ class ExerciseCheckpoint {
     turn,
     mistakes,
     hints,
+    hintTurn,
     open,
     startedAt,
     pausedAt,

@@ -3,6 +3,8 @@ import 'dart:ui' show BoxHeightStyle;
 import 'package:flutter/material.dart';
 
 import 'speech_text_tap_notification.dart';
+import 'explanation_cards.dart';
+import '../../../domain/models/explanation.dart';
 import 'viktor_sheet.dart';
 
 import 'package:flutter/semantics.dart';
@@ -46,6 +48,9 @@ enum TeacherSpeechPart { all, header, bubble }
 class TeacherSpeech extends StatelessWidget {
   const TeacherSpeech({
     this.part = TeacherSpeechPart.all,
+    this.explanation,
+    this.onVariation,
+    this.activeVariation,
     required this.teacher,
     required this.text,
     required this.speechContext,
@@ -64,6 +69,9 @@ class TeacherSpeech extends StatelessWidget {
   });
 
   final Character teacher;
+  final ExplanationPayload? explanation;
+  final ValueChanged<VariationCursor?>? onVariation;
+  final VariationCursor? activeVariation;
 
   /// Ver [TeacherSpeechPart].
   final TeacherSpeechPart part;
@@ -90,7 +98,18 @@ class TeacherSpeech extends StatelessWidget {
   final String? text;
 
   /// A fala sem a marcação: o que aparece e o que a voz lê.
-  String? get _plain => text == null ? null : WikiMarkup.plain(text!);
+  String? get _plain {
+    if (activeVariation case final cursor?) {
+      return cursor.texts.map(WikiMarkup.plain).join('\n\n');
+    }
+    return explanation == null
+        ? (text == null ? null : WikiMarkup.plain(text!))
+        : explanation!.explanations
+              .expand((block) => block.texts)
+              .map(WikiMarkup.plain)
+              .join('\n\n');
+  }
+
   final Emotion emotion;
   final double avatarSize;
 
@@ -377,6 +396,98 @@ class TeacherSpeech extends StatelessWidget {
 
   /// O balão, que troca de fala com uma transição suave.
   Widget _speech(BuildContext context) {
+    if (explanation case final payload?) {
+      var paragraphIndex = 0;
+      return ExplanationCards(
+        payload: payload,
+        onVariation: onVariation,
+        activeCursor: activeVariation,
+        hasInlineNavigation: (text, variation, origin) =>
+            onVariation != null &&
+            SpeechLinks.find(
+              variation.label,
+              SpeechLinks.lettersFor(
+                Localizations.localeOf(context).languageCode,
+              ),
+            ).any((link) => link.isMove && link.text == variation.label) &&
+            SpeechLinks.find(
+              WikiMarkup.plain(text),
+              SpeechLinks.lettersFor(
+                Localizations.localeOf(context).languageCode,
+              ),
+            ).any(
+              (link) =>
+                  link.isMove &&
+                  payload
+                          .cursorForNotation(
+                            link.text,
+                            preferred: origin,
+                            strictPreferred: origin != null,
+                          )
+                          ?.variation
+                          .id ==
+                      variation.id,
+            ),
+        groupedParagraph: (paragraphs) {
+          final text = paragraphs.map((p) => p.text).join('\n\n');
+          return _bubble(
+            context,
+            WikiMarkup.parse(text),
+            useBubbleKey: paragraphIndex++ == 0,
+            onLinkOverride: (link) {
+              var start = 0;
+              ExplanationVariation? origin;
+              for (final paragraph in paragraphs) {
+                final end = start + WikiMarkup.plain(paragraph.text).length;
+                if (link.start >= start && link.start < end) {
+                  origin = paragraph.variation;
+                  break;
+                }
+                start = end + 2;
+              }
+              final cursor = link.isMove
+                  ? payload.cursorForNotation(
+                      link.text,
+                      preferred: origin,
+                      strictPreferred: origin != null,
+                    )
+                  : null;
+              if (cursor != null && onVariation != null) {
+                onVariation!(cursor);
+              } else {
+                onLink?.call(link);
+              }
+            },
+          );
+        },
+        paragraph: (text) => _bubble(
+          context,
+          WikiMarkup.parse(text),
+          useBubbleKey: paragraphIndex++ == 0,
+        ),
+        variationParagraph: (text, variation) => _bubble(
+          context,
+          WikiMarkup.parse(text),
+          useBubbleKey: paragraphIndex++ == 0,
+          onLinkOverride: variation == null
+              ? null
+              : (link) {
+                  final cursor = link.isMove
+                      ? payload.cursorForNotation(
+                          link.text,
+                          preferred: variation,
+                          strictPreferred: true,
+                        )
+                      : null;
+                  if (cursor != null && onVariation != null) {
+                    onVariation!(cursor);
+                  } else {
+                    onLink?.call(link);
+                  }
+                },
+        ),
+      );
+    }
     final text = this.text;
     final plain = _plain;
     return AnimatedSize(
@@ -442,7 +553,12 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
-  Widget _bubble(BuildContext context, MarkedText marked) {
+  Widget _bubble(
+    BuildContext context,
+    MarkedText marked, {
+    bool useBubbleKey = true,
+    ValueChanged<SpeechLink>? onLinkOverride,
+  }) {
     final text = marked.text;
     final theme = Theme.of(context);
     final color = theme.colorScheme.surfaceContainerHighest;
@@ -453,7 +569,7 @@ class TeacherSpeech extends StatelessWidget {
       for (final mark in marked.marks)
         if (wiki.url(mark.key, language) case final url?) (mark, url),
     ];
-    final onLink = this.onLink;
+    final onLink = onLinkOverride ?? this.onLink;
     final links = onLink == null
         ? const <SpeechLink>[]
         : [
@@ -485,7 +601,7 @@ class TeacherSpeech extends StatelessWidget {
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     final words = spans.isEmpty
-        ? Text(text, key: bubbleKey, style: style)
+        ? Text(text, key: useBubbleKey ? bubbleKey : null, style: style)
         : Text.rich(
             TextSpan(
               children: [
@@ -502,7 +618,7 @@ class TeacherSpeech extends StatelessWidget {
                 TextSpan(text: text.substring(spans.last.$2)),
               ],
             ),
-            key: bubbleKey,
+            key: useBubbleKey ? bubbleKey : null,
             style: style,
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz

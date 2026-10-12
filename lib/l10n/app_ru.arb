@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Урок не прошёл проверку: он будет переделан.",
   "endgamesTagFailed": "Не принят",
-  "endgamesTagInReview": "На проверке"
+  "endgamesTagInReview": "На проверке",
+  "explanationContext": "Контекст и цель",
+  "explanationPlayedIncorrect": "Ваш ход",
+  "explanationPlayedCorrect": "Ваш правильный ход",
+  "explanationMainSolution": "Основное решение",
+  "explanationOtherSolutions": "Другие решения",
+  "explanationFailedAlternatives": "Неудачные варианты",
+  "explanationAccepted": "Достигает цели",
+  "explanationLosing": "Проигрывает",
+  "explanationDoesNotMeetGoal": "Не достигает цели",
+  "explanationUnavailable": "Этот вариант недоступен.",
+  "explanationFirst": "Начало варианта",
+  "explanationPrevious": "Предыдущий ход",
+  "explanationNext": "Следующий ход",
+  "explanationLast": "Конец варианта",
+  "explanationReturn": "Вернуться к позиции"
 }

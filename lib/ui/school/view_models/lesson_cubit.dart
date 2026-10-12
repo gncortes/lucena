@@ -1,3 +1,5 @@
+import '../../../domain/models/explanation.dart';
+
 import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
@@ -63,6 +65,7 @@ class LessonState {
     this.moves = const [],
     this.phase = StepPhase.active,
     this.speech,
+    this.explanation,
     this.emotion = Emotion.calm,
     this.hint,
     this.result,
@@ -88,6 +91,7 @@ class LessonState {
     this.returnTo,
     this.genericMistake = false,
     this.thinkMistake,
+    this.attemptedSan,
   });
 
   /// Depois de um lance errado previsto: o id do passo da lição que explica
@@ -107,6 +111,7 @@ class LessonState {
   /// explicação aberta começa pela frase genérica do app com ele
   /// (`lessonThinkMistakeGeneric`), antes de [speech].
   final String? thinkMistake;
+  final String? attemptedSan;
 
   /// A demonstração aberta mostra a linha errada.
   bool get wrongDemo => switch (current) {
@@ -122,7 +127,9 @@ class LessonState {
   /// posição. Nulo sem `ref`, sem `url` ou no passo de pensar (o link
   /// entregaria a resposta; a explicação vem no passo seguinte).
   Reference? get link {
-    if (current is ThinkStep) return null;
+    if (current is ThinkStep) {
+      return null;
+    }
     final reference = Reference.resolve(references, current?.ref);
     return reference?.url == null ? null : reference;
   }
@@ -176,6 +183,7 @@ class LessonState {
 
   /// O que o Viktor está dizendo.
   final String? speech;
+  final ExplanationPayload? explanation;
   final Emotion emotion;
 
   /// O lance que o mestre sugere (seta no tabuleiro).
@@ -269,7 +277,9 @@ class LessonState {
 
   LessonStep? get current {
     final steps = lesson?.steps;
-    if (steps == null || step >= steps.length) return null;
+    if (steps == null || step >= steps.length) {
+      return null;
+    }
     return steps[step];
   }
 
@@ -333,6 +343,7 @@ class LessonState {
     List<String>? moves,
     StepPhase? phase,
     String? speech,
+    ExplanationPayload? explanation,
     Emotion? emotion,
     Move? hint,
     bool clearHint = false,
@@ -361,6 +372,8 @@ class LessonState {
     int? returnTo,
     bool? genericMistake,
     String? thinkMistake,
+    String? attemptedSan,
+    bool clearAttemptedSan = false,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -376,6 +389,11 @@ class LessonState {
     moves: moves ?? this.moves,
     phase: phase ?? this.phase,
     speech: speech ?? this.speech,
+    explanation:
+        explanation ??
+        (speech == null && step == null && fen == null
+            ? this.explanation
+            : null),
     emotion: emotion ?? this.emotion,
     hint: clearHint ? null : hint ?? this.hint,
     result: clearResult ? null : result ?? this.result,
@@ -404,6 +422,10 @@ class LessonState {
         genericMistake ?? (speech != null ? false : this.genericMistake),
     // Idem para o lance errado do passo de pensar.
     thinkMistake: thinkMistake ?? (speech != null ? null : this.thinkMistake),
+    attemptedSan: clearAttemptedSan
+        ? null
+        : attemptedSan ??
+              (speech != null || step != null ? null : this.attemptedSan),
   );
 }
 
@@ -428,9 +450,170 @@ class LessonCubit extends Cubit<LessonState> {
        super(const LessonState());
 
   final LessonSource _source;
+  ({
+    int step,
+    String id,
+    String kind,
+    String fen,
+    int turn,
+    String uci,
+    bool incorrect,
+  })?
+  _decision;
+  LessonCheckpoint? _reviewReturn;
+
+  @override
+  void emit(LessonState state) {
+    final decision = _decision;
+    if (decision != null &&
+        decision.incorrect &&
+        (state.step == decision.step ||
+            (decision.kind == 'think' && state.step == decision.step + 1))) {
+      final move = Move.parse(decision.uci);
+      if (move != null) {
+        state = state.copyWith(attemptedSan: _numbered(decision.fen, move));
+      }
+    }
+    if (decision != null && !decision.incorrect) {
+      state = state.copyWith(clearAttemptedSan: true);
+    }
+    super.emit(state);
+    if (state.ready &&
+        !state.finished &&
+        state.current != null &&
+        state.phase != StepPhase.waiting &&
+        !(decision?.kind == 'move' &&
+            decision?.incorrect == true &&
+            state.step == decision?.step)) {
+      unawaited(_loadExplanation(state));
+    }
+  }
+
+  Future<void> _loadExplanation(LessonState snapshot) async {
+    final repository = _feedback;
+    final step = snapshot.current;
+    if (repository == null || step == null || step.fen == null) {
+      return;
+    }
+    final decision = _decision;
+    final followsThink =
+        decision != null &&
+        decision.kind == 'think' &&
+        snapshot.step == decision.step + 1;
+    final useDecision =
+        decision != null &&
+        ((snapshot.step == decision.step &&
+                (step is! PlayStep || snapshot.fen == decision.fen) &&
+                (step is! MoveStep ||
+                    snapshot.fen == decision.fen ||
+                    snapshot.phase == StepPhase.done)) ||
+            (followsThink && step is! DemoStep));
+    final kind = switch (step) {
+      ThinkStep() => 'think',
+      DemoStep() => 'demo',
+      MoveStep() => 'move',
+      PlayStep() => 'play',
+      TalkStep() => 'talk',
+      _ => 'context',
+    };
+    final requested = useDecision
+        ? (decision.incorrect
+              ? ExplanationState.incorrect
+              : ExplanationState.correct)
+        : snapshot.interactive && !snapshot.reviewing
+        ? ExplanationState.intro
+        : ExplanationState.review;
+    try {
+      var payload = await repository.findPayload(
+        lessonId: snapshot.lesson!.id,
+        exerciseId: useDecision ? decision.id : step.id,
+        kind: useDecision ? decision.kind : kind,
+        turn: useDecision
+            ? decision.turn
+            : (step is MoveStep
+                  ? snapshot.turn + 1
+                  : step is PlayStep
+                  ? (snapshot.moves.length + 1) ~/ 2 + 1
+                  : 1),
+        fen: useDecision
+            ? decision.fen
+            : (step is MoveStep || step is PlayStep
+                  ? snapshot.fen!
+                  : step.fen!),
+        language: _language,
+        state: requested,
+        playedUci: useDecision ? decision.uci : null,
+      );
+      if (payload != null && step is DemoStep) {
+        payload = ExplanationPayload(
+          positionId: payload.positionId,
+          reviewStepId: payload.reviewStepId,
+          state: payload.state,
+          explanations: [
+            for (final block in payload.explanations)
+              ExplanationBlock(
+                id: block.id,
+                kind: block.kind,
+                title: block.title,
+                texts: snapshot.demoMove == 0 || block.variations.isEmpty
+                    ? block.texts
+                    : block.variations.firstOrNull?.explanationByPly[snapshot
+                              .demoMove] ??
+                          (snapshot.speech == null
+                              ? block.texts
+                              : [snapshot.speech!]),
+                variations: block.variations,
+              ),
+          ],
+        );
+        if (followsThink && snapshot.demoMove <= 1) {
+          final feedback = await repository.findPayload(
+            lessonId: snapshot.lesson!.id,
+            exerciseId: decision.id,
+            kind: decision.kind,
+            turn: decision.turn,
+            fen: decision.fen,
+            language: _language,
+            state: decision.incorrect
+                ? ExplanationState.incorrect
+                : ExplanationState.correct,
+            playedUci: decision.uci,
+          );
+          payload = ExplanationPayload(
+            positionId: payload.positionId,
+            reviewStepId: payload.reviewStepId,
+            state: payload.state,
+            explanations: [
+              for (final block
+                  in feedback?.explanations ?? <ExplanationBlock>[])
+                if (block.kind == ExplanationKind.playedCorrect ||
+                    block.kind == ExplanationKind.playedIncorrect)
+                  block,
+              ...payload.explanations,
+            ],
+          );
+        }
+      }
+      if (!isClosed &&
+          !_closing &&
+          identical(state, snapshot) &&
+          payload != null &&
+          payload.explanations.isNotEmpty) {
+        super.emit(
+          snapshot.copyWith(
+            explanation: payload,
+            attemptedSan: snapshot.attemptedSan,
+            speech: payload.explanations.expand((b) => b.texts).join('\n\n'),
+          ),
+        );
+      }
+    } catch (_) {
+      /* Authored data is optional; preserve the original explanation. */
+    }
+  }
+
   final ExerciseFeedbackRepository? _feedback;
   String _language = 'en';
-  int _feedbackRevision = 0;
   int _loadRevision = 0;
   final Now _now;
   final CharacterRepository _characters;
@@ -459,7 +642,9 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> _waitForForeground() async {
     while (_pausedAt != null && !_closing && !isClosed) {
       final foreground = _foreground;
-      if (foreground == null) return;
+      if (foreground == null) {
+        return;
+      }
       await foreground.future;
     }
   }
@@ -473,7 +658,9 @@ class LessonCubit extends Cubit<LessonState> {
   }
 
   Future<void> pauseForBackground() async {
-    if (_pausedAt != null) return;
+    if (_pausedAt != null) {
+      return;
+    }
     _pausedAt = _now();
     _foreground = Completer<void>();
     await _save();
@@ -481,7 +668,9 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> resumeFromBackground() async {
     final pausedAt = _pausedAt;
-    if (pausedAt == null) return;
+    if (pausedAt == null) {
+      return;
+    }
     _pausedAt = null;
     _foreground?.complete();
     _foreground = null;
@@ -503,8 +692,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// Abre a aula [lessonId]. Numa aula em partes, abre a parte [part] (ou a
   /// do passo guardado, ou a primeira): a lição toca só os passos dela.
   Future<void> load(String lessonId, String language, {String? part}) async {
+    _decision = null;
+    _reviewReturn = null;
     final revision = ++_loadRevision;
-    ++_feedbackRevision;
     _language = language;
     final full = await _source.lesson(lessonId);
     final texts = await _source.texts(language);
@@ -512,7 +702,9 @@ class LessonCubit extends Cubit<LessonState> {
     var saved = await _source.checkpoint();
     final (number, count) = await _source.placeOf(lessonId);
     final references = await _source.references(lessonId);
-    if (isClosed || revision != _loadRevision) return;
+    if (isClosed || revision != _loadRevision) {
+      return;
+    }
     if (full == null || full.steps.isEmpty) {
       emit(const LessonState(ready: true, missing: true));
       return;
@@ -539,8 +731,10 @@ class LessonCubit extends Cubit<LessonState> {
                 stepStartedAt: saved.stepStartedAt,
                 stepPausedAt: saved.stepPausedAt,
                 hintsShown: saved.hintsShown,
+                mistakes: saved.mistakes,
                 demoMove: saved.demoMove,
                 demoPlaying: saved.demoPlaying,
+                reviewReturn: saved.reviewReturn,
               );
       }
       opened =
@@ -568,7 +762,8 @@ class LessonCubit extends Cubit<LessonState> {
       references: references,
     );
     if (saved != null && saved.step < lesson.steps.length) {
-      emit(_restore(base, saved));
+      _reviewReturn = saved.reviewReturn;
+      emit(_restore(base, saved).copyWith(returnTo: _reviewReturn?.step));
     } else {
       emit(_open(base, 0));
     }
@@ -593,12 +788,17 @@ class LessonCubit extends Cubit<LessonState> {
   /// "Continuar": passa da fala, ou do passo cumprido, para o próximo; no
   /// último, conclui a aula.
   Future<void> next() async {
-    if (!state.canContinue) return;
+    _decision = null;
+    if (!state.canContinue) {
+      return;
+    }
     // Revendo um ponto a partir do teste: depois do passo revisto (e da
     // explicação, se ele era de pensar), "continuar" volta ao teste.
     final returnTo = state.returnTo;
     if (returnTo != null && state.current is! ThinkStep) {
-      emit(_open(state, returnTo));
+      final saved = _reviewReturn;
+      _reviewReturn = null;
+      emit(saved == null ? _open(state, returnTo) : _restore(state, saved));
       await _save();
       return;
     }
@@ -617,7 +817,11 @@ class LessonCubit extends Cubit<LessonState> {
     final id = state.reviewStep;
     final steps = state.lesson?.steps ?? const <LessonStep>[];
     final index = steps.indexWhere((step) => step.id == id);
-    if (id == null || index < 0) return;
+    if (id == null || index < 0 || index >= state.step) {
+      return;
+    }
+    _reviewReturn = _checkpoint();
+    _decision = null;
     emit(_open(state, index).copyWith(returnTo: state.step));
     await _save();
   }
@@ -631,13 +835,17 @@ class LessonCubit extends Cubit<LessonState> {
   /// Volta um passo, para rever: ele abre do começo (dá para jogar de
   /// novo ou seguir com "continuar").
   Future<void> back() async {
-    if (!state.canGoBack) return;
+    _decision = null;
+    if (!state.canGoBack) {
+      return;
+    }
     emit(_carryReturn(_open(state, state.step - 1), state.returnTo));
     await _save();
   }
 
   /// Tenta de novo o passo de jogar, do começo.
   Future<void> retry() async {
+    _decision = null;
     final step = state.current;
     // Depois de um lance errado previsto, o tabuleiro está como antes dele:
     // o aluno joga de novo dali.
@@ -656,7 +864,9 @@ class LessonCubit extends Cubit<LessonState> {
       await _save();
       return;
     }
-    if (step is! PlayStep) return;
+    if (step is! PlayStep) {
+      return;
+    }
     emit(
       _open(
         state,
@@ -669,13 +879,40 @@ class LessonCubit extends Cubit<LessonState> {
   /// Sai da aula pelo voltar: o passo fica guardado, mas o app não reabre
   /// nela.
   Future<void> leave() async {
-    if (state.finished) return;
+    if (state.finished) {
+      return;
+    }
     await _source.leave();
   }
 
   /// O aluno moveu uma peça no tabuleiro.
   Future<void> play(Move move) async {
-    if (!state.interactive) return;
+    if (!state.interactive) {
+      return;
+    }
+    final origin = state;
+    final current = origin.current;
+    if (origin.fen != null && _position()?.isLegal(move) == true) {
+      _decision = (
+        step: origin.step,
+        id: current!.id,
+        kind: current is ThinkStep
+            ? 'think'
+            : current is MoveStep
+            ? 'move'
+            : 'play',
+        fen: origin.fen!,
+        turn: current is PlayStep
+            ? (origin.moves.length + 1) ~/ 2 + 1
+            : origin.turn + 1,
+        uci: move.uci,
+        incorrect: current is MoveStep
+            ? !LessonRules.accepts(current, origin.turn, move.uci)
+            : current is ThinkStep
+            ? !LessonRules.acceptsThink(current, move.uci)
+            : false,
+      );
+    }
     switch (state.current) {
       case StarsStep step:
         await _playStar(step, move);
@@ -703,7 +940,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// "Mais uma dica", quando o aluno quiser.
   Future<void> moreHint() async {
     final step = state.current;
-    if (step is! ThinkStep || !state.canHint) return;
+    if (step is! ThinkStep || !state.canHint) {
+      return;
+    }
     final shown = state.hintsShown + 1;
     emit(
       state.copyWith(
@@ -718,7 +957,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// "Voltar à posição": o tabuleiro do passo de pensar de novo.
   void resetThink() {
     final step = state.current;
-    if (step is! ThinkStep) return;
+    if (step is! ThinkStep) {
+      return;
+    }
     emit(state.copyWith(fen: step.fen, clearLastMove: true));
   }
 
@@ -728,9 +969,13 @@ class LessonCubit extends Cubit<LessonState> {
   // "Ver explicação" faz o mesmo sem lance.
   Future<void> _playThink(Move move) async {
     final position = _position();
-    if (position == null) return;
+    if (position == null) {
+      return;
+    }
     final played = GameRules.play(position, move);
-    if (played == null) return;
+    if (played == null) {
+      return;
+    }
     unawaited(_sounds?.move(played.san));
     emit(
       state.copyWith(
@@ -756,7 +1001,9 @@ class LessonCubit extends Cubit<LessonState> {
     final answerFen = state.fen;
     await Future<void>.delayed(replyDelay);
     await _waitForForeground();
-    if (isClosed || _closing || state.step != stepIndex) return;
+    if (isClosed || _closing || state.step != stepIndex) {
+      return;
+    }
     final nextIndex = stepIndex + 1;
     if (nextIndex < state.stepCount) {
       final steps = state.lesson!.steps;
@@ -804,6 +1051,23 @@ class LessonCubit extends Cubit<LessonState> {
       emit(
         opened.copyWith(
           speech: [said, ?opened.speech].join('\n\n'),
+          explanation: ExplanationPayload(
+            positionId: step.id,
+            state: ExplanationState.incorrect,
+            explanations: [
+              ExplanationBlock(
+                id: 'played',
+                kind: ExplanationKind.playedIncorrect,
+                texts: [said],
+              ),
+              if (opened.speech case final text?)
+                ExplanationBlock(
+                  id: 'context',
+                  kind: ExplanationKind.context,
+                  texts: [text],
+                ),
+            ],
+          ),
           emotion: Emotion.focused,
         ),
       );
@@ -827,7 +1091,9 @@ class LessonCubit extends Cubit<LessonState> {
   static String? _numbered(String fen, Move move) {
     final position = GameRules.fromFen(fen);
     final played = position == null ? null : GameRules.play(position, move);
-    if (position == null || played == null) return null;
+    if (position == null || played == null) {
+      return null;
+    }
     final dots = position.turn == Side.white ? '.' : '...';
     return '${position.fullmoves}$dots${played.san}';
   }
@@ -900,7 +1166,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// aluno avança na mão): ela volta a andar sozinha.
   Future<void> demoForward() async {
     final step = state.current;
-    if (step is! DemoStep || state.demoMove >= step.line.length) return;
+    if (step is! DemoStep || state.demoMove >= step.line.length) {
+      return;
+    }
     emit(_demoAt(state.copyWith(demoPlaying: true), step, state.demoMove + 1));
     await _save();
   }
@@ -908,14 +1176,18 @@ class LessonCubit extends Cubit<LessonState> {
   /// Volta um lance: desfaz no tabuleiro e mostra a fala daquele ponto.
   Future<void> demoBack() async {
     final step = state.current;
-    if (step is! DemoStep || state.demoMove == 0) return;
+    if (step is! DemoStep || state.demoMove == 0) {
+      return;
+    }
     emit(_demoAt(state, step, state.demoMove - 1).copyWith(demoPlaying: false));
     await _save();
   }
 
   /// Pausa a demonstração (ela para de andar sozinha) ou a retoma.
   void demoTogglePause() {
-    if (state.current is! DemoStep) return;
+    if (state.current is! DemoStep) {
+      return;
+    }
     emit(state.copyWith(demoPlaying: !state.demoPlaying));
     unawaited(_save());
   }
@@ -923,7 +1195,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// Repete a demonstração do começo.
   Future<void> demoReplay() async {
     final step = state.current;
-    if (step is! DemoStep) return;
+    if (step is! DemoStep) {
+      return;
+    }
     emit(_demoAt(state, step, 0).copyWith(demoPlaying: true));
     await _save();
   }
@@ -978,7 +1252,9 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> tap(String square) async {
     final step = state.current;
     final target = state.tapTarget;
-    if (step is! TapStep || target == null) return;
+    if (step is! TapStep || target == null) {
+      return;
+    }
     if (square != target) {
       emit(
         state.copyWith(
@@ -1008,7 +1284,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// Pede ao mestre o melhor lance (vira uma seta no tabuleiro).
   Future<void> askHint() async {
     final current = state.current;
-    if (!state.interactive) return;
+    if (!state.interactive) {
+      return;
+    }
     switch (current) {
       case MoveStep step:
         final accepted = step.line[state.turn].accept.first;
@@ -1021,10 +1299,14 @@ class LessonCubit extends Cubit<LessonState> {
         );
       case PlayStep():
         final position = _position();
-        if (position == null) return;
+        if (position == null) {
+          return;
+        }
         final fen = state.fen;
         final move = await _opponent.pickMove(position, thinkTime: thinkTime);
-        if (isClosed || _closing || state.fen != fen || move == null) return;
+        if (isClosed || _closing || state.fen != fen || move == null) {
+          return;
+        }
         emit(
           state.copyWith(
             hint: move,
@@ -1045,12 +1327,20 @@ class LessonCubit extends Cubit<LessonState> {
   /// aluno é só escolher outra peça: sem fala.
   void refuseStar(Square from, Square to) {
     final step = state.current;
-    if (step is! StarsStep || !state.interactive || from == to) return;
+    if (step is! StarsStep || !state.interactive || from == to) {
+      return;
+    }
     final board = LessonRules.starsBoard(state.fen!);
     final piece = board.pieceAt(from);
-    if (piece == null || piece.color != step.side) return;
-    if (board.pieceAt(to)?.color == step.side) return;
-    if (LessonRules.moveStar(board, step.side, from, to) != null) return;
+    if (piece == null || piece.color != step.side) {
+      return;
+    }
+    if (board.pieceAt(to)?.color == step.side) {
+      return;
+    }
+    if (LessonRules.moveStar(board, step.side, from, to) != null) {
+      return;
+    }
     _refusal =
         _pick('coach.illegal.${piece.role.name}') ?? _pick('coach.wrong');
     emit(state.copyWith(speech: _refusal, emotion: Emotion.focused));
@@ -1060,10 +1350,14 @@ class LessonCubit extends Cubit<LessonState> {
   String? _refusal;
 
   Future<void> _playStar(StarsStep step, Move move) async {
-    if (move is! NormalMove) return;
+    if (move is! NormalMove) {
+      return;
+    }
     final board = LessonRules.starsBoard(state.fen!);
     final moved = LessonRules.moveStar(board, step.side, move.from, move.to);
-    if (moved == null) return;
+    if (moved == null) {
+      return;
+    }
     unawaited(_sounds?.play(GameSound.move));
     final star = move.to.name;
     final collected = [
@@ -1094,11 +1388,17 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _playLine(MoveStep step, Move move) async {
     final position = _position();
-    if (position == null || GameRules.play(position, move) == null) return;
-    final revision = ++_feedbackRevision;
+    if (position == null || GameRules.play(position, move) == null) {
+      return;
+    }
     if (!LessonRules.accepts(step, state.turn, move.uci)) {
       if (step.mistakes[move.uci] case final mistake?) {
         await _explainMistake(mistake);
+        await _loadExplanation(state);
+        return;
+      }
+      if (_feedback is ExplanationRepository &&
+          await _explainContextualMistake(move)) {
         return;
       }
       // A peça volta: a tela redesenha o tabuleiro a cada estado novo. No
@@ -1117,31 +1417,13 @@ class LessonCubit extends Cubit<LessonState> {
           mistakes: mistakes,
         ),
       );
-      final context = state;
-      try {
-        final text = await _feedback?.find(
-          lessonId: _lessonId,
-          exerciseId: step.id,
-          kind: 'move',
-          turn: context.turn + 1,
-          fen: context.fen!,
-          uci: move.uci,
-          language: _language,
-        );
-        if (!isClosed &&
-            !_closing &&
-            revision == _feedbackRevision &&
-            identical(state, context) &&
-            text != null) {
-          emit(state.copyWith(speech: text, genericMistake: false));
-        }
-      } catch (_) {
-        // Keep the existing hint when optional contextual feedback is absent.
-      }
+      await _loadExplanation(state);
       return;
     }
     final played = GameRules.play(position, move);
-    if (played == null) return;
+    if (played == null) {
+      return;
+    }
     unawaited(_sounds?.move(played.san));
     unawaited(_haptics?.move(played.san));
     final turn = step.line[state.turn];
@@ -1179,7 +1461,9 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _finishLineReply(MoveStep step) async {
     final position = _position();
-    if (position == null || state.turn >= step.line.length) return;
+    if (position == null || state.turn >= step.line.length) {
+      return;
+    }
     final turn = step.line[state.turn];
     final reply = Move.parse(turn.reply ?? '');
     var after = position;
@@ -1187,7 +1471,9 @@ class LessonCubit extends Cubit<LessonState> {
     if (reply != null) {
       await Future<void>.delayed(replyDelay);
       await _waitForForeground();
-      if (isClosed || _closing || state.fen != fen) return;
+      if (isClosed || _closing || state.fen != fen) {
+        return;
+      }
       final answered = GameRules.play(after, reply);
       if (answered == null) {
         // A resposta combinada não cabe no tabuleiro (aula com dado
@@ -1220,11 +1506,32 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _playOut(PlayStep step, Move move) async {
     final position = _position();
-    if (position == null) return;
+    if (position == null) {
+      return;
+    }
     final played = GameRules.play(position, move);
-    if (played == null) return;
+    if (played == null) {
+      return;
+    }
     if (step.mistakes[move.uci] case final mistake?) {
+      final decision = _decision;
+      if (decision != null) {
+        _decision = (
+          step: decision.step,
+          id: decision.id,
+          kind: decision.kind,
+          fen: decision.fen,
+          turn: decision.turn,
+          uci: decision.uci,
+          incorrect: true,
+        );
+      }
       await _explainMistake(mistake);
+      await _loadExplanation(state);
+      return;
+    }
+    if (_feedback is ExplanationRepository &&
+        await _explainContextualMistake(move)) {
       return;
     }
     unawaited(_sounds?.move(played.san));
@@ -1263,7 +1570,9 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _replyPlay(PlayStep step) async {
     final position = _position();
-    if (position == null) return;
+    if (position == null) {
+      return;
+    }
     final start = GameRules.fromFen(step.fen)!;
     var moves = state.moves;
     final reply = await _opponent.pickMove(
@@ -1274,7 +1583,9 @@ class LessonCubit extends Cubit<LessonState> {
       history: [start],
     );
     await _waitForForeground();
-    if (isClosed || _closing || state.fen != position.fen) return;
+    if (isClosed || _closing || state.fen != position.fen) {
+      return;
+    }
     final answered = reply == null ? null : GameRules.play(position, reply);
     if (answered == null) {
       emit(state.copyWith(phase: StepPhase.active));
@@ -1305,14 +1616,82 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
+  // Content metadata alone may reject a move, and only at this exact origin.
+  Future<bool> _explainContextualMistake(Move move) async {
+    final repository = _feedback;
+    final decision = _decision;
+    if (repository is! ExplanationRepository || decision == null) return false;
+    ExplanationPayload? payload;
+    try {
+      payload = await repository!.findPayload(
+        lessonId: _lessonId,
+        exerciseId: decision.id,
+        kind: decision.kind,
+        turn: decision.turn,
+        fen: decision.fen,
+        language: _language,
+        state: ExplanationState.incorrect,
+        playedUci: move.uci,
+      );
+    } catch (_) {
+      return false;
+    }
+    if (isClosed ||
+        _closing ||
+        _decision != decision ||
+        state.step != decision.step ||
+        state.fen != decision.fen ||
+        !state.interactive) {
+      return true;
+    }
+    final steps = state.lesson!.steps;
+    final target = steps.indexWhere((step) => step.id == payload?.reviewStepId);
+    if (payload == null || target < 0 || target >= state.step) return false;
+    final roots = payload.variations.where(
+      (v) =>
+          v.parentId == null &&
+          v.originFen == decision.fen &&
+          v.firstUci == move.uci &&
+          payload!.openVariation(v) != null,
+    );
+    if (roots.any((v) => v.outcome == VariationOutcome.accepted) ||
+        !roots.any((v) => v.outcome != VariationOutcome.accepted)) {
+      return false;
+    }
+    _decision = (
+      step: decision.step,
+      id: decision.id,
+      kind: decision.kind,
+      fen: decision.fen,
+      turn: decision.turn,
+      uci: decision.uci,
+      incorrect: true,
+    );
+    emit(
+      state.copyWith(
+        phase: StepPhase.failed,
+        mistakes: state.mistakes + 1,
+        reviewStep: payload.reviewStepId,
+        clearHint: true,
+        explanation: payload,
+        speech: payload.explanations.expand((b) => b.texts).join('\n\n'),
+        genericMistake: false,
+        emotion: Emotion.focused,
+      ),
+    );
+    await _loadExplanation(state);
+    await _save();
+    return true;
+  }
+
   /// O lance errado previsto: a peça volta, o Viktor explica o erro e o
   /// rodapé oferece rever o ponto da lição e tentar de novo.
   Future<void> _explainMistake(StepMistake mistake) async {
-    ++_feedbackRevision;
     final text = _mistakeText(mistake.say);
     final review = mistake.review;
     final steps = state.lesson?.steps ?? const <LessonStep>[];
-    final reviewable = steps.any((step) => step.id == review);
+    final index = steps.indexWhere((step) => step.id == review);
+    final reviewable = index >= 0 && index < state.step;
     emit(
       state.copyWith(
         phase: StepPhase.failed,
@@ -1331,7 +1710,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// A fala de um lance errado: `step.x` do arquivo de falas da aula vira
   /// `<aula>.x`; outra chave vale como está.
   String? _mistakeText(String? key) {
-    if (key == null) return null;
+    if (key == null) {
+      return null;
+    }
     final local = key.startsWith('step.')
         ? '$_lessonId.${key.substring('step.'.length)}'
         : '$_lessonId.$key';
@@ -1367,7 +1748,9 @@ class LessonCubit extends Cubit<LessonState> {
     if (part != null) {
       // Parte concluída: o cartão "Parte N concluída" com a próxima.
       final outcome = await _source.completePart(lesson.id, part.id);
-      if (isClosed) return;
+      if (isClosed) {
+        return;
+      }
       unawaited(_haptics?.play(HapticEvent.success));
       emit(
         state.copyWith(
@@ -1380,7 +1763,9 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     final outcome = await _source.complete(lesson.id);
-    if (isClosed) return;
+    if (isClosed) {
+      return;
+    }
     // A formatura é só da escola: na trilha de finais, a última lição
     // termina como as outras.
     final courseFinished = outcome.last && !state.endgame;
@@ -1455,6 +1840,7 @@ class LessonCubit extends Cubit<LessonState> {
       collected: saved.collected,
       turn: saved.turn,
       moves: saved.moves,
+      mistakes: saved.mistakes,
       stepStartedAt: saved.stepId == step.id
           ? (saved.stepStartedAt != null && saved.stepPausedAt != null
                 ? StepClock.resume(
@@ -1564,25 +1950,29 @@ class LessonCubit extends Cubit<LessonState> {
 
   Future<void> _save() async {
     final lesson = state.lesson;
-    if (lesson == null || state.finished) return;
-    await _source.saveCheckpoint(
-      LessonCheckpoint(
-        lessonId: lesson.id,
-        step: state.step,
-        fen: state.fen,
-        collected: state.collected,
-        turn: state.turn,
-        moves: state.moves,
-        part: state.part?.id,
-        stepId: state.current?.id,
-        stepStartedAt: state.stepStartedAt,
-        stepPausedAt: _pausedAt,
-        hintsShown: state.hintsShown,
-        demoMove: state.demoMove,
-        demoPlaying: state.demoPlaying,
-      ),
-    );
+    if (lesson == null || state.finished) {
+      return;
+    }
+    await _source.saveCheckpoint(_checkpoint());
   }
+
+  LessonCheckpoint _checkpoint() => LessonCheckpoint(
+    lessonId: state.lesson!.id,
+    step: state.step,
+    fen: state.fen,
+    collected: state.collected,
+    turn: state.turn,
+    moves: state.moves,
+    part: state.part?.id,
+    stepId: state.current?.id,
+    stepStartedAt: state.stepStartedAt,
+    stepPausedAt: _pausedAt,
+    hintsShown: state.hintsShown,
+    mistakes: state.mistakes,
+    demoMove: state.demoMove,
+    demoPlaying: state.demoPlaying,
+    reviewReturn: _reviewReturn,
+  );
 
   Position? _position() {
     final fen = state.fen;

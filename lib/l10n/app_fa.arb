@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "درس در بازبینی رد شد: دوباره ساخته می‌شود.",
   "endgamesTagFailed": "رد شده",
-  "endgamesTagInReview": "در بازبینی"
+  "endgamesTagInReview": "در بازبینی",
+  "explanationContext": "زمینه و هدف",
+  "explanationPlayedIncorrect": "حرکت شما",
+  "explanationPlayedCorrect": "حرکت درست شما",
+  "explanationMainSolution": "راه‌حل اصلی",
+  "explanationOtherSolutions": "راه‌حل‌های دیگر",
+  "explanationFailedAlternatives": "گزینه‌های ناموفق",
+  "explanationAccepted": "به هدف می‌رسد",
+  "explanationLosing": "می‌بازد",
+  "explanationDoesNotMeetGoal": "به هدف نمی‌رسد",
+  "explanationUnavailable": "این شاخه در دسترس نیست.",
+  "explanationFirst": "آغاز شاخه",
+  "explanationPrevious": "حرکت قبلی",
+  "explanationNext": "حرکت بعدی",
+  "explanationLast": "پایان شاخه",
+  "explanationReturn": "بازگشت به وضعیت اصلی"
 }
