@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Les afgekeurd bij de controle: wordt opnieuw gemaakt.",
   "endgamesTagFailed": "Afgekeurd",
-  "endgamesTagInReview": "In controle"
+  "endgamesTagInReview": "In controle",
+  "explanationContext": "Context en doel",
+  "explanationPlayedIncorrect": "Jouw zet",
+  "explanationPlayedCorrect": "Jouw juiste zet",
+  "explanationMainSolution": "Hoofdoplossing",
+  "explanationOtherSolutions": "Andere oplossingen",
+  "explanationFailedAlternatives": "Alternatieven die falen",
+  "explanationAccepted": "Bereikt het doel",
+  "explanationLosing": "Verliest",
+  "explanationDoesNotMeetGoal": "Bereikt het doel niet",
+  "explanationUnavailable": "Deze variant is niet beschikbaar.",
+  "explanationFirst": "Begin van de variant",
+  "explanationPrevious": "Vorige zet",
+  "explanationNext": "Volgende zet",
+  "explanationLast": "Einde van de variant",
+  "explanationReturn": "Terug naar de stelling"
 }

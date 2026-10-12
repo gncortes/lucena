@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Ders incelemeden geçemedi: yeniden yapılacak.",
   "endgamesTagFailed": "Reddedildi",
-  "endgamesTagInReview": "İncelemede"
+  "endgamesTagInReview": "İncelemede",
+  "explanationContext": "Bağlam ve hedef",
+  "explanationPlayedIncorrect": "Hamleniz",
+  "explanationPlayedCorrect": "Doğru hamleniz",
+  "explanationMainSolution": "Ana çözüm",
+  "explanationOtherSolutions": "Diğer çözümler",
+  "explanationFailedAlternatives": "Başarısız alternatifler",
+  "explanationAccepted": "Hedefe ulaşır",
+  "explanationLosing": "Kaybeder",
+  "explanationDoesNotMeetGoal": "Hedefe ulaşmaz",
+  "explanationUnavailable": "Bu varyant kullanılamıyor.",
+  "explanationFirst": "Varyantın başı",
+  "explanationPrevious": "Önceki hamle",
+  "explanationNext": "Sonraki hamle",
+  "explanationLast": "Varyantın sonu",
+  "explanationReturn": "Konuma dön"
 }

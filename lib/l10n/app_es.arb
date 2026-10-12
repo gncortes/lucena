@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Lección suspendida en la revisión: se rehará.",
   "endgamesTagFailed": "Suspendida",
-  "endgamesTagInReview": "En revisión"
+  "endgamesTagInReview": "En revisión",
+  "explanationContext": "Contexto y objetivo",
+  "explanationPlayedIncorrect": "Tu jugada",
+  "explanationPlayedCorrect": "Tu jugada correcta",
+  "explanationMainSolution": "Solución principal",
+  "explanationOtherSolutions": "Otras soluciones",
+  "explanationFailedAlternatives": "Alternativas que fallan",
+  "explanationAccepted": "Cumple el objetivo",
+  "explanationLosing": "Pierde",
+  "explanationDoesNotMeetGoal": "No cumple el objetivo",
+  "explanationUnavailable": "Esta variante no está disponible.",
+  "explanationFirst": "Inicio de la variante",
+  "explanationPrevious": "Jugada anterior",
+  "explanationNext": "Jugada siguiente",
+  "explanationLast": "Final de la variante",
+  "explanationReturn": "Volver a la posición"
 }

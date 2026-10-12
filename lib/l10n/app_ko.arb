@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "레슨이 검토에서 탈락했습니다: 다시 만듭니다.",
   "endgamesTagFailed": "탈락",
-  "endgamesTagInReview": "검토 중"
+  "endgamesTagInReview": "검토 중",
+  "explanationContext": "배경과 목표",
+  "explanationPlayedIncorrect": "당신의 수",
+  "explanationPlayedCorrect": "당신의 올바른 수",
+  "explanationMainSolution": "주요 해법",
+  "explanationOtherSolutions": "다른 해법",
+  "explanationFailedAlternatives": "실패하는 변화",
+  "explanationAccepted": "목표 달성",
+  "explanationLosing": "패배",
+  "explanationDoesNotMeetGoal": "목표 미달성",
+  "explanationUnavailable": "이 변화는 사용할 수 없습니다.",
+  "explanationFirst": "변화 시작",
+  "explanationPrevious": "이전 수",
+  "explanationNext": "다음 수",
+  "explanationLast": "변화 끝",
+  "explanationReturn": "원래 포지션으로 돌아가기"
 }

@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Lezione bocciata in revisione: sarà rifatta.",
   "endgamesTagFailed": "Bocciata",
-  "endgamesTagInReview": "In revisione"
+  "endgamesTagInReview": "In revisione",
+  "explanationContext": "Contesto e obiettivo",
+  "explanationPlayedIncorrect": "La tua mossa",
+  "explanationPlayedCorrect": "La tua mossa corretta",
+  "explanationMainSolution": "Soluzione principale",
+  "explanationOtherSolutions": "Altre soluzioni",
+  "explanationFailedAlternatives": "Alternative che falliscono",
+  "explanationAccepted": "Raggiunge l’obiettivo",
+  "explanationLosing": "Perde",
+  "explanationDoesNotMeetGoal": "Non raggiunge l’obiettivo",
+  "explanationUnavailable": "Questa variante non è disponibile.",
+  "explanationFirst": "Inizio della variante",
+  "explanationPrevious": "Mossa precedente",
+  "explanationNext": "Mossa successiva",
+  "explanationLast": "Fine della variante",
+  "explanationReturn": "Torna alla posizione"
 }

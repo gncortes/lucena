@@ -7,6 +7,7 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
@@ -27,11 +28,12 @@ void main() {
     String exercise, {
     FakeWebPages? webPages,
     FakeNow? now,
+    FakeEndgameLessonRepository? lessons,
     EndgameProgress progress = const EndgameProgress(),
   }) async {
     final cubit = ExerciseCubit(
       now: now ?? FakeNow(DateTime.utc(2026, 10, 11)),
-      lessons: FakeEndgameLessonRepository(),
+      lessons: lessons ?? FakeEndgameLessonRepository(),
       progress: FakeEndgameProgressRepository(progress),
       characters: FakeCharacterRepository(),
       replyDelay: Duration.zero,
@@ -115,7 +117,9 @@ void main() {
     });
   }
 
-  testWidgets('o enunciado, as estrelas e a dica com a seta', (tester) async {
+  testWidgets('o enunciado, as estrelas e a dica conceitual sem resposta', (
+    tester,
+  ) async {
     await pump(tester, 'e03');
     expect(find.text('Exercise 3 of 3'), findsOneWidget);
     // O Viktor só entra quando fala.
@@ -124,15 +128,66 @@ void main() {
 
     await tester.tap(find.byKey(ExerciseKeys.hintButton));
     await tester.pumpAndSettle();
-    expect(speech(tester), 'The hard one. Same idea.');
+    expect(find.text('The hard one.\n\nSame idea.'), findsOneWidget);
     final board = tester.widget<Chessboard>(find.byKey(ExerciseKeys.board));
     expect(
       board.shapes.whereType<Arrow>().any(
         (arrow) => arrow.orig.name == 'c1' && arrow.dest.name == 'c4',
       ),
-      isTrue,
+      isFalse,
     );
   });
+
+  for (final goal in PositionGoal.values) {
+    testWidgets('objetivo ${goal.name} permanece após erro silencioso', (
+      tester,
+    ) async {
+      final sample = FakeEndgameLessonRepository.sample.lessons.first;
+      final exercise = sample.exercise('e03')!;
+      final lessons = FakeEndgameLessonRepository(
+        trail: EndgameTrail(
+          modules: [
+            EndgameModule(
+              id: sample.module,
+              lessons: [
+                EndgameLesson(
+                  id: sample.id,
+                  module: sample.module,
+                  lesson: sample.lesson,
+                  exercises: [
+                    Exercise(
+                      id: exercise.id,
+                      stars: exercise.stars,
+                      fen: exercise.fen,
+                      goal: goal,
+                      line: exercise.line,
+                    ),
+                  ],
+                  passScore: sample.passScore,
+                  keyPositions: sample.keyPositions,
+                  practice: sample.practice,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      final cubit = await pump(tester, 'e03', lessons: lessons);
+      final expected = goal == PositionGoal.win
+          ? 'White to play and win'
+          : 'White to play and hold';
+      expect(tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data, expected);
+      expect(find.byKey(ExerciseKeys.speech), findsNothing);
+
+      await move(tester, 'c1', 'c2');
+      expect(cubit.state.mistakes, 1);
+      expect(cubit.state.phase, ExercisePhase.active);
+      expect(cubit.state.fen, exercise.fen);
+      expect(cubit.state.speech, isNull);
+      expect(find.byKey(ExerciseKeys.speech), findsNothing);
+      expect(tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data, expected);
+    });
+  }
 
   testWidgets('lance errado volta; o certo resolve e mostra a nota', (
     tester,
@@ -142,10 +197,10 @@ void main() {
     expect(cubit.state.mistakes, 1);
     expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
 
-    // Antes de resolver, a vez logo abaixo do tabuleiro.
+    // Antes de resolver, a vez e o objetivo logo abaixo do tabuleiro.
     expect(
       tester.widget<Text>(find.byKey(ExerciseKeys.goal)).data,
-      'Your turn: White to play',
+      'White to play and win',
     );
 
     await move(tester, 'c1', 'c4');

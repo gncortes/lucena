@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
+import 'package:lucena/ui/core/keys/explanation_keys.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_voice_repository.dart';
@@ -16,6 +18,226 @@ import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 void main() {
+  testWidgets(
+    'one bubble joins paragraphs and verified inline move replaces SAN button',
+    (tester) async {
+      final main = ExplanationVariation(
+        id: 'main',
+        label: '1.Kh2',
+        outcome: VariationOutcome.accepted,
+        texts: const ['First: 1.Kh2.', 'Second paragraph.'],
+        originFen: '6k1/8/8/8/8/8/3P4/7K w - - 0 1',
+        movesUci: const ['h1h2'],
+        movesSan: const ['1.Kh2'],
+        validated: true,
+      );
+      final fallback = ExplanationVariation(
+        id: 'fallback',
+        label: '1.Kh2',
+        outcome: VariationOutcome.accepted,
+        texts: const ['Unlinked explanation.'],
+        originFen: main.originFen,
+        movesUci: main.movesUci,
+        movesSan: main.movesSan,
+        validated: true,
+      );
+      VariationCursor? selected;
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: null,
+              speechContext: SpeechContext.teaching,
+              explanation: ExplanationPayload(
+                positionId: 'p',
+                state: ExplanationState.review,
+                explanations: [
+                  ExplanationBlock(
+                    id: 'main',
+                    kind: ExplanationKind.mainSolution,
+                    texts: main.texts,
+                    variations: [main],
+                  ),
+                  ExplanationBlock(
+                    id: 'fallback',
+                    kind: ExplanationKind.otherSolutions,
+                    variations: [fallback],
+                  ),
+                ],
+              ),
+              onVariation: (cursor) => selected = cursor,
+              onLink: (_) =>
+                  fail('The inline move must open its verified origin.'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(ExplanationKeys.variation('main')), findsNothing);
+      final paragraph = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .singleWhere(
+            (widget) =>
+                widget.properties.label?.contains(
+                  'First: 1.Kh2.\n\nSecond paragraph.',
+                ) ??
+                false,
+          );
+      expect(paragraph.properties.customSemanticsActions, hasLength(1));
+      paragraph.properties.customSemanticsActions!.values.single.call();
+      expect(selected!.variation.id, 'main');
+      expect(selected!.fen, main.open()!.fen);
+      expect(find.byKey(ExplanationKeys.variation('fallback')), findsOneWidget);
+      await tester.tap(find.byKey(ExplanationKeys.variation('fallback')));
+      await tester.pumpAndSettle();
+      expect(selected!.variation.id, 'fallback');
+      expect(
+        find.text('Unlinked explanation.', findRichText: true),
+        findsOneWidget,
+      );
+    },
+  );
+  testWidgets('branch notation validates against the complete parent graph', (
+    tester,
+  ) async {
+    final root = ExplanationVariation(
+      id: 'A',
+      label: 'A',
+      outcome: VariationOutcome.accepted,
+      texts: const ['First: 1.d4.'],
+      originFen: '6k1/8/8/8/8/8/3P4/7K w - - 0 1',
+      movesUci: const ['d2d4'],
+      movesSan: const ['1.d4'],
+      validated: true,
+    );
+    final child = ExplanationVariation(
+      id: 'A.1',
+      label: 'A.1',
+      parentId: 'A',
+      parentPly: 1,
+      outcome: VariationOutcome.accepted,
+      texts: const ['Reply: 1...Kf7.'],
+      originFen: root.open()!.fen,
+      movesUci: const ['g8f7'],
+      movesSan: const ['1...Kf7'],
+      validated: true,
+    );
+    final payload = ExplanationPayload(
+      positionId: 'p',
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'tree',
+          kind: ExplanationKind.mainSolution,
+          variations: [root, child],
+        ),
+      ],
+    );
+    VariationCursor? selected;
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: null,
+              speechContext: SpeechContext.teaching,
+              explanation: payload,
+              activeVariation: payload.openVariation(child),
+              onVariation: (cursor) => selected = cursor,
+              onLink: (_) =>
+                  fail('A verified child link must keep its ancestry.'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final paragraph = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .singleWhere(
+          (w) => w.properties.label?.contains('Reply: 1...Kf7.') ?? false,
+        );
+    paragraph.properties.customSemanticsActions!.values.single.call();
+    expect(selected!.variation.id, 'A.1');
+    expect(selected!.fen, payload.openVariation(child)!.fen);
+    expect(
+      payload.cursorForNotation(
+        '1.d4',
+        preferred: child,
+        strictPreferred: true,
+      ),
+      isNull,
+    );
+  });
+  testWidgets(
+    'a notation link keeps its paragraph origin while another line is active',
+    (tester) async {
+      ExplanationVariation line(String id, String first) =>
+          ExplanationVariation(
+            id: id,
+            label: '1...Kf7',
+            outcome: VariationOutcome.accepted,
+            texts: ['$id: 1...Kf7.'],
+            originFen: '6k1/8/8/8/8/8/3P4/7K w - - 0 1',
+            movesUci: [first, 'g8f7'],
+            movesSan: ['1.${first == 'd2d4' ? 'd4' : 'd3'}', '1...Kf7'],
+            validated: true,
+          );
+      final main = line('main', 'd2d4');
+      final other = line('other', 'd2d3');
+      VariationCursor? selected;
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: TeacherSpeech(
+                teacher: FakeCharacterRepository.viktor,
+                text: null,
+                speechContext: SpeechContext.teaching,
+                explanation: ExplanationPayload(
+                  positionId: 'p',
+                  state: ExplanationState.review,
+                  explanations: [
+                    ExplanationBlock(
+                      id: 'main',
+                      kind: ExplanationKind.mainSolution,
+                      texts: main.texts,
+                      variations: [main],
+                    ),
+                    ExplanationBlock(
+                      id: 'other',
+                      kind: ExplanationKind.otherSolutions,
+                      variations: [other],
+                    ),
+                  ],
+                ),
+                activeVariation: other.open(),
+                onVariation: (cursor) => selected = cursor,
+                onLink: (_) => fail(
+                  'The scoped notation must open its own verified line.',
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(ExplanationKeys.variation('main')), findsNothing);
+      final paragraph = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .singleWhere(
+            (widget) =>
+                widget.properties.label?.contains('main: 1...Kf7.') ?? false,
+          );
+      paragraph.properties.customSemanticsActions!.values.single.call();
+      expect(selected!.variation.id, 'main');
+      expect(selected!.ply, 2);
+      expect(selected!.fen, main.open()!.at(2).fen);
+      expect(selected!.fen, isNot(other.open()!.at(2).fen));
+    },
+  );
   const speech = Key('speech');
   const speech_ = speech;
   const long =

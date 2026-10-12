@@ -1060,5 +1060,20 @@
   "endgamesFiltersCount": "[{count} one]",
   "endgameLessonFailed": "[Léššöñ fåîléd ŕévîéw: ît wîll bé ŕédöñé. one two three four]",
   "endgamesTagFailed": "[Fåîléd one]",
-  "endgamesTagInReview": "[Ûñdéŕ ŕévîéw one two]"
+  "endgamesTagInReview": "[Ûñdéŕ ŕévîéw one two]",
+  "explanationContext": "[Çöñtéxt åñd ĝöål one two]",
+  "explanationPlayedIncorrect": "[Ýöûŕ mövé one]",
+  "explanationPlayedCorrect": "[Ýöûŕ çöŕŕéçt mövé one two]",
+  "explanationMainSolution": "[Måîñ šölûtîöñ one two]",
+  "explanationOtherSolutions": "[Öthéŕ šölûtîöñš one two]",
+  "explanationFailedAlternatives": "[Åltéŕñåtîvéš thåt fåîl one two three]",
+  "explanationAccepted": "[Méétš thé ĝöål one two]",
+  "explanationLosing": "[Löšéš one]",
+  "explanationDoesNotMeetGoal": "[Döéš ñöt méét thé ĝöål one two three]",
+  "explanationUnavailable": "[Thîš lîñé îš ûñåvåîlåblé. one two three]",
+  "explanationFirst": "[Štåŕt öf lîñé one two]",
+  "explanationPrevious": "[Pŕévîöûš mövé one two]",
+  "explanationNext": "[Ñéxt mövé one]",
+  "explanationLast": "[Éñd öf lîñé one two]",
+  "explanationReturn": "[Ŕétûŕñ tö pöšîtîöñ one two]"
 }

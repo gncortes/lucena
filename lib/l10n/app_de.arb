@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Lektion bei der Prüfung durchgefallen: sie wird neu gemacht.",
   "endgamesTagFailed": "Durchgefallen",
-  "endgamesTagInReview": "In Prüfung"
+  "endgamesTagInReview": "In Prüfung",
+  "explanationContext": "Kontext und Ziel",
+  "explanationPlayedIncorrect": "Dein Zug",
+  "explanationPlayedCorrect": "Dein richtiger Zug",
+  "explanationMainSolution": "Hauptlösung",
+  "explanationOtherSolutions": "Andere Lösungen",
+  "explanationFailedAlternatives": "Fehlgeschlagene Alternativen",
+  "explanationAccepted": "Erreicht das Ziel",
+  "explanationLosing": "Verliert",
+  "explanationDoesNotMeetGoal": "Erreicht das Ziel nicht",
+  "explanationUnavailable": "Diese Variante ist nicht verfügbar.",
+  "explanationFirst": "Variantenanfang",
+  "explanationPrevious": "Vorheriger Zug",
+  "explanationNext": "Nächster Zug",
+  "explanationLast": "Variantenende",
+  "explanationReturn": "Zur Stellung zurück"
 }

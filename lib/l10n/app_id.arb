@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Pelajaran gagal ditinjau: akan dibuat ulang.",
   "endgamesTagFailed": "Gagal",
-  "endgamesTagInReview": "Ditinjau"
+  "endgamesTagInReview": "Ditinjau",
+  "explanationContext": "Konteks dan tujuan",
+  "explanationPlayedIncorrect": "Langkah Anda",
+  "explanationPlayedCorrect": "Langkah Anda yang benar",
+  "explanationMainSolution": "Solusi utama",
+  "explanationOtherSolutions": "Solusi lain",
+  "explanationFailedAlternatives": "Alternatif yang gagal",
+  "explanationAccepted": "Mencapai tujuan",
+  "explanationLosing": "Kalah",
+  "explanationDoesNotMeetGoal": "Tidak mencapai tujuan",
+  "explanationUnavailable": "Variasi ini tidak tersedia.",
+  "explanationFirst": "Awal variasi",
+  "explanationPrevious": "Langkah sebelumnya",
+  "explanationNext": "Langkah berikutnya",
+  "explanationLast": "Akhir variasi",
+  "explanationReturn": "Kembali ke posisi"
 }

@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Lekcja odrzucona w przeglądzie: zostanie przerobiona.",
   "endgamesTagFailed": "Odrzucona",
-  "endgamesTagInReview": "W przeglądzie"
+  "endgamesTagInReview": "W przeglądzie",
+  "explanationContext": "Kontekst i cel",
+  "explanationPlayedIncorrect": "Twój ruch",
+  "explanationPlayedCorrect": "Twój poprawny ruch",
+  "explanationMainSolution": "Główne rozwiązanie",
+  "explanationOtherSolutions": "Inne rozwiązania",
+  "explanationFailedAlternatives": "Błędne alternatywy",
+  "explanationAccepted": "Osiąga cel",
+  "explanationLosing": "Przegrywa",
+  "explanationDoesNotMeetGoal": "Nie osiąga celu",
+  "explanationUnavailable": "Ten wariant jest niedostępny.",
+  "explanationFirst": "Początek wariantu",
+  "explanationPrevious": "Poprzedni ruch",
+  "explanationNext": "Następny ruch",
+  "explanationLast": "Koniec wariantu",
+  "explanationReturn": "Wróć do pozycji"
 }

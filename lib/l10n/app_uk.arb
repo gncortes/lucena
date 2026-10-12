@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "Урок не пройшов перевірку: його буде перероблено.",
   "endgamesTagFailed": "Не прийнято",
-  "endgamesTagInReview": "На перевірці"
+  "endgamesTagInReview": "На перевірці",
+  "explanationContext": "Контекст і мета",
+  "explanationPlayedIncorrect": "Ваш хід",
+  "explanationPlayedCorrect": "Ваш правильний хід",
+  "explanationMainSolution": "Основне рішення",
+  "explanationOtherSolutions": "Інші рішення",
+  "explanationFailedAlternatives": "Невдалі варіанти",
+  "explanationAccepted": "Досягає мети",
+  "explanationLosing": "Програє",
+  "explanationDoesNotMeetGoal": "Не досягає мети",
+  "explanationUnavailable": "Цей варіант недоступний.",
+  "explanationFirst": "Початок варіанта",
+  "explanationPrevious": "Попередній хід",
+  "explanationNext": "Наступний хід",
+  "explanationLast": "Кінець варіанта",
+  "explanationReturn": "Повернутися до позиції"
 }

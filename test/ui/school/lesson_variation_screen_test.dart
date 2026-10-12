@@ -1,13 +1,19 @@
 import 'package:chessground/chessground.dart';
+import 'package:dartchess/dartchess.dart' show Move, Square;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/ui/core/keys/explanation_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -18,12 +24,37 @@ import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 
+class _AuthoredFeedback extends EmptyExerciseFeedbackRepository
+    implements ExplanationRepository {
+  const _AuthoredFeedback(this.payload);
+  final ExplanationPayload payload;
+  @override
+  Future<ExplanationPayload?> findPayload({
+    required String lessonId,
+    required String exerciseId,
+    required String kind,
+    required int turn,
+    required String fen,
+    required String language,
+    required ExplanationState state,
+    String? playedUci,
+  }) async =>
+      (kind == 'talk' && exerciseId == 'intro') ||
+          (kind == 'move' && exerciseId == 'bridge')
+      ? payload.forState(state, playedUci: playedUci)
+      : null;
+}
+
 /// A variante citada na fala: o lance tocado mostra a posição e o botão do
 /// rodapé anda por ela lance a lance.
 void main() {
   const said = 'Play 1.Rd1+ Ke7 2.Rd4 and the rook shields the king.';
 
-  Future<void> pump(WidgetTester tester, String intro) async {
+  Future<LessonCubit> pump(
+    WidgetTester tester,
+    String intro, {
+    ExerciseFeedbackRepository? feedback,
+  }) async {
     tester.view.physicalSize = const Size(400, 1100);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -38,6 +69,7 @@ void main() {
         FakeEndgameProgressRepository(),
       ),
       characters: FakeCharacterRepository(),
+      feedback: feedback,
       opponent: FakeOpponentRepository(),
       replyDelay: Duration.zero,
     );
@@ -56,6 +88,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return cubit;
   }
 
   String fen(WidgetTester tester) => tester
@@ -129,4 +162,167 @@ void main() {
     await pump(tester, 'This is the Lucena position.');
     expect(find.byKey(LessonKeys.variationShow), findsNothing);
   });
+
+  testWidgets(
+    'authored replay switches origins and returns without changing lesson progress',
+    (tester) async {
+      final primary = ExplanationVariation(
+        id: 'main',
+        label: '1.Rd1+',
+        outcome: VariationOutcome.accepted,
+        texts: ['The rook checks before making a shield.'],
+        originFen: '1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1',
+        movesUci: ['c1d1', 'd8e7', 'd1d4'],
+        movesSan: ['1.Rd1+', '1...Ke7', '2.Rd4'],
+        validated: true,
+      );
+      final secondary = ExplanationVariation(
+        id: 'reply',
+        label: '1...Ke7',
+        outcome: VariationOutcome.accepted,
+        texts: ['The king leaves the file.'],
+        originFen: primary.open()!.fen,
+        movesUci: ['d8e7', 'd1d4'],
+        movesSan: ['1...Ke7', '2.Rd4'],
+        validated: true,
+      );
+      final payload = ExplanationPayload(
+        positionId: 'intro',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'main',
+            kind: ExplanationKind.mainSolution,
+            variations: [primary, secondary],
+          ),
+        ],
+      );
+      final cubit = await pump(
+        tester,
+        said,
+        feedback: _AuthoredFeedback(payload),
+      );
+      final snapshot = cubit.state;
+      final start = fen(tester);
+      await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -700));
+      await tester.pumpAndSettle();
+      Future<void> select(String id) async {
+        await tester.ensureVisible(find.byKey(ExplanationKeys.variation(id)));
+        await tester.tap(find.byKey(ExplanationKeys.variation(id)));
+        await tester.pumpAndSettle();
+      }
+
+      await select('main');
+      expect(fen(tester), primary.open()!.fen);
+      expect(identical(cubit.state, snapshot), isTrue);
+      await tester.ensureVisible(find.byKey(ExplanationKeys.last));
+      await press(tester, ExplanationKeys.last);
+      expect(fen(tester), primary.open()!.at(3).fen);
+      tester.widget<TeacherSpeech>(find.byType(TeacherSpeech).last).onSpoken!(
+        const SpeechLink(start: 0, end: 2, text: 'd4', square: Square.d4),
+      );
+      await tester.pump();
+      final highlighted = tester.widget<Chessboard>(
+        find.byKey(LessonKeys.board),
+      );
+      expect(
+        highlighted.shapes.whereType<CustomShape>().single.orig,
+        Square.d4,
+      );
+      expect(identical(cubit.state, snapshot), isTrue);
+      await select('reply');
+      expect(fen(tester), secondary.open()!.fen);
+      expect(identical(cubit.state, snapshot), isTrue);
+      await tester.ensureVisible(find.byKey(ExplanationKeys.restore));
+      await press(tester, ExplanationKeys.restore);
+      expect(fen(tester), start);
+      expect(identical(cubit.state, snapshot), isTrue);
+    },
+  );
+  testWidgets(
+    'interactive lesson shows authored context then error before the solution',
+    (tester) async {
+      ExplanationVariation variant(
+        String id,
+        String uci,
+        String text,
+        VariationOutcome outcome,
+      ) => ExplanationVariation(
+        id: id,
+        label: uci == 'c1c4' ? '1.Rc4' : '1.Rd1+',
+        outcome: outcome,
+        texts: [text],
+        originFen: FakeEndgameLessonRepository.lucenaFen,
+        movesUci: [uci],
+        movesSan: [uci],
+        validated: true,
+      );
+      final payload = ExplanationPayload(
+        positionId: 'bridge',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'context',
+            kind: ExplanationKind.context,
+            texts: ['The task is to reach the fourth rank.'],
+          ),
+          ExplanationBlock(
+            id: 'main',
+            kind: ExplanationKind.mainSolution,
+            texts: ['The rook reaches the fourth rank.'],
+            variations: [
+              variant(
+                'correct',
+                'c1c4',
+                'The rook reaches the fourth rank.',
+                VariationOutcome.accepted,
+              ),
+            ],
+          ),
+          ExplanationBlock(
+            id: 'failed',
+            kind: ExplanationKind.failedAlternatives,
+            variations: [
+              variant(
+                'incorrect',
+                'c1d1',
+                'This keeps the rook on the first rank.',
+                VariationOutcome.doesNotMeetGoal,
+              ),
+            ],
+          ),
+        ],
+      );
+      final cubit = await pump(
+        tester,
+        said,
+        feedback: _AuthoredFeedback(payload),
+      );
+      await cubit.next();
+      await tester.pumpAndSettle();
+      expect(cubit.state.layout, LessonLayoutMode.solving);
+      expect(
+        find.textContaining(
+          'The task is to reach the fourth rank.',
+          findRichText: true,
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(ExplanationKeys.variation('correct')), findsNothing);
+      await tester.runAsync(() => cubit.play(Move.parse('c1d1')!));
+      await tester.pumpAndSettle();
+      expect(cubit.state.layout, LessonLayoutMode.solving);
+      expect(find.byKey(ExplanationKeys.block('played')), findsOneWidget);
+      expect(find.byKey(ExplanationKeys.variation('correct')), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.byKey(ExplanationKeys.block('played'))).dy,
+        lessThan(
+          tester.getTopLeft(find.byKey(ExplanationKeys.block('main'))).dy,
+        ),
+      );
+      expect(cubit.state.mistakes, 1);
+      expect(cubit.state.turn, 0);
+      expect(cubit.state.fen, FakeEndgameLessonRepository.lucenaFen);
+    },
+  );
 }

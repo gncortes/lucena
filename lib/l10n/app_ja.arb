@@ -1061,5 +1061,20 @@
   "endgamesFiltersCount": "{count}",
   "endgameLessonFailed": "レッスンは審査で不合格：作り直します。",
   "endgamesTagFailed": "不合格",
-  "endgamesTagInReview": "審査中"
+  "endgamesTagInReview": "審査中",
+  "explanationContext": "背景と目標",
+  "explanationPlayedIncorrect": "あなたの手",
+  "explanationPlayedCorrect": "あなたの正しい手",
+  "explanationMainSolution": "主な解答",
+  "explanationOtherSolutions": "その他の解答",
+  "explanationFailedAlternatives": "失敗する変化",
+  "explanationAccepted": "目標を達成",
+  "explanationLosing": "負け",
+  "explanationDoesNotMeetGoal": "目標を達成しない",
+  "explanationUnavailable": "この変化は利用できません。",
+  "explanationFirst": "変化の開始",
+  "explanationPrevious": "前の手",
+  "explanationNext": "次の手",
+  "explanationLast": "変化の最後",
+  "explanationReturn": "元の局面に戻る"
 }

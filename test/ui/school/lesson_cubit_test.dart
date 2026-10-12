@@ -9,6 +9,7 @@ import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_a
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
+import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/lesson.dart';
@@ -101,7 +102,9 @@ void main() {
       test('tipo move, turn 1-based e FEN completa em $language', () async {
         final lesson = cubit(
           course: course,
-          feedback: AssetExerciseFeedbackRepository(_FeedbackAssets()),
+          feedback: AssetExerciseFeedbackRepository(
+            _FeedbackAssets(legacyOnly: true),
+          ),
         );
         await lesson.load(id, language);
         await lesson.next();
@@ -120,7 +123,12 @@ void main() {
           for (final row in errors) {
             final mistakes = lesson.state.mistakes;
             await lesson.play(move(row['uci'] as String));
-            expect(lesson.state.speech, row[language]);
+            expect(
+              lesson.state.speech,
+              row[language],
+              reason:
+                  'turn=$turn uci=${row["uci"]} phase=${lesson.state.phase} payload=${lesson.state.explanation?.explanations.map((b) => b.kind.name).toList()}',
+            );
             expect(lesson.state.mistakes, mistakes + 1);
             expect(lesson.state.turn, turn);
             expect(lesson.state.fen, fen);
@@ -188,6 +196,290 @@ void main() {
       expect(lesson.state.mistakes, 0);
       expect(feedback.results, isEmpty);
     });
+  });
+
+  test(
+    'real demo captions follow zero, first, next, back and replay',
+    () async {
+      const id = 'pawns.distantOpposition';
+      final parsed = AssetEndgameLessonRepository.parseLesson(
+        jsonDecode(
+          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+        ),
+      );
+      final step = parsed.lesson.steps.whereType<DemoStep>().singleWhere(
+        (s) => s.id == 'd_distant',
+      );
+      final feedback = AssetExerciseFeedbackRepository(_FeedbackAssets());
+      final expected = (await feedback.findPayload(
+        lessonId: id,
+        exerciseId: step.id,
+        kind: 'demo',
+        turn: 1,
+        fen: step.fen,
+        language: 'pt',
+        state: ExplanationState.review,
+      ))!;
+      final main = expected.explanations.singleWhere(
+        (b) => b.kind == ExplanationKind.mainSolution,
+      );
+      final demo = cubit(
+        course: Course(
+          modules: [
+            CourseModule(
+              id: 'pawns',
+              lessons: [
+                Lesson(id: id, steps: [step]),
+              ],
+            ),
+          ],
+        ),
+        feedback: feedback,
+      );
+      Future<void> settle() => Future<void>.delayed(Duration.zero);
+      List<String> caption() => demo.state.explanation!.explanations
+          .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
+          .texts;
+      await demo.load(id, 'pt');
+      await settle();
+      expect(caption(), main.texts);
+      for (final ply in [1, 2, 3]) {
+        await demo.demoForward();
+        await settle();
+        expect(demo.state.demoMove, ply);
+        expect(caption(), main.variations.single.explanationByPly[ply]);
+      }
+      await demo.demoBack();
+      await settle();
+      expect(caption(), main.variations.single.explanationByPly[2]);
+      await demo.demoReplay();
+      await settle();
+      expect(demo.state.demoMove, 0);
+      expect(caption(), main.texts);
+      await demo.demoForward();
+      await settle();
+      expect(caption(), main.variations.single.explanationByPly[1]);
+      expect(demo.state.mistakes, 0);
+    },
+  );
+
+  test(
+    'real rich move error precedes solution without moving position or turn',
+    () async {
+      const id = 'pawns.distantOpposition';
+      final parsed = AssetEndgameLessonRepository.parseLesson(
+        jsonDecode(
+          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+        ),
+      );
+      final step = parsed.lesson.steps.whereType<MoveStep>().singleWhere(
+        (s) => s.id == 'convert',
+      );
+      final lesson = cubit(
+        course: Course(
+          modules: [
+            CourseModule(
+              id: 'pawns',
+              lessons: [
+                Lesson(id: id, steps: [step]),
+              ],
+            ),
+          ],
+        ),
+        feedback: AssetExerciseFeedbackRepository(_FeedbackAssets()),
+      );
+      await lesson.load(id, 'pt');
+      await lesson.play(move('d3e3'));
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        lesson.state.explanation!.explanations.first.kind,
+        ExplanationKind.playedIncorrect,
+      );
+      expect(
+        lesson.state.explanation!.explanations.first.variations.single.firstUci,
+        'd3e3',
+      );
+      expect(lesson.state.fen, step.fen);
+      expect(lesson.state.turn, 0);
+      expect(lesson.state.mistakes, 1);
+    },
+  );
+
+  test(
+    'real demo after think retains feedback and its own ply caption',
+    () async {
+      const id = 'pawns.distantOpposition';
+      final parsed = AssetEndgameLessonRepository.parseLesson(
+        jsonDecode(
+          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+        ),
+      );
+      final steps = parsed.lesson.steps;
+      final index = steps.indexWhere((s) => s.id == 'd_distant');
+      final think = steps.whereType<ThinkStep>().singleWhere(
+        (s) => s.id == 't_lesson',
+      );
+      final demo = steps[index] as DemoStep;
+      final feedback = AssetExerciseFeedbackRepository(_FeedbackAssets());
+      final expected = (await feedback.findPayload(
+        lessonId: id,
+        exerciseId: demo.id,
+        kind: 'demo',
+        turn: 1,
+        fen: demo.fen,
+        language: 'pt',
+        state: ExplanationState.review,
+      ))!;
+      final caption = expected.explanations
+          .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
+          .variations
+          .single
+          .explanationByPly;
+      final lesson = cubit(
+        course: Course(
+          modules: [
+            CourseModule(
+              id: 'pawns',
+              lessons: [
+                Lesson(id: id, steps: [think, demo]),
+              ],
+            ),
+          ],
+        ),
+        feedback: feedback,
+      );
+      await lesson.load(id, 'pt');
+      await lesson.play(move(demo.line.first.uci));
+      await Future<void>.delayed(Duration.zero);
+      expect(lesson.state.current, isA<DemoStep>());
+      expect(lesson.state.explanation!.positionId, expected.positionId);
+      expect(
+        lesson.state.explanation!.explanations.first.kind,
+        ExplanationKind.playedCorrect,
+      );
+      expect(
+        lesson.state.explanation!.explanations
+            .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
+            .texts,
+        caption[1],
+      );
+      await lesson.demoForward();
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        lesson.state.explanation!.explanations.any(
+          (b) => b.kind == ExplanationKind.playedCorrect,
+        ),
+        isFalse,
+      );
+      expect(
+        lesson.state.explanation!.explanations
+            .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
+            .texts,
+        caption[2],
+      );
+    },
+  );
+
+  for (final stepId in ['edgeMove', 'protectPawnMove']) {
+    test('active move context follows replies in $stepId', () async {
+      const id = 'pawns.distantOpposition';
+      final parsed = AssetEndgameLessonRepository.parseLesson(
+        jsonDecode(
+          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+        ),
+      );
+      final step = parsed.lesson.steps.whereType<MoveStep>().singleWhere(
+        (step) => step.id == stepId,
+      );
+      final feedback = AssetExerciseFeedbackRepository(_FeedbackAssets());
+      final lesson = cubit(
+        course: Course(
+          modules: [
+            CourseModule(
+              id: 'pawns',
+              lessons: [
+                Lesson(id: id, steps: [step]),
+              ],
+            ),
+          ],
+        ),
+        feedback: feedback,
+      );
+      await lesson.load(id, 'pt');
+      for (final turn in step.line) {
+        final originFen = lesson.state.fen!;
+        final originTurn = lesson.state.turn + 1;
+        final uci = turn.accept.first;
+        await lesson.play(move(uci));
+        final done = lesson.state.phase == StepPhase.done;
+        final expected = await feedback.findPayload(
+          lessonId: id,
+          exerciseId: stepId,
+          kind: 'move',
+          turn: done ? originTurn : lesson.state.turn + 1,
+          fen: done ? originFen : lesson.state.fen!,
+          language: 'pt',
+          state: done ? ExplanationState.correct : ExplanationState.intro,
+          playedUci: done ? uci : null,
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(expected, isNotNull);
+        expect(lesson.state.explanation?.positionId, expected!.positionId);
+        expect(lesson.state.explanation?.state, expected.state);
+        expect(
+          lesson.state.speech,
+          expected.explanations.expand((block) => block.texts).join('\n\n'),
+        );
+        if (done) break;
+      }
+      expect(lesson.state.phase, StepPhase.done);
+    });
+  }
+
+  test('late move context cannot replace the next decision context', () async {
+    const id = 'pawns.distantOpposition';
+    final parsed = AssetEndgameLessonRepository.parseLesson(
+      jsonDecode(
+        io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+      ),
+    );
+    final step = parsed.lesson.steps.whereType<MoveStep>().singleWhere(
+      (step) => step.id == 'edgeMove',
+    );
+    final feedback = _DelayedMoveContextFeedback();
+    final lesson = cubit(
+      course: Course(
+        modules: [
+          CourseModule(
+            id: 'pawns',
+            lessons: [
+              Lesson(id: id, steps: [step]),
+            ],
+          ),
+        ],
+      ),
+      feedback: feedback,
+    );
+    await lesson.load(id, 'pt');
+    await lesson.play(move(step.line.first.accept.first));
+    expect(feedback.delayedRequests, 1);
+    expect(lesson.state.turn, 1);
+    await lesson.play(move(step.line[1].accept.first));
+    final expected = await feedback.delegate.findPayload(
+      lessonId: id,
+      exerciseId: step.id,
+      kind: 'move',
+      turn: 3,
+      fen: lesson.state.fen!,
+      language: 'pt',
+      state: ExplanationState.intro,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(lesson.state.explanation?.positionId, expected!.positionId);
+    final current = lesson.state;
+    feedback.pending.complete(ExplanationPayload.context(['STALE']));
+    await Future<void>.delayed(Duration.zero);
+    expect(lesson.state, same(current));
   });
 
   test('abre no primeiro passo, com o Viktor falando', () async {
@@ -693,8 +985,16 @@ void main() {
 }
 
 class _FeedbackAssets extends AssetService {
+  _FeedbackAssets({this.legacyOnly = false});
+  final bool legacyOnly;
   @override
-  Future<String> loadString(String path) => io.File(path).readAsString();
+  Future<String> loadString(String path) async {
+    final text = await io.File(path).readAsString();
+    if (!legacyOnly) return text;
+    final data = jsonDecode(text) as Map<String, dynamic>;
+    data.remove('positions');
+    return jsonEncode(data);
+  }
 }
 
 class _PendingLessonFeedback implements ExerciseFeedbackRepository {
@@ -712,5 +1012,39 @@ class _PendingLessonFeedback implements ExerciseFeedbackRepository {
     final result = Completer<String?>();
     results.add(result);
     return result.future;
+  }
+}
+
+class _DelayedMoveContextFeedback extends EmptyExerciseFeedbackRepository
+    implements ExplanationRepository {
+  final delegate = AssetExerciseFeedbackRepository(_FeedbackAssets());
+  final pending = Completer<ExplanationPayload?>();
+  int delayedRequests = 0;
+
+  @override
+  Future<ExplanationPayload?> findPayload({
+    required String lessonId,
+    required String exerciseId,
+    required String kind,
+    required int turn,
+    required String fen,
+    required String language,
+    required ExplanationState state,
+    String? playedUci,
+  }) {
+    if (kind == 'move' && turn == 2 && state == ExplanationState.intro) {
+      delayedRequests++;
+      return pending.future;
+    }
+    return delegate.findPayload(
+      lessonId: lessonId,
+      exerciseId: exerciseId,
+      kind: kind,
+      turn: turn,
+      fen: fen,
+      language: language,
+      state: state,
+      playedUci: playedUci,
+    );
   }
 }

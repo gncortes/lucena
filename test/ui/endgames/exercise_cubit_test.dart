@@ -5,6 +5,7 @@ import 'dart:io' as io;
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
+import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
@@ -53,6 +54,58 @@ void main() {
     progress = FakeEndgameProgressRepository();
     sound = FakeSoundRepository();
     now = FakeNow(DateTime.utc(2026, 10, 9, 20));
+  });
+
+  test('e14 resumed before final decision exposes all seven authored decisions only when done', () async {
+    const id = 'pawns.distantOpposition';
+    final parsed = AssetEndgameLessonRepository.parseLesson(
+      jsonDecode(
+        io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
+      ),
+    );
+    final lessons = FakeEndgameLessonRepository(
+      trail: EndgameTrail(
+        modules: [
+          EndgameModule(id: 'pawns', lessons: [parsed]),
+        ],
+      ),
+      texts: LessonTexts.fromJson({
+        '$id.ex.e14.solution': 'Complete original solution.',
+      }),
+    );
+    final feedback = AssetExerciseFeedbackRepository(_FileFeedbackAssets());
+    final first = cubit(lessons: lessons, feedback: feedback);
+    await first.load(id, 'e14', 'pt');
+    final line = first.state.exercise!.step.line;
+    for (final turn in line.take(line.length - 1)) {
+      await first.play(move(turn.accept.first));
+      expect(first.state.explanationPayload, isNull);
+    }
+    await first.leave();
+    final resumed = cubit(lessons: lessons, feedback: feedback);
+    await resumed.load(id, 'e14', 'pt');
+    expect(resumed.state.turn, line.length - 1);
+    expect(resumed.state.explanationPayload, isNull);
+    await resumed.play(move(line.last.accept.first));
+    expect(resumed.state.phase, ExercisePhase.done);
+    expect(resumed.state.explanationPayload, isNull);
+    final finalFen = resumed.state.fen;
+    final loadedReview = resumed.stream.firstWhere(
+      (state) => state.explanationPayload != null,
+    );
+    resumed.showExplanation();
+    await loadedReview.timeout(const Duration(seconds: 5));
+    final payload = resumed.state.explanationPayload!;
+    expect(
+      payload.explanations
+          .where((b) => b.kind == ExplanationKind.mainSolution)
+          .length,
+      7,
+    );
+    expect(payload.explanations.first.id, startsWith('exercise/e14.1:'));
+    expect(payload.explanations.last.id, startsWith('exercise/e14.7:'));
+    expect(resumed.state.fen, finalFen);
+    expect(resumed.state.turn, line.length);
   });
 
   group('feedback congelado sob demanda', () {
@@ -112,7 +165,7 @@ void main() {
             exercise.state.speech,
             'Statement. ${exact(fen, 'd2d3', language)}',
           );
-          expect(exercise.state.hint, move('h1g2'));
+          expect(exercise.state.hint, isNull);
           expect(exercise.state.hints, 1);
           await exercise.askHint();
           expect(exercise.state.hints, 1);
@@ -243,7 +296,7 @@ void main() {
       await hint;
       expect(exercise.state.speech, 'The hard one. Same idea.');
       expect(exercise.state.hints, 1);
-      expect(exercise.state.hint, move('c1c4'));
+      expect(exercise.state.hint, isNull);
     },
   );
 
@@ -404,7 +457,7 @@ void main() {
 
     await exercise.askHint();
     expect(exercise.state.hints, 1);
-    expect(exercise.state.hint, move('c1c4'));
+    expect(exercise.state.hint, isNull);
     expect(exercise.state.wrongMove, isNull);
     expect(exercise.state.speech, 'The hard one. Same idea.');
     // A mesma dica de novo não custa outra estrela.
