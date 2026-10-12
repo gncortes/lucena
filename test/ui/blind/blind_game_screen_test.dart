@@ -149,14 +149,23 @@ void main() {
 
   for (final size in [
     const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
     testWidgets('B6b $size: centro real nas vistas e ao confirmar fala', (
       tester,
     ) async {
       await pump(tester, size: size, systemBars: true);
       final before = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+      expect(tester.widget<AppBar>(find.byType(AppBar)).centerTitle, isTrue);
+      expect(
+        tester.getCenter(find.byType(SegmentedButton<BlindView>)).dx,
+        closeTo(size.width / 2, 1),
+      );
       final center = (24 + size.height - 32) / 2;
       expect(before.center.dy, closeTo(center, 1));
       expect(before.width, greaterThanOrEqualTo(120));

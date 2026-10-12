@@ -1300,7 +1300,7 @@ class _LessonScreenState extends State<LessonScreen>
           final l10n = context.l10n;
           return IconButton(
             key: LessonKeys.marksToggle,
-            visualDensity: VisualDensity.compact,
+            visualDensity: VisualDensity.standard,
             tooltip: shown ? l10n.lessonHideMarks : l10n.lessonShowMarks,
             isSelected: shown,
             icon: const Icon(Icons.layers_clear_outlined),
@@ -1459,6 +1459,10 @@ class _LessonScreenState extends State<LessonScreen>
       return _footer(
         context,
         child: TextButton.icon(
+          style: TextButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            minimumSize: const Size(48, 48),
+          ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
           label: Text(l10n.explanationReturn),
@@ -1585,6 +1589,10 @@ class _LessonScreenState extends State<LessonScreen>
       return _footer(
         context,
         child: TextButton.icon(
+          style: TextButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            minimumSize: const Size(48, 48),
+          ),
           onPressed: () => _showAuthoredVariation(null),
           icon: const Icon(Icons.undo),
           label: Text(context.l10n.explanationReturn),
@@ -1657,7 +1665,9 @@ class _LessonScreenState extends State<LessonScreen>
                 )
               : OutlinedButton(
                   key: key,
-                  style: style,
+                  style: style.copyWith(
+                    backgroundColor: WidgetStatePropertyAll(colors.surface),
+                  ),
                   onPressed: onPressed,
                   child: content,
                 ),

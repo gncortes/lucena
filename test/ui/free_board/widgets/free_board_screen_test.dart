@@ -24,6 +24,7 @@ import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
+import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/board_gestures.dart';
@@ -984,7 +985,18 @@ void main() {
           final appbar = tester.widget<AppBar>(find.byType(AppBar));
           expect(appbar.actions, isNull);
           expect(appbar.centerTitle, isTrue);
-          expect(board.center.dy, closeTo((24 + size.height - 32) / 2, .01));
+          final appBarRect = tester.getRect(find.byType(AppBar));
+          expect(
+            board.center.dy,
+            closeTo(
+              (appBarRect.bottom - MoveList.height + actions.top) / 2,
+              .01,
+            ),
+          );
+          expect(
+            board.top - (appBarRect.bottom - MoveList.height),
+            closeTo(actions.top - board.bottom, .01),
+          );
           expect(board.width, greaterThanOrEqualTo(280));
           expect(actions.bottom, closeTo(size.height - 32, .01));
           final actionKey = mode.opponent.isMachine
@@ -1152,7 +1164,12 @@ void main() {
           expect(avatar.height, 44);
           expect(avatar.center.dy, closeTo(black.center.dy, 1));
           expect(board.width, greaterThanOrEqualTo(200));
-          expect(board.center.dy, closeTo(316, 1));
+          final appBar = tester.getRect(find.byType(AppBar));
+          final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
+          expect(
+            board.center.dy,
+            closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
+          );
           if (position == ClockPosition.bottom) {
             expect(avatar.top, greaterThanOrEqualTo(board.bottom));
             expect(white.top, greaterThanOrEqualTo(board.bottom));
@@ -1195,7 +1212,12 @@ void main() {
           await talk.settled();
           await tester.pumpAndSettle();
           final board = boardRect(tester);
-          expect(board.center.dy, closeTo((24 + size.height - 32) / 2, 1));
+          final appBar = tester.getRect(find.byType(AppBar));
+          final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
+          expect(
+            board.center.dy,
+            closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
+          );
           expect(board.width, greaterThanOrEqualTo(200));
           expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
           await tester.pump(const Duration(seconds: 20));
@@ -1329,13 +1351,10 @@ void main() {
       final appBar = tester.getRect(find.byType(AppBar));
       final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
       expect(appBar.bottom, area.top);
-      // O centro conta a partir do topo da faixa de lances, que começa vazia.
+      final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
       expect(
         board.center.dy,
-        closeTo(
-          tester.view.physicalSize.height / tester.view.devicePixelRatio / 2,
-          1,
-        ),
+        closeTo((appBar.bottom - MoveList.height + actions.top) / 2, 1),
       );
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,

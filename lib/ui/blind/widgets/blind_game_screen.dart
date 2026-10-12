@@ -371,17 +371,8 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       builder: (context, state) => Scaffold(
         key: BlindKeys.screen,
         appBar: AppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  l10n.blindTitleShort,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+          centerTitle: true,
+          title: Text(l10n.blindTitleShort, overflow: TextOverflow.ellipsis),
           actions: [
             if (state.started && state.phase != BlindPhase.finished) ...[
               IconButton(
@@ -460,8 +451,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                     SizedBox(
                                       width: size,
                                       child: Align(
-                                        alignment:
-                                            AlignmentDirectional.centerEnd,
+                                        alignment: AlignmentDirectional.center,
                                         child: _ViewPicker(state: state),
                                       ),
                                     ),

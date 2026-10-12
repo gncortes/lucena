@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/star_challenge.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/domain/use_cases/star_challenge_rules.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/school/view_models/star_challenge_cubit.dart';
 import 'package:lucena/ui/school/widgets/star_challenge_screen.dart';
 import 'package:lucena/ui/school/widgets/star_challenges_screen.dart';
@@ -114,10 +115,12 @@ void main() {
   ) async {
     final cubit = await pump(tester);
     expect(find.text('Rook challenge'), findsOneWidget);
+    expect(find.text('Easy · Star hunt'), findsOneWidget);
+    expect(tester.widget<AppBar>(find.byType(AppBar)).bottom, isNull);
     expect(
       find.descendant(
-        of: find.byKey(StarChallengeKeys.levelChip),
-        matching: find.text('Easy'),
+        of: find.byType(AppBar),
+        matching: find.byKey(StarChallengeKeys.levelChip),
       ),
       findsOneWidget,
     );
@@ -161,7 +164,7 @@ void main() {
     expect(find.text('New best!'), findsOneWidget);
     expect(
       tester.widget(find.byKey(StarChallengeKeys.retryButton)),
-      isA<FloatingActionButton>(),
+      isA<FilledButton>(),
     );
     expect(find.byKey(StarChallengeKeys.backButton), findsOneWidget);
   });
@@ -214,27 +217,114 @@ void main() {
   });
 
   for (final size in [
-    const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
-    testWidgets('B6b $size: estrelas no centro real em todos os estados', (
-      tester,
-    ) async {
-      final cubit = await pump(tester, size: size, systemBars: true);
-      final before = tester.getRect(find.byKey(StarChallengeKeys.board));
-      expect(before.center.dy, closeTo((24 + size.height - 32) / 2, 1));
-      expect(before.width, greaterThanOrEqualTo(200));
+    for (final scale in [1.0, 1.5, 2.0]) {
+      testWidgets(
+        'B6b $size fonte $scale: estrelas no centro real em todos os estados',
+        (tester) async {
+          final cubit = await pump(
+            tester,
+            size: size,
+            systemBars: true,
+            textScale: scale,
+          );
+          final before = tester.getRect(find.byKey(StarChallengeKeys.board));
+          expect(before.center.dy, closeTo((24 + size.height - 32) / 2, 1));
+          expect(before.width, greaterThanOrEqualTo(100));
+          if (scale == 1) {
+            final rule = find
+                .descendant(
+                  of: find.byKey(StarChallengeKeys.intro),
+                  matching: find.byType(Text),
+                )
+                .last;
+            expect(
+              tester.getTopLeft(rule).dy + 20,
+              lessThanOrEqualTo(before.top - 8),
+            );
+          }
+          final action = tester.getRect(find.byKey(StarChallengeKeys.goButton));
+          final score = tester.getRect(
+            find.byKey(StarChallengeKeys.scoreboard),
+          );
+          expect(action.left, 16);
+          expect(action.width, size.width - 32);
+          expect(action.height, greaterThanOrEqualTo(52));
+          expect(action.bottom, closeTo(size.height - 32 - 16, 1));
+          expect(action.overlaps(before), isFalse);
+          expect(action.overlaps(score), isFalse);
+          expect(
+            tester.widget<AppBar>(find.byType(AppBar)).centerTitle,
+            isTrue,
+          );
+          expect(find.byKey(StarChallengeKeys.levelChip), findsOneWidget);
+          await tester.tap(find.byKey(StarChallengeKeys.goButton));
+          await tester.pumpAndSettle();
+          final running = tester.getRect(find.byKey(StarChallengeKeys.board));
+          expect(running.center, before.center);
+          expect(running.width, greaterThanOrEqualTo(before.width));
+          now.advance(const Duration(seconds: 61));
+          cubit.tick();
+          await tester.pumpAndSettle();
+          expect(tester.getRect(find.byKey(StarChallengeKeys.board)), running);
+          final retry = tester.getRect(
+            find.byKey(StarChallengeKeys.retryButton),
+          );
+          expect(retry, action);
+          expect(retry.overlaps(score), isFalse);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets(
+    'contagem mantém arredondamento, pouco tempo, pausa e progresso',
+    (tester) async {
+      final cubit = await pump(tester);
+      TimeDisplay timer() => tester.widget<TimeDisplay>(
+        find.ancestor(
+          of: find.byKey(StarChallengeKeys.timer),
+          matching: find.byType(TimeDisplay),
+        ),
+      );
+      expect(timer().type, TimeDisplayType.countdown);
+      expect(timer().size, TimeDisplaySize.inline);
+      expect(timer().value, '1:00');
+      expect(timer().semanticsLabel, 'Time left: 1:00');
+      expect(timer().state, TimeDisplayState.normal);
       await tester.tap(find.byKey(StarChallengeKeys.goButton));
       await tester.pumpAndSettle();
-      expect(tester.getRect(find.byKey(StarChallengeKeys.board)), before);
-      now.advance(const Duration(seconds: 61));
+      expect(timer().state, TimeDisplayState.active);
+      now.advance(const Duration(milliseconds: 50400));
       cubit.tick();
       await tester.pumpAndSettle();
-      expect(tester.getRect(find.byKey(StarChallengeKeys.board)), before);
+      expect(timer().value, '0:10');
+      expect(timer().state, TimeDisplayState.low);
+      final bar = tester.widget<LinearProgressIndicator>(
+        find.byType(LinearProgressIndicator),
+      );
+      expect(bar.value, closeTo(1 - cubit.state.elapsedFraction, .0001));
+      cubit.pause();
+      await tester.pumpAndSettle();
+      expect(timer().state, TimeDisplayState.paused);
+      expect(timer().semanticsLabel, contains('Paused'));
+      expect(timer().value, '0:10');
+      cubit.resume();
+      now.advance(const Duration(seconds: 10));
+      cubit.tick();
+      await tester.pumpAndSettle();
+      expect(timer().value, '0:00');
+      expect(find.byKey(StarChallengeKeys.retryButton), findsOneWidget);
       expect(tester.takeException(), isNull);
-    });
-  }
+    },
+  );
 
   for (final scale in [1.0, 1.6]) {
     testWidgets(
@@ -296,46 +386,57 @@ void main() {
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
     final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
-    expect(rect, ready);
+    expect(rect.center, ready.center);
+    expect(rect.width, greaterThanOrEqualTo(ready.width));
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();
   });
 
-  testWidgets('o placar das estrelas tem o mesmo tamanho e lugar no convite, '
-      'jogando e no fim', (tester) async {
-    final cubit = await pump(tester);
-    Rect card() => tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
-    final ready = card();
-    expect(find.byKey(StarChallengeKeys.intro), findsOneWidget);
-    expect(find.text('Star hunt'), findsOneWidget);
-    // Fica logo abaixo do tabuleiro.
-    final board = tester.getRect(find.byKey(StarChallengeKeys.board));
-    expect(ready.top, greaterThan(board.bottom));
-    expect(ready.top - board.bottom, lessThan(16));
-    await tester.tap(find.byKey(StarChallengeKeys.goButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(StarChallengeKeys.intro), findsNothing);
-    expect(card(), ready);
-    now.advance(const Duration(seconds: 61));
-    cubit.tick();
-    await tester.pumpAndSettle();
-    expect(find.byKey(StarChallengeKeys.result), findsOneWidget);
-    expect(card(), ready);
-  });
+  testWidgets(
+    'o placar acompanha o tabuleiro e fica estável jogando e no fim',
+    (tester) async {
+      final cubit = await pump(tester);
+      Rect card() => tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+      final ready = card();
+      expect(find.byKey(StarChallengeKeys.intro), findsOneWidget);
+      expect(find.text('Star hunt'), findsOneWidget);
+      // Fica logo abaixo do tabuleiro.
+      final board = tester.getRect(find.byKey(StarChallengeKeys.board));
+      expect(ready.top, greaterThan(board.bottom));
+      expect(ready.top - board.bottom, lessThan(16));
+      await tester.tap(find.byKey(StarChallengeKeys.goButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(StarChallengeKeys.intro), findsNothing);
+      final running = card();
+      expect(running.width, ready.width);
+      expect(running.height, closeTo(ready.height, .01));
+      expect(
+        running.top,
+        greaterThan(tester.getRect(find.byKey(StarChallengeKeys.board)).bottom),
+      );
+      now.advance(const Duration(seconds: 61));
+      cubit.tick();
+      await tester.pumpAndSettle();
+      expect(find.byKey(StarChallengeKeys.result), findsOneWidget);
+      expect(card(), running);
+    },
+  );
 
-  testWidgets('o "Vai!" flutuante começa o jogo e some', (tester) async {
+  testWidgets('o "Vai!" amplo no rodapé começa o jogo e some', (tester) async {
     final cubit = await pump(tester);
     final fab = find.byKey(StarChallengeKeys.goButton);
     expect(
       find.descendant(of: fab, matching: find.byType(FloatingActionButton)),
       findsNothing,
     );
-    expect(tester.widget(fab), isA<FloatingActionButton>());
+    expect(tester.widget(fab), isA<FilledButton>());
     expect(find.text('Go!'), findsOneWidget);
-    // No canto de baixo, à direita.
+    // Rodapé amplo e fixo.
     final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
     final rect = tester.getRect(fab);
+    expect(rect.width, screen.width - 32);
+    expect(rect.height, 52);
     expect(rect.right, greaterThan(screen.width * 0.8));
     expect(rect.bottom, greaterThan(screen.height * 0.9));
     expect(cubit.state.phase, ChallengePhase.ready);
@@ -368,13 +469,15 @@ void main() {
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), ready);
+    final running = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+    expect(running.width, ready.width);
+    expect(running.height, closeTo(ready.height, .01));
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), ready);
-    // No fim, o "Jogar de novo" fica no mesmo canto, também sem cobrir.
+    expect(tester.getRect(find.byKey(StarChallengeKeys.scoreboard)), running);
+    // No fim, o "Jogar de novo" fica no mesmo rodapé, também sem cobrir.
     final retry = tester.getRect(find.byKey(StarChallengeKeys.retryButton));
     expect(retry.overlaps(board), isFalse);
     expect(retry.overlaps(ready), isFalse);

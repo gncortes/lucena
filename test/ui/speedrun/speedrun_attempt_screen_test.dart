@@ -5,6 +5,8 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_attempt_screen.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -50,7 +52,13 @@ void main() {
         ),
       );
 
-  Future<void> pump(WidgetTester tester, int attempt) async {
+  Future<void> pump(
+    WidgetTester tester,
+    int attempt, {
+    Locale locale = const Locale('en'),
+    ThemeMode themeMode = ThemeMode.light,
+    double textScale = 1,
+  }) async {
     await cubit.load(speedrunId: 'rung.1000', attemptId: attempt);
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
@@ -60,18 +68,82 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
+        themeMode: themeMode,
         settingsCubit: settings,
-        child: BlocProvider.value(
-          value: cubit,
-          child: const SpeedrunAttemptScreen(),
+        child: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(textScale)),
+            child: BlocProvider.value(
+              value: cubit,
+              child: const SpeedrunAttemptScreen(),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  // O tempo de um RunClock (os décimos ficam num pedaço menor).
   String clockText(WidgetTester tester, Key key) =>
-      tester.widget<Text>(find.byKey(key)).textSpan!.toPlainText();
+      tester.widget<Text>(find.byKey(key)).data!;
+
+  for (final locale in [const Locale('en'), const Locale('ar')]) {
+    testWidgets(
+      'total e etapa preservam leitura em $locale, escuro e fonte 1.5',
+      (tester) async {
+        tester.view.physicalSize = const Size(414, 896);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final semantics = tester.ensureSemantics();
+        await cubit.load(speedrunId: 'rung.1000');
+        final (_, id) = (await cubit.startWith(SpeedrunPaces.standard))!;
+        await game(id, 0, 30);
+        await game(id, 1, 40);
+        await pump(
+          tester,
+          id,
+          locale: locale,
+          themeMode: ThemeMode.dark,
+          textScale: 1.5,
+        );
+        final totalFinder = find.ancestor(
+          of: find.byKey(SpeedrunKeys.total),
+          matching: find.byType(TimeDisplay),
+        );
+        final total = tester.widget<TimeDisplay>(totalFinder);
+        final l10n = tester.element(totalFinder).l10n;
+        expect(total.type, TimeDisplayType.stopwatch);
+        expect(total.size, TimeDisplaySize.block);
+        expect(total.value, '1:10.0');
+        expect(total.semanticsLabel, '${l10n.speedrunTotal}: 1:10.0');
+        expect(find.bySemanticsLabel(total.semanticsLabel), findsOneWidget);
+        expect(
+          tester.widget<Text>(find.byKey(SpeedrunKeys.total)).textDirection,
+          TextDirection.ltr,
+        );
+        expect(
+          Theme.of(tester.element(totalFinder)).brightness,
+          Brightness.dark,
+        );
+        await tester.scrollUntilVisible(
+          find.byKey(SpeedrunKeys.stageTime(0)),
+          100,
+        );
+        final stage = tester.widget<TimeDisplay>(
+          find.ancestor(
+            of: find.byKey(SpeedrunKeys.stageTime(0)),
+            matching: find.byType(TimeDisplay),
+          ),
+        );
+        expect(stage.size, TimeDisplaySize.inline);
+        expect(stage.type, TimeDisplayType.stopwatch);
+        expect(stage.value, '0:30.0');
+        expect(tester.takeException(), isNull);
+        semantics.dispose();
+      },
+    );
+  }
 
   testWidgets('abandonada: até onde foi, o tempo, as derrotas e nada de '
       'jogar', (tester) async {

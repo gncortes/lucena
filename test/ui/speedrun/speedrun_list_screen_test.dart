@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:lucena/domain/models/pace.dart';
@@ -14,6 +17,7 @@ import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/domain/use_cases/speedrun_category.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_ui.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_list_screen.dart';
@@ -32,14 +36,16 @@ import '../../../testing/test_app.dart';
 void main() {
   late FakeSettingsRepository settings;
   late SpeedrunCubit cubit;
+  late FakeProgressRepository progress;
 
   setUp(() {
     settings = FakeSettingsRepository(const AppSettings());
+    progress = FakeProgressRepository();
     cubit = SpeedrunCubit(
       journey: FakeJourneyRepository(
         speedruns: [...sampleSpeedruns, sampleMarathon],
       ),
-      speedruns: FakeSpeedrunRepository(FakeProgressRepository()),
+      speedruns: FakeSpeedrunRepository(progress),
       games: FakeOngoingGameRepository(),
       now: FakeNow(DateTime.utc(2026, 10, 4, 12)),
       settings: settings,
@@ -81,6 +87,44 @@ void main() {
   bool chipSelected(WidgetTester tester, String code) => tester
       .widget<ChoiceChip>(find.byKey(SpeedrunKeys.paceOption(code)))
       .selected;
+
+  testWidgets('recorde da lista usa tempo em linha e preserva key e valor', (
+    tester,
+  ) async {
+    await cubit.load(speedrunId: 'rung.1000');
+    final (speedrun, attempt) = (await cubit.startWith(
+      SpeedrunPaces.standard,
+    ))!;
+    for (var index = 0; index < speedrun.stages.length; index++) {
+      await progress.addAttempt(
+        Attempt(
+          positionId: 'basic.queen.0001',
+          playedAt: DateTime.utc(2026, 10, 4, 12),
+          outcome: AttemptOutcome.win,
+          fulfilled: true,
+          opponent: OpponentKind.maia,
+          userClock: const Duration(seconds: 10),
+          speedrunAttemptId: attempt,
+          speedrunStage: index,
+        ),
+      );
+    }
+    await pump(tester);
+    final recordFinder = find.ancestor(
+      of: find.byKey(SpeedrunKeys.itemBest(speedrun.id)),
+      matching: find.byType(TimeDisplay),
+    );
+    final record = tester.widget<TimeDisplay>(recordFinder);
+    expect(record.type, TimeDisplayType.record);
+    expect(record.size, TimeDisplaySize.inline);
+    expect(record.value, '0:20.0');
+    expect(record.semanticsLabel, 'Your best time: 0:20.0');
+    expect(tester.takeException(), isNull);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await pump(tester, small: true);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('o ritmo fica no alto: a categoria e o tempo dela, sem '
       'painel', (tester) async {

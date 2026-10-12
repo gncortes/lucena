@@ -380,7 +380,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final nickname = context.select(
                 (ProfileCubit cubit) => cubit.state?.nickname ?? '',
               );
-              // A referência inclui a barra do app, a faixa de lances e ações.
+              // O centro fica entre o fim da barra de título e as ações.
+              // A faixa de lances pertence à área útil, mesmo quando vazia.
               // Retrato, nome e relógio compartilham uma única linha;
               // o balão flutua e não reserva altura.
               final clocksAbove =
@@ -399,7 +400,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 reserveTop: reserveTop,
                 reserveBottom: clocksBelow,
                 footer: 76,
-                centerY: BoardViewport.centerYOf(context),
+                aboveInset: MoveList.height,
               );
               const both = [Side.white, Side.black];
               final end = state.end;
@@ -411,7 +412,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   CenteredBoardLayout(
                     key: FreeBoardKeys.scrollArea,
                     gap: 12,
-                    centerY: BoardViewport.centerYOf(context),
+                    aboveInset: MoveList.height,
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
                     footer: GameActionsBar(

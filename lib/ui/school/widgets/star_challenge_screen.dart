@@ -12,6 +12,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
@@ -110,46 +111,86 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         return Scaffold(
           key: StarChallengeKeys.screen,
           appBar: AppBar(
+            centerTitle: true,
+            toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
+                .clamp(72.0, double.infinity),
             title: piece == null
                 ? null
-                : Text(l10n.starChallengeTitle(piece.name)),
-            actions: [
-              if (level != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(end: AppSpacing.lg),
-                  child: _LevelChip(level: level),
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.starChallengeTitle(piece.name)),
+                      if (level != null)
+                        Text(
+                          '${levelName(l10n, level)} · ${l10n.starChallengeIntroTitle}',
+                          key: StarChallengeKeys.levelChip,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                        ),
+                    ],
+                  ),
+          ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              BoardViewport(
+                usefulHeight: BoardViewport.usefulHeightOf(context),
+                child: SafeArea(
+                  child: Builder(
+                    builder: (context) => _body(context, state, boardSettings),
+                  ),
+                ),
+              ),
+              if (_action(context, state) case final action?)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      ),
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        child: action,
+                      ),
+                    ),
+                  ),
                 ),
             ],
           ),
-          body: BoardViewport(
-            usefulHeight: BoardViewport.usefulHeightOf(context),
-            child: SafeArea(
-              child: Builder(
-                builder: (context) => _body(context, state, boardSettings),
-              ),
-            ),
-          ),
-          // O botão do momento no canto de baixo: "Vai!" no convite e "Jogar
-          // de novo" no fim. Jogando, some (o Scaffold anima a saída).
-          floatingActionButton: _fab(context, state),
         );
       },
     );
   }
 
-  Widget? _fab(BuildContext context, StarChallengeState state) {
+  Widget? _action(BuildContext context, StarChallengeState state) {
     if (!state.ready) return null;
     final l10n = context.l10n;
     final cubit = context.read<StarChallengeCubit>();
     return switch (state.phase) {
-      ChallengePhase.ready => FloatingActionButton.extended(
+      ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.play_arrow_rounded),
         label: Text(l10n.starChallengeGo),
         onPressed: cubit.start,
       ),
-      ChallengePhase.finished => FloatingActionButton.extended(
+      ChallengePhase.finished => FilledButton.icon(
         key: StarChallengeKeys.retryButton,
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.replay_rounded),
         label: Text(l10n.starChallengePlayAgain),
         onPressed: cubit.retry,
@@ -158,15 +199,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     };
   }
 
-  /// A altura que o botão flutuante ocupa no pé da tela, com a margem dele.
-  static const _fabRoom = 56.0 + AppSpacing.lg + AppSpacing.xs;
+  /// A ação fixa, suas margens e a borda; a área segura fica fora da reserva.
+  static const _actionRoom = 52.0 + 8 + 16 + 1;
 
   /// O espaço mínimo sob o tabuleiro: o placar (duas linhas de texto e as
-  /// margens) e, abaixo dele, o botão flutuante, que assim nunca cobre o
+  /// margens) e, abaixo dele, a ação fixa, que assim nunca cobre o
   /// placar. Em celular comum ele já sobra; em tela baixa ou com fonte
   /// grande, o tabuleiro diminui um pouco.
   static double _reserveBottom(TextScaler scaler) =>
-      3 * AppSpacing.sm + scaler.scale(36) + AppSpacing.sm + _fabRoom;
+      3 * AppSpacing.sm + scaler.scale(36) + AppSpacing.sm + _actionRoom;
 
   Widget _body(
     BuildContext context,
@@ -184,17 +225,19 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     // O tabuleiro no centro do espaço útil (T64), entre a barra do app e o
     // fim da área segura. Em cima, o relógio colado na barra do app e, sob
     // ele, o convite ou o resultado; embaixo, o placar das estrelas, sempre
-    // no mesmo lugar, e o botão flutuante no canto.
+    // no mesmo lugar, e a ação fixa no rodapé.
     return CenteredBoardLayout(
       centerY: BoardViewport.centerYOf(context),
       gutter: AppSpacing.sm,
-      reserveTop: 40,
+      reserveTop: state.phase == ChallengePhase.ready ? 180 : 40,
+      minFraction: state.phase == ChallengePhase.ready ? 0.35 : 0.6,
       // O relógio fica colado na barra do app, como antes, e não no tabuleiro.
       topAlignment: Alignment.topCenter,
       reserveBottom: _reserveBottom(MediaQuery.textScalerOf(context)),
       bottomAlignment: Alignment.topCenter,
       // O relógio fica; a instrução rola na fonte normal quando falta altura.
-      // O placar e o tabuleiro mantêm tamanho e posição entre os estados.
+      // O centro permanece fixo. Antes de jogar, a regra recebe mais espaço;
+      // ao iniciar, o tabuleiro pode crescer em torno do mesmo centro.
       shrinkSides: false,
       top: Column(
         mainAxisSize: MainAxisSize.min,
@@ -204,20 +247,21 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
             child: Row(
               children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 20,
-                  color: lowTime ? colors.error : colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  clockText(state.timeLeft),
-                  key: StarChallengeKeys.timer,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                    color: lowTime ? colors.error : null,
-                  ),
+                TimeDisplay(
+                  value: clockText(state.timeLeft),
+                  semanticsLabel:
+                      '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
+                      '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
+                  type: TimeDisplayType.countdown,
+                  size: TimeDisplaySize.inline,
+                  state: lowTime
+                      ? TimeDisplayState.low
+                      : state.phase == ChallengePhase.running
+                      ? TimeDisplayState.active
+                      : state.phase == ChallengePhase.paused
+                      ? TimeDisplayState.paused
+                      : TimeDisplayState.normal,
+                  textKey: StarChallengeKeys.timer,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -465,7 +509,7 @@ class _IntroCard extends StatelessWidget {
     return Container(
       key: StarChallengeKeys.intro,
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppShape.large),
@@ -512,36 +556,6 @@ class _IntroCard extends StatelessWidget {
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-/// O selo do nível, na cor dele.
-class _LevelChip extends StatelessWidget {
-  const _LevelChip({required this.level});
-
-  final ChallengeLevel level;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      key: StarChallengeKeys.levelChip,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: levelColor(level),
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Text(
-        levelName(context.l10n, level),
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-        ),
       ),
     );
   }

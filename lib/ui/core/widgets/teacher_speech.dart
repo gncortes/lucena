@@ -224,7 +224,9 @@ class TeacherSpeech extends StatelessWidget {
             if (!state.availableFor(language)) {
               return IconButton(
                 key: VoiceKeys.speakButton,
-                visualDensity: VisualDensity.compact,
+                visualDensity: lessonV2
+                    ? VisualDensity.standard
+                    : VisualDensity.compact,
                 tooltip: context.l10n.voiceSection,
                 icon: const Icon(Icons.volume_off_outlined),
                 onPressed: () => context.push(Routes.settingsVoice),
@@ -239,8 +241,10 @@ class TeacherSpeech extends StatelessWidget {
                 TextButton(
                   key: VoiceKeys.speedButton,
                   style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    minimumSize: const Size(48, 36),
+                    visualDensity: lessonV2
+                        ? VisualDensity.standard
+                        : VisualDensity.compact,
+                    minimumSize: Size(48, lessonV2 ? 48 : 36),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                   ),
                   onPressed: speech.nextSpeed,
@@ -255,7 +259,9 @@ class TeacherSpeech extends StatelessWidget {
                 if (speaks)
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: lessonV2
+                        ? VisualDensity.standard
+                        : VisualDensity.compact,
                     tooltip: state.settings.enabled
                         ? l10n.voiceAutoOff(teacher.name)
                         : l10n.voiceAutoOn(teacher.name),
@@ -278,7 +284,9 @@ class TeacherSpeech extends StatelessWidget {
                 else
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: lessonV2
+                        ? VisualDensity.standard
+                        : VisualDensity.compact,
                     tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
                     isSelected: speaking,
                     icon: const Icon(Icons.volume_up_outlined),

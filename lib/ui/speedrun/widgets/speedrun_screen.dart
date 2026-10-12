@@ -13,7 +13,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/step_progress.dart';
-import '../../core/widgets/run_clock.dart';
+import '../../core/widgets/time_display.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_ui.dart';
@@ -166,34 +166,18 @@ class SpeedrunScreen extends StatelessWidget {
                       ),
                     ],
                   )
-                : Card(
-                    margin: EdgeInsets.zero,
-                    color: colors.primaryContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.leaderboard,
-                            color: colors.onPrimaryContainer,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              speedrun.kind == SpeedrunKind.marathon
-                                  ? l10n.marathonBest
-                                  : l10n.speedrunBest,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: colors.onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          RunClock(
-                            recordTime(speedrun, best),
-                            textKey: SpeedrunKeys.best,
-                          ),
-                        ],
-                      ),
+                : Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TimeDisplay(
+                      value: runTime(context, recordTime(speedrun, best)),
+                      semanticsLabel:
+                          '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonBest : l10n.speedrunBest}: ${runTime(context, recordTime(speedrun, best))}',
+                      type: TimeDisplayType.record,
+                      state: TimeDisplayState.highlight,
+                      label: speedrun.kind == SpeedrunKind.marathon
+                          ? l10n.marathonBest
+                          : l10n.speedrunBest,
+                      textKey: SpeedrunKeys.best,
                     ),
                   ),
           ),
@@ -227,8 +211,12 @@ class SpeedrunScreen extends StatelessWidget {
                   : SpeedrunStageStatus.ahead,
               // O melhor tempo da etapa, em qualquer tentativa concluída.
               trailing: switch (records.bestStages[index]) {
-                final best? => RunClock(
-                  best,
+                final best? => TimeDisplay(
+                  value: runTime(context, best),
+                  semanticsLabel:
+                      '${l10n.speedrunStageOf(index + 1, speedrun.stages.length)}, ${l10n.speedrunBest}: ${runTime(context, best)}',
+                  type: TimeDisplayType.record,
+                  size: TimeDisplaySize.inline,
                   textKey: SpeedrunKeys.stageRecord(index),
                 ),
                 null => null,
@@ -337,22 +325,26 @@ class SpeedrunScreen extends StatelessWidget {
               run.completed ? Icons.check_circle_rounded : Icons.timer_outlined,
               color: run.completed ? colors.primary : colors.outline,
             ),
-            title: Text(
-              run.completed
-                  ? runTime(context, recordTime(speedrun, run.total))
-                  : l10n.speedrunStoppedAt(
+            title: run.completed
+                ? Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TimeDisplay(
+                      value: runTime(context, recordTime(speedrun, run.total)),
+                      semanticsLabel:
+                          '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonLeft : l10n.speedrunTotal}: ${runTime(context, recordTime(speedrun, run.total))}',
+                      type: TimeDisplayType.duration,
+                      size: TimeDisplaySize.inline,
+                    ),
+                  )
+                : Text(
+                    l10n.speedrunStoppedAt(
                       math.min(run.currentStage + 1, total),
                       total,
                     ),
-              style: run.completed
-                  ? theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    )
-                  : theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
-            ),
+                  ),
             subtitle: Text(
               '${date.format(endedAt)} · ${l10n.speedrunLosses(run.losses)}',
             ),
