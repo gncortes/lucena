@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Połącz się z internetem, aby przeczytać tę stronę. Lekcja toczy się dalej.",
   "wikiOpen": "Otwórz {name} w Wikipedii",
   "starChallengeIntroTitle": "Łowy na gwiazdy",
-  "starChallengeIntroBody": "Masz {seconds} sekund. Doprowadź bierkę do każdej gwiazdy, zanim zgaśnie. Złota gaśnie pierwsza, dlatego jest warta więcej.",
+  "starChallengeIntroBody": "Masz {seconds} sekund. Doprowadź bierkę do każdej gwiazdy, zanim zgaśnie.",
   "starChallengeWorth": "{points, plural, =1{warta 1} other{warta {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punkt} few{punkty} many{punktów} other{punktu}}",
   "speedrunQuitProgress": "Porzucić ten speedrun? Stracisz {count} wygranych etapów.",

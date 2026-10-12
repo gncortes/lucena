@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Подключитесь к интернету, чтобы прочитать эту страницу. Урок продолжается как обычно.",
   "wikiOpen": "Открыть {name} в Википедии",
   "starChallengeIntroTitle": "Охота за звёздами",
-  "starChallengeIntroBody": "У вас {seconds} секунд. Доведите фигуру до каждой звезды, пока она не погасла. Золотая гаснет первой, поэтому она ценится выше.",
+  "starChallengeIntroBody": "У вас {seconds} секунд. Доведите фигуру до каждой звезды, пока она не погасла.",
   "starChallengeWorth": "{points, plural, =1{стоит 1} other{стоит {points}}}",
   "starChallengePointsLabel": "{count, plural, one{очко} few{очка} many{очков} other{очка}}",
   "speedrunQuitProgress": "Прервать этот спидран? Вы потеряете {count} выигранных этапов.",

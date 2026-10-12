@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Sambungkan ke internet untuk membaca halaman ini. Pelajaran tetap berjalan seperti biasa.",
   "wikiOpen": "Buka {name} di Wikipedia",
   "starChallengeIntroTitle": "Berburu bintang",
-  "starChallengeIntroBody": "Anda punya {seconds} detik. Bawa bidak Anda ke setiap bintang sebelum bintang itu padam. Bintang emas padam paling dulu, karena itu nilainya lebih besar.",
+  "starChallengeIntroBody": "Anda punya {seconds} detik. Bawa bidak Anda ke setiap bintang sebelum bintang itu padam.",
   "starChallengeWorth": "{points, plural, =1{bernilai 1} other{bernilai {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{poin} other{poin}}",
   "speedrunQuitProgress": "Hentikan speedrun ini? Kamu kehilangan {count} tahap yang dimenangkan.",

@@ -120,7 +120,7 @@ abstract final class StarChallengeKeys {
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');
 
-  /// O "Vai!" flutuante, no canto de baixo, antes de começar.
+  /// O "Vai!" largo no rodapé, antes de começar.
   static const goButton = Key('starChallenge.go');
 
   /// O cartão do convite, sob o relógio, antes de começar.
@@ -134,7 +134,7 @@ abstract final class StarChallengeKeys {
   /// O painel de pontos embaixo do tabuleiro.
   static const scoreboard = Key('starChallenge.scoreboard');
 
-  /// O selo do nível na barra.
+  /// O nível e o modo no subtítulo da barra do app.
   static const levelChip = Key('starChallenge.levelChip');
 
   /// Quantas estrelas de uma cor (`bronze`, `silver`, `gold`) foram pegas.
@@ -143,7 +143,7 @@ abstract final class StarChallengeKeys {
   static const earned = Key('starChallenge.earned');
   static const best = Key('starChallenge.best');
 
-  /// O "Jogar de novo" flutuante, no fim, no lugar do "Vai!".
+  /// O "Jogar de novo" no mesmo rodapé, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
   static const backButton = Key('starChallenge.back');
 

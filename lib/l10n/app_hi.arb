@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "यह पेज पढ़ने के लिए इंटरनेट से जुड़ें। पाठ सामान्य रूप से चलता रहेगा।",
   "wikiOpen": "{name} को विकिपीडिया पर खोलें",
   "starChallengeIntroTitle": "तारों की खोज",
-  "starChallengeIntroBody": "आपके पास {seconds} सेकंड हैं। हर तारे के बुझने से पहले अपना मोहरा उस तक ले जाइए। सुनहरा तारा सबसे पहले बुझता है, इसलिए उसका मूल्य अधिक है।",
+  "starChallengeIntroBody": "आपके पास {seconds} सेकंड हैं। हर तारे के बुझने से पहले अपना मोहरा उस तक ले जाइए।",
   "starChallengeWorth": "{points, plural, =1{मूल्य 1} other{मूल्य {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{अंक} other{अंक}}",
   "speedrunQuitProgress": "यह स्पीडरन छोड़ें? आप जीते हुए {count} चरण खो देंगे।",

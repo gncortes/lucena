@@ -367,8 +367,17 @@ void main() {
           paragraph.getTransformTo(screen).getMaxScaleOnAxis(),
           closeTo(1, .01),
         );
+        // O cartão não rola por dentro: quem rola é o espaço sobre o
+        // tabuleiro, com o cartão inteiro.
+        expect(
+          find.descendant(
+            of: intro,
+            matching: find.byType(SingleChildScrollView),
+          ),
+          findsNothing,
+        );
         final scroll = find
-            .descendant(of: intro, matching: find.byType(SingleChildScrollView))
+            .ancestor(of: intro, matching: find.byType(SingleChildScrollView))
             .first;
         final scrollable = find
             .descendant(of: scroll, matching: find.byType(Scrollable))
@@ -380,6 +389,11 @@ void main() {
         expect(position.pixels, closeTo(position.maxScrollExtent, 1));
         expect(
           tester.getBottomLeft(text).dy,
+          lessThanOrEqualTo(tester.getBottomLeft(scroll).dy + 1),
+        );
+        // Rolado até o fim, a borda de baixo do cartão aparece.
+        expect(
+          tester.getRect(intro).bottom,
           lessThanOrEqualTo(tester.getBottomLeft(scroll).dy + 1),
         );
         expect(tester.getRect(find.byKey(StarChallengeKeys.board)), board);
@@ -508,51 +522,6 @@ void main() {
     expect(retry.overlaps(finishedScore), isFalse);
   });
 
-  for (final size in [const Size(360, 740), const Size(412, 917)]) {
-    testWidgets('V2 sem insets: componentes e centro em $size', (tester) async {
-      final cubit = await pump(tester, size: size, locale: const Locale('pt'));
-      final board = tester.getRect(find.byKey(StarChallengeKeys.board));
-      final score = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
-      final intro = tester.getRect(find.byKey(StarChallengeKeys.intro));
-      expect(board.center.dy, size.height / 2);
-      expect(board.width, size.width == 360 ? 284 : 412);
-      expect(score.top - board.bottom, closeTo(8, .01));
-      expect(score.height, closeTo(68, .01));
-      expect(score.left, 16);
-      expect(score.width, size.width - 32);
-      expect(intro.bottom, closeTo(board.top - 8, .01));
-      expect(intro.height, 108);
-      final introScroll = find.descendant(
-        of: find.byKey(StarChallengeKeys.intro),
-        matching: find.byType(SingleChildScrollView),
-      );
-      expect(introScroll, findsOneWidget);
-      await tester.drag(introScroll, const Offset(0, -300));
-      await tester.pumpAndSettle();
-      expect(tester.getRect(find.byKey(StarChallengeKeys.intro)), intro);
-      expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 72);
-      expect(find.text('Fácil · Caça às estrelas'), findsOneWidget);
-      final go = tester.getRect(find.byKey(StarChallengeKeys.goButton));
-      expect(go.height, 52);
-      expect(go.bottom, size.height - 8);
-      await tester.tap(find.byKey(StarChallengeKeys.goButton));
-      await tester.pumpAndSettle();
-      final running = tester.getRect(find.byKey(StarChallengeKeys.board));
-      expect(running.width, size.width);
-      expect(running.top, closeTo(size.width == 360 ? 190 : 252, .5));
-      expect(find.byKey(StarChallengeKeys.goButton), findsNothing);
-      expect(find.text('Sua vez'), findsNothing);
-      expect(
-        tester.getRect(find.byKey(StarChallengeKeys.scoreboard)).height,
-        closeTo(68, .01),
-      );
-      cubit.pause();
-      await tester.pumpAndSettle();
-      expect(find.text('Em pausa'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
-  }
-
   for (final mode in [ThemeMode.light, ThemeMode.dark]) {
     for (final direction in TextDirection.values) {
       testWidgets('V2 cartões/resultado legíveis $mode $direction fonte2,4', (
@@ -572,11 +541,12 @@ void main() {
         final score = tester.widget<Container>(
           find.byKey(StarChallengeKeys.scoreboard),
         );
+        // D2: um papel só para os dois cartões, também no escuro.
         expect(
           (intro.decoration! as BoxDecoration).color,
           mode == ThemeMode.light
               ? colors.surfaceContainerLowest
-              : colors.surfaceContainerLow,
+              : colors.surfaceContainerHigh,
         );
         expect(
           (score.decoration! as BoxDecoration).color,

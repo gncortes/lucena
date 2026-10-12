@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Hãy kết nối internet để đọc trang này. Bài học vẫn tiếp tục bình thường.",
   "wikiOpen": "Mở {name} trên Wikipedia",
   "starChallengeIntroTitle": "Săn sao",
-  "starChallengeIntroBody": "Bạn có {seconds} giây. Hãy đưa quân của bạn đến từng ngôi sao trước khi nó tắt. Sao vàng tắt sớm nhất, vì vậy nó có giá trị cao hơn.",
+  "starChallengeIntroBody": "Bạn có {seconds} giây. Hãy đưa quân của bạn đến từng ngôi sao trước khi nó tắt.",
   "starChallengeWorth": "{points, plural, =1{giá trị 1} other{giá trị {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{điểm} other{điểm}}",
   "speedrunQuitProgress": "Bỏ speedrun này? Bạn mất {count} chặng đã thắng.",

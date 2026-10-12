@@ -25,14 +25,11 @@ class StarScoreboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return Container(
       key: StarChallengeKeys.scoreboard,
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.light
-            ? colors.surfaceContainerLowest
-            : colors.surfaceContainerHigh,
+        color: starCardColor(theme),
         borderRadius: BorderRadius.circular(AppShape.large),
       ),
       child: Row(

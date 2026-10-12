@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "برای خواندن این صفحه به اینترنت وصل شوید. درس به‌طور عادی ادامه دارد.",
   "wikiOpen": "باز کردن {name} در ویکی‌پدیا",
   "starChallengeIntroTitle": "شکار ستاره",
-  "starChallengeIntroBody": "{seconds} ثانیه وقت دارید. مهره‌تان را پیش از خاموش شدن هر ستاره به آن برسانید. ستارهٔ طلایی زودتر خاموش می‌شود و برای همین ارزش بیشتری دارد.",
+  "starChallengeIntroBody": "{seconds} ثانیه وقت دارید. مهره‌تان را پیش از خاموش شدن هر ستاره به آن برسانید.",
   "starChallengeWorth": "{points, plural, =1{ارزش ۱} other{ارزش {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{امتیاز} other{امتیاز}}",
   "speedrunQuitProgress": "این رقابت رها شود؟ {count} مرحلهٔ برده‌شده را از دست می‌دهید.",

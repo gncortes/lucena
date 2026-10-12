@@ -60,3 +60,10 @@ Color levelColor(ChallengeLevel level) => switch (level) {
   ChallengeLevel.hard => const Color(0xffc62828),
   ChallengeLevel.named => const Color(0xff6a1b9a),
 };
+
+/// O fundo dos cartões da tela (o convite e o placar, D2 do canvas V2): no
+/// claro, a superfície mais clara; no escuro, um papel só para os dois, o
+/// `surfaceContainerHigh` (o `surfaceContainerLow` some no fundo escuro).
+Color starCardColor(ThemeData theme) => theme.brightness == Brightness.light
+    ? theme.colorScheme.surfaceContainerLowest
+    : theme.colorScheme.surfaceContainerHigh;

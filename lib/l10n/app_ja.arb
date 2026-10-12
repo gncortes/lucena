@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "このページを読むにはインターネットに接続してください。レッスンはそのまま続けられます。",
   "wikiOpen": "{name}をウィキペディアで開く",
   "starChallengeIntroTitle": "スターハント",
-  "starChallengeIntroBody": "持ち時間は{seconds}秒です。星が消える前に、駒をそれぞれの星まで運びましょう。金の星は最初に消えるので、点数が高くなっています。",
+  "starChallengeIntroBody": "持ち時間は{seconds}秒です。星が消える前に、駒をそれぞれの星まで運びましょう。",
   "starChallengeWorth": "{points, plural, =1{1点} other{{points}点}}",
   "starChallengePointsLabel": "{count, plural, =1{点} other{点}}",
   "speedrunQuitProgress": "このスピードランをやめますか？勝利した {count} ステージを失います。",

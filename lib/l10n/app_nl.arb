@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Maak verbinding met internet om deze pagina te lezen. De les gaat gewoon verder.",
   "wikiOpen": "{name} openen op Wikipedia",
   "starChallengeIntroTitle": "Sterrenjacht",
-  "starChallengeIntroBody": "Je hebt {seconds} seconden. Breng je stuk naar elke ster voordat die dooft. De gouden dooft het eerst en is daarom meer waard.",
+  "starChallengeIntroBody": "Je hebt {seconds} seconden. Breng je stuk naar elke ster voordat die dooft.",
   "starChallengeWorth": "{points, plural, =1{telt 1} other{telt {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punt} other{punten}}",
   "speedrunQuitProgress": "Deze speedrun opgeven? Je verliest de {count} gewonnen etappes.",

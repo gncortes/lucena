@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Bu sayfayı okumak için internete bağlanın. Ders normal şekilde devam ediyor.",
   "wikiOpen": "{name} sayfasını Vikipedi'de aç",
   "starChallengeIntroTitle": "Yıldız avı",
-  "starChallengeIntroBody": "{seconds} saniyeniz var. Taşınızı her yıldıza, o sönmeden götürün. Altın yıldız önce söner, bu yüzden daha değerlidir.",
+  "starChallengeIntroBody": "{seconds} saniyeniz var. Taşınızı her yıldıza, o sönmeden götürün.",
   "starChallengeWorth": "{points, plural, =1{değeri 1} other{değeri {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{puan} other{puan}}",
   "speedrunQuitProgress": "Bu speedrun bırakılsın mı? Kazandığın {count} aşamayı kaybedersin.",

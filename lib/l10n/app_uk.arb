@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Підключіться до інтернету, щоб прочитати цю сторінку. Урок триває як звичайно.",
   "wikiOpen": "Відкрити {name} у Вікіпедії",
   "starChallengeIntroTitle": "Полювання на зірки",
-  "starChallengeIntroBody": "У вас {seconds} секунд. Доведіть фігуру до кожної зірки, поки вона не згасла. Золота гасне першою, тому вона цінніша.",
+  "starChallengeIntroBody": "У вас {seconds} секунд. Доведіть фігуру до кожної зірки, поки вона не згасла.",
   "starChallengeWorth": "{points, plural, =1{варта 1} other{варта {points}}}",
   "starChallengePointsLabel": "{count, plural, one{очко} few{очки} many{очок} other{очка}}",
   "speedrunQuitProgress": "Припинити цей спідран? Ви втратите {count} виграних етапів.",

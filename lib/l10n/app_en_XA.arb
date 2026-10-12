@@ -1025,7 +1025,7 @@
   "externalPageOfflineBody": "[Çöññéçt tö thé îñtéŕñét tö ŕéåd thîš påĝé. Thé léššöñ ĝöéš öñ åš ñöŕmål. one two three four five six seven]",
   "wikiOpen": "[Öpéñ {name} öñ Wîkîpédîå one two three]",
   "starChallengeIntroTitle": "[Štåŕ hûñt one]",
-  "starChallengeIntroBody": "[Ýöû håvé {seconds} šéçöñdš. Tåké ýöûŕ pîéçé tö éåçh štåŕ béföŕé ît fådéš åwåý. Thé ĝöld öñé fådéš fîŕšt, whîçh îš whý ît îš wöŕth möŕé. one two three four five six seven eight nine ten one two]",
+  "starChallengeIntroBody": "[Ýöû håvé {seconds} šéçöñdš. Tåké ýöûŕ pîéçé tö éåçh štåŕ béföŕé ît fådéš åwåý. one two three four five six seven]",
   "starChallengeWorth": "{points, plural, =1{[wöŕth 1 one]} other{[wöŕth {points} one two]}}",
   "starChallengePointsLabel": "{count, plural, =1{[pöîñt one]} other{[pöîñtš one]}}",
   "speedrunQuitProgress": "[Ĝîvé ûp thîš špéédŕûñ? Ýöû löšé thé {count} štåĝéš wöñ. one two three four five]",

@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Connectez-vous à Internet pour lire cette page. La leçon continue normalement.",
   "wikiOpen": "Ouvrir {name} sur Wikipédia",
   "starChallengeIntroTitle": "Chasse aux étoiles",
-  "starChallengeIntroBody": "Vous avez {seconds} secondes. Amenez votre pièce sur chaque étoile avant qu'elle ne s'éteigne. L'étoile d'or s'éteint en premier : c'est pourquoi elle vaut plus.",
+  "starChallengeIntroBody": "Vous avez {seconds} secondes. Amenez votre pièce sur chaque étoile avant qu'elle ne s'éteigne.",
   "starChallengeWorth": "{points, plural, =1{vaut 1} other{vaut {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{point} other{points}}",
   "speedrunQuitProgress": "Abandonner cette speedrun ? Vous perdez les {count} étapes gagnées.",

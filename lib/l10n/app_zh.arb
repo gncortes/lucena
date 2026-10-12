@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "请连接互联网以阅读此页面。课程照常进行。",
   "wikiOpen": "在维基百科上打开{name}",
   "starChallengeIntroTitle": "寻星",
-  "starChallengeIntroBody": "你有 {seconds} 秒。在每颗星熄灭之前，把棋子走到它那里。金星最先熄灭，所以分值更高。",
+  "starChallengeIntroBody": "你有 {seconds} 秒。在每颗星熄灭之前，把棋子走到它那里。",
   "starChallengeWorth": "{points, plural, =1{1 分} other{{points} 分}}",
   "starChallengePointsLabel": "{count, plural, =1{分} other{分}}",
   "speedrunQuitProgress": "放弃这次速通？你将失去已赢得的 {count} 个阶段。",

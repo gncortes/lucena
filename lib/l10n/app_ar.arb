@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "اتصل بالإنترنت لقراءة هذه الصفحة. يستمر الدرس كالمعتاد.",
   "wikiOpen": "افتح {name} في ويكيبيديا",
   "starChallengeIntroTitle": "صيد النجوم",
-  "starChallengeIntroBody": "لديك {seconds} ثانية. انقل قطعتك إلى كل نجمة قبل أن تنطفئ. النجمة الذهبية تنطفئ أولًا، ولهذا قيمتها أكبر.",
+  "starChallengeIntroBody": "لديك {seconds} ثانية. انقل قطعتك إلى كل نجمة قبل أن تنطفئ.",
   "starChallengeWorth": "{points, plural, =1{قيمتها 1} other{قيمتها {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{نقطة} other{نقاط}}",
   "speedrunQuitProgress": "هل تريد التخلي عن هذا السباق؟ ستفقد المراحل التي فزت بها وعددها {count}.",

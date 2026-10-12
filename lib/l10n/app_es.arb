@@ -1026,7 +1026,7 @@
   "externalPageOfflineBody": "Conéctate a internet para leer esta página. La clase sigue con normalidad.",
   "wikiOpen": "Abrir {name} en Wikipedia",
   "starChallengeIntroTitle": "Caza de estrellas",
-  "starChallengeIntroBody": "Tienes {seconds} segundos. Lleva tu pieza a cada estrella antes de que se apague. La de oro se apaga primero, por eso vale más.",
+  "starChallengeIntroBody": "Tienes {seconds} segundos. Lleva tu pieza a cada estrella antes de que se apague.",
   "starChallengeWorth": "{points, plural, =1{vale 1} other{vale {points}}}",
   "starChallengePointsLabel": "{count, plural, =1{punto} other{puntos}}",
   "speedrunQuitProgress": "¿Abandonar esta speedrun? Pierdes las {count} etapas ganadas.",

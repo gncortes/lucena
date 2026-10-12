@@ -5203,9 +5203,9 @@
   "@starChallengeIntroTitle": {
     "description": "Title of the card before starting a star challenge: the name of the game."
   },
-  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away. The gold one fades first, which is why it is worth more.",
+  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away.",
   "@starChallengeIntroBody": {
-    "description": "Card before starting a star challenge: the rule in one or two friendly sentences (take the piece to each star before it fades; the gold one fades first and is worth more).",
+    "description": "Card before starting a star challenge: the rule in two short friendly sentences (how many seconds; take the piece to each star before it fades). The scoreboard already shows what each star is worth.",
     "placeholders": {
       "seconds": {
         "type": "int"
