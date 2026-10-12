@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/explanation.dart';
 import '../keys/explanation_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_shape.dart';
 
 typedef ExplanationParagraph = ({String text, ExplanationVariation? variation});
 
@@ -277,7 +278,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppShape.medium),
                 ),
                 child: _line(context, block, child, principal: false),
               )
