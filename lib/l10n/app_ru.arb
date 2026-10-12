@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "Эти ходы тоже не работают",
   "lessonStillUnsure": "Остались сомнения?",
   "lessonOpenFreeBoard": "Открыть на свободной доске",
+  "lessonExplanationShort": "Объяснение",
+  "lessonFreeBoardInvite": "Остались сомнения? Проверьте другие идеи из этой позиции со своей стороны доски.",
   "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Виктора",
   "lessonTeacherVoiceHint": "Читать объяснения вслух",

@@ -1090,6 +1090,8 @@
   "lessonFailedAlternatives": "[Théšé dö ñöt wöŕk éîthéŕ one two three]",
   "lessonStillUnsure": "[Štîll ûñšûŕé? one two]",
   "lessonOpenFreeBoard": "[Öpéñ îñ thé fŕéé böåŕd one two three]",
+  "lessonExplanationShort": "[Éxplåñåtîöñ one two]",
+  "lessonFreeBoardInvite": "[Štîll ûñšûŕé? Téšt öthéŕ îdéåš fŕöm thîš pöšîtîöñ, fŕöm ýöûŕ šîdé öf thé böåŕd. one two three four five six seven]",
   "lessonReturn": "[Båçk one]",
   "lessonTeacherVoice": "[Vîktöŕ'š vöîçé one two]",
   "lessonTeacherVoiceHint": "[Ŕéåd thé éxplåñåtîöñš ålöûd one two three]",

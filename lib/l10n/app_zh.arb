@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "这些着法也不行",
   "lessonStillUnsure": "还有疑问？",
   "lessonOpenFreeBoard": "在自由棋盘中打开",
+  "lessonExplanationShort": "讲解",
+  "lessonFreeBoardInvite": "还有疑问？从这个局面出发，在你这一侧的棋盘上试试别的想法。",
   "lessonReturn": "返回",
   "lessonTeacherVoice": "维克托的语音",
   "lessonTeacherVoiceHint": "朗读讲解",

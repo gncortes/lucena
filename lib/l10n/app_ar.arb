@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "هذه النقلات لا تنجح أيضًا",
   "lessonStillUnsure": "هل ما زلت غير متأكد؟",
   "lessonOpenFreeBoard": "افتح في الرقعة الحرة",
+  "lessonExplanationShort": "الشرح",
+  "lessonFreeBoardInvite": "هل ما زلت غير متأكد؟ جرّب أفكارًا أخرى من هذا الوضع، من جهتك من الرقعة.",
   "lessonReturn": "رجوع",
   "lessonTeacherVoice": "صوت فيكتور",
   "lessonTeacherVoiceHint": "قراءة الشروحات بصوت عالٍ",

@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "Tampoco funcionan",
   "lessonStillUnsure": "¿Aún tienes dudas?",
   "lessonOpenFreeBoard": "Abrir en el tablero libre",
+  "lessonExplanationShort": "Explicación",
+  "lessonFreeBoardInvite": "¿Aún tienes dudas? Prueba otras ideas desde esta posición, desde tu lado del tablero.",
   "lessonReturn": "Volver",
   "lessonTeacherVoice": "Voz de Viktor",
   "lessonTeacherVoiceHint": "Leer las explicaciones en voz alta",

@@ -480,10 +480,30 @@ void main() {
         expect(rect.right, lessThanOrEqualTo(size.width), reason: '$key');
         expect(find.byKey(key).hitTestable(), findsOneWidget, reason: '$key');
       }
-      // Os botões da mesma altura.
-      for (final key in keys.take(2)) {
-        expect(tester.getRect(find.byKey(key)).height, 56, reason: '$key');
-      }
+      // Round buttons 56; the main one at least that, its label wrapping
+      // (never shrunk by a FittedBox nor cut).
+      expect(tester.getRect(find.byKey(LessonKeys.moreHintButton)).height, 56);
+      expect(
+        tester.getRect(find.byKey(LessonKeys.nextButton)).height,
+        greaterThanOrEqualTo(56),
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(LessonKeys.nextButton),
+          matching: find.byType(FittedBox),
+        ),
+        findsNothing,
+      );
+      final label = tester.renderObject<RenderParagraph>(
+        find.descendant(
+          of: find.descendant(
+            of: find.byKey(LessonKeys.nextButton),
+            matching: find.byType(Text),
+          ),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(label.didExceedMaxLines, isFalse);
       // Lado a lado, sem se cobrir.
       for (var i = 1; i < keys.length; i++) {
         expect(

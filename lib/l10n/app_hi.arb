@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "ये भी काम नहीं करतीं",
   "lessonStillUnsure": "अब भी संदेह है?",
   "lessonOpenFreeBoard": "स्वतंत्र बोर्ड में खोलें",
+  "lessonExplanationShort": "व्याख्या",
+  "lessonFreeBoardInvite": "अब भी संदेह है? इसी स्थिति से, बोर्ड की अपनी तरफ़ से, दूसरे विचार आज़माएँ।",
   "lessonReturn": "वापस",
   "lessonTeacherVoice": "विक्टर की आवाज़",
   "lessonTeacherVoiceHint": "व्याख्याएँ ज़ोर से पढ़ें",

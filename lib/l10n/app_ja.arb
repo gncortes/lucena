@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "これらの手もうまくいきません",
   "lessonStillUnsure": "まだ疑問がありますか？",
   "lessonOpenFreeBoard": "自由盤で開く",
+  "lessonExplanationShort": "解説",
+  "lessonFreeBoardInvite": "まだ疑問がありますか？この局面から、自分の側の盤で別の考えを試してみましょう。",
   "lessonReturn": "戻る",
   "lessonTeacherVoice": "ヴィクトルの声",
   "lessonTeacherVoiceHint": "解説を読み上げる",

@@ -5410,11 +5410,19 @@
   },
   "lessonStillUnsure": "Still unsure?",
   "lessonOpenFreeBoard": "Open in the free board",
+  "lessonExplanationShort": "Explanation",
+  "lessonFreeBoardInvite": "Still unsure? Test other ideas from this position, from your side of the board.",
   "@lessonStillUnsure": {
     "description": "Canvas V2 lesson feedback heading; presentation only."
   },
   "@lessonOpenFreeBoard": {
     "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonExplanationShort": {
+    "description": "Main button of a lesson think step (D16): one word that opens Viktor's explanation."
+  },
+  "@lessonFreeBoardInvite": {
+    "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
   "lessonReturn": "Back",
   "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},

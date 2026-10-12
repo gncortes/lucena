@@ -1091,6 +1091,8 @@
   "lessonFailedAlternatives": "Ці ходи також не працюють",
   "lessonStillUnsure": "Залишилися сумніви?",
   "lessonOpenFreeBoard": "Відкрити на вільній дошці",
+  "lessonExplanationShort": "Пояснення",
+  "lessonFreeBoardInvite": "Залишилися сумніви? Перевірте інші ідеї з цієї позиції зі свого боку дошки.",
   "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Віктора",
   "lessonTeacherVoiceHint": "Читати пояснення вголос",

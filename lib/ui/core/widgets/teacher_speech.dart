@@ -672,6 +672,7 @@ class TeacherSpeech extends StatelessWidget {
     String text,
     Text words,
     bool Function(int)? onTapAt,
+    int Function(int) toDrawn,
   ) {
     final speech = speechOf(context);
     if (speech == null) return _TypedText(text: words, onTapAt: onTapAt);
@@ -693,7 +694,13 @@ class TeacherSpeech extends StatelessWidget {
         onTapAt: onTapAt,
         paced: paced,
         speaking: state.isSpeaking(text),
-        revealed: state.isSpeaking(text) ? state.revealed : null,
+        // The voice counts in the source text; the clip, in the drawn one.
+        revealed: state.isSpeaking(text)
+            ? switch (state.revealed) {
+                final revealed? => toDrawn(revealed),
+                null => null,
+              }
+            : null,
       ),
     );
   }
@@ -817,39 +824,74 @@ class TeacherSpeech extends StatelessWidget {
         ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
-    final words = spans.isEmpty && !lessonV2
+    // Authored fallback prose keeps its own reading direction while the
+    // surrounding controls follow the selected app locale.
+    final direction = lessonV2
+        ? Bidi.detectRtlDirectionality(text)
+              ? TextDirection.rtl
+              : TextDirection.ltr
+        : null;
+    // In an RTL paragraph the move number after an Arabic letter would be
+    // reordered ("Ke3.1"): each notation is isolated as LTR (LRI…PDI). The
+    // drawn text then differs from the source; [offsets] maps the two.
+    final offsets = _BidiOffsets(
+      lessonV2 && (direction ?? Directionality.of(context)) == TextDirection.rtl
+          ? [
+              for (final link in SpeechLinks.find(
+                text,
+                SpeechLinks.lettersFor(language),
+              ))
+                (link.start, link.end),
+            ]
+          : const [],
+    );
+    InlineSpan? styledSpans() {
+      if (spans.isEmpty && !lessonV2) return null;
+      final breaks = <int>{
+        0,
+        text.length,
+        for (final (start, end, _) in spans) ...[start, end],
+        for (final (start, end) in offsets.ranges) ...[start, end],
+      }.toList()..sort();
+      return TextSpan(
+        children: [
+          for (var i = 0; i < breaks.length; i++) ...[
+            if (offsets.endsAt(breaks[i])) const TextSpan(text: _pdi),
+            if (offsets.startsAt(breaks[i])) const TextSpan(text: _lri),
+            if (i + 1 < breaks.length)
+              if (spans
+                      .where(
+                        (span) => span.$1 <= breaks[i] && span.$2 > breaks[i],
+                      )
+                      .firstOrNull
+                  case final span?)
+                TextSpan(
+                  text: text.substring(breaks[i], breaks[i + 1]),
+                  style: span.$3,
+                )
+              else
+                ...plainSpans(
+                  text.substring(breaks[i], breaks[i + 1]),
+                  breaks[i],
+                ),
+          ],
+        ],
+      );
+    }
+
+    final rich = styledSpans();
+    final words = rich == null
         ? Text(text, key: useBubbleKey ? bubbleKey : null, style: style)
         : Text.rich(
-            TextSpan(
-              children: [
-                for (final (index, (start, end, spanStyle))
-                    in spans.indexed) ...[
-                  ...plainSpans(
-                    text.substring(index == 0 ? 0 : spans[index - 1].$2, start),
-                    index == 0 ? 0 : spans[index - 1].$2,
-                  ),
-                  TextSpan(text: text.substring(start, end), style: spanStyle),
-                ],
-                ...plainSpans(
-                  text.substring(spans.isEmpty ? 0 : spans.last.$2),
-                  spans.isEmpty ? 0 : spans.last.$2,
-                ),
-              ],
-            ),
+            rich,
             key: useBubbleKey ? bubbleKey : null,
             style: style,
-            // Authored fallback prose keeps its own reading direction while
-            // the surrounding controls follow the selected app locale.
-            textDirection:
-                lessonV2 && !lessonPromptBubble && explanation != null
-                ? Bidi.detectRtlDirectionality(text)
-                      ? TextDirection.rtl
-                      : TextDirection.ltr
-                : null,
+            textDirection: direction,
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
-    bool tapAt(int offset) {
+    bool tapAt(int drawn) {
+      final offset = offsets.toSource(drawn);
       for (final (mark, url) in pages) {
         if (offset >= mark.start && offset < mark.end) {
           showExternalPage(context, url);
@@ -906,7 +948,7 @@ class TeacherSpeech extends StatelessWidget {
           links: links,
           onLink: onSpoken,
           child: typed
-              ? _typed(context, text, words, tappable)
+              ? _typed(context, text, words, tappable, offsets.toDrawn)
               : tappable == null
               ? words
               : _LinkTapper(text: words, onTapAt: tappable),
@@ -932,6 +974,43 @@ class TeacherSpeech extends StatelessWidget {
         bubble,
       ],
     );
+  }
+}
+
+const _lri = '\u2066';
+const _pdi = '\u2069';
+
+/// The LTR isolates wrapped around notations in an RTL paragraph, and the map
+/// between offsets in the drawn text (with the isolates) and in the source
+/// text (what Semantics, the voice and the links use).
+class _BidiOffsets {
+  _BidiOffsets(this.ranges)
+    : _inserts = [
+        for (final (start, end) in ranges) ...[start, end],
+      ]..sort();
+
+  /// Source ranges isolated as LTR, in order and without overlap.
+  final List<(int, int)> ranges;
+
+  /// Source offsets before which one isolate character is drawn.
+  final List<int> _inserts;
+
+  bool startsAt(int offset) => ranges.any((range) => range.$1 == offset);
+  bool endsAt(int offset) => ranges.any((range) => range.$2 == offset);
+
+  /// The drawn offset of the source character at [source].
+  int toDrawn(int source) =>
+      source + _inserts.where((insert) => insert <= source).length;
+
+  /// The source offset of the drawn character at [drawn]; an isolate maps to
+  /// the edge of the notation it wraps.
+  int toSource(int drawn) {
+    for (final (index, insert) in _inserts.indexed) {
+      final at = insert + index;
+      if (drawn == at) return insert;
+      if (drawn < at) return drawn - index;
+    }
+    return drawn - _inserts.length;
   }
 }
 
@@ -1036,6 +1115,7 @@ class _TypedTextState extends State<_TypedText>
   late final AnimationController _controller;
   TextPainter? _painter;
   double? _width;
+  double? _minWidth;
 
   int get _length => _span.toPlainText().length;
 
@@ -1058,6 +1138,14 @@ class _TypedTextState extends State<_TypedText>
   @override
   void didUpdateWidget(_TypedText old) {
     super.didUpdateWidget(old);
+    // Another text (or direction) in the same place: measure it again.
+    if (old.text.textSpan != widget.text.textSpan ||
+        old.text.data != widget.text.data ||
+        old.text.textDirection != widget.text.textDirection ||
+        old.text.style != widget.text.style) {
+      _painter?.dispose();
+      _painter = null;
+    }
     final revealed = widget.revealed;
     if (revealed != null && revealed != old.revealed && _length > 0) {
       // A voz conta onde está: o texto vai até a palavra falada.
@@ -1088,21 +1176,28 @@ class _TypedTextState extends State<_TypedText>
   }
 
   /// As linhas do texto na largura [width], medidas como o [Text] as desenha.
-  TextPainter _measure(BuildContext context, double width) {
+  TextPainter _measure(BuildContext context, BoxConstraints constraints) {
+    final width = constraints.maxWidth;
     final cached = _painter;
-    if (cached != null && _width == width) return cached;
+    if (cached != null &&
+        _width == width &&
+        _minWidth == constraints.minWidth) {
+      return cached;
+    }
     cached?.dispose();
     var style = DefaultTextStyle.of(context).style.merge(widget.text.style);
     if (MediaQuery.boldTextOf(context)) {
       style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
     }
     _width = width;
+    _minWidth = constraints.minWidth;
     return _painter = TextPainter(
       text: TextSpan(style: style, children: [_span]),
       textDirection: widget.text.textDirection ?? Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       locale: Localizations.maybeLocaleOf(context),
-    )..layout(maxWidth: width);
+      // Same width as the RenderParagraph, so RTL lines line up with it.
+    )..layout(minWidth: constraints.minWidth, maxWidth: width);
   }
 
   @override
@@ -1115,7 +1210,7 @@ class _TypedTextState extends State<_TypedText>
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        final painter = _measure(context, constraints.maxWidth);
+        final painter = _measure(context, constraints);
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           // Numa casa ou lance já à vista, o toque vale nele (mesmo com a
@@ -1196,15 +1291,21 @@ class _LinkTapper extends StatelessWidget {
           if (MediaQuery.boldTextOf(context)) {
             style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
           }
-          final painter = TextPainter(
-            text: TextSpan(
-              style: style,
-              children: [text.textSpan ?? TextSpan(text: text.data)],
-            ),
-            textDirection: text.textDirection ?? Directionality.of(context),
-            textScaler: MediaQuery.textScalerOf(context),
-            locale: Localizations.maybeLocaleOf(context),
-          )..layout(maxWidth: constraints.maxWidth);
+          final painter =
+              TextPainter(
+                text: TextSpan(
+                  style: style,
+                  children: [text.textSpan ?? TextSpan(text: text.data)],
+                ),
+                textDirection: text.textDirection ?? Directionality.of(context),
+                textScaler: MediaQuery.textScalerOf(context),
+                locale: Localizations.maybeLocaleOf(context),
+                // Same width as the RenderParagraph: a tight box (RTL text aligned
+                // to the right of it) must not be measured shrink-wrapped.
+              )..layout(
+                minWidth: constraints.minWidth,
+                maxWidth: constraints.maxWidth,
+              );
           if (!_tapNear(painter, details.localPosition, onTapAt)) {
             SpeechTextTapNotification().dispatch(context);
           }
