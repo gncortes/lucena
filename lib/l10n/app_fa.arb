@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "این شاخه در دسترس نیست.",
   "explanationFirst": "آغاز شاخه",
   "explanationPrevious": "حرکت قبلی",
+  "explanationParent": "بازگشت به شاخهٔ بالاتر",
   "explanationNext": "حرکت بعدی",
   "explanationLast": "پایان شاخه",
   "explanationReturn": "بازگشت به وضعیت اصلی",

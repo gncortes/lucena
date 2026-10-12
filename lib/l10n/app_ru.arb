@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Этот вариант недоступен.",
   "explanationFirst": "Начало варианта",
   "explanationPrevious": "Предыдущий ход",
+  "explanationParent": "Вернуться к родительскому варианту",
   "explanationNext": "Следующий ход",
   "explanationLast": "Конец варианта",
   "explanationReturn": "Вернуться к позиции",

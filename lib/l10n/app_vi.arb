@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Biến này không khả dụng.",
   "explanationFirst": "Đầu biến",
   "explanationPrevious": "Nước trước",
+  "explanationParent": "Quay lại biến thể cấp trên",
   "explanationNext": "Nước tiếp theo",
   "explanationLast": "Cuối biến",
   "explanationReturn": "Trở về thế cờ",

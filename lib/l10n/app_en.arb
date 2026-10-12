@@ -5334,6 +5334,8 @@
   "explanationUnavailable": "This line is unavailable.",
   "explanationFirst": "Start of line",
   "explanationPrevious": "Previous move",
+  "explanationParent": "Return to parent variation",
+  "@explanationParent": {"description": "Explanation panel: leave the current branch and return to its immediate parent variation, which may itself be a variation"},
   "explanationNext": "Next move",
   "explanationLast": "End of line",
   "explanationReturn": "Return to position",

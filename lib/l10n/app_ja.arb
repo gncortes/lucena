@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "この変化は利用できません。",
   "explanationFirst": "変化の開始",
   "explanationPrevious": "前の手",
+  "explanationParent": "親の変化に戻る",
   "explanationNext": "次の手",
   "explanationLast": "変化の最後",
   "explanationReturn": "元の局面に戻る",

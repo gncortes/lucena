@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "此变化不可用。",
   "explanationFirst": "变化起点",
   "explanationPrevious": "上一步",
+  "explanationParent": "返回上级变化",
   "explanationNext": "下一步",
   "explanationLast": "变化终点",
   "explanationReturn": "返回原局面",

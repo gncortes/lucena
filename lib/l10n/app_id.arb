@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Variasi ini tidak tersedia.",
   "explanationFirst": "Awal variasi",
   "explanationPrevious": "Langkah sebelumnya",
+  "explanationParent": "Kembali ke variasi induk",
   "explanationNext": "Langkah berikutnya",
   "explanationLast": "Akhir variasi",
   "explanationReturn": "Kembali ke posisi",

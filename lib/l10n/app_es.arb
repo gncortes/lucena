@@ -1074,6 +1074,7 @@
   "explanationUnavailable": "Esta variante no está disponible.",
   "explanationFirst": "Inicio de la variante",
   "explanationPrevious": "Jugada anterior",
+  "explanationParent": "Volver a la variante superior",
   "explanationNext": "Jugada siguiente",
   "explanationLast": "Final de la variante",
   "explanationReturn": "Volver a la posición",
