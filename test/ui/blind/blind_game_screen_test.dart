@@ -304,6 +304,41 @@ void main() {
     });
   }
 
+  testWidgets('painel pinta 158/154 dp com reserva estável para o tabuleiro', (
+    tester,
+  ) async {
+    await pump(tester, size: const Size(360, 740));
+    final surface = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          ((widget.decoration as BoxDecoration).boxShadow?.any(
+                (shadow) => shadow.blurRadius == 12,
+              ) ??
+              false),
+    );
+    final board = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+    final idle = tester.getRect(surface);
+    expect(idle.height, 158);
+    expect(idle.bottom, 740);
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pump(const Duration(milliseconds: 600));
+    input.hear(['rook a7']);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pumpAndSettle();
+    expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+    final proposal = tester.getRect(surface);
+    expect(proposal.height, 154);
+    expect(proposal.bottom, idle.bottom);
+    expect(tester.getRect(find.byKey(BlindKeys.emptyBoard)), board);
+    expect(
+      tester.getSize(find.byKey(BlindKeys.sayProposal)),
+      const Size.square(44),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('ação semântica do microfone inicia e envia a gravação', (
     tester,
   ) async {
