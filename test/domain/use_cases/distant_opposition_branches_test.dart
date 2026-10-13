@@ -51,12 +51,31 @@ void main() {
     // 1.Rf4 Re6 2.Re4 (2.e4? Rf6! =)
     ('diagonal', 'step.diagonal', 'e4', 2, '8/8/4k3/8/5K2/4P3/8/8 w - - 2 2'),
     // 1.Re2 Re7 2.Re3 (2.Rd3? Rd7 =; 2.Rf3? Rf7 =)
-    for (final (stepId, textKey) in [
-      ('capablanca', 'step.capablanca'),
-      ('capablancaMove', 'step.capablancaMove.done'),
-    ])
-      for (final branchId in ['kd3', 'kf3'])
-        (stepId, textKey, branchId, 2, '8/4k3/8/1p5p/1P5P/8/4K3/8 w - - 2 2'),
+    for (final branchId in ['kd3', 'kf3'])
+      (
+        'capablanca',
+        'step.capablanca',
+        branchId,
+        2,
+        '8/4k3/8/1p5p/1P5P/8/4K3/8 w - - 2 2',
+      ),
+    // A armadilha: 1.Re2 Rf8!? 2.Rd3 Re7 3.Re3 (2.Re3?? Re7 =;
+    // 2.Rf3? Rf7 =; 3.Re4? Re6 =).
+    for (final branchId in ['ke3', 'kf3'])
+      (
+        'capablancaMove',
+        'step.capablancaMove.done',
+        branchId,
+        2,
+        '5k2/8/8/1p5p/1P5P/8/4K3/8 w - - 2 2',
+      ),
+    (
+      'capablancaMove',
+      'step.capablancaMove.done',
+      'ke4',
+      4,
+      '8/4k3/8/1p5p/1P5P/3K4/8/8 w - - 4 3',
+    ),
   ];
 
   for (final (stepId, textKey, branchId, at, fen) in expected) {
