@@ -53,10 +53,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // os tempos sejam refeitos pelo instante atual.
   late final Timer _clockRefresh;
 
-  // A partida contra a máquina acabou: o resultado em destaque por um
-  // instante, antes da troca para a tela de conclusão (T51, B4).
-  bool _concluding = false;
-
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
   bool _confirmingQuit = false;
@@ -266,7 +262,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             // fica embaixo do tabuleiro.
             listenWhen: (previous, current) => previous.end != current.end,
             listener: (context, state) {
-              if (state.end == null || !state.mode.opponent.isMachine) return;
+              if (!_marathonAdvance(state)) return;
               unawaited(_conclude(context, cubit, state));
             },
             child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
@@ -363,6 +359,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   ? ClockPosition.sides
                   : clockPosition;
               final character = talk.character;
+              // Acabou a partida contra a máquina: o selo fica no tabuleiro e
+              // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
+              final machineEnded =
+                  state.end != null &&
+                  state.mode.opponent.isMachine &&
+                  !_marathonAdvance(state);
+              final barTalk = machineEnded
+                  ? talk.copyWith(clearLine: true)
+                  : talk;
               final nickname = context.select(
                 (ProfileCubit cubit) => cubit.state?.nickname ?? '',
               );
@@ -402,18 +407,25 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     centerY: centerY,
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
-                    footer: GameActionsBar(
-                      training: training,
-                      onResign:
-                          state.end == null && state.mode.opponent.isMachine
-                          ? _confirmResign
-                          : null,
-                      onDraw: state.canOfferDraw ? _confirmDraw : null,
-                      onFlip: cubit.flip,
-                      onClock: _pickClock,
-                      onNewGame: cubit.newGame,
-                      showSound: true,
-                    ),
+                    footer: machineEnded
+                        ? _SeeResultBar(
+                            onPressed: () => unawaited(
+                              _conclude(context, cubit, cubit.state),
+                            ),
+                          )
+                        : GameActionsBar(
+                            training: training,
+                            onResign:
+                                state.end == null &&
+                                    state.mode.opponent.isMachine
+                                ? _confirmResign
+                                : null,
+                            onDraw: state.canOfferDraw ? _confirmDraw : null,
+                            onFlip: cubit.flip,
+                            onClock: _pickClock,
+                            onNewGame: cubit.newGame,
+                            showSound: true,
+                          ),
                     // Enquanto o tabuleiro termina o voo, a barra do
                     // adversário desce do alto e a do jogador sobe de baixo.
                     top: GameEntrance(
@@ -425,7 +437,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           if (character != null &&
                               clocks != ClockPosition.bottom)
                             CharacterBar(
-                              talk: talk,
+                              talk: barTalk,
                               avatarSize: 44,
                               showName: false,
                               playerRow: ClockRow(
@@ -488,6 +500,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           // Toda partida nova contra a máquina abre com o
                           // versus (na Maratona, com a contagem); só então
                           // o relógio corre.
+                          // O selo do resultado sobre o tabuleiro, até o jogador seguir.
+                          if (machineEnded && end != null)
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: _EndFlash(
+                                  end: end,
+                                  userSide: state.mode.userSide,
+                                ),
+                              ),
+                            ),
                           if (state.held)
                             Positioned.fill(
                               child: VersusIntro(
@@ -544,7 +566,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           if (clocks == ClockPosition.bottom &&
                               character != null)
                             CharacterBar(
-                              talk: talk,
+                              talk: barTalk,
                               avatarSize: 44,
                               showName: false,
                               playerRow: ClockRow(
@@ -572,16 +594,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       ),
                     ),
                   ),
-                  // O resultado em destaque, antes da conclusão.
-                  if (end != null && _concluding)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: _EndFlash(
-                          end: end,
-                          userSide: state.mode.userSide,
-                        ),
-                      ),
-                    ),
                 ],
               );
             },
@@ -607,17 +619,26 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     return time != null && PaceCategory.of(time) == PaceCategory.ultraBullet;
   }
 
-  // A partida acabou: um instante com o resultado em destaque e a tela de
-  // conclusão no lugar desta (voltar dela leva para antes da partida). Na
-  // Maratona, a etapa vencida segue direto para a próxima, sem conclusão.
+  // Só a etapa vencida da Maratona segue sozinha; nas demais partidas contra
+  // a máquina o fim para no tabuleiro até o jogador tocar em "Ver o resultado".
+  bool _marathonAdvance(FreeBoardState state) =>
+      state.end != null &&
+      state.mode.opponent.isMachine &&
+      state.mode.isMarathon &&
+      (state.fulfilled ?? false);
+
+  // A partida acabou: a tela de conclusão no lugar desta (voltar dela leva
+  // para antes da partida). Na Maratona, a etapa vencida segue direto para a
+  // próxima, sem conclusão, depois de um instante com o resultado.
   Future<void> _conclude(
     BuildContext context,
     FreeBoardCubit cubit,
     FreeBoardState state,
   ) async {
-    final pause = AppMotion.of(context).disabled ? Duration.zero : _flashTime;
-    final marathonWin = state.mode.isMarathon && (state.fulfilled ?? false);
-    if (!marathonWin) setState(() => _concluding = true);
+    final marathonWin = _marathonAdvance(state);
+    final pause = AppMotion.of(context).disabled || !marathonWin
+        ? Duration.zero
+        : _flashTime;
     await Future.wait([cubit.saved(), Future<void>.delayed(pause)]);
     if (!context.mounted || cubit.state.end == null) return;
     final step = cubit.state.report?.speedrun;
@@ -680,8 +701,46 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   static const _boardGap = 8.0;
 }
 
-/// O resultado em destaque por um instante, no meio do tabuleiro, quando a
-/// partida contra a máquina acaba.
+/// O rodapé da partida terminada contra a máquina: só "Ver o resultado"
+/// (PropV2PartidaFim, CompRodapeAcoes com botão de 52).
+class _SeeResultBar extends StatelessWidget {
+  const _SeeResultBar({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surfaceContainerLow,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: colors.outlineVariant)),
+        ),
+        // 76 de altura (a reserva do tabuleiro): botão de 52 e 12 de respiro.
+        child: SizedBox(
+          height: 76,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                key: FreeBoardKeys.seeResultButton,
+                onPressed: onPressed,
+                icon: const Icon(Icons.arrow_forward),
+                iconAlignment: IconAlignment.end,
+                label: Text(context.l10n.gameSeeResult),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O resultado em destaque, no meio do tabuleiro, quando a partida contra a
+/// máquina acaba.
 class _EndFlash extends StatelessWidget {
   const _EndFlash({required this.end, this.userSide});
 

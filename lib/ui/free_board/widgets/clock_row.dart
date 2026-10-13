@@ -77,7 +77,8 @@ class ClockRow extends StatelessWidget {
         side: side,
         name: name,
         time: clock == null ? null : state.timeOf(side),
-        running: clock?.running == side,
+        // Partida acabada: nenhum relógio ativo (TimeDisplayState.paused).
+        running: state.end == null && clock?.running == side,
         clockKey: FreeBoardKeys.clock(side),
         timeKey: FreeBoardKeys.clockTime(side),
         turnKey: FreeBoardKeys.turn,

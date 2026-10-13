@@ -1075,6 +1075,18 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('voz desligada: sem o chip de velocidade; ligada, ele volta', (
+      tester,
+    ) async {
+      await pumpWithVoice(tester, enabled: false);
+      expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+      expect(find.text('1×'), findsNothing);
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(find.byKey(VoiceKeys.speedButton), findsOneWidget);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('um botão de som só: desligado, liga a voz e fala; ligado, '
         'cala e grava a escolha', (tester) async {
       final (speech, voice) = await pumpWithVoice(tester, enabled: false);

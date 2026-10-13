@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
+import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -1686,7 +1687,15 @@ void main() {
       // Nem o cartão nem o painel do fim: a partida acabou.
       expect(find.byKey(FreeBoardKeys.endPanel), findsNothing);
 
-      await tester.pump(const Duration(seconds: 1));
+      // O fim para no tabuleiro: nada avança sozinho.
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+      expect(find.byType(FreeBoardScreen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+      // Desistir e empate saíram do rodapé.
+      expect(find.byKey(FreeBoardKeys.resignButton), findsNothing);
+      expect(find.byKey(FreeBoardKeys.drawButton), findsNothing);
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
       await tester.pumpAndSettle();
       final id = await cubit.savedGameId();
       expect(find.text('conclusion $id'), findsOneWidget);
@@ -1708,7 +1717,8 @@ void main() {
         );
 
         await resign(tester);
-        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
         await tester.pumpAndSettle();
         expect(find.text('conclusion lost'), findsOneWidget);
         expect(progress.attempts, isEmpty);
@@ -1810,11 +1820,51 @@ void main() {
 
       await move(tester, 'h1', 'h8');
       expect(textOf(tester, FreeBoardKeys.endFlash), 'You won!');
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
+      expect(find.byType(FreeBoardScreen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.resignButton), findsNothing);
 
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.pumpAndSettle();
       expect(progress.attempts.single.fulfilled, isTrue);
       expect(find.textContaining('conclusion'), findsOneWidget);
+    });
+
+    testWidgets('fim com relógio: nenhum relógio fica ativo e o selo e o '
+        'botão estão no tabuleiro, em 360x740 com fonte 2,0', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1000),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 5)),
+        ),
+        screen: const Size(360 * 2.625, 740 * 2.625),
+      );
+
+      await move(tester, 'h1', 'h8');
+      expect(cubit.state.end, isNotNull);
+      final seal = tester.getRect(find.byKey(FreeBoardKeys.endFlash));
+      final board = boardRect(tester);
+      expect(
+        (seal.center - board.center).distance,
+        lessThan(24),
+        reason: 'o selo fica sobre o tabuleiro',
+      );
+      final button = tester.getRect(find.byKey(FreeBoardKeys.seeResultButton));
+      expect(button.height, greaterThanOrEqualTo(48));
+      // O balão do personagem fechou.
+      expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
+      for (final side in [Side.white, Side.black]) {
+        final clockWidget = tester.widget<GameClock>(
+          find.byKey(FreeBoardKeys.clock(side)),
+        );
+        expect(clockWidget.running, isFalse, reason: '$side');
+      }
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('a máquina responde e o jogador não move as peças dela', (

@@ -344,21 +344,23 @@ class TeacherSpeech extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // A velocidade da voz: cada toque passa para a próxima.
-                TextButton(
-                  key: VoiceKeys.speedButton,
-                  style: TextButton.styleFrom(
-                    visualDensity: lessonV2
-                        ? VisualDensity.standard
-                        : VisualDensity.compact,
-                    minimumSize: Size(48, lessonV2 ? 48 : 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
+                if (soundEnabled && state.settings.enabled)
+                  TextButton(
+                    key: VoiceKeys.speedButton,
+                    style: TextButton.styleFrom(
+                      visualDensity: lessonV2
+                          ? VisualDensity.standard
+                          : VisualDensity.compact,
+                      minimumSize: Size(48, lessonV2 ? 48 : 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    onPressed: soundEnabled ? speech.nextSpeed : null,
+                    child: Tooltip(
+                      message: l10n.voiceSpeed,
+                      child: Text(l10n.voiceSpeedValue(state.settings.speed)),
+                    ),
                   ),
-                  onPressed: soundEnabled ? speech.nextSpeed : null,
-                  child: Tooltip(
-                    message: l10n.voiceSpeed,
-                    child: Text(l10n.voiceSpeedValue(state.settings.speed)),
-                  ),
-                ),
                 // Onde ele fala sozinho, um botão só: ligado, um toque cala
                 // a voz dele (a escolha fica gravada); desligado, liga e já
                 // fala. Nos outros balões, ouvir e parar.

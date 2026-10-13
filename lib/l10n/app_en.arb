@@ -573,6 +573,10 @@
     "description": "Title of the panel that asks to confirm resigning."
   },
   "gameResigned": "Resignation",
+  "gameSeeResult": "See the result",
+  "@gameSeeResult": {
+    "description": "Button under the board when the game against the machine is over; opens the result screen."
+  },
   "@gameResigned": {
     "description": "Reason the game ended: the player resigned."
   },

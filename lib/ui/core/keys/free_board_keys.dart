@@ -6,6 +6,7 @@ import '../../../domain/models/character.dart';
 abstract final class FreeBoardKeys {
   /// O resultado em destaque, antes da conclusão.
   static const endFlash = Key('freeBoard.endFlash');
+  static const seeResultButton = Key('freeBoard.seeResultButton');
   static const screen = Key('freeBoard.screen');
   static const board = Key('freeBoard.board');
   static const actionsBar = Key('freeBoard.actions');
