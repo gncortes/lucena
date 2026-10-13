@@ -152,18 +152,22 @@ class _HistoryTabs extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 6),
+                                    // Sem corte com a fonte grande: o rótulo
+                                    // encolhe para caber (contrato §9).
                                     Flexible(
-                                      child: Text(
-                                        label,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.labelLarge
-                                            ?.copyWith(
-                                              color: color,
-                                              fontWeight: selected
-                                                  ? FontWeight.w700
-                                                  : FontWeight.w500,
-                                            ),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          label,
+                                          maxLines: 1,
+                                          style: theme.textTheme.labelLarge
+                                              ?.copyWith(
+                                                color: color,
+                                                fontWeight: selected
+                                                    ? FontWeight.w700
+                                                    : FontWeight.w500,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                   ],

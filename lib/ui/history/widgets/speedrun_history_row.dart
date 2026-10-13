@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/speedrun_history_rows.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
@@ -86,8 +87,18 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    speedrunName(l10n, characters, speedrun),
-                    maxLines: 2,
+                    // Na aba Maratona o "Maratona:" do nome se repete: só o
+                    // final, como no canvas.
+                    speedrun.kind == SpeedrunKind.marathon
+                        ? endgameName(
+                            l10n,
+                            speedrun.stages.first.position.subcategory,
+                          )
+                        : speedrunName(l10n, characters, speedrun),
+                    // Duas linhas só com a fonte grande (contrato §4).
+                    maxLines: MediaQuery.textScalerOf(context).scale(1) > 1.3
+                        ? 2
+                        : 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
