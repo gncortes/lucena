@@ -1301,28 +1301,10 @@ class _LessonScreenState extends State<LessonScreen>
   /// faixa fina no fim esmaece até a cor do fundo, para ela não terminar
   /// cortada seco e dar para ver que continua (rolando, o fim dela sobe
   /// acima dos botões).
-  Widget _footer(BuildContext context, {required Widget child}) {
-    final background = Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      key: LessonKeys.footer,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            background.withValues(alpha: 0),
-            background.withValues(alpha: 0),
-            background,
-          ],
-          stops: const [0, 0.7, 1],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: child,
-      ),
-    );
-  }
+  Widget _footer(BuildContext context, {required Widget child}) => KeyedSubtree(
+    key: LessonKeys.footer,
+    child: LessonFooterSurface(child: child),
+  );
 
   /// Dentro de uma variante: o "Voltar" do rodapé (TextButton centrado,
   /// CompRodapeLicao `voltar-posicao`) sobe uma variante, ou sai dela se já
@@ -1331,34 +1313,20 @@ class _LessonScreenState extends State<LessonScreen>
   Widget _variationFooter(BuildContext context, LessonState state) {
     final cursor = _authoredVariation!;
     final payload = state.explanation;
-    final background = Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      key: LessonKeys.footer,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [background.withValues(alpha: 0), background, background],
-          // Canvas: 24 dp de esmaecer acima do botão.
-          stops: const [0, 0.3, 1],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: Align(
-          alignment: Alignment.center,
-          heightFactor: 1,
-          child: TextButton.icon(
-            key: ExplanationKeys.restore,
-            style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-            onPressed: () => _showAuthoredVariation(
-              cursor.variation.parentId == null
-                  ? null
-                  : payload?.parentCursor(cursor.variation),
-            ),
-            icon: const Icon(Icons.undo),
-            label: Text(context.l10n.lessonReturn),
+    return _footer(
+      context,
+      child: Align(
+        heightFactor: 1,
+        child: TextButton.icon(
+          key: ExplanationKeys.restore,
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => _showAuthoredVariation(
+            cursor.variation.parentId == null
+                ? null
+                : payload?.parentCursor(cursor.variation),
           ),
+          icon: const Icon(Icons.undo),
+          label: Text(context.l10n.lessonReturn),
         ),
       ),
     );

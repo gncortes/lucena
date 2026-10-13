@@ -33,6 +33,9 @@ abstract final class LessonKeys {
   static const stepTimer = Key('lesson.step.timer');
   static const footer = Key('lesson.footer');
 
+  /// O esmaecer de 24 dp no topo do rodapé (fundo sólido abaixo dele).
+  static const footerFade = Key('lesson.footer.fade');
+
   /// O convite para jogar no Lichess e o botão que abre o site.
   static const lichessInvite = Key('lesson.lichessInvite');
   static const lichessButton = Key('lesson.lichessButton');

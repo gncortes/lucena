@@ -181,4 +181,50 @@ void main() {
     final right = tester.getTopRight(find.byKey(LessonKeys.nextButton)).dx;
     expect(right, closeTo(360 - 16, 1));
   });
+
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+    testWidgets('$size: scrolled to the end, the speech sits above the footer '
+        'fade and a solid surface is behind the buttons', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final cubit = await open(1);
+      await show(tester, cubit, size);
+      await tester.runAsync(() => cubit.play(move('a1a5')));
+      await tester.pumpAndSettle();
+      expect(cubit.state.wrongMove, isTrue);
+      final scroll = find.byKey(LessonKeys.scroll);
+      await tester.fling(scroll, const Offset(0, -3000), 3000);
+      await tester.pumpAndSettle();
+      final fade = find.byKey(LessonKeys.footerFade);
+      expect(fade, findsOneWidget);
+      final fadeRect = tester.getRect(fade);
+      expect(fadeRect.height, closeTo(24, 1));
+      final invite = tester.getRect(find.byKey(LessonV2Keys.freeBoardInvite));
+      expect(invite.bottom, lessThanOrEqualTo(fadeRect.top + 1));
+      // Solid surface below the fade, covering both buttons.
+      final footer = tester.getRect(find.byKey(LessonKeys.footer));
+      expect(fadeRect.top, closeTo(footer.top, 1));
+      final solid = find.descendant(
+        of: find.byKey(LessonKeys.footer),
+        matching: find.byType(ColoredBox),
+      );
+      expect(solid, findsWidgets);
+      final solidRect = tester.getRect(solid.first);
+      var buttons = 0;
+      for (final key in [
+        LessonKeys.backButton,
+        LessonKeys.hintButton,
+        LessonKeys.nextButton,
+      ]) {
+        if (find.byKey(key).evaluate().isEmpty) continue;
+        buttons++;
+        final r = tester.getRect(find.byKey(key));
+        expect(solidRect.top, lessThanOrEqualTo(r.top));
+        expect(solidRect.bottom, greaterThanOrEqualTo(r.bottom));
+        expect(r.top, greaterThanOrEqualTo(fadeRect.bottom - 1));
+      }
+      expect(buttons, greaterThan(0));
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

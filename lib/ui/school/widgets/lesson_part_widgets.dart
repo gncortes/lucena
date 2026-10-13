@@ -246,32 +246,20 @@ class _ControlBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [background.withValues(alpha: 0), background],
-          stops: const [0, 0.5],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (wrong)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: WrongLineBadge(key: LessonKeys.wrongLineControls),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: children,
+    return LessonFooterSurface(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (wrong)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: WrongLineBadge(key: LessonKeys.wrongLineControls),
             ),
-          ],
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: children,
+          ),
+        ],
       ),
     );
   }
@@ -472,6 +460,50 @@ class PartFinished extends StatelessWidget {
           ],
         ),
         if (!motion.disabled) const Celebration(),
+      ],
+    );
+  }
+}
+
+/// O fundo do rodapé da lição (CompRodapeLicao): 24 dp de esmaecer até a cor
+/// da tela e, abaixo, fundo sólido, para o texto que rola não aparecer por
+/// entre os botões. A fala termina acima do esmaecer (o rodapé inteiro, com
+/// ele, entra na altura reservada).
+class LessonFooterSurface extends StatelessWidget {
+  const LessonFooterSurface({required this.child, super.key});
+
+  final Widget child;
+
+  /// Altura do esmaecer (canvas: 24 dp acima dos botões).
+  static const fadeHeight = 24.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: fadeHeight,
+          child: DecoratedBox(
+            key: LessonKeys.footerFade,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [background.withValues(alpha: 0), background],
+              ),
+            ),
+            child: const SizedBox.expand(),
+          ),
+        ),
+        ColoredBox(
+          color: background,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: child,
+          ),
+        ),
       ],
     );
   }

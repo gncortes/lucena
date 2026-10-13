@@ -382,12 +382,14 @@ void main() {
         tester.getCenter(find.byKey(ExplanationKeys.restore)).dx,
         closeTo(width / 2, 1),
       );
-      final footer = tester.widget<DecoratedBox>(find.byKey(LessonKeys.footer));
+      final fade = tester.widget<DecoratedBox>(
+        find.byKey(LessonKeys.footerFade),
+      );
       final gradient =
-          (footer.decoration as BoxDecoration).gradient! as LinearGradient;
+          (fade.decoration as BoxDecoration).gradient! as LinearGradient;
       expect(gradient.colors.first.a, 0);
       expect(gradient.colors.last.a, 1);
-      expect(gradient.colors[1].a, 1);
+      expect(tester.getSize(find.byKey(LessonKeys.footerFade)).height, 24);
       await activate(ExplanationKeys.restore);
       expect(fen(tester), payload.parentCursor(child)!.fen);
       expect(fen(tester), origin);
