@@ -202,6 +202,12 @@ void main() {
           kind: ExplanationKind.failedAlternatives,
           texts: ['Others fail.'],
         ),
+        ExplanationBlock(
+          id: 'history',
+          kind: ExplanationKind.context,
+          title: 'Norway Chess',
+          texts: ['In Stavanger, 2017.'],
+        ),
       ],
     );
 
@@ -220,7 +226,8 @@ void main() {
         correctMoveTitle: 'Correct',
         solutionSeen: true,
       );
-      expect(ids(seen), ['main', 'played', 'failed']);
+      // A citação de contexto só fica na Solução vista (§4).
+      expect(ids(seen), ['main', 'played', 'failed', 'history']);
       expect(seen.explanations.first.title, 'Correct');
     });
   });

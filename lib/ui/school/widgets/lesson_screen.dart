@@ -1975,7 +1975,9 @@ ExplanationPayload wrongMoveSheetPayload(
             texts: b.texts,
             variations: b.variations,
           )
-        else if (!(b.kind == ExplanationKind.context && b.title.isNotEmpty))
+        // A citação de contexto só fica na Solução vista (LICOES-V2 §4).
+        else if (solutionSeen ||
+            !(b.kind == ExplanationKind.context && b.title.isNotEmpty))
           b,
     ]),
   );
