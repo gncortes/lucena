@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Masing-masing sudah punya suara. Ketuk salah satu untuk menggantinya.",
   "tourKeepVoices": "Biarkan saja",
   "lessonPrevious": "Langkah sebelumnya",
+  "lessonFooterBack": "Kembali",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Buka setelan suara perangkat",
   "blindTitle": "Tanpa melihat",

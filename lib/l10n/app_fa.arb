@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "هرکدام از قبل صدایی دارند. برای تغییر، یکی را لمس کنید.",
   "tourKeepVoices": "همین بماند",
   "lessonPrevious": "مرحلهٔ قبلی",
+  "lessonFooterBack": "بازگشت",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "باز کردن تنظیمات صدای دستگاه",
   "blindTitle": "چشم‌بسته",

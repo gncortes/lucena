@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "每个人都已有声音。点按某人即可更换。",
   "tourKeepVoices": "保持不变",
   "lessonPrevious": "上一步",
+  "lessonFooterBack": "返回",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "打开设备语音设置",
   "blindTitle": "盲棋",

@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Iedereen heeft al een stem. Tik op iemand om die te wijzigen.",
   "tourKeepVoices": "Zo laten",
   "lessonPrevious": "Vorige stap",
+  "lessonFooterBack": "Terug",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Spraakinstellingen van het apparaat openen",
   "blindTitle": "Blind",

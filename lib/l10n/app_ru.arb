@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "У каждого уже есть голос. Нажмите на соперника, чтобы сменить его.",
   "tourKeepVoices": "Оставить так",
   "lessonPrevious": "Предыдущий шаг",
+  "lessonFooterBack": "Назад",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Открыть настройки голоса устройства",
   "blindTitle": "Вслепую",

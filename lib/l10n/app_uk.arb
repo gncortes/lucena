@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "У кожного вже є голос. Торкніться суперника, щоб змінити його.",
   "tourKeepVoices": "Залишити так",
   "lessonPrevious": "Попередній крок",
+  "lessonFooterBack": "Назад",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Відкрити налаштування голосу пристрою",
   "blindTitle": "Наосліп",

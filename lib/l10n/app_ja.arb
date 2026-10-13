@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "それぞれすでに声があります。変えたい相手をタップしてください。",
   "tourKeepVoices": "このままにする",
   "lessonPrevious": "前のステップ",
+  "lessonFooterBack": "戻る",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "端末の音声設定を開く",
   "blindTitle": "目隠し",
