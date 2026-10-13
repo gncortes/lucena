@@ -228,8 +228,9 @@ class VariationControls extends StatelessWidget {
 }
 
 /// O trecho do Viktor no modo variante: a linha com o lance da vez em
-/// destaque e o texto daquele ponto (até 2 linhas), sem card, entre o
-/// tabuleiro e os controles.
+/// destaque e o texto daquele ponto inteiro, sem card, entre o tabuleiro e
+/// os controles. Ocupa a altura que a tela der; se o texto não couber, rola
+/// dentro dela e os controles ficam fixos.
 class VariationStrip extends StatelessWidget {
   const VariationStrip({
     required this.moves,
@@ -266,46 +267,44 @@ class VariationStrip extends StatelessWidget {
     final text = withoutLeadingMove(this.text);
     return Semantics(
       container: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text.rich(
-            key: LessonKeys.variationStripCurrent,
-            TextSpan(
-              children: [
-                for (final (index, move) in moves.indexed) ...[
-                  if (index > 0) const TextSpan(text: ' '),
-                  TextSpan(
-                    // Notação isolada da direção do texto (RTL); o leitor de
-                    // tela lê o lance sem os caracteres de isolamento.
-                    // O número das pretas só abre a linha ("1...Re6"); no
-                    // meio dela vale a notação da fala ("1.Rf4 Re6").
-                    text: '\u2066${_shown(index, move)}\u2069',
-                    semanticsLabel: _shown(index, move),
-                    style: index + 1 == current
-                        ? TextStyle(
-                            color: colors.primary,
-                            fontWeight: FontWeight.w600,
-                            backgroundColor: colors.primaryContainer,
-                          )
-                        : const TextStyle(fontWeight: FontWeight.w500),
-                  ),
+      child: SingleChildScrollView(
+        key: LessonKeys.variationStripScroll,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text.rich(
+              key: LessonKeys.variationStripCurrent,
+              TextSpan(
+                children: [
+                  for (final (index, move) in moves.indexed) ...[
+                    if (index > 0) const TextSpan(text: ' '),
+                    TextSpan(
+                      // Notação isolada da direção do texto (RTL); o leitor de
+                      // tela lê o lance sem os caracteres de isolamento.
+                      // O número das pretas só abre a linha ("1...Re6"); no
+                      // meio dela vale a notação da fala ("1.Rf4 Re6").
+                      text: '\u2066${_shown(index, move)}\u2069',
+                      semanticsLabel: _shown(index, move),
+                      style: index + 1 == current
+                          ? TextStyle(
+                              color: colors.primary,
+                              fontWeight: FontWeight.w600,
+                              backgroundColor: colors.primaryContainer,
+                            )
+                          : const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-            style: body.copyWith(color: colors.onSurface),
-          ),
-          if (text.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              ),
               style: body.copyWith(color: colors.onSurface),
             ),
+            if (text.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(text, style: body.copyWith(color: colors.onSurface)),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

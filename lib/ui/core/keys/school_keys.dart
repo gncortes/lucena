@@ -83,6 +83,7 @@ abstract final class LessonKeys {
   static const demoForward = Key('lesson.demo.forward');
   static const demoRing = Key('lesson.demo.ring');
   static const variationStrip = Key('lesson.variation.strip');
+  static const variationStripScroll = Key('lesson.variation.strip.scroll');
   static const variationStripCurrent = Key('lesson.variation.strip.current');
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');

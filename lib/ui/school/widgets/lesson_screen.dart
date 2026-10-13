@@ -1078,19 +1078,22 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           ),
           // A faixa da variante: os lances, o da vez em destaque, e o texto.
-          PositionedDirectional(
-            // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 dos lados.
-            top: rect.bottom + AppSpacing.lg,
-            start: AppSpacing.lg,
-            end: AppSpacing.lg,
-            child: ListenableBuilder(
-              listenable: Listenable.merge([_variation, _stage]),
-              builder: (context, _) {
-                final line = _variation.value;
-                final strip = _stage.value >= 2
-                    ? _stripOf(context, state, line)
-                    : null;
-                return AnimatedOpacity(
+          ListenableBuilder(
+            listenable: Listenable.merge([_variation, _stage, _footerHeight]),
+            builder: (context, _) {
+              final line = _variation.value;
+              final strip = _stage.value >= 2
+                  ? _stripOf(context, state, line)
+                  : null;
+              // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 dos lados,
+              // até o topo dos controles: o texto inteiro, rolando se não
+              // couber.
+              return PositionedDirectional(
+                top: rect.bottom + AppSpacing.lg,
+                start: AppSpacing.lg,
+                end: AppSpacing.lg,
+                bottom: _footerHeight.value,
+                child: AnimatedOpacity(
                   opacity: strip == null ? 0 : 1,
                   duration: AppMotion.of(context).state,
                   child: IgnorePointer(
@@ -1104,9 +1107,9 @@ class _LessonScreenState extends State<LessonScreen>
                             text: strip.text,
                           ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       );
