@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
@@ -162,6 +163,41 @@ void main() {
       expect(cubit.state.loaded, isTrue);
       expect(cubit.state.speedrun, isNull);
     });
+  });
+
+  // Até a T67f, a aba Maratona também abre este histórico (T67c).
+  testWidgets('a Maratona abre o histórico dela', (tester) async {
+    final marathon = SpeedrunHistoryCubit(
+      journey: FakeJourneyRepository(
+        speedruns: [...sampleSpeedruns, sampleMarathon],
+      ),
+      speedruns: speedruns,
+      rating: rating,
+      now: now,
+      characters: FakeCharacterRepository(),
+    );
+    addTearDown(marathon.close);
+    await tester.runAsync(() async {
+      now.value = DateTime(2026, 9, 10, 9);
+      final attempt = (await speedruns.start(sampleMarathon.id, now())).id;
+      for (var stage = 0; stage < sampleMarathon.stages.length; stage++) {
+        await game(attempt, stage);
+      }
+      await marathon.load(sampleMarathon.id);
+    });
+    expect(marathon.state.speedrun?.kind, SpeedrunKind.marathon);
+    expect(marathon.state.runs.single.end, SpeedrunRunEnd.completed);
+    await tester.pumpWidget(
+      TestApp(
+        child: BlocProvider.value(
+          value: marathon,
+          child: const SpeedrunHistoryScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(SpeedrunKeys.historyRun(0)), findsOneWidget);
   });
 
   group('a tela', () {
