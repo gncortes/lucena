@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
@@ -47,7 +48,7 @@ class GameDetailsScreen extends StatelessWidget {
     final attempt = state.attempt;
     return Scaffold(
       key: GameDetailsKeys.screen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         leading: ContainerNavigation.canClose(context)
             ? BackButton(onPressed: () => ContainerNavigation.close(context))
             : null,

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -244,7 +245,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           return Scaffold(
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
-            appBar: AppBar(
+            appBar: LucenaAppBar(
               title: lesson == null
                   ? null
                   : Text(

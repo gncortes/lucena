@@ -118,7 +118,10 @@ void main() {
     await lesson.retry();
     expect(lesson.state.phase, StepPhase.active);
     expect(lesson.state.reviewStep, isNull);
-    expect(lesson.state.speech, 'Again.');
+    // T65 §4: o passo recomeça como na abertura (a fala de abertura, não a
+    // do "de novo"); o erro já contado fica.
+    expect(lesson.state.speech, 'Mate in one.');
+    expect(lesson.state.mistakes, 1);
     await lesson.play(move('a1a8'));
     expect(lesson.state.phase, StepPhase.done);
   });
@@ -263,51 +266,6 @@ void main() {
       addTearDown(result.close);
       return result;
     }
-
-    test('later MoveStep error reviews and resumes exact turn after cold reload', () async {
-      final feedback = _ReviewFeedback();
-      final progress = FakeSchoolProgressRepository();
-      var cubit = build(line, feedback, progress);
-      await cubit.load('review', 'en');
-      await cubit.next();
-      await cubit.play(move('e2e4'));
-      final origin = cubit.state.fen;
-      feedback.origin = origin;
-      feedback.turn = 2;
-      await cubit.play(move('a2a3'));
-      expect(cubit.state.phase, StepPhase.failed);
-      expect(cubit.state.reviewStep, 'intro');
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.turn, 1);
-      expect(cubit.state.mistakes, 1);
-      await cubit.reviewPoint();
-      final storedProgress = await progress.load();
-      final saved = storedProgress.ongoing;
-      final roundTrip = LessonCheckpoint.fromJson(saved!.toJson())!;
-      expect(roundTrip.reviewReturn?.fen, origin);
-      expect(
-        roundTrip.copyWith(open: false).reviewReturn,
-        saved.reviewReturn,
-        reason:
-            '${roundTrip.reviewReturn?.toJson()} != ${saved.reviewReturn?.toJson()}',
-      );
-      await progress.save(storedProgress.copyWith(ongoing: roundTrip));
-      cubit = build(line, feedback, progress);
-      await cubit.load('review', 'en');
-      expect(cubit.state.current?.id, 'intro');
-      await cubit.next();
-      expect(cubit.state.current?.id, 'line');
-      expect(cubit.state.turn, 1);
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.mistakes, 1);
-      await cubit.play(move('a2a3'));
-      await cubit.retry();
-      expect(cubit.state.phase, StepPhase.active);
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.turn, 1);
-      await cubit.play(move('g1f3'));
-      expect(cubit.state.phase, StepPhase.done);
-    });
 
     for (final target in <String?>[null, 'missing', 'line', 'later']) {
       test(

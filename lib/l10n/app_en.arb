@@ -1131,7 +1131,7 @@
       }
     }
   },
-  "profileRatingHint": "It changes after every game against the Maia or Stockfish, taking into account how hard the position was. It measures endgames against the Maia: it is not comparable to Lichess or chess.com ratings.",
+  "profileRatingHint": "It changes after every game against the Maia or Stockfish outside a speedrun, taking into account how hard the position was, and when you finish a speedrun for the first time at a pace. It measures endgames against the Maia: it is not comparable to Lichess or chess.com ratings.",
   "@profileRatingHint": {
     "description": "Explanation under the player rating."
   },
@@ -1441,10 +1441,6 @@
   "@speedrunAbandonQuestion": {
     "description": "Confirmation before abandoning a speedrun attempt."
   },
-  "speedrunAbandoned": "Attempt abandoned: no record",
-  "@speedrunAbandoned": {
-    "description": "Shown on an attempt the player gave up."
-  },
   "speedrunBest": "Your best time",
   "@speedrunBest": {
     "description": "Label of the best total time of a speedrun."
@@ -1489,10 +1485,6 @@
   "@speedrunFullTitle": {
     "description": "Name of the speedrun that plays every Journey challenge, from Maia 1000 to Stockfish."
   },
-  "speedrunHistory": "Times",
-  "@speedrunHistory": {
-    "description": "Header of the list of completed attempts, grouped by month."
-  },
   "speedrunIntro": "Play every stage as fast as you can. Only your clock counts; a lost stage is played again with the timer running.",
   "@speedrunIntro": {
     "description": "Explanation at the top of the speedrun list."
@@ -1501,16 +1493,7 @@
   "@speedrunKeepGoing": {
     "description": "Cancels giving up the attempt."
   },
-  "speedrunLosses": "{count, plural, =0{No losses} =1{1 loss} other{{count} losses}}",
-  "@speedrunLosses": {
-    "description": "How many games were lost in a stage or attempt.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "speedrunNewRecord": "New personal record!",
+  "speedrunNewRecord": "New personal record",
   "@speedrunNewRecord": {
     "description": "Shown at the end of an attempt that beat the previous best time."
   },
@@ -1602,17 +1585,9 @@
   "@speedrunTotal": {
     "description": "Label of the total time of an attempt."
   },
-  "speedrunVersusRecord": "{difference} s vs. record {record}",
-  "@speedrunVersusRecord": {
-    "description": "Difference to the previous record at the end of an attempt, e.g. '+3.2 s vs. record 4:05.3'.",
-    "placeholders": {
-      "difference": {
-        "type": "String"
-      },
-      "record": {
-        "type": "String"
-      }
-    }
+  "speedrunTotalTime": "Total time",
+  "@speedrunTotalTime": {
+    "description": "Label of the total time of an attempt that is not the record."
   },
   "teacherName": "Master {name}",
   "@teacherName": {
@@ -1688,7 +1663,7 @@
   "@tourOpponentsTitle": {
     "description": "Tour step title."
   },
-  "tourRatingBody": "Every game against the Maia or Stockfish moves your endgame rating, taking into account how good the starting position was.",
+  "tourRatingBody": "Every game against the Maia or Stockfish moves your endgame rating. In a speedrun, the rating comes all at once, when you finish.",
   "@tourRatingBody": {
     "description": "Tour step text."
   },
@@ -1708,7 +1683,7 @@
   "@tourSkip": {
     "description": "Button that skips the first-run tour."
   },
-  "tourSpeedrunBody": "Play a sequence of stages as fast as you can. Only your clock counts and you can pause between stages.",
+  "tourSpeedrunBody": "Win the stages as fast as you can. The first time you finish a speedrun you earn rating, and the faster the pace, the more.",
   "@tourSpeedrunBody": {
     "description": "Tour step text."
   },
@@ -1888,10 +1863,6 @@
         "type": "int"
       }
     }
-  },
-  "speedrunNow": "Up next",
-  "@speedrunNow": {
-    "description": "Title of the current stage card in a speedrun attempt."
   },
   "paceTitle": "Choose the time control",
   "@paceTitle": {
@@ -2969,6 +2940,10 @@
   "@lessonPrevious": {
     "description": "Lesson: button (tooltip) that goes back to the previous step to review it"
   },
+  "lessonFooterBack": "Back",
+  "@lessonFooterBack": {
+    "description": "Lesson: label of the footer button that goes back to the previous step (outlined, next to Continue)"
+  },
   "voiceSpeedValue": "{speed}×",
   "@voiceSpeedValue": {
     "description": "Voice speed on the speech bubble button, e.g. 1.2×",
@@ -3421,6 +3396,52 @@
   "@marathonLeft": {
     "description": "Label of the time left in the bank at the end of a Marathon attempt."
   },
+  "marathonLeftValue": "Time left: {time}",
+  "@marathonLeftValue": {
+    "description": "Line of the Marathon end card: the time left in the bank when the attempt ended (label and value in one string).",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "1:52.8"
+      }
+    }
+  },
+  "marathonBestValue": "Most time left: {time}",
+  "@marathonBestValue": {
+    "description": "Screen-reader label of the Marathon record: the most time left in the bank (label and value in one string).",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "1:52.8"
+      }
+    }
+  },
+  "speedrunStageTimeValue": "Stage {stage} of {total}: {time}",
+  "@speedrunStageTimeValue": {
+    "description": "Screen-reader label of the time of one stage in a speedrun summary (stage, total and time in one string).",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String",
+        "example": "0:41.0"
+      }
+    }
+  },
+  "marathonDayLeft": "{when} · left",
+  "@marathonDayLeft": {
+    "description": "Date of a completed Marathon attempt in the Marathon history, followed by 'left' because the time shown is the time left in the bank.",
+    "placeholders": {
+      "when": {
+        "type": "String",
+        "example": "Today, 22:31"
+      }
+    }
+  },
   "speedrunModeClassic": "Classic",
   "@speedrunModeClassic": {
     "description": "Speedrun mode selector: each game has its own clock (as opposed to the Marathon, one clock for the whole run)."
@@ -3813,9 +3834,30 @@
   "@lessonVariationShow": {
     "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
   },
-  "lessonVariationExit": "Back to the lesson position",
-  "@lessonVariationExit": {
-    "description": "Lesson footer button (tooltip): leave the cited line and show the lesson step position again."
+    "lessonVariationClose": "Close the line and return to the explanation",
+  "@lessonVariationClose": {
+    "description": "Tooltip of the X in the line mode footer: leave the cited line and show the explanation panel again."
+  },
+  "lessonVariationPrevious": "Previous move in the line",
+  "@lessonVariationPrevious": {
+    "description": "Tooltip: go back one move in the cited line."
+  },
+  "lessonVariationNext": "Next move in the line",
+  "@lessonVariationNext": {
+    "description": "Tooltip: go forward one move in the cited line."
+  },
+  "lessonPresentationClose": "Close and see the board",
+  "@lessonPresentationClose": {
+    "description": "Tooltip and label of the X that closes the step presentation sheet and shows the board."
+  },
+  "lessonVariationAlternative": "Alternative to {move}",
+  "@lessonVariationAlternative": {
+    "description": "Screen reader label of a side line in the variation strip; {move} is the main-line move it replaces.",
+    "placeholders": {"move": {"type": "String"}}
+  },
+  "lessonLineResultDraw": "draw",
+  "@lessonLineResultDraw": {
+    "description": "Screen reader reading of the = symbol that closes a side line in the variation strip."
   },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
@@ -3887,9 +3929,9 @@
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
-  "endgameResumePart": "Resume chapter {part}",
-  "@endgameResumePart": {
-    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
+  "endgameRestartPart": "Restart chapter {part}",
+  "@endgameRestartPart": {
+    "description": "Fixed bottom button on the endgame lesson screen: restart the part the student left in the middle (closing the app reopens it at its first step).",
     "placeholders": {
       "part": {
         "type": "int"
@@ -5334,6 +5376,8 @@
   "explanationLosing": "Loses",
   "explanationDoesNotMeetGoal": "Does not meet the goal",
   "explanationUnavailable": "This line is unavailable.",
+  "explanationExpand": "Show the replies",
+  "explanationCollapse": "Hide the replies",
   "explanationFirst": "Start of line",
   "explanationPrevious": "Previous move",
   "explanationParent": "Return to parent variation",
@@ -5351,6 +5395,8 @@
   "@explanationLosing": {"description": "Explanation panel: Losing"},
   "@explanationDoesNotMeetGoal": {"description": "Explanation panel: DoesNotMeetGoal"},
   "@explanationUnavailable": {"description": "Explanation panel: Unavailable"},
+  "@explanationExpand": {"description": "Explanation card: accessibility label of the chevron that shows the replies"},
+  "@explanationCollapse": {"description": "Explanation card: accessibility label of the chevron that hides the replies"},
   "@explanationFirst": {"description": "Explanation panel: First"},
   "@explanationPrevious": {"description": "Explanation panel: Previous"},
   "@explanationNext": {"description": "Explanation panel: Next"},
@@ -5426,8 +5472,6 @@
   "@lessonFreeBoardInvite": {
     "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
-  "lessonReturn": "Back",
-  "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},
   "lessonTeacherVoice": "Viktor's voice",
   "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
   "lessonTeacherVoiceHint": "Read the explanations aloud",
@@ -5451,5 +5495,574 @@
   },
   "@gameSoundLabelOff": {
     "description": "Label under the sound button of the game actions bar while the sound is off."
-  }
+  },
+  "speedrunRatingBonusOffer": "Finish it to earn +{points} rating",
+  "@speedrunRatingBonusOffer": {
+    "description": "Speedrun detail: rating bonus offered for the first completion at this pace.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRatingBonusOfferHint": "Only the first time at {pace}. Shorter paces are worth more.",
+  "@speedrunRatingBonusOfferHint": {
+    "description": "Speedrun detail: hint below the rating offer. pace is the pace name (e.g. Blitz).",
+    "placeholders": {
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunRatingAlreadyEarned": "You already earned the {ending} rating at {pace}: +{points}, on {date}.",
+  "@speedrunRatingAlreadyEarned": {
+    "description": "Speedrun detail: the bonus of this endgame and pace was already earned.",
+    "placeholders": {
+      "ending": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunRatingBonusAtFinish": "+{points} rating on finishing",
+  "@speedrunRatingBonusAtFinish": {
+    "description": "Speedrun or marathon: bonus earned when the attempt is finished.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRatingBonusFirst": "+{points} rating on the first completion",
+  "@speedrunRatingBonusFirst": {
+    "description": "History: rating bonus earned by the first completion.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRatingBonusShort": "+{points} rating",
+  "@speedrunRatingBonusShort": {
+    "description": "History row: short rating bonus.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunNotFinishedYet": "You haven't finished this speedrun yet",
+  "@speedrunNotFinishedYet": {
+    "description": "Speedrun detail: no completed attempt yet."
+  },
+  "speedrunBestReached": "Your best attempt reached stage {stage} of {total}, against {opponent}.",
+  "@speedrunBestReached": {
+    "description": "Speedrun or marathon detail: furthest stage reached without finishing.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunBestAttempt": "Best attempt: stage {stage} of {total}",
+  "@speedrunBestAttempt": {
+    "description": "Speedrun detail: furthest stage of the best attempt.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunBestShort": "Best: stage {stage} of {total}",
+  "@speedrunBestShort": {
+    "description": "History row: furthest stage of the best attempt.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunSeeHistory": "See history",
+  "@speedrunSeeHistory": {
+    "description": "Speedrun detail: button that opens the history."
+  },
+  "speedrunYourRecord": "Your record",
+  "@speedrunYourRecord": {
+    "description": "Speedrun detail and history: personal record label."
+  },
+  "speedrunRecordAt": "On {date}, at {time}",
+  "@speedrunRecordAt": {
+    "description": "Speedrun record: day and time it was set.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "historyDayPattern": "MMM d",
+  "@historyDayPattern": {
+    "description": "DateFormat pattern for the day inside historyDayAt. Translate as a date pattern, not as text."
+  },
+  "historyDayAt": "{date}, {time}",
+  "@historyDayAt": {
+    "description": "History: day (formatted with historyDayPattern) and time of an attempt.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunTimeUntilAbandon": "Time until giving up: {time}",
+  "@speedrunTimeUntilAbandon": {
+    "description": "Abandoned attempt: sum of the stage clocks until giving up.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunLostHero": "Lost at stage {stage} of {total}",
+  "@speedrunLostHero": {
+    "description": "Attempt summary title: lost at a stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunAbandonedHero": "Gave up at stage {stage} of {total}",
+  "@speedrunAbandonedHero": {
+    "description": "Attempt summary title: gave up at a stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunRatingBonusEarned": "+{points} rating ({before} → {after})",
+  "@speedrunRatingBonusEarned": {
+    "description": "Attempt summary: rating bonus earned and the rating before and after.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "before": {
+        "type": "int"
+      },
+      "after": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunAbandonedHere": "gave up here",
+  "@speedrunAbandonedHere": {
+    "description": "Attempt summary: note of the stage where the user gave up."
+  },
+  "speedrunStageNote": "Stage {stage} of {total} · {note}",
+  "@speedrunStageNote": {
+    "description": "Attempt summary: stage row with a short note.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunFasterThanRecord": "{seconds} s faster than the previous record",
+  "@speedrunFasterThanRecord": {
+    "description": "Attempt summary: new record; seconds has one decimal place.",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunShortOfRecord": "{seconds} s short of your record",
+  "@speedrunShortOfRecord": {
+    "description": "Attempt summary: finished without beating the record.",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunCompareBefore": "Before",
+  "@speedrunCompareBefore": {
+    "description": "Attempt summary comparison: previous record column."
+  },
+  "speedrunCompareNow": "Now",
+  "@speedrunCompareNow": {
+    "description": "Attempt summary comparison: new record column."
+  },
+  "speedrunCompareRecord": "Record",
+  "@speedrunCompareRecord": {
+    "description": "Attempt summary comparison: current record column."
+  },
+  "speedrunCompareThis": "This one",
+  "@speedrunCompareThis": {
+    "description": "Attempt summary comparison: this attempt column."
+  },
+  "historyTitle": "History",
+  "@historyTitle": {
+    "description": "History screen title."
+  },
+  "historyTabGames": "Games",
+  "@historyTabGames": {
+    "description": "History tab: games."
+  },
+  "historyTabClassic": "Classic",
+  "@historyTabClassic": {
+    "description": "History tab: classic speedruns."
+  },
+  "historyTabMarathon": "Marathon",
+  "@historyTabMarathon": {
+    "description": "History tab: marathons."
+  },
+  "historyFilterPeriod": "Period",
+  "@historyFilterPeriod": {
+    "description": "History filter: period."
+  },
+  "historyFilterResult": "Result",
+  "@historyFilterResult": {
+    "description": "History filter: result."
+  },
+  "historyFilterLevel": "Level",
+  "@historyFilterLevel": {
+    "description": "History filter: level."
+  },
+  "historyFilterPace": "Pace",
+  "@historyFilterPace": {
+    "description": "History filter: pace."
+  },
+  "historyFilters": "Filters",
+  "@historyFilters": {
+    "description": "History: title of the filters sheet."
+  },
+  "historyFiltersClear": "Clear",
+  "@historyFiltersClear": {
+    "description": "History filters sheet: clear button."
+  },
+  "historyFiltersAll": "All filters",
+  "@historyFiltersAll": {
+    "description": "History: label of the filters (tune) button."
+  },
+  "historyFiltersShowSpeedruns": "{count, plural, =0{No speedruns} =1{See 1 speedrun} other{See {count} speedruns}}",
+  "@historyFiltersShowSpeedruns": {
+    "description": "History filters sheet: confirm button with the number of speedruns found.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyFiltersShowMarathons": "{count, plural, =0{No marathons} =1{See 1 marathon} other{See {count} marathons}}",
+  "@historyFiltersShowMarathons": {
+    "description": "History filters sheet: confirm button with the number of marathons found.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyFiltersShowGames": "{count, plural, =0{No games} =1{See 1 game} other{See {count} games}}",
+  "@historyFiltersShowGames": {
+    "description": "History filters sheet: confirm button with the number of games found.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatAttempts": "{count, plural, =1{attempt} other{attempts}}",
+  "@historyStatAttempts": {
+    "description": "History stat label below the number of attempts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatFinishedSpeedruns": "{count, plural, =1{finished} other{finished}}",
+  "@historyStatFinishedSpeedruns": {
+    "description": "History stat label below the number of finished speedruns.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatFinishedMarathons": "{count, plural, =1{finished} other{finished}}",
+  "@historyStatFinishedMarathons": {
+    "description": "History stat label below the number of finished marathons.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatFinishedAttempts": "{count, plural, =1{finished} other{finished}}",
+  "@historyStatFinishedAttempts": {
+    "description": "History stat label below the number of finished attempts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatNewRecords": "{count, plural, =1{new record} other{new records}}",
+  "@historyStatNewRecords": {
+    "description": "History stat label below the number of new records.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatWins": "{count, plural, =1{win} other{wins}}",
+  "@historyStatWins": {
+    "description": "History stat label below the number of wins.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatDraws": "{count, plural, =1{draw} other{draws}}",
+  "@historyStatDraws": {
+    "description": "History stat label below the number of draws.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyStatLosses": "{count, plural, =1{loss} other{losses}}",
+  "@historyStatLosses": {
+    "description": "History stat label below the number of losses.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyGroupSpeedruns": "{level} · {count, plural, =1{1 speedrun} other{{count} speedruns}}",
+  "@historyGroupSpeedruns": {
+    "description": "History: group header with the level and its number of speedruns.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyGroupMarathons": "{level} · {count, plural, =1{1 marathon} other{{count} marathons}}",
+  "@historyGroupMarathons": {
+    "description": "History: group header with the level and its number of marathons.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyAttemptsCount": "{count, plural, =1{1 attempt} other{{count} attempts}}",
+  "@historyAttemptsCount": {
+    "description": "History row: number of attempts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyNewRecord": "New record",
+  "@historyNewRecord": {
+    "description": "History row badge: the attempt set a new record."
+  },
+  "historyEmptySpeedruns": "Finish a speedrun and it shows up here.",
+  "@historyEmptySpeedruns": {
+    "description": "History: empty state of the Classic tab."
+  },
+  "historyEmptyMarathons": "Finish a marathon and it shows up here.",
+  "@historyEmptyMarathons": {
+    "description": "History: empty state of the Marathon tab."
+  },
+  "speedrunDrawnHero": "Drew at stage {stage} of {total}",
+  "@speedrunDrawnHero": {
+    "description": "Attempt summary title: drew at a stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speedrunDrawnHere": "drew here",
+  "@speedrunDrawnHere": {
+    "description": "Attempt summary: note of the stage that was drawn."
+  },
+  "speedrunLostHere": "lost here",
+  "@speedrunLostHere": {
+    "description": "Attempt summary: note of the stage that was lost."
+  },
+  "speedrunOngoingTitle": "Attempt in progress",
+  "@speedrunOngoingTitle": {
+    "description": "Speedrun detail: title of the unfinished attempt card."
+  },
+  "speedrunOngoingStoppedAt": "You stopped at stage {stage} of {total}, against {opponent}.",
+  "@speedrunOngoingStoppedAt": {
+    "description": "Speedrun detail: where the attempt in progress stopped.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunTimeSoFar": "Time so far: {time}",
+  "@speedrunTimeSoFar": {
+    "description": "Attempt in progress: sum of the stage clocks so far.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunTimeUntilLost": "Time until losing: {time}",
+  "@speedrunTimeUntilLost": {
+    "description": "Lost attempt: sum of the stage clocks until losing.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "marathonDrawnHero": "Drew at stage {stage} of {total}",
+  "@marathonDrawnHero": {
+    "description": "Marathon summary title: drew at a stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "marathonTimeoutHero": "Out of time at stage {stage} of {total}",
+  "@marathonTimeoutHero": {
+    "description": "Marathon summary title: the clock ran out at a stage.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "marathonDrawnHere": "drew here",
+  "@marathonDrawnHere": {
+    "description": "Marathon summary: note of the stage that was drawn."
+  },
+  "marathonTimeoutHere": "time ran out here",
+  "@marathonTimeoutHere": {
+    "description": "Marathon summary: note of the stage where the clock ran out."
+  },
+  "marathonNotFinishedYet": "You haven't finished this marathon yet",
+  "@marathonNotFinishedYet": {
+    "description": "Marathon detail: no completed attempt yet."
+  },
+  "historyEmptyFilteredGames": "No games with these filters.",
+  "@historyEmptyFilteredGames": {
+    "description": "History: Games tab empty after filtering."
+  },
+  "historyEmptyFilteredSpeedruns": "No speedruns with these filters.",
+  "@historyEmptyFilteredSpeedruns": {
+    "description": "History: Classic tab empty after filtering."
+  },
+  "speedrunTimeUntilDrawn": "Time until the draw: {time}",
+  "@speedrunTimeUntilDrawn": {
+    "description": "Drawn attempt: sum of the stage clocks until the draw.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunContinueStage": "Continue · stage {stage} of {total}",
+  "@speedrunContinueStage": {
+    "description": "Speedrun detail: button that continues the attempt in progress.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "historyEmptyFilteredMarathons": "No marathons with these filters.",
+  "@historyEmptyFilteredMarathons": {
+    "description": "History: Marathon tab empty after filtering."
+  },
+  "lessonHideNextMoves": "Hide the next moves",
+  "@lessonHideNextMoves": {"description": "Tooltip: cover the moves the student has not seen yet in the variation strip."},
+  "lessonShowAllMoves": "Show all moves",
+  "@lessonShowAllMoves": {"description": "Tooltip: stop covering the moves in the variation strip."},
+  "lessonHiddenMoves": "Hidden moves",
+  "@lessonHiddenMoves": {"description": "Screen reader label of the block that covers the unseen moves."},
+  "lessonRevealNextMove": "reveal the next move",
+  "@lessonRevealNextMove": {"description": "Screen reader hint of the tap on the block that covers the unseen moves."},
+  "lessonVariationEndBranch": "End of the alternative",
+  "@lessonVariationEndBranch": {"description": "Tooltip of the disabled next button at the end of an alternative."},
+  "lessonVariationEndLine": "End of the line",
+  "@lessonVariationEndLine": {"description": "Tooltip of the disabled next button at the end of the main line."}
 }

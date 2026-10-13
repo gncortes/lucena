@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -57,7 +58,7 @@ class ExercisesIntroScreen extends StatelessWidget {
     ];
     return Scaffold(
       key: ExercisesIntroKeys.screen,
-      appBar: AppBar(title: Text(l10n.endgameFinalTest)),
+      appBar: LucenaAppBar(title: Text(l10n.endgameFinalTest)),
       body: SafeArea(
         child: lesson == null
             ? const SizedBox.shrink()

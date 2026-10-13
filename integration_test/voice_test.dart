@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
@@ -61,8 +62,8 @@ void main() {
     await tour.expectStep(TourStep.goal);
   });
 
-  patrolTest('lição: o botão de som liga a voz e fala, e cala de novo; '
-      'ligada, a fala sai sozinha', ($) async {
+  patrolTest('lição: o botão de som abre o som da lição; ligar a voz ali faz '
+      'a fala sair sozinha', ($) async {
     final app = AppRobot($);
     final voice = VoiceRobot($);
     final endgames = EndgamesRobot($);
@@ -71,24 +72,28 @@ void main() {
     await endgames.openLesson('rook.philidor');
     await endgames.openSteps();
 
-    // A voz começa desligada: nada sai sozinho. O botão liga e já fala; de
-    // novo, cala.
+    // A voz começa desligada: nada sai sozinho. No V2 o botão de som abre o
+    // diálogo do som da lição (Canvas V2), onde a voz do Viktor liga.
     expect(voice.spokenCount, 0);
     await voice.tapSpeak();
-    expect(voice.spokenCount, 1);
-    var stops = voice.stops;
-    await voice.tapSpeak();
-    expect(voice.stops, greaterThan(stops));
+    await $(LessonSoundKeys.dialog).waitUntilVisible();
+    expect(voice.spokenCount, 0);
+    await $(LessonSoundKeys.teacherVoice).tap();
+    await $.pumpAndSettle();
+    await $(LessonSoundKeys.close).tap();
+    await $.pumpAndSettle();
 
-    // Sair da lição no meio da fala para a voz.
-    await voice.tapSpeak();
-    stops = voice.stops;
+    // Ligada: o passo seguinte fala sozinho; sair da lição cala.
+    var before = voice.spokenCount;
+    await endgames.nextStep();
+    expect(voice.spokenCount, greaterThan(before));
+    final stops = voice.stops;
     await endgames.back();
     expect(voice.stops, greaterThan(stops));
 
-    // O botão deixou a voz ligada: o passo seguinte fala sozinho.
+    // A escolha persiste: reaberto o app, o passo fala sozinho.
     await app.restart();
-    var before = voice.spokenCount;
+    before = voice.spokenCount;
     await endgames.openFromHome();
     await endgames.openLesson('rook.philidor');
     await endgames.openSteps();

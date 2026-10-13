@@ -1,6 +1,7 @@
 import '../../../domain/models/explanation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +41,7 @@ class EndgameLessonScreen extends StatelessWidget {
         return Scaffold(
           key: EndgameLessonKeys.screen,
           // O número e o título da aula, que pode ser longo, vêm no corpo.
-          appBar: AppBar(
+          appBar: LucenaAppBar(
             actions: [
               if (lesson != null)
                 IconButton(
@@ -589,14 +590,15 @@ class _ContinueBar extends StatelessWidget {
     final VoidCallback onPressed;
     if (part != null) {
       final number = lesson.lesson.sections.indexOf(part) + 1;
-      // A parte começada (passou do primeiro passo) é retomada; sem nada
-      // feito, a aula começa; senão, segue para a próxima parte.
+      // A parte começada (passou do primeiro passo) recomeça do início, como
+      // ao fechar o app; sem nada feito, a aula começa; senão, segue para a
+      // próxima parte.
       final resume =
           state.lessonOngoing &&
           state.ongoingStep > 0 &&
           (lesson.lesson.parts.isEmpty || state.ongoingPart == part.id);
       label = resume
-          ? l10n.endgameResumePart(number)
+          ? l10n.endgameRestartPart(number)
           : state.partsDone.isEmpty
           ? l10n.endgameStartLesson
           : l10n.endgameNextPart(number);

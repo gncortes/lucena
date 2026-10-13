@@ -13,7 +13,7 @@ void main() {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (raw) {
-          // As tabelas da versão 6 que esta migração toca.
+          // As tabelas da versão 6 que as migrações seguintes tocam.
           raw
             ..execute(
               'CREATE TABLE unlocked_achievements (achievement_id TEXT NOT '
@@ -22,6 +22,17 @@ void main() {
             ..execute(
               'INSERT INTO unlocked_achievements (achievement_id, at) '
               "VALUES ('first-fulfilled', 1759880460)",
+            )
+            ..execute(
+              'CREATE TABLE speedrun_attempts (id INTEGER NOT NULL PRIMARY '
+              'KEY AUTOINCREMENT, speedrun_id TEXT NOT NULL, started_at '
+              'INTEGER NOT NULL, abandoned_at INTEGER NULL)',
+            )
+            ..execute(
+              'CREATE TABLE rating_history (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, game_id INTEGER NULL, at INTEGER NOT NULL, '
+              'rating REAL NOT NULL, deviation REAL NOT NULL, volatility REAL '
+              'NOT NULL)',
             )
             ..execute('PRAGMA user_version = 6');
         },

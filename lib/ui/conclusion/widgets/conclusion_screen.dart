@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,14 +79,14 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
-    return PopScope(
+    final scaffold = PopScope(
       canPop: conclusion?.run?.nextChallenge == null,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _close(context);
       },
       child: Scaffold(
         key: ConclusionKeys.screen,
-        appBar: AppBar(
+        appBar: LucenaAppBar(
           leading: IconButton(
             key: ConclusionKeys.close,
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
@@ -124,21 +125,31 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                     card: _card,
                     analysis: _analysis,
                   ),
-                  if (widget.fresh && conclusion.achievements.isNotEmpty)
-                    AchievementToasts(
-                      achievements: conclusion.achievements,
-                      characters: state.characters,
-                      onTap: (achievement) => showAchievementDetail(
-                        context,
-                        achievement: achievement,
-                        unlocked: conclusion.unlocked[achievement.id],
-                        characters: state.characters,
-                        speedrunId: conclusion.run?.speedrunId,
-                      ),
-                    ),
                 ],
               ),
       ),
+    );
+    // O aviso de conquista vai por cima da tela inteira, AppBar incluída
+    // (TelaConclusaoAviso: 8 do topo), sem cobrir o título do painel.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        scaffold,
+        if (widget.fresh &&
+            conclusion != null &&
+            conclusion.achievements.isNotEmpty)
+          AchievementToasts(
+            achievements: conclusion.achievements,
+            characters: state.characters,
+            onTap: (achievement) => showAchievementDetail(
+              context,
+              achievement: achievement,
+              unlocked: conclusion.unlocked[achievement.id],
+              characters: state.characters,
+              speedrunId: conclusion.run?.speedrunId,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -978,6 +989,9 @@ class _RunState extends State<_Run> {
         ? Duration.zero
         : times.reduce((a, b) => a > b ? a : b);
     final record = run.previousBest;
+    // Na Maratona o que conta é o tempo que sobrou no banco, o mesmo valor
+    // do resumo; nas demais, o tempo gasto.
+    final bankLeft = kind == ConclusionKind.marathonEnd ? run.bankLeft : null;
     return Container(
       key: ConclusionKeys.run,
       padding: const EdgeInsets.all(AppSpacing.insideCard),
@@ -992,15 +1006,20 @@ class _RunState extends State<_Run> {
           // a partida se perdeu); fica só o detalhe, para quem quiser.
           if (!_lost) ...[
             Text(
-              ended ? l10n.conclusionTotalTime : l10n.conclusionTotalSoFar,
+              bankLeft != null
+                  ? l10n.marathonLeft
+                  : ended
+                  ? l10n.conclusionTotalTime
+                  : l10n.conclusionTotalSoFar,
               textAlign: TextAlign.center,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
             Text(
-              time(spent),
+              bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
               key: ConclusionKeys.total,
+              textDirection: bankLeft != null ? TextDirection.ltr : null,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,

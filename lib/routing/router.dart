@@ -102,8 +102,10 @@ import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
 import '../ui/journey/widgets/rung_screen.dart';
 import '../ui/speedrun/view_models/speedrun_cubit.dart';
+import '../ui/speedrun/view_models/speedrun_history_cubit.dart';
 import '../ui/speedrun/widgets/speedrun_attempt_screen.dart';
 import '../ui/speedrun/widgets/speedrun_list_screen.dart';
+import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
@@ -752,6 +754,27 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ),
                 routes: [
+                  // Antes de `:attempt`, que pegaria "history" como id.
+                  _route(
+                    path: 'history',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => SpeedrunHistoryCubit(
+                        journey: context.read<JourneyRepository>(),
+                        speedruns: context.read<SpeedrunRepository>(),
+                        rating: context.read<RatingRepository>(),
+                        characters: context.read<CharacterRepository>(),
+                        now: context.read<Now>(),
+                      )..load(state.pathParameters['speedrun']!),
+                      child: Builder(
+                        builder: (context) => ReloadOnReturn(
+                          onReturn: () => context
+                              .read<SpeedrunHistoryCubit>()
+                              .load(state.pathParameters['speedrun']!),
+                          child: const SpeedrunHistoryScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
                   _route(
                     path: ':attempt',
                     builder: (context, state) => BlocProvider(
@@ -975,6 +998,7 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
   profile: context.read<ProfileRepository>(),
+  rating: context.read<RatingRepository>(),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18

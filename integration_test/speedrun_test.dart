@@ -90,14 +90,16 @@ void main() {
     // A diferença para o recorde fica no resumo da tentativa.
     await speedrun.back();
     await speedrun.openHistory(0);
-    speedrun.expectRecordDifference('-2.0 s vs. record 0:12.0');
+    speedrun.expectRecordDifference('2.0 s faster than the previous record');
+    await speedrun.back();
     await speedrun.back();
 
     await runRung($, 8, 7);
     await speedrun.expectNewRecord(record: false);
     await speedrun.back();
     await speedrun.openHistory(0);
-    speedrun.expectRecordDifference('+5.0 s vs. record 0:10.0');
+    speedrun.expectRecordDifference('5.0 s short of your record');
+    await speedrun.back();
     await speedrun.back();
     await speedrun.expectBest('0:10.0');
   });
@@ -132,7 +134,7 @@ void main() {
 
     // A perdida fica no histórico, até onde chegou.
     await speedrun.back();
-    await speedrun.expectHistory(1, 'Gave up at stage 2 of 2');
+    await speedrun.expectHistory(1, 'Lost at stage 2 of 2');
   });
 
   patrolTest('fechar à força no meio da etapa: tentativa e relógio voltam', (
@@ -181,11 +183,34 @@ void main() {
     await speedrun.back();
 
     await speedrun.expectBest('0:13.0');
-    await speedrun.expectStageRecord(0, '0:03.0');
-    await speedrun.expectStageRecord(1, '0:04.0');
-    await speedrun.expectStageRecord(2, '0:06.0');
     await speedrun.back();
     await speedrun.expectItemBest(_endingRun, '0:13.0');
+  });
+
+  patrolTest('concluir o speedrun paga o bônus: oferta no detalhe, ganho no '
+      'resumo e no Histórico', ($) async {
+    final app = AppRobot($);
+    final speedrun = SpeedrunRobot($);
+    await app.open(systemLocale: _english);
+    await speedrun.open();
+    await speedrun.openSpeedrun(_endingRun);
+    await speedrun.expectBonusOffer();
+
+    await speedrun.start();
+    await playStage($, 3);
+    await speedrun.continueToNextStage();
+    await playStage($, 4);
+    await speedrun.continueToNextStage();
+    await playStage($, 6);
+    await speedrun.finishAttempt();
+    await speedrun.back();
+
+    // O resumo da tentativa, aberto pelo Histórico, mostra o bônus ganho; a
+    // linha dela no Histórico também.
+    await speedrun.openHistory(0);
+    await speedrun.expectBonusEarned();
+    await speedrun.back();
+    await speedrun.expectHistoryBonus(0);
   });
 
   patrolTest('sair no meio pede confirmação; o histórico diz até onde a '
@@ -207,6 +232,7 @@ void main() {
     // Tocar na tentativa abre o resumo dela, com a marca de cada etapa.
     await speedrun.openHistory(0);
     await speedrun.expectAbandonedDetails(firstStage: '0:03.0');
+    await speedrun.back();
     await speedrun.back();
 
     await app.restart();

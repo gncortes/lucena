@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/voice.dart';
@@ -33,7 +34,7 @@ class VoiceSettingsScreen extends StatelessWidget {
     final help = SystemVoicesHelp(missing: !available);
     return Scaffold(
       key: VoiceKeys.settingsSection,
-      appBar: AppBar(title: Text(l10n.voiceSection)),
+      appBar: LucenaAppBar(title: Text(l10n.voiceSection)),
       body: !state.loaded
           ? const SizedBox.shrink()
           : ListView(

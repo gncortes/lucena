@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -47,7 +48,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       // Compartilhar o diploma: só o ícone, no canto da barra.
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         actions: [
           if (!below)
             ShareIconButton(

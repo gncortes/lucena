@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/variation_tree.dart';
 import '../../services/asset_service.dart';
 import 'lesson_repository.dart';
 
@@ -236,6 +237,30 @@ class AssetLessonRepository implements LessonRepository {
                 if (move.isNotEmpty) move,
             ],
             wrong: line['wrong'] == true,
+            branches: _branches(line['branches']),
+          ),
+  ];
+
+  /// `"branches": [{"id":"g4","at":2,"uci":["g3g4","f7g6"],
+  /// "glyphs":["?",null],"result":"draw"}]`.
+  static List<CitedBranch> _branches(Object? json) => [
+    for (final branch in json as List? ?? const [])
+      if (branch is Map && branch['id'] is String && branch['at'] is int)
+        if (switch (branch['uci']) {
+              final String text => text.split(RegExp(r'\s+')),
+              final List list => [for (final m in list) ?(m as String?)],
+              _ => const <String>[],
+            }.where((move) => move.isNotEmpty).toList()
+            case final uci when uci.isNotEmpty)
+          CitedBranch(
+            id: branch['id'] as String,
+            at: branch['at'] as int,
+            uci: uci,
+            glyphs: [
+              for (final glyph in branch['glyphs'] as List? ?? const [])
+                glyph is String && glyph.isNotEmpty ? glyph : null,
+            ],
+            result: VariationResult.parse(branch['result']),
           ),
   ];
 

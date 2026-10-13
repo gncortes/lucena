@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -119,48 +117,34 @@ void main() {
     });
   }
 
-  testWidgets('the wrong move comes back after a hard close', (tester) async {
-    final progress = FakeSchoolProgressRepository();
-    final live = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(live.close);
-    await live.load('mates.rank', 'en');
-    await live.next();
-    await live.play(move('a1a5'));
-    final stored = await progress.load();
-    await progress.save(
-      stored.copyWith(
-        ongoing: LessonCheckpoint.fromJson(stored.ongoing!.toJson()),
-      ),
-    );
-    final cubit = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(cubit.close);
-    await cubit.load('mates.rank', 'en');
+  testWidgets('a wrong move without a planned mistake shows Back | See '
+      'solution | Continue, and See solution works', (tester) async {
+    final cubit = await open(1);
+    await show(tester, cubit, const Size(360, 740));
+    await tester.runAsync(() => cubit.play(move('a1a5')));
+    await tester.pumpAndSettle();
     expect(cubit.state.wrongMove, isTrue);
-    expect(cubit.state.attemptedSan, '1.Ra5');
+    expect(find.byKey(LessonKeys.seeSolution), findsOneWidget);
+    expect(find.byKey(LessonKeys.backButton), findsOneWidget);
+    expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
+    await tester.tap(find.byKey(LessonKeys.seeSolution));
+    await tester.pumpAndSettle();
+    expect(cubit.state.solutionSeen, isTrue);
+    expect(find.byKey(LessonKeys.solutionFooter), findsOneWidget);
+    expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
   });
 
   testWidgets('think mistake: the explanation is titled CORRECT MOVE and the '
-      'move is in the error colour', (tester) async {
+      'move is in the primary colour (no result colour)', (tester) async {
     final cubit = await open(2);
     await show(tester, cubit, const Size(360, 740));
     await tester.runAsync(() => cubit.play(move('a1b1')));
     await tester.pumpAndSettle();
     expect(find.text('CORRECT MOVE'), findsOneWidget);
-    final error = MoveQuality.mistake.listColor(
-      Theme.of(tester.element(find.byType(LessonScreen))).brightness,
-    );
+    // LICOES-V2 §2: o lance é sempre primary; o resultado não tem cor.
+    final error = Theme.of(tester.element(find.byType(LessonScreen)))
+        .colorScheme
+        .primary;
     var found = false;
     for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
       rich.text.visitChildren((span) {
@@ -183,8 +167,8 @@ void main() {
   });
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
-    testWidgets('$size: scrolled to the end, the speech sits above the footer '
-        'fade and a solid surface is behind the buttons', (tester) async {
+    testWidgets('$size: the error footer keeps its three '
+        'buttons inside the solid box', (tester) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       final cubit = await open(1);
@@ -192,42 +176,21 @@ void main() {
       await tester.runAsync(() => cubit.play(move('a1a5')));
       await tester.pumpAndSettle();
       expect(cubit.state.wrongMove, isTrue);
-      final scroll = find.byKey(LessonKeys.scroll);
-      await tester.fling(scroll, const Offset(0, -3000), 3000);
-      await tester.pumpAndSettle();
-      final fade = find.byKey(LessonKeys.footerFade);
-      expect(fade, findsOneWidget);
-      final fadeRect = tester.getRect(fade);
-      expect(fadeRect.height, closeTo(24, 1));
-      final invite = tester.getRect(find.byKey(LessonV2Keys.freeBoardInvite));
-      expect(invite.bottom, lessThanOrEqualTo(fadeRect.top + 1));
-      // Solid surface below the fade, covering both buttons.
+      // O rodapé de erro (Voltar | Ver solução | Continuar) é a caixa sólida
+      // do painel, sem a faixa que esmaece.
       final footer = tester.getRect(find.byKey(LessonKeys.footer));
-      expect(fadeRect.top, closeTo(footer.top, 1));
-      final solid = find.descendant(
-        of: find.byKey(LessonKeys.footer),
-        matching: find.byType(ColoredBox),
-      );
-      expect(solid, findsWidgets);
-      final solidRect = tester.getRect(solid.first);
-      final panel = Theme.of(tester.element(find.byKey(LessonKeys.footer)))
-          .colorScheme
-          .surfaceContainerLow;
-      expect(tester.widget<ColoredBox>(solid.first).color, panel);
       var buttons = 0;
       for (final key in [
         LessonKeys.backButton,
-        LessonKeys.hintButton,
+        LessonKeys.seeSolution,
         LessonKeys.nextButton,
       ]) {
-        if (find.byKey(key).evaluate().isEmpty) continue;
         buttons++;
         final r = tester.getRect(find.byKey(key));
-        expect(solidRect.top, lessThanOrEqualTo(r.top));
-        expect(solidRect.bottom, greaterThanOrEqualTo(r.bottom));
-        expect(r.top, greaterThanOrEqualTo(fadeRect.bottom - 1));
+        expect(r.top, greaterThanOrEqualTo(footer.top));
+        expect(r.bottom, lessThanOrEqualTo(footer.bottom));
       }
-      expect(buttons, greaterThan(0));
+      expect(buttons, 3);
       expect(tester.takeException(), isNull);
     });
   }

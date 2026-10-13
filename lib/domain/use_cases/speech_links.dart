@@ -105,7 +105,11 @@ abstract final class SpeechLinks {
       final promotion = match.group(7) != null;
       final check = match.group(8) != null;
       final dest = Square.fromName(match.group(6)!);
+      // O número do lance ("1." ou "2...") só aparece num lance: "1.g4" não
+      // é a casa g4.
+      final numbered = RegExp(r'^\d').hasMatch(match.group(0)!);
       final isMove =
+          numbered ||
           piece != null ||
           file != null ||
           rank != null ||

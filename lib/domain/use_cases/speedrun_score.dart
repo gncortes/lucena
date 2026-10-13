@@ -1,3 +1,4 @@
+import '../models/attempt.dart';
 import '../models/speedrun.dart';
 import 'marathon.dart';
 
@@ -84,5 +85,19 @@ abstract final class SpeedrunScore {
       if (best == null || other.total < best) best = other.total;
     }
     return best;
+  }
+
+  /// Como a tentativa [run] do clássico terminou. Perder ou empatar a etapa
+  /// encerra a tentativa (P1); sem partida perdida no fim, foi o jogador que
+  /// desistiu. Nunca devolve `timeout` (isso é da Maratona).
+  static SpeedrunRunEnd endOf(SpeedrunRun run) {
+    if (run.completed) return SpeedrunRunEnd.completed;
+    final last = run.attempt.games.lastOrNull;
+    if (last == null || last.fulfilled) return SpeedrunRunEnd.abandoned;
+    return switch (last.outcome) {
+      AttemptOutcome.draw => SpeedrunRunEnd.drawn,
+      AttemptOutcome.loss => SpeedrunRunEnd.lost,
+      _ => SpeedrunRunEnd.abandoned,
+    };
   }
 }
