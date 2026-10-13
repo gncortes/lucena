@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "不是这步。想想课程关于“{topic}”讲了什么。",
   "lessonThinkMistakeGeneric": "你的着法 {move} 在这里行不通。看看为什么：",
   "lessonVariationShow": "查看变化",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "上一步",
   "lessonDemoForward": "下一步",
   "lessonDemoReplay": "重播",

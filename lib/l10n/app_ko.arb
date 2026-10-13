@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "그 수가 아닙니다. 레슨이 “{topic}”에 대해 보여 준 것을 떠올려 보세요.",
   "lessonThinkMistakeGeneric": "당신의 수 {move}는 여기서 통하지 않습니다. 이유를 보세요:",
   "lessonVariationShow": "변화 보기",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "이전 수",
   "lessonDemoForward": "다음 수",
   "lessonDemoReplay": "다시 보기",

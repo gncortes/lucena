@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Pas celui-ci. Pense à ce que la leçon a montré sur « {topic} ».",
   "lessonThinkMistakeGeneric": "Ton coup {move} ne fonctionne pas ici. Voici pourquoi :",
   "lessonVariationShow": "Voir la variante",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Coup précédent",
   "lessonDemoForward": "Coup suivant",
   "lessonDemoReplay": "Rejouer",

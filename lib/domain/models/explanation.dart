@@ -1,5 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 
+import 'variation_tree.dart';
+
 enum ExplanationKind {
   context,
   playedIncorrect,
@@ -48,6 +50,7 @@ class ExplanationVariation {
     required List<String> movesSan,
     this.validated = false,
     Map<int, List<String>> explanationByPly = const {},
+    this.result,
   }) : texts = List.unmodifiable(texts),
        playedTexts = List.unmodifiable(playedTexts),
        movesUci = List.unmodifiable(movesUci),
@@ -59,6 +62,10 @@ class ExplanationVariation {
   final String id, label, originFen;
   final VariationOutcome outcome;
   final String? outcomeText;
+
+  /// O resultado da variante quando muda em relação à principal (`"draw"`);
+  /// sem ele, a faixa não mostra símbolo (T68).
+  final VariationResult? result;
 
   /// Authored identity and divergence; labels never determine ancestry.
   final String? contextId, parentId;
@@ -93,6 +100,7 @@ class ExplanationVariation {
         movesUci: explanationTexts(json['movesUci']),
         movesSan: explanationTexts(json['movesSan']),
         validated: json['validated'] == true,
+        result: VariationResult.parse(json['result']),
         explanationByPly: {
           for (final e in ((json['explanationByPly'] as Map?) ?? {}).entries)
             ?int.tryParse(e.key.toString()): explanationTexts(e.value),

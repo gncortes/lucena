@@ -1,183 +1,141 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/variation_tree.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/widgets/lesson_part_widgets.dart';
 
 import '../../../testing/test_app.dart';
 
-void main() {
-  testWidgets('a faixa usa a notação da fala, sem "1..." no meio da linha', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const TestApp(
+TreeMove m(String label) => TreeMove(label: label, fen: label);
+
+VariationTree tree({List<VariationBranch> branches = const []}) =>
+    VariationTree(
+      startFen: 'start',
+      main: [m('1.Rf4'), m('1...Re6'), m('2.Re4'), m('2...Rd6'), m('3.Rf5')],
+      branches: branches,
+    );
+
+Future<void> pump(
+  WidgetTester tester,
+  VariationTree tree,
+  TreePosition position, {
+  void Function(TreePosition)? onSelect,
+  Size size = const Size(360, 740),
+  double scale = 1,
+}) async {
+  tester.view.physicalSize = size;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    TestApp(
+      child: MediaQuery(
+        data: MediaQueryData(size: size, textScaler: TextScaler.linear(scale)),
         child: Scaffold(
           body: VariationStrip(
-            moves: ['1.Rf4', '1...Re6', '2.Re4', '2...Rd6', '3.Rf5'],
-            current: 2,
-            text: '',
+            tree: tree,
+            position: position,
+            text: 'Comment.',
+            onSelect: onSelect ?? (_) {},
           ),
         ),
       ),
+    ),
+  );
+}
+
+String plain(Text text) => (text.data ?? text.textSpan!.toPlainText())
+    .replaceAll(RegExp('[\u2066\u2069]'), '');
+
+void main() {
+  testWidgets('a notação da fala: sem "1..." no meio da linha, 1 botão por '
+      'lance', (tester) async {
+    await pump(tester, tree(), const TreePosition.main(2));
+    expect(
+      plain(tester.widget(find.byKey(LessonKeys.variationStripCurrent))),
+      'Re6',
     );
-    final text = tester
-        .widget<Text>(find.byKey(LessonKeys.variationStripCurrent))
-        .textSpan!
-        .toPlainText()
-        .replaceAll(RegExp('[\u2066\u2069]'), '');
-    expect(text, '1.Rf4 Re6 2.Re4 Rd6 3.Rf5');
+    for (var ply = 1; ply <= 5; ply++) {
+      expect(find.byKey(LessonKeys.variationMove(ply)), findsOneWidget);
+    }
+    expect(find.text('\u20662.Re4\u2069'), findsOneWidget);
+    expect(find.text('\u20662...Rd6\u2069'), findsNothing);
+    expect(find.text('\u2066Rd6\u2069'), findsOneWidget);
   });
 
   testWidgets('a linha que abre pelas pretas mantém o "1..."', (tester) async {
-    await tester.pumpWidget(
-      const TestApp(
-        child: Scaffold(
-          body: VariationStrip(
-            moves: ['1...Re6', '2.Re4'],
-            current: 1,
-            text: '',
-          ),
-        ),
-      ),
+    await pump(
+      tester,
+      VariationTree(startFen: 's', main: [m('1...Re6'), m('2.Re4')]),
+      const TreePosition.main(1),
     );
-    final text = tester
-        .widget<Text>(find.byKey(LessonKeys.variationStripCurrent))
-        .textSpan!
-        .toPlainText()
-        .replaceAll(RegExp('[\u2066\u2069]'), '');
-    expect(text, '1...Re6 2.Re4');
+    expect(
+      plain(tester.widget(find.byKey(LessonKeys.variationStripCurrent))),
+      '1...Re6',
+    );
   });
 
-  testWidgets('o rótulo de acessibilidade não leva os isolantes de direção', (
+  testWidgets('o rótulo de acessibilidade não leva os isolantes', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await tester.pumpWidget(
-      const TestApp(
-        child: Scaffold(
-          body: VariationStrip(
-            moves: ['1.Rf4', '1...Re6', '2.Re4'],
-            current: 1,
-            text: '',
-          ),
-        ),
-      ),
-    );
-    final label = tester
-        .getSemantics(find.byKey(LessonKeys.variationStripCurrent))
-        .label;
-    expect(label, isNot(contains('\u2066')));
-    expect(label, isNot(contains('\u2069')));
-    expect(label, contains('Re6'));
+    await pump(tester, tree(), const TreePosition.main(2));
+    expect(find.bySemanticsLabel('Re6'), findsOneWidget);
     handle.dispose();
   });
 
-  testWidgets('o trecho não repete a notação do lance que abre o texto', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const TestApp(
-        child: Scaffold(
-          body: VariationStrip(
-            moves: ['1.Rf4', '1...Re6', '2.Re4'],
-            current: 2,
-            text: '1...Re6. O rei preto vai para a frente do peão.',
-          ),
-        ),
-      ),
+  testWidgets('ramo: recuado 16 dp, com = e alvos de 48 dp; toque avisa o '
+      'lugar', (tester) async {
+    final branch = VariationBranch(
+      id: 'b',
+      at: 2,
+      moves: [m('2.Rd4?'), m('2...Re5')],
+      result: VariationResult.draw,
     );
-    expect(find.text('O rei preto vai para a frente do peão.'), findsOneWidget);
-    expect(find.textContaining('1...Re6.'), findsNothing);
-    expect(VariationStrip.withoutLeadingMove('2.Re4 Rd6 segue.'), 'Rd6 segue.');
-    expect(
-      VariationStrip.withoutLeadingMove('O rei vai a e6.'),
-      'O rei vai a e6.',
-    );
-  });
-
-  Future<void> pumpPanel(WidgetTester tester, Size size, String text) async {
-    tester.view.physicalSize = size;
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    await tester.pumpWidget(
-      TestApp(
-        child: Scaffold(
-          body: Column(
-            children: [
-              // O tabuleiro.
-              SizedBox.square(dimension: size.width),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: VariationStrip(
-                    moves: const ['1.Re4', '1...Rf7', '2.Rf5', '2...Rg7'],
-                    current: 2,
-                    text: text,
-                  ),
-                ),
-              ),
-              VariationControls(
-                canPrevious: true,
-                canNext: true,
-                onExit: () {},
-                onBack: () {},
-                onForward: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  for (final size in const [Size(412, 917), Size(360, 640)]) {
-    testWidgets('texto médio aparece inteiro, sem corte, em $size', (
+    final taps = <TreePosition>[];
+    await pump(
       tester,
-    ) async {
-      final text = List.filled(
-        4,
-        'O rei branco fica na frente do peão e a torre corta o rei preto.',
-      ).join(' ');
-      await pumpPanel(tester, size, text);
-      final shown = tester.widget<Text>(find.text(text));
-      expect(shown.maxLines, isNull);
-      expect(shown.overflow, isNot(TextOverflow.ellipsis));
-      final scroll = tester.state<ScrollableState>(
-        find.descendant(
-          of: find.byKey(LessonKeys.variationStripScroll),
-          matching: find.byType(Scrollable),
-        ),
-      );
-      if (size.height > 800) {
-        expect(scroll.position.maxScrollExtent, 0);
-      }
-      expect(find.byKey(LessonKeys.variationForward), findsOneWidget);
-    });
-  }
-
-  testWidgets('texto longo rola e os controles continuam visíveis', (
-    tester,
-  ) async {
-    final text = List.filled(
-      40,
-      'O rei branco fica na frente do peão e a torre corta o rei preto.',
-    ).join(' ');
-    await pumpPanel(tester, const Size(360, 640), text);
-    final scroll = tester.state<ScrollableState>(
-      find.descendant(
-        of: find.byKey(LessonKeys.variationStripScroll),
-        matching: find.byType(Scrollable),
-      ),
+      tree(branches: [branch]),
+      const TreePosition.main(3),
+      onSelect: taps.add,
     );
-    expect(scroll.position.maxScrollExtent, greaterThan(0));
-    final controls = tester.getRect(find.byKey(LessonKeys.variationForward));
-    await tester.drag(
-      find.byKey(LessonKeys.variationStripScroll),
-      const Offset(0, -200),
+    final main = tester.getRect(find.byKey(LessonKeys.variationMove(1)));
+    final alt = tester.getRect(
+      find.byKey(LessonKeys.variationBranchMove('b', 1)),
     );
-    await tester.pump();
-    expect(scroll.position.pixels, greaterThan(0));
-    expect(tester.getRect(find.byKey(LessonKeys.variationForward)), controls);
-    expect(controls.bottom, lessThanOrEqualTo(640));
+    expect(alt.left - main.left, closeTo(16, 1));
+    expect(alt.top, greaterThan(main.bottom - 1));
+    for (final key in [
+      LessonKeys.variationMove(1),
+      LessonKeys.variationBranchMove('b', 1),
+      LessonKeys.variationBranchMove('b', 2),
+    ]) {
+      final rect = tester.getRect(find.byKey(key));
+      expect(rect.width, greaterThanOrEqualTo(48));
+      expect(rect.height, greaterThanOrEqualTo(48));
+    }
+    expect(find.byKey(LessonKeys.variationResult('b')), findsOneWidget);
+    await tester.tap(find.byKey(LessonKeys.variationBranchMove('b', 2)));
+    expect(taps, [const TreePosition.branch('b', 2)]);
   });
+
+  for (final size in const [Size(360, 640), Size(360, 740), Size(412, 917)]) {
+    for (final scale in const [1.0, 2.0]) {
+      testWidgets('sem overflow em $size, fonte $scale', (tester) async {
+        final branch = VariationBranch(
+          id: 'b',
+          at: 2,
+          moves: [m('2.Rd4?'), m('2...Re5'), m('3.Rf5'), m('3...Rd6')],
+          result: VariationResult.draw,
+        );
+        await pump(
+          tester,
+          tree(branches: [branch]),
+          const TreePosition.branch('b', 1),
+          size: size,
+          scale: scale,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 }

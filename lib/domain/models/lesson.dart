@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import 'game_setup.dart';
 import 'journey.dart';
+import 'variation_tree.dart';
 import '../use_cases/wiki_markup.dart';
 
 /// A Escola do Viktor: as aulas do iniciante, em módulos, na ordem em que se
@@ -240,10 +241,18 @@ class MoveStep extends LessonStep {
 /// Uma variante citada numa fala, descrita no JSON da aula: os lances
 /// (UCI) a partir da posição de onde ela sai e se é a linha errada.
 class CitedLine {
-  const CitedLine({required this.uci, this.wrong = false});
+  const CitedLine({
+    required this.uci,
+    this.wrong = false,
+    this.branches = const [],
+  });
 
   final List<String> uci;
   final bool wrong;
+
+  /// As alternativas à linha, mostradas recuadas na faixa (T68). Não mudam
+  /// [matches] nem o selo de linha errada.
+  final List<CitedBranch> branches;
 
   /// A variante [ucis] é esta: uma começa com a outra (a fala pode citar só
   /// o começo da linha, ou a linha inteira e mais).
@@ -255,6 +264,29 @@ class CitedLine {
     }
     return true;
   }
+}
+
+/// Uma alternativa a um lance de uma [CitedLine] (T68): `at` lances da
+/// linha jogados antes; a alternativa substitui o lance `at + 1`.
+/// `{"id":"g4","at":2,"uci":["g3g4","f7g6"],"glyphs":["?",null],"result":"draw"}`.
+/// Comentários no JSON da aula: `step.<passo>.alt.<id>` (da alternativa) e
+/// `step.<passo>.alt.<id>.m<k>` (do lance k, opcional).
+class CitedBranch {
+  const CitedBranch({
+    required this.id,
+    required this.at,
+    required this.uci,
+    this.glyphs = const [],
+    this.result,
+  });
+
+  final String id;
+  final int at;
+  final List<String> uci;
+
+  /// Avaliação de cada lance (`?`, `!`), do tamanho de [uci]; vazio, nenhuma.
+  final List<String?> glyphs;
+  final VariationResult? result;
 }
 
 /// Um lance errado previsto num passo de lance, de jogar ou de pensar: a
@@ -470,6 +502,11 @@ class LessonTexts {
   /// O que o Viktor diz ao abrir o passo.
   String? step(String lessonId, String stepId) => say('$lessonId.$stepId');
 
+  /// O comentário de uma alternativa citada (T68): o dela (`...alt.<id>`) ou,
+  /// com [ply], o do lance (`...alt.<id>.m<ply>`).
+  String? alternative(String lessonId, String stepId, String id, [int? ply]) =>
+      plain('$lessonId.$stepId.alt.$id${ply == null ? '' : '.m$ply'}');
+
   /// A dica depois de um erro no passo.
   String? hint(String lessonId, String stepId) => say('$lessonId.$stepId.hint');
 
@@ -614,6 +651,95 @@ class LessonAttempt {
   int get hashCode => Object.hash(step, id, kind, fen, turn, uci, incorrect);
 }
 
+/// A variante aberta na faixa (T68), para reabrir no mesmo nó:
+/// `{"source":"speech","step":"i1","line":0,"branch":"g4","ply":1,"open":true}`
+/// (`source` `explanation` usa `id` da variante no lugar de `line`).
+class VariationCheckpoint {
+  const VariationCheckpoint({
+    required this.source,
+    required this.step,
+    this.line,
+    this.id,
+    this.branch,
+    this.ply = 0,
+    this.open = false,
+  });
+
+  static const speech = 'speech';
+  static const explanation = 'explanation';
+
+  /// `speech` (linha citada na fala) ou `explanation` (variante do painel).
+  final String source;
+
+  /// O id do passo em que a variante foi aberta.
+  final String step;
+
+  /// Índice da linha entre as que a fala do passo cita (`speech`).
+  final int? line;
+
+  /// O id da variante (`explanation`).
+  final String? id;
+
+  /// O ramo onde o aluno está; nulo, a linha principal.
+  final String? branch;
+
+  /// Lances jogados na linha principal, ou lance do ramo.
+  final int ply;
+
+  /// O painel da faixa estava aberto (arrastado).
+  final bool open;
+
+  VariationCheckpoint copyWith({bool? open}) => VariationCheckpoint(
+    source: source,
+    step: step,
+    line: line,
+    id: id,
+    branch: branch,
+    ply: ply,
+    open: open ?? this.open,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'source': source,
+    'step': step,
+    'line': ?line,
+    'id': ?id,
+    'branch': ?branch,
+    'ply': ply,
+    'open': open,
+  };
+
+  static VariationCheckpoint? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final source = json['source'];
+    final step = json['step'];
+    if (source is! String || step is! String) return null;
+    return VariationCheckpoint(
+      source: source,
+      step: step,
+      line: json['line'] as int?,
+      id: json['id'] as String?,
+      branch: json['branch'] as String?,
+      ply: json['ply'] as int? ?? 0,
+      open: json['open'] as bool? ?? false,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is VariationCheckpoint &&
+      other.source == source &&
+      other.step == step &&
+      other.line == line &&
+      other.id == id &&
+      other.branch == branch &&
+      other.ply == ply &&
+      other.open == open;
+
+  @override
+  int get hashCode => Object.hash(source, step, line, id, branch, ply, open);
+}
+
 /// Onde o aluno parou dentro de uma aula: o passo e o tabuleiro dele.
 class LessonCheckpoint {
   const LessonCheckpoint({
@@ -639,9 +765,13 @@ class LessonCheckpoint {
     this.attemptedSan,
     this.thinkMistake,
     this.solutionSeen = false,
+    this.variation,
   });
 
   final String lessonId;
+
+  /// A variante aberta na faixa (T68); nula, nenhuma.
+  final VariationCheckpoint? variation;
 
   /// The student asked for the solution of the failed step (T65 §4): the app
   /// reopens on the "solution seen" screen.
@@ -734,6 +864,7 @@ class LessonCheckpoint {
     attemptedSan: attemptedSan,
     thinkMistake: thinkMistake,
     solutionSeen: solutionSeen,
+    variation: variation,
   );
 
   Map<String, dynamic> toJson() => {
@@ -759,6 +890,7 @@ class LessonCheckpoint {
     'attemptedSan': ?attemptedSan,
     'thinkMistake': ?thinkMistake,
     if (solutionSeen) 'solutionSeen': true,
+    'variation': ?variation?.toJson(),
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -795,6 +927,7 @@ class LessonCheckpoint {
       attemptedSan: json['attemptedSan'] as String?,
       thinkMistake: json['thinkMistake'] as String?,
       solutionSeen: json['solutionSeen'] as bool? ?? false,
+      variation: VariationCheckpoint.fromJson(json['variation']),
     );
   }
 
@@ -820,7 +953,8 @@ class LessonCheckpoint {
       other.reviewStep == reviewStep &&
       other.attemptedSan == attemptedSan &&
       other.thinkMistake == thinkMistake &&
-      other.solutionSeen == solutionSeen;
+      other.solutionSeen == solutionSeen &&
+      other.variation == variation;
 
   @override
   int get hashCode => Object.hash(
@@ -845,6 +979,7 @@ class LessonCheckpoint {
       attemptedSan,
       thinkMistake,
       solutionSeen,
+      variation,
     ),
   );
 

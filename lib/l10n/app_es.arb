@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "No es esa. Piensa en lo que la lección mostró sobre «{topic}».",
   "lessonThinkMistakeGeneric": "Tu jugada {move} no funciona aquí. Mira por qué:",
   "lessonVariationShow": "Ver la variante",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Jugada anterior",
   "lessonDemoForward": "Siguiente jugada",
   "lessonDemoReplay": "Repetir",

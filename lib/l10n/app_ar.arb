@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "ليست هذه. فكّر فيما أظهره الدرس عن «{topic}».",
   "lessonThinkMistakeGeneric": "نقلتك {move} لا تنجح هنا. إليك السبب:",
   "lessonVariationShow": "عرض التفريع",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "النقلة السابقة",
   "lessonDemoForward": "النقلة التالية",
   "lessonDemoReplay": "إعادة",

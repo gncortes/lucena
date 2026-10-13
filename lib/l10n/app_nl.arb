@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Niet deze. Denk aan wat de les liet zien over ‘{topic}’.",
   "lessonThinkMistakeGeneric": "Je zet {move} werkt hier niet. Kijk waarom:",
   "lessonVariationShow": "Variant bekijken",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Vorige zet",
   "lessonDemoForward": "Volgende zet",
   "lessonDemoReplay": "Opnieuw",
