@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{Попытка закончится здесь и останется в истории.} one{Вы потеряете {count} этап, выигранный в этой попытке.} few{Вы потеряете {count} этапа, выигранных в этой попытке.} other{Вы потеряете {count} этапов, выигранных в этой попытке.}}",
   "gameSeeResult": "Посмотреть результат",
   "gameSoundLabelOn": "Звук",
-  "gameSoundLabelOff": "Без звука"
+  "gameSoundLabelOff": "Без звука",
+  "lessonVariationClose": "Закрыть вариант и вернуться к объяснению",
+  "lessonVariationPrevious": "Предыдущий ход варианта",
+  "lessonVariationNext": "Следующий ход варианта"
 }

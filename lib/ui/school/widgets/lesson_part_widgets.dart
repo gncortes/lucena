@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/use_cases/lesson_rules.dart';
-import '../../../domain/use_cases/speech_lines.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -171,11 +170,14 @@ class DemoControls extends StatelessWidget {
   }
 }
 
-/// Os controles da variante citada na fala, no estilo dos da demonstração:
-/// voltar à posição do passo, lance anterior e próximo lance.
+/// Os controles do modo variante (LICOES-V2 §1), fixos no rodapé nos mesmos
+/// lugares dos da demonstração: fechar à esquerda, lance anterior no meio e
+/// próximo lance no canto. Os dois cursores (a variante da fala e a da
+/// explicação) usam estes controles.
 class VariationControls extends StatelessWidget {
   const VariationControls({
-    required this.cursor,
+    required this.canPrevious,
+    required this.canNext,
     required this.onExit,
     required this.onBack,
     required this.onForward,
@@ -183,7 +185,8 @@ class VariationControls extends StatelessWidget {
     super.key,
   });
 
-  final SpeechLineCursor cursor;
+  final bool canPrevious;
+  final bool canNext;
 
   /// A variante é a linha errada da aula.
   final bool wrong;
@@ -194,30 +197,98 @@ class VariationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    const gap = SizedBox.square(dimension: _ControlButton.size);
     return _ControlBar(
       wrong: wrong,
-      evenly: true,
       children: [
         _ControlButton(
           buttonKey: LessonKeys.variationExit,
           icon: Icons.close_rounded,
-          tooltip: l10n.lessonVariationExit,
+          tooltip: l10n.lessonVariationClose,
           onPressed: onExit,
         ),
+        gap,
         _ControlButton(
           buttonKey: LessonKeys.variationBack,
           icon: Icons.skip_previous_rounded,
-          tooltip: l10n.lessonDemoBack,
-          onPressed: cursor.canPrevious ? onBack : null,
+          tooltip: l10n.lessonVariationPrevious,
+          onPressed: canPrevious ? onBack : null,
         ),
+        gap,
         _ControlButton(
           buttonKey: LessonKeys.variationForward,
           icon: Icons.skip_next_rounded,
-          tooltip: l10n.lessonDemoForward,
-          onPressed: cursor.canNext ? onForward : null,
+          tooltip: l10n.lessonVariationNext,
+          onPressed: canNext ? onForward : null,
           main: true,
         ),
       ],
+    );
+  }
+}
+
+/// O trecho do Viktor no modo variante: a linha com o lance da vez em
+/// destaque e o texto daquele ponto (até 2 linhas), sem card, entre o
+/// tabuleiro e os controles.
+class VariationStrip extends StatelessWidget {
+  const VariationStrip({
+    required this.moves,
+    required this.current,
+    required this.text,
+    super.key,
+  });
+
+  /// Os lances da linha como estão escritos ("1...Rf6?", "2.Rf4").
+  final List<String> moves;
+
+  /// O lance da vez, de 1 a [moves].length; 0, nenhum.
+  final int current;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final body = theme.textTheme.bodyLarge!;
+    return Semantics(
+      container: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text.rich(
+            key: LessonKeys.variationStripCurrent,
+            TextSpan(
+              children: [
+                for (final (index, move) in moves.indexed) ...[
+                  if (index > 0) const TextSpan(text: ' '),
+                  TextSpan(
+                    // Notação isolada da direção do texto (RTL).
+                    text: '\u2066$move\u2069',
+                    style: index + 1 == current
+                        ? TextStyle(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                            backgroundColor: colors.primaryContainer,
+                          )
+                        : const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ],
+            ),
+            style: body.copyWith(color: colors.onSurface),
+          ),
+          if (text.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: body.copyWith(color: colors.onSurface),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -270,17 +341,10 @@ class WrongLineBadge extends StatelessWidget {
 /// A fileira dos controles redondos, sobre um esmaecer até o fundo. Na
 /// linha errada, o selo vem acima dela. As setas não espelham (`ltr`).
 class _ControlBar extends StatelessWidget {
-  const _ControlBar({
-    required this.children,
-    this.wrong = false,
-    this.evenly = false,
-  });
+  const _ControlBar({required this.children, this.wrong = false});
 
   final List<Widget> children;
   final bool wrong;
-
-  /// Poucos botões: espalhados por igual, em vez de nas casas fixas.
-  final bool evenly;
 
   @override
   Widget build(BuildContext context) {
@@ -298,9 +362,7 @@ class _ControlBar extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
-                mainAxisAlignment: evenly
-                    ? MainAxisAlignment.spaceEvenly
-                    : MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: children,
               ),
             ),

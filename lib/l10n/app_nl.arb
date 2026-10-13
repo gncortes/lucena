@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{De poging eindigt hier en blijft in je geschiedenis.} =1{Je verliest de etappe die je in deze poging hebt gewonnen.} other{Je verliest de {count} etappes die je in deze poging hebt gewonnen.}}",
   "gameSeeResult": "Bekijk het resultaat",
   "gameSoundLabelOn": "Geluid",
-  "gameSoundLabelOff": "Geen geluid"
+  "gameSoundLabelOff": "Geen geluid",
+  "lessonVariationClose": "Sluit de variant en ga terug naar de uitleg",
+  "lessonVariationPrevious": "Vorige zet van de variant",
+  "lessonVariationNext": "Volgende zet van de variant"
 }

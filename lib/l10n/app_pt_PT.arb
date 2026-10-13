@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{A tentativa termina aqui e fica no histórico.} =1{Perdes a etapa vencida desta tentativa.} other{Perdes as {count} etapas vencidas desta tentativa.}}",
   "gameSeeResult": "Ver o resultado",
   "gameSoundLabelOn": "Som",
-  "gameSoundLabelOff": "Sem som"
+  "gameSoundLabelOff": "Sem som",
+  "lessonVariationClose": "Fechar a variante e voltar à explicação",
+  "lessonVariationPrevious": "Lance anterior da variante",
+  "lessonVariationNext": "Próximo lance da variante"
 }

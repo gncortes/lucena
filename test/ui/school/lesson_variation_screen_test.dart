@@ -135,7 +135,8 @@ void main() {
     // Depois de 1.Rd1+ Ke7: a torre em d1, o rei preto em e7.
     expect(fen(tester), startsWith('1K6/1P2k3/8/8/8/8/r7/3R4'));
     expect(find.byKey(LessonKeys.variationExit), findsOneWidget);
-    await tapText(tester, 'Ke7');
+    // A folha saiu: o X fecha a variante e o tabuleiro volta ao passo.
+    await press(tester, LessonKeys.variationExit);
     expect(fen(tester), start);
     expect(find.byKey(LessonKeys.variationExit), findsNothing);
   });
@@ -170,6 +171,35 @@ void main() {
     expect(find.byKey(LessonKeys.variationShow), findsNothing);
     expect(cubit.state.step, originalStep);
     expect(cubit.state.reached, originalReached);
+  });
+
+  testWidgets('modo variante: a folha sai e fica montada, a faixa e os '
+      'controles entram, o X devolve a folha igual', (tester) async {
+    await pump(tester, said);
+    final sheet = find.byKey(LessonKeys.viktorSheet);
+    final before = tester.getRect(sheet);
+    expect(find.byKey(LessonKeys.variationStrip), findsNothing);
+    await tapText(tester, 'Rd1+');
+    // Fica montada, abaixo da tela e sem receber toque.
+    expect(sheet, findsOneWidget);
+    expect(tester.getRect(sheet).top, greaterThan(before.top));
+    expect(
+      tester
+          .widget<IgnorePointer>(
+            find
+                .ancestor(of: sheet, matching: find.byType(IgnorePointer))
+                .first,
+          )
+          .ignoring,
+      isTrue,
+    );
+    // A faixa: lances da linha, o da vez em destaque, texto do Viktor.
+    expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
+    expect(find.byKey(LessonKeys.variationStripCurrent), findsOneWidget);
+    // Sem ir antes do primeiro lance: o anterior só desliga em 0.
+    await press(tester, LessonKeys.variationExit);
+    expect(find.byKey(LessonKeys.variationStrip), findsNothing);
+    expect(tester.getRect(sheet), before);
   });
 
   testWidgets('fala sem variante: sem o botão', (tester) async {
@@ -304,11 +334,13 @@ void main() {
         Square.d4,
       );
       expect(identical(cubit.state, snapshot), isTrue);
+      // O X volta à explicação; só então outra variante pode ser escolhida.
+      await press(tester, LessonKeys.variationExit);
+      expect(fen(tester), start);
       await select('reply');
       expect(fen(tester), secondary.open()!.fen);
       expect(identical(cubit.state, snapshot), isTrue);
-      await tester.ensureVisible(find.byKey(ExplanationKeys.restore));
-      await press(tester, ExplanationKeys.restore);
+      await press(tester, LessonKeys.variationExit);
       expect(fen(tester), start);
       expect(identical(cubit.state, snapshot), isTrue);
     },
@@ -365,39 +397,18 @@ void main() {
 
       await activate(ExplanationKeys.variation('A'));
       expect(fen(tester), parent.open()!.fen);
+      await activate(LessonKeys.variationExit);
       // O lance não expande mais a linha: só o chevron (LICOES-V2 §2).
       await activate(ExplanationKeys.expand('A'));
       await activate(ExplanationKeys.variation('A.1'));
       expect(fen(tester), child.open()!.fen);
       expect(find.byKey(ExplanationKeys.first), findsNothing);
       expect(find.byKey(ExplanationKeys.parent), findsNothing);
-      // O "Voltar" do rodapé (sem fundo) volta à linha pai primeiro.
-      final back = tester.widget<TextButton>(
-        find.byKey(ExplanationKeys.restore),
-      );
-      expect(back.style?.backgroundColor, isNull);
-      // Canvas voltar-posicao: centrado, sobre fundo sólido com esmaecer no
-      // topo (o texto que rola não aparece atrás).
-      final width =
-          tester.view.physicalSize.width / tester.view.devicePixelRatio;
-      expect(
-        tester.getCenter(find.byKey(ExplanationKeys.restore)).dx,
-        closeTo(width / 2, 1),
-      );
-      final fade = tester.widget<DecoratedBox>(
-        find.byKey(LessonKeys.footerFade),
-      );
-      final gradient =
-          (fade.decoration as BoxDecoration).gradient! as LinearGradient;
-      expect(gradient.colors.first.a, 0);
-      expect(gradient.colors.last.a, 1);
-      expect(tester.getSize(find.byKey(LessonKeys.footerFade)).height, 24);
-      await activate(ExplanationKeys.restore);
-      expect(fen(tester), payload.parentCursor(child)!.fen);
-      expect(fen(tester), origin);
-      expect(identical(cubit.state, snapshot), isTrue);
-      await activate(ExplanationKeys.restore);
+      // Modo variante: faixa com o lance e controles; o X volta à explicação.
+      expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
+      await activate(LessonKeys.variationExit);
       expect(fen(tester), lessonFen);
+      expect(find.byKey(LessonKeys.variationStrip), findsNothing);
       expect(identical(cubit.state, snapshot), isTrue);
     },
   );

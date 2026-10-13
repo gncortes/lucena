@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{Der Versuch endet hier und bleibt im Verlauf.} =1{Du verlierst die in diesem Versuch gewonnene Etappe.} other{Du verlierst die {count} in diesem Versuch gewonnenen Etappen.}}",
   "gameSeeResult": "Ergebnis ansehen",
   "gameSoundLabelOn": "Ton",
-  "gameSoundLabelOff": "Kein Ton"
+  "gameSoundLabelOff": "Kein Ton",
+  "lessonVariationClose": "Variante schließen und zur Erklärung zurückkehren",
+  "lessonVariationPrevious": "Vorheriger Zug der Variante",
+  "lessonVariationNext": "Nächster Zug der Variante"
 }

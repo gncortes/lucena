@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{本次挑战到此结束，并保留在历史记录中。} =1{你将失去本次挑战中赢得的阶段。} other{你将失去本次挑战中赢得的 {count} 个阶段。}}",
   "gameSeeResult": "查看结果",
   "gameSoundLabelOn": "声音",
-  "gameSoundLabelOff": "静音"
+  "gameSoundLabelOff": "静音",
+  "lessonVariationClose": "关闭变着并返回讲解",
+  "lessonVariationPrevious": "变着中的上一步",
+  "lessonVariationNext": "变着中的下一步"
 }

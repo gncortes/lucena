@@ -27,7 +27,6 @@ import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
-import '../../core/keys/explanation_keys.dart';
 import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_timer.dart';
@@ -430,10 +429,9 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// O tabuleiro na variante, no lance do [cursor]; a folha recolhe para o
-  /// tabuleiro aparecer inteiro.
+  /// O tabuleiro na variante, no lance do [cursor]; a folha sai para baixo
+  /// (fica montada, com o tamanho e a rolagem) e a faixa e os controles entram.
   void _showLine(BuildContext context, SpeechLineCursor cursor) {
-    final opening = _variation.value == null;
     _flash.clear();
     _variation.value = cursor;
     _board?.updatePosition(
@@ -441,17 +439,6 @@ class _LessonScreenState extends State<LessonScreen>
       animate: true,
       resetPremove: true,
     );
-    if (opening && _sheet.isAttached) {
-      if (AppMotion.of(context).disabled) {
-        _sheet.jumpTo(_sheetMin);
-      } else {
-        _sheet.animateTo(
-          _sheetMin,
-          duration: AppMotion.of(context).component,
-          curve: AppMotion.enter,
-        );
-      }
-    }
   }
 
   void _showAuthoredVariation(VariationCursor? cursor) {
@@ -775,6 +762,8 @@ class _LessonScreenState extends State<LessonScreen>
                       builder: (context, _) {
                         final covered = _sheetMoving.value;
                         final variation = _variation.value;
+                        final authored = _authoredVariation;
+                        final inVariant = variation != null || authored != null;
                         // Os botões saem só enquanto a folha anda (arrasto
                         // ou animação) e voltam quando ela para, recolhida
                         // ou aberta: a fala rola por baixo deles.
@@ -796,25 +785,40 @@ class _LessonScreenState extends State<LessonScreen>
                                   child: AnimatedSwitcher(
                                     duration: AppMotion.of(context).component,
                                     child: KeyedSubtree(
-                                      key: ValueKey((
-                                        state.layout,
-                                        variation != null,
-                                      )),
-                                      child: variation != null
+                                      key: ValueKey((state.layout, inVariant)),
+                                      child: inVariant
                                           ? KeyedSubtree(
                                               key: LessonKeys.footer,
                                               child: VariationControls(
-                                                cursor: variation,
+                                                canPrevious: variation != null
+                                                    ? variation.canPrevious
+                                                    : authored!.canPrevious,
+                                                canNext: variation != null
+                                                    ? variation.canNext
+                                                    : authored!.canNext,
                                                 wrong: _wrongShown(state),
-                                                onExit: () => _exitLine(),
-                                                onBack: () => _showLine(
-                                                  context,
-                                                  variation.previous(),
-                                                ),
-                                                onForward: () => _showLine(
-                                                  context,
-                                                  variation.next(),
-                                                ),
+                                                onExit: () => variation != null
+                                                    ? _exitLine()
+                                                    : _showAuthoredVariation(
+                                                        null,
+                                                      ),
+                                                onBack: () => variation != null
+                                                    ? _showLine(
+                                                        context,
+                                                        variation.previous(),
+                                                      )
+                                                    : _showAuthoredVariation(
+                                                        authored!.previous(),
+                                                      ),
+                                                onForward: () =>
+                                                    variation != null
+                                                    ? _showLine(
+                                                        context,
+                                                        variation.next(),
+                                                      )
+                                                    : _showAuthoredVariation(
+                                                        authored!.next(),
+                                                      ),
                                               ),
                                             )
                                           : state.layout ==
@@ -910,24 +914,106 @@ class _LessonScreenState extends State<LessonScreen>
           ),
           Positioned.fill(
             child: ValueListenableBuilder(
-              valueListenable: _footerHeight,
-              builder: (context, footer, _) => ViktorSheet(
-                key: LessonKeys.viktorSheet,
-                top: rect.bottom + ExerciseLayout.gutter,
-                controller: _sheet,
-                scrollKey: LessonKeys.scroll,
-                closeKey: LessonKeys.closeSheet,
-                onMinimumChanged: (value) => _sheetMin = value,
-                onMoving: (value) => _sheetMoving.value = value,
-                padding: EdgeInsets.only(bottom: footer + _endGap),
-                children: [_speechSheet(context, state, step, viktor)],
+              valueListenable: _variation,
+              builder: (context, line, child) {
+                final motion = AppMotion.of(context);
+                final variant = line != null || _authoredVariation != null;
+                // A folha sai para baixo e fica montada: o tamanho e a
+                // rolagem voltam como estavam ao fechar a variante.
+                return AnimatedSlide(
+                  offset: variant ? const Offset(0, 1) : Offset.zero,
+                  duration: motion.component,
+                  curve: variant ? AppMotion.exit : AppMotion.enter,
+                  child: IgnorePointer(
+                    ignoring: variant,
+                    child: ExcludeSemantics(excluding: variant, child: child),
+                  ),
+                );
+              },
+              child: ValueListenableBuilder(
+                valueListenable: _footerHeight,
+                builder: (context, footer, _) => ViktorSheet(
+                  key: LessonKeys.viktorSheet,
+                  top: rect.bottom + ExerciseLayout.gutter,
+                  controller: _sheet,
+                  scrollKey: LessonKeys.scroll,
+                  closeKey: LessonKeys.closeSheet,
+                  onMinimumChanged: (value) => _sheetMin = value,
+                  onMoving: (value) => _sheetMoving.value = value,
+                  padding: EdgeInsets.only(bottom: footer + _endGap),
+                  children: [_speechSheet(context, state, step, viktor)],
+                ),
               ),
+            ),
+          ),
+          // A faixa da variante: os lances, o da vez em destaque, e o texto.
+          PositionedDirectional(
+            top: rect.bottom + ExerciseLayout.gutter,
+            start: ExerciseLayout.gutter,
+            end: ExerciseLayout.gutter,
+            child: ValueListenableBuilder(
+              valueListenable: _variation,
+              builder: (context, line, _) {
+                final strip = _stripOf(context, state, line);
+                return AnimatedOpacity(
+                  opacity: strip == null ? 0 : 1,
+                  duration: AppMotion.of(context).state,
+                  child: IgnorePointer(
+                    ignoring: strip == null,
+                    child: strip == null
+                        ? const SizedBox(width: double.infinity)
+                        : VariationStrip(
+                            key: LessonKeys.variationStrip,
+                            moves: strip.moves,
+                            current: strip.current,
+                            text: strip.text,
+                          ),
+                  ),
+                );
+              },
             ),
           ),
         ],
       );
     },
   );
+
+  /// O que a faixa da variante mostra: os lances da linha, o da vez e o
+  /// texto (na fala, o parágrafo que cita a linha; na explicação, o do lance).
+  ({List<String> moves, int current, String text})? _stripOf(
+    BuildContext context,
+    LessonState state,
+    SpeechLineCursor? line,
+  ) {
+    final authored = _authoredVariation;
+    if (authored != null) {
+      return (
+        moves: authored.variation.movesSan,
+        current: authored.ply,
+        text: authored.texts.isEmpty
+            ? ''
+            : WikiMarkup.parse(authored.texts.first).text,
+      );
+    }
+    if (line == null) return null;
+    final step = state.current;
+    final said = step == null
+        ? null
+        : state.layout == LessonLayoutMode.solving
+        ? _promptText(context, state, step)
+        : _said(context, state);
+    final marked = WikiMarkup.parse(said ?? '').text;
+    final first = line.line.links.first.text;
+    final paragraphs = marked.split('\n').where((p) => p.trim().isNotEmpty);
+    return (
+      moves: [for (final link in line.line.links) link.text],
+      current: line.ply,
+      text: paragraphs.firstWhere(
+        (p) => p.contains(first),
+        orElse: () => paragraphs.isEmpty ? '' : paragraphs.first,
+      ),
+    );
+  }
 
   /// Solução vista em tela baixa (T65 §4, E6): se entre o tabuleiro e o
   /// rodapé de 2 linhas sobra menos que o cabeçalho (64) e 4 linhas de texto
@@ -1432,32 +1518,6 @@ class _LessonScreenState extends State<LessonScreen>
     child: LessonFooterSurface(child: child),
   );
 
-  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton centrado,
-  /// CompRodapeLicao `voltar-posicao`) sobe uma variante, ou sai dela se já
-  /// estiver na raiz. Ao contrário do rodapé dos botões flutuantes, o fundo
-  /// é sólido (o texto que rola não aparece atrás) com um esmaecer no topo.
-  Widget _variationFooter(BuildContext context, LessonState state) {
-    final cursor = _authoredVariation!;
-    final payload = state.explanation;
-    return _footer(
-      context,
-      child: Align(
-        heightFactor: 1,
-        child: TextButton.icon(
-          key: ExplanationKeys.restore,
-          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-          onPressed: () => _showAuthoredVariation(
-            cursor.variation.parentId == null
-                ? null
-                : payload?.parentCursor(cursor.variation),
-          ),
-          icon: const Icon(Icons.undo),
-          label: Text(context.l10n.lessonReturn),
-        ),
-      ),
-    );
-  }
-
   /// O texto do botão principal: "Explicação" no passo de pensar (D16),
   /// "Concluir a aula" no último passo da aula, "Continuar" no resto.
   String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
@@ -1477,9 +1537,6 @@ class _LessonScreenState extends State<LessonScreen>
   Widget _solvingFooter(BuildContext context, LessonState state) {
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
-    if (_authoredVariation != null) {
-      return _variationFooter(context, state);
-    }
     final step = state.current!;
     final colors = Theme.of(context).colorScheme;
     final canHint =
@@ -1597,9 +1654,6 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// Com o professor falando: voltar um passo, tentar de novo e continuar.
   Widget _actions(BuildContext context, LessonState state) {
-    if (_authoredVariation != null) {
-      return _variationFooter(context, state);
-    }
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
     final step = state.current!;

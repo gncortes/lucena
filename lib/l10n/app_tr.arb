@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{Deneme burada biter ve geçmişinde kalır.} =1{Bu denemede kazandığın aşamayı kaybedersin.} other{Bu denemede kazandığın {count} aşamayı kaybedersin.}}",
   "gameSeeResult": "Sonucu gör",
   "gameSoundLabelOn": "Ses",
-  "gameSoundLabelOff": "Sessiz"
+  "gameSoundLabelOff": "Sessiz",
+  "lessonVariationClose": "Varyantı kapat ve açıklamaya dön",
+  "lessonVariationPrevious": "Varyantta önceki hamle",
+  "lessonVariationNext": "Varyantta sonraki hamle"
 }

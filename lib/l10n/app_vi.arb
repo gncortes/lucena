@@ -1106,5 +1106,8 @@
   "speedrunQuitHint": "{count, plural, =0{Lượt thử kết thúc tại đây và vẫn nằm trong lịch sử.} =1{Bạn mất chặng đã thắng trong lượt thử này.} other{Bạn mất {count} chặng đã thắng trong lượt thử này.}}",
   "gameSeeResult": "Xem kết quả",
   "gameSoundLabelOn": "Âm thanh",
-  "gameSoundLabelOff": "Không âm thanh"
+  "gameSoundLabelOff": "Không âm thanh",
+  "lessonVariationClose": "Đóng biến và quay lại phần giải thích",
+  "lessonVariationPrevious": "Nước đi trước trong biến",
+  "lessonVariationNext": "Nước đi tiếp theo trong biến"
 }
