@@ -8,6 +8,39 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
+  testWidgets('relógio parado fica a 55% de opacidade (CompTempo parado)', (
+    tester,
+  ) async {
+    Future<double> opacity(bool running) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: Center(
+              child: GameClock(
+                key: FreeBoardKeys.clock(Side.black),
+                side: Side.black,
+                time: const Duration(minutes: 3),
+                running: running,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return tester
+          .widget<Opacity>(
+            find.descendant(
+              of: find.byKey(FreeBoardKeys.clock(Side.black)),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .opacity;
+    }
+
+    expect(await opacity(false), 0.55);
+    expect(await opacity(true), 1);
+  });
+
   for (final side in Side.values) {
     testWidgets('$side: cor e tamanho fixos; só borda e ícone indicam a vez', (
       tester,

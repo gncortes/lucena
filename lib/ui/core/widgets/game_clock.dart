@@ -370,7 +370,8 @@ class GameClock extends StatelessWidget {
           value: value,
           semanticsLabel: value,
           type: TimeDisplayType.clock,
-          state: running ? TimeDisplayState.active : TimeDisplayState.normal,
+          // Relógio parado: 55% de opacidade, como o CompTempo estado=parado.
+          state: running ? TimeDisplayState.active : TimeDisplayState.paused,
           side: side,
           width: width,
           valueWidget: FittedBox(

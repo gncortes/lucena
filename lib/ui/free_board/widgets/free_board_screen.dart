@@ -60,6 +60,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
   bool _confirmingQuit = false;
+  // Só vale uma confirmação dada com o app em primeiro plano.
+  AppLifecycleState _lifecycle = AppLifecycleState.resumed;
 
   @override
   void initState() {
@@ -82,6 +84,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // for a vez da máquina, ela volta a pensar.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lifecycle = state;
     if (state == AppLifecycleState.resumed) {
       context.read<FreeBoardCubit>().resumed();
     }
@@ -101,7 +104,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   Future<void> _confirmResign() async {
     final cubit = context.read<FreeBoardCubit>();
     final confirmed = await showResignSheet(context);
-    if ((confirmed ?? false) && mounted) cubit.resign();
+    if (confirmed == true &&
+        mounted &&
+        _lifecycle == AppLifecycleState.resumed) {
+      cubit.resign();
+    }
   }
 
   @override
@@ -141,8 +148,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       destructive: true,
     );
     _confirmingQuit = false;
-    if (!(confirmed ?? false) || !mounted) return;
-    await cubit.quitSpeedrun();
+    if (confirmed != true ||
+        !mounted ||
+        _lifecycle != AppLifecycleState.resumed) {
+      return;
+    }
+    await cubit.quitSpeedrun(confirmed: true);
     if (!mounted) return;
     setState(() => _quitting = true);
     // Só depois de a tela aceitar fechar.
