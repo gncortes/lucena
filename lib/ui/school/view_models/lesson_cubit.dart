@@ -566,7 +566,10 @@ class LessonCubit extends Cubit<LessonState> {
         ? (decision.incorrect
               ? ExplanationState.incorrect
               : ExplanationState.correct)
-        : snapshot.interactive && !snapshot.reviewing
+        // Voltar a um passo para refazê-lo (não "Rever este ponto", que traz
+        // `returnTo`): o painel é o objetivo, nunca a solução (T65 §4).
+        : snapshot.interactive &&
+              (!snapshot.reviewing || snapshot.returnTo == null)
         ? ExplanationState.intro
         : ExplanationState.review;
     try {
