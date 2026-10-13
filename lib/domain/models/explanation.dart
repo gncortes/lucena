@@ -42,12 +42,14 @@ class ExplanationVariation {
     this.parentId,
     this.parentPly,
     required List<String> texts,
+    List<String> playedTexts = const [],
     required this.originFen,
     required List<String> movesUci,
     required List<String> movesSan,
     this.validated = false,
     Map<int, List<String>> explanationByPly = const {},
   }) : texts = List.unmodifiable(texts),
+       playedTexts = List.unmodifiable(playedTexts),
        movesUci = List.unmodifiable(movesUci),
        movesSan = List.unmodifiable(movesSan),
        explanationByPly = Map.unmodifiable({
@@ -62,6 +64,11 @@ class ExplanationVariation {
   final String? contextId, parentId;
   final int? parentPly;
   final List<String> texts, movesUci, movesSan;
+
+  /// Optional wording for when the student actually played this failed move
+  /// ("With 1.Ke3? you let the win slip…"); [texts] stays the hypothetical
+  /// wording used under "These do not work either".
+  final List<String> playedTexts;
   final Map<int, List<String>> explanationByPly;
   final bool validated;
   String? get firstUci => movesUci.firstOrNull;
@@ -77,6 +84,7 @@ class ExplanationVariation {
           _ => throw const FormatException('Missing variation outcome'),
         },
         texts: explanationTexts(json['texts']),
+        playedTexts: explanationTexts(json['playedTexts']),
         outcomeText: json['outcomeText'] as String?,
         contextId: json['contextId'] as String?,
         parentId: json['parentId'] as String?,
@@ -352,7 +360,7 @@ class ExplanationPayload {
             ExplanationBlock(
               id: 'played',
               kind: ExplanationKind.playedIncorrect,
-              texts: v.texts,
+              texts: v.playedTexts.isNotEmpty ? v.playedTexts : v.texts,
               variations: [for (final root in authored) ..._tree(root)],
             ),
           ],

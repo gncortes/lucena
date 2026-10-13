@@ -254,8 +254,8 @@ void main() {
         expect(
           block.title,
           language == 'pt'
-              ? 'Por que a tentativa anterior falha'
-              : 'Why the previous attempt fails',
+              ? 'Por que o lance anterior não funciona'
+              : 'Why the previous move does not work',
         );
         final variant = block.variations.single;
         expect(variant.outcomeText, variant.texts.first);
@@ -263,8 +263,8 @@ void main() {
           variant.outcomeText,
           startsWith(
             language == 'pt'
-                ? 'Refutação da tentativa anterior:'
-                : 'Refutation of the previous attempt:',
+                ? 'É esta resposta que pune o lance anterior:'
+                : 'This is the reply that punishes the previous move:',
           ),
         );
       }

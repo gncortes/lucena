@@ -812,4 +812,54 @@ void main() {
     expect(find.textContaining('Teaching text.'), findsNothing);
     expect(find.textContaining('1928'), findsOneWidget);
   });
+
+  testWidgets(
+    'lance errado: texto jogado (a) no erro, hipótese (b) na revisão',
+    (tester) async {
+      final source = ExplanationPayload(
+        positionId: 'played-vs-hypothesis',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'm',
+            kind: ExplanationKind.mainSolution,
+            variations: [root()],
+          ),
+          ExplanationBlock(
+            id: 'f',
+            kind: ExplanationKind.failedAlternatives,
+            variations: [
+              ExplanationVariation(
+                id: 'B',
+                label: 'B',
+                outcome: VariationOutcome.doesNotMeetGoal,
+                texts: ['Se as brancas jogassem 1.Rh2?, as pretas empatariam.'],
+                playedTexts: ['Com 1.Rh2? você deixa escapar a vitória.'],
+                originFen: fen,
+                movesUci: ['h1h2'],
+                movesSan: ['1.Kh2'],
+                validated: true,
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        app(source.forState(ExplanationState.incorrect, playedUci: 'h1h2')),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('você deixa escapar a vitória'),
+        findsOneWidget,
+      );
+
+      await tester.pumpWidget(app(source.forState(ExplanationState.review)));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('você deixa escapar'), findsNothing);
+      expect(
+        find.textContaining('Se as brancas jogassem 1.Rh2?'),
+        findsOneWidget,
+      );
+    },
+  );
 }
