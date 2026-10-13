@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Her birinin zaten bir sesi var. Değiştirmek için birine dokun.",
   "tourKeepVoices": "Böyle kalsın",
   "lessonPrevious": "Önceki adım",
+  "lessonFooterBack": "Geri",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Cihazın ses ayarlarını aç",
   "blindTitle": "Körleme",

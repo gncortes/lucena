@@ -252,10 +252,12 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
+    var cleared = false;
     if (state.fen != previous.fen ||
         state.step != previous.step ||
         state.speech != previous.speech ||
         state.layout != previous.layout) {
+      cleared = _authoredVariation != null;
       _authoredVariation = null;
     }
     _previous = state;
@@ -278,6 +280,18 @@ class _LessonScreenState extends State<LessonScreen>
             curve: AppMotion.enter,
           );
         }
+      }
+    }
+    // Saiu da Solução vista (Tentar de novo): a folha recolhe até o tabuleiro.
+    if (previous.solutionSeen && !state.solutionSeen && _sheet.isAttached) {
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(_sheetMin);
+      } else {
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
       }
     }
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
@@ -305,6 +319,16 @@ class _LessonScreenState extends State<LessonScreen>
     }
     if (_authoredVariation != null) {
       return;
+    }
+    // Saiu de uma variante da explicação (Voltar, Tentar de novo...): o
+    // tabuleiro volta a ser o do passo, com quem joga dele (o da variante é
+    // sem toque).
+    if (cleared) {
+      _board?.updatePosition(
+        _gameData(state),
+        animate: false,
+        resetPremove: true,
+      );
     }
     final board = _board;
     if (board == null) {
@@ -806,6 +830,10 @@ class _LessonScreenState extends State<LessonScreen>
         side,
         side,
       );
+      _openSolutionSheet(
+        state,
+        box.maxHeight - rect.bottom - ExerciseLayout.gutter,
+      );
       return Stack(
         children: [
           Positioned.fromRect(
@@ -873,6 +901,41 @@ class _LessonScreenState extends State<LessonScreen>
     },
   );
 
+  /// Solução vista em tela baixa (T65 §4, E6): se entre o tabuleiro e o
+  /// rodapé de 2 linhas sobra menos que o cabeçalho (64) e 4 linhas de texto
+  /// (160 dp), a folha abre expandida, como modal sobre o tabuleiro; o X
+  /// recolhe até a borda dele.
+  void _openSolutionSheet(LessonState state, double below) {
+    if (!state.solutionSeen) {
+      _solutionHandled = false;
+      return;
+    }
+    if (_solutionHandled) return;
+    _solutionHandled = true;
+    if (below - _solutionFooterHeight >= _solutionMinSheet) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_sheet.isAttached) return;
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(1);
+      } else {
+        // O controle limita ao tamanho máximo da folha.
+        _sheet.animateTo(
+          1,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
+      }
+    });
+  }
+
+  bool _solutionHandled = false;
+
+  /// Rodapé da Solução vista: 12 + 48 + 12 + 48 + 24 (LICOES-V2 §4).
+  static const _solutionFooterHeight = 144.0;
+
+  /// Cabeçalho do Viktor (64) + 4 linhas de texto de 24 dp.
+  static const _solutionMinSheet = 160.0;
+
   /// Room kept below the board for the collapsed sheet: the shared peek plus
   /// Viktor's header row (avatar 56 minus the 8 gap), now always in the sheet
   /// (D15). Short screens (360×640) shrink the board so the first line of the
@@ -932,6 +995,10 @@ class _LessonScreenState extends State<LessonScreen>
         ),
       if (hint is NormalMove)
         Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
+      // Solução vista: a seta verde (a da dica) no lance certo.
+      if (state.solutionSeen)
+        if (state.solutionMove case final NormalMove move)
+          Arrow(color: const Color(0xcc15781b), orig: move.from, dest: move.to),
     };
     // Cada passo novo: o tabuleiro "pousa" (o controle volta do zero ao
     // trocar de passo, sem refazer o tabuleiro).
@@ -1105,6 +1172,7 @@ class _LessonScreenState extends State<LessonScreen>
         inDemo: state.current is DemoStep && state.demoMove > 0,
       ),
       correctMoveTitle: context.l10n.lessonCorrectMove,
+      solutionSeen: state.solutionSeen,
     );
     final attempted = state.attemptedSan ?? state.thinkMistake;
     if (attempted == null ||
@@ -1122,25 +1190,29 @@ class _LessonScreenState extends State<LessonScreen>
     return ExplanationPayload(
       positionId: payload.positionId,
       state: ExplanationState.incorrect,
-      explanations: [
-        ExplanationBlock(
-          id: 'played-unmapped',
-          kind: ExplanationKind.playedIncorrect,
-          texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
-        ),
-        for (final block in payload.explanations)
-          // A explicação do lance certo ganha o título dela (D13–D16).
-          if (block.kind == ExplanationKind.context && block.title.isEmpty)
-            ExplanationBlock(
-              id: block.id,
-              kind: block.kind,
-              title: context.l10n.lessonCorrectMove,
-              texts: block.texts,
-              variations: block.variations,
-            )
-          else
-            block,
-      ],
+      explanations: _correctFirst(
+        state.solutionSeen,
+        context.l10n.lessonCorrectMove,
+        [
+          ExplanationBlock(
+            id: 'played-unmapped',
+            kind: ExplanationKind.playedIncorrect,
+            texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
+          ),
+          for (final block in payload.explanations)
+            // A explicação do lance certo ganha o título dela (D13–D16).
+            if (block.kind == ExplanationKind.context && block.title.isEmpty)
+              ExplanationBlock(
+                id: block.id,
+                kind: block.kind,
+                title: context.l10n.lessonCorrectMove,
+                texts: block.texts,
+                variations: block.variations,
+              )
+            else
+              block,
+        ],
+      ),
     );
   }
 
@@ -1483,24 +1555,31 @@ class _LessonScreenState extends State<LessonScreen>
         child: DemoControls(state: state, height: _actionsHeight),
       );
     }
+    // Com a explicação aberta (T65 §3, §4): o rodapé do canvas, de botões de
+    // texto em partes iguais, no lugar do FAB e da pílula.
+    final explanation = state.explanation;
+    final failed = state.phase == StepPhase.failed;
+    if (failed && state.solutionSeen) {
+      return _solutionFooter(context, state);
+    }
+    if (failed &&
+        (explanation?.explanations.any(
+              (b) => b.kind == ExplanationKind.mainSolution,
+            ) ??
+            false)) {
+      return _errorFooter(context, state, step);
+    }
+    if (explanation != null && !failed && state.phase != StepPhase.waiting) {
+      return _panelFooter(
+        context,
+        children: [
+          _backButton(context, state),
+          _continueButton(context, state, step),
+        ],
+      );
+    }
     final review = state.phase == StepPhase.failed && state.reviewStep != null;
     if (state.phase == StepPhase.failed) {
-      VariationCursor? solution;
-      for (final block
-          in state.explanation?.explanations ?? const <ExplanationBlock>[]) {
-        if (block.kind != ExplanationKind.mainSolution &&
-            block.kind != ExplanationKind.playedCorrect &&
-            block.kind != ExplanationKind.otherSolutions) {
-          continue;
-        }
-        for (final variation in block.variations) {
-          if (variation.parentId != null) continue;
-          solution = state.explanation?.openVariation(variation);
-          if (solution != null) break;
-        }
-        if (solution != null) break;
-      }
-      final solutionCursor = solution;
       Widget action(
         Key key,
         IconData icon,
@@ -1574,11 +1653,11 @@ class _LessonScreenState extends State<LessonScreen>
             Row(
               children: [
                 action(
-                  LessonKeys.nextButton,
+                  LessonKeys.seeSolution,
                   Icons.lightbulb_outline,
                   l10n.lessonSeeSolution,
-                  solutionCursor != null
-                      ? () => _showAuthoredVariation(solutionCursor)
+                  state.explanation != null
+                      ? cubit.seeSolution
                       : state.canContinue
                       ? cubit.next
                       : null,
@@ -1651,6 +1730,180 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
+  /// O rodapé do painel (CompRodapeLicao `rodape_botoes`): fundo da folha,
+  /// borda de cima de 1 dp, padding 12/16/24; as linhas em [children] e os
+  /// botões de cada linha em partes iguais, 12 dp entre eles.
+  Widget _panelFooter(BuildContext context, {required List<Widget> children}) =>
+      _footerBox(
+        key: LessonKeys.footer,
+        context: context,
+        // Os botões da fileira da mesma altura se um rótulo quebrar linha.
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (index, child) in children.indexed) ...[
+                if (index > 0) const SizedBox(width: AppSpacing.md),
+                Expanded(child: child),
+              ],
+            ],
+          ),
+        ),
+      );
+
+  Widget _footerBox({
+    required Key key,
+    required BuildContext context,
+    required Widget child,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      key: key,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        border: Border(top: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        child: child,
+      ),
+    );
+  }
+
+  ButtonStyle _footerButtonStyle(BuildContext context) => ButtonStyle(
+    minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+    padding: const WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+    ),
+    shape: const WidgetStatePropertyAll(StadiumBorder()),
+    textStyle: WidgetStatePropertyAll(Theme.of(context).textTheme.labelLarge),
+  );
+
+  Widget _outlinedButton(
+    BuildContext context, {
+    required Key key,
+    required String label,
+    required VoidCallback? onPressed,
+    String? tooltip,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    final button = OutlinedButton(
+      key: key,
+      style: _footerButtonStyle(context).copyWith(
+        foregroundColor: WidgetStatePropertyAll(colors.primary),
+        side: WidgetStateProperty.resolveWith(
+          (states) => BorderSide(
+            color: states.contains(WidgetState.disabled)
+                ? colors.onSurface.withValues(alpha: .12)
+                : colors.outline,
+          ),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    );
+    return tooltip == null ? button : Tooltip(message: tooltip, child: button);
+  }
+
+  /// "Voltar" (o passo anterior; o tooltip é `lessonPrevious`).
+  Widget _backButton(BuildContext context, LessonState state) =>
+      _outlinedButton(
+        context,
+        key: LessonKeys.backButton,
+        label: context.l10n.lessonFooterBack,
+        tooltip: context.l10n.lessonPrevious,
+        onPressed: state.canGoBack ? context.read<LessonCubit>().back : null,
+      );
+
+  /// "Continuar" cheio, ou o texto do passo (Concluir, Voltar ao teste...).
+  Widget _continueButton(
+    BuildContext context,
+    LessonState state,
+    LessonStep step, {
+    bool filled = true,
+  }) {
+    final cubit = context.read<LessonCubit>();
+    final label = _nextLabel(context, state, step);
+    final onPressed = state.canContinue ? cubit.next : null;
+    if (!filled) {
+      return _outlinedButton(
+        context,
+        key: LessonKeys.nextButton,
+        label: label,
+        onPressed: onPressed,
+      );
+    }
+    return FilledButton(
+      key: LessonKeys.nextButton,
+      style: _footerButtonStyle(context),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    );
+  }
+
+  /// Explicação do erro (E2): Voltar | Ver solução | Continuar, 1:1:1; só o
+  /// Continuar é cheio.
+  Widget _errorFooter(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+  ) => _panelFooter(
+    context,
+    children: [
+      _backButton(context, state),
+      _outlinedButton(
+        context,
+        key: LessonKeys.seeSolution,
+        label: context.l10n.lessonSeeSolution,
+        onPressed: context.read<LessonCubit>().seeSolution,
+      ),
+      _continueButton(context, state, step),
+    ],
+  );
+
+  /// Solução vista (E5): em cima, Tentar de novo cheio com o ícone; embaixo,
+  /// Voltar | Continuar em contorno (um só primário na tela).
+  Widget _solutionFooter(BuildContext context, LessonState state) {
+    final cubit = context.read<LessonCubit>();
+    final step = state.current!;
+    return KeyedSubtree(
+      key: LessonKeys.footer,
+      child: _footerBox(
+        key: LessonKeys.solutionFooter,
+        context: context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.icon(
+              key: LessonKeys.retryButton,
+              style: _footerButtonStyle(context),
+              onPressed: cubit.retry,
+              icon: const Icon(Icons.replay, size: 18),
+              label: Text(
+                context.l10n.lessonRetry,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: _backButton(context, state)),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: _continueButton(context, state, step, filled: false),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
@@ -1700,6 +1953,7 @@ ExplanationPayload demoSheetPayload(
 ExplanationPayload wrongMoveSheetPayload(
   ExplanationPayload payload, {
   required String correctMoveTitle,
+  bool solutionSeen = false,
 }) {
   if (payload.state != ExplanationState.incorrect ||
       !payload.explanations.any(
@@ -1711,7 +1965,7 @@ ExplanationPayload wrongMoveSheetPayload(
     positionId: payload.positionId,
     reviewStepId: payload.reviewStepId,
     state: payload.state,
-    explanations: [
+    explanations: _correctFirst(solutionSeen, correctMoveTitle, [
       for (final b in payload.explanations)
         if (b.kind == ExplanationKind.mainSolution)
           ExplanationBlock(
@@ -1723,8 +1977,27 @@ ExplanationPayload wrongMoveSheetPayload(
           )
         else if (!(b.kind == ExplanationKind.context && b.title.isNotEmpty))
           b,
-    ],
+    ]),
   );
+}
+
+/// Solução vista (T65 §4): Lance certo, depois o lance do aluno ("Lance
+/// errado"), a citação de contexto e "Também não funcionam". Sem a solução
+/// vista, a ordem é a do conteúdo (erro antes do certo, §3).
+// TODO(lote A): `ExplanationCards._ordered` hoje reordena por tipo; ao
+// refazê-lo (erro, certo, contexto, falhas), respeitar esta ordem quando o
+// certo vier antes do erro, e a citação de contexto (`LessonQuote`) fica
+// entre o lance do aluno e "Também não funcionam".
+List<ExplanationBlock> _correctFirst(
+  bool solutionSeen,
+  String correctMoveTitle,
+  List<ExplanationBlock> blocks,
+) {
+  if (!solutionSeen) return blocks;
+  bool isCorrect(ExplanationBlock b) =>
+      b.kind == ExplanationKind.mainSolution ||
+      (b.kind == ExplanationKind.context && b.title == correctMoveTitle);
+  return [...blocks.where(isCorrect), ...blocks.where((b) => !isCorrect(b))];
 }
 
 /// Abre a próxima aula da trilha no lugar desta.

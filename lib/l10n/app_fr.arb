@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Chacun a déjà une voix. Touchez-en un pour la changer.",
   "tourKeepVoices": "Garder ainsi",
   "lessonPrevious": "Étape précédente",
+  "lessonFooterBack": "Retour",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Ouvrir les réglages vocaux de l'appareil",
   "blindTitle": "À l'aveugle",

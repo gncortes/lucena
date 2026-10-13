@@ -2969,6 +2969,10 @@
   "@lessonPrevious": {
     "description": "Lesson: button (tooltip) that goes back to the previous step to review it"
   },
+  "lessonFooterBack": "Back",
+  "@lessonFooterBack": {
+    "description": "Lesson: label of the footer button that goes back to the previous step (outlined, next to Continue)"
+  },
   "voiceSpeedValue": "{speed}×",
   "@voiceSpeedValue": {
     "description": "Voice speed on the speech bubble button, e.g. 1.2×",

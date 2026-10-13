@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Mỗi người đã có một giọng. Chạm vào một người để đổi.",
   "tourKeepVoices": "Giữ nguyên",
   "lessonPrevious": "Bước trước",
+  "lessonFooterBack": "Quay lại",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Mở cài đặt giọng nói của thiết bị",
   "blindTitle": "Cờ mù",

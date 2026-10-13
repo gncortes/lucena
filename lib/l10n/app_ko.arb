@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "모두 이미 목소리가 있어요. 바꾸려면 상대를 누르세요.",
   "tourKeepVoices": "이대로 두기",
   "lessonPrevious": "이전 단계",
+  "lessonFooterBack": "뒤로",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "기기 음성 설정 열기",
   "blindTitle": "블라인드",

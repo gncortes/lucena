@@ -434,7 +434,7 @@ void main() {
       expect(lessonCubit.state.phase, StepPhase.failed);
       final back = find.byKey(LessonKeys.backButton);
       final review = find.byKey(LessonKeys.reviewPoint);
-      final solution = find.byKey(LessonKeys.nextButton);
+      final solution = find.byKey(LessonKeys.seeSolution);
       final retry = find.byKey(LessonKeys.retryButton);
       expect(tester.getRect(back).top, closeTo(tester.getRect(review).top, 1));
       expect(

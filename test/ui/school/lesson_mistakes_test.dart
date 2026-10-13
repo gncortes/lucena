@@ -118,7 +118,10 @@ void main() {
     await lesson.retry();
     expect(lesson.state.phase, StepPhase.active);
     expect(lesson.state.reviewStep, isNull);
-    expect(lesson.state.speech, 'Again.');
+    // T65 §4: o passo recomeça como na abertura (a fala de abertura, não a
+    // do "de novo"); o erro já contado fica.
+    expect(lesson.state.speech, 'Mate in one.');
+    expect(lesson.state.mistakes, 1);
     await lesson.play(move('a1a8'));
     expect(lesson.state.phase, StepPhase.done);
   });
@@ -302,9 +305,12 @@ void main() {
       expect(cubit.state.mistakes, 1);
       await cubit.play(move('a2a3'));
       await cubit.retry();
+      // T65 §4: Tentar de novo recomeça o passo (posição e vez iniciais).
       expect(cubit.state.phase, StepPhase.active);
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.turn, 1);
+      expect(cubit.state.fen, initial);
+      expect(cubit.state.turn, 0);
+      expect(cubit.state.mistakes, 2);
+      await cubit.play(move('e2e4'));
       await cubit.play(move('g1f3'));
       expect(cubit.state.phase, StepPhase.done);
     });

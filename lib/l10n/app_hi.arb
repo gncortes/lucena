@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "हर एक की पहले से एक आवाज़ है। बदलने के लिए किसी पर टैप करें।",
   "tourKeepVoices": "ऐसे ही रखें",
   "lessonPrevious": "पिछला चरण",
+  "lessonFooterBack": "वापस",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "डिवाइस की आवाज़ सेटिंग खोलें",
   "blindTitle": "बिना देखे",

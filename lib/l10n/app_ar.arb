@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "لكل واحد صوت بالفعل. المس أحدهم لتغييره.",
   "tourKeepVoices": "أبقِه كما هو",
   "lessonPrevious": "الخطوة السابقة",
+  "lessonFooterBack": "رجوع",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "فتح إعدادات الصوت في الجهاز",
   "blindTitle": "بلا رؤية",

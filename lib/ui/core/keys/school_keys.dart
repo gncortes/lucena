@@ -66,6 +66,12 @@ abstract final class LessonKeys {
   static const title = Key('lesson.title');
   static const guide = Key('lesson.guide');
   static const nextButton = Key('lesson.next');
+
+  /// "Ver solução" do rodapé da explicação do erro (T65 §3).
+  static const seeSolution = Key('lesson.seeSolution');
+
+  /// O rodapé de duas linhas da Solução vista (T65 §4).
+  static const solutionFooter = Key('lesson.solutionFooter');
   static const hintButton = Key('lesson.hint');
 
   /// T51: o passo de pensar, a demonstração e o fim de uma parte.
