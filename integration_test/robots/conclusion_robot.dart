@@ -132,13 +132,8 @@ class ConclusionRobot {
   Future<void> expectStageTime(String time) async {
     await waitConclusion();
     await $(ConclusionKeys.stageTime).scrollTo();
-    // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo). O valor vem
-    // isolado em LTR (U+2066…U+2069), que não aparece na tela.
-    expect(
-      _lastText(ConclusionKeys.stageTime)
-          ?.replaceAll(RegExp('[\u2066\u2069]'), ''),
-      endsWith(time),
-    );
+    // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo).
+    expect(_lastText(ConclusionKeys.stageTime), endsWith(time));
   }
 
   /// Espera o aviso de conquista sumir (ele some sozinho), sem prender o

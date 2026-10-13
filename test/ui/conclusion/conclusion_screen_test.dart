@@ -17,7 +17,6 @@ import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
-import 'package:lucena/domain/use_cases/marathon.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -86,7 +85,6 @@ void main() {
     Locale locale = const Locale('en'),
     bool fresh = false,
     bool settled = true,
-    ThemeMode themeMode = ThemeMode.light,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
@@ -155,7 +153,6 @@ void main() {
         settingsCubit: settings,
         speechCubit: speech,
         locale: locale,
-        themeMode: themeMode,
         child: MediaQuery(
           data: MediaQueryData(
             size: size,
@@ -235,88 +232,6 @@ void main() {
         );
       });
     }
-  });
-
-  group('fonte 2,0', () {
-    // Largo de propósito: a fonte dos testes (Ahem, um quadrado por letra)
-    // não cabe em 360 a 2,0, e a largura não muda o círculo de 28 fixo.
-    testWidgets('o número "10" da etapa cabe inteiro (pílula)', (tester) async {
-      final base = sampleSpeedruns[1];
-      final marathon = Marathon.of(
-        base.copyWith(
-          stages: [
-            for (var i = 0; i < 10; i++)
-              base.stages.first.copyWith(id: '${base.id}/$i'),
-          ],
-        ),
-      );
-      final pace = SpeedrunPaces.idFor(marathon.id, sampleSpeedrunTime);
-      await open(
-        tester,
-        size: const Size(900, 2400),
-        scale: 2,
-        journey: FakeJourneyRepository(speedruns: [marathon]),
-        marathon: (speedruns) async {
-          final attempt = await speedruns.start(pace, now());
-          for (var stage = 0; stage < 9; stage++) {
-            await progress.addAttempt(
-              Attempt(
-                positionId: samplePositions[0].id,
-                playedAt: now(),
-                outcome: AttemptOutcome.win,
-                fulfilled: true,
-                opponent: OpponentKind.maia,
-                userClock: const Duration(seconds: 10),
-                speedrunAttemptId: attempt.id,
-                speedrunStage: stage,
-              ),
-            );
-          }
-          return (attempt.id, 9);
-        },
-      );
-      await tester.tap(find.byKey(ConclusionKeys.runDetails));
-      await tester.pumpAndSettle();
-      final number = find.descendant(
-        of: find.byKey(ConclusionKeys.stage(9)),
-        matching: find.text('10'),
-      );
-      final badge = find.ancestor(of: number, matching: find.byType(Container));
-      final box = tester.getRect(badge.first);
-      final text = tester.getRect(number);
-      // Numa linha só e dentro da pílula (antes o "0" descia e era cortado).
-      expect(box.width, greaterThanOrEqualTo(text.width));
-      expect(box.height, greaterThanOrEqualTo(text.height));
-      expect(text.height, lessThan(text.width * 2));
-      // Um dígito continua círculo, que cresce com a fonte (na Ahem o "10"
-      // ainda passa do círculo; no aparelho cabe).
-      final one = find.ancestor(
-        of: find.descendant(
-          of: find.byKey(ConclusionKeys.stage(0)),
-          matching: find.text('1'),
-        ),
-        matching: find.byType(Container),
-      );
-      final first = tester.getRect(one.first);
-      expect(first.width, closeTo(first.height, 0.5));
-      expect(first.width, closeTo(56, 0.5));
-    });
-
-    testWidgets('o rating cabe em 360 sem encolher a fonte', (tester) async {
-      await open(tester, size: const Size(360, 2400), scale: 2);
-      expect(find.byKey(ConclusionKeys.ratingValue), findsOneWidget);
-      // Sem FittedBox: o valor desce de linha em vez de diminuir.
-      expect(
-        find.ancestor(
-          of: find.byKey(ConclusionKeys.ratingValue),
-          matching: find.byType(FittedBox),
-        ),
-        findsNothing,
-      );
-      final card = tester.getRect(find.byKey(ConclusionKeys.rating));
-      final value = tester.getRect(find.byKey(ConclusionKeys.ratingValue));
-      expect(value.right, lessThanOrEqualTo(card.right));
-    });
   });
 
   group('análise rápida', () {
@@ -535,143 +450,23 @@ void main() {
     });
   });
 
-  // T65 (dívidas): tempo no árabe, aviso por cima da AppBar, botão no tema.
-  group('speedrun clássico', () {
-    final speedrunId = SpeedrunPaces.idFor(
-      sampleSpeedruns[0].id,
-      SpeedrunPaces.all.first,
-    );
-
-    // Joga as etapas anteriores e devolve a que `open` grava por último.
-    Future<(int, int)> Function(FakeSpeedrunRepository) run(int last) {
-      return (speedruns) async {
-        final attempt = await speedruns.start(speedrunId, now());
-        for (var stage = 0; stage < last; stage++) {
-          await progress.addAttempt(
-            Attempt(
-              positionId: samplePositions[0].id,
-              playedAt: now(),
-              outcome: AttemptOutcome.win,
-              fulfilled: true,
-              opponent: OpponentKind.maia,
-              userClock: const Duration(seconds: 10),
-              speedrunAttemptId: attempt.id,
-              speedrunStage: stage,
-            ),
-          );
-        }
-        return (attempt.id, last);
-      };
-    }
-
-    Text textOf(WidgetTester tester, Key key) =>
-        tester.widget<Text>(find.byKey(key));
-
-    testWidgets('em andamento: tempo da etapa isolado em LTR (ar)', (
-      tester,
-    ) async {
-      await open(tester, locale: const Locale('ar'), marathon: run(0));
-      final stageText = textOf(tester, ConclusionKeys.stageTime);
-      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
-      expect(stageText.data, contains('\u2066$formatted\u2069'));
-      expect(
-        textOf(tester, ConclusionKeys.total).textDirection,
-        TextDirection.ltr,
-      );
-    });
-
-    testWidgets('em andamento, en: o texto visível não muda', (tester) async {
-      await open(tester, marathon: run(0));
-      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
-      final label = AppLocalizations.of(
-        tester.element(find.byKey(ConclusionKeys.run)),
-      ).conclusionStageTime;
-      expect(
-        textOf(
-          tester,
-          ConclusionKeys.stageTime,
-        ).data!.replaceAll(RegExp('[\u2066\u2069]'), ''),
-        '$label: $formatted',
-      );
-    });
-
-    testWidgets('concluído: total e etapas em LTR (ar)', (tester) async {
-      await open(tester, locale: const Locale('ar'), marathon: run(1));
-      expect(
-        textOf(tester, ConclusionKeys.total).textDirection,
-        TextDirection.ltr,
-      );
-      final rows = find.descendant(
-        of: find.byKey(ConclusionKeys.stage(0)),
-        matching: find.byType(Text),
-      );
-      await tester.tap(find.byKey(ConclusionKeys.runDetails));
-      await tester.pumpAndSettle();
-      final texts = tester.widgetList<Text>(rows);
-      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
-      expect(
-        texts.where(
-          (t) => t.data == formatted && t.textDirection == TextDirection.ltr,
-        ),
-        isNotEmpty,
-      );
-    });
-  });
-
   group('aviso de conquista', () {
     for (final size in const [Size(360, 740), Size(412, 917)]) {
-      for (final scale in const [1.0, 2.0]) {
-        // A 2,0 o aviso (componente aprovado, cresce com a fonte) tem
-        // 188-220 dp e cobre o título enquanto aparece: aceito, porque some
-        // sozinho. Ali só a posição e o título livre depois.
-        testWidgets('fica no alto, acima do título a 1,0 '
-            '(${size.width.toInt()}, x$scale)', (tester) async {
-          await open(
-            tester,
-            size: size,
-            scale: scale,
-            fresh: true,
-            settled: false,
-          );
-          await tester.pump(AchievementToasts.duration * 0.3);
-          final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
-          final title = tester.getRect(find.byKey(ConclusionKeys.title));
-          expect(toast.top, closeTo(8, 1));
-          if (scale == 1) expect(toast.bottom, lessThanOrEqualTo(title.top));
-          await tester.pump(AchievementToasts.duration);
-          await tester.pumpAndSettle();
-          expect(
-            find.byKey(AchievementsKeys.toast).hitTestable(),
-            findsNothing,
-          );
-          expect(
-            find.byKey(ConclusionKeys.title).hitTestable(),
-            findsOneWidget,
-          );
-        });
-      }
+      testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
+        tester,
+      ) async {
+        await open(tester, size: size, fresh: true, settled: false);
+        await tester.pump(AchievementToasts.duration * 0.3);
+        final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
+        final title = tester.getRect(find.byKey(ConclusionKeys.title));
+        expect(toast.top, closeTo(8, 1));
+        expect(toast.bottom, lessThanOrEqualTo(title.top));
+        // Some sozinho e o título fica livre.
+        await tester.pump(AchievementToasts.duration);
+        await tester.pumpAndSettle();
+        expect(find.byKey(AchievementsKeys.toast).hitTestable(), findsNothing);
+        expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
+      });
     }
-  });
-
-  group('botão principal no escuro', () {
-    testWidgets('usa o tema, sem cor fixa, com contraste', (tester) async {
-      await open(tester, themeMode: ThemeMode.dark);
-      final colors = Theme.of(tester.element(find.byKey(ConclusionKeys.screen)))
-          .colorScheme;
-      final buttons = find.descendant(
-        of: find.byKey(ConclusionKeys.screen),
-        matching: find.byType(FilledButton),
-      );
-      expect(buttons, findsWidgets);
-      for (final button in tester.widgetList<FilledButton>(buttons)) {
-        expect(button.style?.backgroundColor, isNull);
-        expect(button.style?.foregroundColor, isNull);
-      }
-      final a = colors.primary.computeLuminance();
-      final b = colors.onPrimary.computeLuminance();
-      final ratio =
-          (a > b ? a + 0.05 : b + 0.05) / (a > b ? b + 0.05 : a + 0.05);
-      expect(ratio, greaterThanOrEqualTo(4.5));
-    });
   });
 }

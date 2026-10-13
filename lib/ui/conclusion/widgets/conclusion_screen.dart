@@ -19,7 +19,6 @@ import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_medal.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
-import '../../history/widgets/history_labels.dart';
 import '../../core/l10n/l10n.dart';
 import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -209,9 +208,7 @@ String _title(AppLocalizations l10n, Conclusion conclusion) {
 String _shareLine(AppLocalizations l10n, Conclusion conclusion) {
   final title = _title(l10n, conclusion);
   final total = conclusion.run?.total;
-  final line = total == null
-      ? title
-      : '$title: ${HistoryLabels.ltr(RunTimeFormat.format(total))}';
+  final line = total == null ? title : '$title: ${RunTimeFormat.format(total)}';
   if (RegExp(r'[.!?]$').hasMatch(line)) return line;
   // Vitória com exclamação; o resto, com ponto.
   return conclusion.result == ConclusionResult.won ? '$line!' : '$line.';
@@ -881,25 +878,17 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppShape.large),
       ),
-      // Numa linha; com fonte grande em 360, o valor desce para a de baixo
-      // (sem encolher a fonte que o jogador escolheu).
-      child: Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: AppSpacing.xs,
+      child: Row(
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.trending_up_rounded, color: colors.primary),
-              const SizedBox(width: AppSpacing.md),
-              Flexible(
-                child: Text(
-                  context.l10n.reportRatingLabel,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-            ],
+          Icon(Icons.trending_up_rounded, color: colors.primary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              context.l10n.reportRatingLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleSmall,
+            ),
           ),
           AnimatedBuilder(
             animation: _counting,
@@ -1029,7 +1018,7 @@ class _RunState extends State<_Run> {
             Text(
               bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
               key: ConclusionKeys.total,
-              textDirection: TextDirection.ltr,
+              textDirection: bankLeft != null ? TextDirection.ltr : null,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -1040,7 +1029,7 @@ class _RunState extends State<_Run> {
           // A etapa que acabou de ser jogada e, no fim, o recorde de antes.
           if (!ended && !_lost && stageTime > Duration.zero)
             Text(
-              '${l10n.conclusionStageTime}: ${HistoryLabels.ltr(time(stageTime))}',
+              '${l10n.conclusionStageTime}: ${time(stageTime)}',
               key: ConclusionKeys.stageTime,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -1049,8 +1038,7 @@ class _RunState extends State<_Run> {
             ),
           if (ended && record != null && !run.newRecord)
             Text(
-              // O valor não quebra no meio ("2 min / 50.0 s") com fonte grande.
-              '${l10n.speedrunBest}: ${HistoryLabels.ltr(time(record).replaceAll(' ', '\u00A0'))}',
+              '${l10n.speedrunBest}: ${time(record)}',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -1121,22 +1109,18 @@ class _StageRow extends StatelessWidget {
     final accent = fastest
         ? ChangeColors.of(context, up: true)
         : colors.primary;
-    final badge = MediaQuery.textScalerOf(context).scale(28);
     return Padding(
       key: ConclusionKeys.stage(number - 1),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
-          // Círculo de 28 que cresce com a fonte: o "10" cabe, um dígito
-          // continua círculo e todas as linhas têm a mesma largura (só passa
-          // a pílula se o número não couber).
           Container(
-            constraints: BoxConstraints(minWidth: badge, minHeight: badge),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+            width: 28,
+            height: 28,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: accent.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(AppShape.full),
+              shape: BoxShape.circle,
             ),
             child: Text(
               '$number',
@@ -1225,7 +1209,6 @@ class _StageRow extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Text(
             time,
-            textDirection: TextDirection.ltr,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontFeatures: const [FontFeature.tabularFigures()],
