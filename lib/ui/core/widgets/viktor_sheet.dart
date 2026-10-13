@@ -55,6 +55,11 @@ class ViktorSheet extends StatefulWidget {
   /// (LICOES-V2 §5).
   static const openGap = 76.0;
 
+  /// Quanto a folha aberta sozinha fica à vista antes de recolher: 2 s mais
+  /// 50 ms por caractere do texto, entre 4 e 12 s. Só aqui.
+  static Duration readingTime(int length) =>
+      Duration(milliseconds: (2000 + 50 * length).clamp(4000, 12000));
+
   final double top;
 
   /// Quanto, no fim da folha recolhida, já é da barra de controles: o texto

@@ -702,7 +702,12 @@ class TeacherSpeech extends StatelessWidget {
   }) {
     final speech = speechOf(context);
     if (speech == null) {
-      return _TypedText(text: words, onTapAt: onTapAt, snap: snap);
+      return _TypedText(
+        key: ValueKey(text),
+        text: words,
+        onTapAt: onTapAt,
+        snap: snap,
+      );
     }
     final language = Localizations.localeOf(context).toLanguageTag();
     final state = speech.state;
@@ -718,6 +723,8 @@ class TeacherSpeech extends StatelessWidget {
           a.isSpeaking(text) != b.isSpeaking(text) ||
           (b.isSpeaking(text) && a.revealed != b.revealed),
       builder: (context, state) => _TypedText(
+        // Fala nova no mesmo lugar (explicação seguinte): digita de novo.
+        key: ValueKey(text),
         text: words,
         onTapAt: onTapAt,
         snap: snap,
@@ -1127,6 +1134,7 @@ class _TailPainter extends CustomPainter {
 class _TypedText extends StatefulWidget {
   const _TypedText({
     required this.text,
+    super.key,
     this.onTapAt,
     this.snap,
     this.paced = false,

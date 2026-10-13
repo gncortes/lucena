@@ -21,6 +21,7 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -90,6 +91,10 @@ void main() {
         child: BlocProvider.value(value: cubit, child: const LessonScreen()),
       ),
     );
+    await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
     await tester.pumpAndSettle();
     return settings;
   }
@@ -465,6 +470,7 @@ void main() {
       expect(tester.widget<OutlinedButton>(review).onPressed, isNull);
       expect(tester.widget<FilledButton>(solution).onPressed, isNull);
       expect(find.byKey(LessonKeys.variationShow), findsNothing);
+      await settleSheet(tester);
       final board = tester.getRect(find.byKey(LessonKeys.board));
       final teacher = find.byWidgetPredicate(
         (widget) =>

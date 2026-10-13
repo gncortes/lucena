@@ -141,6 +141,22 @@ class _LessonScreenState extends State<LessonScreen>
   // para depois do quadro.
   final _sheetMoving = ValueNotifier(false);
 
+  // A folha que abre sozinha com o texto novo do Viktor e recolhe depois do
+  // tempo de leitura (T65, folha automática). [_visited] guarda o que já foi
+  // dito nesta sessão da lição: passo revisto não anima a folha nem digita.
+  final _visited = <String>{};
+  bool _revisiting = false;
+  bool _firstSynced = false;
+  bool _autoSettled = false;
+  bool _autoOpen = false;
+  int _autoGen = 0;
+  int _autoLength = 0;
+  double? _areaHeight;
+  Timer? _autoTimer;
+  Duration _autoTotal = Duration.zero;
+  Duration? _autoLeft;
+  final _autoWatch = Stopwatch();
+
   // A altura medida dos botões que flutuam embaixo (com a margem acima
   // deles). Começa na prevista, até a primeira medida.
   final _footerHeight = ValueNotifier<double>(_actionsHeight);
@@ -169,9 +185,11 @@ class _LessonScreenState extends State<LessonScreen>
     final cubit = context.read<LessonCubit>();
     final speech = TeacherSpeech.speechOf(context);
     if (background) {
+      _pauseAuto();
       unawaited(cubit.pauseForBackground());
       unawaited(speech?.pauseForBackground());
     } else {
+      _resumeAuto();
       unawaited(cubit.resumeFromBackground());
       unawaited(speech?.resumeFromBackground());
     }
@@ -182,6 +200,13 @@ class _LessonScreenState extends State<LessonScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
+    // Lição já carregada ao abrir a tela: o ouvinte do estado só fala nas
+    // mudanças, então o 1º passo é tratado aqui, depois do 1º quadro.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _previous.ready) return;
+      final state = context.read<LessonCubit>().state;
+      if (state.ready) _syncSheet(state, _previous);
+    });
   }
 
   void _tick() {
@@ -264,6 +289,7 @@ class _LessonScreenState extends State<LessonScreen>
     WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
     _board?.dispose();
+    _autoTimer?.cancel();
     _sheet.dispose();
     _sheetMoving.dispose();
     _footerHeight.dispose();
@@ -336,20 +362,8 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.layout == LessonLayoutMode.solving) {
       _elapsed.value = cubit.stepElapsed;
     }
-    if (state.step != previous.step) {
-      _illegal.reset();
-      if (_sheet.isAttached) {
-        if (AppMotion.of(context).disabled) {
-          _sheet.jumpTo(_sheetMin);
-        } else {
-          _sheet.animateTo(
-            _sheetMin,
-            duration: AppMotion.of(context).component,
-            curve: AppMotion.enter,
-          );
-        }
-      }
-    }
+    if (state.step != previous.step) _illegal.reset();
+    _syncSheet(state, previous);
     // Saiu da Solução vista (Tentar de novo): a folha recolhe até o tabuleiro.
     if (previous.solutionSeen && !state.solutionSeen && _sheet.isAttached) {
       if (AppMotion.of(context).disabled) {
@@ -1244,6 +1258,7 @@ class _LessonScreenState extends State<LessonScreen>
   ) => LayoutBuilder(
     builder: (context, box) {
       final area = Size(box.maxWidth, box.maxHeight);
+      _areaHeight = box.maxHeight;
       final side = ExerciseLayout.boardSize(area, footer: _sheetPeek);
       final rect = Rect.fromLTWH(
         (area.width - side) / 2,
@@ -1325,35 +1340,39 @@ class _LessonScreenState extends State<LessonScreen>
                 builder: (context, footer, _) => ListenableBuilder(
                   listenable: _presentingModal,
                   // Na apresentação B não há rodapé: o texto vai até o fim.
-                  builder: (context, _) => ViktorSheet(
-                    key: LessonKeys.viktorSheet,
-                    top: rect.bottom + ExerciseLayout.gutter,
-                    controller: _sheet,
-                    scrollKey: LessonKeys.scroll,
-                    closeKey: _presentingModal.value
-                        ? LessonKeys.presentationClose
-                        : LessonKeys.closeSheet,
-                    closeTooltip: _presentingModal.value
-                        ? context.l10n.lessonPresentationClose
-                        : null,
-                    modalKey: _presentingModal.value
-                        ? LessonKeys.presentation
-                        : null,
-                    onMinimumChanged: (value) => _sheetMin = value,
-                    // Recolhida, o texto vai até a barra de controles; a
-                    // folga final (_endGap) só pesa ao rolar até o fim.
-                    collapsedInset: _presentingModal.value ? 0 : footer,
-                    onMoving: (value) => _sheetMoving.value = value,
-                    onExpanded: _onSheetExpanded,
-                    padding: EdgeInsets.only(
-                      bottom: (_presentingModal.value ? 0 : footer) + _endGap,
-                    ),
-                    children: [
-                      KeyedSubtree(
-                        key: _speechContent,
-                        child: _speechSheet(context, state, step, viktor),
+                  builder: (context, _) => Listener(
+                    behavior: HitTestBehavior.deferToChild,
+                    onPointerDown: (_) => _onSheetPointerDown(),
+                    child: ViktorSheet(
+                      key: LessonKeys.viktorSheet,
+                      top: rect.bottom + ExerciseLayout.gutter,
+                      controller: _sheet,
+                      scrollKey: LessonKeys.scroll,
+                      closeKey: _presentingModal.value
+                          ? LessonKeys.presentationClose
+                          : LessonKeys.closeSheet,
+                      closeTooltip: _presentingModal.value
+                          ? context.l10n.lessonPresentationClose
+                          : null,
+                      modalKey: _presentingModal.value
+                          ? LessonKeys.presentation
+                          : null,
+                      onMinimumChanged: (value) => _sheetMin = value,
+                      // Recolhida, o texto vai até a barra de controles; a
+                      // folga final (_endGap) só pesa ao rolar até o fim.
+                      collapsedInset: _presentingModal.value ? 0 : footer,
+                      onMoving: (value) => _sheetMoving.value = value,
+                      onExpanded: _onSheetExpanded,
+                      padding: EdgeInsets.only(
+                        bottom: (_presentingModal.value ? 0 : footer) + _endGap,
                       ),
-                    ],
+                      children: [
+                        KeyedSubtree(
+                          key: _speechContent,
+                          child: _speechSheet(context, state, step, viktor),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1492,6 +1511,177 @@ class _LessonScreenState extends State<LessonScreen>
     _goTo(previous ? tree.previous(position) : tree.next(position));
   }
 
+  /// A folha na troca de estado. Passo novo, lance jogado ou fala trocada:
+  /// a folha volta ao mínimo no mesmo quadro da troca (sem transição, sem
+  /// quadro com o texto antigo numa altura intermediária). Texto novo do
+  /// Viktor, ainda não visto nesta sessão, abre a folha com ele todo.
+  void _syncSheet(LessonState state, LessonState previous) {
+    final stepChanged = state.step != previous.step;
+    final layoutChanged =
+        state.layout != previous.layout ||
+        state.wrongMove != previous.wrongMove;
+    if (stepChanged ||
+        (_autoOpen && (state.fen != previous.fen || layoutChanged))) {
+      _cancelAuto();
+      _snapSheet();
+    }
+    final entered = !previous.ready && state.ready && !_firstSynced;
+    if (!previous.ready && !entered) return;
+    if (entered) _firstSynced = true;
+    if (!state.ready || !(entered || stepChanged || layoutChanged)) return;
+    final step = state.current;
+    if (step == null) return;
+    // Entrar no passo vale pelo passo (revisto não anima); dentro do mesmo
+    // passo, vale pela fala nova (explicação, lance errado).
+    final layoutKey = 'L:${step.id}|${state.layout.name}|${state.wrongMove}';
+    final bool isNew;
+    if (entered || stepChanged) {
+      isNew = _visited.add('S:${step.id}');
+      _visited.add(layoutKey);
+    } else {
+      isNew = _visited.add(layoutKey);
+    }
+    _revisiting = !isNew;
+    if (!isNew ||
+        state.viktor == null ||
+        state.fen == null ||
+        _board == null ||
+        state.finished ||
+        state.solutionSeen) {
+      return;
+    }
+    final prompting =
+        state.layout == LessonLayoutMode.solving && !state.wrongMove;
+    final text = prompting
+        ? _promptText(context, state, step)
+        : _said(context, state);
+    _autoLength = text?.length ?? 0;
+    _measureThenOpen(++_autoGen, null, 0);
+  }
+
+  void _snapSheet() {
+    if (_sheet.isAttached && _sheet.size > _sheetMin + .001) {
+      _sheet.jumpTo(_sheetMin);
+    }
+  }
+
+  /// O toque na folha: cancela o recolhimento; se ela repousava aberta pelo
+  /// tamanho do texto, volta a contar como em movimento (arrasto).
+  void _onSheetPointerDown() {
+    final settled = _autoSettled;
+    _cancelAuto();
+    if (settled) _sheetMoving.value = true;
+  }
+
+  void _cancelAuto() {
+    _autoGen++;
+    _autoOpen = false;
+    _autoSettled = false;
+    _autoTimer?.cancel();
+    _autoTimer = null;
+    _autoLeft = null;
+    _autoWatch.stop();
+  }
+
+  /// Mede o conteúdo da folha quadro a quadro até parar de mudar (o texto
+  /// novo entra com um AnimatedSize) e então abre.
+  void _measureThenOpen(int gen, double? last, int tries) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || gen != _autoGen) return;
+      final height = _speechContent.currentContext?.size?.height;
+      final ready = _sheet.isAttached && height != null;
+      if (ready && last != null && (height - last).abs() < .5) {
+        _openAuto(height);
+        return;
+      }
+      if (tries >= 60) return;
+      _measureThenOpen(gen, ready ? height : null, tries + 1);
+    });
+    WidgetsBinding.instance.scheduleFrame();
+  }
+
+  void _openAuto(double content) {
+    final area = _areaHeight;
+    if (area == null || area <= 0 || _presentingModal.value) return;
+    final fixed = _handleHeight + content + _footerHeight.value;
+    // Cabe na folha recolhida: ela não abre.
+    if (fixed / area <= _sheetMin + .001) return;
+    final ceiling = max(_sheetMin, 1 - ViktorSheet.openGap / area);
+    final target = ((fixed + _endGap) / area)
+        .clamp(_sheetMin, ceiling)
+        .toDouble();
+    if (target <= _sheetMin + .03) return;
+    _autoOpen = true;
+    final gen = _autoGen;
+    void settled() {
+      // Aberta no tamanho do texto (nem recolhida nem no máximo): os botões
+      // ficam à vista, já que a folha parou.
+      if (!mounted || !_autoOpen || gen != _autoGen) return;
+      _autoSettled = true;
+      _sheetMoving.value = false;
+    }
+
+    if (AppMotion.of(context).disabled) {
+      _sheet.jumpTo(target);
+      WidgetsBinding.instance.addPostFrameCallback((_) => settled());
+    } else {
+      unawaited(
+        _sheet
+            .animateTo(
+              target,
+              duration: AppMotion.of(context).panel,
+              curve: AppMotion.enter,
+            )
+            .then((_) => settled()),
+      );
+    }
+    _startAutoTimer(ViktorSheet.readingTime(_autoLength));
+  }
+
+  void _startAutoTimer(Duration left) {
+    _autoTimer?.cancel();
+    _autoTotal = left;
+    _autoLeft = null;
+    _autoWatch
+      ..reset()
+      ..start();
+    _autoTimer = Timer(left, _autoCollapse);
+  }
+
+  void _autoCollapse() {
+    _autoTimer = null;
+    if (!mounted || !_autoOpen) return;
+    _autoOpen = false;
+    _autoSettled = false;
+    if (!_sheet.isAttached) return;
+    if (AppMotion.of(context).disabled) {
+      _sheet.jumpTo(_sheetMin);
+    } else {
+      unawaited(
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        ),
+      );
+    }
+  }
+
+  void _pauseAuto() {
+    if (!_autoOpen || !(_autoTimer?.isActive ?? false)) return;
+    _autoTimer!.cancel();
+    _autoTimer = null;
+    _autoWatch.stop();
+    final left = _autoTotal - _autoWatch.elapsed;
+    _autoLeft = left.isNegative ? Duration.zero : left;
+  }
+
+  void _resumeAuto() {
+    final left = _autoLeft;
+    if (!_autoOpen || left == null) return;
+    _startAutoTimer(left);
+  }
+
   /// Apresentação do passo (T65 §8): mede o objetivo e decide. Cabe entre o
   /// tabuleiro e o rodapé (A): o painel fica parado e o relógio corre já. Não
   /// cabe (B): a folha abre cobrindo o tabuleiro, sem rodapé nem relógio.
@@ -1506,7 +1696,7 @@ class _LessonScreenState extends State<LessonScreen>
       _presentHandled = false;
       if (_presentingModal.value) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _endPresentation();
+          if (mounted) _endPresentation(instant: true);
         });
       }
       return;
@@ -1535,6 +1725,7 @@ class _LessonScreenState extends State<LessonScreen>
       _presentWait = Duration.zero;
       _presentSpoke = false;
       _presentExpanded = false;
+      _cancelAuto();
       _presentingModal.value = true;
       if (!_sheet.isAttached) return;
       // A folha sobe até a altura do texto (alça, conteúdo e respiro final),
@@ -1569,11 +1760,13 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// Fim da apresentação B: a folha diminui até o tabuleiro, o rodapé entra
   /// e o relógio começa.
-  void _endPresentation() {
+  void _endPresentation({bool instant = false}) {
     if (!_presentingModal.value) return;
     _presentingModal.value = false;
     if (_sheet.isAttached && _sheet.size > _sheetMin + .01) {
-      if (AppMotion.of(context).disabled) {
+      // Fim por lance jogado: sem transição, para o enunciado antigo não
+      // aparecer com a folha numa altura intermediária.
+      if (instant || AppMotion.of(context).disabled) {
         _sheet.jumpTo(_sheetMin);
       } else {
         _sheet.animateTo(
@@ -2019,7 +2212,7 @@ class _LessonScreenState extends State<LessonScreen>
       ),
       speaks: true,
       speechContext: SpeechContext.teaching,
-      typed: true,
+      typed: !_revisiting,
       // Ao lado do som: mostrar ou esconder as marcações.
       headerAction: Builder(
         builder: (context) {

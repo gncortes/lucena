@@ -19,6 +19,7 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
 
 /// T65 §2 and §8: the board stays high in every lesson state (D15), solving
@@ -127,6 +128,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pumpAndSettle();
     return cubit;
   }
 
@@ -206,11 +211,13 @@ void main() {
             );
             // Pensar (solving, think step).
             expect(cubit.state.layout, LessonLayoutMode.solving);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Pensar');
             expectFooterTargets(tester, 'Pensar');
             // PensarDica.
             await cubit.moreHint();
             await tester.pumpAndSettle();
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'PensarDica');
             // Pratica (move step, solving).
             await cubit.next();
@@ -220,16 +227,19 @@ void main() {
             await tester.pumpAndSettle();
             expect(cubit.state.current?.id, 'try');
             expect(cubit.state.layout, LessonLayoutMode.solving);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Pratica');
             expectFooterTargets(tester, 'Pratica');
             // LanceErrado (wrong move, not predicted).
             await cubit.play(Move.parse('c1c2')!);
             await tester.pumpAndSettle();
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'LanceErrado');
             // Errou (predicted wrong move: 2×2 footer).
             await cubit.play(Move.parse('c1c3')!);
             await tester.pumpAndSettle();
             expect(cubit.state.phase, StepPhase.failed);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Errou');
             expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
             expectFooterTargets(tester, 'Errou');
@@ -239,6 +249,7 @@ void main() {
             await cubit.play(Move.parse('c1c4')!);
             await tester.pumpAndSettle();
             expect(cubit.state.layout, LessonLayoutMode.explaining);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'LanceResposta');
             expectFooterTargets(tester, 'LanceResposta');
           });

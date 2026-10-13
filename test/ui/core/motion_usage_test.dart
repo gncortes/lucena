@@ -70,6 +70,10 @@ void main() {
       '_pacePresentation(cubit, state, const Duration(milliseconds: 250))':
           'um tique do cronômetro na apresentação: tempo, não animação',
     },
+    'lib/ui/core/widgets/viktor_sheet.dart': {
+      'Duration(milliseconds: (2000 + 50 * length)':
+          'tempo de leitura da folha aberta sozinha: tempo, não animação',
+    },
     'lib/ui/school/widgets/lesson_part_widgets.dart': {
       'tick = Duration(milliseconds: 250)':
           'o anel acompanha o tique de 250 ms da demonstração',
