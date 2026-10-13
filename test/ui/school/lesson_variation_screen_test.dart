@@ -178,6 +178,10 @@ void main() {
     await pump(tester, said);
     final sheet = find.byKey(LessonKeys.viktorSheet);
     final before = tester.getRect(sheet);
+    final typed = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_TypedText',
+    );
+    final speech = tester.element(typed.first);
     expect(find.byKey(LessonKeys.variationStrip), findsNothing);
     await tapText(tester, 'Rd1+');
     // Fica montada, abaixo da tela e sem receber toque.
@@ -200,6 +204,8 @@ void main() {
     await press(tester, LessonKeys.variationExit);
     expect(find.byKey(LessonKeys.variationStrip), findsNothing);
     expect(tester.getRect(sheet), before);
+    // A mesma fala, sem remontar (o texto não recomeça a digitar).
+    expect(identical(tester.element(typed.first), speech), isTrue);
   });
 
   testWidgets('fala sem variante: sem o botão', (tester) async {
