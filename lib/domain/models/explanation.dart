@@ -360,6 +360,28 @@ class ExplanationPayload {
       );
       if (authored.isNotEmpty) {
         final v = authored.first;
+        // Com fala própria do lance jogado, a hipótese ("Se as brancas
+        // jogassem…") é a mesma ideia: a linha fica só com a fala do lance.
+        ExplanationVariation played(ExplanationVariation node) =>
+            node.playedTexts.isEmpty
+            ? node
+            : ExplanationVariation(
+                id: node.id,
+                label: node.label,
+                outcome: node.outcome,
+                outcomeText: node.outcomeText,
+                contextId: node.contextId,
+                parentId: node.parentId,
+                parentPly: node.parentPly,
+                texts: node.playedTexts,
+                playedTexts: node.playedTexts,
+                originFen: node.originFen,
+                movesUci: node.movesUci,
+                movesSan: node.movesSan,
+                validated: node.validated,
+                explanationByPly: node.explanationByPly,
+                result: node.result,
+              );
         rejected = ExplanationPayload(
           positionId: positionId,
           reviewStepId: reviewStepId,
@@ -369,7 +391,11 @@ class ExplanationPayload {
               id: 'played',
               kind: ExplanationKind.playedIncorrect,
               texts: v.playedTexts.isNotEmpty ? v.playedTexts : v.texts,
-              variations: [for (final root in authored) ..._tree(root)],
+              variations: [
+                for (final root in authored)
+                  for (final node in _tree(root))
+                    node == root ? played(node) : node,
+              ],
             ),
           ],
         );

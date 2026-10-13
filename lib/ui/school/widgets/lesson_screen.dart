@@ -1521,6 +1521,13 @@ class _LessonScreenState extends State<LessonScreen>
         _expandSolutionSheet(attempts: attempts - 1);
         return;
       }
+      // O modal abre do começo: cabeçalho e respiro antes da 1ª linha, não o
+      // texto rolado rente à borda pela fala revelada com a folha recolhida.
+      final content = _speechContent.currentContext;
+      if (content != null && content.mounted) {
+        final position = Scrollable.maybeOf(content)?.position;
+        if (position != null && position.pixels > 0) position.jumpTo(0);
+      }
       if (AppMotion.of(context).disabled) {
         _sheet.jumpTo(1);
         return;

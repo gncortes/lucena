@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../keys/viktor_sheet_keys.dart';
@@ -121,6 +122,52 @@ class _ViktorSheetState extends State<ViktorSheet> {
     if (box is! RenderBox || !box.attached) return 0;
     return box.localToGlobal(Offset(0, box.size.height), ancestor: mask).dy;
   }
+
+  /// Onde o recolhido corta, nas coordenadas da máscara: nunca no meio de uma
+  /// linha nem de um botão. Uma linha que cruza [y] fica inteira se só a
+  /// folga de baixo dela (até [slack] dp, sem letra) passa de [y]; senão o
+  /// corte sobe ao topo dela (360×640: a 4ª linha não fica cortada ao meio).
+  /// Um botão (forma com até [_atomic] dp) cruzando [y] sai inteiro: não
+  /// aparece pela metade acima do rodapé (demo pausada com texto longo).
+  double _lineCut(double y, {double slack = 4}) {
+    final maskElement = _maskKey.currentContext;
+    final mask = maskElement?.findRenderObject();
+    if (maskElement == null || mask is! RenderBox || !mask.attached) return y;
+    double? cut;
+    void visit(RenderObject node) {
+      if (cut != null) return;
+      if (node is RenderBox &&
+          node.attached &&
+          node.hasSize &&
+          (node is RenderParagraph ||
+              (node is RenderPhysicalShape && node.size.height <= _atomic))) {
+        final origin = node.localToGlobal(Offset.zero, ancestor: mask).dy;
+        if (origin >= y || origin + node.size.height <= y) return;
+        if (node is! RenderParagraph) {
+          cut = origin;
+          return;
+        }
+        final length = node.text.toPlainText().length;
+        for (final box in node.getBoxesForSelection(
+          TextSelection(baseOffset: 0, extentOffset: length),
+        )) {
+          final top = origin + box.top, bottom = origin + box.bottom;
+          if (top < y && bottom > y) {
+            cut = bottom - y <= slack ? bottom : top;
+            return;
+          }
+        }
+        return;
+      }
+      node.visitChildren(visit);
+    }
+
+    mask.visitChildren(visit);
+    return cut ?? y;
+  }
+
+  /// Maior altura de forma tratada como um botão só no corte do recolhido.
+  static const _atomic = 64.0;
 
   ScrollController? _scroll;
 
@@ -277,9 +324,9 @@ class _ViktorSheetState extends State<ViktorSheet> {
                           key: _maskKey,
                           blendMode: BlendMode.dstIn,
                           // Recolhida: o que fica acima do rodapé (a área
-                          // visível, sem o `padding` de baixo) esmaece em dp
-                          // nos últimos 12 dp, para o rótulo da seção seguinte
-                          // não aparecer cortado logo abaixo do cabeçalho.
+                          // visível, sem o `padding` de baixo) some em 4 dp
+                          // entre duas linhas, para nenhuma linha (nem o
+                          // rótulo da seção seguinte) aparecer cortada.
                           shaderCallback: (rect) {
                             final visible = math.max(
                               1.0,
@@ -293,13 +340,18 @@ class _ViktorSheetState extends State<ViktorSheet> {
                             // nem rótulo cortado.
                             final header = _headerBottom();
                             final tight = header > visible - 12;
+                            // O corte cai entre linhas: no topo da linha que
+                            // não cabe (ou no fim da que cabe), nunca no meio.
+                            final cut = _expanded || tight
+                                ? visible - 4
+                                : math.max(header, _lineCut(visible - 4));
                             final start = math.min(
                               rect.height,
-                              tight ? header : visible - 12,
+                              tight ? header : cut,
                             );
                             final end = math.min(
                               rect.height,
-                              tight ? header : visible - 4,
+                              tight ? header : cut + 4,
                             );
                             return LinearGradient(
                               begin: Alignment.topCenter,

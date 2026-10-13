@@ -33691,7 +33691,7 @@
               "title": "Por que o lance anterior não funciona",
               "texts": [
                 "O peão avançou antes do rei: com 1...Rd7, o rei preto segue pelo centro; o rei branco, em d3, fica longe das casas-chave, e o rei preto tem tempo de voltar para a frente do peão. As pretas seguram o empate.",
-                "O peão branco avançou antes de o rei branco conquistar espaço. A rota preta por d7 e d6 permite ao defensor aproximar-se pelo centro enquanto o rei branco continua atrás do peão. Por exemplo: 1...Rd7 2.g5 Rd6."
+                "A rota preta por d7 e d6 permite ao defensor aproximar-se pelo centro enquanto o rei branco continua atrás do peão. Por exemplo: 1...Rd7 2.g5 Rd6."
               ],
               "variations": [
                 {
@@ -33700,7 +33700,7 @@
                   "outcome": "does_not_meet_goal",
                   "texts": [
                     "O peão avançou antes do rei: com 1...Rd7, o rei preto segue pelo centro; o rei branco, em d3, fica longe das casas-chave, e o rei preto tem tempo de voltar para a frente do peão. As pretas seguram o empate.",
-                    "O peão branco avançou antes de o rei branco conquistar espaço. A rota preta por d7 e d6 permite ao defensor aproximar-se pelo centro enquanto o rei branco continua atrás do peão. Por exemplo: 1...Rd7 2.g5 Rd6."
+                    "A rota preta por d7 e d6 permite ao defensor aproximar-se pelo centro enquanto o rei branco continua atrás do peão. Por exemplo: 1...Rd7 2.g5 Rd6."
                   ],
                   "originFen": "4k3/8/8/8/6P1/3K4/8/8 b - - 0 1",
                   "movesUci": [

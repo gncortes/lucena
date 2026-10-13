@@ -53,6 +53,20 @@ String plain(Text text) => (text.data ?? text.textSpan!.toPlainText())
     .replaceAll(RegExp('[\u2066\u2069]'), '');
 
 void main() {
+  test('comentário: o lance do começo sai; como sujeito, a frase fica '
+      'inteira (r6 E9)', () {
+    expect(
+      VariationStrip.withoutLeadingMove('1...Re6. O rei volta.'),
+      'O rei volta.',
+    );
+    expect(
+      VariationStrip.withoutLeadingMove(
+        '3.Rf5 é um bom lance: a vitória continua garantida.',
+      ),
+      '3.Rf5 é um bom lance: a vitória continua garantida.',
+    );
+  });
+
   testWidgets('a notação da fala: sem "1..." no meio da linha, 1 botão por '
       'lance', (tester) async {
     await pump(tester, tree(), const TreePosition.main(2));
