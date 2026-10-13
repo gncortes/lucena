@@ -19,6 +19,7 @@ import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_medal.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
+import '../../history/widgets/history_labels.dart';
 import '../../core/l10n/l10n.dart';
 import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -78,7 +79,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
-    return PopScope(
+    final scaffold = PopScope(
       canPop: conclusion?.run?.nextChallenge == null,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _close(context);
@@ -124,21 +125,31 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                     card: _card,
                     analysis: _analysis,
                   ),
-                  if (widget.fresh && conclusion.achievements.isNotEmpty)
-                    AchievementToasts(
-                      achievements: conclusion.achievements,
-                      characters: state.characters,
-                      onTap: (achievement) => showAchievementDetail(
-                        context,
-                        achievement: achievement,
-                        unlocked: conclusion.unlocked[achievement.id],
-                        characters: state.characters,
-                        speedrunId: conclusion.run?.speedrunId,
-                      ),
-                    ),
                 ],
               ),
       ),
+    );
+    // O aviso de conquista vai por cima da tela inteira, AppBar incluída
+    // (TelaConclusaoAviso: 8 do topo), sem cobrir o título do painel.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        scaffold,
+        if (widget.fresh &&
+            conclusion != null &&
+            conclusion.achievements.isNotEmpty)
+          AchievementToasts(
+            achievements: conclusion.achievements,
+            characters: state.characters,
+            onTap: (achievement) => showAchievementDetail(
+              context,
+              achievement: achievement,
+              unlocked: conclusion.unlocked[achievement.id],
+              characters: state.characters,
+              speedrunId: conclusion.run?.speedrunId,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -198,7 +209,9 @@ String _title(AppLocalizations l10n, Conclusion conclusion) {
 String _shareLine(AppLocalizations l10n, Conclusion conclusion) {
   final title = _title(l10n, conclusion);
   final total = conclusion.run?.total;
-  final line = total == null ? title : '$title: ${RunTimeFormat.format(total)}';
+  final line = total == null
+      ? title
+      : '$title: ${HistoryLabels.ltr(RunTimeFormat.format(total))}';
   if (RegExp(r'[.!?]$').hasMatch(line)) return line;
   // Vitória com exclamação; o resto, com ponto.
   return conclusion.result == ConclusionResult.won ? '$line!' : '$line.';
@@ -880,14 +893,24 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
               style: theme.textTheme.titleSmall,
             ),
           ),
-          AnimatedBuilder(
-            animation: _counting,
-            builder: (context, _) => RatingValue(
-              rating: (before + (after - before) * _counting.value).round(),
-              change: ((after - before) * _counting.value).round(),
-              up: after >= before,
-              valueKey: ConclusionKeys.ratingValue,
-              changeKey: ConclusionKeys.ratingDelta,
+          // Com fonte grande em 360 o valor não cabe: encolhe só ele.
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.sizeOf(context).width * 0.6,
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerEnd,
+              child: AnimatedBuilder(
+                animation: _counting,
+                builder: (context, _) => RatingValue(
+                  rating: (before + (after - before) * _counting.value).round(),
+                  change: ((after - before) * _counting.value).round(),
+                  up: after >= before,
+                  valueKey: ConclusionKeys.ratingValue,
+                  changeKey: ConclusionKeys.ratingDelta,
+                ),
+              ),
             ),
           ),
         ],
@@ -1008,7 +1031,7 @@ class _RunState extends State<_Run> {
             Text(
               bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
               key: ConclusionKeys.total,
-              textDirection: bankLeft != null ? TextDirection.ltr : null,
+              textDirection: TextDirection.ltr,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -1019,7 +1042,7 @@ class _RunState extends State<_Run> {
           // A etapa que acabou de ser jogada e, no fim, o recorde de antes.
           if (!ended && !_lost && stageTime > Duration.zero)
             Text(
-              '${l10n.conclusionStageTime}: ${time(stageTime)}',
+              '${l10n.conclusionStageTime}: ${HistoryLabels.ltr(time(stageTime))}',
               key: ConclusionKeys.stageTime,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -1028,7 +1051,7 @@ class _RunState extends State<_Run> {
             ),
           if (ended && record != null && !run.newRecord)
             Text(
-              '${l10n.speedrunBest}: ${time(record)}',
+              '${l10n.speedrunBest}: ${HistoryLabels.ltr(time(record))}',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -1199,6 +1222,7 @@ class _StageRow extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Text(
             time,
+            textDirection: TextDirection.ltr,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
               fontFeatures: const [FontFeature.tabularFigures()],

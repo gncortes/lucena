@@ -14,7 +14,9 @@ import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
+import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
+import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -81,6 +83,9 @@ void main() {
     Size size = const Size(412, 2400),
     double scale = 1,
     Locale locale = const Locale('en'),
+    bool fresh = false,
+    bool settled = true,
+    ThemeMode themeMode = ThemeMode.light,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
@@ -149,6 +154,7 @@ void main() {
         settingsCubit: settings,
         speechCubit: speech,
         locale: locale,
+        themeMode: themeMode,
         child: MediaQuery(
           data: MediaQueryData(
             size: size,
@@ -157,12 +163,19 @@ void main() {
           ),
           child: BlocProvider.value(
             value: cubit,
-            child: const ConclusionScreen(),
+            child: ConclusionScreen(fresh: fresh),
           ),
         ),
       ),
     );
-    await settle(tester);
+    if (settled) {
+      await settle(tester);
+    } else {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 60)),
+      );
+      await tester.pump();
+    }
   }
 
   /// Compartilha e devolve a altura da imagem (no cabeçalho do PNG).
@@ -436,6 +449,146 @@ void main() {
         disableAnimations: true,
       );
       expect(find.byKey(ConclusionKeys.winnerGlow), findsNothing);
+    });
+  });
+
+  // T65 (dívidas): tempo no árabe, aviso por cima da AppBar, botão no tema.
+  group('speedrun clássico', () {
+    final speedrunId = SpeedrunPaces.idFor(
+      sampleSpeedruns[0].id,
+      SpeedrunPaces.all.first,
+    );
+
+    // Joga as etapas anteriores e devolve a que `open` grava por último.
+    Future<(int, int)> Function(FakeSpeedrunRepository) run(int last) {
+      return (speedruns) async {
+        final attempt = await speedruns.start(speedrunId, now());
+        for (var stage = 0; stage < last; stage++) {
+          await progress.addAttempt(
+            Attempt(
+              positionId: samplePositions[0].id,
+              playedAt: now(),
+              outcome: AttemptOutcome.win,
+              fulfilled: true,
+              opponent: OpponentKind.maia,
+              userClock: const Duration(seconds: 10),
+              speedrunAttemptId: attempt.id,
+              speedrunStage: stage,
+            ),
+          );
+        }
+        return (attempt.id, last);
+      };
+    }
+
+    Text textOf(WidgetTester tester, Key key) =>
+        tester.widget<Text>(find.byKey(key));
+
+    testWidgets('em andamento: tempo da etapa isolado em LTR (ar)', (
+      tester,
+    ) async {
+      await open(tester, locale: const Locale('ar'), marathon: run(0));
+      final stageText = textOf(tester, ConclusionKeys.stageTime);
+      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
+      expect(stageText.data, contains('\u2066$formatted\u2069'));
+      expect(
+        textOf(tester, ConclusionKeys.total).textDirection,
+        TextDirection.ltr,
+      );
+    });
+
+    testWidgets('em andamento, en: o texto visível não muda', (tester) async {
+      await open(tester, marathon: run(0));
+      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
+      final label = AppLocalizations.of(
+        tester.element(find.byKey(ConclusionKeys.run)),
+      ).conclusionStageTime;
+      expect(
+        textOf(
+          tester,
+          ConclusionKeys.stageTime,
+        ).data!.replaceAll(RegExp('[\u2066\u2069]'), ''),
+        '$label: $formatted',
+      );
+    });
+
+    testWidgets('concluído: total e etapas em LTR (ar)', (tester) async {
+      await open(tester, locale: const Locale('ar'), marathon: run(1));
+      expect(
+        textOf(tester, ConclusionKeys.total).textDirection,
+        TextDirection.ltr,
+      );
+      final rows = find.descendant(
+        of: find.byKey(ConclusionKeys.stage(0)),
+        matching: find.byType(Text),
+      );
+      await tester.tap(find.byKey(ConclusionKeys.runDetails));
+      await tester.pumpAndSettle();
+      final texts = tester.widgetList<Text>(rows);
+      final formatted = RunTimeFormat.format(const Duration(seconds: 10));
+      expect(
+        texts.where(
+          (t) => t.data == formatted && t.textDirection == TextDirection.ltr,
+        ),
+        isNotEmpty,
+      );
+    });
+  });
+
+  group('aviso de conquista', () {
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      for (final scale in const [1.0, 2.0]) {
+        // A 2,0 o aviso (componente aprovado, cresce com a fonte) tem
+        // 188-220 dp e cobre o título enquanto aparece: aceito, porque some
+        // sozinho. Ali só a posição e o título livre depois.
+        testWidgets('fica no alto, acima do título a 1,0 '
+            '(${size.width.toInt()}, x$scale)', (tester) async {
+          await open(
+            tester,
+            size: size,
+            scale: scale,
+            fresh: true,
+            settled: false,
+          );
+          await tester.pump(AchievementToasts.duration * 0.3);
+          final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
+          final title = tester.getRect(find.byKey(ConclusionKeys.title));
+          expect(toast.top, closeTo(8, 1));
+          if (scale == 1) expect(toast.bottom, lessThanOrEqualTo(title.top));
+          await tester.pump(AchievementToasts.duration);
+          await tester.pumpAndSettle();
+          expect(
+            find.byKey(AchievementsKeys.toast).hitTestable(),
+            findsNothing,
+          );
+          expect(
+            find.byKey(ConclusionKeys.title).hitTestable(),
+            findsOneWidget,
+          );
+        });
+      }
+    }
+  });
+
+  group('botão principal no escuro', () {
+    testWidgets('usa o tema, sem cor fixa, com contraste', (tester) async {
+      await open(tester, themeMode: ThemeMode.dark);
+      final colors = Theme.of(tester.element(find.byKey(ConclusionKeys.screen)))
+          .colorScheme;
+      final buttons = find.descendant(
+        of: find.byKey(ConclusionKeys.screen),
+        matching: find.byType(FilledButton),
+      );
+      expect(buttons, findsWidgets);
+      for (final button in tester.widgetList<FilledButton>(buttons)) {
+        expect(button.style?.backgroundColor, isNull);
+        expect(button.style?.foregroundColor, isNull);
+      }
+      final a = colors.primary.computeLuminance();
+      final b = colors.onPrimary.computeLuminance();
+      final ratio =
+          (a > b ? a + 0.05 : b + 0.05) / (a > b ? b + 0.05 : a + 0.05);
+      expect(ratio, greaterThanOrEqualTo(4.5));
     });
   });
 }
