@@ -1286,14 +1286,20 @@ class LessonCubit extends Cubit<LessonState> {
 
   /// O próximo lance da demonstração (a tela chama no ritmo da fala, ou o
   /// aluno avança na mão). Pausada, segue pausada (T70, crit. 19): só o play
-  /// retoma. Fora do roteiro não há próximo lance (o aluno volta antes).
+  /// retoma. Fora do roteiro, volta ao roteiro e anda um lance, pausada.
   Future<void> demoForward() async {
     final step = state.current;
-    if (step is! DemoStep ||
-        state.offScript ||
-        state.demoMove >= step.line.length) {
+    if (step is! DemoStep) return;
+    if (state.offScript) {
+      // Fora do roteiro (pg. 2.5): volta ao roteiro e anda um lance, pausado.
+      final next = state.demoOffFrom + 1;
+      if (next > step.line.length) return;
+      _offNotes.clear();
+      emit(_demoAt(state, step, next).copyWith(demoPlaying: false));
+      await _save();
       return;
     }
+    if (state.demoMove >= step.line.length) return;
     emit(_demoAt(state, step, state.demoMove + 1));
     await _save();
   }
@@ -1375,7 +1381,7 @@ class LessonCubit extends Cubit<LessonState> {
   }
 
   // As falas de cada par fora do roteiro (para o ⏮ devolver a do par).
-  final _offNotes = <LessonNote>[];
+  final _offNotes = <_OffNote>[];
 
   /// Lição de vencer (o lado do aluno deve seguir ganhando) ou de segurar o
   /// empate (algum passo de jogar com objetivo de empatar).
@@ -1409,6 +1415,11 @@ class LessonCubit extends Cubit<LessonState> {
     final played = GameRules.play(position, move);
     if (played == null) return;
     unawaited(_sounds?.move(played.san));
+    final branch = state.offScript ? null : _branchFor(step, move);
+    if (branch != null) {
+      await _demoBranch(step, played.position, move, branch);
+      return;
+    }
     final before = state;
     final index = state.step;
     final off = [...state.demoOff, move.uci];
@@ -1454,7 +1465,7 @@ class LessonCubit extends Cubit<LessonState> {
         : LessonNote.engineReply;
     _offNotes
       ..length = (off.length - 1) ~/ 2
-      ..add(note);
+      ..add(_OffNote(note: note));
     emit(
       state.copyWith(
         fen: answered.position.fen,
@@ -1467,6 +1478,73 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
+  /// O ramo dos dados (`lines` do passo) que o lance do aluno segue na
+  /// posição atual da demonstração (T70, pg. 2.3, ponto 2c).
+  CitedBranch? _branchFor(DemoStep step, Move move) {
+    final script = [for (final m in step.line) m.uci];
+    for (final line in step.lines) {
+      if (!line.matches(script)) continue;
+      for (final branch in line.branches) {
+        if (branch.at == state.demoMove &&
+            branch.uci.isNotEmpty &&
+            branch.uci.first == move.uci) {
+          return branch;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// O aluno seguiu um ramo dos dados: joga o lance dele e a resposta do
+  /// ramo, pausa, e o Viktor lê o comentário do ramo. Sem motor.
+  Future<void> _demoBranch(
+    DemoStep step,
+    Position afterStudent,
+    Move move,
+    CitedBranch branch,
+  ) async {
+    var position = afterStudent;
+    var last = move;
+    final off = [move.uci];
+    if (branch.uci.length > 1) {
+      final reply = Move.parse(branch.uci[1]);
+      final answered = reply == null ? null : GameRules.play(position, reply);
+      if (reply != null && answered != null) {
+        position = answered.position;
+        last = reply;
+        off.add(reply.uci);
+        unawaited(_sounds?.move(answered.san));
+      }
+    }
+    final text = state.texts.alternative(
+      state.lesson?.id ?? '',
+      step.id,
+      branch.id,
+    );
+    final note = _OffNote(
+      speech: text,
+      note: text == null
+          ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
+          : null,
+    );
+    _offNotes
+      ..clear()
+      ..add(note);
+    emit(
+      state.copyWith(
+        fen: position.fen,
+        lastMove: last,
+        demoOff: off,
+        demoOffFrom: state.demoMove,
+        demoPlaying: false,
+        note: note.note,
+        speech: note.speech,
+        clearHint: true,
+      ),
+    );
+    await _save();
+  }
+
   /// A demonstração fora do roteiro depois de [off] (lances em UCI, a partir
   /// do lance [count] do roteiro), com a fala genérica [note].
   LessonState _demoOffAt(
@@ -1474,7 +1552,7 @@ class LessonCubit extends Cubit<LessonState> {
     DemoStep step,
     int count,
     List<String> off,
-    LessonNote note,
+    _OffNote note,
   ) {
     final onScript = _demoAt(base, step, count);
     var position = GameRules.fromFen(onScript.fen!);
@@ -1494,7 +1572,8 @@ class LessonCubit extends Cubit<LessonState> {
       demoOff: off,
       demoOffFrom: count,
       demoPlaying: false,
-      note: note,
+      note: note.note,
+      speech: note.speech,
       phase: StepPhase.active,
     );
   }
@@ -2314,4 +2393,13 @@ class LessonCubit extends Cubit<LessonState> {
     _said[key] = index + 1;
     return state.texts.say(key, index);
   }
+}
+
+/// A fala de um par fora do roteiro: a genérica do app ([note]) ou o
+/// comentário de um ramo dos dados ([speech]).
+class _OffNote {
+  const _OffNote({this.note, this.speech});
+
+  final LessonNote? note;
+  final String? speech;
 }

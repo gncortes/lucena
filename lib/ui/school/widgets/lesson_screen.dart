@@ -397,6 +397,9 @@ class _LessonScreenState extends State<LessonScreen>
         ..showSnackBar(
           SnackBar(
             key: LessonKeys.engineErrorSnack,
+            behavior: SnackBarBehavior.floating,
+            // Acima do rodapé da demonstração, sem cobrir os controles.
+            margin: EdgeInsets.fromLTRB(16, 0, 16, _footerHeight.value + 8),
             content: Text(context.l10n.lessonEngineError),
           ),
         );
@@ -2320,24 +2323,28 @@ class _LessonScreenState extends State<LessonScreen>
               state,
               step,
               viktor,
-              part: TeacherSpeechPart.all,
+              // Digitando: só o cabeçalho; os pontinhos tomam o lugar do texto.
+              part: state.typing
+                  ? TeacherSpeechPart.header
+                  : TeacherSpeechPart.all,
             ),
           ),
         // A máquina responde ao lance do aluno na demonstração: três pontos
-        // no lugar do comentário (T70, pg. 2.3).
+        // centralizados no lugar do comentário (T70, pg. 2.3).
         if (state.typing)
           Padding(
             key: LessonKeys.sheetTyping,
-            padding: const EdgeInsetsDirectional.fromSTEB(28, 0, 16, 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: Align(
-              alignment: AlignmentDirectional.centerStart,
               child: TypingDots(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
         if (step is TapStep) _guide(context, state, step),
-        if ((state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
+        // A folha da demonstração não traz o convite (T70, P2 #6).
+        if (step is! DemoStep &&
+            (state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
             state.fen != null)
           Padding(
             // Em cima, 0: o último bloco da explicação já termina com 16.
