@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "वेरिएशन की अगली चाल",
   "lessonPresentationClose": "बंद करें और बोर्ड देखें",
   "speedrunTimeUntilDrawn": "ड्रॉ तक का समय: {time}",
-  "speedrunContinueStage": "जारी रखें · {total} में से चरण {stage}"
+  "speedrunContinueStage": "जारी रखें · {total} में से चरण {stage}",
+  "lessonHideNextMoves": "अगली चालें छिपाएँ",
+  "lessonShowAllMoves": "सभी चालें दिखाएँ",
+  "lessonHiddenMoves": "छिपी हुई चालें",
+  "lessonRevealNextMove": "अगली चाल दिखाएँ",
+  "lessonVariationEndBranch": "विकल्प का अंत",
+  "lessonVariationEndLine": "लाइन का अंत"
 }

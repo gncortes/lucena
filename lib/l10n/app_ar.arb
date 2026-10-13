@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "النقلة التالية في التفريعة",
   "lessonPresentationClose": "إغلاق ومشاهدة اللوح",
   "speedrunTimeUntilDrawn": "الوقت حتى التعادل: {time}",
-  "speedrunContinueStage": "متابعة · المرحلة {stage} من {total}"
+  "speedrunContinueStage": "متابعة · المرحلة {stage} من {total}",
+  "lessonHideNextMoves": "إخفاء الحركات التالية",
+  "lessonShowAllMoves": "إظهار كل الحركات",
+  "lessonHiddenMoves": "حركات مخفية",
+  "lessonRevealNextMove": "كشف الحركة التالية",
+  "lessonVariationEndBranch": "نهاية البديل",
+  "lessonVariationEndLine": "نهاية الخط"
 }

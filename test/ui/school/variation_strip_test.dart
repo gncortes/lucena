@@ -22,6 +22,9 @@ Future<void> pump(
   void Function(TreePosition)? onSelect,
   Size size = const Size(360, 740),
   double scale = 1,
+  bool hideUnseen = false,
+  Set<TreePosition> revealed = const {},
+  ValueChanged<int>? onReveal,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -36,6 +39,9 @@ Future<void> pump(
             position: position,
             text: 'Comment.',
             onSelect: onSelect ?? (_) {},
+            hideUnseen: hideUnseen,
+            revealed: revealed,
+            onReveal: onReveal,
           ),
         ),
       ),
@@ -138,4 +144,47 @@ void main() {
       });
     }
   }
+
+  testWidgets('lances ocultos: o bloco cobre o que falta, toca para revelar '
+      'e o lance coberto não recebe toque', (tester) async {
+    final reveals = <int>[];
+    final selected = <TreePosition>[];
+    await pump(
+      tester,
+      tree(),
+      const TreePosition.main(2),
+      hideUnseen: true,
+      revealed: {const TreePosition.main(1), const TreePosition.main(2)},
+      onReveal: reveals.add,
+      onSelect: selected.add,
+    );
+    // A medida dos lances vem depois do 1º layout.
+    await tester.pump();
+    final block = find.byKey(LessonKeys.variationHiddenBlock(0));
+    expect(block, findsOneWidget);
+    final area = tester.getRect(block);
+    expect(area.height, closeTo(28, .5));
+    // Em 360 dp a linha quebra: o bloco com a key é o da 1ª linha visual.
+    for (final ply in [3]) {
+      final text = tester.getRect(
+        find.descendant(
+          of: find.byKey(LessonKeys.variationMove(ply)),
+          matching: find.byType(Text),
+        ),
+      );
+      expect(area.left, lessThanOrEqualTo(text.left + .5));
+      expect(area.right, greaterThanOrEqualTo(text.right - .5));
+    }
+    await tester.tap(block);
+    expect(reveals, [0]);
+    expect(selected, isEmpty);
+  });
+
+  testWidgets('sem o botão ligado a faixa mostra tudo, sem bloco', (
+    tester,
+  ) async {
+    await pump(tester, tree(), const TreePosition.main(1));
+    expect(find.byKey(LessonKeys.variationHiddenBlock(0)), findsNothing);
+    expect(find.byKey(LessonKeys.variationHiddenToggle), findsNothing);
+  });
 }

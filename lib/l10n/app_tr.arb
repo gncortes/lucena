@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Varyantta sonraki hamle",
   "lessonPresentationClose": "Kapat ve tahtayı gör",
   "speedrunTimeUntilDrawn": "Berabereye kadar süre: {time}",
-  "speedrunContinueStage": "Devam · {total} aşamadan {stage}. aşama"
+  "speedrunContinueStage": "Devam · {total} aşamadan {stage}. aşama",
+  "lessonHideNextMoves": "Sonraki hamleleri gizle",
+  "lessonShowAllMoves": "Tüm hamleleri göster",
+  "lessonHiddenMoves": "Gizli hamleler",
+  "lessonRevealNextMove": "sonraki hamleyi göster",
+  "lessonVariationEndBranch": "Alternatifin sonu",
+  "lessonVariationEndLine": "Hattın sonu"
 }

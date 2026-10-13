@@ -42,6 +42,7 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _historyClassicFilterKey = 'history.filter.classic';
   static const _historyMarathonFilterKey = 'history.filter.marathon';
   static const _lessonMarksKey = 'lesson.marks';
+  static const _lessonHiddenMovesKey = 'lesson.hiddenMoves';
   static const _evalBarKey = 'review.evalBar';
 
   final PreferencesService _preferences;
@@ -90,6 +91,8 @@ class LocalSettingsRepository implements SettingsRepository {
         await _preferences.getString(_endgamesFilterKey),
       ),
       lessonMarks: await _preferences.getBool(_lessonMarksKey) ?? true,
+      lessonHiddenMoves:
+          await _preferences.getBool(_lessonHiddenMovesKey) ?? true,
       historyTab: HistoryTab.fromCode(
         await _preferences.getString(_historyTabKey),
       ),
@@ -196,6 +199,10 @@ class LocalSettingsRepository implements SettingsRepository {
       settings.endgamesFilter.code,
     );
     await _preferences.setBool(_lessonMarksKey, value: settings.lessonMarks);
+    await _preferences.setBool(
+      _lessonHiddenMovesKey,
+      value: settings.lessonHiddenMoves,
+    );
     await _preferences.setString(_historyTabKey, settings.historyTab.code);
     await _preferences.setString(
       _historyGamesFilterKey,

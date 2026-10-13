@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Coup suivant de la variante",
   "lessonPresentationClose": "Fermer et voir l'échiquier",
   "speedrunTimeUntilDrawn": "Temps jusqu'à la nulle : {time}",
-  "speedrunContinueStage": "Continuer · étape {stage} sur {total}"
+  "speedrunContinueStage": "Continuer · étape {stage} sur {total}",
+  "lessonHideNextMoves": "Masquer les prochains coups",
+  "lessonShowAllMoves": "Afficher tous les coups",
+  "lessonHiddenMoves": "Coups masqués",
+  "lessonRevealNextMove": "révéler le prochain coup",
+  "lessonVariationEndBranch": "Fin de l'alternative",
+  "lessonVariationEndLine": "Fin de la ligne"
 }

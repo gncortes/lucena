@@ -92,6 +92,14 @@ class _LessonScreenState extends State<LessonScreen>
   VariationTree? _tree;
   Object? _treeKey;
 
+  // Lances ocultos (T69): os já vistos por linha da faixa (passo + fonte +
+  // lance), só na memória da tela: o segundo plano mantém, fechar o app e
+  // sair da lição zeram.
+  final _seen = <String, Set<TreePosition>>{};
+  String? _seenId;
+  final _seenTick = ValueNotifier<int>(0);
+  RevealEvent? _revealing;
+
   // A folha da faixa (segunda ViktorSheet, só no modo variante) e se está
   // aberta; a variante salva no checkpoint (T68).
   final _variationSheet = DraggableScrollableController();
@@ -266,6 +274,7 @@ class _LessonScreenState extends State<LessonScreen>
     _presentingModal.dispose();
     _flash.dispose();
     _variation.dispose();
+    _seenTick.dispose();
     _branch.dispose();
     _variationSheet.dispose();
     _stage.dispose();
@@ -484,6 +493,7 @@ class _LessonScreenState extends State<LessonScreen>
     _branch.value = null;
     _variation.value = cursor;
     _syncTree();
+    _markSeen(_position);
     _enterVariant(entering, () {
       _board?.updatePosition(
         _lineGame(cursor),
@@ -507,6 +517,8 @@ class _LessonScreenState extends State<LessonScreen>
         );
         _treeKey = authored.variation;
       }
+      _seenId =
+          '${state.current?.id}|a|${authored.moves.map((m) => m.uci).join(' ')}';
     } else if (line != null && state.current != null) {
       if (!identical(_treeKey, line)) {
         final step = state.current!;
@@ -522,9 +534,12 @@ class _LessonScreenState extends State<LessonScreen>
         );
         _treeKey = line;
       }
+      _seenId =
+          '${state.current!.id}|s|${line.moves.map((m) => m.uci).join(' ')}';
     } else {
       _tree = null;
       _treeKey = null;
+      _seenId = null;
     }
     return _tree;
   }
@@ -546,6 +561,7 @@ class _LessonScreenState extends State<LessonScreen>
     final tree = _syncTree();
     if (tree == null || !tree.contains(target)) return;
     _flash.clear();
+    _markSeen(target, animate: true);
     final branch = target.branch == null ? null : tree.branchOf(target.branch!);
     final mainPly = branch?.at ?? target.ply;
     if (_authoredVariation case final authored?) {
@@ -570,6 +586,44 @@ class _LessonScreenState extends State<LessonScreen>
       animate: !AppMotion.of(context).disabled,
       resetPremove: true,
     );
+  }
+
+  bool get _hideUnseen =>
+      context.read<SettingsCubit>().state?.lessonHiddenMoves ?? true;
+
+  Set<TreePosition> get _seenSet =>
+      _seenId == null ? const {} : (_seen[_seenId!] ??= {});
+
+  /// [target] e o caminho até ele entram nos lances vistos. Com [animate] e
+  /// os lances ocultos ligados, o bloco desliza para fora do que é novo.
+  void _markSeen(TreePosition? target, {bool animate = false}) {
+    final tree = _tree;
+    if (target == null || tree == null || _seenId == null) return;
+    if (!tree.contains(target)) return;
+    final seen = _seenSet;
+    final fresh = tree.revealPath(target).where(seen.add).toList();
+    if (fresh.isEmpty) return;
+    if (animate && fresh.contains(target) && _hideUnseen) {
+      _revealing = (position: target, stamp: (_revealing?.stamp ?? 0) + 1);
+    }
+    _seenTick.value++;
+  }
+
+  /// Toque num bloco: revela o 1º lance coberto no caminho até o 1º lance
+  /// coberto da linha, e o tabuleiro vai até ele.
+  void _revealRow(int rowIndex) {
+    final tree = _tree;
+    if (tree == null || rowIndex >= tree.rows.length) return;
+    final seen = _seenSet;
+    final moves = tree.rows[rowIndex].moves;
+    final firstHidden = moves.where((m) => !seen.contains(m.position));
+    if (firstHidden.isEmpty) return;
+    final path = tree.revealPath(firstHidden.first.position);
+    final target = path.firstWhere(
+      (p) => !seen.contains(p),
+      orElse: () => firstHidden.first.position,
+    );
+    _goTo(target);
   }
 
   void _cancelEntry() {
@@ -626,6 +680,7 @@ class _LessonScreenState extends State<LessonScreen>
     }
     setState(() => _authoredVariation = cursor);
     _syncTree();
+    _markSeen(_position);
     final state = context.read<LessonCubit>().state;
     if (cursor == null) {
       _board?.updatePosition(
@@ -1015,6 +1070,7 @@ class _LessonScreenState extends State<LessonScreen>
                                                   previous: false,
                                                 ),
                                                 wrong: _wrongShown(state),
+                                                inBranch: _branch.value != null,
                                                 onExit: () => variation != null
                                                     ? _exitLine()
                                                     : _showAuthoredVariation(
@@ -1182,6 +1238,7 @@ class _LessonScreenState extends State<LessonScreen>
               _branch,
               _stage,
               _footerHeight,
+              _seenTick,
             ]),
             builder: (context, _) {
               final strip = _stage.value >= 2 ? _stripOf(context, state) : null;
@@ -1207,12 +1264,27 @@ class _LessonScreenState extends State<LessonScreen>
                       ),
                       children: [
                         if (strip != null)
-                          VariationStrip(
-                            key: LessonKeys.variationStrip,
-                            tree: strip.tree,
-                            position: strip.position,
-                            text: strip.text,
-                            onSelect: _goTo,
+                          Builder(
+                            builder: (context) {
+                              final hide = context.select(
+                                (SettingsCubit cubit) =>
+                                    cubit.state?.lessonHiddenMoves ?? true,
+                              );
+                              return VariationStrip(
+                                key: LessonKeys.variationStrip,
+                                tree: strip.tree,
+                                position: strip.position,
+                                text: strip.text,
+                                onSelect: _goTo,
+                                hideUnseen: hide,
+                                revealed: _seenSet,
+                                revealing: _revealing,
+                                onReveal: _revealRow,
+                                onToggleHidden: () => context
+                                    .read<SettingsCubit>()
+                                    .setLessonHiddenMoves(hidden: !hide),
+                              );
+                            },
                           )
                         else
                           const SizedBox(width: double.infinity),
@@ -1817,16 +1889,31 @@ class _LessonScreenState extends State<LessonScreen>
           final shown = context.select(
             (SettingsCubit cubit) => cubit.state?.lessonMarks ?? true,
           );
+          final hide = context.select(
+            (SettingsCubit cubit) => cubit.state?.lessonHiddenMoves ?? true,
+          );
           final l10n = context.l10n;
-          return IconButton(
-            key: LessonKeys.marksToggle,
-            visualDensity: VisualDensity.standard,
-            tooltip: shown ? l10n.lessonHideMarks : l10n.lessonShowMarks,
-            isSelected: shown,
-            icon: const Icon(Icons.layers_clear_outlined),
-            selectedIcon: const Icon(Icons.layers_outlined),
-            onPressed: () =>
-                context.read<SettingsCubit>().setLessonMarks(shown: !shown),
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HiddenMovesButton(
+                buttonKey: LessonKeys.hiddenMovesToggle,
+                hidden: hide,
+                onPressed: () => context
+                    .read<SettingsCubit>()
+                    .setLessonHiddenMoves(hidden: !hide),
+              ),
+              IconButton(
+                key: LessonKeys.marksToggle,
+                visualDensity: VisualDensity.standard,
+                tooltip: shown ? l10n.lessonHideMarks : l10n.lessonShowMarks,
+                isSelected: shown,
+                icon: const Icon(Icons.layers_clear_outlined),
+                selectedIcon: const Icon(Icons.layers_outlined),
+                onPressed: () =>
+                    context.read<SettingsCubit>().setLessonMarks(shown: !shown),
+              ),
+            ],
           );
         },
       ),

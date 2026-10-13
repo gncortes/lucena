@@ -6052,5 +6052,17 @@
   "historyEmptyFilteredMarathons": "No marathons with these filters.",
   "@historyEmptyFilteredMarathons": {
     "description": "History: Marathon tab empty after filtering."
-  }
+  },
+  "lessonHideNextMoves": "Hide the next moves",
+  "@lessonHideNextMoves": {"description": "Tooltip: cover the moves the student has not seen yet in the variation strip."},
+  "lessonShowAllMoves": "Show all moves",
+  "@lessonShowAllMoves": {"description": "Tooltip: stop covering the moves in the variation strip."},
+  "lessonHiddenMoves": "Hidden moves",
+  "@lessonHiddenMoves": {"description": "Screen reader label of the block that covers the unseen moves."},
+  "lessonRevealNextMove": "reveal the next move",
+  "@lessonRevealNextMove": {"description": "Screen reader hint of the tap on the block that covers the unseen moves."},
+  "lessonVariationEndBranch": "End of the alternative",
+  "@lessonVariationEndBranch": {"description": "Tooltip of the disabled next button at the end of an alternative."},
+  "lessonVariationEndLine": "End of the line",
+  "@lessonVariationEndLine": {"description": "Tooltip of the disabled next button at the end of the main line."}
 }

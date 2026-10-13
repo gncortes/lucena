@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "حرکت بعدی واریانت",
   "lessonPresentationClose": "بستن و دیدن صفحه",
   "speedrunTimeUntilDrawn": "زمان تا مساوی: {time}",
-  "speedrunContinueStage": "ادامه · مرحله {stage} از {total}"
+  "speedrunContinueStage": "ادامه · مرحله {stage} از {total}",
+  "lessonHideNextMoves": "پنهان کردن حرکت‌های بعدی",
+  "lessonShowAllMoves": "نمایش همه حرکت‌ها",
+  "lessonHiddenMoves": "حرکت‌های پنهان",
+  "lessonRevealNextMove": "آشکار کردن حرکت بعدی",
+  "lessonVariationEndBranch": "پایان جایگزین",
+  "lessonVariationEndLine": "پایان خط"
 }

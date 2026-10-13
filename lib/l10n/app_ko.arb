@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "변화 수순의 다음 수",
   "lessonPresentationClose": "닫고 보드 보기",
   "speedrunTimeUntilDrawn": "무승부까지 시간: {time}",
-  "speedrunContinueStage": "계속 · {total}단계 중 {stage}단계"
+  "speedrunContinueStage": "계속 · {total}단계 중 {stage}단계",
+  "lessonHideNextMoves": "다음 수 숨기기",
+  "lessonShowAllMoves": "모든 수 보이기",
+  "lessonHiddenMoves": "숨겨진 수",
+  "lessonRevealNextMove": "다음 수 보기",
+  "lessonVariationEndBranch": "대안의 끝",
+  "lessonVariationEndLine": "라인의 끝"
 }

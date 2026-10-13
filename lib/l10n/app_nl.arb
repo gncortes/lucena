@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Volgende zet van de variant",
   "lessonPresentationClose": "Sluiten en het bord zien",
   "speedrunTimeUntilDrawn": "Tijd tot remise: {time}",
-  "speedrunContinueStage": "Doorgaan · etappe {stage} van {total}"
+  "speedrunContinueStage": "Doorgaan · etappe {stage} van {total}",
+  "lessonHideNextMoves": "De volgende zetten verbergen",
+  "lessonShowAllMoves": "Alle zetten tonen",
+  "lessonHiddenMoves": "Verborgen zetten",
+  "lessonRevealNextMove": "de volgende zet onthullen",
+  "lessonVariationEndBranch": "Einde van het alternatief",
+  "lessonVariationEndLine": "Einde van de lijn"
 }

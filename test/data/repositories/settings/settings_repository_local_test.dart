@@ -213,4 +213,15 @@ void main() {
 
     expect(await reopen().load(), saved);
   });
+
+  test(
+    'lances ocultos (T69): ligado por padrão, e o valor volta ao reabrir',
+    () async {
+      expect((await reopen().load()).lessonHiddenMoves, isTrue);
+      await reopen().save(const AppSettings(lessonHiddenMoves: false));
+      expect((await reopen().load()).lessonHiddenMoves, isFalse);
+      await reopen().save(const AppSettings());
+      expect((await reopen().load()).lessonHiddenMoves, isTrue);
+    },
+  );
 }

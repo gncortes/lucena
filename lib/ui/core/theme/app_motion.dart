@@ -29,6 +29,12 @@ abstract final class AppMotion {
   /// Atraso entre itens em cascata.
   static const stagger = Durations.short1;
 
+  /// Revelar um lance oculto da faixa de variantes (T69, "desliza para fora").
+  static const reveal = Duration(milliseconds: 240);
+
+  /// Curva da revelação.
+  static const revealCurve = Curves.easeOutCubic;
+
   /// Algo aparece ou entra na tela.
   static const enter = Easing.emphasizedDecelerate;
 

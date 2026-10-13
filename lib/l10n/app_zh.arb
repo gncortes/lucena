@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "变着中的下一步",
   "lessonPresentationClose": "关闭并查看棋盘",
   "speedrunTimeUntilDrawn": "距离和棋的用时：{time}",
-  "speedrunContinueStage": "继续 · 第 {stage}/{total} 阶段"
+  "speedrunContinueStage": "继续 · 第 {stage}/{total} 阶段",
+  "lessonHideNextMoves": "隐藏后续着法",
+  "lessonShowAllMoves": "显示所有着法",
+  "lessonHiddenMoves": "隐藏的着法",
+  "lessonRevealNextMove": "显示下一步着法",
+  "lessonVariationEndBranch": "变着结束",
+  "lessonVariationEndLine": "主线结束"
 }

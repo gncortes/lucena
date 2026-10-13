@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Nước đi tiếp theo trong biến",
   "lessonPresentationClose": "Đóng và xem bàn cờ",
   "speedrunTimeUntilDrawn": "Thời gian đến khi hòa: {time}",
-  "speedrunContinueStage": "Tiếp tục · chặng {stage}/{total}"
+  "speedrunContinueStage": "Tiếp tục · chặng {stage}/{total}",
+  "lessonHideNextMoves": "Ẩn các nước đi tiếp theo",
+  "lessonShowAllMoves": "Hiện tất cả nước đi",
+  "lessonHiddenMoves": "Nước đi bị ẩn",
+  "lessonRevealNextMove": "hiện nước đi tiếp theo",
+  "lessonVariationEndBranch": "Hết nhánh thay thế",
+  "lessonVariationEndLine": "Hết đường đi"
 }
