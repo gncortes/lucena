@@ -9,10 +9,6 @@ abstract final class RatingKeys {
   static const games = Key('rating.games');
   static const chart = Key('rating.chart');
 
-  /// Os números do progresso (partidas, vitórias, dias seguidos...).
-  static const stats = Key('rating.stats');
-  static Key stat(int index) => Key('rating.stat.$index');
-
   /// O aviso de período sem partidas.
   static const chartEmpty = Key('rating.chart.empty');
 
