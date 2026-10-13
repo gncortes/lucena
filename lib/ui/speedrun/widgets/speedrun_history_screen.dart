@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../../routing/routes.dart';
@@ -208,7 +209,7 @@ class _Chip extends StatelessWidget {
 String recordAtLabel(AppLocalizations l10n, String date, String time) =>
     l10n.speedrunRecordAt(date, time).replaceFirst(' $time', '\u00A0$time');
 
-/// "Seu recorde" com a data e, ao lado, as tentativas e as concluídas.
+/// "Seu recorde" com a data e, embaixo, as tentativas e as concluídas.
 class _Numbers extends StatelessWidget {
   const _Numbers({required this.speedrun, required this.state});
 
@@ -263,8 +264,8 @@ class _Numbers extends StatelessWidget {
         ),
       ],
     );
-    // Lado a lado até a fonte 1,5; acima, um embaixo do outro.
-    final wide = MediaQuery.textScalerOf(context).scale(10) <= 15;
+    // Verde de sucesso do GoalStyle (T67d, variante B): troféu e tempo.
+    final green = GoalStyle.of(context, PositionGoal.win).color;
     final Widget record = best == null || bestAt == null
         ? const SizedBox.shrink()
         : Column(
@@ -276,16 +277,34 @@ class _Numbers extends StatelessWidget {
                 style: muted,
               ),
               const SizedBox(height: 4),
-              TimeDisplay(
-                value: runTime(context, recordTime(speedrun, best)),
-                semanticsLabel: marathon
+              Semantics(
+                container: true,
+                excludeSemantics: true,
+                label: marathon
                     ? l10n.marathonBestValue(
                         runTime(context, recordTime(speedrun, best)),
                       )
                     : '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
-                type: TimeDisplayType.record,
-                size: TimeDisplaySize.pill,
-                state: TimeDisplayState.highlight,
+                child: Row(
+                  children: [
+                    Icon(Icons.emoji_events_rounded, size: 32, color: green),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        runTime(context, recordTime(speedrun, best)),
+                        key: SpeedrunKeys.historyRecordTime,
+                        textDirection: TextDirection.ltr,
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: green,
+                          fontSize: 36,
+                          height: 44 / 36,
+                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -302,6 +321,42 @@ class _Numbers extends StatelessWidget {
               ),
             ],
           );
+    // As contagens lado a lado, centradas, com divisor vertical.
+    Widget centered(Key key, int value, String label) => Expanded(
+      child: Column(
+        key: key,
+        children: [
+          Text(
+            '$value',
+            textDirection: TextDirection.ltr,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontSize: 20,
+              height: 24 / 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(label, textAlign: TextAlign.center, style: muted),
+        ],
+      ),
+    );
+    final strip = IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          centered(
+            SpeedrunKeys.historyAttempts,
+            attempts,
+            l10n.historyStatAttempts(attempts),
+          ),
+          VerticalDivider(width: 1, color: colors.outlineVariant),
+          centered(
+            SpeedrunKeys.historyFinished,
+            finished,
+            l10n.historyStatFinishedAttempts(finished),
+          ),
+        ],
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Material(
@@ -327,31 +382,12 @@ class _Numbers extends StatelessWidget {
                     counts,
                   ],
                 )
-              : wide
-              ? IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Expanded(child: record),
-                      const SizedBox(width: 16),
-                      VerticalDivider(width: 1, color: colors.outlineVariant),
-                      const SizedBox(width: 16),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(minWidth: 104),
-                        child: counts,
-                      ),
-                    ],
-                  ),
-                )
-              // Fonte grande: as contagens embaixo do recorde.
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     record,
                     Divider(height: 24, color: colors.outlineVariant),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: counts,
-                    ),
+                    strip,
                   ],
                 ),
         ),

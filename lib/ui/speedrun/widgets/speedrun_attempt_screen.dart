@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
@@ -372,9 +373,7 @@ class _CompareCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final record = total < previous;
     // A cor clara do selo de recorde: o número no claro, o fundo no escuro.
-    final recordColor = theme.brightness == Brightness.dark
-        ? colors.tertiaryContainer
-        : colors.onTertiaryContainer;
+    final recordColor = GoalStyle.of(context, PositionGoal.win).color;
     final difference = (previous - total).abs();
     // Os segundos com uma casa e a vírgula do idioma, truncados.
     final decimal = NumberFormat.decimalPattern(

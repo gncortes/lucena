@@ -109,6 +109,7 @@ abstract final class SpeedrunKeys {
   static const historyRecord = Key('speedrun.history.record');
 
   /// "Em 12 de outubro, às 20:06", embaixo do recorde.
+  static const historyRecordTime = Key('speedrun.history.recordTime');
   static const historyRecordAt = Key('speedrun.history.recordAt');
   static const historyNotFinished = Key('speedrun.history.notFinished');
   static const historyAttempts = Key('speedrun.history.attempts');

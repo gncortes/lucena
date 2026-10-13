@@ -25,6 +25,7 @@ import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/test_app.dart';
 
 /// O ramo da Maratona do histórico de um speedrun (T67f, lote 4): chip,
@@ -237,15 +238,29 @@ void main() {
       expect(textOf(tester, SpeedrunKeys.historyAttempts), '6 | tentativas');
       expect(textOf(tester, SpeedrunKeys.historyFinished), '2 | concluídas');
       expect(find.byKey(SpeedrunKeys.historyNotFinished), findsNothing);
-      final record = tester.widget<TimeDisplay>(
-        find.descendant(
-          of: find.byKey(SpeedrunKeys.historyRecord),
-          matching: find.byType(TimeDisplay),
-        ),
+      final record = tester.widget<Text>(
+        find.byKey(SpeedrunKeys.historyRecordTime),
       );
       // 3 minutos menos 3 etapas de 40 s: sobra 1:00.
-      expect(record.value, '1:00.0');
+      expect(record.data, '1:00.0');
+      expect(record.style?.color, const Color(0xFF2E7D32));
       expect(cubit.state.runs[4].record, isTrue);
+    });
+
+    testWidgets('360 dp: "Mais tempo sobrando" em verde, data numa linha', (
+      tester,
+    ) async {
+      await tester.runAsync(Goldens.loadFonts);
+      await pump(tester, size: const Size(360, 740));
+      expect(tester.takeException(), isNull);
+      final at = find.byKey(SpeedrunKeys.historyRecordAt);
+      expect(tester.getSize(at).height, lessThanOrEqualTo(19));
+      final time = find.byKey(SpeedrunKeys.historyRecordTime);
+      expect(tester.widget<Text>(time).style?.color, const Color(0xFF2E7D32));
+      expect(
+        tester.getRect(find.byKey(SpeedrunKeys.historyAttempts)).top,
+        greaterThan(tester.getRect(time).bottom),
+      );
     });
 
     testWidgets('linhas: recorde, regressivo "sobrou" e cada fim', (

@@ -1,7 +1,9 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../../domain/models/endgame_position.dart';
 import '../theme/app_shape.dart';
+import 'goal_style.dart';
 
 enum TimeDisplayType { clock, stopwatch, countdown, record, duration, pace }
 
@@ -71,6 +73,7 @@ class TimeDisplay extends StatelessWidget {
     // Piece-side colors intentionally stay fixed across light/dark themes.
     const light = Color(0xFFFFFFFF);
     const dark = Color(0xFF262421);
+    final darkTheme = theme.brightness == Brightness.dark;
     final (background, foreground, accent) = clock
         ? side == Side.white
               ? (light, dark, dark)
@@ -98,10 +101,12 @@ class TimeDisplay extends StatelessWidget {
               colors.onSurfaceVariant,
               colors.onSurfaceVariant,
             ),
+            // Recorde: verde de sucesso do GoalStyle, sólido, com troféu e
+            // tempo em branco (T67d, variante B; 5,1:1 no claro).
             TimeDisplayState.highlight => (
-              colors.tertiaryContainer,
-              colors.onTertiaryContainer,
-              colors.onTertiaryContainer,
+              GoalStyle.of(context, PositionGoal.win).color,
+              darkTheme ? const Color(0xFF0B2E10) : const Color(0xFFFFFFFF),
+              darkTheme ? const Color(0xFF0B2E10) : const Color(0xFFFFFFFF),
             ),
           };
     final icon = switch (type) {

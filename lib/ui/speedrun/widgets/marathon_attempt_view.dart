@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
@@ -445,6 +446,7 @@ class _RecordCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final value = runTime(context, recordTime(speedrun, best));
+    final green = GoalStyle.of(context, PositionGoal.win).color;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
@@ -465,12 +467,28 @@ class _RecordCard extends StatelessWidget {
               ),
             ),
           ),
-          TimeDisplay(
-            value: value,
-            semanticsLabel: l10n.marathonBestValue(value),
-            type: TimeDisplayType.record,
-            size: TimeDisplaySize.inline,
-            textKey: SpeedrunKeys.marathonRecord,
+          Semantics(
+            container: true,
+            excludeSemantics: true,
+            label: l10n.marathonBestValue(value),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: AppSpacing.sm,
+              children: [
+                Icon(Icons.emoji_events_rounded, size: 24, color: green),
+                Text(
+                  value,
+                  key: SpeedrunKeys.marathonRecord,
+                  textDirection: TextDirection.ltr,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: green,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

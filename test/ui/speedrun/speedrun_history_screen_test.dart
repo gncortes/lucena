@@ -24,6 +24,7 @@ import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/goldens/golden_harness.dart';
 
 /// O histórico de um speedrun (T67d): o recorde, as contagens, as tentativas
 /// por mês e o "+N" só na primeira conclusão.
@@ -203,6 +204,8 @@ void main() {
   });
 
   group('a tela', () {
+    setUpAll(Goldens.loadFonts);
+
     Future<void> pump(
       WidgetTester tester, {
       Locale locale = const Locale('pt'),
@@ -413,6 +416,47 @@ void main() {
       });
     }
 
+    for (final size in [const Size(360, 740), const Size(412, 917)]) {
+      testWidgets('recorde em verde, data numa linha e faixa embaixo em '
+          '${size.width.toInt()}', (tester) async {
+        await pump(tester, size: size);
+        expect(tester.takeException(), isNull);
+        final time = find.byKey(SpeedrunKeys.historyRecordTime);
+        expect(tester.widget<Text>(time).style?.color, const Color(0xFF2E7D32));
+        // A data inteira numa linha só (uma linha de 13 sp, 18 dp de altura).
+        final at = find.byKey(SpeedrunKeys.historyRecordAt);
+        expect(tester.getSize(at).height, lessThanOrEqualTo(19));
+        // A faixa de tentativas e concluídas fica abaixo do tempo, lado a lado.
+        final attempts = tester.getRect(
+          find.byKey(SpeedrunKeys.historyAttempts),
+        );
+        final finished = tester.getRect(
+          find.byKey(SpeedrunKeys.historyFinished),
+        );
+        expect(attempts.top, greaterThan(tester.getRect(time).bottom));
+        expect((attempts.top - finished.top).abs(), lessThan(1));
+        expect(finished.left, greaterThan(attempts.right - 1));
+      });
+    }
+
+    testWidgets('linha do recorde: pílula verde sólida com troféu branco', (
+      tester,
+    ) async {
+      await pump(tester);
+      final pill = find.descendant(
+        of: find.byKey(
+          SpeedrunKeys.historyRun(cubit.state.runs.indexWhere((r) => r.record)),
+        ),
+        matching: find.byType(Container),
+      );
+      final box = tester
+          .widgetList<Container>(pill)
+          .map((c) => c.decoration)
+          .whereType<BoxDecoration>()
+          .where((d) => d.color == const Color(0xFF2E7D32));
+      expect(box, isNotEmpty);
+    });
+
     testWidgets('no árabe, os números ficam LTR', (tester) async {
       await pump(tester, locale: const Locale('ar'));
       expect(tester.takeException(), isNull);
@@ -426,13 +470,10 @@ void main() {
       );
       expect(attempts.data, '5');
       expect(attempts.textDirection, TextDirection.ltr);
-      final time = tester.widget<TimeDisplay>(
-        find.descendant(
-          of: find.byKey(SpeedrunKeys.historyRecord),
-          matching: find.byType(TimeDisplay),
-        ),
+      final time = tester.widget<Text>(
+        find.byKey(SpeedrunKeys.historyRecordTime),
       );
-      expect(time.value, '0:45.0');
+      expect(time.data, '0:45.0');
       // A seta espelha sozinha: no RTL continua chevron_right.
       expect(find.byIcon(Icons.chevron_left), findsNothing);
     });
