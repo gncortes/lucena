@@ -1099,5 +1099,7 @@
   "lessonSoundOff": "[Šöûñd åñd vöîçé: öff one two]",
   "gameDrawOfferHintNamed": "[{name} çåñ åççépt öŕ déçlîñé. Îf théý déçlîñé, thé ĝåmé ĝöéš öñ. one two three four five six]",
   "gameKeepPlaying": "[Kéép plåýîñĝ one two]",
-  "speedrunQuitHint": "{count, plural, =0{[Thé åttémpt éñdš héŕé åñd štåýš îñ ýöûŕ hîštöŕý. one two three four five]} =1{[Ýöû löšé thé štåĝé ýöû wöñ îñ thîš åttémpt. one two three four]} other{[Ýöû löšé thé {count} štåĝéš ýöû wöñ îñ thîš åttémpt. one two three four five]}}"
+  "speedrunQuitHint": "{count, plural, =0{[Thé åttémpt éñdš héŕé åñd štåýš îñ ýöûŕ hîštöŕý. one two three four five]} =1{[Ýöû löšé thé štåĝé ýöû wöñ îñ thîš åttémpt. one two three four]} other{[Ýöû löšé thé {count} štåĝéš ýöû wöñ îñ thîš åttémpt. one two three four five]}}",
+  "gameSoundLabelOn": "[Šöûñd one]",
+  "gameSoundLabelOff": "[Ñö šöûñd one]"
 }

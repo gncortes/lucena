@@ -447,9 +447,12 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
   /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
   /// guardada para depois.
-  Future<void> quitSpeedrun() async {
+  ///
+  /// Só encerra com [confirmed] verdadeiro: a folha de sair devolveu "sim"
+  /// de forma explícita. Cancelar (ou fechar a folha) nunca grava nada.
+  Future<void> quitSpeedrun({required bool confirmed}) async {
     final attemptId = state.mode.speedrunAttemptId;
-    if (attemptId == null || _left) return;
+    if (!confirmed || attemptId == null || _left) return;
     _left = true;
     final now = _now();
     final clock = state.clock;
