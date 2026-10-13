@@ -305,6 +305,20 @@ void main() {
       expect(plain.type, TimeDisplayType.stopwatch);
     });
 
+    testWidgets('linha de cima da parada com 28 de altura, como o tempo', (
+      tester,
+    ) async {
+      await pump(tester);
+      final top = find
+          .descendant(
+            of: find.byKey(SpeedrunKeys.historyRun(0)),
+            matching: find.byType(ConstrainedBox),
+          )
+          .evaluate()
+          .map((e) => (e.widget as ConstrainedBox).constraints.minHeight);
+      expect(top, contains(28.0));
+    });
+
     testWidgets('o "+N" só na 1ª conclusão', (tester) async {
       await pump(tester);
       expect(find.byKey(SpeedrunKeys.historyBonus), findsOneWidget);
