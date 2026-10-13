@@ -288,6 +288,18 @@ void main() {
       expect(box.width, greaterThanOrEqualTo(text.width));
       expect(box.height, greaterThanOrEqualTo(text.height));
       expect(text.height, lessThan(text.width * 2));
+      // Um dígito continua círculo, que cresce com a fonte (na Ahem o "10"
+      // ainda passa do círculo; no aparelho cabe).
+      final one = find.ancestor(
+        of: find.descendant(
+          of: find.byKey(ConclusionKeys.stage(0)),
+          matching: find.text('1'),
+        ),
+        matching: find.byType(Container),
+      );
+      final first = tester.getRect(one.first);
+      expect(first.width, closeTo(first.height, 0.5));
+      expect(first.width, closeTo(56, 0.5));
     });
 
     testWidgets('o rating cabe em 360 sem encolher a fonte', (tester) async {

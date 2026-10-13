@@ -1121,14 +1121,17 @@ class _StageRow extends StatelessWidget {
     final accent = fastest
         ? ChangeColors.of(context, up: true)
         : colors.primary;
+    final badge = MediaQuery.textScalerOf(context).scale(28);
     return Padding(
       key: ConclusionKeys.stage(number - 1),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
-          // Círculo de 28; com fonte grande vira pílula, sem cortar o "10".
+          // Círculo de 28 que cresce com a fonte: o "10" cabe, um dígito
+          // continua círculo e todas as linhas têm a mesma largura (só passa
+          // a pílula se o número não couber).
           Container(
-            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+            constraints: BoxConstraints(minWidth: badge, minHeight: badge),
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             alignment: Alignment.center,
             decoration: BoxDecoration(
