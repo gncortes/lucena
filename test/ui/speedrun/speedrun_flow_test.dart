@@ -267,11 +267,14 @@ void main() {
     expect(find.byKey(FreeBoardKeys.marathonBanner), findsNothing);
     expect(game().state.clock!.running, isNotNull);
 
-    // 20 s depois, a etapa é perdida: a conclusão da etapa perdida abre no
-    // lugar da partida.
+    // 20 s depois, a etapa é perdida: a partida para no tabuleiro (canvas
+    // PropV2PartidaFim) e "Ver o resultado" abre a conclusão no lugar dela.
     now.advance(const Duration(seconds: 20));
     game().resign();
     await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);
     expect(find.byKey(ConclusionKeys.title), findsOneWidget);
