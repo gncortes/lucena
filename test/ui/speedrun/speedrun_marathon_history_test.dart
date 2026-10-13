@@ -220,6 +220,16 @@ void main() {
         ),
         findsOneWidget,
       );
+      final chipText = tester.widget<Text>(
+        find.descendant(
+          of: find.byKey(SpeedrunKeys.paceChip),
+          matching: find.byType(Text),
+        ),
+      );
+      expect(chipText.style?.fontWeight, FontWeight.w700);
+      expect(chipText.style?.fontSize, 14);
+      // O título é só o nome do final, sem "Maratona:" (o chip já diz).
+      expect(find.textContaining('Maratona:'), findsNothing);
       expect(
         textOf(tester, SpeedrunKeys.historyRecord),
         allOf(contains('Mais tempo sobrando'), isNot(contains('Seu recorde'))),
