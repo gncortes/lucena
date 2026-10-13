@@ -99,14 +99,23 @@ class VariationStrip extends StatefulWidget {
   static const tapSize = 48.0;
 
   /// O trecho abre com o lance da vez ("1...Re6. O rei…"), que a linha de
-  /// cima já mostra em destaque: a notação do começo sai do texto.
+  /// cima já mostra em destaque: a notação do começo sai do texto. Quando o
+  /// lance é o sujeito da frase ("3.Rf5 é um bom lance…"), o texto fica
+  /// inteiro: cortar deixaria um pedaço começando em minúscula.
   @visibleForTesting
-  static String withoutLeadingMove(String text) => text.replaceFirst(
-    RegExp(
-      r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
-    ),
-    '',
-  );
+  static String withoutLeadingMove(String text) {
+    final rest = text.replaceFirst(
+      RegExp(
+        r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
+      ),
+      '',
+    );
+    if (rest == text || rest.isEmpty) return rest;
+    final first = rest[0];
+    return first.toLowerCase() == first && first.toUpperCase() != first
+        ? text
+        : rest;
+  }
 
   @override
   State<VariationStrip> createState() => _VariationStripState();

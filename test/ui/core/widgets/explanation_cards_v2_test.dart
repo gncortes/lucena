@@ -852,6 +852,8 @@ void main() {
         find.textContaining('você deixa escapar a vitória'),
         findsOneWidget,
       );
+      // A hipótese é a mesma ideia: no erro ela não se repete abaixo (r6 E2).
+      expect(find.textContaining('Se as brancas jogassem'), findsNothing);
 
       await tester.pumpWidget(app(source.forState(ExplanationState.review)));
       await tester.pumpAndSettle();
