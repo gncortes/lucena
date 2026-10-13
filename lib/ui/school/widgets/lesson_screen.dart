@@ -1337,11 +1337,21 @@ class _LessonScreenState extends State<LessonScreen>
   /// Cabeçalho do Viktor (64) + 4 linhas de texto de 24 dp.
   static const _solutionMinSheet = 160.0;
 
-  /// Room kept below the board for the collapsed sheet: the shared peek plus
-  /// Viktor's header row (avatar 56 minus the 8 gap), now always in the sheet
-  /// (D15). Short screens (360×640) shrink the board so the first line of the
-  /// speech stays above the footer; 360×740 and 412×917 keep the full width.
-  static const _sheetPeek = ViktorSheet.peekHeight + 48;
+  /// Room kept below the board for the collapsed sheet: the handle, Viktor's
+  /// header (48), the prompt bubble with [_collapsedLines] full lines of 24 dp
+  /// (2 dp above it and 9 dp of padding on each side), the 12 dp fade, the gap
+  /// and the footer. Short screens (360×640) shrink the board to leave it;
+  /// 360×740 and 412×917 keep the full width.
+  static const _collapsedLines = 3;
+  static const _sheetPeek =
+      _handleHeight +
+      48 +
+      2 +
+      2 * 9 +
+      _collapsedLines * 24 +
+      12 +
+      _endGap +
+      _actionsHeight;
 
   /// A fala do enunciado. No passo de pensar, antes de qualquer dica, o
   /// Viktor só diz quem joga e pede para pensar, curto (o tabuleiro fica no

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
@@ -59,7 +60,11 @@ void main() {
     );
     addTearDown(cubit.close);
     await tester.runAsync(
-      () => cubit.load('pawns.distantOpposition', 'pt', part: part),
+      () => cubit.load(
+        'pawns.distantOpposition',
+        'pt',
+        part: part.isEmpty ? null : part,
+      ),
     );
     tester.view
       ..devicePixelRatio = 1
@@ -144,5 +149,36 @@ void main() {
       );
       expect(sheet.top, greaterThanOrEqualTo(76));
     }
+  });
+
+  testWidgets('360x640 recolhido: 3 linhas do enunciado inteiras, sem corte', (
+    tester,
+  ) async {
+    final cubit = await open(tester, 'defend', const Size(360, 640));
+    if (cubit.state.presenting) {
+      await tester.tap(find.byKey(LessonKeys.presentationClose));
+      await tester.pumpAndSettle();
+    }
+    final speech = find.descendant(
+      of: find.byKey(LessonKeys.speech),
+      matching: find.byType(RichText),
+    );
+    final paragraph = tester.renderObject<RenderParagraph>(speech.first);
+    final box = paragraph
+        .getBoxesForSelection(
+          const TextSelection(baseOffset: 0, extentOffset: 1),
+        )
+        .first;
+    final line = box.bottom - box.top;
+    final text = tester.getRect(speech.first);
+    // O que fica visível: da folha até o rodapé, menos o respiro de 12 dp e o
+    // esmaecer de 12 dp (o texto precisa terminar antes do esmaecer).
+    final footerTop = tester.getRect(find.byKey(LessonKeys.footer)).top;
+    final clearBottom = footerTop - 12 - 12;
+    final visibleLines = ((clearBottom - text.top) / line).floor();
+    expect(visibleLines, greaterThanOrEqualTo(3));
+    // E o card (9 dp abaixo da terceira linha) também termina antes do fade.
+    expect(text.top + 3 * line + 9, lessThanOrEqualTo(clearBottom));
+    expect(tester.takeException(), isNull);
   });
 }
