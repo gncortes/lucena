@@ -3,6 +3,10 @@ import 'package:flutter/widgets.dart';
 abstract final class SpeedrunKeys {
   static const listScreen = Key('speedrun.list.screen');
   static const screen = Key('speedrun.screen');
+
+  /// O cartão do bônus de rating: a oferta (antes de concluir) e o ganho.
+  static const ratingBonusOffer = Key('speedrun.ratingBonus.offer');
+  static const ratingBonusEarned = Key('speedrun.ratingBonus.earned');
   static const attemptScreen = Key('speedrun.attempt.screen');
 
   /// Um speedrun na lista e o recorde dele.
