@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
@@ -494,11 +495,10 @@ class _Chips extends StatelessWidget {
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
-        TimeDisplay(
-          value: paceLabel(l10n, speedrun.time),
-          semanticsLabel: paceLabel(l10n, speedrun.time),
-          type: TimeDisplayType.pace,
-          size: TimeDisplaySize.pill,
+        _Chip(
+          icon: paceIcon(PaceCategory.of(speedrun.time)),
+          label: HistoryLabels.ltr(paceLabel(l10n, speedrun.time)),
+          filled: true,
         ),
         _Chip(icon: Icons.all_inclusive, label: l10n.marathonSection),
         if (endedAt != null)
@@ -514,10 +514,13 @@ class _Chips extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label});
+  const _Chip({required this.icon, required this.label, this.filled = false});
 
   final IconData icon;
   final String label;
+
+  /// O ritmo: pílula cheia e em negrito (`CompTempo` tipo ritmo, tamanho p).
+  final bool filled;
 
   @override
   Widget build(BuildContext context) {
@@ -531,8 +534,11 @@ class _Chip extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(AppShape.small),
+        color: filled ? colors.surfaceContainerHighest : null,
+        border: filled ? null : Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(
+          filled ? AppShape.full : AppShape.small,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -545,7 +551,9 @@ class _Chip extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+                color: filled ? colors.onSurface : colors.onSurfaceVariant,
+                fontWeight: filled ? FontWeight.w700 : null,
+                fontSize: filled ? 14 : null,
               ),
             ),
           ),
