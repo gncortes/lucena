@@ -45,7 +45,7 @@ import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
-import '../../../../testing/visible_center.dart';
+import '../../../../testing/balanced_block.dart';
 
 void main() {
   late FreeBoardCubit cubit;
@@ -1009,7 +1009,7 @@ void main() {
               final board = boardRect(tester);
               // Centro da tela visível; largura toda em 412, e pelo menos
               // 330 em 360×740 com as barras do sistema.
-              expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+              expectBalancedBlock(tester, board);
               expect(board.center.dx, closeTo(size.width / 2, 1));
               if (size.width == 412) {
                 expect(board.width, closeTo(412, 1));
@@ -1390,7 +1390,7 @@ void main() {
           expect(appbar.centerTitle, isTrue);
           final appBarRect = tester.getRect(find.byType(AppBar));
           // O centro do tabuleiro é o centro da tela visível.
-          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expectBalancedBlock(tester, board);
           expect(board.top, greaterThanOrEqualTo(appBarRect.bottom));
           expect(board.bottom, lessThanOrEqualTo(actions.top));
           expect(board.width, greaterThanOrEqualTo(280));
@@ -1575,7 +1575,7 @@ void main() {
           expect(board.width, greaterThanOrEqualTo(200));
           final appBar = tester.getRect(find.byType(AppBar));
           final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expectBalancedBlock(tester, board);
           expect(board.top, greaterThanOrEqualTo(appBar.bottom));
           expect(board.bottom, lessThanOrEqualTo(actions.top));
           if (position == ClockPosition.bottom) {
@@ -1622,7 +1622,7 @@ void main() {
           final board = boardRect(tester);
           final appBar = tester.getRect(find.byType(AppBar));
           final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-          expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+          expectBalancedBlock(tester, board);
           expect(board.top, greaterThanOrEqualTo(appBar.bottom));
           expect(board.bottom, lessThanOrEqualTo(actions.top));
           expect(board.width, greaterThanOrEqualTo(200));
@@ -1768,7 +1768,7 @@ void main() {
       final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
       expect(appBar.bottom, area.top);
       final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
-      expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+      expectBalancedBlock(tester, board);
       expect(board.bottom, lessThanOrEqualTo(actions.top));
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.characterBar)).bottom,
@@ -1993,5 +1993,69 @@ void main() {
       opponent.release();
       await tester.pumpAndSettle();
     });
+  });
+  group('Vão do bloco central: a sobra se divide meio a meio', () {
+    const machine = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1600,
+      userSide: Side.white,
+      positionId: 'basic.queen.0001',
+    );
+    final modes = <String, GameMode>{
+      'Partida': machine,
+      'Speedrun': machine.copyWith(
+        speedrunId: 'queen',
+        speedrunAttemptId: 1,
+        speedrunStage: 0,
+      ),
+      'Maratona': machine.copyWith(
+        speedrunId: 'marathon.queen',
+        speedrunAttemptId: 1,
+        speedrunStage: 0,
+      ),
+    };
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      for (final entry in modes.entries) {
+        for (final ended in [false, true]) {
+          testWidgets('${entry.key} em $size, ${ended ? 'fim' : 'jogando'}', (
+            tester,
+          ) async {
+            await pumpScreen(
+              tester,
+              fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+              screen: size * 2.625,
+              systemBars: true,
+              mode: entry.value,
+              withReporter: true,
+              clock: ClockConfig.same(
+                const TimeControl(initial: Duration(minutes: 3)),
+              ),
+            );
+            await cubit.open();
+            await talk.settled();
+            await tester.pumpAndSettle();
+            if (ended) {
+              await move(tester, 'h1', 'h8');
+              expect(cubit.state.end, isNotNull);
+              expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+              final button = tester.getRect(
+                find.byKey(FreeBoardKeys.seeResultButton),
+              );
+              expect(button.height, closeTo(52, 1));
+              // A seta vem antes do texto (CompBotao).
+              final arrow = tester.getRect(find.byIcon(Icons.arrow_forward));
+              final label = tester.getRect(find.text('See the result'));
+              expect(arrow.right, lessThanOrEqualTo(label.left));
+            }
+            final board = boardRect(tester);
+            final gaps = blockGaps(tester, board);
+            expect(gaps.above, greaterThanOrEqualTo(-0.01));
+            expect(gaps.below, greaterThanOrEqualTo(-0.01));
+            expectBalancedBlock(tester, board);
+            expect(tester.takeException(), isNull);
+          });
+        }
+      }
+    }
   });
 }

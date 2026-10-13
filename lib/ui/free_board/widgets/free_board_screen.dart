@@ -375,7 +375,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               // menos as barras do sistema), como no às cegas e nas
               // estrelas. Retrato, nome e relógio compartilham uma única
               // linha; o balão flutua e não reserva altura.
-              final centerY = BoardViewport.centerYOf(context);
               final clocksAbove =
                   clocks == ClockPosition.top || clocks == ClockPosition.sides
                   ? ClockRow.height
@@ -386,13 +385,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   ? ClockRow.height
                   : 0.0;
               final reserveTop = clocksAbove;
-              final centering = BoardCentering(
+              final centering = BoardCentering.balanced(
                 constraints.biggest,
                 gap: _boardGap,
                 reserveTop: reserveTop,
                 reserveBottom: clocksBelow,
                 footer: 76,
-                centerY: centerY,
               );
               const both = [Side.white, Side.black];
               final end = state.end;
@@ -404,7 +402,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   CenteredBoardLayout(
                     key: FreeBoardKeys.scrollArea,
                     gap: _boardGap,
-                    centerY: centerY,
+                    balanced: true,
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
                     footer: machineEnded
@@ -727,8 +725,11 @@ class _SeeResultBar extends StatelessWidget {
               child: FilledButton.icon(
                 key: FreeBoardKeys.seeResultButton,
                 onPressed: onPressed,
+                // CompBotao: 52 de altura, seta antes do texto (18), 14/500.
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
                 icon: const Icon(Icons.arrow_forward),
-                iconAlignment: IconAlignment.end,
                 label: Text(context.l10n.gameSeeResult),
               ),
             ),

@@ -36,7 +36,7 @@ import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
-import '../../../../testing/visible_center.dart';
+import '../../../../testing/balanced_block.dart';
 
 /// Começar a partida na Nova partida: o tabuleiro de cima desliza e cresce
 /// até o centro da partida (um tabuleiro só no ar, sem girar), e o resto da
@@ -192,7 +192,7 @@ void main() {
     final appBar = tester.getRect(find.byType(AppBar));
     final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
     expect(board.center.dx, closeTo(area.center.dx, 1));
-    expect(board.center.dy, closeTo(visibleCenterY(tester), 1));
+    expectBalancedBlock(tester, board);
     expect(board.top, greaterThanOrEqualTo(appBar.bottom));
     expect(board.bottom, lessThanOrEqualTo(actions.top));
     expect(find.byType(StaticChessboard), findsNothing);
