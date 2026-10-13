@@ -64,6 +64,7 @@ class _LessonScreenState extends State<LessonScreen>
 
   // Apresentação (T65 §8). Caso B: a folha cobre o tabuleiro, sem rodapé e
   // sem relógio, até o fim da fala (ou do tempo de leitura) ou o X.
+  final _speechContent = GlobalKey();
   final _presentingModal = ValueNotifier(false);
   bool _presentHandled = false;
   bool _presentExpanded = false;
@@ -800,7 +801,18 @@ class _LessonScreenState extends State<LessonScreen>
                                 child: _SizeReporter(
                                   onSize: _onFooterSize,
                                   child: AnimatedSwitcher(
-                                    duration: AppMotion.of(context).component,
+                                    // 100 ms saindo e 100 ms entrando: o
+                                    // rodapé antigo nunca cobre o texto novo.
+                                    duration: AppMotion.of(context).state,
+                                    transitionBuilder: (child, animation) =>
+                                        FadeTransition(
+                                          opacity: animation.drive(
+                                            CurveTween(
+                                              curve: const Interval(.5, 1),
+                                            ),
+                                          ),
+                                          child: child,
+                                        ),
                                     child: KeyedSubtree(
                                       key: ValueKey((state.layout, inVariant)),
                                       child: inVariant
@@ -960,7 +972,12 @@ class _LessonScreenState extends State<LessonScreen>
                   onMoving: (value) => _sheetMoving.value = value,
                   onExpanded: _onSheetExpanded,
                   padding: EdgeInsets.only(bottom: footer + _endGap),
-                  children: [_speechSheet(context, state, step, viktor)],
+                  children: [
+                    KeyedSubtree(
+                      key: _speechContent,
+                      child: _speechSheet(context, state, step, viktor),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1055,21 +1072,21 @@ class _LessonScreenState extends State<LessonScreen>
     }
     if (_presentHandled) return;
     _presentHandled = true;
-    final text = WikiMarkup.parse(_promptText(context, state, step) ?? '').text;
-    final style = Theme.of(context).textTheme.bodyLarge!
-        .copyWith(fontSize: 16, height: 24 / 16);
-    final painter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-    )..layout(maxWidth: area.width - 32);
-    final height = painter.height;
-    painter.dispose();
-    // Tabuleiro + 8 + alça e cabeçalho (60) + texto + rodapé (96).
-    final fits = rect.bottom + 8 + 60 + height + 96 <= area.height;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final cubit = context.read<LessonCubit>();
+      // Cabe: tudo o que a folha mostra (cabeçalho, contexto e objetivo,
+      // medido na tela) entre o tabuleiro e o rodapé, com a alça no alto.
+      final content = _speechContent.currentContext?.size?.height;
+      final fits =
+          content == null ||
+          rect.bottom +
+                  ExerciseLayout.gutter +
+                  _handleHeight +
+                  content +
+                  _footerHeight.value +
+                  _endGap <=
+              area.height;
       if (fits || !cubit.state.presenting) {
         unawaited(cubit.startStepClock());
         return;
@@ -1084,7 +1101,7 @@ class _LessonScreenState extends State<LessonScreen>
       } else {
         _sheet.animateTo(
           1,
-          duration: AppMotion.of(context).component,
+          duration: AppMotion.of(context).panel,
           curve: AppMotion.enter,
         );
       }
@@ -2152,6 +2169,8 @@ class _LessonScreenState extends State<LessonScreen>
   /// Folga depois do último item da folha, além da altura do rodapé: ele
   /// nunca encosta no rodapé nem no anel da demonstração.
   static const _endGap = AppSpacing.md;
+  // A alça da folha: 8 dp em cima e 4 dp dela.
+  static const _handleHeight = 12.0;
 }
 
 /// Na demonstração, a folha mostra só a fala do lance (TelaLicaoDemoFim):

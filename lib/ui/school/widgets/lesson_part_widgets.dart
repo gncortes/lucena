@@ -264,7 +264,10 @@ class VariationStrip extends StatelessWidget {
                   if (index > 0) const TextSpan(text: ' '),
                   TextSpan(
                     // Notação isolada da direção do texto (RTL).
-                    text: '\u2066$move\u2069',
+                    // O número das pretas só abre a linha ("1...Re6"); no
+                    // meio dela vale a notação da fala ("1.Rf4 Re6").
+                    text:
+                        '\u2066${index > 0 ? move.replaceFirst(RegExp(r'^\d+\.\.\.'), '') : move}\u2069',
                     style: index + 1 == current
                         ? TextStyle(
                             color: colors.primary,

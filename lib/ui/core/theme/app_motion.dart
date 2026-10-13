@@ -17,6 +17,9 @@ abstract final class AppMotion {
   /// Cartão que expande, painel que abre, balão que troca de fala.
   static const component = Durations.medium2;
 
+  /// Folha que sobe por cima do tabuleiro na apresentação do passo.
+  static const panel = Durations.medium1;
+
   /// Entrada de tela, versus, conclusão.
   static const screen = Durations.long2;
 
@@ -59,6 +62,7 @@ class MotionDurations {
     required this.tap,
     required this.state,
     required this.component,
+    required this.panel,
     required this.screen,
     required this.celebrate,
     required this.stagger,
@@ -68,6 +72,7 @@ class MotionDurations {
     tap: AppMotion.tap,
     state: AppMotion.state,
     component: AppMotion.component,
+    panel: AppMotion.panel,
     screen: AppMotion.screen,
     celebrate: AppMotion.celebrate,
     stagger: AppMotion.stagger,
@@ -77,6 +82,7 @@ class MotionDurations {
     tap: Duration.zero,
     state: Duration.zero,
     component: Duration.zero,
+    panel: Duration.zero,
     screen: Duration.zero,
     celebrate: Duration.zero,
     stagger: Duration.zero,
@@ -85,6 +91,7 @@ class MotionDurations {
   final Duration tap;
   final Duration state;
   final Duration component;
+  final Duration panel;
   final Duration screen;
   final Duration celebrate;
   final Duration stagger;

@@ -86,13 +86,13 @@ void main() {
       );
       await tester.pumpAndSettle();
       for (var i = 0; i < 5; i++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 100)),
-      );
-      await tester.pump();
-    }
-    await tester.pumpAndSettle();
-    final payload = cubit.state.explanation!;
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      final payload = cubit.state.explanation!;
       final roots = [
         for (final b in payload.explanations)
           for (final v in b.variations)

@@ -76,6 +76,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load(endgame ? 'rook.lucena' : 'pieces.rook', 'en');
+    await cubit.startStepClock();
     lessonCubit = cubit;
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
@@ -333,6 +334,9 @@ void main() {
 
   Future<void> toStars(WidgetTester tester) async {
     await tester.tap(find.byKey(LessonKeys.nextButton));
+    await tester.pumpAndSettle();
+    // A apresentação do passo (§8) termina antes do exercício.
+    await lessonCubit.startStepClock();
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('pieces.rook', 'stars')), findsOneWidget);
   }
