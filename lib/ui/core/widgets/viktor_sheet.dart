@@ -238,6 +238,9 @@ class _ViktorSheetState extends State<ViktorSheet> {
                         crossAxisMargin: 6,
                         child: ShaderMask(
                           blendMode: BlendMode.dstIn,
+                          // Recolhida: o fim da folha some em dp (não em
+                          // fração), para o rótulo da seção seguinte não
+                          // aparecer cortado logo abaixo do cabeçalho.
                           shaderCallback: (rect) => LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -247,8 +250,16 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                     Colors.white,
                                     Colors.white,
                                     Colors.transparent,
+                                    Colors.transparent,
                                   ],
-                            stops: _expanded ? null : [0, .9, 1],
+                            stops: _expanded
+                                ? null
+                                : [
+                                    0,
+                                    math.max(0, 1 - 24 / rect.height),
+                                    math.max(0, 1 - 12 / rect.height),
+                                    1,
+                                  ],
                           ).createShader(rect),
                           child: ListView(
                             key: widget.scrollKey,

@@ -1428,13 +1428,14 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   /// O texto do botão principal: "Explicação" no passo de pensar (D16),
-  /// "Concluir" no último passo, "Continuar" no resto.
+  /// "Concluir a aula" no último passo da aula, "Continuar" no resto.
   String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
     final l10n = context.l10n;
     final isLast = state.step + 1 >= state.stepCount;
     if (step is ThinkStep) return l10n.lessonExplanationShort;
     if (state.returnTo != null) return l10n.lessonBackToTest;
-    if (isLast && state.part != null) return l10n.lessonFinishPart;
+    // Último passo de uma parte: segue para a próxima parte (LICOES-V2 §3).
+    if (isLast && state.part != null) return l10n.lessonContinue;
     return isLast ? l10n.lessonFinish : l10n.lessonContinue;
   }
 

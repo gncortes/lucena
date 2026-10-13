@@ -432,6 +432,60 @@ void main() {
     expect(top('THESE DO NOT WORK EITHER'), lessThan(top('Story text.')));
   });
 
+  testWidgets('no loose move line when the move is already a link; the '
+      'chevron sits in the paragraph and the label stays silent', (
+    tester,
+  ) async {
+    final main = root();
+    final child = ExplanationVariation(
+      id: 'A.1',
+      label: 'A.1',
+      parentId: 'A',
+      parentPly: 1,
+      outcome: VariationOutcome.accepted,
+      texts: ['Child explanation.'],
+      originFen: main.open()!.fen,
+      movesUci: ['g8f7'],
+      movesSan: ['1...Kf7'],
+      validated: true,
+    );
+    final data = ExplanationPayload(
+      positionId: 'inline',
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'solution',
+          kind: ExplanationKind.mainSolution,
+          texts: ['1.d4 wins.'],
+          variations: [main, child],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: ExplanationCards(
+              payload: data,
+              lessonV2: true,
+              paragraph: (text) => Text(text),
+              hasInlineNavigation: (_, _, _) => true,
+              onVariation: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(ExplanationKeys.variation('A')), findsNothing);
+    final paragraph = tester.getRect(
+      find.byKey(ExplanationKeys.paragraph('solution', 0)),
+    );
+    final chevron = tester.getRect(find.byKey(ExplanationKeys.expand('A')));
+    expect(chevron.size, const Size(48, 48));
+    expect(chevron.top, closeTo(paragraph.top, 1));
+    expect(chevron.right, closeTo(paragraph.right, 1));
+  });
+
   testWidgets('quote: 3 dp start bar, 12 dp padding, 14/20 muted text', (
     tester,
   ) async {

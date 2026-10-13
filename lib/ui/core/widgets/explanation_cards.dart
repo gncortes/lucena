@@ -88,6 +88,32 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     );
   }
 
+  /// No `lessonV2` a seção começa pelo lance e o lance já é um link no
+  /// parágrafo (de [block] ou da própria linha): não há linha só com o lance.
+  bool _inlineMove(
+    ExplanationBlock block,
+    ExplanationVariation variation,
+    List<String> own,
+  ) {
+    if (!widget.lessonV2 || widget.hasInlineNavigation == null) return false;
+    return [..._texts(block).map((p) => p.text), ...own].any(
+      (text) => widget.hasInlineNavigation!(text, variation, variation) == true,
+    );
+  }
+
+  /// Linha principal que recolhe/expande: o chevron vai na primeira linha
+  /// do parágrafo da seção (canvas `tentativa`), sem linha própria.
+  ExplanationVariation? _chevronLine(ExplanationBlock block) {
+    for (final v in block.variations) {
+      if (v.parentId != null) continue;
+      final own = v.texts.where((t) => !block.texts.contains(t)).toList();
+      if (_children(block, v.id).isNotEmpty && _inlineMove(block, v, own)) {
+        return v;
+      }
+    }
+    return null;
+  }
+
   VariationCursor? _verifiedCursor(VariationCursor? current) {
     if (current == null) return null;
     for (final node in widget.payload.variations) {
@@ -243,11 +269,18 @@ class _ExplanationCardsState extends State<ExplanationCards> {
 
   /// O chevron das respostas: 48×48, só expande/recolhe (A15). A margem
   /// de −12 alinha o glifo à borda do texto, como no canvas (`tentativa`).
-  Widget _chevron(BuildContext context, String id, bool expanded) {
+  Widget _chevron(
+    BuildContext context,
+    String id,
+    bool expanded, {
+    bool shifted = true,
+  }) {
     final colors = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     final label = expanded ? l10n.explanationCollapse : l10n.explanationExpand;
-    final shift = Directionality.of(context) == TextDirection.rtl
+    final shift = !shifted
+        ? 0.0
+        : Directionality.of(context) == TextDirection.rtl
         ? -12.0
         : 12.0;
     return Transform.translate(
@@ -286,7 +319,8 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     final texts = variation.texts
         .where((text) => !block.texts.contains(text))
         .toList();
-    final selector = _showSelector(block, variation);
+    final inline = _inlineMove(block, variation, texts);
+    final selector = !inline && _showSelector(block, variation);
     final labelled =
         variation.movesSan.isNotEmpty &&
         RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label);
@@ -297,15 +331,17 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     final body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (selector || expandable)
+        if (selector || (expandable && !inline))
           Row(
             children: [
               Expanded(
                 child: MergeSemantics(
                   child: Semantics(
                     selected: selected,
-                    label:
-                        '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
+                    // Variante única (V2): o leitor lê só o lance, sem "A, ...".
+                    label: widget.lessonV2 && principal && !letter
+                        ? null
+                        : '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
                     child: Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: TextButton(
@@ -375,6 +411,10 @@ class _ExplanationCardsState extends State<ExplanationCards> {
             ],
       ],
     );
+    // Sem linha do lance e sem nada a mostrar: não ocupa espaço.
+    final empty =
+        inline && !(showText && (texts.isNotEmpty || children.isNotEmpty));
+    if (empty) return const SizedBox.shrink();
     // Card da tentativa: 8 dp em cima e embaixo (canvas `tentativa`).
     return principal
         ? Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: line)
@@ -459,12 +499,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                         ),
                       ),
                     ),
-                  if (_texts(block).isNotEmpty)
-                    Padding(
-                      key: ExplanationKeys.paragraph(block.id, 0),
-                      padding: EdgeInsets.zero,
-                      child: _body(block),
-                    ),
+                  if (_texts(block).isNotEmpty) _paragraphWithChevron(block),
                   for (final variation in block.variations)
                     if (variation.parentId == null)
                       _line(context, block, variation),
@@ -478,6 +513,35 @@ class _ExplanationCardsState extends State<ExplanationCards> {
               ],
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _paragraphWithChevron(ExplanationBlock block) {
+    final line = _chevronLine(block);
+    final body = Padding(
+      key: ExplanationKeys.paragraph(block.id, 0),
+      padding: line == null
+          ? EdgeInsets.zero
+          : const EdgeInsetsDirectional.only(end: 48),
+      child: _body(block),
+    );
+    if (line == null) return body;
+    // O chevron (48×48) fica na primeira linha, na coluna reservada à direita.
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        body,
+        PositionedDirectional(
+          end: 0,
+          top: 0,
+          child: _chevron(
+            context,
+            line.id,
+            _expanded.contains(line.id),
+            shifted: false,
+          ),
+        ),
       ],
     );
   }
