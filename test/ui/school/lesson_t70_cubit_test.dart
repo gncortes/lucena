@@ -25,6 +25,10 @@ void main() {
     'test.t70.m.r1': ['Resposta ao primeiro lance.'],
     'test.t70.m.done': ['Feito.'],
     'test.t70.d.m1': ['Primeiro lance da demo.'],
+    'coach.good': ['Bom lance.'],
+    'test.t70.dw.m1': ['1...Kd8. O rei preto sai da coluna.'],
+    'test.t70.p': ['Jogue de brancas e ache o lance.'],
+    'test.t70.p.done': ['Passo feito.'],
   });
 
   const think = ThinkStep(
@@ -225,12 +229,62 @@ void main() {
         await cubit.play(mv('e1f1'));
         expect(cubit.state.offLine, isTrue);
         expect(cubit.state.interactive, isFalse);
+        final after = cubit.state.fen;
         await cubit.practiceBack();
         expect(cubit.state.offLine, isFalse);
         expect(cubit.state.fen, start);
+        // O Continuar refaz também o par jogado pelo motor (4.7).
+        expect(cubit.state.canRedo, isTrue);
+        await cubit.practiceForward();
+        expect(cubit.state.fen, after);
+        expect(cubit.state.offLine, isTrue);
         expect(cubit.state.canRedo, isFalse);
       },
     );
+
+    test('sem r<n> o balão comenta o lance com coach.good e o Voltar o '
+        'devolve ao comentário anterior', () async {
+      const plain = MoveStep(
+        id: 'p',
+        fen: start,
+        line: [
+          MoveTurn(accept: {'e2e4'}, reply: 'e8d8'),
+          MoveTurn(accept: {'e4e5'}, reply: 'd8e8'),
+          MoveTurn(accept: {'e5e6'}),
+        ],
+      );
+      final cubit = make(const [plain], practiceV2: true);
+      await cubit.load(id, 'pt');
+      await cubit.play(mv('e2e4'));
+      expect(cubit.state.speech, 'Bom lance.');
+      await cubit.play(mv('e4e5'));
+      expect(cubit.state.speech, 'Bom lance.');
+      await cubit.play(mv('e5e6'));
+      expect(cubit.state.speech, 'Passo feito.');
+      await cubit.practiceBack();
+      expect(cubit.state.speech, 'Bom lance.');
+      await cubit.practiceBack();
+      await cubit.practiceBack();
+      // De volta ao início: o enunciado do próprio passo.
+      expect(cubit.state.speech, 'Jogue de brancas e ache o lance.');
+    });
+
+    test('o balão abre com a fala do passo, não com a do pensar', () async {
+      const plain = MoveStep(
+        id: 'p',
+        fen: start,
+        line: [
+          MoveTurn(accept: {'e2e4'}),
+        ],
+      );
+      final cubit = make(const [think, talk, plain], practiceV2: true);
+      await cubit.load(id, 'pt');
+      await cubit.play(mv('e2e3'));
+      await cubit.next();
+      expect(cubit.state.practiceGate, isTrue);
+      cubit.startPractice();
+      expect(cubit.state.speech, 'Jogue de brancas e ache o lance.');
+    });
 
     test('a dica fica só no balão, sem seta', () async {
       final cubit = make(const [move], practiceV2: true);
@@ -239,6 +293,41 @@ void main() {
       expect(cubit.state.practiceHint, isTrue);
       expect(cubit.state.hint, isNull);
       expect(cubit.state.speech, 'Dica do Viktor.');
+    });
+  });
+
+  group('ramo do erro do pensar', () {
+    const wrongDemo = DemoStep(
+      id: 'dw',
+      fen: '4k3/8/8/8/8/8/4P3/3K4 b - - 1 1',
+      wrong: true,
+      line: [
+        DemoMove(uci: 'e8d8'),
+        DemoMove(uci: 'd1c1'),
+      ],
+    );
+
+    test('segue a demo errada ligada ao erro, texto por lance', () async {
+      final cubit = make(const [think, talk, wrongDemo]);
+      await cubit.load(id, 'pt');
+      await cubit.play(mv('e1d1'));
+      final branch = cubit.thinkBranch('e1d1', fallback: 'Neutro.');
+      expect(branch.ucis, ['e1d1', 'e8d8', 'd1c1']);
+      // 1) a fala do erro; 2) a da demo sem o lance na frente; 3) sem texto.
+      expect(branch.texts, [
+        'Texto do erro previsto.',
+        'O rei preto sai da coluna.',
+        '',
+      ]);
+    });
+
+    test('alternativa sem ramo nos dados: só o lance, texto neutro', () async {
+      final cubit = make(const [think, talk, wrongDemo]);
+      await cubit.load(id, 'pt');
+      await cubit.play(mv('e2e3'));
+      final branch = cubit.thinkBranch('e1f1', fallback: 'Neutro.');
+      expect(branch.ucis, ['e1f1']);
+      expect(branch.texts, ['Neutro.']);
     });
   });
 

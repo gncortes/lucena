@@ -15,6 +15,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/failed_alternative.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/use_cases/branch_comments.dart';
 import '../../../domain/use_cases/engine_fallback.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
@@ -84,6 +85,8 @@ class PracticePair {
     this.onLine = true,
     this.commentBefore,
     this.lastMoveBefore,
+    this.note,
+    this.speech,
   });
 
   final String fenBefore;
@@ -97,6 +100,11 @@ class PracticePair {
   final bool onLine;
   final String? commentBefore;
   final Move? lastMoveBefore;
+
+  /// Par fora da linha: a nota genérica do motor ou a fala do erro que ele
+  /// mostrou, para o "Continuar" refazer o par como estava.
+  final LessonNote? note;
+  final String? speech;
 }
 
 class LessonState {
@@ -1499,6 +1507,77 @@ class LessonCubit extends Cubit<LessonState> {
     );
   }
 
+  /// O ramo do lance [uci] do passo de pensar (T70, "Texto por lance"): os
+  /// lances (o do aluno e a continuação) e o comentário de cada um, `''` onde
+  /// não há. A continuação é a da demo errada da parte cuja posição é a de
+  /// depois do lance; sem ela, a variação do feedback; sem as duas, só o
+  /// lance. [fallback] é o comentário neutro do lance do aluno.
+  ({List<String> ucis, List<String> texts}) thinkBranch(
+    String uci, {
+    required String fallback,
+  }) {
+    final steps = state.lesson?.steps ?? const <LessonStep>[];
+    final current = state.current;
+    final index = current is ThinkStep ? state.step : state.step - 1;
+    final think =
+        index >= 0 && index < steps.length && steps[index] is ThinkStep
+        ? steps[index] as ThinkStep
+        : null;
+    if (think == null) return (ucis: [uci], texts: [fallback]);
+    var ucis = [uci];
+    String? demoId;
+    String? altId;
+    final position = GameRules.fromFen(think.fen);
+    final move = Move.parse(uci);
+    final after = position == null || move == null
+        ? null
+        : GameRules.play(position, move)?.position.fen;
+    for (final other in steps.skip(index + 1)) {
+      if (other is ThinkStep) break;
+      if (other is DemoStep &&
+          other.wrong &&
+          _fenKey(other.fen) == _fenKey(after)) {
+        ucis = [uci, for (final m in other.line) m.uci];
+        demoId = other.id;
+        break;
+      }
+    }
+    for (final variation
+        in state.explanation?.variations ?? const <ExplanationVariation>[]) {
+      if (variation.parentId == null &&
+          variation.firstUci == uci &&
+          variation.movesUci.isNotEmpty) {
+        altId = variation.id;
+        if (demoId == null) ucis = List.of(variation.movesUci);
+        break;
+      }
+    }
+    final say = _mistakeText(think.mistakes[uci]?.say);
+    final texts = [
+      for (var ply = 1; ply <= ucis.length; ply++)
+        _withoutMove(
+          BranchComments.at(
+            texts: state.texts,
+            lessonId: _lessonId,
+            ply: ply,
+            mistakeSay: say,
+            demoId: demoId,
+            altStepId: think.id,
+            altId: altId,
+            fallback: fallback,
+          ),
+          ply,
+        ),
+    ];
+    return (ucis: ucis, texts: texts);
+  }
+
+  /// O comentário do lance sem o lance no começo (`1...Re7. O rei…`): a faixa
+  /// já o mostra. O do aluno (ply 1) fica como está.
+  static String _withoutMove(String? text, int ply) => ply <= 1
+      ? text ?? ''
+      : (text ?? '').replaceFirst(RegExp(r'^\d+\.(?:\.\.)?[^\s.]+\.\s*'), '');
+
   /// "Alternativas que falham" do estado correto (crit. 7c): a união, sem
   /// repetir o lance, das alternativas que falham do feedback (ordem dele) e
   /// das demos erradas da parte. Nunca um lance aceito.
@@ -1773,7 +1852,11 @@ class LessonCubit extends Cubit<LessonState> {
     emit(
       state.copyWith(
         practiceGate: false,
-        speech: step == null ? null : _speechOf(state, state.step),
+        // A fala do próprio passo (`step.<id>`), não a do pensar anterior.
+        speech: step == null
+            ? null
+            : state.texts.step(_lessonId, step.id) ??
+                  _speechOf(state, state.step),
         emotion: Emotion.calm,
       ),
     );
@@ -1787,8 +1870,11 @@ class LessonCubit extends Cubit<LessonState> {
   }
 
   /// O comentário que o Viktor dá ao n-ésimo lance do aluno (`r<n>`).
+  /// Sem a chave, a fala reserva `coach.good`: o balão sempre comenta o
+  /// último lance.
   String? _practiceReply(MoveStep step, int turn) =>
-      state.texts.say('$_lessonId.${step.id}.r${turn + 1}');
+      state.texts.say('$_lessonId.${step.id}.r${turn + 1}') ??
+      _pick('coach.good');
 
   Future<void> _playPractice(MoveStep step, Move move) async {
     final start = _position();
@@ -1836,7 +1922,10 @@ class LessonCubit extends Cubit<LessonState> {
           speech: said,
           clearNote: true,
           practiceHint: false,
-          practiceUndo: [...state.practiceUndo, _offPair(before)],
+          practiceUndo: [
+            ...state.practiceUndo,
+            _offPair(before, speech: said),
+          ],
           practiceRedo: const [],
           offLine: true,
           mistakes: state.mistakes + 1,
@@ -1897,18 +1986,19 @@ class LessonCubit extends Cubit<LessonState> {
     }
     unawaited(_sounds?.move(answered.san));
     final keeps = answer.verdict == EngineVerdict.keeps;
+    final note = keeps
+        ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
+        : LessonNote.engineReply;
     emit(
       state.copyWith(
         fen: answered.position.fen,
         lastMove: reply,
         typing: false,
         moves: [...state.moves, move.uci, reply!.uci],
-        note: keeps
-            ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
-            : LessonNote.engineReply,
+        note: note,
         practiceUndo: [
           ...state.practiceUndo,
-          _offPair(before, reply: reply.uci),
+          _offPair(before, reply: reply.uci, note: note),
         ],
         practiceRedo: const [],
         offLine: true,
@@ -1919,7 +2009,14 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
-  PracticePair _offPair(PracticePair base, {String? reply}) => PracticePair(
+  PracticePair _offPair(
+    PracticePair base, {
+    String? reply,
+    LessonNote? note,
+    String? speech,
+  }) => PracticePair(
+    note: note,
+    speech: speech,
     fenBefore: base.fenBefore,
     turnBefore: base.turnBefore,
     movesBefore: base.movesBefore,
@@ -1995,6 +2092,7 @@ class LessonCubit extends Cubit<LessonState> {
             reply: answered != null && !ends ? reply!.uci : null,
             commentBefore: before.commentBefore,
             lastMoveBefore: before.lastMoveBefore,
+            speech: comment,
           ),
         ],
         practiceRedo: const [],
@@ -2032,9 +2130,8 @@ class LessonCubit extends Cubit<LessonState> {
           0,
           state.practiceUndo.length - 1,
         ),
-        practiceRedo: pair.onLine
-            ? [...state.practiceRedo, pair]
-            : state.practiceRedo,
+        // O "Continuar" refaz qualquer par, inclusive o do motor (4.7).
+        practiceRedo: [...state.practiceRedo, pair],
         offLine: false,
         clearNote: true,
         practiceHint: false,
@@ -2085,6 +2182,29 @@ class LessonCubit extends Cubit<LessonState> {
         position = GameRules.play(position, reply)!.position;
         last = reply;
       }
+      if (!pair.onLine) {
+        // Par fora da linha (erro, motor): volta como estava, sem contar de
+        // novo o erro.
+        emit(
+          state.copyWith(
+            fen: position.fen,
+            lastMove: last,
+            moves: [...pair.movesBefore, pair.student, ?pair.reply],
+            speech: pair.speech,
+            note: pair.note,
+            clearNote: pair.note == null,
+            practiceUndo: [...state.practiceUndo, pair],
+            practiceRedo: state.practiceRedo.sublist(
+              0,
+              state.practiceRedo.length - 1,
+            ),
+            offLine: true,
+            emotion: Emotion.focused,
+          ),
+        );
+        await _save();
+        return;
+      }
       final turn = pair.turnBefore + 1;
       final ends = turn >= step.line.length;
       emit(
@@ -2093,9 +2213,12 @@ class LessonCubit extends Cubit<LessonState> {
           lastMove: last,
           turn: turn,
           moves: [...pair.movesBefore, pair.student, ?pair.reply],
-          speech: ends
-              ? state.texts.done(_lessonId, step.id) ?? _pick('coach.praise')
-              : _practiceReply(step, pair.turnBefore),
+          speech:
+              pair.speech ??
+              (ends
+                  ? state.texts.done(_lessonId, step.id) ??
+                        _pick('coach.praise')
+                  : _practiceReply(step, pair.turnBefore)),
           phase: ends ? StepPhase.done : StepPhase.active,
           practiceUndo: [...state.practiceUndo, pair],
           practiceRedo: state.practiceRedo.sublist(

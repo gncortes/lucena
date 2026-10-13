@@ -232,6 +232,51 @@ void main() {
     );
   });
 
+  testWidgets(
+    'fora do roteiro depois de um lance da demo: fala genérica do motor, não a do roteiro',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 740);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final lesson = await build(now: FakeNow(DateTime.utc(2026, 10, 13)));
+      final speech = SpeechCubit(
+        FakeVoiceRepository(settings: const VoiceSettings(enabled: false)),
+      );
+      addTearDown(speech.close);
+      await speech.load();
+      final settings = SettingsCubit(
+        FakeSettingsRepository(const AppSettings(sound: false)),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(settings.close);
+      await settings.load();
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: BlocProvider.value(value: lesson, child: const LessonScreen()),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      addTearDown(() => tester.pumpWidget(const SizedBox()));
+      lesson.demoTogglePause();
+      final first = lesson.demoForward();
+      await tester.pump(const Duration(seconds: 1));
+      await first;
+      expect(find.textContaining('The rook moves.'), findsOneWidget);
+      final second = lesson.demoForward();
+      await tester.pump(const Duration(seconds: 1));
+      await second;
+      final played = lesson.play(Move.parse('c4c3')!);
+      await tester.pump(const Duration(seconds: 1));
+      await played;
+      await tester.pump(const Duration(seconds: 1));
+      expect(lesson.state.offScript, isTrue);
+      expect(find.textContaining('The rook moves.'), findsNothing);
+      expect(find.textContaining('Well done'), findsOneWidget);
+    },
+  );
+
   const sizes = [Size(360, 740), Size(412, 917)];
   for (final size in sizes) {
     testWidgets(
