@@ -4,6 +4,7 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
 import '../../../routing/routes.dart';
+import '../../../config/dependencies.dart' show showsDevTools;
 import '../../conclusion/view_models/conclusion_cubit.dart';
 
 import 'dart:async';
@@ -668,17 +669,17 @@ class _ViewPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return SizedBox(
-      // Accessibility adaptation approved for the compact Canvas selector.
-      width: 132,
-      height: 44,
+      // CompSegmentado so-icone: 3 x (20 + 2 x 8) + bordas = 111 x 36.
+      width: 111,
+      height: 36,
       child: SegmentedButton<BlindView>(
         expandedInsets: EdgeInsets.zero,
         showSelectedIcon: false,
         style: SegmentedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          minimumSize: const Size(44, 44),
-          // SegmentedButton derives its inner target from40 + density.dy.
-          visualDensity: const VisualDensity(vertical: 1),
+          minimumSize: const Size(36, 36),
+          // O segmentado parte de 40 dp de altura + densidade (-1 = -4).
+          visualDensity: const VisualDensity(vertical: -1),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         segments: [
@@ -1028,12 +1029,13 @@ class _TalkBarState extends State<_TalkBar> {
                   label: l10n.blindHearAgain,
                   onPressed: cubit.repeatOpponent,
                 ),
-              _ActionChip(
-                key: BlindKeys.copyLog,
-                icon: Icons.content_copy_outlined,
-                label: l10n.blindCopyLog,
-                onPressed: () => copyLog(context),
-              ),
+              if (showsDevTools)
+                _ActionChip(
+                  key: BlindKeys.copyLog,
+                  icon: Icons.content_copy_outlined,
+                  label: l10n.blindCopyLog,
+                  onPressed: () => copyLog(context),
+                ),
             ].indexed) ...[if (index > 0) const SizedBox(width: 8), chip],
           ],
         ),
@@ -1506,7 +1508,8 @@ class _ActionChip extends StatelessWidget {
         ? const VisualDensity(horizontal: -2, vertical: -3)
         : VisualDensity.standard,
     padding: EdgeInsets.zero,
-    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+    // Canvas: o texto fica colado ao ícone (gap do avatar já é 8).
+    labelPadding: const EdgeInsetsDirectional.only(end: 8),
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     avatar: Icon(
       icon,
