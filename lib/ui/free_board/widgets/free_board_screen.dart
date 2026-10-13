@@ -845,6 +845,8 @@ Future<bool?> _showGameConfirmation(
   bool destructive = false,
 }) => showModalBottomSheet<bool>(
   context: context,
+  // Scrim do canvas: 32% de preto (padrao do M3), nao os 54% do Flutter.
+  barrierColor: Colors.black.withValues(alpha: 0.32),
   backgroundColor: Colors.transparent,
   useSafeArea: true,
   isScrollControlled: true,

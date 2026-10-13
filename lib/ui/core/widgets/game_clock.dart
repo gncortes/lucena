@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/use_cases/clock_format.dart';
-import '../board/board_settings_ui.dart';
 import '../theme/app_shape.dart';
 import 'game_entrance.dart';
 import 'time_display.dart';
@@ -262,9 +261,8 @@ class PlayersRow extends StatelessWidget {
   }
 }
 
-/// O retrato do lado: o peão dele, no conjunto de peças escolhido, sobre uma
-/// casa escura do tabuleiro (onde as peças das duas cores aparecem bem, no
-/// tema claro e no escuro).
+/// O retrato do lado sem personagem: ícone de pessoa sobre primaryContainer,
+/// como no CompJogador do canvas.
 class PlayerPortrait extends StatelessWidget {
   const PlayerPortrait({required this.side, required this.board, super.key});
 
@@ -275,21 +273,21 @@ class PlayerPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pawn = side == Side.white ? PieceKind.whitePawn : PieceKind.blackPawn;
+    final colors = Theme.of(context).colorScheme;
+    // CompJogador do canvas: quadrado primaryContainer com o icone de pessoa.
     return Container(
       width: _size,
       height: _size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: board.colors.scheme.darkSquare,
+        color: colors.primaryContainer,
         borderRadius: BorderRadius.circular(AppShape.small),
       ),
-      // A imagem da peça já vem centralizada no próprio quadro.
       child: ExcludeSemantics(
-        child: Image(
-          image: board.pieces.assets[pawn]!,
-          width: _size * 0.8,
-          height: _size * 0.8,
+        child: Icon(
+          Icons.person,
+          size: _size * 0.64,
+          color: colors.onPrimaryContainer,
         ),
       ),
     );

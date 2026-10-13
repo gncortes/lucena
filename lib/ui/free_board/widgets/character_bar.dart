@@ -354,10 +354,13 @@ class CharacterSoundButton extends StatelessWidget {
               const SizedBox(height: 4),
               Flexible(
                 child: Text(
-                  l10n.settingsSound,
+                  sound ? l10n.gameSoundLabelOn : l10n.gameSoundLabelOff,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
