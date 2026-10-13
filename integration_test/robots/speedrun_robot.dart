@@ -198,6 +198,16 @@ class SpeedrunRobot {
     expect(find.byKey(SpeedrunKeys.resume), findsNothing);
   }
 
+  /// Na tela do speedrun: o cartão do bônus de rating que concluir dá.
+  Future<void> expectBonusOffer() async {
+    await $(SpeedrunKeys.ratingBonusOffer).waitUntilVisible();
+  }
+
+  /// No resumo da tentativa concluída: o bônus de rating ganho.
+  Future<void> expectBonusEarned() async {
+    await $(SpeedrunKeys.ratingBonusEarned).scrollTo();
+  }
+
   /// Na conclusão do fim: o total da tentativa (`12.0 s`).
   Future<void> expectTotal(String time) => ConclusionRobot($).expectTotal(time);
 

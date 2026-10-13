@@ -81,6 +81,12 @@ class ConclusionRobot {
     await $(ConclusionKeys.ratingDelta).waitUntilVisible();
   }
 
+  /// A conclusão sem rating: a partida não mexeu nele.
+  Future<void> expectNoRating() async {
+    await waitConclusion();
+    expect(find.byKey(ConclusionKeys.ratingValue), findsNothing);
+  }
+
   /// O botão da ação [action] está (ou não está) na tela.
   Future<void> expectAction(ConclusionAction action) async {
     await waitConclusion();

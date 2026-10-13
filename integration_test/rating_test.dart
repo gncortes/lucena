@@ -155,9 +155,8 @@ void main() {
     await HomeRobot($).expectVisible();
   });
 
-  patrolTest('a etapa de speedrun conta para o rating como a partida comum', (
-    $,
-  ) async {
+  patrolTest('a etapa de speedrun não mexe no rating; o bônus vem na '
+      'conclusão', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     final board = FreeBoardRobot($);
@@ -165,20 +164,30 @@ void main() {
     await app.open(systemLocale: _english);
     await play($, won: true, level: 1000);
     await progress.expectRatedGames('1 rated game');
+    final before = await progress.rating();
 
     await speedrun.open();
-    await speedrun.openSpeedrun('e2e.rung');
+    await speedrun.openSpeedrun('e2e.ending');
+    await speedrun.expectBonusOffer();
     await speedrun.start();
     final (from, to) = E2EJourneyRepository.mate;
+    // As etapas do meio terminam sem rating na conclusão.
+    for (var stage = 0; stage < 2; stage++) {
+      await board.move(from, to);
+      await ConclusionRobot($).expectNoRating();
+      await speedrun.continueToNextStage();
+    }
     await board.move(from, to);
-    await progress.expectRatingChanged();
-    // Conclusão da etapa, speedrun e lista: de volta à tela inicial.
-    await ConclusionRobot($).close();
-    for (var screen = 0; screen < 2; screen++) {
+    await speedrun.finishAttempt();
+    await speedrun.expectBonusEarned();
+
+    // Resumo, speedrun e lista: de volta à tela inicial.
+    for (var screen = 0; screen < 3; screen++) {
       await speedrun.back();
     }
     await HomeRobot($).expectVisible();
-
+    expect(await progress.rating(), greaterThan(before));
+    // Só o bônus entra no histórico; as etapas, não.
     await progress.expectRatedGames('2 rated games');
   });
 }
