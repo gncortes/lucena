@@ -5,6 +5,7 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/endgame_filter.dart';
+import '../../../domain/models/history_filter.dart';
 import '../../services/preferences_service.dart';
 import 'settings_repository.dart';
 
@@ -36,6 +37,10 @@ class LocalSettingsRepository implements SettingsRepository {
   static const _endgamesAllKey = 'endgames.all';
   static const _endgamesHideDoneKey = 'endgames.hideDone';
   static const _endgamesFilterKey = 'endgames.filter';
+  static const _historyTabKey = 'history.tab';
+  static const _historyGamesFilterKey = 'history.filter.games';
+  static const _historyClassicFilterKey = 'history.filter.classic';
+  static const _historyMarathonFilterKey = 'history.filter.marathon';
   static const _lessonMarksKey = 'lesson.marks';
   static const _evalBarKey = 'review.evalBar';
 
@@ -85,6 +90,18 @@ class LocalSettingsRepository implements SettingsRepository {
         await _preferences.getString(_endgamesFilterKey),
       ),
       lessonMarks: await _preferences.getBool(_lessonMarksKey) ?? true,
+      historyTab: HistoryTab.fromCode(
+        await _preferences.getString(_historyTabKey),
+      ),
+      historyGamesFilter: GamesHistoryFilter.fromCode(
+        await _preferences.getString(_historyGamesFilterKey),
+      ),
+      historyClassicFilter: SpeedrunHistoryFilter.fromCode(
+        await _preferences.getString(_historyClassicFilterKey),
+      ),
+      historyMarathonFilter: SpeedrunHistoryFilter.fromCode(
+        await _preferences.getString(_historyMarathonFilterKey),
+      ),
     );
   }
 
@@ -179,6 +196,19 @@ class LocalSettingsRepository implements SettingsRepository {
       settings.endgamesFilter.code,
     );
     await _preferences.setBool(_lessonMarksKey, value: settings.lessonMarks);
+    await _preferences.setString(_historyTabKey, settings.historyTab.code);
+    await _preferences.setString(
+      _historyGamesFilterKey,
+      settings.historyGamesFilter.code,
+    );
+    await _preferences.setString(
+      _historyClassicFilterKey,
+      settings.historyClassicFilter.code,
+    );
+    await _preferences.setString(
+      _historyMarathonFilterKey,
+      settings.historyMarathonFilter.code,
+    );
   }
 
   Future<void> _saveBoard(BoardSettings board) async {

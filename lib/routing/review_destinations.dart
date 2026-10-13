@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/journey/journey_repository.dart';
@@ -14,24 +13,27 @@ import '../data/repositories/speedrun/speedrun_repository.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/game_details/view_models/game_details_cubit.dart';
 import '../ui/game_details/widgets/game_details_screen.dart';
-import '../ui/profile/view_models/rating_cubit.dart';
-import '../ui/profile/widgets/rating_screen.dart';
+import '../ui/history/view_models/history_cubit.dart';
+import '../ui/history/widgets/history_screen.dart';
 
-/// Shared by canonical routes and Android container entry points.
+/// Shared by canonical routes and Android container entry points. The
+/// History opens on the saved tab; [highlightedGame] forces the games tab.
 Widget ratingDestination(BuildContext context, {int? highlightedGame}) =>
     BlocProvider(
-      create: (_) => RatingCubit(
-        context.read<RatingRepository>(),
+      create: (_) => HistoryCubit(
+        rating: context.read<RatingRepository>(),
         progress: context.read<ProgressRepository>(),
-        achievements: context.read<AchievementsRepository>(),
         speedruns: context.read<SpeedrunRepository>(),
         journey: context.read<JourneyRepository>(),
         characters: context.read<CharacterRepository>(),
         reviews: context.read<GameReviewRepository>(),
+        settings: context.read<SettingsRepository>(),
         now: context.read<Now>(),
         highlightedGame: highlightedGame,
       )..load(),
-      child: const RatingScreen(gameDestinationBuilder: gameDetailsDestination),
+      child: const HistoryScreen(
+        gameDestinationBuilder: gameDetailsDestination,
+      ),
     );
 
 Widget gameDetailsDestination(BuildContext context, int id) {

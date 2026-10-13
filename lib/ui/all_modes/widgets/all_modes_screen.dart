@@ -119,7 +119,7 @@ class AllModesScreen extends StatelessWidget {
           (
             id: 'rating',
             icon: Icons.show_chart,
-            title: l10n.ratingHistory,
+            title: l10n.historyTitle,
             body: l10n.allModesRatingBody,
             route: Routes.rating,
           ),

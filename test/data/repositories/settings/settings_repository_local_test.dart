@@ -8,6 +8,11 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:lucena/domain/models/endgame_filter.dart';
+import 'package:lucena/domain/models/history_filter.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/pace.dart';
+import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/domain/use_cases/rating_period.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
@@ -189,5 +194,23 @@ void main() {
 
     final loaded = await reopen().load();
     expect(loaded, const AppSettings());
+  });
+
+  test('a aba e os filtros do Histórico voltam ao reabrir', () async {
+    const saved = AppSettings(
+      historyTab: HistoryTab.marathon,
+      historyGamesFilter: GamesHistoryFilter(
+        period: RatingPeriod.week,
+        result: AttemptOutcome.loss,
+        pace: GamesHistoryFilter.noClock,
+      ),
+      historyClassicFilter: SpeedrunHistoryFilter(pace: PaceCategory.blitz),
+      historyMarathonFilter: SpeedrunHistoryFilter(
+        level: SpeedrunCategory.advanced,
+      ),
+    );
+    await reopen().save(saved);
+
+    expect(await reopen().load(), saved);
   });
 }

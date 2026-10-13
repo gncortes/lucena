@@ -5,6 +5,7 @@ import 'app_theme_mode.dart';
 import 'board_settings.dart';
 import 'clock_settings.dart';
 import 'endgame_filter.dart';
+import 'history_filter.dart';
 
 part 'app_settings.freezed.dart';
 
@@ -53,5 +54,15 @@ abstract class AppSettings with _$AppSettings {
 
     /// Nas aulas, as marcações do professor no tabuleiro (setas e casas).
     @Default(true) bool lessonMarks,
+
+    /// A aba do Histórico em que o jogador parou.
+    @Default(HistoryTab.games) HistoryTab historyTab,
+
+    /// Os filtros de cada aba do Histórico.
+    @Default(GamesHistoryFilter()) GamesHistoryFilter historyGamesFilter,
+    @Default(SpeedrunHistoryFilter())
+    SpeedrunHistoryFilter historyClassicFilter,
+    @Default(SpeedrunHistoryFilter())
+    SpeedrunHistoryFilter historyMarathonFilter,
   }) = _AppSettings;
 }
