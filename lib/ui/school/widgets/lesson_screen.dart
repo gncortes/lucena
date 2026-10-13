@@ -53,7 +53,7 @@ class LessonScreen extends StatefulWidget {
 
 class _LessonScreenState extends State<LessonScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  // O tabuleiro "pousa" a cada passo novo: um fade curto e uma leve escala.
+  // O tabuleiro entra a cada passo novo com um esmaecer curto.
   late final _landing = AnimationController(
     vsync: this,
     duration: AppMotion.component,
@@ -61,6 +61,14 @@ class _LessonScreenState extends State<LessonScreen>
   );
 
   ChessboardController? _board;
+
+  // Apresentação (T65 §8). Caso B: a folha cobre o tabuleiro, sem rodapé e
+  // sem relógio, até o fim da fala (ou do tempo de leitura) ou o X.
+  final _presentingModal = ValueNotifier(false);
+  bool _presentHandled = false;
+  bool _presentExpanded = false;
+  bool _presentSpoke = false;
+  Duration _presentWait = Duration.zero;
 
   // Sacode o tabuleiro no lance errado.
   // A casa ou o lance tocado na fala, por um instante no tabuleiro.
@@ -161,6 +169,9 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.layout == LessonLayoutMode.solving) {
       _elapsed.value = cubit.stepElapsed;
     }
+    if (state.presenting && _presentingModal.value) {
+      _pacePresentation(cubit, state, delta);
+    }
     switch (state.current) {
       case DemoStep(:final line)
           when state.demoPlaying && state.demoMove < line.length:
@@ -228,6 +239,7 @@ class _LessonScreenState extends State<LessonScreen>
     _landing.dispose();
     _elapsed.dispose();
     _demoRing.dispose();
+    _presentingModal.dispose();
     _flash.dispose();
     _variation.dispose();
     super.dispose();
@@ -758,9 +770,14 @@ class _LessonScreenState extends State<LessonScreen>
                     // A altura de verdade dos botões (com a margem acima
                     // deles): a fala termina antes dela.
                     child: ListenableBuilder(
-                      listenable: Listenable.merge([_sheetMoving, _variation]),
+                      listenable: Listenable.merge([
+                        _sheetMoving,
+                        _variation,
+                        _presentingModal,
+                      ]),
                       builder: (context, _) {
-                        final covered = _sheetMoving.value;
+                        final covered =
+                            _sheetMoving.value || _presentingModal.value;
                         final variation = _variation.value;
                         final authored = _authoredVariation;
                         final inVariant = variation != null || authored != null;
@@ -866,6 +883,7 @@ class _LessonScreenState extends State<LessonScreen>
         state,
         box.maxHeight - rect.bottom - ExerciseLayout.gutter,
       );
+      _openPresentation(context, state, step, area, rect);
       return Stack(
         children: [
           Positioned.fromRect(
@@ -940,6 +958,7 @@ class _LessonScreenState extends State<LessonScreen>
                   closeKey: LessonKeys.closeSheet,
                   onMinimumChanged: (value) => _sheetMin = value,
                   onMoving: (value) => _sheetMoving.value = value,
+                  onExpanded: _onSheetExpanded,
                   padding: EdgeInsets.only(bottom: footer + _endGap),
                   children: [_speechSheet(context, state, step, viktor)],
                 ),
@@ -1013,6 +1032,117 @@ class _LessonScreenState extends State<LessonScreen>
         orElse: () => paragraphs.isEmpty ? '' : paragraphs.first,
       ),
     );
+  }
+
+  /// Apresentação do passo (T65 §8): mede o objetivo e decide. Cabe entre o
+  /// tabuleiro e o rodapé (A): o painel fica parado e o relógio corre já. Não
+  /// cabe (B): a folha abre cobrindo o tabuleiro, sem rodapé nem relógio.
+  void _openPresentation(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+    Size area,
+    Rect rect,
+  ) {
+    if (!state.presenting) {
+      _presentHandled = false;
+      if (_presentingModal.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _endPresentation();
+        });
+      }
+      return;
+    }
+    if (_presentHandled) return;
+    _presentHandled = true;
+    final text = WikiMarkup.parse(_promptText(context, state, step) ?? '').text;
+    final style = Theme.of(context).textTheme.bodyLarge!
+        .copyWith(fontSize: 16, height: 24 / 16);
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: area.width - 32);
+    final height = painter.height;
+    painter.dispose();
+    // Tabuleiro + 8 + alça e cabeçalho (60) + texto + rodapé (96).
+    final fits = rect.bottom + 8 + 60 + height + 96 <= area.height;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final cubit = context.read<LessonCubit>();
+      if (fits || !cubit.state.presenting) {
+        unawaited(cubit.startStepClock());
+        return;
+      }
+      _presentWait = Duration.zero;
+      _presentSpoke = false;
+      _presentExpanded = false;
+      _presentingModal.value = true;
+      if (!_sheet.isAttached) return;
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(1);
+      } else {
+        _sheet.animateTo(
+          1,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
+      }
+    });
+  }
+
+  /// Fim da apresentação B: a folha diminui até o tabuleiro, o rodapé entra
+  /// e o relógio começa.
+  void _endPresentation() {
+    if (!_presentingModal.value) return;
+    _presentingModal.value = false;
+    if (_sheet.isAttached && _sheet.size > _sheetMin + .01) {
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(_sheetMin);
+      } else {
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
+      }
+    }
+    unawaited(context.read<LessonCubit>().startStepClock());
+  }
+
+  /// A folha abriu ou fechou: na apresentação B, abrir arma o fim e
+  /// recolher (o X) encerra.
+  void _onSheetExpanded(bool expanded) {
+    if (!_presentingModal.value) return;
+    if (expanded) {
+      _presentExpanded = true;
+    } else if (_presentExpanded) {
+      _endPresentation();
+    }
+  }
+
+  /// A apresentação acaba com a fala (ou, sem voz, no tempo de leitura).
+  void _pacePresentation(LessonCubit cubit, LessonState state, Duration delta) {
+    if (!_presentExpanded) return;
+    final speech = TeacherSpeech.speechOf(context)?.state;
+    final text = state.step < 0
+        ? ''
+        : (_promptText(context, state, state.current!) ?? '');
+    final audible =
+        (context.read<SettingsCubit>().state?.sound ?? true) &&
+        (speech?.settings.enabled ?? false);
+    if (audible && speech!.isSpeaking(text)) {
+      _presentSpoke = true;
+      _presentWait = Duration.zero;
+      return;
+    }
+    _presentWait += delta;
+    final waitMs = DemoPace.waitMs(
+      length: text.length,
+      spoke: _presentSpoke,
+      speed: speech?.settings.speed ?? 1.0,
+    );
+    if (_presentWait.inMilliseconds >= waitMs) _endPresentation();
   }
 
   /// Solução vista em tela baixa (T65 §4, E6): se entre o tabuleiro e o
@@ -1143,10 +1273,8 @@ class _LessonScreenState extends State<LessonScreen>
       animation: _landing,
       builder: (context, child) {
         final value = AppMotion.enter.transform(_landing.value);
-        return Opacity(
-          opacity: 0.3 + 0.7 * value,
-          child: Transform.scale(scale: 0.95 + 0.05 * value, child: child),
-        );
+        // Só um esmaecer: as peças que andam já se movem sozinhas (§8).
+        return Opacity(opacity: 0.3 + 0.7 * value, child: child);
       },
       child: _shakingBoard(context, state, boardSettings, board, size, shapes),
     );

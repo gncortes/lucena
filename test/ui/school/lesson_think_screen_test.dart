@@ -126,6 +126,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,

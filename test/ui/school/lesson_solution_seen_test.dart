@@ -123,6 +123,7 @@ void main() {
   Future<LessonCubit> failed({FakeSchoolProgressRepository? progress}) async {
     final cubit = build(progress ?? FakeSchoolProgressRepository());
     await cubit.load('mates.rank', 'en');
+    await cubit.startStepClock();
     await cubit.play(move('a1a8'));
     await cubit.next();
     await cubit.play(move('a1a7'));

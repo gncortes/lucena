@@ -99,6 +99,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -213,6 +214,9 @@ void main() {
             expectHighBoard(tester, size, 'PensarDica');
             // Pratica (move step, solving).
             await cubit.next();
+            await tester.pumpAndSettle();
+            // A apresentação do passo (§8) termina antes do jogo.
+            await cubit.startStepClock();
             await tester.pumpAndSettle();
             expect(cubit.state.current?.id, 'try');
             expect(cubit.state.layout, LessonLayoutMode.solving);
