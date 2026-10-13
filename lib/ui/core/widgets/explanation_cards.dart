@@ -428,10 +428,53 @@ class _ExplanationCardsState extends State<ExplanationCards> {
       b.title.isNotEmpty &&
       b.title != context.l10n.lessonCorrectMove;
 
+  /// Parágrafo de história: o que cita partida, jogador, torneio ou local
+  /// (os nomes vêm marcados como link, `{{Nome|id}}`, no conteúdo).
+  static final _historyMark = RegExp(r'\{\{[^{}|]+\|[^{}]+\}\}');
+
+  /// Só o contexto histórico vai para a citação (LICOES-V2 §3). O objetivo e
+  /// o ensino do bloco de contexto viram texto normal, no começo do painel;
+  /// depois do lance do aluno (acerto ou erro) eles não se repetem.
+  List<ExplanationBlock> _splitContext(
+    BuildContext context,
+    ExplanationPayload payload,
+  ) {
+    final answered =
+        payload.state == ExplanationState.correct ||
+        payload.state == ExplanationState.incorrect;
+    return [
+      for (final b in payload.explanations)
+        if (!_isQuote(context, b))
+          b
+        else ...[
+          if (!answered && b.texts.any((t) => !_historyMark.hasMatch(t)))
+            ExplanationBlock(
+              id: '${b.id}.plain',
+              kind: b.kind,
+              texts: [
+                for (final t in b.texts)
+                  if (!_historyMark.hasMatch(t)) t,
+              ],
+            ),
+          if (b.texts.any(_historyMark.hasMatch) || b.variations.isNotEmpty)
+            ExplanationBlock(
+              id: b.id,
+              kind: b.kind,
+              title: b.title,
+              texts: [
+                for (final t in b.texts)
+                  if (_historyMark.hasMatch(t)) t,
+              ],
+              variations: b.variations,
+            ),
+        ],
+    ];
+  }
+
   /// Ordem do canvas: erro (se houver) -> certo -> contexto/história (citação)
   /// -> "Também não funcionam". O resto segue a ordem do conteúdo.
   List<ExplanationBlock> _ordered(BuildContext context) {
-    final all = widget.payload.explanations;
+    final all = _splitContext(context, widget.payload);
     final error = all.indexWhere(
       (b) => b.kind == ExplanationKind.playedIncorrect,
     );
@@ -483,8 +526,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                 if (_isQuote(context, block))
                   LessonQuote(id: block.id, texts: block.texts)
                 else ...[
-                  if (block.kind != ExplanationKind.context ||
-                      block.title.isNotEmpty)
+                  if (_hasHeader(context, block))
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
@@ -544,6 +586,17 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         ),
       ],
     );
+  }
+
+  /// Rótulo da seção (V2): o contexto sem título e o título "A ideia
+  /// principal" do asset não têm rótulo; o texto começa direto.
+  bool _hasHeader(BuildContext context, ExplanationBlock block) {
+    if (block.kind == ExplanationKind.context) return block.title.isNotEmpty;
+    if (block.kind == ExplanationKind.mainSolution) {
+      return block.title.isEmpty ||
+          block.title == context.l10n.lessonCorrectMove;
+    }
+    return true;
   }
 
   /// O rótulo da seção: caixa alta, menos em árabe (sem caixa).

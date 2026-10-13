@@ -302,13 +302,14 @@ void main() {
             id: 'c',
             kind: ExplanationKind.context,
             title: 'The position and the goal',
-            texts: ['Goal text.'],
+            texts: ['Goal text. {{Euwe|max-euwe}}'],
           ),
         ],
       );
       await tester.pumpWidget(app(data));
       await tester.pumpAndSettle();
-      double top(String text) => tester.getTopLeft(find.text(text)).dy;
+      double top(String text) =>
+          tester.getTopLeft(find.textContaining(text)).dy;
       // Contexto sem rótulo: a citação vem depois do certo e antes de "Também
       // não funcionam"; o título "A posição e o objetivo" não aparece.
       expect(find.text('THE POSITION AND THE GOAL'), findsNothing);
@@ -367,7 +368,7 @@ void main() {
           id: 'c',
           kind: ExplanationKind.context,
           title: 'History',
-          texts: ['Story text.'],
+          texts: ['Story text. {{Euwe|max-euwe}}'],
         ),
         ExplanationBlock(
           id: 'm',
@@ -384,7 +385,7 @@ void main() {
     );
     await tester.pumpWidget(app(data));
     await tester.pumpAndSettle();
-    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+    double top(String text) => tester.getTopLeft(find.textContaining(text)).dy;
     expect(top('Wrong text.'), lessThan(top('Right text.')));
     expect(top('Right text.'), lessThan(top('Story text.')));
     expect(top('Story text.'), lessThan(top('THESE DO NOT WORK EITHER')));
@@ -420,13 +421,13 @@ void main() {
           id: 'c',
           kind: ExplanationKind.context,
           title: 'History',
-          texts: ['Story text.'],
+          texts: ['Story text. {{Euwe|max-euwe}}'],
         ),
       ],
     );
     await tester.pumpWidget(app(data));
     await tester.pumpAndSettle();
-    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+    double top(String text) => tester.getTopLeft(find.textContaining(text)).dy;
     expect(top('Right text.'), lessThan(top('Wrong text.')));
     expect(top('Wrong text.'), lessThan(top('THESE DO NOT WORK EITHER')));
     expect(top('THESE DO NOT WORK EITHER'), lessThan(top('Story text.')));
@@ -497,7 +498,7 @@ void main() {
           id: 'c',
           kind: ExplanationKind.context,
           title: 'History',
-          texts: ['Story text.'],
+          texts: ['Story text. {{Euwe|max-euwe}}'],
         ),
       ],
     );
@@ -512,11 +513,13 @@ void main() {
     expect(border.start.color, theme.colorScheme.outlineVariant);
     expect(border.end, BorderSide.none);
     expect(
-      tester.getTopLeft(find.text('Story text.')).dx -
+      tester.getTopLeft(find.textContaining('Story text.')).dx -
           tester.getTopLeft(find.byKey(ExplanationKeys.quote('c'))).dx,
       closeTo(15, 1), // 3 dp bar + 12 dp padding
     );
-    final style = tester.widget<Text>(find.text('Story text.')).style!;
+    final style = tester
+        .widget<Text>(find.textContaining('Story text.'))
+        .style!;
     expect(style.fontSize, 14);
     expect(style.height! * style.fontSize!, closeTo(20, .1));
     expect(style.color, theme.colorScheme.onSurfaceVariant);
@@ -604,5 +607,54 @@ void main() {
     await tester.tap(find.byKey(ExplanationKeys.expand('A')));
     await tester.pumpAndSettle();
     expect(controller.offset, 30);
+  });
+
+  testWidgets('citação: só a história; objetivo e ensino ficam fora dela, '
+      'sem rótulo "A ideia principal"', (tester) async {
+    ExplanationPayload data(ExplanationState state) => ExplanationPayload(
+      positionId: 'q',
+      state: state,
+      explanations: [
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'A posição e o objetivo',
+          texts: [
+            'Goal text.',
+            'In 1928, {{Max Euwe|max-euwe}} played.',
+            'Teaching text.',
+          ],
+        ),
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          title: 'A ideia principal',
+          texts: ['Right text.'],
+          variations: [line('A', '1.d4', 'd2d4')],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data(ExplanationState.review)));
+    await tester.pumpAndSettle();
+    final quote = find.byKey(ExplanationKeys.quote('c'));
+    expect(quote, findsOneWidget);
+    expect(
+      find.descendant(of: quote, matching: find.textContaining('1928')),
+      findsOneWidget,
+    );
+    for (final out in ['Goal text.', 'Teaching text.']) {
+      expect(find.textContaining(out), findsOneWidget);
+      expect(
+        find.descendant(of: quote, matching: find.textContaining(out)),
+        findsNothing,
+      );
+    }
+    expect(find.text('A IDEIA PRINCIPAL'), findsNothing);
+    // Depois do lance do aluno, só a história aparece (o objetivo não repete).
+    await tester.pumpWidget(app(data(ExplanationState.correct)));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Goal text.'), findsNothing);
+    expect(find.textContaining('Teaching text.'), findsNothing);
+    expect(find.textContaining('1928'), findsOneWidget);
   });
 }

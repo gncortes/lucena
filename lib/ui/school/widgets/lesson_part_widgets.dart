@@ -248,11 +248,22 @@ class VariationStrip extends StatelessWidget {
   static String _shown(int index, String move) =>
       index > 0 ? move.replaceFirst(RegExp(r'^\d+\.\.\.'), '') : move;
 
+  /// O trecho abre com o lance da vez ("1...Re6. O rei…"), que a linha de
+  /// cima já mostra em destaque: a notação do começo sai do texto.
+  @visibleForTesting
+  static String withoutLeadingMove(String text) => text.replaceFirst(
+    RegExp(
+      r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
+    ),
+    '',
+  );
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final body = theme.textTheme.bodyLarge!;
+    final text = withoutLeadingMove(this.text);
     return Semantics(
       container: true,
       child: Column(

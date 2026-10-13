@@ -327,20 +327,12 @@ class LessonState {
 
   int get stepCount => lesson?.steps.length ?? 0;
 
-  /// Quanto da aula já foi feito, de 0 a 1 (o passo cumprido conta inteiro).
+  /// Quanto da aula já foi feito, de 0 a 1: anda por passo, e só por passo
+  /// (passo 1 de 3 vale 1/3; no último a barra fica cheia).
   double get progress {
     if (stepCount == 0) return 0;
     if (finished) return 1;
-    if (phase == StepPhase.done) return (step + 1) / stepCount;
-    // Dentro do passo, cada estrela pega e cada lance certo já enchem a barra.
-    final within = switch (current) {
-      StarsStep(:final stars) => collected.length / stars.length,
-      TapStep(:final targets) => collected.length / targets.length,
-      MoveStep(:final line) => turn / line.length,
-      DemoStep(:final line) => demoMove / line.length,
-      _ => 0.0,
-    };
-    return (step + within) / stepCount;
+    return ((step + 1) / stepCount).clamp(0.0, 1.0);
   }
 
   /// O aluno pode mexer no tabuleiro (no passo de tocar, só tocar).

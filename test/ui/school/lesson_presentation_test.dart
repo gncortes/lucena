@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -164,6 +165,25 @@ void main() {
     expect(mid, inExclusiveRange(before, end), reason: 'anima, não salta');
     expect(find.bySemanticsLabel('Step 2 of 3'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('barra: anda por passo (1/3) e não muda jogando dentro dele', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, const Size(412, 917));
+    double value() => tester
+        .widget<LinearProgressIndicator>(find.byKey(LessonKeys.progress))
+        .value!;
+    expect(value(), closeTo(1 / 3, 1e-9));
+    cubit.next();
+    await tester.pumpAndSettle();
+    expect(value(), closeTo(2 / 3, 1e-9));
+    await cubit.play(Move.parse('c1c3')!);
+    await tester.pumpAndSettle();
+    expect(value(), closeTo(2 / 3, 1e-9));
+    await cubit.play(Move.parse('c1c4')!);
+    await tester.pumpAndSettle();
+    expect(value(), closeTo(2 / 3, 1e-9));
   });
 
   testWidgets('caso B sem voz: fecha sozinha no tempo de leitura (até 8 s)', (

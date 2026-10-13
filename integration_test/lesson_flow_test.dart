@@ -90,6 +90,7 @@ void main() {
     // em 80 em 412×917).
     expect(board.top - bar.bottom, closeTo(20, 1));
     final first = _progress($);
+    expect(first, closeTo(1 / part.steps.length, 0.001));
 
     // Um passo adiante: a barra anda (e o tabuleiro não se mexe).
     e2eNow.advance(const Duration(minutes: 5));

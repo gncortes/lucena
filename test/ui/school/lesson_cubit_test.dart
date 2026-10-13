@@ -490,7 +490,7 @@ void main() {
     expect(state.viktor!.name, 'Viktor');
     expect(state.current, isA<TalkStep>());
     expect(state.speech, 'The rook moves in straight lines.');
-    expect(state.progress, 0);
+    expect(state.progress, 1 / state.stepCount);
     expect(state.lessonNumber, 1);
     expect(state.lessonCount, 3);
     expect(progress.saved.ongoing!.lessonId, 'pieces.rook');
@@ -965,7 +965,8 @@ void main() {
 
       await lesson.tap('e4');
       expect(lesson.state.tapTarget, 'a1');
-      expect(lesson.state.progress, 0.5);
+      // A barra anda por passo, não por casa tocada.
+      expect(lesson.state.progress, 1 / lesson.state.stepCount);
 
       await lesson.tap('a1');
       expect(lesson.state.phase, StepPhase.done);

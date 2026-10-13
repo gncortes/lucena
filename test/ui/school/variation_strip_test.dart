@@ -71,4 +71,27 @@ void main() {
     expect(label, contains('Re6'));
     handle.dispose();
   });
+
+  testWidgets('o trecho não repete a notação do lance que abre o texto', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const TestApp(
+        child: Scaffold(
+          body: VariationStrip(
+            moves: ['1.Rf4', '1...Re6', '2.Re4'],
+            current: 2,
+            text: '1...Re6. O rei preto vai para a frente do peão.',
+          ),
+        ),
+      ),
+    );
+    expect(find.text('O rei preto vai para a frente do peão.'), findsOneWidget);
+    expect(find.textContaining('1...Re6.'), findsNothing);
+    expect(VariationStrip.withoutLeadingMove('2.Re4 Rd6 segue.'), 'Rd6 segue.');
+    expect(
+      VariationStrip.withoutLeadingMove('O rei vai a e6.'),
+      'O rei vai a e6.',
+    );
+  });
 }
