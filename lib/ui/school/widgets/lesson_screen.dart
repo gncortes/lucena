@@ -712,7 +712,7 @@ class _LessonScreenState extends State<LessonScreen>
                                           onMoving: (value) =>
                                               _sheetMoving.value = value,
                                           padding: EdgeInsets.only(
-                                            bottom: footer,
+                                            bottom: footer + _endGap,
                                           ),
                                           children: [
                                             _speechSheet(
@@ -891,7 +891,7 @@ class _LessonScreenState extends State<LessonScreen>
                 closeKey: LessonKeys.closeSheet,
                 onMinimumChanged: (value) => _sheetMin = value,
                 onMoving: (value) => _sheetMoving.value = value,
-                padding: EdgeInsets.only(bottom: footer),
+                padding: EdgeInsets.only(bottom: footer + _endGap),
                 children: [_speechSheet(context, state, step, viktor)],
               ),
             ),
@@ -913,18 +913,41 @@ class _LessonScreenState extends State<LessonScreen>
     if (_solutionHandled) return;
     _solutionHandled = true;
     if (below - _solutionFooterHeight >= _solutionMinSheet) return;
+    _expandSolutionSheet(attempts: 5);
+  }
+
+  /// Abre a folha até o máximo. A folha pode ainda não estar ligada ao
+  /// controle neste quadro, ou um relayout (o rodapé que cresce) pode
+  /// devolvê-la ao mínimo no meio da animação: tenta de novo, sem desistir
+  /// da primeira vez (ao vivo, no aparelho, a folha ficava recolhida).
+  void _expandSolutionSheet({required int attempts}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_sheet.isAttached) return;
+      if (!mounted ||
+          attempts <= 0 ||
+          !context.read<LessonCubit>().state.solutionSeen) {
+        return;
+      }
+      if (!_sheet.isAttached) {
+        _expandSolutionSheet(attempts: attempts - 1);
+        return;
+      }
       if (AppMotion.of(context).disabled) {
         _sheet.jumpTo(1);
-      } else {
-        // O controle limita ao tamanho máximo da folha.
-        _sheet.animateTo(
-          1,
-          duration: AppMotion.of(context).component,
-          curve: AppMotion.enter,
-        );
+        return;
       }
+      // O controle limita ao tamanho máximo da folha.
+      _sheet
+          .animateTo(
+            1,
+            duration: AppMotion.of(context).component,
+            curve: AppMotion.enter,
+          )
+          .then((_) {
+            if (!mounted || !_sheet.isAttached) return;
+            if (_sheet.size <= _sheetMin + .02) {
+              _expandSolutionSheet(attempts: attempts - 1);
+            }
+          });
     });
   }
 
@@ -1907,6 +1930,10 @@ class _LessonScreenState extends State<LessonScreen>
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
+
+  /// Folga depois do último item da folha, além da altura do rodapé: ele
+  /// nunca encosta no rodapé nem no anel da demonstração.
+  static const _endGap = AppSpacing.md;
 }
 
 /// Na demonstração, a folha mostra só a fala do lance (TelaLicaoDemoFim):

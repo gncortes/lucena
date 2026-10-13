@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io' as io;
+
+import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +11,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
@@ -57,14 +62,53 @@ void main() {
     'mates.rank.first': 'Mate in one.',
     'mates.rank.test': 'Mate in one, again.',
     'mates.rank.after': 'Done.',
+    'mates.rank.wrongdemo': List.filled(
+      40,
+      'A long sentence of the lesson.',
+    ).join(' '),
     'coach.retry': ['Again.'],
   });
 
   Move move(String uci) => Move.parse(uci)!;
 
-  LessonCubit build(FakeSchoolProgressRepository progress) {
+  // Aula com demonstração de erro antes do passo de lance (como a parte
+  // "distant" de pawns.distantOpposition).
+  const demoCourse = Course(
+    modules: [
+      CourseModule(
+        id: 'mates',
+        lessons: [
+          Lesson(
+            id: 'mates.rank',
+            steps: [
+              TalkStep(id: 'first', fen: mateFen),
+              DemoStep(
+                id: 'wrongdemo',
+                fen: mateFen,
+                wrong: true,
+                line: [DemoMove(uci: 'a1a7')],
+              ),
+              MoveStep(
+                id: 'test',
+                fen: mateFen,
+                line: [
+                  MoveTurn(accept: {'a1a8'}),
+                ],
+              ),
+              TalkStep(id: 'after', fen: mateFen),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+
+  LessonCubit build(
+    FakeSchoolProgressRepository progress, {
+    Course useCourse = course,
+  }) {
     final cubit = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
+      lessons: FakeLessonRepository(course: useCourse, texts: texts),
       progress: progress,
       feedback: _Feedback(),
       characters: FakeCharacterRepository(),
@@ -238,10 +282,17 @@ void main() {
       LessonCubit cubit,
       Size size, {
       double fontScale = 1,
+      bool insets = false,
     }) async {
       tester.view
         ..devicePixelRatio = 1
         ..physicalSize = size;
+      if (insets) {
+        // Barra de status (24) e de navegação (48) do aparelho de verdade.
+        tester.view
+          ..padding = const FakeViewPadding(top: 24, bottom: 48)
+          ..viewPadding = const FakeViewPadding(top: 24, bottom: 48);
+      }
       addTearDown(tester.view.reset);
       tester.platformDispatcher.textScaleFactorTestValue = fontScale;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -382,6 +433,78 @@ void main() {
       expect(cubit.state.phase, StepPhase.done);
     });
 
+    testWidgets('Solução vista depois de uma demonstração: Voltar abre a '
+        'demonstração dentro da aula', (tester) async {
+      final cubit = build(
+        FakeSchoolProgressRepository(),
+        useCourse: demoCourse,
+      );
+      await tester.runAsync(() async {
+        await cubit.load('mates.rank', 'en');
+        await cubit.next();
+        await cubit.demoForward();
+        await cubit.next();
+        await cubit.play(move('a1a7'));
+      });
+      expect(cubit.state.step, 2);
+      await show(tester, cubit, const Size(412, 917));
+      await tester.tap(find.byKey(LessonKeys.seeSolution));
+      await tester.pumpAndSettle();
+      expect(cubit.state.solutionSeen, isTrue);
+      await tester.tap(find.byKey(LessonKeys.backButton));
+      await tester.pumpAndSettle();
+      expect(cubit.state.step, 1);
+      expect(find.byKey(LessonKeys.screen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'aula distantOpposition (passo 6): Solução vista, Voltar abre o passo 5',
+      (tester) async {
+        final real = AssetLessonRepository.parseLesson(
+          jsonDecode(
+            io.File('assets/lessons/endgames/pawns.distantOpposition.json')
+                .readAsStringSync(),
+          ) as Map<String, dynamic>,
+        );
+        final cubit = build(
+          FakeSchoolProgressRepository(),
+          useCourse: Course(
+            modules: [
+              CourseModule(id: 'pawns', lessons: [real]),
+            ],
+          ),
+        );
+        await tester.runAsync(() async {
+          await cubit.load('pawns.distantOpposition', 'en', part: 'distant');
+          while (cubit.state.step < 5) {
+            final cur = cubit.state.current;
+            if (cur is DemoStep) {
+              for (var k = 0; k < cur.line.length; k++) {
+                await cubit.demoForward();
+              }
+            }
+            final before = cubit.state.step;
+            await cubit.next();
+            if (cubit.state.step == before) break;
+          }
+          for (var i = 0; i < 4; i++) {
+            await cubit.play(move('d3e3'));
+          }
+        });
+        expect(cubit.state.phase, StepPhase.failed);
+        await show(tester, cubit, const Size(412, 917));
+        await tester.tap(find.byKey(LessonKeys.seeSolution));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(LessonKeys.backButton));
+        await tester.pumpAndSettle();
+        expect(cubit.state.step, 4);
+        await tester.pump(const Duration(seconds: 30));
+        await tester.pumpAndSettle();
+        expect(find.byKey(LessonKeys.screen), findsOneWidget);
+      },
+    );
+
     testWidgets('Continuar no erro avança para o próximo passo', (
       tester,
     ) async {
@@ -402,27 +525,54 @@ void main() {
       expect(find.byKey(LessonKeys.solutionFooter), findsOneWidget);
     });
 
-    testWidgets('360x640: a folha abre expandida, com X e rodapé visíveis', (
-      tester,
-    ) async {
-      final cubit = await tester.runAsync(failed) as LessonCubit;
-      await show(tester, cubit, const Size(360, 640));
-      await tester.tap(find.byKey(LessonKeys.seeSolution));
-      await tester.pumpAndSettle();
-      final close = tester.getRect(find.byKey(LessonKeys.closeSheet));
-      expect(close.top, greaterThanOrEqualTo(0));
-      expect(close.height, greaterThanOrEqualTo(48));
-      final footer = tester.getRect(find.byKey(LessonKeys.solutionFooter));
-      expect(footer.bottom, closeTo(640, 1));
-      expect(footer.height, closeTo(144, 1));
-      final board = tester.getRect(find.byKey(LessonKeys.board));
-      final sheet = tester.getRect(find.byKey(LessonKeys.viktorSheet));
-      // Modal sobre o tabuleiro: a folha começa acima da borda dele.
-      final top = tester.getTopLeft(find.byKey(LessonKeys.scroll)).dy;
-      expect(top, lessThan(board.bottom));
-      expect(sheet.bottom, lessThanOrEqualTo(640));
-      expect(tester.takeException(), isNull);
-    });
+    for (final size in [const Size(360, 640), const Size(412, 917)]) {
+      testWidgets('$size: no fim da rolagem, "Abrir no tabuleiro livre" fica '
+          'inteiro acima do rodapé', (tester) async {
+        final cubit = await tester.runAsync(failed) as LessonCubit;
+        await show(tester, cubit, size);
+        await tester.drag(
+          find.byKey(LessonKeys.viktorSheet),
+          const Offset(0, -2000),
+        );
+        await tester.pumpAndSettle();
+        for (var i = 0; i < 4; i++) {
+          await tester.drag(
+            find.byKey(LessonKeys.scroll),
+            const Offset(0, -3000),
+          );
+          await tester.pumpAndSettle();
+        }
+        final open = find.byKey(LessonV2Keys.openFreeBoard);
+        expect(open, findsOneWidget);
+        final footer = tester.getRect(find.byKey(LessonKeys.footer));
+        final button = tester.getRect(open);
+        expect(button.bottom, lessThanOrEqualTo(footer.top - 8 + 1));
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    for (final insets in [false, true]) {
+      testWidgets('360x640 ao vivo (barras do sistema: $insets): a folha abre '
+          'expandida, com X e rodapé visíveis', (tester) async {
+        final cubit = await tester.runAsync(failed) as LessonCubit;
+        await show(tester, cubit, const Size(360, 640), insets: insets);
+        await tester.tap(find.byKey(LessonKeys.seeSolution));
+        await tester.pumpAndSettle();
+        final close = tester.getRect(find.byKey(LessonKeys.closeSheet));
+        expect(close.top, greaterThanOrEqualTo(0));
+        expect(close.height, greaterThanOrEqualTo(48));
+        final footer = tester.getRect(find.byKey(LessonKeys.solutionFooter));
+        expect(footer.bottom, closeTo(insets ? 592 : 640, 1));
+        expect(footer.height, closeTo(144, 1));
+        final board = tester.getRect(find.byKey(LessonKeys.board));
+        final sheet = tester.getRect(find.byKey(LessonKeys.viktorSheet));
+        // Modal sobre o tabuleiro: a folha começa acima da borda dele.
+        final top = tester.getTopLeft(find.byKey(LessonKeys.scroll)).dy;
+        expect(top, lessThan(board.bottom));
+        expect(sheet.bottom, lessThanOrEqualTo(640));
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 }
 
@@ -441,7 +591,7 @@ class _Feedback extends EmptyExerciseFeedbackRepository
     String? playedUci,
   }) async {
     if (kind != 'move' ||
-        exerciseId != 'test' ||
+        (exerciseId != 'test' && exerciseId != 'convert') ||
         state != ExplanationState.incorrect) {
       return null;
     }
@@ -460,14 +610,14 @@ class _Feedback extends EmptyExerciseFeedbackRepository
         );
     return ExplanationPayload(
       positionId: 'move/$exerciseId.$turn',
-      reviewStepId: 'first',
+      reviewStepId: exerciseId == 'convert' ? 'err_distantPawn' : 'first',
       state: ExplanationState.incorrect,
       explanations: [
         ExplanationBlock(
           id: 'played',
           kind: ExplanationKind.playedIncorrect,
-          texts: const ['1.Ra7? does not mate.'],
-          variations: [variation('bad', 'a1a7', false)],
+          texts: [List.filled(30, '1.Ra7? does not mate.').join(' ')],
+          variations: [variation('bad', playedUci ?? 'a1a7', false)],
         ),
         ExplanationBlock(
           id: 'main',
