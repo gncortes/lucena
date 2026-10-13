@@ -144,7 +144,11 @@ class _Header extends StatelessWidget {
                       label: paceLabel(l10n, speedrun.time),
                     ),
                     if (level != null)
-                      _Chip(icon: Icons.signal_cellular_alt, label: level),
+                      _Chip(
+                        icon: Icons.signal_cellular_alt,
+                        label: level,
+                        outlined: true,
+                      ),
                   ],
                 ),
               ],
@@ -157,32 +161,40 @@ class _Header extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label});
+  const _Chip({required this.icon, required this.label, this.outlined = false});
 
   final IconData icon;
   final String label;
+
+  /// O do nível: contornado, raio 8; o do ritmo, preenchido como no detalhe.
+  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final color = outlined
+        ? colors.onSurfaceVariant
+        : colors.onSecondaryContainer;
     return Container(
+      constraints: const BoxConstraints(minHeight: 28),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.large),
+        color: outlined ? null : colors.secondaryContainer,
+        border: outlined ? Border.all(color: colors.outlineVariant) : null,
+        borderRadius: BorderRadius.circular(
+          outlined ? AppShape.small : AppShape.large,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: colors.onSecondaryContainer),
+          Icon(icon, size: 16, color: color),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
               label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colors.onSecondaryContainer,
-              ),
+              style: theme.textTheme.labelLarge?.copyWith(color: color),
             ),
           ),
         ],
@@ -274,8 +286,9 @@ class _Numbers extends StatelessWidget {
           );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Card(
-        margin: EdgeInsets.zero,
+      child: Material(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppShape.large),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           // Sem conclusão, só as contagens.
@@ -293,7 +306,7 @@ class _Numbers extends StatelessWidget {
                       VerticalDivider(width: 1, color: colors.outlineVariant),
                       const SizedBox(width: 16),
                       ConstrainedBox(
-                        constraints: const BoxConstraints(minWidth: 88),
+                        constraints: const BoxConstraints(minWidth: 104),
                         child: counts,
                       ),
                     ],
@@ -338,6 +351,7 @@ class _RunRow extends StatelessWidget {
       color: colors.onSurfaceVariant,
     );
     final time = runTime(context, recordTime(speedrun, entry.run.total));
+    final label = '${l10n.speedrunTotal}: $time';
     final (icon, stopped) = switch (entry.end) {
       SpeedrunRunEnd.completed => (null, null),
       SpeedrunRunEnd.lost => (
@@ -372,7 +386,7 @@ class _RunRow extends StatelessWidget {
                     if (stopped == null)
                       TimeDisplay(
                         value: time,
-                        semanticsLabel: '${l10n.speedrunTotal}: $time',
+                        semanticsLabel: label,
                         type: entry.record
                             ? TimeDisplayType.record
                             : TimeDisplayType.stopwatch,
@@ -408,38 +422,59 @@ class _RunRow extends StatelessWidget {
                       style: muted,
                     ),
                     if (bonus != null && bonus > 0)
-                      Row(
-                        key: SpeedrunKeys.historyBonus,
-                        children: [
-                          Icon(
-                            Icons.trending_up,
-                            size: 18,
-                            color: ChangeColors.of(context, up: true),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              l10n.speedrunRatingBonusFirst(bonus),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: ChangeColors.of(context, up: true),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      _Bonus(key: SpeedrunKeys.historyBonus, points: bonus),
                   ],
                 ),
               ),
-              Icon(
-                Directionality.of(context) == TextDirection.rtl
-                    ? Icons.chevron_left
-                    : Icons.chevron_right,
-                color: colors.onSurfaceVariant,
-              ),
+              // Espelha sozinha no RTL.
+              Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "+N de rating" em negrito e "na primeira conclusão" normal, em verde.
+class _Bonus extends StatelessWidget {
+  const _Bonus({required this.points, super.key});
+
+  final int points;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final color = ChangeColors.of(context, up: true);
+    final style = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(fontSize: 13, height: 18 / 13, color: color);
+    final text = l10n.speedrunRatingBonusFirst(points);
+    final short = l10n.speedrunRatingBonusShort(points);
+    // O negrito só onde o idioma começa pelo "+N de rating".
+    final bold = text.startsWith(short) ? short : '';
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 1),
+          child: Icon(Icons.trending_up, size: 16, color: color),
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: bold,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                TextSpan(text: text.substring(bold.length)),
+              ],
+            ),
+            style: style,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -247,7 +247,7 @@ void main() {
             matchRoot: true,
           ),
         )
-        .map((text) => text.data)
+        .map((text) => text.data ?? text.textSpan?.toPlainText())
         .join(' | ');
 
     testWidgets('meses do mais novo ao mais antigo, com maiúscula', (
