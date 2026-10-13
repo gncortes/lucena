@@ -279,13 +279,14 @@ void main() {
     await app.restart();
     await $(LessonKeys.screen).waitUntilVisible();
     await endgames.expectStep(_lesson, 'd_diagonal');
-    await $(LessonKeys.viktorSheet).waitUntilVisible();
+    // A folha ocupa a altura toda (o centro dela cai no tabuleiro): quem
+    // aparece é a fala.
+    await $(LessonKeys.speech).waitUntilVisible();
+    expect(_speechText($), contains('2.Ke4'));
     expect(find.byKey(LessonKeys.variationStrip), findsNothing);
+    // A posição não diz nada aqui: o 2.Ke4 tocado é o mesmo lance que a
+    // demonstração já tinha jogado.
     expect(find.byKey(LessonKeys.variationExit), findsNothing);
-    expect(
-      $.tester.widget<Chessboard>(find.byKey(LessonKeys.board)).controller.fen,
-      isNot(startsWith('8/8/4k3/8/4K3/4P3/8/8 b')),
-    );
   });
 
   patrolTest('fechar à força na apresentação B: reabre no estado final, com o '
