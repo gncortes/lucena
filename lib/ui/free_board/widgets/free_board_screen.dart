@@ -361,6 +361,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
               final character = talk.character;
               // Acabou a partida contra a máquina: o selo fica no tabuleiro e
               // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
+              if (state.end == null) {
+                _endAtOpen = false;
+                _endSeen = true;
+              } else if (!_endSeen) {
+                _endAtOpen = true;
+                _endSeen = true;
+              }
               final machineEnded =
                   state.end != null &&
                   state.mode.opponent.isMachine &&
@@ -499,10 +506,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           // versus (na Maratona, com a contagem); só então
                           // o relógio corre.
                           // O selo do resultado sobre o tabuleiro, até o jogador seguir.
-                          if (machineEnded && end != null)
+                          if (end != null &&
+                              !_endAtOpen &&
+                              state.mode.opponent.isMachine)
                             Positioned.fill(
                               child: IgnorePointer(
                                 child: _EndFlash(
+                                  key: ValueKey(end),
                                   end: end,
                                   userSide: state.mode.userSide,
                                 ),
@@ -691,8 +701,14 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  /// Quanto o resultado fica em destaque antes da conclusão.
-  static const _flashTime = AppMotion.celebrate;
+  /// A tela abriu com a partida já terminada (retomada): sem selo (§12).
+  /// Volta a falso quando uma partida nova começa.
+  bool _endAtOpen = false;
+  bool _endSeen = false;
+
+  /// Quanto o resultado fica em destaque antes da conclusão: o selo inteiro
+  /// (entra 200 ms, pico 1200 ms, sai 200 ms).
+  static const _flashTime = _EndFlash.total;
 
   /// Entre as faixas dos jogadores e o tabuleiro (PropV2EtapaSpeedrunP360:
   /// faixa até 184, tabuleiro de 192 a 548, faixa a partir de 556).
@@ -742,43 +758,100 @@ class _SeeResultBar extends StatelessWidget {
 }
 
 /// O resultado em destaque, no meio do tabuleiro, quando a partida contra a
-/// máquina acaba.
-class _EndFlash extends StatelessWidget {
-  const _EndFlash({required this.end, this.userSide});
+/// máquina acaba: entra, fica no pico e sai sozinho (T65, §12).
+class _EndFlash extends StatefulWidget {
+  const _EndFlash({super.key, required this.end, this.userSide});
 
   final GameEnd end;
   final Side? userSide;
+
+  /// Entrada, pico e saída (200 + 1200 + 200 ms).
+  // coreografia do selo de fim: tempo de leitura, não token de animação
+  static const total = Duration(milliseconds: 1600);
+  static const _fade = AppMotion.state;
+  static const _reducedFade = Duration(milliseconds: 150);
+
+  @override
+  State<_EndFlash> createState() => _EndFlashState();
+}
+
+class _EndFlashState extends State<_EndFlash>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(vsync: this);
+  bool _started = false;
+  bool _reduced = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    _reduced = AppMotion.of(context).disabled;
+    final fade = _reduced ? _EndFlash._reducedFade : _EndFlash._fade;
+    _controller.duration = fade * 2 + const Duration(milliseconds: 1200);
+    unawaited(_controller.forward());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final winner = end.winner;
+    final winner = widget.end.winner;
     final title = winner == null
         ? l10n.conclusionDraw
-        : winner == userSide
+        : winner == widget.userSide
         ? l10n.resultYouWon
         : l10n.resultYouLost;
-    return Center(
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.6, end: 1),
-        duration: AppMotion.of(context).screen,
-        curve: AppMotion.pop,
-        builder: (context, scale, child) =>
-            Transform.scale(scale: scale, child: child),
-        child: Container(
-          key: FreeBoardKeys.endFlash,
-          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-          decoration: BoxDecoration(
-            color: colors.inverseSurface.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(AppShape.large),
+    final fade = _reduced ? _EndFlash._reducedFade : _EndFlash._fade;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        if (_controller.isCompleted) return const SizedBox.shrink();
+        final total = _controller.duration!.inMilliseconds;
+        final ms = _controller.value * total;
+        final f = fade.inMilliseconds;
+        final double opacity;
+        var scale = 1.0;
+        if (ms < f) {
+          final t = AppMotion.enter.transform(ms / f);
+          opacity = t;
+          if (!_reduced) scale = 0.92 + 0.08 * t;
+        } else if (ms > total - f) {
+          opacity = 1 - AppMotion.exit.transform((ms - (total - f)) / f);
+        } else {
+          opacity = 1;
+        }
+        return Center(
+          child: Opacity(
+            opacity: opacity.clamp(0.0, 1.0),
+            child: Transform.scale(scale: scale, child: child),
           ),
-          child: Text(
-            title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: colors.onInverseSurface,
-              fontWeight: FontWeight.w900,
+        );
+      },
+      child: Semantics(
+        liveRegion: true,
+        label: title,
+        child: ExcludeSemantics(
+          child: Container(
+            key: FreeBoardKeys.endFlash,
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+            decoration: BoxDecoration(
+              color: colors.inverseSurface.withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(AppShape.large),
+            ),
+            child: Text(
+              title,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: colors.onInverseSurface,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
         ),

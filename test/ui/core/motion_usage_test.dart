@@ -24,6 +24,10 @@ void main() {
           'relógio da partida: tempo de jogo',
       'duration: const Duration(milliseconds: 1400)':
           'coreografia do cartão do resultado (sai na frente B)',
+      'total = Duration(milliseconds: 1600)': 'selo de fim: 200 + 1200 + 200',
+      '_reducedFade = Duration(milliseconds: 150)':
+          'selo de fim com movimento reduzido',
+      'const Duration(milliseconds: 1200)': 'pico do selo de fim',
     },
     'lib/ui/free_board/widgets/character_bar.dart': {
       'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',

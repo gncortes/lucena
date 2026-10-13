@@ -190,6 +190,17 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Como [move], mas sem esperar as animações: lê o selo logo após o fim.
+  Future<void> moveNow(WidgetTester tester, String from, String to) async {
+    final orientation = cubit.state.orientation;
+    final board = boardRect(tester);
+    await tester.tapAt(squareCenter(board, from, orientation: orientation));
+    await tester.pump();
+    await tester.tapAt(squareCenter(board, to, orientation: orientation));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+
   Future<void> drag(WidgetTester tester, String from, String to) async {
     final board = boardRect(tester);
     await tester.dragFrom(
@@ -1818,7 +1829,7 @@ void main() {
         mode: vsMachine,
       );
 
-      await move(tester, 'h1', 'h8');
+      await moveNow(tester, 'h1', 'h8');
       expect(textOf(tester, FreeBoardKeys.endFlash), 'You won!');
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
@@ -1829,6 +1840,72 @@ void main() {
       await tester.pumpAndSettle();
       expect(progress.attempts.single.fulfilled, isTrue);
       expect(find.textContaining('conclusion'), findsOneWidget);
+    });
+
+    testWidgets('o selo entra, fica no pico e some em 1,6 s; o botão fica', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine,
+      );
+      await moveNow(tester, 'h1', 'h8');
+      double opacity() => tester
+          .widget<Opacity>(
+            find.ancestor(
+              of: find.byKey(FreeBoardKeys.endFlash),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .opacity;
+      expect(opacity(), lessThan(1));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(opacity(), 1);
+      await tester.pump(const Duration(milliseconds: 900));
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+    });
+
+    testWidgets('abrir a tela com a partida já terminada: sem selo', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '3k3Q/8/3K4/8/8/8/8/8 b - - 0 1',
+        mode: vsMachine,
+      );
+      expect(cubit.state.end, isNotNull);
+      expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
+    });
+
+    testWidgets('reduzir movimento: só fade, sem escala', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine,
+      );
+      await moveNow(tester, 'h1', 'h8');
+      await tester.pump(const Duration(milliseconds: 25));
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      final scale = tester.widget<Transform>(
+        find
+            .ancestor(
+              of: find.byKey(FreeBoardKeys.endFlash),
+              matching: find.byType(Transform),
+            )
+            .first,
+      );
+      expect(scale.transform.getMaxScaleOnAxis(), 1);
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
     });
 
     for (final size in [const Size(360, 740), const Size(412, 917)]) {
@@ -1844,7 +1921,7 @@ void main() {
             ),
             screen: size * 2.625,
           );
-          await move(tester, 'h1', 'h8');
+          await moveNow(tester, 'h1', 'h8');
           final button = tester.getRect(
             find.byKey(FreeBoardKeys.seeResultButton),
           );
@@ -1870,7 +1947,7 @@ void main() {
         screen: const Size(360 * 2.625, 740 * 2.625),
       );
 
-      await move(tester, 'h1', 'h8');
+      await moveNow(tester, 'h1', 'h8');
       expect(cubit.state.end, isNotNull);
       final seal = tester.getRect(find.byKey(FreeBoardKeys.endFlash));
       final board = boardRect(tester);
