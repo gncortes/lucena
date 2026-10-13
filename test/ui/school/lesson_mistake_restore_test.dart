@@ -1,57 +1,15 @@
 import 'package:dartchess/dartchess.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
-import 'package:lucena/domain/models/app_language.dart';
-import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
-import 'package:lucena/ui/school/widgets/lesson_screen.dart';
-import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
-import '../../../testing/fakes/fake_settings_repository.dart';
-import '../../../testing/test_app.dart';
 
-/// The authored explanation of a wrong move, found by the step id.
-class _WrongFeedback extends EmptyExerciseFeedbackRepository
-    implements ExplanationRepository {
-  final asked = <(String, ExplanationState, String?)>[];
-
-  @override
-  Future<ExplanationPayload?> findPayload({
-    required String lessonId,
-    required String exerciseId,
-    required String kind,
-    required int turn,
-    required String fen,
-    required String language,
-    required ExplanationState state,
-    String? playedUci,
-  }) async {
-    asked.add((exerciseId, state, playedUci));
-    if (state != ExplanationState.incorrect) return null;
-    return ExplanationPayload(
-      positionId: exerciseId,
-      state: state,
-      explanations: [
-        ExplanationBlock(
-          id: 'played',
-          kind: ExplanationKind.playedIncorrect,
-          texts: ['$exerciseId: $playedUci does not work.'],
-        ),
-      ],
-    );
-  }
-}
-
-/// T65 §7: closing the app on a wrong answer (PensarErrado, LanceErrado and
-/// Errou) brings back the error and its explanation.
+/// Decisão de 2026-10-13: fechar o app de verdade reabre no início da lição,
+/// qualquer que fosse o erro na tela; o checkpoint ainda guarda os campos.
 void main() {
   const mateFen = '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1';
   const course = Course(
@@ -147,108 +105,28 @@ void main() {
     return cubit;
   }
 
-  test('Errou: the failed phase, speech, review and move come back', () async {
+  test('closing on a wrong answer reopens at step 0 with no error', () async {
     final progress = FakeSchoolProgressRepository();
     final live = await openAt(progress, 1);
     await live.play(move('a1a7'));
-    expect(live.state.phase, StepPhase.failed);
+    expect(live.state.attemptedSan, isNotNull);
     final cubit = await reopen(progress);
-    final state = cubit.state;
-    expect(state.current?.id, 'test');
-    expect(state.phase, StepPhase.failed);
-    expect(state.layout, LessonLayoutMode.explaining);
-    expect(state.speech, 'The rook on a7 gives no check.');
-    expect(state.reviewStep, 'backrank');
-    expect(state.genericMistake, isFalse);
-    expect(state.attemptedSan, '1.Ra7');
-    expect(state.mistakes, 1);
-    expect(state.fen, mateFen);
-    // "Tentar de novo" still works after the restore.
-    await cubit.retry();
-    expect(cubit.state.phase, StepPhase.active);
-    await cubit.play(move('a1a8'));
-    expect(cubit.state.phase, StepPhase.done);
+    expect(cubit.state.step, 0);
+    expect(cubit.state.attemptedSan, isNull);
+    expect((await progress.load()).ongoing!.step, 0);
   });
 
-  test('Errou without speech: the generic app sentence comes back', () async {
+  test('an old checkpoint with a saved step reopens at step 0', () async {
     final progress = FakeSchoolProgressRepository();
-    final live = await openAt(progress, 1);
-    await live.play(move('a1a6'));
-    final cubit = await reopen(progress);
-    expect(cubit.state.phase, StepPhase.failed);
-    expect(cubit.state.genericMistake, isTrue);
-    expect(cubit.state.reviewStep, isNull);
-    expect(cubit.state.attemptedSan, '1.Ra6');
-  });
-
-  test('LanceErrado: the hint, the mistake count and the authored '
-      'explanation (by step id) come back', () async {
-    final progress = FakeSchoolProgressRepository();
-    final feedback = _WrongFeedback();
-    final live = await openAt(progress, 1, feedback: feedback);
-    await live.play(move('a1a5'));
-    expect(live.state.phase, StepPhase.active);
-    final before = live.state.explanation;
-    expect(before?.explanations.single.texts, ['test: a1a5 does not work.']);
-    feedback.asked.clear();
-    final cubit = await reopen(progress, feedback: feedback);
-    await pumpEventQueue();
-    final state = cubit.state;
-    expect(state.current?.id, 'test');
-    expect(state.phase, StepPhase.active);
-    expect(state.mistakes, 1);
-    expect(state.attemptedSan, '1.Ra5');
-    expect(state.explanation?.explanations.single.texts, [
-      'test: a1a5 does not work.',
-    ]);
-    expect(
-      feedback.asked,
-      contains(('test', ExplanationState.incorrect, 'a1a5')),
+    await progress.save(
+      (await progress.load()).copyWith(
+        ongoing: const LessonCheckpoint(lessonId: 'mates.rank', step: 2),
+      ),
     );
-  });
-
-  test('second LanceErrado: the arrow of the move comes back', () async {
-    final progress = FakeSchoolProgressRepository();
-    final live = await openAt(progress, 1);
-    await live.play(move('a1a5'));
-    await live.play(move('a1a4'));
-    expect(live.state.hint, move('a1a8'));
-    final cubit = await reopen(progress);
-    expect(cubit.state.mistakes, 2);
-    expect(cubit.state.hint, move('a1a8'));
-    expect(cubit.state.speech, 'Look at the back rank.');
-  });
-
-  test('PensarErrado: the numbered move of the generic sentence comes '
-      'back', () async {
-    final progress = FakeSchoolProgressRepository();
-    final live = await openAt(progress, 2);
-    expect(live.state.current?.id, 'think');
-    await live.play(move('a1b1'));
-    await pumpEventQueue();
-    expect(live.state.current?.id, 'after');
-    expect(live.state.thinkMistake, '1.Rb1');
-    final cubit = await reopen(progress);
-    await pumpEventQueue();
-    expect(cubit.state.current?.id, 'after');
-    expect(cubit.state.thinkMistake, '1.Rb1');
-    expect(cubit.state.attemptedSan, '1.Rb1');
-  });
-
-  test('PensarErrado with its own speech: the explanation block comes '
-      'back', () async {
-    final progress = FakeSchoolProgressRepository();
-    final live = await openAt(progress, 2);
-    await live.play(move('a1a2'));
-    await pumpEventQueue();
-    final cubit = await reopen(progress);
-    await pumpEventQueue();
-    final explanation = cubit.state.explanation!;
-    expect(explanation.state, ExplanationState.incorrect);
-    expect(explanation.explanations.first.texts, [
-      'On a2 the rook only defends.',
-    ]);
-    expect(cubit.state.speech, startsWith('On a2 the rook only defends.'));
+    final cubit = build(progress);
+    await cubit.load('mates.rank', 'en');
+    expect(cubit.state.step, 0);
+    expect(cubit.state.current?.id, 'backrank');
   });
 
   test('moving on clears the stored error', () async {
@@ -287,41 +165,4 @@ void main() {
     expect(back!.attempt, checkpoint.attempt);
     expect(back.failed, isTrue);
   });
-
-  for (final size in [const Size(360, 740), const Size(412, 917)]) {
-    testWidgets('$size: reopening on Errou shows the 2×2 footer and the '
-        'explanation', (tester) async {
-      final progress = FakeSchoolProgressRepository();
-      final live = await openAt(progress, 1);
-      await live.play(move('a1a7'));
-      final cubit = await reopen(progress);
-      tester.view
-        ..devicePixelRatio = 1
-        ..physicalSize = size;
-      addTearDown(tester.view.reset);
-      final settings = SettingsCubit(
-        FakeSettingsRepository(const AppSettings()),
-        languages: AppLanguage.selectable,
-      );
-      addTearDown(settings.close);
-      await settings.load();
-      await tester.pumpWidget(
-        TestApp(
-          settingsCubit: settings,
-          child: BlocProvider.value(value: cubit, child: const LessonScreen()),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
-      expect(find.byKey(LessonKeys.reviewPoint), findsOneWidget);
-      expect(
-        find.textContaining(
-          'The rook on a7 gives no check.',
-          findRichText: true,
-        ),
-        findsOneWidget,
-      );
-      expect(tester.takeException(), isNull);
-    });
-  }
 }

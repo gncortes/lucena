@@ -134,38 +134,6 @@ void main() {
     expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
   });
 
-  testWidgets('the wrong move comes back after a hard close', (tester) async {
-    final progress = FakeSchoolProgressRepository();
-    final live = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(live.close);
-    await live.load('mates.rank', 'en');
-    await live.next();
-    await live.play(move('a1a5'));
-    final stored = await progress.load();
-    await progress.save(
-      stored.copyWith(
-        ongoing: LessonCheckpoint.fromJson(stored.ongoing!.toJson()),
-      ),
-    );
-    final cubit = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(cubit.close);
-    await cubit.load('mates.rank', 'en');
-    expect(cubit.state.wrongMove, isTrue);
-    expect(cubit.state.attemptedSan, '1.Ra5');
-  });
-
   testWidgets('think mistake: the explanation is titled CORRECT MOVE and the '
       'move is in the primary colour (no result colour)', (tester) async {
     final cubit = await open(2);

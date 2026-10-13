@@ -267,54 +267,6 @@ void main() {
       return result;
     }
 
-    test('later MoveStep error reviews and resumes exact turn after cold reload', () async {
-      final feedback = _ReviewFeedback();
-      final progress = FakeSchoolProgressRepository();
-      var cubit = build(line, feedback, progress);
-      await cubit.load('review', 'en');
-      await cubit.next();
-      await cubit.play(move('e2e4'));
-      final origin = cubit.state.fen;
-      feedback.origin = origin;
-      feedback.turn = 2;
-      await cubit.play(move('a2a3'));
-      expect(cubit.state.phase, StepPhase.failed);
-      expect(cubit.state.reviewStep, 'intro');
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.turn, 1);
-      expect(cubit.state.mistakes, 1);
-      await cubit.reviewPoint();
-      final storedProgress = await progress.load();
-      final saved = storedProgress.ongoing;
-      final roundTrip = LessonCheckpoint.fromJson(saved!.toJson())!;
-      expect(roundTrip.reviewReturn?.fen, origin);
-      expect(
-        roundTrip.copyWith(open: false).reviewReturn,
-        saved.reviewReturn,
-        reason:
-            '${roundTrip.reviewReturn?.toJson()} != ${saved.reviewReturn?.toJson()}',
-      );
-      await progress.save(storedProgress.copyWith(ongoing: roundTrip));
-      cubit = build(line, feedback, progress);
-      await cubit.load('review', 'en');
-      expect(cubit.state.current?.id, 'intro');
-      await cubit.next();
-      expect(cubit.state.current?.id, 'line');
-      expect(cubit.state.turn, 1);
-      expect(cubit.state.fen, origin);
-      expect(cubit.state.mistakes, 1);
-      await cubit.play(move('a2a3'));
-      await cubit.retry();
-      // T65 §4: Tentar de novo recomeça o passo (posição e vez iniciais).
-      expect(cubit.state.phase, StepPhase.active);
-      expect(cubit.state.fen, initial);
-      expect(cubit.state.turn, 0);
-      expect(cubit.state.mistakes, 2);
-      await cubit.play(move('e2e4'));
-      await cubit.play(move('g1f3'));
-      expect(cubit.state.phase, StepPhase.done);
-    });
-
     for (final target in <String?>[null, 'missing', 'line', 'later']) {
       test(
         'invalid/absent target $target preserves legacy MoveStep behavior',
