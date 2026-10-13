@@ -37,6 +37,12 @@ void main() {
     await CharacterRobot($).expectCharacter('Valdini', 1600);
   }
 
+  /// Oferece empate: a oferta só sai depois de confirmar na folha (T65).
+  Future<void> offerDraw(PatrolIntegrationTester $) async {
+    await $(FreeBoardKeys.drawButton).tap();
+    await $(FreeBoardKeys.drawConfirmButton).tap();
+  }
+
   /// O jogador move a torre (o lance [index] dele) e a máquina responde.
   Future<void> shuffle(PatrolIntegrationTester $, int index) async {
     final board = FreeBoardRobot($);
@@ -234,7 +240,7 @@ void main() {
     await AppRobot($).open(systemLocale: _english);
     await openMagician($);
 
-    await $(FreeBoardKeys.drawButton).tap();
+    await offerDraw($);
     await character.expectLine('drawDeclined');
     await $(FreeBoardKeys.drawDeclined).waitUntilVisible();
     FreeBoardRobot($).expectStillPlaying();
@@ -244,7 +250,7 @@ void main() {
     for (var move = 0; move < 3; move++) {
       await shuffle($, move);
     }
-    await $(FreeBoardKeys.drawButton).tap();
+    await offerDraw($);
     // Aceito, a partida acaba e a conclusão abre na hora (T51): o
     // comentário do personagem fica nela.
     await ConclusionRobot($)
