@@ -120,12 +120,9 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           body: Stack(
             fit: StackFit.expand,
             children: [
-              BoardViewport(
-                usefulHeight: BoardViewport.usefulHeightOf(context),
-                child: SafeArea(
-                  child: Builder(
-                    builder: (context) => _body(context, state, boardSettings),
-                  ),
+              SafeArea(
+                child: Builder(
+                  builder: (context) => _body(context, state, boardSettings),
                 ),
               ),
               if (_action(context, state) case final action?)
@@ -203,19 +200,22 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     if (!state.ready) return null;
     final l10n = context.l10n;
     final cubit = context.read<StarChallengeCubit>();
+    // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
+    Widget label(String text) =>
+        FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
     return switch (state.phase) {
       ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
         style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.play_arrow_rounded),
-        label: Text(l10n.starChallengeGo),
+        label: label(l10n.starChallengeGo),
         onPressed: cubit.start,
       ),
       ChallengePhase.finished => FilledButton.icon(
         key: StarChallengeKeys.retryButton,
         style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.replay_rounded),
-        label: Text(l10n.starChallengePlayAgain),
+        label: label(l10n.starChallengePlayAgain),
         onPressed: cubit.retry,
       ),
       ChallengePhase.running || ChallengePhase.paused => null,
@@ -223,20 +223,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   }
 
   /// A ação fixa, suas margens e a borda; a área segura fica fora da reserva.
-  static const _actionRoom = 52.0 + 8 + 8 + 1;
+  /// O botão tem 52 ou a linha do rótulo, se for maior.
+  static double _actionRoom(TextScaler scaler) =>
+      max(52.0, scaler.scale(20).ceilToDouble()) + 8 + 8 + 1;
 
-  /// O espaço mínimo sob o tabuleiro: o placar (duas linhas de texto e as
-  /// margens) e, abaixo dele, a ação fixa, que assim nunca cobre o
-  /// placar. Em celular comum ele já sobra; em tela baixa ou com fonte
-  /// grande, o tabuleiro diminui um pouco.
-  static double _reserveBottom(TextScaler scaler, ChallengePhase phase) =>
-      24 +
-      scaler.scale(44) +
-      (phase == ChallengePhase.ready || phase == ChallengePhase.finished
-          ? AppSpacing.sm + _actionRoom
-          : phase == ChallengePhase.paused
-          ? AppSpacing.sm + scaler.scale(20)
-          : 0);
+  /// O placar sob o tabuleiro (duas linhas de texto e as margens). Na pausa
+  /// o aviso vai na sobra de baixo, sem mexer no bloco.
+  /// Cada linha arredonda para cima, como o texto pintado.
+  static double _reserveBottom(TextScaler scaler) =>
+      24 + scaler.scale(28).ceilToDouble() + scaler.scale(16).ceilToDouble();
 
   Widget _body(
     BuildContext context,
@@ -251,17 +246,13 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final lowTime =
         state.phase == ChallengePhase.running &&
         state.timeLeft <= const Duration(seconds: 10);
-    // O tabuleiro no centro do espaço útil (T64), entre a barra do app e o
-    // fim da área segura. Em cima, o relógio colado na barra do app e, sob
-    // ele, o convite ou o resultado; embaixo, o placar das estrelas, sempre
-    // no mesmo lugar, e a ação fixa no rodapé.
+    // O bloco (relógio, convite ou resultado, tabuleiro e placar) centrado
+    // entre a barra do app e o rodapé, a sobra meio a meio (T65, "Centralizar
+    // igual"). Ao tocar em Vai!, o convite e o botão somem e o bloco é
+    // recentrado.
     return LayoutBuilder(
-      builder: (context, box) => _layout(
-        context,
-        state,
-        boardSettings,
-        board: board,
-        reserveTop:
+      builder: (context, box) {
+        final wanted =
             timerHeight +
             switch (state.phase) {
               // O convite na altura do conteúdo dele (fonte, idioma, nota dos
@@ -273,11 +264,32 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               ),
               ChallengePhase.finished => scaler.scale(140),
               _ => state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
-            },
-        lowTime: lowTime,
-      ),
+            };
+        // Fonte grande em tela baixa: o tabuleiro não passa de metade da
+        // largura para baixo; o que vem em cima ganha só a altura que sobra e
+        // rola.
+        final footer = _hasAction(state) ? _actionRoom(scaler) : 0.0;
+        final room =
+            box.maxHeight -
+            footer -
+            _reserveBottom(scaler) -
+            2 * AppSpacing.sm -
+            box.maxWidth / 2;
+        return _layout(
+          context,
+          state,
+          boardSettings,
+          board: board,
+          reserveTop: max(timerHeight, min(wanted, room)),
+          lowTime: lowTime,
+        );
+      },
     );
   }
+
+  static bool _hasAction(StarChallengeState state) =>
+      state.phase == ChallengePhase.ready ||
+      state.phase == ChallengePhase.finished;
 
   Widget _layout(
     BuildContext context,
@@ -290,94 +302,98 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final colors = Theme.of(context).colorScheme;
     final star = state.star;
     final scaler = MediaQuery.textScalerOf(context);
+    final withAction = _hasAction(state);
     return CenteredBoardLayout(
-      centerY: BoardViewport.centerYOf(context),
-      gutter: 0,
+      balanced: true,
       reserveTop: reserveTop,
-      minFraction: 0.35,
-      // O relógio fica colado na barra do app, como antes, e não no tabuleiro.
-      topAlignment: Alignment.topCenter,
-      reserveBottom: _reserveBottom(scaler, state.phase),
+      // O topo do bloco tem a altura da reserva, colado no tabuleiro.
+      topAlignment: Alignment.bottomCenter,
+      reserveBottom: _reserveBottom(scaler),
       bottomAlignment: Alignment.topCenter,
+      // O lugar da ação fixa (o "Vai!" ou o "Jogar de novo", desenhados por
+      // cima, fora da área segura): o bloco centra acima dela.
+      footer: withAction ? SizedBox(height: _actionRoom(scaler)) : null,
       // O relógio fica; o convite e o resultado rolam na fonte normal quando
       // falta altura (fonte grande em tela baixa), sem cortar o cartão.
-      // O centro permanece fixo. Antes de jogar, a regra recebe mais espaço;
-      // ao iniciar, o tabuleiro pode crescer em torno do mesmo centro.
       shrinkSides: false,
-      top: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // O relógio e a barra do tempo.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 20,
-                  color: lowTime ? colors.error : colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                TimeDisplay(
-                  value: clockText(state.timeLeft),
-                  semanticsLabel:
-                      '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
-                      '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
-                  type: TimeDisplayType.countdown,
-                  size: TimeDisplaySize.inline,
-                  presentation: TimeDisplayPresentation.plain,
-                  state: lowTime
-                      ? TimeDisplayState.low
-                      : state.phase == ChallengePhase.running
-                      ? TimeDisplayState.active
-                      : state.phase == ChallengePhase.paused
-                      ? TimeDisplayState.paused
-                      : TimeDisplayState.normal,
-                  textKey: StarChallengeKeys.timer,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                    child: LinearProgressIndicator(
-                      value: 1 - state.elapsedFraction,
-                      minHeight: 8,
-                      color: lowTime ? colors.error : colors.primary,
-                      backgroundColor: colors.surfaceContainerHighest,
+      top: ConstrainedBox(
+        key: StarChallengeKeys.blockTop,
+        constraints: BoxConstraints(maxHeight: reserveTop),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // O relógio e a barra do tempo.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: 20,
+                    color: lowTime ? colors.error : colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 6),
+                  TimeDisplay(
+                    value: clockText(state.timeLeft),
+                    semanticsLabel:
+                        '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
+                        '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
+                    type: TimeDisplayType.countdown,
+                    size: TimeDisplaySize.inline,
+                    presentation: TimeDisplayPresentation.plain,
+                    state: lowTime
+                        ? TimeDisplayState.low
+                        : state.phase == ChallengePhase.running
+                        ? TimeDisplayState.active
+                        : state.phase == ChallengePhase.paused
+                        ? TimeDisplayState.paused
+                        : TimeDisplayState.normal,
+                    textKey: StarChallengeKeys.timer,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppShape.small),
+                      child: LinearProgressIndicator(
+                        value: 1 - state.elapsedFraction,
+                        minHeight: 8,
+                        color: lowTime ? colors.error : colors.primary,
+                        backgroundColor: colors.surfaceContainerHighest,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: _AboveContent(
-                readable:
-                    state.phase == ChallengePhase.ready ||
-                    state.phase == ChallengePhase.finished,
-                child: AnimatedSwitcher(
-                  duration: AppMotion.of(context).component,
-                  switchInCurve: AppMotion.enter,
-                  switchOutCurve: AppMotion.exit,
-                  layoutBuilder: (current, previous) => Stack(
-                    alignment: Alignment.topCenter,
-                    children: [...previous, ?current],
-                  ),
-                  child: KeyedSubtree(
-                    key: ValueKey(
-                      state.phase == ChallengePhase.paused
-                          ? ChallengePhase.running
-                          : state.phase,
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: _AboveContent(
+                  readable:
+                      state.phase == ChallengePhase.ready ||
+                      state.phase == ChallengePhase.finished,
+                  child: AnimatedSwitcher(
+                    duration: AppMotion.of(context).component,
+                    switchInCurve: AppMotion.enter,
+                    switchOutCurve: AppMotion.exit,
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.topCenter,
+                      children: [...previous, ?current],
                     ),
-                    child: _above(context, state),
+                    child: KeyedSubtree(
+                      key: ValueKey(
+                        state.phase == ChallengePhase.paused
+                            ? ChallengePhase.running
+                            : state.phase,
+                      ),
+                      child: _above(context, state),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       board: LayoutBuilder(
         builder: (context, box) => Directionality(

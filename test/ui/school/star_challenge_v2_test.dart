@@ -95,14 +95,32 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// "Centralizar igual": o bloco (relógio, convite ou resultado, tabuleiro e
+  /// placar) com a sobra meio a meio entre a barra do app e o rodapé (o topo
+  /// da ação fixa, com a borda e a margem de 8; sem ação, o fim da tela).
+  void expectBalanced(WidgetTester tester, Size size) {
+    final appBar = tester.getRect(find.byType(AppBar)).bottom;
+    final top = rectOf(tester, StarChallengeKeys.blockTop).top;
+    final score = rectOf(tester, StarChallengeKeys.scoreboard).bottom;
+    final action = [
+      StarChallengeKeys.goButton,
+      StarChallengeKeys.retryButton,
+    ].where((key) => find.byKey(key).evaluate().isNotEmpty);
+    final footer = action.isEmpty
+        ? size.height
+        : rectOf(tester, action.single).top - 8 - 1;
+    final above = top - appBar;
+    final below = footer - score;
+    expect(above, greaterThanOrEqualTo(-1));
+    expect(above, closeTo(below, 1), reason: 'vão de cima × vão de baixo');
+  }
+
   // As medidas do contrato, sem insets, fonte 1,0, pt, Fácil. O cartão do
   // convite tem a altura do conteúdo: 112 dp com o texto em duas linhas (o
-  // artboard reserva 108, ver "Ajuste no canvas" no contrato), e o tabuleiro
-  // de 360×740 fica com 2 × (298 − 40 − 112 − 8) = 276 dp.
-  for (final (size, readySide, readyTop, runningTop) in [
-    (const Size(360, 740), 276.0, 232.0, 190.0),
-    (const Size(412, 917), 412.0, 252.5, 252.5),
-  ]) {
+  // artboard reserva 108, ver "Ajuste no canvas" no contrato). O tabuleiro
+  // ocupa a largura e o bloco fica no meio do que sobra (T65, "Centralizar
+  // igual"): ao tocar em Vai!, o convite e o botão somem e o bloco recentra.
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
     testWidgets('V2 $size: medidas do Pronto, Jogando, Pausa e Fim', (
       tester,
     ) async {
@@ -117,18 +135,18 @@ void main() {
         ),
         findsOneWidget,
       );
-      // A contagem colada na barra do app: 40 dp.
+      // A contagem no topo do bloco: 40 dp.
       final timer = rectOf(tester, StarChallengeKeys.timer);
-      expect(timer.top, closeTo(72 + 10, 1));
+      final block = rectOf(tester, StarChallengeKeys.blockTop);
+      expect(timer.top, closeTo(block.top + 10, 1));
       expect(timer.height, closeTo(24, 1));
 
       final board = rectOf(tester, StarChallengeKeys.board);
       final intro = rectOf(tester, StarChallengeKeys.intro);
       final score = rectOf(tester, StarChallengeKeys.scoreboard);
       final go = rectOf(tester, StarChallengeKeys.goButton);
-      expect(board.center.dy, closeTo(size.height / 2, 1));
-      expect(board.width, closeTo(readySide, 1));
-      expect(board.top, closeTo(readyTop, 1));
+      expectBalanced(tester, size);
+      expect(board.width, size.width);
       expect(board.center.dx, closeTo(size.width / 2, .01));
       // O convite: margem 16, 8 dp acima do tabuleiro, altura do conteúdo.
       expect(intro.left, 16);
@@ -164,8 +182,9 @@ void main() {
       await tester.pumpAndSettle();
       final running = rectOf(tester, StarChallengeKeys.board);
       expect(running.width, size.width);
-      expect(running.top, closeTo(runningTop, 1));
-      expect(running.center.dy, closeTo(board.center.dy, .01));
+      expectBalanced(tester, size);
+      // Sem o convite e sem o botão, o bloco desce para o meio.
+      expect(running.top, lessThan(board.top));
       expect(find.byKey(StarChallengeKeys.goButton), findsNothing);
       expect(find.byKey(StarChallengeKeys.intro), findsNothing);
       expect(find.text('Sua vez'), findsNothing);
@@ -178,12 +197,13 @@ void main() {
       expect(find.text('Em pausa'), findsOneWidget);
       expect(rectOf(tester, StarChallengeKeys.board), running);
       expect(rectOf(tester, StarChallengeKeys.scoreboard), runningScore);
+      expectBalanced(tester, size);
       cubit.resume();
       await tester.pumpAndSettle();
 
       await finish(tester, cubit);
       final finished = rectOf(tester, StarChallengeKeys.board);
-      expect(finished.center.dy, closeTo(board.center.dy, .01));
+      expectBalanced(tester, size);
       final finishedScore = rectOf(tester, StarChallengeKeys.scoreboard);
       expect(finishedScore.size, score.size);
       expect(finishedScore.top - finished.bottom, closeTo(8, 1));
@@ -213,9 +233,8 @@ void main() {
               Directionality.of(context),
               rtl ? TextDirection.rtl : TextDirection.ltr,
             );
-            final centerY = (size.height + 0) / 2;
             final ready = rectOf(tester, StarChallengeKeys.board);
-            expect(ready.center.dy, closeTo(centerY, 1));
+            expectBalanced(tester, size);
             // Tabuleiro e número do tempo sempre da esquerda para a direita.
             expect(
               tester
@@ -309,7 +328,7 @@ void main() {
             await tester.tap(find.byKey(StarChallengeKeys.goButton));
             await tester.pumpAndSettle();
             final running = rectOf(tester, StarChallengeKeys.board);
-            expect(running.center.dy, closeTo(ready.center.dy, .01));
+            expectBalanced(tester, size);
             expect(running.width, greaterThanOrEqualTo(ready.width));
             final runningScore = rectOf(tester, StarChallengeKeys.scoreboard);
             expect(runningScore.size, score.size);
@@ -350,7 +369,7 @@ void main() {
 
             await finish(tester, cubit);
             final finished = rectOf(tester, StarChallengeKeys.board);
-            expect(finished.center.dy, closeTo(ready.center.dy, .01));
+            expectBalanced(tester, size);
             final finishedScore = rectOf(tester, StarChallengeKeys.scoreboard);
             expect(finishedScore.size, score.size);
             final retry = rectOf(tester, StarChallengeKeys.retryButton);
@@ -382,15 +401,15 @@ void main() {
 
   for (final level in [ChallengeLevel.medium, ChallengeLevel.hard]) {
     testWidgets('V2 ${level.name} em 360×740: a nota dos obstáculos aparece '
-        'e o tabuleiro diminui em torno do mesmo centro', (tester) async {
+        'e o bloco continua no meio', (tester) async {
       await pump(tester, size: const Size(360, 740), level: level);
       final note = rectOf(tester, StarChallengeKeys.obstacles);
       final intro = rectOf(tester, StarChallengeKeys.intro);
       final board = rectOf(tester, StarChallengeKeys.board);
       expect(note.bottom, lessThanOrEqualTo(intro.bottom - 16 + 1));
       expect(intro.bottom, closeTo(board.top - 8, 1));
-      expect(board.width, lessThan(276));
-      expect(board.center.dy, closeTo(370, 1));
+      expect(board.width, lessThanOrEqualTo(360));
+      expectBalanced(tester, const Size(360, 740));
       expect(tester.takeException(), isNull);
     });
   }
@@ -404,13 +423,13 @@ void main() {
         level: ChallengeLevel.named,
         locale: locale,
       );
-      final ready = rectOf(tester, StarChallengeKeys.board);
+      expectBalanced(tester, const Size(360, 740));
       await tester.tap(find.byKey(StarChallengeKeys.goButton));
       await tester.pumpAndSettle();
       final name = find.byKey(StarChallengeKeys.starName);
       expect(tester.widget<Text>(name).data, cubit.state.star!.name);
       final board = rectOf(tester, StarChallengeKeys.board);
-      expect(board.center.dy, closeTo(ready.center.dy, .01));
+      expectBalanced(tester, const Size(360, 740));
       expect(tester.getRect(name).bottom, lessThanOrEqualTo(board.top));
       // A casa ("e4") é notação: nunca vira "4e" em árabe.
       expect(tester.widget<Text>(name).textDirection, TextDirection.ltr);

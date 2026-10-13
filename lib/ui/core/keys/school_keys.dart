@@ -131,6 +131,9 @@ abstract final class StarChallengeKeys {
   static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
 
+  /// O topo do bloco centrado: o relógio e o convite ou o resultado.
+  static const blockTop = Key('starChallenge.blockTop');
+
   /// O total de pontos no painel embaixo do tabuleiro.
   static const collected = Key('starChallenge.collected');
 
