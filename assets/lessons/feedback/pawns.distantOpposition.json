@@ -28842,7 +28842,11 @@
                     "2...Rd3"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "2": [
+                      "O rei preto se aproxima dos peões brancos e ameaça ir a c2. O rei branco precisa ficar perto o bastante para ajudar na ala da dama."
+                    ]
+                  },
                   "contextId": "exercise/e15.2"
                 },
                 {
@@ -28863,7 +28867,14 @@
                     "3...Rc2"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "1": [
+                      "Este passo afasta o rei branco da ala da dama. Se os peões correrem, ele já não chega a tempo de ajudar a dama contra o peão preto de c."
+                    ],
+                    "2": [
+                      "Este lance ataca o peão de b2. Se as brancas correrem com o peão de b, o rei preto também captura c3, e a dama que nasce em b8 não vence o peão de c sem a ajuda do rei."
+                    ]
+                  },
                   "contextId": "exercise/e15.2",
                   "parentId": "c2c3",
                   "parentPly": 2
@@ -28979,7 +28990,11 @@
                     "2...Kd3"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "2": [
+                      "The black king approaches the white pawns and threatens to go to c2. The white king must stay close enough to help on the queenside."
+                    ]
+                  },
                   "contextId": "exercise/e15.2"
                 },
                 {
@@ -29000,7 +29015,14 @@
                     "3...Kc2"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "1": [
+                      "This step takes the white king away from the queenside. If the pawns race, it no longer arrives in time to help the queen against Black's c-pawn."
+                    ],
+                    "2": [
+                      "This move attacks the b2-pawn. If White races with the b-pawn, the black king also captures c3, and the queen born on b8 cannot beat the c-pawn without its king's help."
+                    ]
+                  },
                   "contextId": "exercise/e15.2",
                   "parentId": "c2c3",
                   "parentPly": 2
@@ -31676,7 +31698,11 @@
                     "3...Rd5"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "2": [
+                      "O rei preto ataca o peão de e5. O empate depende da rota do rei branco: ele precisa ir em direção a h7 sem deixar o rei preto tomar a oposição."
+                    ]
+                  },
                   "contextId": "exercise/e16.3"
                 },
                 {
@@ -31697,7 +31723,14 @@
                     "4...Rd4"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "1": [
+                      "Este passo vai na direção de e5, mas deixa as pretas tomarem a oposição direta na quarta fileira."
+                    ],
+                    "2": [
+                      "Este lance toma a oposição: e4 fica entre os reis, e as brancas jogam. Se o rei branco recuar, as pretas capturam e5; se for para o lado de h7, o rei preto o acompanha e chega primeiro a h6."
+                    ]
+                  },
                   "contextId": "exercise/e16.3",
                   "parentId": "f2g3",
                   "parentPly": 2
@@ -31813,7 +31846,11 @@
                     "3...Kd5"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "2": [
+                      "The black king attacks the e5-pawn. The draw depends on the white king's route: it must head for h7 without letting the black king take the opposition."
+                    ]
+                  },
                   "contextId": "exercise/e16.3"
                 },
                 {
@@ -31834,7 +31871,14 @@
                     "4...Kd4"
                   ],
                   "validated": true,
-                  "explanationByPly": {},
+                  "explanationByPly": {
+                    "1": [
+                      "This step heads towards e5, but lets Black take the direct opposition on the fourth rank."
+                    ],
+                    "2": [
+                      "This move takes the opposition: e4 lies between the kings, and White is to move. If the white king retreats, Black captures e5; if it heads for h7, the black king follows and reaches h6 first."
+                    ]
+                  },
                   "contextId": "exercise/e16.3",
                   "parentId": "f2g3",
                   "parentPly": 2

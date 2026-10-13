@@ -20,12 +20,28 @@
           "refusals": {
             "d3e3": 3,
             "g3g4": 3
+          },
+          "mistakes": {
+            "d3e3": {
+              "say": "step.t_lesson.mistake.d3e3"
+            },
+            "g3g4": {
+              "say": "step.t_lesson.mistake.g3g4"
+            }
           }
         },
         {
           "type": "talk",
           "id": "intro",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "marks": [
+            "f5",
+            "g5",
+            "h5",
+            "e5",
+            "e6",
+            "e7"
+          ],
           "lines": [
             {
               "uci": [
@@ -71,14 +87,6 @@
                 }
               ]
             }
-          ],
-          "marks": [
-            "f5",
-            "g5",
-            "h5",
-            "e5",
-            "e6",
-            "e7"
           ]
         },
         {
@@ -114,6 +122,58 @@
               "uci": "f5g5",
               "marks": [
                 "g6"
+              ]
+            }
+          ],
+          "lines": [
+            {
+              "uci": [
+                "d3e4",
+                "e8f7",
+                "e4f5",
+                "f7g7",
+                "f5g5"
+              ],
+              "branches": [
+                {
+                  "id": "g4",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "kf4",
+                  "at": 2,
+                  "uci": [
+                    "e4f4",
+                    "f7f6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "g4late",
+                  "at": 4,
+                  "uci": [
+                    "g3g4",
+                    "g7f7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                }
               ]
             }
           ]
@@ -158,6 +218,7 @@
           "type": "move",
           "id": "convert",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "goal": "win",
           "lines": [
             {
               "uci": [
@@ -168,6 +229,58 @@
                 "e5f5"
               ],
               "branches": [
+                {
+                  "id": "ke3",
+                  "at": 0,
+                  "uci": [
+                    "d3e3",
+                    "e8e7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "g4first",
+                  "at": 0,
+                  "uci": [
+                    "g3g4",
+                    "e8d7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "kf4",
+                  "at": 2,
+                  "uci": [
+                    "e4f4",
+                    "e7f6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "g4second",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "e7e6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
                 {
                   "id": "g4",
                   "at": 4,
@@ -184,7 +297,6 @@
               ]
             }
           ],
-          "goal": "win",
           "line": [
             {
               "teach": "d3e4",
@@ -232,6 +344,12 @@
           "type": "talk",
           "id": "diagonal",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+          "marks": [
+            "e5"
+          ],
+          "arrows": [
+            "f3f4"
+          ],
           "lines": [
             {
               "uci": [
@@ -255,12 +373,6 @@
                 }
               ]
             }
-          ],
-          "marks": [
-            "e5"
-          ],
-          "arrows": [
-            "f3f4"
           ]
         },
         {
@@ -668,6 +780,18 @@
           "type": "talk",
           "id": "capablanca",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+          "marks": [
+            "e2",
+            "e3",
+            "e4",
+            "e5",
+            "e6",
+            "e7"
+          ],
+          "arrows": [
+            "e1e2"
+          ],
+          "ref": "capablanca",
           "lines": [
             {
               "uci": [
@@ -704,19 +828,7 @@
                 }
               ]
             }
-          ],
-          "marks": [
-            "e2",
-            "e3",
-            "e4",
-            "e5",
-            "e6",
-            "e7"
-          ],
-          "arrows": [
-            "e1e2"
-          ],
-          "ref": "capablanca"
+          ]
         },
         {
           "type": "demo",
@@ -783,20 +895,24 @@
           "type": "move",
           "id": "capablancaMove",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+          "goal": "win",
+          "ref": "capablanca",
           "lines": [
             {
               "uci": [
                 "e1e2",
-                "e8e7",
-                "e2e3"
+                "e8f8",
+                "e2d3",
+                "f8e7",
+                "d3e3"
               ],
               "branches": [
                 {
-                  "id": "kd3",
+                  "id": "ke3",
                   "at": 2,
                   "uci": [
-                    "e2d3",
-                    "e7d7"
+                    "e2e3",
+                    "f8e7"
                   ],
                   "glyphs": [
                     "?",
@@ -809,7 +925,20 @@
                   "at": 2,
                   "uci": [
                     "e2f3",
-                    "e7f7"
+                    "f8f7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "ke4",
+                  "at": 4,
+                  "uci": [
+                    "d3e4",
+                    "e7e6"
                   ],
                   "glyphs": [
                     "?",
@@ -820,8 +949,6 @@
               ]
             }
           ],
-          "goal": "win",
-          "ref": "capablanca",
           "line": [
             {
               "teach": "e1e2",
@@ -2028,6 +2155,11 @@
           ]
         },
         {
+          "type": "talk",
+          "id": "recap",
+          "fen": "1k6/3K4/8/8/2P5/8/8/8 b - - 7 4"
+        },
+        {
           "type": "move",
           "id": "meansMove",
           "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
@@ -2048,15 +2180,6 @@
                 "c5d5"
               ]
             }
-          ]
-        },
-        {
-          "type": "talk",
-          "id": "recap",
-          "fen": "8/2k5/8/8/8/8/1K3P2/8 w - - 0 1",
-          "marks": [
-            "c3",
-            "c7"
           ]
         },
         {

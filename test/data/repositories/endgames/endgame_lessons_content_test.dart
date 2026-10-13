@@ -245,10 +245,30 @@ void main() {
               for (var k = 1; k <= branch.uci.length; k++)
                 'step.${step.id}.alt.${branch.id}.m$k',
       };
+      // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
+      // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do
+      // erro comentado (`step.<id>.mistake.<uci>`).
+      final stepIds = {for (final step in lesson.lesson.steps) step.id};
+      final exerciseIds = {
+        for (final exercise in lesson.exercises) exercise.id,
+      };
+      final optionalPattern = RegExp(
+        r'^(step\.([^.]+)\.(short|r\d+|mistake\.[a-h][1-8][a-h][1-8][qrbn]?)'
+        r'|ex\.([^.]+)\.r\d+)$',
+      );
+      bool isOptional(String key) {
+        if (optional.contains(key)) return true;
+        final match = optionalPattern.firstMatch(key);
+        if (match == null) return false;
+        return match.group(2) != null
+            ? stepIds.contains(match.group(2))
+            : exerciseIds.contains(match.group(4));
+      }
+
       for (final language in ['pt', 'en']) {
         final all = texts(language, lesson.id);
         expect(
-          all.keys.toSet().difference(optional),
+          all.keys.where((key) => !isOptional(key)).toSet(),
           expected,
           reason: '$language ${lesson.id}',
         );
