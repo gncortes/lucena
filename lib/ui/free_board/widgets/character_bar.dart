@@ -10,12 +10,16 @@ import 'sound_dialog.dart';
 import 'clock_row.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/character_speech.dart';
 import '../../core/widgets/game_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/theme/app_motion.dart';
+
+export '../../core/widgets/character_speech.dart'
+    show BubblePainter, TypewriterText;
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de
@@ -497,215 +501,6 @@ class _Bubble extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// O balão e a ponta desenhados num caminho só, sem emenda: a ponta sai da
-/// lateral, perto da base, levemente curva, e aponta para o retrato.
-class BubblePainter extends CustomPainter {
-  BubblePainter({
-    required this.color,
-    required this.shadow,
-    required this.tail,
-    required this.tailOnRight,
-    this.tailBelow = false,
-  });
-
-  final Color color;
-  final Color shadow;
-  final double tail;
-  final bool tailOnRight;
-  final bool tailBelow;
-
-  static const _radius = 14.0;
-
-  /// O caminho do balão num retângulo de [size]: o corpo começa depois da
-  /// ponta (à esquerda, ou à direita em idiomas da direita para a esquerda).
-  static Path pathFor(
-    Size size, {
-    required double tail,
-    bool tailOnRight = false,
-    bool tailBelow = false,
-  }) {
-    if (tailBelow) {
-      final bottom = size.height - tail;
-      final path = Path()
-        ..addRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width, bottom),
-            const Radius.circular(_radius),
-          ),
-        );
-      final x = tailOnRight ? size.width - 22 : 22.0;
-      return Path.combine(
-        PathOperation.union,
-        path,
-        Path()
-          ..moveTo(x - 8, bottom - 1)
-          ..lineTo(x, size.height)
-          ..lineTo(x + 8, bottom - 1)
-          ..close(),
-      );
-    }
-    final width = size.width - tail;
-    final height = size.height;
-    final r = math.min(_radius, math.min(width, height) / 2);
-    // A ponta fica perto da base, logo acima do canto arredondado, na altura
-    // da base da foto.
-    final middle = math.max(height / 2, height - r - 10);
-    // A base da ponta não passa dos cantos arredondados.
-    final half = math.min(8.0, middle - r);
-    final path = Path()
-      ..moveTo(tail + r, 0)
-      ..lineTo(tail + width - r, 0)
-      ..arcToPoint(Offset(tail + width, r), radius: Radius.circular(r))
-      ..lineTo(tail + width, height - r)
-      ..arcToPoint(Offset(tail + width - r, height), radius: Radius.circular(r))
-      ..lineTo(tail + r, height)
-      ..arcToPoint(Offset(tail, height - r), radius: Radius.circular(r))
-      ..lineTo(tail, middle + half)
-      // A ponta: duas curvas suaves até a pontinha, um pouco acima do meio.
-      ..quadraticBezierTo(tail - 2, middle + 2, 0, middle - 2)
-      ..quadraticBezierTo(tail - 4, middle - half + 2, tail, middle - half)
-      ..lineTo(tail, r)
-      ..arcToPoint(Offset(tail + r, 0), radius: Radius.circular(r))
-      ..close();
-    if (!tailOnRight) return path;
-    // Espelhada: a ponta à direita.
-    final mirror = Matrix4.identity()
-      ..translateByDouble(size.width, 0, 0, 1)
-      ..scaleByDouble(-1, 1, 1, 1);
-    return path.transform(mirror.storage);
-  }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = pathFor(
-      size,
-      tail: tail,
-      tailOnRight: tailOnRight,
-      tailBelow: tailBelow,
-    );
-    canvas
-      ..drawShadow(path, shadow, 3, false)
-      ..drawPath(path, Paint()..color = color);
-  }
-
-  @override
-  bool shouldRepaint(BubblePainter old) =>
-      old.color != color ||
-      old.shadow != shadow ||
-      old.tail != tail ||
-      old.tailOnRight != tailOnRight ||
-      old.tailBelow != tailBelow;
-}
-
-/// Um texto que aparece letra por letra, como alguém falando. O espaço do
-/// texto inteiro fica reservado desde o começo: o balão não muda de tamanho
-/// enquanto as letras chegam.
-class TypewriterText extends StatefulWidget {
-  const TypewriterText(this.text, {this.style, this.maxLines, super.key});
-
-  final String text;
-  final TextStyle? style;
-  final int? maxLines;
-
-  /// Quanto cada letra leva para aparecer.
-  static const perLetter = Duration(milliseconds: 28);
-
-  @override
-  State<TypewriterText> createState() => _TypewriterTextState();
-}
-
-class _TypewriterTextState extends State<TypewriterText>
-    with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(vsync: this);
-
-  @override
-  void initState() {
-    super.initState();
-    _start();
-  }
-
-  @override
-  void didUpdateWidget(TypewriterText old) {
-    super.didUpdateWidget(old);
-    if (old.text != widget.text) _start();
-  }
-
-  void _start() {
-    _controller
-      ..duration = TypewriterText.perLetter * widget.text.length
-      ..forward(from: 0);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Com menos movimento pedido ao sistema, o texto já aparece inteiro.
-    final instant = AppMotion.of(context).disabled;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Fala longa no espaço do balão: a letra diminui até caber inteira,
-        // em vez de cortar a última linha.
-        final style = _fitting(context, constraints);
-        return AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) => _text(instant, style),
-        );
-      },
-    );
-  }
-
-  // O estilo com a letra no maior tamanho em que a fala inteira cabe no
-  // espaço dado (até 60% do tamanho normal).
-  TextStyle? _fitting(BuildContext context, BoxConstraints constraints) {
-    final base = widget.style ?? DefaultTextStyle.of(context).style;
-    if (!constraints.hasBoundedHeight || !constraints.hasBoundedWidth) {
-      return base;
-    }
-    final size = base.fontSize ?? 14;
-    final scaler = MediaQuery.textScalerOf(context);
-    for (var scale = 1.0; scale > 0.6; scale -= 0.05) {
-      final style = base.copyWith(fontSize: size * scale);
-      final painter = TextPainter(
-        text: TextSpan(text: widget.text, style: style),
-        textDirection: Directionality.of(context),
-        textScaler: scaler,
-        maxLines: widget.maxLines,
-      )..layout(maxWidth: constraints.maxWidth);
-      final fits =
-          painter.height <= constraints.maxHeight && !painter.didExceedMaxLines;
-      painter.dispose();
-      if (fits) return style;
-    }
-    return base.copyWith(fontSize: size * 0.6);
-  }
-
-  Widget _text(bool instant, TextStyle? style) {
-    final shown = instant
-        ? widget.text.length
-        : (widget.text.length * _controller.value).round();
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: widget.text.substring(0, shown)),
-          // O resto, invisível, guarda o lugar das letras que faltam.
-          TextSpan(
-            text: widget.text.substring(shown),
-            style: const TextStyle(color: Colors.transparent),
-          ),
-        ],
-      ),
-      style: style,
-      maxLines: widget.maxLines,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }
