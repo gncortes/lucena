@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -81,6 +82,12 @@ class ConclusionRobot {
     await $(ConclusionKeys.ratingDelta).waitUntilVisible();
   }
 
+  /// A conclusão sem rating: a partida não mexeu nele.
+  Future<void> expectNoRating() async {
+    await waitConclusion();
+    expect(find.byKey(ConclusionKeys.ratingValue), findsNothing);
+  }
+
   /// O botão da ação [action] está (ou não está) na tela.
   Future<void> expectAction(ConclusionAction action) async {
     await waitConclusion();
@@ -114,6 +121,8 @@ class ConclusionRobot {
   /// Fecha a conclusão: volta para onde o jogador estava antes da partida.
   Future<void> close() async {
     await waitConclusion();
+    // O aviso de conquista fica por cima da tela toda e cobre o "X".
+    await _waitToastGone();
     await $(ConclusionKeys.close).tap();
     await $.pumpAndSettle();
     expect(find.byKey(ConclusionKeys.screen), findsNothing);
@@ -121,9 +130,26 @@ class ConclusionRobot {
 
   /// No speedrun: o tempo da etapa que acabou de ser vencida.
   Future<void> expectStageTime(String time) async {
+    await waitConclusion();
     await $(ConclusionKeys.stageTime).scrollTo();
-    // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo).
-    expect(_lastText(ConclusionKeys.stageTime), endsWith(time));
+    // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo). O valor vem
+    // isolado em LTR (U+2066…U+2069), que não aparece na tela.
+    expect(
+      _lastText(ConclusionKeys.stageTime)
+          ?.replaceAll(RegExp('[\u2066\u2069]'), ''),
+      endsWith(time),
+    );
+  }
+
+  /// Espera o aviso de conquista sumir (ele some sozinho), sem prender o
+  /// teste a uma duração fixa.
+  Future<void> _waitToastGone() async {
+    final toast = find.byKey(AchievementsKeys.toast);
+    final end = DateTime.now().add(const Duration(seconds: 15));
+    while (toast.evaluate().isNotEmpty && DateTime.now().isBefore(end)) {
+      await $.pump(const Duration(milliseconds: 200));
+    }
+    expect(toast, findsNothing);
   }
 
   /// No speedrun: o total (somado até aqui ou, no fim, o da tentativa).
