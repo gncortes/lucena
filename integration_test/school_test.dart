@@ -76,9 +76,14 @@ void main() {
     await school.expectStep('pieces.pawn', 'double');
 
     await school.move('e2', 'e3');
-    expectText(
-      school.speech,
-      'On its first move the pawn may go two squares: from e2 to e4.',
+    // O painel do V2 (LICOES-V2 §3): o lance errado primeiro, a dica do passo
+    // como o lance certo logo depois.
+    expectText(school.speech, '1.e3? Does not meet the goal.');
+    expect(
+      find.text(
+        'On its first move the pawn may go two squares: from e2 to e4.',
+      ),
+      findsOneWidget,
     );
     await school.move('e2', 'e4');
     expectText(school.speech, 'Perfect.');
