@@ -191,10 +191,6 @@ void main() {
     await tester.pumpAndSettle();
     final timer = find.byKey(LessonKeys.stepTimer);
     expect(timer, findsOneWidget);
-    final material = tester.widget<Material>(
-      find.ancestor(of: timer, matching: find.byType(Material)).first,
-    );
-    expect(material.color?.a, 1);
     expect(
       tester
           .getRect(timer)

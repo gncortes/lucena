@@ -1139,8 +1139,9 @@ class _LessonScreenState extends State<LessonScreen>
     return TeacherSpeech(
       part: part,
       lessonV2: true,
+      // Pensar e passos de lance: a fala fica no balão cinza (PropV2LicaoPratica).
       lessonPromptBubble:
-          step is ThinkStep &&
+          step != null &&
           state.layout == LessonLayoutMode.solving &&
           (state.explanation == null ||
               state.explanation?.state == ExplanationState.intro) &&
@@ -1421,14 +1422,8 @@ class _LessonScreenState extends State<LessonScreen>
           // Na escola, sem cronômetro: o iniciante aprende sem pressa (os
           // desafios das estrelas, contra o relógio, têm o deles).
           if (state.endgame)
-            Material(
-              color: colors.surface,
-              shape: const StadiumBorder(),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
-              ),
-            ),
+            // Sem fundo de pílula (CompTimer do canvas): ícone e tempo soltos.
+            StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
         ],
       ),
     );

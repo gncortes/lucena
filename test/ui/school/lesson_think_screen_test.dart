@@ -203,7 +203,21 @@ void main() {
     );
     await cubit.next();
     await tester.pumpAndSettle();
-    expect(teacher().lessonPromptBubble, isFalse);
+    // Passo de lance (PropV2LicaoPratica): a fala também fica no balão cinza.
+    expect(cubit.state.step, 1);
+    expect(teacher().lessonPromptBubble, isTrue);
+    final moveBubble = tester
+        .widgetList<Container>(
+          find.ancestor(
+            of: find.byKey(LessonKeys.speech),
+            matching: find.byType(Container),
+          ),
+        )
+        .firstWhere((widget) => widget.decoration is BoxDecoration);
+    expect(
+      (moveBubble.decoration! as BoxDecoration).color,
+      colors.surfaceContainerHighest,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -267,13 +281,14 @@ void main() {
       expect(cubit.state.step, step);
       await cubit.next();
       await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isFalse);
+      // Passo de lance: o balão também vale (PropV2LicaoPratica).
+      expect(teacher().lessonPromptBubble, isTrue);
       teacher().onVariation!(line.open());
       await tester.pumpAndSettle();
       expect(teacher().lessonPromptBubble, isFalse);
       teacher().onVariation!(null);
       await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isFalse);
+      expect(teacher().lessonPromptBubble, isTrue);
       expect(tester.takeException(), isNull);
     },
   );
@@ -418,14 +433,16 @@ void main() {
     // O cronômetro no canto inferior direito, do zero.
     final timerFinder = find.byKey(LessonKeys.stepTimer);
     final timer = tester.getRect(timerFinder);
-    final capsule = tester.getRect(
-      find.ancestor(of: timerFinder, matching: find.byType(Material)).first,
+    // Sem fundo de pílula (CompTimer): ícone e tempo soltos, margem 16.
+    expect(timer.right, closeTo(400 - 16, 1));
+    expect(
+      tester
+          .widgetList<Material>(
+            find.ancestor(of: timerFinder, matching: find.byType(Material)),
+          )
+          .any((m) => m.shape is StadiumBorder),
+      isFalse,
     );
-    expect(capsule.right, closeTo(400 - 16, 1));
-    expect(timer.right, closeTo(capsule.right - 8, 1));
-    expect(timer.left, closeTo(capsule.left + 8, 1));
-    expect(timer.top, closeTo(capsule.top + 8, 1));
-    expect(timer.bottom, closeTo(capsule.bottom - 8, 1));
     expect(timer.bottom, greaterThan(board.bottom));
     expect(timerText(tester), '0:00');
 
@@ -447,14 +464,7 @@ void main() {
     await pump(tester, locale: const Locale('ar'));
     final timerFinder = find.byKey(LessonKeys.stepTimer);
     final timer = tester.getRect(timerFinder);
-    final capsule = tester.getRect(
-      find.ancestor(of: timerFinder, matching: find.byType(Material)).first,
-    );
-    expect(capsule.left, closeTo(16, 1));
-    expect(timer.left, closeTo(capsule.left + 8, 1));
-    expect(timer.right, closeTo(capsule.right - 8, 1));
-    expect(timer.top, closeTo(capsule.top + 8, 1));
-    expect(timer.bottom, closeTo(capsule.bottom - 8, 1));
+    expect(timer.left, closeTo(16, 1));
     final board = tester.getRect(find.byKey(LessonKeys.board));
     expect(board.center.dx, closeTo(200, 1));
   });
