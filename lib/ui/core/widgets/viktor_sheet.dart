@@ -86,18 +86,27 @@ class _ViktorSheetState extends State<ViktorSheet> {
   Size? _area;
   double? _top;
   final _maskKey = GlobalKey();
-  final _headerKey = GlobalKey();
 
-  /// Fim do cabeçalho (o primeiro filho) nas coordenadas da máscara: o fade
-  /// nunca começa acima dele, para não clarear o retrato do Viktor.
+  /// Fim do cabeçalho do Viktor ([ViktorSheetKeys.header]) nas coordenadas da
+  /// máscara: o fade nunca começa acima dele, para não clarear o retrato.
   double _headerBottom() {
-    final header = _headerKey.currentContext?.findRenderObject();
-    final mask = _maskKey.currentContext?.findRenderObject();
-    if (header is! RenderBox || mask is! RenderBox) return 0;
-    if (!header.attached || !mask.attached) return 0;
-    return header
-        .localToGlobal(Offset(0, header.size.height), ancestor: mask)
-        .dy;
+    final maskElement = _maskKey.currentContext;
+    final mask = maskElement?.findRenderObject();
+    if (maskElement == null || mask is! RenderBox || !mask.attached) return 0;
+    RenderObject? header;
+    void visit(Element element) {
+      if (header != null) return;
+      if (element.widget.key == ViktorSheetKeys.header) {
+        header = element.findRenderObject();
+        return;
+      }
+      element.visitChildElements(visit);
+    }
+
+    maskElement.visitChildElements(visit);
+    final box = header;
+    if (box is! RenderBox || !box.attached) return 0;
+    return box.localToGlobal(Offset(0, box.size.height), ancestor: mask).dy;
   }
 
   ScrollController? _scroll;
@@ -323,9 +332,8 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                   ),
                                 ),
                               ),
-                              for (final (i, child) in widget.children.indexed)
+                              for (final child in widget.children)
                                 _ViktorSheetPresentation(
-                                  key: i == 0 ? _headerKey : null,
                                   expanded: _expanded,
                                   sheet: this,
                                   child: child,
@@ -363,7 +371,6 @@ class _ViktorSheetState extends State<ViktorSheet> {
 
 class _ViktorSheetPresentation extends InheritedWidget {
   const _ViktorSheetPresentation({
-    super.key,
     required this.expanded,
     required this.sheet,
     required super.child,
