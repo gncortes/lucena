@@ -283,7 +283,10 @@ void main() {
       );
       expect(
         textOf(tester, SpeedrunKeys.historyRecord),
-        allOf(contains('Seu recorde'), contains('Em 3 de outubro, às\u00A018:13')),
+        allOf(
+          contains('Seu recorde'),
+          contains('Em 3 de outubro, às\u00A018:13'),
+        ),
       );
       expect(textOf(tester, SpeedrunKeys.historyAttempts), '5 | tentativas');
       expect(textOf(tester, SpeedrunKeys.historyFinished), '2 | concluídas');
