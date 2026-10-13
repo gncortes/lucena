@@ -1441,10 +1441,6 @@
   "@speedrunAbandonQuestion": {
     "description": "Confirmation before abandoning a speedrun attempt."
   },
-  "speedrunAbandoned": "Attempt abandoned: no record",
-  "@speedrunAbandoned": {
-    "description": "Shown on an attempt the player gave up."
-  },
   "speedrunBest": "Your best time",
   "@speedrunBest": {
     "description": "Label of the best total time of a speedrun."
@@ -1489,10 +1485,6 @@
   "@speedrunFullTitle": {
     "description": "Name of the speedrun that plays every Journey challenge, from Maia 1000 to Stockfish."
   },
-  "speedrunHistory": "Times",
-  "@speedrunHistory": {
-    "description": "Header of the list of completed attempts, grouped by month."
-  },
   "speedrunIntro": "Play every stage as fast as you can. Only your clock counts; a lost stage is played again with the timer running.",
   "@speedrunIntro": {
     "description": "Explanation at the top of the speedrun list."
@@ -1500,15 +1492,6 @@
   "speedrunKeepGoing": "Keep going",
   "@speedrunKeepGoing": {
     "description": "Cancels giving up the attempt."
-  },
-  "speedrunLosses": "{count, plural, =0{No losses} =1{1 loss} other{{count} losses}}",
-  "@speedrunLosses": {
-    "description": "How many games were lost in a stage or attempt.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "speedrunNewRecord": "New personal record",
   "@speedrunNewRecord": {
@@ -1602,17 +1585,9 @@
   "@speedrunTotal": {
     "description": "Label of the total time of an attempt."
   },
-  "speedrunVersusRecord": "{difference} s vs. record {record}",
-  "@speedrunVersusRecord": {
-    "description": "Difference to the previous record at the end of an attempt, e.g. '+3.2 s vs. record 4:05.3'.",
-    "placeholders": {
-      "difference": {
-        "type": "String"
-      },
-      "record": {
-        "type": "String"
-      }
-    }
+  "speedrunTotalTime": "Total time",
+  "@speedrunTotalTime": {
+    "description": "Label of the total time of an attempt that is not the record."
   },
   "teacherName": "Master {name}",
   "@teacherName": {
@@ -1888,10 +1863,6 @@
         "type": "int"
       }
     }
-  },
-  "speedrunNow": "Up next",
-  "@speedrunNow": {
-    "description": "Title of the current stage card in a speedrun attempt."
   },
   "paceTitle": "Choose the time control",
   "@paceTitle": {
@@ -6047,6 +6018,27 @@
   "historyEmptyFilteredSpeedruns": "No speedruns with these filters.",
   "@historyEmptyFilteredSpeedruns": {
     "description": "History: Classic tab empty after filtering."
+  },
+  "speedrunTimeUntilDrawn": "Time until the draw: {time}",
+  "@speedrunTimeUntilDrawn": {
+    "description": "Drawn attempt: sum of the stage clocks until the draw.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "speedrunContinueStage": "Continue · stage {stage} of {total}",
+  "@speedrunContinueStage": {
+    "description": "Speedrun detail: button that continues the attempt in progress.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "historyEmptyFilteredMarathons": "No marathons with these filters.",
   "@historyEmptyFilteredMarathons": {

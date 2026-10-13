@@ -201,6 +201,12 @@ class _Chip extends StatelessWidget {
   }
 }
 
+/// "Em {date}, às {time}" com a hora presa à palavra de antes: numa tela
+/// estreita a linha quebra antes de "às", nunca entre "às" e a hora.
+@visibleForTesting
+String recordAtLabel(AppLocalizations l10n, String date, String time) =>
+    l10n.speedrunRecordAt(date, time).replaceFirst(' $time', '\u00A0$time');
+
 /// "Seu recorde" com a data e, ao lado, as tentativas e as concluídas.
 class _Numbers extends StatelessWidget {
   const _Numbers({required this.speedrun, required this.state});
@@ -282,13 +288,15 @@ class _Numbers extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                l10n.speedrunRecordAt(
+                recordAtLabel(
+                  l10n,
                   (bestAt.year == state.year
                           ? DateFormat.MMMMd(locale)
                           : DateFormat.yMMMMd(locale))
                       .format(bestAt),
                   DateFormat.Hm(locale).format(bestAt),
                 ),
+                key: SpeedrunKeys.historyRecordAt,
                 style: muted,
               ),
             ],

@@ -426,5 +426,57 @@ void main() {
       expect(cubit.state.bonus, isNull);
       expect(cubit.state.offer, 110);
     });
+
+    test('tentativa em andamento: a oferta é a do rating do início; some '
+        'quando o grupo já foi pago', () async {
+      final cubit = withRating();
+      final attempt = await speedruns.start(endingId, now());
+      started[attempt.id] = endingId;
+      await win(attempt.id, 0, 10);
+
+      await cubit.load(speedrunId: endingId);
+
+      expect(cubit.state.ongoingOffer, 70);
+
+      // Outra tentativa conclui e paga o grupo.
+      final other = await complete(endingId, sampleSpeedruns[1].stages.length);
+      await cubit.load(speedrunId: endingId, attemptId: other);
+      await cubit.load(speedrunId: endingId);
+
+      expect(cubit.state.ongoingOffer, 0);
+    });
+
+    test('o aviso de bônus já pago só vem sem bônus novo', () async {
+      final cubit = withRating();
+      final stages = sampleSpeedruns[1].stages.length;
+      final first = await complete(endingId, stages);
+
+      await cubit.load(speedrunId: endingId, attemptId: first);
+      expect(cubit.state.bonus, isNotNull);
+      expect(cubit.state.paid, isNull);
+
+      now.advance(const Duration(days: 1));
+      final second = await complete(endingId, stages);
+      await cubit.load(speedrunId: endingId, attemptId: second);
+
+      expect(cubit.state.bonus, isNull);
+      expect(cubit.state.paid!.attemptId, first);
+      expect(cubit.state.paid!.points, 70);
+    });
+
+    test('tentativa não concluída: sem o aviso de bônus pago', () async {
+      final cubit = withRating();
+      final stages = sampleSpeedruns[1].stages.length;
+      final first = await complete(endingId, stages);
+      await cubit.load(speedrunId: endingId, attemptId: first);
+      final attempt = await speedruns.start(endingId, now());
+      started[attempt.id] = endingId;
+      await win(attempt.id, 0, 10);
+      await speedruns.abandon(attempt.id, now());
+
+      await cubit.load(speedrunId: endingId, attemptId: attempt.id);
+
+      expect(cubit.state.paid, isNull);
+    });
   });
 }

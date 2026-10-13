@@ -18,12 +18,14 @@ class ProgressRobot {
 
   final PatrolIntegrationTester $;
 
-  /// O rating de finais, a partir da tela inicial (e volta para ela): o
-  /// perfil tem o botão que abre a tela do rating (T59).
+  /// O rating de finais, lido no cartão do jogador da tela inicial (sem
+  /// partidas, a tela do rating só mostra o convite), depois de o número
+  /// terminar de contar.
   Future<int> rating() async {
-    await _openRating();
-    final value = $.tester.widget<Text>(find.byKey(RatingKeys.value)).data!;
     await _backHome();
+    await $(HomeKeys.ratingValue).scrollTo();
+    await $.pumpAndSettle();
+    final value = $.tester.widget<Text>(find.byKey(HomeKeys.ratingValue)).data!;
     return int.parse(value);
   }
 

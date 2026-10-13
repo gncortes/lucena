@@ -179,7 +179,8 @@ void main() {
     GoRouter.of(context)
         .go(Routes.speedrunAttempt(id, 1, game: now().millisecondsSinceEpoch));
     await tester.pumpAndSettle();
-    expect(find.byKey(SpeedrunKeys.newRecord), findsOneWidget);
+    expect(find.byKey(SpeedrunKeys.total), findsOneWidget);
+    expect(find.text('Your record'), findsOneWidget);
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
@@ -218,8 +219,8 @@ void main() {
     // e nenhuma etapa ficou guardada para depois.
     expect(find.byKey(SpeedrunKeys.screen), findsOneWidget);
     expect(find.byKey(SpeedrunKeys.start), findsOneWidget);
-    expect(find.byKey(SpeedrunKeys.run(0)), findsOneWidget);
-    expect(find.text('Gave up at stage 1 of 2'), findsOneWidget);
+    expect(find.byKey(SpeedrunKeys.bestAttempt), findsOneWidget);
+    expect(find.text('Best attempt: stage 1 of 2'), findsOneWidget);
     expect(games.snapshot, isNull);
   });
 

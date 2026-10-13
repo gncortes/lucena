@@ -44,34 +44,50 @@ abstract final class SpeedrunKeys {
   static const paceBadge = Key('speedrun.paceBadge');
   static Key stageCard(int index) => Key('speedrun.stage.$index');
 
-  /// O progresso por passos da tentativa em andamento.
-  static const progress = Key('speedrun.progress');
-
   /// Na tentativa: a etapa da vez em destaque e o menu (desistir).
   static const current = Key('speedrun.attempt.current');
   static const menu = Key('speedrun.attempt.menu');
 
   /// O melhor tempo total e o melhor de cada etapa.
   static const best = Key('speedrun.best');
-  static Key stageRecord(int index) => Key('speedrun.stage.$index.record');
+
+  /// No detalhe: o cartão do recorde, "Ver histórico", a linha "Melhor
+  /// tentativa" (nunca concluiu) e o cartão da tentativa em andamento com a
+  /// linha "+N ao concluir".
+  static const recordCard = Key('speedrun.recordCard');
+  static const seeHistory = Key('speedrun.seeHistory');
+  static const bestAttempt = Key('speedrun.bestAttempt');
+  static const ongoingCard = Key('speedrun.ongoingCard');
+  static const ongoingOffer = Key('speedrun.ongoingOffer');
 
   static const start = Key('speedrun.start');
   static const resume = Key('speedrun.resume');
 
-  /// Na tentativa: cada etapa, o tempo dela e as derrotas.
+  /// Na tentativa: cada etapa e o tempo dela.
   static Key stage(int index) => Key('speedrun.attempt.stage.$index');
   static Key stageTime(int index) => Key('speedrun.attempt.stage.$index.time');
-  static Key stageLosses(int index) =>
-      Key('speedrun.attempt.stage.$index.losses');
   static const total = Key('speedrun.attempt.total');
   static const play = Key('speedrun.attempt.play');
   static const abandon = Key('speedrun.attempt.abandon');
   static const abandonConfirm = Key('speedrun.attempt.abandon.confirm');
   static const abandoned = Key('speedrun.attempt.abandoned');
 
-  /// No fim: "novo recorde pessoal" ou a diferença para o recorde.
+  /// No fim: o herói do recorde novo, a frase da diferença para o recorde,
+  /// as barras de comparação e o aviso de que o bônus já foi pago.
   static const newRecord = Key('speedrun.attempt.newRecord');
   static const recordDifference = Key('speedrun.attempt.recordDifference');
+  static const recordBars = Key('speedrun.attempt.recordBars');
+  static const ratingAlreadyEarned = Key('speedrun.attempt.alreadyEarned');
+
+  /// No fim sem concluir: o cartão do herói (qualquer falha), os títulos de
+  /// perdeu e empatou (`abandoned` é o de desistiu), o tempo até parar, o
+  /// aviso de que ainda não concluiu e a melhor etapa dele.
+  static const abandonedHero = Key('speedrun.attempt.hero');
+  static const lostTitle = Key('speedrun.attempt.lost');
+  static const drawnTitle = Key('speedrun.attempt.drawn');
+  static const timeUntil = Key('speedrun.attempt.timeUntil');
+  static const notFinishedNotice = Key('speedrun.attempt.notFinished');
+  static const bestReached = Key('speedrun.attempt.bestReached');
 
   /// No fim da Maratona: o herói (perdeu, empatou, sem tempo, desistiu), contra
   /// quem, o tempo que sobrou, o aviso de que ainda não concluiu, o cartão do
@@ -87,14 +103,13 @@ abstract final class SpeedrunKeys {
   /// A nota da etapa onde a tentativa parou ("perdeu aqui").
   static Key stageNote(int index) => Key('speedrun.attempt.stage.$index.note');
 
-  /// O histórico de tempos: o título de cada mês e cada tentativa concluída.
-  static Key month(int index) => Key('speedrun.history.month.$index');
-  static Key run(int index) => Key('speedrun.history.run.$index');
-
   /// O histórico de um speedrun: o recorde, as contagens, o mês, a tentativa
   /// e o "+N" da primeira conclusão.
   static const historyScreen = Key('speedrun.history.screen');
   static const historyRecord = Key('speedrun.history.record');
+
+  /// "Em 12 de outubro, às 20:06", embaixo do recorde.
+  static const historyRecordAt = Key('speedrun.history.recordAt');
   static const historyNotFinished = Key('speedrun.history.notFinished');
   static const historyAttempts = Key('speedrun.history.attempts');
   static const historyFinished = Key('speedrun.history.finished');

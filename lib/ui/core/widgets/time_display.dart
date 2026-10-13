@@ -122,7 +122,9 @@ class TimeDisplay extends StatelessWidget {
             maxLines: compact ? 1 : null,
             overflow: compact ? TextOverflow.ellipsis : null,
             style: theme.textTheme.labelLarge?.copyWith(
-              color: clock ? foreground : colors.onSurfaceVariant,
+              color: clock || state == TimeDisplayState.highlight
+                  ? foreground
+                  : colors.onSurfaceVariant,
               fontWeight: block ? FontWeight.w600 : FontWeight.w500,
             ),
           );
