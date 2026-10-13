@@ -51,6 +51,7 @@ class ProgressRobot {
   /// O aviso de conquista desbloqueada por cima da tela, com o nome dela;
   /// depois ele some sozinho.
   Future<void> expectAchievementToast(String title) async {
+    await ConclusionRobot($).seeResult();
     // O aviso não recebe toques: basta existir na tela.
     await $(AchievementsKeys.toast).waitUntilExists();
     expectText(
@@ -64,6 +65,7 @@ class ProgressRobot {
   /// Toca no aviso de conquista enquanto ele está na tela e espera o
   /// detalhe dela abrir (T51, A6).
   Future<void> tapAchievementToast() async {
+    await ConclusionRobot($).seeResult();
     await $(AchievementsKeys.toast).waitUntilVisible();
     await $.tester.tap(find.byKey(AchievementsKeys.toast));
     await $(AchievementsKeys.detail).waitUntilVisible();

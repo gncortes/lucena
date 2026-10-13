@@ -162,9 +162,16 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
-  Future<void> skip() async {
+  /// Pula o tour. Pular exige um nível escolhido: sem ele, o botão leva ao
+  /// passo do nível, onde escolhemos [level] e pulamos de novo.
+  Future<void> skip({RatingLevel level = RatingLevel.intermediate}) async {
     await $(TourKeys.skipButton).tap();
     await $.pumpAndSettle();
+    if (find.byKey(TourKeys.step(TourStep.level)).evaluate().isNotEmpty) {
+      await chooseLevel(level);
+      await $(TourKeys.skipButton).tap();
+      await $.pumpAndSettle();
+    }
   }
 
   /// Em Configurações, "Rever o tour".
