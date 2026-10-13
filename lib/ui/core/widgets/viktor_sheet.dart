@@ -85,6 +85,21 @@ class _ViktorSheetState extends State<ViktorSheet> {
   bool _adjustingMinimum = false;
   Size? _area;
   double? _top;
+  final _maskKey = GlobalKey();
+  final _headerKey = GlobalKey();
+
+  /// Fim do cabeçalho (o primeiro filho) nas coordenadas da máscara: o fade
+  /// nunca começa acima dele, para não clarear o retrato do Viktor.
+  double _headerBottom() {
+    final header = _headerKey.currentContext?.findRenderObject();
+    final mask = _maskKey.currentContext?.findRenderObject();
+    if (header is! RenderBox || mask is! RenderBox) return 0;
+    if (!header.attached || !mask.attached) return 0;
+    return header
+        .localToGlobal(Offset(0, header.size.height), ancestor: mask)
+        .dy;
+  }
+
   ScrollController? _scroll;
 
   @override
@@ -237,6 +252,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
                         thumbColor: colors.outlineVariant,
                         crossAxisMargin: 6,
                         child: ShaderMask(
+                          key: _maskKey,
                           blendMode: BlendMode.dstIn,
                           // Recolhida: o que fica acima do rodapé (a área
                           // visível, sem o `padding` de baixo) esmaece em dp
@@ -249,6 +265,14 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                   widget.padding
                                       .resolve(Directionality.of(context))
                                       .bottom,
+                            );
+                            final start = math.min(
+                              rect.height,
+                              math.max(visible - 12, _headerBottom()),
+                            );
+                            final end = math.min(
+                              rect.height,
+                              math.max(visible - 4, start),
                             );
                             return LinearGradient(
                               begin: Alignment.topCenter,
@@ -265,8 +289,8 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                   ? null
                                   : [
                                       0,
-                                      math.max(0, (visible - 12) / rect.height),
-                                      math.max(0, (visible - 4) / rect.height),
+                                      math.max(0, start / rect.height),
+                                      math.max(0, end / rect.height),
                                       1,
                                     ],
                             ).createShader(rect);
@@ -294,8 +318,9 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                   ),
                                 ),
                               ),
-                              for (final child in widget.children)
+                              for (final (i, child) in widget.children.indexed)
                                 _ViktorSheetPresentation(
+                                  key: i == 0 ? _headerKey : null,
                                   expanded: _expanded,
                                   sheet: this,
                                   child: child,
@@ -333,6 +358,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
 
 class _ViktorSheetPresentation extends InheritedWidget {
   const _ViktorSheetPresentation({
+    super.key,
     required this.expanded,
     required this.sheet,
     required super.child,

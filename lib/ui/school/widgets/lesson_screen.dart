@@ -1316,8 +1316,6 @@ class _LessonScreenState extends State<LessonScreen>
       children: [
         // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
         // exercício. No resto, o Viktor já diz o que fazer.
-        // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-        // exercício. No resto, o Viktor já diz o que fazer.
         if (viktor != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -1333,12 +1331,17 @@ class _LessonScreenState extends State<LessonScreen>
         if ((state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
             state.fen != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            // Em cima, 0: o último bloco da explicação já termina com 16.
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Divider(),
-                const SizedBox(height: 8),
+                // Canvas: 16 + linha + 16 até "Ainda com dúvida?".
+                Divider(
+                  height: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+                const SizedBox(height: 16),
                 // End of the explanation (PropV2Licao*): 16/24 onSurfaceVariant.
                 Text(
                   context.l10n.lessonFreeBoardInvite,
