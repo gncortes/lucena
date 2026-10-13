@@ -14,6 +14,7 @@ import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/use_cases/engine_fallback.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
@@ -37,6 +38,25 @@ enum StepPhase {
   /// Num passo de jogar, a posição acabou sem o objetivo (afogamento, empate
   /// ou mate no aluno): o botão tenta de novo.
   failed,
+}
+
+/// A fala genérica do app que a tela escreve (l10n) no lugar de um texto da
+/// aula: o motor respondeu (T70, crit. 8) ou o aluno achou outro lance bom.
+/// (Versão mínima do lote 3; o lote 1 traz a completa com o mesmo nome.)
+enum LessonNote {
+  /// "Também é correto. A aula segue com {move}."
+  alsoCorrect,
+
+  /// Comentário do lance do aluno / da resposta do motor (neutros).
+  engineMove,
+  engineReply,
+
+  /// O motor diz que o lance mantém o resultado (ganhar / empatar), sem e
+  /// com o "agora veja o caminho que a lição mostra" (aprendizado).
+  alsoWins,
+  alsoHolds,
+  alsoWinsShowMain,
+  alsoHoldsShowMain,
 }
 
 /// Como a tela se organiza (T60).
@@ -95,7 +115,28 @@ class LessonState {
     this.wrongMove = false,
     this.solutionSeen = false,
     this.presenting = false,
+    this.typing = false,
+    this.note,
+    this.demoOff = const [],
+    this.demoOffFrom = 0,
+    this.engineErrors = 0,
   });
+
+  /// A máquina está respondendo: a folha mostra os três pontinhos.
+  final bool typing;
+
+  /// A fala genérica do app (l10n) no lugar de [speech].
+  final LessonNote? note;
+
+  /// Na demonstração: os lances (UCI) que o aluno jogou fora do roteiro, com
+  /// a resposta da máquina (pares aluno + resposta), e o lance do roteiro em
+  /// que ele saiu ([demoMove] não muda fora do roteiro).
+  final List<String> demoOff;
+  final int demoOffFrom;
+  bool get offScript => demoOff.isNotEmpty;
+
+  /// Quantas vezes o motor deu erro inesperado (a tela mostra o aviso).
+  final int engineErrors;
 
   /// A abertura de um passo de exercício (T65 §8): o Viktor apresenta o
   /// objetivo e o relógio do passo ainda não começou. Não é salvo: fechar o
@@ -415,8 +456,19 @@ class LessonState {
     bool? wrongMove,
     bool? solutionSeen,
     bool? presenting,
+    bool? typing,
+    LessonNote? note,
+    bool clearNote = false,
+    List<String>? demoOff,
+    int? demoOffFrom,
+    int? engineErrors,
     bool clearAttemptedSan = false,
   }) => LessonState(
+    typing: typing ?? this.typing,
+    note: clearNote ? null : note ?? (speech != null ? null : this.note),
+    demoOff: demoOff ?? this.demoOff,
+    demoOffFrom: demoOffFrom ?? this.demoOffFrom,
+    engineErrors: engineErrors ?? this.engineErrors,
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
     lesson: lesson ?? this.lesson,
@@ -497,10 +549,19 @@ class LessonCubit extends Cubit<LessonState> {
     this._haptics,
     this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
+    this.typingDelay = const Duration(milliseconds: 600),
+    this._engine,
   }) : _source = source ?? SchoolLessonSource(lessons!, progress!),
        super(const LessonState());
 
   final LessonSource _source;
+
+  /// O motor que responde aos lances fora dos dados (T70, crit. 8). Nulo: o
+  /// lance fora do roteiro é desfeito com o aviso de erro do motor.
+  final EngineFallback? _engine;
+
+  /// Quanto tempo os pontinhos "pensando" ficam, no mínimo.
+  final Duration typingDelay;
   ({
     int step,
     String id,
@@ -935,6 +996,9 @@ class LessonCubit extends Cubit<LessonState> {
 
   /// O aluno moveu uma peça no tabuleiro.
   Future<void> play(Move move) async {
+    if (state.current is DemoStep) {
+      return _demoStudent(move);
+    }
     if (!state.interactive) {
       return;
     }
@@ -1221,32 +1285,81 @@ class LessonCubit extends Cubit<LessonState> {
   // --- demonstração (T51) -------------------------------------------------
 
   /// O próximo lance da demonstração (a tela chama no ritmo da fala, ou o
-  /// aluno avança na mão): ela volta a andar sozinha.
+  /// aluno avança na mão). Pausada, segue pausada (T70, crit. 19): só o play
+  /// retoma. Fora do roteiro não há próximo lance (o aluno volta antes).
   Future<void> demoForward() async {
     final step = state.current;
-    if (step is! DemoStep || state.demoMove >= step.line.length) {
+    if (step is! DemoStep ||
+        state.offScript ||
+        state.demoMove >= step.line.length) {
       return;
     }
-    emit(_demoAt(state.copyWith(demoPlaying: true), step, state.demoMove + 1));
+    emit(_demoAt(state, step, state.demoMove + 1));
     await _save();
   }
 
-  /// Volta um lance: desfaz no tabuleiro e mostra a fala daquele ponto.
+  /// Volta um lance: desfaz no tabuleiro e mostra a fala daquele ponto. Fora
+  /// do roteiro, desfaz um par (lance do aluno + resposta); sem mais lances
+  /// fora, volta ao ponto do roteiro em que o aluno saiu.
   Future<void> demoBack() async {
     final step = state.current;
-    if (step is! DemoStep || state.demoMove == 0) {
+    if (step is! DemoStep) {
+      return;
+    }
+    if (state.offScript) {
+      final pairs = (state.demoOff.length - 1) ~/ 2;
+      if (pairs == 0) {
+        _offNotes.clear();
+        emit(
+          _demoAt(state, step, state.demoOffFrom).copyWith(demoPlaying: false),
+        );
+      } else {
+        _offNotes.length = pairs;
+        emit(
+          _demoOffAt(
+            state,
+            step,
+            state.demoOffFrom,
+            state.demoOff.take(pairs * 2).toList(),
+            _offNotes.last,
+          ),
+        );
+      }
+      await _save();
+      return;
+    }
+    if (state.demoMove == 0) {
       return;
     }
     emit(_demoAt(state, step, state.demoMove - 1).copyWith(demoPlaying: false));
     await _save();
   }
 
-  /// Pausa a demonstração (ela para de andar sozinha) ou a retoma.
-  void demoTogglePause() {
-    if (state.current is! DemoStep) {
+  /// "Voltar à demonstração" (T70, pg. 2.5): ao lance do roteiro em que o
+  /// aluno saiu, com a demonstração ainda pausada.
+  Future<void> demoBackToScript() async {
+    final step = state.current;
+    if (step is! DemoStep || !state.offScript) {
       return;
     }
-    emit(state.copyWith(demoPlaying: !state.demoPlaying));
+    _offNotes.clear();
+    emit(_demoAt(state, step, state.demoOffFrom).copyWith(demoPlaying: false));
+    await _save();
+  }
+
+  /// Pausa a demonstração (ela para de andar sozinha) ou a retoma. Fora do
+  /// roteiro, o play volta ao roteiro e retoma dali.
+  void demoTogglePause() {
+    final step = state.current;
+    if (step is! DemoStep) {
+      return;
+    }
+    if (state.offScript && !state.demoPlaying) {
+      _offNotes.clear();
+      emit(_demoAt(state, step, state.demoOffFrom).copyWith(demoPlaying: true));
+    } else {
+      emit(state.copyWith(demoPlaying: !state.demoPlaying));
+    }
     unawaited(_save());
   }
 
@@ -1256,8 +1369,134 @@ class LessonCubit extends Cubit<LessonState> {
     if (step is! DemoStep) {
       return;
     }
+    _offNotes.clear();
     emit(_demoAt(state, step, 0).copyWith(demoPlaying: true));
     await _save();
+  }
+
+  // As falas de cada par fora do roteiro (para o ⏮ devolver a do par).
+  final _offNotes = <LessonNote>[];
+
+  /// Lição de vencer (o lado do aluno deve seguir ganhando) ou de segurar o
+  /// empate (algum passo de jogar com objetivo de empatar).
+  bool get _mustWin => !(state.lesson?.steps ?? const <LessonStep>[]).any(
+    (step) => step is PlayStep && step.goal == PlayGoal.draw,
+  );
+
+  /// O lance do aluno na demonstração (T70, "ponto 2"): só o lado e a vez
+  /// dele. O lance pausa a demonstração. Igual ao próximo do roteiro: é o ⏭.
+  /// Fora dele, o Stockfish responde (crit. 8) e o Viktor comenta na folha.
+  Future<void> _demoStudent(Move move) async {
+    final step = state.current;
+    final position = _position();
+    if (step is! DemoStep ||
+        position == null ||
+        state.phase != StepPhase.active ||
+        state.typing ||
+        position.turn != step.side ||
+        !position.isLegal(move)) {
+      return;
+    }
+    if (!state.offScript &&
+        state.demoMove < step.line.length &&
+        step.line[state.demoMove].uci == move.uci) {
+      emit(
+        _demoAt(state.copyWith(demoPlaying: false), step, state.demoMove + 1),
+      );
+      await _save();
+      return;
+    }
+    final played = GameRules.play(position, move);
+    if (played == null) return;
+    unawaited(_sounds?.move(played.san));
+    final before = state;
+    final index = state.step;
+    final off = [...state.demoOff, move.uci];
+    emit(
+      state.copyWith(
+        fen: played.position.fen,
+        lastMove: move,
+        demoOff: off,
+        demoOffFrom: state.offScript ? state.demoOffFrom : state.demoMove,
+        demoPlaying: false,
+        typing: true,
+        clearHint: true,
+      ),
+    );
+    final engine = _engine;
+    final answer = engine == null
+        ? const EngineAnswer(EngineVerdict.failed)
+        : await engine.respond(
+            played.position,
+            student: step.side,
+            mustWin: _mustWin,
+            replyOnKeep: true,
+          );
+    await Future<void>.delayed(typingDelay);
+    await _waitForForeground();
+    if (isClosed || _closing || state.step != index || state.demoOff != off) {
+      return;
+    }
+    final reply = answer.reply;
+    final answered = reply == null
+        ? null
+        : GameRules.play(played.position, reply);
+    if (answer.verdict == EngineVerdict.failed || answered == null) {
+      // Erro inesperado do motor: volta à posição de antes (crit. 8e).
+      emit(
+        before.copyWith(typing: false, engineErrors: before.engineErrors + 1),
+      );
+      return;
+    }
+    unawaited(_sounds?.move(answered.san));
+    final note = answer.verdict == EngineVerdict.keeps
+        ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
+        : LessonNote.engineReply;
+    _offNotes
+      ..length = (off.length - 1) ~/ 2
+      ..add(note);
+    emit(
+      state.copyWith(
+        fen: answered.position.fen,
+        lastMove: reply,
+        demoOff: [...off, reply!.uci],
+        typing: false,
+        note: note,
+      ),
+    );
+    await _save();
+  }
+
+  /// A demonstração fora do roteiro depois de [off] (lances em UCI, a partir
+  /// do lance [count] do roteiro), com a fala genérica [note].
+  LessonState _demoOffAt(
+    LessonState base,
+    DemoStep step,
+    int count,
+    List<String> off,
+    LessonNote note,
+  ) {
+    final onScript = _demoAt(base, step, count);
+    var position = GameRules.fromFen(onScript.fen!);
+    Move? last;
+    for (final uci in off) {
+      final parsed = Move.parse(uci);
+      final played = position == null || parsed == null
+          ? null
+          : GameRules.play(position, parsed);
+      if (played == null) break;
+      position = played.position;
+      last = parsed;
+    }
+    return onScript.copyWith(
+      fen: position?.fen,
+      lastMove: last,
+      demoOff: off,
+      demoOffFrom: count,
+      demoPlaying: false,
+      note: note,
+      phase: StepPhase.active,
+    );
   }
 
   /// A demonstração depois de [count] lances: o tabuleiro, o último lance e

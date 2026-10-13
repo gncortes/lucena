@@ -752,7 +752,7 @@
   "lessonDemoForward": "[Ñéxt mövé one]",
   "lessonDemoReplay": "[Ŕéplåý one]",
   "lessonDemoPause": "[Påûšé one]",
-  "lessonDemoPlay": "[Plåý one]",
+  "lessonDemoPlay": "[Ŕéšûmé one]",
   "lessonPartDone": "[Çhåptéŕ {part} çömplété one two three]",
   "lessonNextPart": "[Ĝö tö çhåptéŕ {part} one two]",
   "lessonToFinalTest": "[Tåké thé fîñål téšt one two]",
@@ -1187,5 +1187,13 @@
   "lessonHiddenMoves": "[Hîddéñ mövéš one two]",
   "lessonRevealNextMove": "[ŕévéål thé ñéxt mövé one two]",
   "lessonVariationEndBranch": "[Éñd öf thé åltéŕñåtîvé one two three]",
-  "lessonVariationEndLine": "[Éñd öf thé lîñé one two]"
+  "lessonVariationEndLine": "[Éñd öf thé lîñé one two]",
+  "lessonDemoBackToScript": "[Båçk tö thé démöñštŕåtîöñ one two three]",
+  "lessonEngineMove": "[Šéé höw {side} åñšwéŕ thîš mövé. one two three]",
+  "lessonEngineReply": "[Wîth thîš ŕéplý, {side} fîñd å ŕéšöûŕçé åĝåîñšt ýöûŕ plåñ. one two three four five]",
+  "lessonEngineAlsoWins": "[Wéll döñé, ýöû föûñd åñöthéŕ wåý thåt ålšö wîñš. Kéép ĝöîñĝ. one two three four five]",
+  "lessonEngineAlsoHolds": "[Wéll döñé, ýöû föûñd åñöthéŕ wåý thåt ålšö höldš thé dŕåw. Kéép ĝöîñĝ. one two three four five six]",
+  "lessonEngineAlsoWinsShowMain": "[Wéll döñé, ýöû föûñd åñöthéŕ wåý thåt ålšö wîñš. Ñöw šéé thé påth thé léššöñ šhöwš. one two three four five six seven]",
+  "lessonEngineAlsoHoldsShowMain": "[Wéll döñé, ýöû föûñd åñöthéŕ wåý thåt ålšö höldš thé dŕåw. Ñöw šéé thé påth thé léššöñ šhöwš. one two three four five six seven eight]",
+  "lessonEngineError": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd. Tŕý åĝåîñ. one two three four]"
 }

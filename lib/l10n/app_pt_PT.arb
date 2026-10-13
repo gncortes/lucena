@@ -748,7 +748,7 @@
   "lessonDemoForward": "Próximo lance",
   "lessonDemoReplay": "Repetir",
   "lessonDemoPause": "Pausar",
-  "lessonDemoPlay": "Continuar",
+  "lessonDemoPlay": "Retomar",
   "lessonPartDone": "Capítulo {part} concluído",
   "lessonNextPart": "Ir para o capítulo {part}",
   "lessonToFinalTest": "Fazer o teste final",
@@ -1188,5 +1188,13 @@
   "lessonHiddenMoves": "Lances ocultos",
   "lessonRevealNextMove": "revelar o próximo lance",
   "lessonVariationEndBranch": "Fim da alternativa",
-  "lessonVariationEndLine": "Fim da linha"
+  "lessonVariationEndLine": "Fim da linha",
+  "lessonDemoBackToScript": "Voltar à demonstração",
+  "lessonEngineMove": "Veja como as {side} respondem a este lance.",
+  "lessonEngineReply": "Com esta resposta, as {side} encontram um recurso contra o seu plano.",
+  "lessonEngineAlsoWins": "Muito bem, você encontrou outro caminho que também ganha. Siga assim.",
+  "lessonEngineAlsoHolds": "Muito bem, você encontrou outro caminho que também segura o empate. Siga assim.",
+  "lessonEngineAlsoWinsShowMain": "Muito bem, você encontrou outro caminho que também ganha. Agora veja o caminho que a lição mostra.",
+  "lessonEngineAlsoHoldsShowMain": "Muito bem, você encontrou outro caminho que também segura o empate. Agora veja o caminho que a lição mostra.",
+  "lessonEngineError": "Aconteceu um erro inesperado. Tente novamente."
 }

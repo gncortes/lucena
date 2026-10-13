@@ -175,10 +175,12 @@ void main() {
     // Quando o lance sai o anel zera na hora (não fica cheio nem desenrola).
     await tick(1);
     expect(progress()!, lessThan(first));
-    // Pausada: sem anel.
+    // Pausada (T70): o anel fica parado onde estava, sem contar.
     t.lesson.demoTogglePause();
-    await tick(2);
-    expect(find.byKey(LessonKeys.demoRing), findsNothing);
+    await tick(1);
+    final frozen = progress();
+    await tick(4);
+    expect(progress(), frozen);
   });
 
   test(

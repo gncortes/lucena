@@ -89,6 +89,12 @@ abstract final class LessonKeys {
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');
 
+  /// T70: a linha de cima do rodapé da demo fora do roteiro, e os pontos
+  /// "pensando" na folha do Viktor.
+  static const demoBackToScript = Key('lesson.demo.backToScript');
+  static const sheetTyping = Key('lesson.sheet.typing');
+  static const engineErrorSnack = Key('lesson.engine.error');
+
   /// A variante citada na fala, lance a lance no tabuleiro.
   static const variationShow = Key('lesson.variation.show');
   static const variationExit = Key('lesson.variation.exit');

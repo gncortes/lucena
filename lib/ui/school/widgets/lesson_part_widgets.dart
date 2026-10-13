@@ -130,9 +130,26 @@ class DemoControls extends StatelessWidget {
       onPressed: onPressed,
       main: main,
       ring: ring,
+      ringPaused: !state.demoPlaying,
     );
     return _ControlBar(
       wrong: state.wrongDemo,
+      // Fora do roteiro (T70, pg. 2.5): em cima, um botão só, de largura
+      // total, que leva ao lance do roteiro em que o aluno saiu.
+      top: state.offScript
+          ? FilledButton(
+              key: LessonKeys.demoBackToScript,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(_ControlButton.size),
+              ),
+              onPressed: cubit.demoBackToScript,
+              child: Text(
+                l10n.lessonDemoBackToScript,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          : null,
       children: [
         // Voltar ao passo anterior da lição, como nos outros passos.
         button(
@@ -163,7 +180,8 @@ class DemoControls extends StatelessWidget {
           LessonKeys.demoForward,
           Icons.skip_next_rounded,
           l10n.lessonDemoForward,
-          cubit.demoForward,
+          // Fora do roteiro, o lance seguinte é o do aluno (ou o botão de cima).
+          state.offScript ? null : cubit.demoForward,
           main: true,
           ring: ring,
         ),
@@ -285,10 +303,13 @@ class WrongLineBadge extends StatelessWidget {
 /// A fileira dos controles redondos, sobre um esmaecer até o fundo. Na
 /// linha errada, o selo vem acima dela. As setas não espelham (`ltr`).
 class _ControlBar extends StatelessWidget {
-  const _ControlBar({required this.children, this.wrong = false});
+  const _ControlBar({required this.children, this.wrong = false, this.top});
 
   final List<Widget> children;
   final bool wrong;
+
+  /// Uma linha acima dos controles (o "Voltar à demonstração").
+  final Widget? top;
 
   @override
   Widget build(BuildContext context) {
@@ -296,6 +317,8 @@ class _ControlBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (top case final top?)
+            Padding(padding: const EdgeInsets.only(bottom: 8), child: top),
           if (wrong)
             const Padding(
               padding: EdgeInsets.only(bottom: 8),
@@ -327,6 +350,7 @@ class _ControlButton extends StatelessWidget {
     required this.onPressed,
     this.main = false,
     this.ring,
+    this.ringPaused = false,
   });
 
   static const size = 48.0;
@@ -339,6 +363,9 @@ class _ControlButton extends StatelessWidget {
 
   /// O anel de tempo em volta do botão (só o ⏭ da demonstração).
   final ValueListenable<double?>? ring;
+
+  /// A demonstração está pausada: o anel fica parado, em tom claro.
+  final bool ringPaused;
 
   @override
   Widget build(BuildContext context) {
@@ -379,7 +406,9 @@ class _ControlButton extends StatelessWidget {
                   left: -DemoRing.outside,
                   top: -DemoRing.outside,
                   child: ExcludeSemantics(
-                    child: IgnorePointer(child: DemoRing(progress: ring)),
+                    child: IgnorePointer(
+                      child: DemoRing(progress: ring, paused: ringPaused),
+                    ),
                   ),
                 ),
                 dimmed,
@@ -395,7 +424,10 @@ class _ControlButton extends StatelessWidget {
 /// (demonstração pausada ou no fim), nada. Com movimento reduzido, o arco
 /// anda em degraus de 25 %.
 class DemoRing extends StatefulWidget {
-  const DemoRing({required this.progress, super.key});
+  const DemoRing({required this.progress, this.paused = false, super.key});
+
+  /// Pausado: o arco fica parado e em tom claro (canvas T70, pg. 2.2).
+  final bool paused;
 
   /// 0 a 1; [speaking] com a voz falando; nulo sem anel.
   final ValueListenable<double?> progress;
@@ -444,7 +476,9 @@ class _DemoRingState extends State<DemoRing> {
             progress: v,
             speaking: isSpeaking,
             track: colors.outlineVariant,
-            arc: colors.primary,
+            arc: widget.paused
+                ? colors.primary.withValues(alpha: 0.45)
+                : colors.primary,
           ),
         );
         if (isSpeaking) return paint(0);

@@ -1188,5 +1188,13 @@
   "lessonHiddenMoves": "隐藏的着法",
   "lessonRevealNextMove": "显示下一步着法",
   "lessonVariationEndBranch": "变着结束",
-  "lessonVariationEndLine": "主线结束"
+  "lessonVariationEndLine": "主线结束",
+  "lessonDemoBackToScript": "Back to the demonstration",
+  "lessonEngineMove": "See how {side} answer this move.",
+  "lessonEngineReply": "With this reply, {side} find a resource against your plan.",
+  "lessonEngineAlsoWins": "Well done, you found another way that also wins. Keep going.",
+  "lessonEngineAlsoHolds": "Well done, you found another way that also holds the draw. Keep going.",
+  "lessonEngineAlsoWinsShowMain": "Well done, you found another way that also wins. Now see the path the lesson shows.",
+  "lessonEngineAlsoHoldsShowMain": "Well done, you found another way that also holds the draw. Now see the path the lesson shows.",
+  "lessonEngineError": "An unexpected error occurred. Try again."
 }

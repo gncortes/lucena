@@ -3873,7 +3873,7 @@
   },
   "lessonDemoPause": "Pause",
   "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
-  "lessonDemoPlay": "Play",
+  "lessonDemoPlay": "Resume",
   "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
   "lessonPartDone": "Chapter {part} complete",
   "@lessonPartDone": {
@@ -6064,5 +6064,21 @@
   "lessonVariationEndBranch": "End of the alternative",
   "@lessonVariationEndBranch": {"description": "Tooltip of the disabled next button at the end of an alternative."},
   "lessonVariationEndLine": "End of the line",
-  "@lessonVariationEndLine": {"description": "Tooltip of the disabled next button at the end of the main line."}
+  "@lessonVariationEndLine": {"description": "Tooltip of the disabled next button at the end of the main line."},
+  "lessonDemoBackToScript": "Back to the demonstration",
+  "@lessonDemoBackToScript": {"description": "Primary button shown when the student left the demonstration script."},
+  "lessonEngineMove": "See how {side} answer this move.",
+  "@lessonEngineMove": {"description": "Generic comment on the student move when the engine answers; {side} is the opponent side.", "placeholders": {"side": {"type": "String"}}},
+  "lessonEngineReply": "With this reply, {side} find a resource against your plan.",
+  "@lessonEngineReply": {"description": "Generic comment on the engine reply; {side} is the opponent side.", "placeholders": {"side": {"type": "String"}}},
+  "lessonEngineAlsoWins": "Well done, you found another way that also wins. Keep going.",
+  "@lessonEngineAlsoWins": {"description": "Engine said the student move keeps the win (demonstration)."},
+  "lessonEngineAlsoHolds": "Well done, you found another way that also holds the draw. Keep going.",
+  "@lessonEngineAlsoHolds": {"description": "Engine said the student move keeps the draw (demonstration)."},
+  "lessonEngineAlsoWinsShowMain": "Well done, you found another way that also wins. Now see the path the lesson shows.",
+  "@lessonEngineAlsoWinsShowMain": {"description": "Engine said the student move keeps the win (learning step)."},
+  "lessonEngineAlsoHoldsShowMain": "Well done, you found another way that also holds the draw. Now see the path the lesson shows.",
+  "@lessonEngineAlsoHoldsShowMain": {"description": "Engine said the student move keeps the draw (learning step)."},
+  "lessonEngineError": "An unexpected error occurred. Try again.",
+  "@lessonEngineError": {"description": "Snackbar when the engine failed to answer a move outside the lesson data."}
 }

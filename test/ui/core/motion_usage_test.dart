@@ -81,6 +81,13 @@ void main() {
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',
     },
+    'lib/ui/core/widgets/typing_dots.dart': {
+      'cycle = Duration(milliseconds: 1200)':
+          'ciclo dos pontinhos de digitando',
+      'stagger = Duration(milliseconds: 150)': 'defasagem entre os pontinhos',
+      'MediaQuery.disableAnimationsOf(context)':
+          'sem animação os pontinhos ficam parados, não só mais curtos',
+    },
     'lib/ui/tour/widgets/tour_demos.dart': {
       'const Duration(milliseconds:': 'coreografia das demonstrações do tour',
     },

@@ -1188,5 +1188,13 @@
   "lessonHiddenMoves": "숨겨진 수",
   "lessonRevealNextMove": "다음 수 보기",
   "lessonVariationEndBranch": "대안의 끝",
-  "lessonVariationEndLine": "라인의 끝"
+  "lessonVariationEndLine": "라인의 끝",
+  "lessonDemoBackToScript": "Back to the demonstration",
+  "lessonEngineMove": "See how {side} answer this move.",
+  "lessonEngineReply": "With this reply, {side} find a resource against your plan.",
+  "lessonEngineAlsoWins": "Well done, you found another way that also wins. Keep going.",
+  "lessonEngineAlsoHolds": "Well done, you found another way that also holds the draw. Keep going.",
+  "lessonEngineAlsoWinsShowMain": "Well done, you found another way that also wins. Now see the path the lesson shows.",
+  "lessonEngineAlsoHoldsShowMain": "Well done, you found another way that also holds the draw. Now see the path the lesson shows.",
+  "lessonEngineError": "An unexpected error occurred. Try again."
 }

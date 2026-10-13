@@ -1188,5 +1188,13 @@
   "lessonHiddenMoves": "حرکت‌های پنهان",
   "lessonRevealNextMove": "آشکار کردن حرکت بعدی",
   "lessonVariationEndBranch": "پایان جایگزین",
-  "lessonVariationEndLine": "پایان خط"
+  "lessonVariationEndLine": "پایان خط",
+  "lessonDemoBackToScript": "Back to the demonstration",
+  "lessonEngineMove": "See how {side} answer this move.",
+  "lessonEngineReply": "With this reply, {side} find a resource against your plan.",
+  "lessonEngineAlsoWins": "Well done, you found another way that also wins. Keep going.",
+  "lessonEngineAlsoHolds": "Well done, you found another way that also holds the draw. Keep going.",
+  "lessonEngineAlsoWinsShowMain": "Well done, you found another way that also wins. Now see the path the lesson shows.",
+  "lessonEngineAlsoHoldsShowMain": "Well done, you found another way that also holds the draw. Now see the path the lesson shows.",
+  "lessonEngineError": "An unexpected error occurred. Try again."
 }
