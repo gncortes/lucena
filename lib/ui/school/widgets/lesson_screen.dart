@@ -930,7 +930,8 @@ class _LessonScreenState extends State<LessonScreen>
                                               ),
                                             )
                                           : state.layout ==
-                                                LessonLayoutMode.solving
+                                                    LessonLayoutMode.solving &&
+                                                !state.wrongMove
                                           ? _solvingFooter(context, state)
                                           : _actions(context, state),
                                     ),
@@ -1932,14 +1933,18 @@ class _LessonScreenState extends State<LessonScreen>
     // texto em partes iguais, no lugar do FAB e da pílula.
     final explanation = state.explanation;
     final failed = state.phase == StepPhase.failed;
-    if (failed && state.solutionSeen) {
+    final mistake = state.showsMistake;
+    if (mistake && state.solutionSeen) {
       return _solutionFooter(context, state);
     }
-    if (failed &&
-        (explanation?.explanations.any(
-              (b) => b.kind == ExplanationKind.mainSolution,
-            ) ??
-            false)) {
+    // Lance errado sem erro previsto: a folha monta o "Lance certo" a partir do
+    // passo, mesmo sem a solução principal no conteúdo.
+    if (mistake &&
+        (state.wrongMove ||
+            (explanation?.explanations.any(
+                  (b) => b.kind == ExplanationKind.mainSolution,
+                ) ??
+                false))) {
       return _errorFooter(context, state, step);
     }
     if (explanation != null && !failed && state.phase != StepPhase.waiting) {

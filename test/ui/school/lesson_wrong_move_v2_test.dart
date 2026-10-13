@@ -117,6 +117,23 @@ void main() {
     });
   }
 
+  testWidgets('a wrong move without a planned mistake shows Back | See '
+      'solution | Continue, and See solution works', (tester) async {
+    final cubit = await open(1);
+    await show(tester, cubit, const Size(360, 740));
+    await tester.runAsync(() => cubit.play(move('a1a5')));
+    await tester.pumpAndSettle();
+    expect(cubit.state.wrongMove, isTrue);
+    expect(find.byKey(LessonKeys.seeSolution), findsOneWidget);
+    expect(find.byKey(LessonKeys.backButton), findsOneWidget);
+    expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
+    await tester.tap(find.byKey(LessonKeys.seeSolution));
+    await tester.pumpAndSettle();
+    expect(cubit.state.solutionSeen, isTrue);
+    expect(find.byKey(LessonKeys.solutionFooter), findsOneWidget);
+    expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
+  });
+
   testWidgets('the wrong move comes back after a hard close', (tester) async {
     final progress = FakeSchoolProgressRepository();
     final live = LessonCubit(
@@ -182,8 +199,8 @@ void main() {
   });
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
-    testWidgets('$size: scrolled to the end, the speech sits above the footer '
-        'fade and a solid surface is behind the buttons', (tester) async {
+    testWidgets('$size: the error footer keeps its three '
+        'buttons inside the solid box', (tester) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       final cubit = await open(1);
@@ -191,42 +208,21 @@ void main() {
       await tester.runAsync(() => cubit.play(move('a1a5')));
       await tester.pumpAndSettle();
       expect(cubit.state.wrongMove, isTrue);
-      final scroll = find.byKey(LessonKeys.scroll);
-      await tester.fling(scroll, const Offset(0, -3000), 3000);
-      await tester.pumpAndSettle();
-      final fade = find.byKey(LessonKeys.footerFade);
-      expect(fade, findsOneWidget);
-      final fadeRect = tester.getRect(fade);
-      expect(fadeRect.height, closeTo(24, 1));
-      final invite = tester.getRect(find.byKey(LessonV2Keys.freeBoardInvite));
-      expect(invite.bottom, lessThanOrEqualTo(fadeRect.top + 1));
-      // Solid surface below the fade, covering both buttons.
+      // O rodapé de erro (Voltar | Ver solução | Continuar) é a caixa sólida
+      // do painel, sem a faixa que esmaece.
       final footer = tester.getRect(find.byKey(LessonKeys.footer));
-      expect(fadeRect.top, closeTo(footer.top, 1));
-      final solid = find.descendant(
-        of: find.byKey(LessonKeys.footer),
-        matching: find.byType(ColoredBox),
-      );
-      expect(solid, findsWidgets);
-      final solidRect = tester.getRect(solid.first);
-      final panel = Theme.of(tester.element(find.byKey(LessonKeys.footer)))
-          .colorScheme
-          .surfaceContainerLow;
-      expect(tester.widget<ColoredBox>(solid.first).color, panel);
       var buttons = 0;
       for (final key in [
         LessonKeys.backButton,
-        LessonKeys.hintButton,
+        LessonKeys.seeSolution,
         LessonKeys.nextButton,
       ]) {
-        if (find.byKey(key).evaluate().isEmpty) continue;
         buttons++;
         final r = tester.getRect(find.byKey(key));
-        expect(solidRect.top, lessThanOrEqualTo(r.top));
-        expect(solidRect.bottom, greaterThanOrEqualTo(r.bottom));
-        expect(r.top, greaterThanOrEqualTo(fadeRect.bottom - 1));
+        expect(r.top, greaterThanOrEqualTo(footer.top));
+        expect(r.bottom, lessThanOrEqualTo(footer.bottom));
       }
-      expect(buttons, greaterThan(0));
+      expect(buttons, 3);
       expect(tester.takeException(), isNull);
     });
   }

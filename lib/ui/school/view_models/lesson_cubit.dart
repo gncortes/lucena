@@ -180,12 +180,17 @@ class LessonState {
           reviewing ||
           (current is TalkStep && phase == StepPhase.active) ||
           // Lance errado explicado: "Continuar" vale sem refazer (§3).
-          (phase == StepPhase.failed &&
+          (showsMistake &&
               result == null &&
-              explanation != null &&
+              (explanation != null || wrongMove) &&
               (current is MoveStep || current is ThinkStep)) ||
           // "Ver explicação": quando o aluno quiser (T60).
           current is ThinkStep);
+
+  /// O erro do aluno está na tela: o passo falhou (`failed`) ou o lance errado
+  /// só devolveu a peça e abriu a explicação (`wrongMove`, passo de lance sem
+  /// erro previsto). Nos dois, valem Voltar | Ver solução | Continuar.
+  bool get showsMistake => phase == StepPhase.failed || wrongMove;
 
   /// Há passo antes deste para rever.
   bool get canGoBack => step > 0 && phase != StepPhase.waiting && !finished;
@@ -824,9 +829,7 @@ class LessonCubit extends Cubit<LessonState> {
         ),
       );
       // Fechou na Solução vista: volta nela (só se o erro voltou também).
-      if (saved.solutionSeen &&
-          state.phase == StepPhase.failed &&
-          state.result == null) {
+      if (saved.solutionSeen && state.showsMistake && state.result == null) {
         emit(state.copyWith(solutionSeen: true));
       }
       // A wrong move keeps its explanation: emit() does not fetch it for a
@@ -888,9 +891,9 @@ class LessonCubit extends Cubit<LessonState> {
   /// solução com o tabuleiro parado. Guardado: fechar o app reabre nela.
   Future<void> seeSolution() async {
     if (state.solutionSeen ||
-        state.phase != StepPhase.failed ||
+        !state.showsMistake ||
         state.result != null ||
-        state.explanation == null) {
+        (state.explanation == null && !state.wrongMove)) {
       return;
     }
     emit(state.copyWith(solutionSeen: true));
@@ -935,9 +938,7 @@ class LessonCubit extends Cubit<LessonState> {
     final step = state.current;
     // Passo de lance errado (T65 §4): volta ao estado inicial, como na
     // abertura (as peças voltam animadas); o erro já contado fica como está.
-    if (state.phase == StepPhase.failed &&
-        state.result == null &&
-        step is MoveStep) {
+    if (state.showsMistake && state.result == null && step is MoveStep) {
       final opened = _open(
         state,
         state.step,
