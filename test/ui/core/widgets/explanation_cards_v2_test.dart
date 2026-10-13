@@ -106,14 +106,14 @@ void main() {
       expect(find.text('Root explanation.'), findsNothing);
       expect(find.text('Child explanation.'), findsNothing);
       expect(
-        tester.getSemantics(find.byKey(ExplanationKeys.variation('A'))),
+        tester.getSemantics(find.byKey(ExplanationKeys.expand('A'))),
         isSemantics(hasExpandedState: true, isExpanded: false),
       );
-      await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+      await tester.tap(find.byKey(ExplanationKeys.expand('A')));
       await tester.pumpAndSettle();
       expect(find.text('Root explanation.'), findsOneWidget);
       expect(
-        tester.getSemantics(find.byKey(ExplanationKeys.variation('A'))),
+        tester.getSemantics(find.byKey(ExplanationKeys.expand('A'))),
         isSemantics(hasExpandedState: true, isExpanded: true),
       );
       expect(find.text('Child explanation.'), findsOneWidget);
@@ -135,11 +135,11 @@ void main() {
       expect(find.byKey(ExplanationKeys.restore), findsNothing);
       expect(find.byKey(ExplanationKeys.last), findsNothing);
       expect(find.text('Reply explanation.'), findsOneWidget);
-      await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+      await tester.tap(find.byKey(ExplanationKeys.expand('A')));
       await tester.pumpAndSettle();
       expect(find.text('Child explanation.'), findsNothing);
       expect(
-        tester.getSemantics(find.byKey(ExplanationKeys.variation('A'))),
+        tester.getSemantics(find.byKey(ExplanationKeys.expand('A'))),
         isSemantics(hasExpandedState: true, isExpanded: false),
       );
       expect(tester.takeException(), isNull);
@@ -169,7 +169,7 @@ void main() {
     await tester.pumpWidget(
       app(data, onVariation: (value) => selected = value),
     );
-    await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+    await tester.tap(find.byKey(ExplanationKeys.expand('A')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(ExplanationKeys.variation('A.1')));
     await tester.pumpAndSettle();
@@ -251,80 +251,358 @@ void main() {
     },
   );
 
-  testWidgets('V2 orders POSITION, CORRECT MOVE, THESE DO NOT WORK EITHER and '
-      'colours the line by quality with the result label', (tester) async {
-    ExplanationVariation line(
-      String id,
-      String label,
-      String san,
-      String uci,
-      VariationOutcome outcome, {
-      String? outcomeText,
-    }) => ExplanationVariation(
-      id: id,
-      label: label,
-      outcome: outcome,
-      outcomeText: outcomeText,
-      texts: ['Text $id.'],
-      originFen: fen,
-      movesUci: [uci],
-      movesSan: [san],
-      validated: true,
-    );
+  testWidgets(
+    'V2 orders CORRECT MOVE, quote, THESE DO NOT WORK EITHER; no result label',
+    (tester) async {
+      ExplanationVariation line(
+        String id,
+        String label,
+        String san,
+        String uci,
+        VariationOutcome outcome, {
+        String? outcomeText,
+      }) => ExplanationVariation(
+        id: id,
+        label: label,
+        outcome: outcome,
+        outcomeText: outcomeText,
+        texts: ['Text $id.'],
+        originFen: fen,
+        movesUci: [uci],
+        movesSan: [san],
+        validated: true,
+      );
+      final data = ExplanationPayload(
+        positionId: 'order',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'f',
+            kind: ExplanationKind.failedAlternatives,
+            title: 'Tentativas que falham',
+            variations: [
+              line(
+                'B',
+                'B',
+                '1.Kh2?',
+                'h1h2',
+                VariationOutcome.doesNotMeetGoal,
+                outcomeText: 'Draws',
+              ),
+            ],
+          ),
+          ExplanationBlock(
+            id: 'm',
+            kind: ExplanationKind.mainSolution,
+            variations: [
+              line('A', 'A', '1.d4', 'd2d4', VariationOutcome.accepted),
+            ],
+          ),
+          ExplanationBlock(
+            id: 'c',
+            kind: ExplanationKind.context,
+            title: 'The position and the goal',
+            texts: ['Goal text.'],
+          ),
+        ],
+      );
+      await tester.pumpWidget(app(data));
+      await tester.pumpAndSettle();
+      double top(String text) => tester.getTopLeft(find.text(text)).dy;
+      // Contexto sem rótulo: a citação vem depois do certo e antes de "Também
+      // não funcionam"; o título "A posição e o objetivo" não aparece.
+      expect(find.text('THE POSITION AND THE GOAL'), findsNothing);
+      expect(find.byKey(ExplanationKeys.quote('c')), findsOneWidget);
+      expect(top('CORRECT MOVE'), lessThan(top('Goal text.')));
+      expect(top('Goal text.'), lessThan(top('THESE DO NOT WORK EITHER')));
+      expect(find.text('TENTATIVAS QUE FALHAM'), findsNothing);
+      // Linha que falha: lance primary peso 500, sem selo de resultado.
+      final theme = Theme.of(tester.element(find.byType(ExplanationCards)));
+      final wrong = tester.widget<Text>(find.text('1.Kh2?'));
+      expect(wrong.style?.color, theme.colorScheme.primary);
+      expect(wrong.style?.fontWeight, FontWeight.w500);
+      expect(find.text('DRAWS'), findsNothing);
+      // Variante única: nem "A)" nem "B)".
+      expect(find.textContaining(') '), findsNothing);
+      final right = tester.widget<Text>(find.text('1.d4'));
+      expect(right.style?.color, theme.colorScheme.primary);
+      expect(find.text('ACCEPTED'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  ExplanationVariation line(
+    String id,
+    String san,
+    String uci, {
+    String? parent,
+    int parentPly = 0,
+    String? origin,
+  }) => ExplanationVariation(
+    id: id,
+    label: id,
+    parentId: parent,
+    parentPly: parentPly,
+    outcome: VariationOutcome.accepted,
+    texts: ['Text $id.'],
+    originFen: origin ?? fen,
+    movesUci: [uci],
+    movesSan: [san],
+    validated: true,
+  );
+
+  testWidgets('wrong move: error, correct, quote, then the failures', (
+    tester,
+  ) async {
     final data = ExplanationPayload(
-      positionId: 'order',
-      state: ExplanationState.review,
+      positionId: 'wrong',
+      state: ExplanationState.incorrect,
       explanations: [
         ExplanationBlock(
           id: 'f',
           kind: ExplanationKind.failedAlternatives,
-          title: 'Tentativas que falham',
-          variations: [
-            line(
-              'B',
-              'B',
-              '1.Kh2?',
-              'h1h2',
-              VariationOutcome.doesNotMeetGoal,
-              outcomeText: 'Draws',
-            ),
-          ],
-        ),
-        ExplanationBlock(
-          id: 'm',
-          kind: ExplanationKind.mainSolution,
-          variations: [
-            line('A', 'A', '1.d4', 'd2d4', VariationOutcome.accepted),
-          ],
+          variations: [line('B', '1.Kh2?', 'h1h2')],
         ),
         ExplanationBlock(
           id: 'c',
           kind: ExplanationKind.context,
-          title: 'The position and the goal',
-          texts: ['Goal text.'],
+          title: 'History',
+          texts: ['Story text.'],
+        ),
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          texts: ['Right text.'],
+          variations: [line('A', '1.d4', 'd2d4')],
+        ),
+        ExplanationBlock(
+          id: 'e',
+          kind: ExplanationKind.playedIncorrect,
+          texts: ['Wrong text.'],
         ),
       ],
     );
     await tester.pumpWidget(app(data));
     await tester.pumpAndSettle();
     double top(String text) => tester.getTopLeft(find.text(text)).dy;
-    expect(top('THE POSITION AND THE GOAL'), lessThan(top('CORRECT MOVE')));
-    expect(top('CORRECT MOVE'), lessThan(top('THESE DO NOT WORK EITHER')));
-    expect(find.text('TENTATIVAS QUE FALHAM'), findsNothing);
-    // The failing line: quality colour (mistake, not primary) and result.
+    expect(top('Wrong text.'), lessThan(top('Right text.')));
+    expect(top('Right text.'), lessThan(top('Story text.')));
+    expect(top('Story text.'), lessThan(top('THESE DO NOT WORK EITHER')));
+    expect(find.text('HISTORY'), findsNothing);
+    expect(find.textContaining('A)'), findsNothing);
+    expect(find.byType(Divider), findsNWidgets(3));
+  });
+
+  testWidgets('solution seen: payload order is kept and the quote goes last', (
+    tester,
+  ) async {
+    final data = ExplanationPayload(
+      positionId: 'seen',
+      state: ExplanationState.incorrect,
+      explanations: [
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          texts: ['Right text.'],
+          variations: [line('A', '1.d4', 'd2d4')],
+        ),
+        ExplanationBlock(
+          id: 'e',
+          kind: ExplanationKind.playedIncorrect,
+          texts: ['Wrong text.'],
+        ),
+        ExplanationBlock(
+          id: 'f',
+          kind: ExplanationKind.failedAlternatives,
+          variations: [line('B', '1.Kh2?', 'h1h2')],
+        ),
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'History',
+          texts: ['Story text.'],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data));
+    await tester.pumpAndSettle();
+    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+    expect(top('Right text.'), lessThan(top('Wrong text.')));
+    expect(top('Wrong text.'), lessThan(top('THESE DO NOT WORK EITHER')));
+    expect(top('THESE DO NOT WORK EITHER'), lessThan(top('Story text.')));
+  });
+
+  testWidgets('no loose move line when the move is already a link; the '
+      'chevron sits in the paragraph and the label stays silent', (
+    tester,
+  ) async {
+    final main = root();
+    final child = ExplanationVariation(
+      id: 'A.1',
+      label: 'A.1',
+      parentId: 'A',
+      parentPly: 1,
+      outcome: VariationOutcome.accepted,
+      texts: ['Child explanation.'],
+      originFen: main.open()!.fen,
+      movesUci: ['g8f7'],
+      movesSan: ['1...Kf7'],
+      validated: true,
+    );
+    final data = ExplanationPayload(
+      positionId: 'inline',
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'solution',
+          kind: ExplanationKind.mainSolution,
+          texts: ['1.d4 wins.'],
+          variations: [main, child],
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: ExplanationCards(
+              payload: data,
+              lessonV2: true,
+              paragraph: (text) => Text(text),
+              hasInlineNavigation: (_, _, _) => true,
+              onVariation: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(ExplanationKeys.variation('A')), findsNothing);
+    final paragraph = tester.getRect(
+      find.byKey(ExplanationKeys.paragraph('solution', 0)),
+    );
+    final chevron = tester.getRect(find.byKey(ExplanationKeys.expand('A')));
+    expect(chevron.size, const Size(48, 48));
+    expect(chevron.top, closeTo(paragraph.top, 1));
+    expect(chevron.right, closeTo(paragraph.right, 1));
+  });
+
+  testWidgets('quote: 3 dp start bar, 12 dp padding, 14/20 muted text', (
+    tester,
+  ) async {
+    final data = ExplanationPayload(
+      positionId: 'q',
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'History',
+          texts: ['Story text.'],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data));
     final theme = Theme.of(tester.element(find.byType(ExplanationCards)));
-    final wrong = tester.widget<Text>(find.text('1.Kh2?'));
-    expect(wrong.style?.color, isNot(theme.colorScheme.primary));
-    expect(wrong.style?.fontWeight, FontWeight.w700);
-    expect(find.text('DRAWS'), findsOneWidget);
-    // Contrato 3.3: letra só na solução; "Também não funcionam" sem letra.
+    final box = tester.widget<Container>(
+      find.byKey(ExplanationKeys.quote('c')),
+    );
+    final decoration = box.decoration! as BoxDecoration;
+    final border = decoration.border! as BorderDirectional;
+    expect(border.start.width, 3);
+    expect(border.start.color, theme.colorScheme.outlineVariant);
+    expect(border.end, BorderSide.none);
+    expect(
+      tester.getTopLeft(find.text('Story text.')).dx -
+          tester.getTopLeft(find.byKey(ExplanationKeys.quote('c'))).dx,
+      closeTo(15, 1), // 3 dp bar + 12 dp padding
+    );
+    final style = tester.widget<Text>(find.text('Story text.')).style!;
+    expect(style.fontSize, 14);
+    expect(style.height! * style.fontSize!, closeTo(20, .1));
+    expect(style.color, theme.colorScheme.onSurfaceVariant);
+  });
+
+  testWidgets('the chevron only expands; the blue move calls onVariation', (
+    tester,
+  ) async {
+    final main = root();
+    final child = line(
+      'A.1',
+      '1...Kf7',
+      'g8f7',
+      parent: 'A',
+      parentPly: 1,
+      origin: main.open()!.fen,
+    );
+    final calls = <VariationCursor?>[];
+    await tester.pumpWidget(
+      app(payload([main, child]), onVariation: calls.add),
+    );
+    final chevron = tester.getRect(find.byKey(ExplanationKeys.expand('A')));
+    expect(chevron.width, greaterThanOrEqualTo(48));
+    expect(chevron.height, greaterThanOrEqualTo(48));
+    await tester.tap(find.byKey(ExplanationKeys.expand('A')));
+    await tester.pumpAndSettle();
+    expect(calls, isEmpty);
+    expect(find.text('Child explanation.'), findsNothing);
+    expect(find.text('Text A.1.'), findsOneWidget);
+    await tester.tap(find.byKey(ExplanationKeys.variation('A')));
+    await tester.pumpAndSettle();
+    expect(calls, hasLength(1));
+    // Tocar no lance não recolhe.
+    expect(find.text('Text A.1.'), findsOneWidget);
+    await tester.tap(find.byKey(ExplanationKeys.expand('A')));
+    await tester.pumpAndSettle();
+    expect(find.text('Text A.1.'), findsNothing);
+  });
+
+  testWidgets('the letter shows only with two or more choices', (tester) async {
+    await tester.pumpWidget(app(payload([root()])));
+    expect(find.textContaining('A) '), findsNothing);
+    final b = line('B', '1.Kh2', 'h1h2');
+    await tester.pumpWidget(app(payload([root(), b])));
+    await tester.pumpAndSettle();
     expect(find.text('A) '), findsOneWidget);
-    expect(find.text('B) '), findsNothing);
-    expect(find.textContaining('B)'), findsNothing);
-    // The correct line has no result label (accepted, as the section).
-    final right = tester.widget<Text>(find.text('1.d4'));
-    expect(right.style?.color, theme.colorScheme.primary);
-    expect(find.text('ACCEPTED'), findsNothing);
-    expect(tester.takeException(), isNull);
+    expect(find.text('B) '), findsOneWidget);
+  });
+
+  testWidgets('expanding a card keeps the scroll offset', (tester) async {
+    final main = root();
+    final child = line(
+      'A.1',
+      '1...Kf7',
+      'g8f7',
+      parent: 'A',
+      parentPly: 1,
+      origin: main.open()!.fen,
+    );
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            controller: controller,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                ExplanationCards(
+                  payload: payload([main, child]),
+                  lessonV2: true,
+                  paragraph: (text) => Text(text),
+                  onVariation: (_) {},
+                ),
+                const SizedBox(height: 2000),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    controller.jumpTo(30);
+    await tester.pump();
+    await tester.tap(find.byKey(ExplanationKeys.expand('A')));
+    await tester.pumpAndSettle();
+    expect(controller.offset, 30);
   });
 }

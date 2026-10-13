@@ -110,6 +110,7 @@ void main() {
     'T65: timer exclui fundo e checkpoint conserva lance e pausa manual',
     () async {
       final cubit = await open();
+      await cubit.startStepClock();
       now.advance(const Duration(seconds: 9));
       await cubit.pauseForBackground();
       final saved = progress.saved.ongoing!;
@@ -210,6 +211,9 @@ void main() {
   test('cronômetro: zero ao abrir, cresce, e passar de 6 minutos não muda '
       'nada', () async {
     final cubit = await open();
+    // O relógio só começa depois da apresentação do Viktor (§8).
+    expect(cubit.state.presenting, isTrue);
+    await cubit.startStepClock();
     expect(cubit.stepElapsed, Duration.zero);
     now.advance(const Duration(minutes: 6, seconds: 1));
     expect(cubit.stepElapsed, const Duration(minutes: 6, seconds: 1));
@@ -238,6 +242,7 @@ void main() {
     'fechar no meio volta com o cronômetro contando desde o começo',
     () async {
       final first = await open();
+      await first.startStepClock();
       now.advance(const Duration(minutes: 1));
       await first.close();
       // Reabre 30 s depois: 1 min 30 s, contado desde o começo.

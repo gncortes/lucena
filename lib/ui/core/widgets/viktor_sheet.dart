@@ -19,6 +19,8 @@ class ViktorSheet extends StatefulWidget {
     this.controller,
     this.scrollKey = ViktorSheetKeys.scroll,
     this.closeKey = ViktorSheetKeys.close,
+    this.closeTooltip,
+    this.modalKey,
     this.onExpanded,
     this.onMoving,
     this.onTop,
@@ -35,16 +37,35 @@ class ViktorSheet extends StatefulWidget {
           ?.expanded ??
       true;
 
+  /// Baixa a folha até a borda do tabuleiro (a posição recolhida), sem mexer
+  /// no que está nela. Sem [ViktorSheet] acima de [context], não faz nada.
+  static void collapse(BuildContext context) => context
+      .getInheritedWidgetOfExactType<_ViktorSheetPresentation>()
+      ?.sheet
+      ._collapse();
+
   /// Quanto, no fim da folha, fica coberto por botões flutuantes: a fala
   /// que aparece aos poucos rola para a linha nova parar acima disso.
   /// Altura reservada em todos os estados para texto acima das ações.
   static const peekHeight = 160.0;
+
+  /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
+  /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
+  /// (LICOES-V2 §5).
+  static const openGap = 76.0;
 
   final double top;
   final List<Widget> children;
   final DraggableScrollableController? controller;
   final Key scrollKey;
   final Key closeKey;
+
+  /// Rótulo do X (dica e leitor de tela); sem ele, o "Fechar" do sistema.
+  final String? closeTooltip;
+
+  /// Marca a folha na tela enquanto ela é um modal (a apresentação B): um
+  /// quadro transparente sobre a folha, sem remontar o conteúdo.
+  final Key? modalKey;
   final ValueChanged<bool>? onExpanded;
 
   /// A folha está entre recolhida e aberta (arrastando ou animando): quem
@@ -65,7 +86,11 @@ class ViktorSheet extends StatefulWidget {
 class _ViktorSheetState extends State<ViktorSheet> {
   final _owned = DraggableScrollableController();
   DraggableScrollableController get _sheet => widget.controller ?? _owned;
-  static const _maximum = .95;
+
+  /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
+  /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
+  /// (LICOES-V2 §5). Calculado no layout.
+  double _maximum = .95;
   double _minimum = .2;
   double? _extent;
   bool _expanded = false;
@@ -73,6 +98,30 @@ class _ViktorSheetState extends State<ViktorSheet> {
   bool _adjustingMinimum = false;
   Size? _area;
   double? _top;
+  final _maskKey = GlobalKey();
+
+  /// Fim do cabeçalho do Viktor ([ViktorSheetKeys.header]) nas coordenadas da
+  /// máscara: o fade nunca começa acima dele, para não clarear o retrato.
+  double _headerBottom() {
+    final maskElement = _maskKey.currentContext;
+    final mask = maskElement?.findRenderObject();
+    if (maskElement == null || mask is! RenderBox || !mask.attached) return 0;
+    RenderObject? header;
+    void visit(Element element) {
+      if (header != null) return;
+      if (element.widget.key == ViktorSheetKeys.header) {
+        header = element.findRenderObject();
+        return;
+      }
+      element.visitChildElements(visit);
+    }
+
+    maskElement.visitChildElements(visit);
+    final box = header;
+    if (box is! RenderBox || !box.attached) return 0;
+    return box.localToGlobal(Offset(0, box.size.height), ancestor: mask).dy;
+  }
+
   ScrollController? _scroll;
 
   @override
@@ -135,6 +184,8 @@ class _ViktorSheetState extends State<ViktorSheet> {
     );
   }
 
+  void _collapse() => _animate(_minimum);
+
   void _close() {
     if (_scroll?.hasClients ?? false) _scroll!.jumpTo(0);
     _animate(_minimum);
@@ -151,6 +202,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final height = box.maxHeight;
+      _maximum = (1 - ViktorSheet.openGap / height).clamp(.02, 1.0);
       _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
       final area = Size(box.maxWidth, height);
       final geometryChanged =
@@ -214,50 +266,93 @@ class _ViktorSheetState extends State<ViktorSheet> {
                         _animate(_maximum);
                         return true;
                       },
-                      child: ShaderMask(
-                        blendMode: BlendMode.dstIn,
-                        shaderCallback: (rect) => LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: _expanded
-                              ? [Colors.white, Colors.white]
-                              : [
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.transparent,
-                                ],
-                          stops: _expanded ? null : [0, .9, 1],
-                        ).createShader(rect),
-                        child: ListView(
-                          key: widget.scrollKey,
-                          controller: scroll,
-                          padding: widget.padding,
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Container(
-                                  key: ViktorSheetKeys.handle,
-                                  width: 36,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: colors.outlineVariant,
-                                    borderRadius: BorderRadius.circular(
-                                      AppShape.full,
+                      child: RawScrollbar(
+                        key: ViktorSheetKeys.scrollbar,
+                        controller: scroll,
+                        thickness: 4,
+                        radius: const Radius.circular(AppShape.hairline),
+                        thumbColor: colors.outlineVariant,
+                        crossAxisMargin: 6,
+                        child: ShaderMask(
+                          key: _maskKey,
+                          blendMode: BlendMode.dstIn,
+                          // Recolhida: o que fica acima do rodapé (a área
+                          // visível, sem o `padding` de baixo) esmaece em dp
+                          // nos últimos 12 dp, para o rótulo da seção seguinte
+                          // não aparecer cortado logo abaixo do cabeçalho.
+                          shaderCallback: (rect) {
+                            final visible = math.max(
+                              1.0,
+                              rect.height -
+                                  widget.padding
+                                      .resolve(Directionality.of(context))
+                                      .bottom,
+                            );
+                            // Sem 12 dp livres abaixo do cabeçalho (360×640),
+                            // corte seco no fim dele: nem retrato clareado,
+                            // nem rótulo cortado.
+                            final header = _headerBottom();
+                            final tight = header > visible - 12;
+                            final start = math.min(
+                              rect.height,
+                              tight ? header : visible - 12,
+                            );
+                            final end = math.min(
+                              rect.height,
+                              tight ? header : visible - 4,
+                            );
+                            return LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: _expanded
+                                  ? [Colors.white, Colors.white]
+                                  : [
+                                      Colors.white,
+                                      Colors.white,
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                    ],
+                              stops: _expanded
+                                  ? null
+                                  : [
+                                      0,
+                                      math.max(0, start / rect.height),
+                                      math.max(0, end / rect.height),
+                                      1,
+                                    ],
+                            ).createShader(rect);
+                          },
+                          child: ListView(
+                            key: widget.scrollKey,
+                            controller: scroll,
+                            padding: widget.padding,
+                            children: [
+                              Center(
+                                child: Padding(
+                                  // Alça do canvas: 32×4, 8 dp em cima e
+                                  // nada embaixo (o cabeçalho tem a folga).
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Container(
+                                    key: ViktorSheetKeys.handle,
+                                    width: 32,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: colors.outlineVariant,
+                                      borderRadius: BorderRadius.circular(
+                                        AppShape.full,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            for (final child in widget.children)
-                              _ViktorSheetPresentation(
-                                expanded: _expanded,
-                                sheet: this,
-                                child: child,
-                              ),
-                          ],
+                              for (final child in widget.children)
+                                _ViktorSheetPresentation(
+                                  expanded: _expanded,
+                                  sheet: this,
+                                  child: child,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -276,11 +371,20 @@ class _ViktorSheetState extends State<ViktorSheet> {
                 opacity: _expanded ? 1 : 0,
                 child: SheetCloseButton(
                   key: widget.closeKey,
+                  tooltip: widget.closeTooltip,
                   onPressed: _close,
                 ),
               ),
             ),
           ),
+          if (widget.modalKey case final key?)
+            PositionedDirectional(
+              start: 0,
+              end: 0,
+              bottom: 0,
+              top: height * (1 - extent),
+              child: IgnorePointer(child: SizedBox.expand(key: key)),
+            ),
         ],
       );
     },

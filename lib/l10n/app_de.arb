@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Jeder hat schon eine Stimme. Tippe auf einen, um sie zu ändern.",
   "tourKeepVoices": "So lassen",
   "lessonPrevious": "Vorheriger Schritt",
+  "lessonFooterBack": "Zurück",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Spracheinstellungen des Geräts öffnen",
   "blindTitle": "Blind",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Nicht dieser. Denk daran, was die Lektion über „{topic}“ gezeigt hat.",
   "lessonThinkMistakeGeneric": "Dein Zug {move} funktioniert hier nicht. Sieh dir an, warum:",
   "lessonVariationShow": "Variante ansehen",
-  "lessonVariationExit": "Zurück zur Stellung der Lektion",
   "lessonDemoBack": "Vorheriger Zug",
   "lessonDemoForward": "Nächster Zug",
   "lessonDemoReplay": "Wiederholen",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Verliert",
   "explanationDoesNotMeetGoal": "Erreicht das Ziel nicht",
   "explanationUnavailable": "Diese Variante ist nicht verfügbar.",
+  "explanationExpand": "Antworten anzeigen",
+  "explanationCollapse": "Antworten ausblenden",
   "explanationFirst": "Variantenanfang",
   "explanationPrevious": "Vorheriger Zug",
   "explanationParent": "Zur übergeordneten Variante zurückkehren",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Auf dem freien Brett öffnen",
   "lessonExplanationShort": "Erklärung",
   "lessonFreeBoardInvite": "Noch unsicher? Teste andere Ideen aus dieser Stellung, von deiner Seite des Bretts aus.",
-  "lessonReturn": "Zurück",
   "lessonTeacherVoice": "Viktors Stimme",
   "lessonTeacherVoiceHint": "Erklärungen vorlesen",
   "lessonSoundHint": "Figurengeräusche und Viktors Stimme",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Du hast diesen Marathon noch nicht abgeschlossen",
   "historyEmptyFilteredGames": "Keine Partien mit diesen Filtern.",
   "historyEmptyFilteredSpeedruns": "Keine Speedruns mit diesen Filtern.",
-  "historyEmptyFilteredMarathons": "Keine Marathons mit diesen Filtern."
+  "historyEmptyFilteredMarathons": "Keine Marathons mit diesen Filtern.",
+  "lessonVariationClose": "Variante schließen und zur Erklärung zurückkehren",
+  "lessonVariationPrevious": "Vorheriger Zug der Variante",
+  "lessonVariationNext": "Nächster Zug der Variante",
+  "lessonPresentationClose": "Schließen und das Brett sehen"
 }

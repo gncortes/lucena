@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Mỗi người đã có một giọng. Chạm vào một người để đổi.",
   "tourKeepVoices": "Giữ nguyên",
   "lessonPrevious": "Bước trước",
+  "lessonFooterBack": "Quay lại",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Mở cài đặt giọng nói của thiết bị",
   "blindTitle": "Cờ mù",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Không phải nước đó. Hãy nghĩ về điều bài học đã chỉ ra về “{topic}”.",
   "lessonThinkMistakeGeneric": "Nước {move} của bạn không hiệu quả ở đây. Hãy xem vì sao:",
   "lessonVariationShow": "Xem biến",
-  "lessonVariationExit": "Quay lại thế cờ của bài",
   "lessonDemoBack": "Nước trước",
   "lessonDemoForward": "Nước tiếp",
   "lessonDemoReplay": "Xem lại",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Thua",
   "explanationDoesNotMeetGoal": "Không đạt mục tiêu",
   "explanationUnavailable": "Biến này không khả dụng.",
+  "explanationExpand": "Hiện các nước đáp",
+  "explanationCollapse": "Ẩn các nước đáp",
   "explanationFirst": "Đầu biến",
   "explanationPrevious": "Nước trước",
   "explanationParent": "Quay lại biến thể cấp trên",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Mở trên bàn cờ tự do",
   "lessonExplanationShort": "Giải thích",
   "lessonFreeBoardInvite": "Vẫn còn thắc mắc? Hãy thử những ý tưởng khác từ thế cờ này, ở phía bàn cờ của bạn.",
-  "lessonReturn": "Quay lại",
   "lessonTeacherVoice": "Giọng của Viktor",
   "lessonTeacherVoiceHint": "Đọc thành tiếng phần giải thích",
   "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Bạn chưa hoàn thành marathon này",
   "historyEmptyFilteredGames": "Không có ván đấu nào với các bộ lọc này.",
   "historyEmptyFilteredSpeedruns": "Không có speedrun nào với các bộ lọc này.",
-  "historyEmptyFilteredMarathons": "Không có marathon nào với các bộ lọc này."
+  "historyEmptyFilteredMarathons": "Không có marathon nào với các bộ lọc này.",
+  "lessonVariationClose": "Đóng biến và quay lại phần giải thích",
+  "lessonVariationPrevious": "Nước đi trước trong biến",
+  "lessonVariationNext": "Nước đi tiếp theo trong biến",
+  "lessonPresentationClose": "Đóng và xem bàn cờ"
 }

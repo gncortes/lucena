@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -152,15 +150,16 @@ void main() {
   });
 
   testWidgets('think mistake: the explanation is titled CORRECT MOVE and the '
-      'move is in the error colour', (tester) async {
+      'move is in the primary colour (no result colour)', (tester) async {
     final cubit = await open(2);
     await show(tester, cubit, const Size(360, 740));
     await tester.runAsync(() => cubit.play(move('a1b1')));
     await tester.pumpAndSettle();
     expect(find.text('CORRECT MOVE'), findsOneWidget);
-    final error = MoveQuality.mistake.listColor(
-      Theme.of(tester.element(find.byType(LessonScreen))).brightness,
-    );
+    // LICOES-V2 §2: o lance é sempre primary; o resultado não tem cor.
+    final error = Theme.of(tester.element(find.byType(LessonScreen)))
+        .colorScheme
+        .primary;
     var found = false;
     for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
       rich.text.visitChildren((span) {

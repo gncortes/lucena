@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Iedereen heeft al een stem. Tik op iemand om die te wijzigen.",
   "tourKeepVoices": "Zo laten",
   "lessonPrevious": "Vorige stap",
+  "lessonFooterBack": "Terug",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Spraakinstellingen van het apparaat openen",
   "blindTitle": "Blind",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Niet deze. Denk aan wat de les liet zien over ‘{topic}’.",
   "lessonThinkMistakeGeneric": "Je zet {move} werkt hier niet. Kijk waarom:",
   "lessonVariationShow": "Variant bekijken",
-  "lessonVariationExit": "Terug naar de stelling van de les",
   "lessonDemoBack": "Vorige zet",
   "lessonDemoForward": "Volgende zet",
   "lessonDemoReplay": "Opnieuw",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Verliest",
   "explanationDoesNotMeetGoal": "Bereikt het doel niet",
   "explanationUnavailable": "Deze variant is niet beschikbaar.",
+  "explanationExpand": "Antwoorden tonen",
+  "explanationCollapse": "Antwoorden verbergen",
   "explanationFirst": "Begin van de variant",
   "explanationPrevious": "Vorige zet",
   "explanationParent": "Terug naar de bovenliggende variant",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Openen op het vrije bord",
   "lessonExplanationShort": "Uitleg",
   "lessonFreeBoardInvite": "Nog twijfels? Probeer andere ideeën vanuit deze stelling, vanaf jouw kant van het bord.",
-  "lessonReturn": "Terug",
   "lessonTeacherVoice": "Stem van Viktor",
   "lessonTeacherVoiceHint": "De uitleg voorlezen",
   "lessonSoundHint": "Stukgeluiden en de stem van Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Je hebt deze marathon nog niet afgerond",
   "historyEmptyFilteredGames": "Geen partijen met deze filters.",
   "historyEmptyFilteredSpeedruns": "Geen speedruns met deze filters.",
-  "historyEmptyFilteredMarathons": "Geen marathons met deze filters."
+  "historyEmptyFilteredMarathons": "Geen marathons met deze filters.",
+  "lessonVariationClose": "Sluit de variant en ga terug naar de uitleg",
+  "lessonVariationPrevious": "Vorige zet van de variant",
+  "lessonVariationNext": "Volgende zet van de variant",
+  "lessonPresentationClose": "Sluiten en het bord zien"
 }

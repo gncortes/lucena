@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Każdy ma już głos. Dotknij kogoś, aby go zmienić.",
   "tourKeepVoices": "Zostaw tak",
   "lessonPrevious": "Poprzedni krok",
+  "lessonFooterBack": "Wstecz",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Otwórz ustawienia głosu urządzenia",
   "blindTitle": "Na ślepo",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Nie ten. Pomyśl o tym, co lekcja pokazała o „{topic}”.",
   "lessonThinkMistakeGeneric": "Twój ruch {move} tu nie działa. Zobacz dlaczego:",
   "lessonVariationShow": "Zobacz wariant",
-  "lessonVariationExit": "Wróć do pozycji z lekcji",
   "lessonDemoBack": "Poprzedni ruch",
   "lessonDemoForward": "Następny ruch",
   "lessonDemoReplay": "Powtórz",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Przegrywa",
   "explanationDoesNotMeetGoal": "Nie osiąga celu",
   "explanationUnavailable": "Ten wariant jest niedostępny.",
+  "explanationExpand": "Pokaż odpowiedzi",
+  "explanationCollapse": "Ukryj odpowiedzi",
   "explanationFirst": "Początek wariantu",
   "explanationPrevious": "Poprzedni ruch",
   "explanationParent": "Wróć do wariantu nadrzędnego",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Otwórz na swobodnej szachownicy",
   "lessonExplanationShort": "Wyjaśnienie",
   "lessonFreeBoardInvite": "Nadal masz wątpliwości? Sprawdź inne pomysły z tej pozycji, ze swojej strony szachownicy.",
-  "lessonReturn": "Wróć",
   "lessonTeacherVoice": "Głos Viktora",
   "lessonTeacherVoiceHint": "Czytaj wyjaśnienia na głos",
   "lessonSoundHint": "Dźwięki figur i głos Viktora",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Nie ukończono jeszcze tego maratonu",
   "historyEmptyFilteredGames": "Brak partii dla tych filtrów.",
   "historyEmptyFilteredSpeedruns": "Brak speedrunów dla tych filtrów.",
-  "historyEmptyFilteredMarathons": "Brak maratonów dla tych filtrów."
+  "historyEmptyFilteredMarathons": "Brak maratonów dla tych filtrów.",
+  "lessonVariationClose": "Zamknij wariant i wróć do wyjaśnienia",
+  "lessonVariationPrevious": "Poprzedni ruch wariantu",
+  "lessonVariationNext": "Następny ruch wariantu",
+  "lessonPresentationClose": "Zamknij i zobacz szachownicę"
 }

@@ -222,7 +222,7 @@ void main() {
     });
   }
 
-  testWidgets('toque na folha abre até 95% sem mover o tabuleiro', (
+  testWidgets('toque na folha abre até 76 dp do topo sem mover o tabuleiro', (
     tester,
   ) async {
     final id = await progress.addAttempt(game);
@@ -232,10 +232,10 @@ void main() {
     await tester.tapAt(tester.getTopLeft(panel) + const Offset(40, 12));
     await tester.pumpAndSettle();
     final appBar = tester.getRect(find.byType(AppBar));
-    final bottom = tester.getRect(find.byKey(GameDetailsKeys.screen)).bottom;
     expect(
       sheetTop(tester),
-      closeTo(appBar.bottom + (bottom - appBar.bottom) * .05, 1),
+      // Aberta, a folha para 76 dp abaixo do topo da área (LICOES-V2 §5).
+      closeTo(appBar.bottom + 76, 1),
     );
     expect(tester.getRect(find.byKey(GameDetailsKeys.board)), board);
     expect(

@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "모두 이미 목소리가 있어요. 바꾸려면 상대를 누르세요.",
   "tourKeepVoices": "이대로 두기",
   "lessonPrevious": "이전 단계",
+  "lessonFooterBack": "뒤로",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "기기 음성 설정 열기",
   "blindTitle": "블라인드",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "그 수가 아닙니다. 레슨이 “{topic}”에 대해 보여 준 것을 떠올려 보세요.",
   "lessonThinkMistakeGeneric": "당신의 수 {move}는 여기서 통하지 않습니다. 이유를 보세요:",
   "lessonVariationShow": "변화 보기",
-  "lessonVariationExit": "레슨 포지션으로 돌아가기",
   "lessonDemoBack": "이전 수",
   "lessonDemoForward": "다음 수",
   "lessonDemoReplay": "다시 보기",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "패배",
   "explanationDoesNotMeetGoal": "목표 미달성",
   "explanationUnavailable": "이 변화는 사용할 수 없습니다.",
+  "explanationExpand": "응수 보기",
+  "explanationCollapse": "응수 숨기기",
   "explanationFirst": "변화 시작",
   "explanationPrevious": "이전 수",
   "explanationParent": "상위 변화로 돌아가기",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "자유 보드에서 열기",
   "lessonExplanationShort": "해설",
   "lessonFreeBoardInvite": "아직 궁금한 점이 있나요? 이 국면에서 내 쪽 보드로 다른 아이디어를 시험해 보세요.",
-  "lessonReturn": "뒤로",
   "lessonTeacherVoice": "빅토르의 음성",
   "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",
   "lessonSoundHint": "기물 효과음과 빅토르의 음성",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "아직 이 마라톤을 완주하지 못했습니다",
   "historyEmptyFilteredGames": "이 필터에 맞는 대국이 없습니다.",
   "historyEmptyFilteredSpeedruns": "이 필터에 맞는 스피드런이 없습니다.",
-  "historyEmptyFilteredMarathons": "이 필터에 맞는 마라톤이 없습니다."
+  "historyEmptyFilteredMarathons": "이 필터에 맞는 마라톤이 없습니다.",
+  "lessonVariationClose": "변화 수순을 닫고 설명으로 돌아가기",
+  "lessonVariationPrevious": "변화 수순의 이전 수",
+  "lessonVariationNext": "변화 수순의 다음 수",
+  "lessonPresentationClose": "닫고 보드 보기"
 }

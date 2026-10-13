@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Chacun a déjà une voix. Touchez-en un pour la changer.",
   "tourKeepVoices": "Garder ainsi",
   "lessonPrevious": "Étape précédente",
+  "lessonFooterBack": "Retour",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Ouvrir les réglages vocaux de l'appareil",
   "blindTitle": "À l'aveugle",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Pas celui-ci. Pense à ce que la leçon a montré sur « {topic} ».",
   "lessonThinkMistakeGeneric": "Ton coup {move} ne fonctionne pas ici. Voici pourquoi :",
   "lessonVariationShow": "Voir la variante",
-  "lessonVariationExit": "Revenir à la position de l'étape",
   "lessonDemoBack": "Coup précédent",
   "lessonDemoForward": "Coup suivant",
   "lessonDemoReplay": "Rejouer",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Perd",
   "explanationDoesNotMeetGoal": "N’atteint pas l’objectif",
   "explanationUnavailable": "Cette variante est indisponible.",
+  "explanationExpand": "Afficher les réponses",
+  "explanationCollapse": "Masquer les réponses",
   "explanationFirst": "Début de la variante",
   "explanationPrevious": "Coup précédent",
   "explanationParent": "Revenir à la variante parente",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Ouvrir sur l’échiquier libre",
   "lessonExplanationShort": "Explication",
   "lessonFreeBoardInvite": "Encore un doute ? Testez d'autres idées depuis cette position, de votre côté de l'échiquier.",
-  "lessonReturn": "Retour",
   "lessonTeacherVoice": "Voix de Viktor",
   "lessonTeacherVoiceHint": "Lire les explications à voix haute",
   "lessonSoundHint": "Sons des pièces et voix de Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Vous n'avez pas encore terminé ce marathon",
   "historyEmptyFilteredGames": "Aucune partie avec ces filtres.",
   "historyEmptyFilteredSpeedruns": "Aucun speedrun avec ces filtres.",
-  "historyEmptyFilteredMarathons": "Aucun marathon avec ces filtres."
+  "historyEmptyFilteredMarathons": "Aucun marathon avec ces filtres.",
+  "lessonVariationClose": "Fermer la variante et revenir à l'explication",
+  "lessonVariationPrevious": "Coup précédent de la variante",
+  "lessonVariationNext": "Coup suivant de la variante",
+  "lessonPresentationClose": "Fermer et voir l'échiquier"
 }

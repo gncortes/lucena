@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "هرکدام از قبل صدایی دارند. برای تغییر، یکی را لمس کنید.",
   "tourKeepVoices": "همین بماند",
   "lessonPrevious": "مرحلهٔ قبلی",
+  "lessonFooterBack": "بازگشت",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "باز کردن تنظیمات صدای دستگاه",
   "blindTitle": "چشم‌بسته",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "این نیست. به آنچه درس دربارهٔ «{topic}» نشان داد فکر کن.",
   "lessonThinkMistakeGeneric": "حرکت {move} شما اینجا جواب نمی‌دهد. ببینید چرا:",
   "lessonVariationShow": "دیدن واریانت",
-  "lessonVariationExit": "بازگشت به وضعیت درس",
   "lessonDemoBack": "حرکت قبلی",
   "lessonDemoForward": "حرکت بعدی",
   "lessonDemoReplay": "تکرار",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "می‌بازد",
   "explanationDoesNotMeetGoal": "به هدف نمی‌رسد",
   "explanationUnavailable": "این شاخه در دسترس نیست.",
+  "explanationExpand": "نمایش پاسخ‌ها",
+  "explanationCollapse": "پنهان کردن پاسخ‌ها",
   "explanationFirst": "آغاز شاخه",
   "explanationPrevious": "حرکت قبلی",
   "explanationParent": "بازگشت به شاخهٔ بالاتر",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "باز کردن در صفحهٔ آزاد",
   "lessonExplanationShort": "توضیح",
   "lessonFreeBoardInvite": "هنوز مطمئن نیستید؟ ایده‌های دیگر را از همین وضعیت و از سمت خودتان روی صفحه امتحان کنید.",
-  "lessonReturn": "بازگشت",
   "lessonTeacherVoice": "صدای ویکتور",
   "lessonTeacherVoiceHint": "خواندن توضیحات با صدای بلند",
   "lessonSoundHint": "صدای مهره‌ها و صدای ویکتور",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "این ماراتن را هنوز تمام نکرده‌ای",
   "historyEmptyFilteredGames": "با این فیلترها بازی‌ای نیست.",
   "historyEmptyFilteredSpeedruns": "با این فیلترها اسپیدرانی نیست.",
-  "historyEmptyFilteredMarathons": "با این فیلترها ماراتنی نیست."
+  "historyEmptyFilteredMarathons": "با این فیلترها ماراتنی نیست.",
+  "lessonVariationClose": "بستن واریانت و بازگشت به توضیح",
+  "lessonVariationPrevious": "حرکت قبلی واریانت",
+  "lessonVariationNext": "حرکت بعدی واریانت",
+  "lessonPresentationClose": "بستن و دیدن صفحه"
 }

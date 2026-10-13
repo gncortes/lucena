@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Masing-masing sudah punya suara. Ketuk salah satu untuk menggantinya.",
   "tourKeepVoices": "Biarkan saja",
   "lessonPrevious": "Langkah sebelumnya",
+  "lessonFooterBack": "Kembali",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Buka setelan suara perangkat",
   "blindTitle": "Tanpa melihat",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Bukan itu. Ingat apa yang ditunjukkan pelajaran tentang “{topic}”.",
   "lessonThinkMistakeGeneric": "Langkahmu {move} tidak berhasil di sini. Lihat alasannya:",
   "lessonVariationShow": "Lihat variasinya",
-  "lessonVariationExit": "Kembali ke posisi pelajaran",
   "lessonDemoBack": "Langkah sebelumnya",
   "lessonDemoForward": "Langkah berikutnya",
   "lessonDemoReplay": "Ulangi",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Kalah",
   "explanationDoesNotMeetGoal": "Tidak mencapai tujuan",
   "explanationUnavailable": "Variasi ini tidak tersedia.",
+  "explanationExpand": "Tampilkan balasan",
+  "explanationCollapse": "Sembunyikan balasan",
   "explanationFirst": "Awal variasi",
   "explanationPrevious": "Langkah sebelumnya",
   "explanationParent": "Kembali ke variasi induk",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Buka di papan bebas",
   "lessonExplanationShort": "Penjelasan",
   "lessonFreeBoardInvite": "Masih ragu? Uji ide lain dari posisi ini, dari sisi papanmu.",
-  "lessonReturn": "Kembali",
   "lessonTeacherVoice": "Suara Viktor",
   "lessonTeacherVoiceHint": "Bacakan penjelasan",
   "lessonSoundHint": "Suara bidak dan suara Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Kamu belum menyelesaikan maraton ini",
   "historyEmptyFilteredGames": "Tidak ada permainan dengan filter ini.",
   "historyEmptyFilteredSpeedruns": "Tidak ada speedrun dengan filter ini.",
-  "historyEmptyFilteredMarathons": "Tidak ada maraton dengan filter ini."
+  "historyEmptyFilteredMarathons": "Tidak ada maraton dengan filter ini.",
+  "lessonVariationClose": "Tutup varian dan kembali ke penjelasan",
+  "lessonVariationPrevious": "Langkah sebelumnya dalam varian",
+  "lessonVariationNext": "Langkah berikutnya dalam varian",
+  "lessonPresentationClose": "Tutup dan lihat papan"
 }

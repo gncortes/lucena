@@ -2969,6 +2969,10 @@
   "@lessonPrevious": {
     "description": "Lesson: button (tooltip) that goes back to the previous step to review it"
   },
+  "lessonFooterBack": "Back",
+  "@lessonFooterBack": {
+    "description": "Lesson: label of the footer button that goes back to the previous step (outlined, next to Continue)"
+  },
   "voiceSpeedValue": "{speed}×",
   "@voiceSpeedValue": {
     "description": "Voice speed on the speech bubble button, e.g. 1.2×",
@@ -3859,9 +3863,21 @@
   "@lessonVariationShow": {
     "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
   },
-  "lessonVariationExit": "Back to the lesson position",
-  "@lessonVariationExit": {
-    "description": "Lesson footer button (tooltip): leave the cited line and show the lesson step position again."
+    "lessonVariationClose": "Close the line and return to the explanation",
+  "@lessonVariationClose": {
+    "description": "Tooltip of the X in the line mode footer: leave the cited line and show the explanation panel again."
+  },
+  "lessonVariationPrevious": "Previous move in the line",
+  "@lessonVariationPrevious": {
+    "description": "Tooltip: go back one move in the cited line."
+  },
+  "lessonVariationNext": "Next move in the line",
+  "@lessonVariationNext": {
+    "description": "Tooltip: go forward one move in the cited line."
+  },
+  "lessonPresentationClose": "Close and see the board",
+  "@lessonPresentationClose": {
+    "description": "Tooltip and label of the X that closes the step presentation sheet and shows the board."
   },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
@@ -5380,6 +5396,8 @@
   "explanationLosing": "Loses",
   "explanationDoesNotMeetGoal": "Does not meet the goal",
   "explanationUnavailable": "This line is unavailable.",
+  "explanationExpand": "Show the replies",
+  "explanationCollapse": "Hide the replies",
   "explanationFirst": "Start of line",
   "explanationPrevious": "Previous move",
   "explanationParent": "Return to parent variation",
@@ -5397,6 +5415,8 @@
   "@explanationLosing": {"description": "Explanation panel: Losing"},
   "@explanationDoesNotMeetGoal": {"description": "Explanation panel: DoesNotMeetGoal"},
   "@explanationUnavailable": {"description": "Explanation panel: Unavailable"},
+  "@explanationExpand": {"description": "Explanation card: accessibility label of the chevron that shows the replies"},
+  "@explanationCollapse": {"description": "Explanation card: accessibility label of the chevron that hides the replies"},
   "@explanationFirst": {"description": "Explanation panel: First"},
   "@explanationPrevious": {"description": "Explanation panel: Previous"},
   "@explanationNext": {"description": "Explanation panel: Next"},
@@ -5472,8 +5492,6 @@
   "@lessonFreeBoardInvite": {
     "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
-  "lessonReturn": "Back",
-  "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},
   "lessonTeacherVoice": "Viktor's voice",
   "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
   "lessonTeacherVoiceHint": "Read the explanations aloud",

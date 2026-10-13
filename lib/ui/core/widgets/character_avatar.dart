@@ -9,12 +9,16 @@ class CharacterAvatar extends StatelessWidget {
   const CharacterAvatar({
     required this.character,
     this.size = 44,
+    this.radius,
     this.emotion,
     super.key,
   });
 
   final Character character;
   final double size;
+
+  /// Raio dos cantos; nulo: 14% do tamanho.
+  final double? radius;
   final Emotion? emotion;
 
   @override
@@ -22,7 +26,7 @@ class CharacterAvatar extends StatelessWidget {
     return SizedBox.square(
       dimension: size,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(size * 0.14),
+        borderRadius: BorderRadius.circular(radius ?? size * 0.14),
         child: AnimatedSwitcher(
           duration: AppMotion.state,
           child: Image.asset(

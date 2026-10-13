@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "それぞれすでに声があります。変えたい相手をタップしてください。",
   "tourKeepVoices": "このままにする",
   "lessonPrevious": "前のステップ",
+  "lessonFooterBack": "戻る",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "端末の音声設定を開く",
   "blindTitle": "目隠し",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "その手ではありません。レッスンが「{topic}」について示したことを考えましょう。",
   "lessonThinkMistakeGeneric": "あなたの手 {move} はここではうまくいきません。理由を見てみましょう：",
   "lessonVariationShow": "変化を見る",
-  "lessonVariationExit": "レッスンの局面に戻る",
   "lessonDemoBack": "前の手",
   "lessonDemoForward": "次の手",
   "lessonDemoReplay": "もう一度",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "負け",
   "explanationDoesNotMeetGoal": "目標を達成しない",
   "explanationUnavailable": "この変化は利用できません。",
+  "explanationExpand": "返答を表示",
+  "explanationCollapse": "返答を非表示",
   "explanationFirst": "変化の開始",
   "explanationPrevious": "前の手",
   "explanationParent": "親の変化に戻る",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "自由盤で開く",
   "lessonExplanationShort": "解説",
   "lessonFreeBoardInvite": "まだ疑問がありますか？この局面から、自分の側の盤で別の考えを試してみましょう。",
-  "lessonReturn": "戻る",
   "lessonTeacherVoice": "ヴィクトルの声",
   "lessonTeacherVoiceHint": "解説を読み上げる",
   "lessonSoundHint": "駒の効果音とヴィクトルの声",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "このマラソンはまだ完走していません",
   "historyEmptyFilteredGames": "この条件に合う対局はありません。",
   "historyEmptyFilteredSpeedruns": "この条件に合うスピードランはありません。",
-  "historyEmptyFilteredMarathons": "この条件に合うマラソンはありません。"
+  "historyEmptyFilteredMarathons": "この条件に合うマラソンはありません。",
+  "lessonVariationClose": "変化手順を閉じて解説に戻る",
+  "lessonVariationPrevious": "変化手順の前の手",
+  "lessonVariationNext": "変化手順の次の手",
+  "lessonPresentationClose": "閉じて盤面を見る"
 }

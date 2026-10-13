@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "У каждого уже есть голос. Нажмите на соперника, чтобы сменить его.",
   "tourKeepVoices": "Оставить так",
   "lessonPrevious": "Предыдущий шаг",
+  "lessonFooterBack": "Назад",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Открыть настройки голоса устройства",
   "blindTitle": "Вслепую",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Не этот. Вспомни, что урок показал о «{topic}».",
   "lessonThinkMistakeGeneric": "Твой ход {move} здесь не работает. Посмотри почему:",
   "lessonVariationShow": "Посмотреть вариант",
-  "lessonVariationExit": "Вернуться к позиции урока",
   "lessonDemoBack": "Предыдущий ход",
   "lessonDemoForward": "Следующий ход",
   "lessonDemoReplay": "Повторить",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Проигрывает",
   "explanationDoesNotMeetGoal": "Не достигает цели",
   "explanationUnavailable": "Этот вариант недоступен.",
+  "explanationExpand": "Показать ответы",
+  "explanationCollapse": "Скрыть ответы",
   "explanationFirst": "Начало варианта",
   "explanationPrevious": "Предыдущий ход",
   "explanationParent": "Вернуться к родительскому варианту",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Открыть на свободной доске",
   "lessonExplanationShort": "Объяснение",
   "lessonFreeBoardInvite": "Остались сомнения? Проверьте другие идеи из этой позиции со своей стороны доски.",
-  "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Виктора",
   "lessonTeacherVoiceHint": "Читать объяснения вслух",
   "lessonSoundHint": "Звуки фигур и голос Виктора",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Вы ещё не завершили этот марафон",
   "historyEmptyFilteredGames": "Нет партий с такими фильтрами.",
   "historyEmptyFilteredSpeedruns": "Нет спидранов с такими фильтрами.",
-  "historyEmptyFilteredMarathons": "Нет марафонов с такими фильтрами."
+  "historyEmptyFilteredMarathons": "Нет марафонов с такими фильтрами.",
+  "lessonVariationClose": "Закрыть вариант и вернуться к объяснению",
+  "lessonVariationPrevious": "Предыдущий ход варианта",
+  "lessonVariationNext": "Следующий ход варианта",
+  "lessonPresentationClose": "Закрыть и посмотреть доску"
 }

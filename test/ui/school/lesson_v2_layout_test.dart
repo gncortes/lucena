@@ -99,6 +99,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -137,8 +138,8 @@ void main() {
     expect(board.height, closeTo(side, 1), reason: '$state: board side');
     expect(board.left, closeTo(8, 1), reason: '$state: board start');
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
-    expect(progress.top, closeTo(64, 1), reason: '$state: progress top');
-    expect(progress.height, closeTo(8, 1), reason: '$state: progress height');
+    expect(progress.top, closeTo(56, 1), reason: '$state: progress top');
+    expect(progress.height, closeTo(4, 1), reason: '$state: progress height');
     // Viktor (header and speech) lives in the sheet, below the board.
     final teacher = find.byWidgetPredicate(
       (widget) =>
@@ -213,6 +214,9 @@ void main() {
             expectHighBoard(tester, size, 'PensarDica');
             // Pratica (move step, solving).
             await cubit.next();
+            await tester.pumpAndSettle();
+            // A apresentação do passo (§8) termina antes do jogo.
+            await cubit.startStepClock();
             await tester.pumpAndSettle();
             expect(cubit.state.current?.id, 'try');
             expect(cubit.state.layout, LessonLayoutMode.solving);

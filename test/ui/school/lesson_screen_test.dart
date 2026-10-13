@@ -76,6 +76,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load(endgame ? 'rook.lucena' : 'pieces.rook', 'en');
+    await cubit.startStepClock();
     lessonCubit = cubit;
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
@@ -334,6 +335,9 @@ void main() {
   Future<void> toStars(WidgetTester tester) async {
     await tester.tap(find.byKey(LessonKeys.nextButton));
     await tester.pumpAndSettle();
+    // A apresentação do passo (§8) termina antes do exercício.
+    await lessonCubit.startStepClock();
+    await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('pieces.rook', 'stars')), findsOneWidget);
   }
 
@@ -360,6 +364,19 @@ void main() {
     expect(find.byKey(LessonKeys.place), findsNothing);
     // A barra de passos da aula fica.
     expect(find.byKey(LessonKeys.progress), findsOneWidget);
+  });
+
+  testWidgets('barra contínua no pé da AppBar: 4 dp, cresce ao avançar', (
+    tester,
+  ) async {
+    await pump(tester, intro: 'Short.');
+    LinearProgressIndicator bar() =>
+        tester.widget<LinearProgressIndicator>(find.byKey(LessonKeys.progress));
+    final before = bar().value!;
+    expect(tester.getSize(find.byKey(LessonKeys.progress)).height, 4);
+    expect(tester.getTopLeft(find.byKey(LessonKeys.progress)).dy, 56);
+    await toStars(tester);
+    expect(bar().value!, greaterThan(before));
   });
 
   testWidgets('estrelas: arrastar a torre na diagonal não anda, ela volta e '
@@ -434,7 +451,7 @@ void main() {
       expect(lessonCubit.state.phase, StepPhase.failed);
       final back = find.byKey(LessonKeys.backButton);
       final review = find.byKey(LessonKeys.reviewPoint);
-      final solution = find.byKey(LessonKeys.nextButton);
+      final solution = find.byKey(LessonKeys.seeSolution);
       final retry = find.byKey(LessonKeys.retryButton);
       expect(tester.getRect(back).top, closeTo(tester.getRect(review).top, 1));
       expect(

@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "لكل واحد صوت بالفعل. المس أحدهم لتغييره.",
   "tourKeepVoices": "أبقِه كما هو",
   "lessonPrevious": "الخطوة السابقة",
+  "lessonFooterBack": "رجوع",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "فتح إعدادات الصوت في الجهاز",
   "blindTitle": "بلا رؤية",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "ليست هذه. فكّر فيما أظهره الدرس عن «{topic}».",
   "lessonThinkMistakeGeneric": "نقلتك {move} لا تنجح هنا. إليك السبب:",
   "lessonVariationShow": "عرض التفريع",
-  "lessonVariationExit": "العودة إلى وضعية الدرس",
   "lessonDemoBack": "النقلة السابقة",
   "lessonDemoForward": "النقلة التالية",
   "lessonDemoReplay": "إعادة",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "يخسر",
   "explanationDoesNotMeetGoal": "لا يحقق الهدف",
   "explanationUnavailable": "هذا التفرع غير متاح.",
+  "explanationExpand": "إظهار الردود",
+  "explanationCollapse": "إخفاء الردود",
   "explanationFirst": "بداية التفرع",
   "explanationPrevious": "النقلة السابقة",
   "explanationParent": "العودة إلى التفرع الأعلى",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "افتح في الرقعة الحرة",
   "lessonExplanationShort": "الشرح",
   "lessonFreeBoardInvite": "هل ما زلت غير متأكد؟ جرّب أفكارًا أخرى من هذا الوضع، من جهتك من الرقعة.",
-  "lessonReturn": "رجوع",
   "lessonTeacherVoice": "صوت فيكتور",
   "lessonTeacherVoiceHint": "قراءة الشروحات بصوت عالٍ",
   "lessonSoundHint": "أصوات القطع وصوت فيكتور",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "لم تُكمل هذا الماراثون بعد",
   "historyEmptyFilteredGames": "لا توجد مباريات بعوامل التصفية هذه.",
   "historyEmptyFilteredSpeedruns": "لا توجد سبيدرانات بعوامل التصفية هذه.",
-  "historyEmptyFilteredMarathons": "لا توجد ماراثونات بعوامل التصفية هذه."
+  "historyEmptyFilteredMarathons": "لا توجد ماراثونات بعوامل التصفية هذه.",
+  "lessonVariationClose": "إغلاق التفريعة والعودة إلى الشرح",
+  "lessonVariationPrevious": "النقلة السابقة في التفريعة",
+  "lessonVariationNext": "النقلة التالية في التفريعة",
+  "lessonPresentationClose": "إغلاق ومشاهدة اللوح"
 }

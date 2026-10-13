@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "У кожного вже є голос. Торкніться суперника, щоб змінити його.",
   "tourKeepVoices": "Залишити так",
   "lessonPrevious": "Попередній крок",
+  "lessonFooterBack": "Назад",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Відкрити налаштування голосу пристрою",
   "blindTitle": "Наосліп",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Не цей. Згадай, що урок показав про «{topic}».",
   "lessonThinkMistakeGeneric": "Твій хід {move} тут не працює. Подивись чому:",
   "lessonVariationShow": "Переглянути варіант",
-  "lessonVariationExit": "Повернутися до позиції уроку",
   "lessonDemoBack": "Попередній хід",
   "lessonDemoForward": "Наступний хід",
   "lessonDemoReplay": "Повторити",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Програє",
   "explanationDoesNotMeetGoal": "Не досягає мети",
   "explanationUnavailable": "Цей варіант недоступний.",
+  "explanationExpand": "Показати відповіді",
+  "explanationCollapse": "Сховати відповіді",
   "explanationFirst": "Початок варіанта",
   "explanationPrevious": "Попередній хід",
   "explanationParent": "Повернутися до батьківського варіанта",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Відкрити на вільній дошці",
   "lessonExplanationShort": "Пояснення",
   "lessonFreeBoardInvite": "Залишилися сумніви? Перевірте інші ідеї з цієї позиції зі свого боку дошки.",
-  "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Віктора",
   "lessonTeacherVoiceHint": "Читати пояснення вголос",
   "lessonSoundHint": "Звуки фігур і голос Віктора",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Ви ще не завершили цей марафон",
   "historyEmptyFilteredGames": "Немає партій за цими фільтрами.",
   "historyEmptyFilteredSpeedruns": "Немає спідранів за цими фільтрами.",
-  "historyEmptyFilteredMarathons": "Немає марафонів за цими фільтрами."
+  "historyEmptyFilteredMarathons": "Немає марафонів за цими фільтрами.",
+  "lessonVariationClose": "Закрити варіант і повернутися до пояснення",
+  "lessonVariationPrevious": "Попередній хід варіанта",
+  "lessonVariationNext": "Наступний хід варіанта",
+  "lessonPresentationClose": "Закрити й подивитися на дошку"
 }

@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Cada uno ya tiene una voz. Toca uno para cambiarla.",
   "tourKeepVoices": "Dejar así",
   "lessonPrevious": "Paso anterior",
+  "lessonFooterBack": "Atrás",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Abrir ajustes de voz del dispositivo",
   "blindTitle": "A ciegas",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "No es esa. Piensa en lo que la lección mostró sobre «{topic}».",
   "lessonThinkMistakeGeneric": "Tu jugada {move} no funciona aquí. Mira por qué:",
   "lessonVariationShow": "Ver la variante",
-  "lessonVariationExit": "Volver a la posición del paso",
   "lessonDemoBack": "Jugada anterior",
   "lessonDemoForward": "Siguiente jugada",
   "lessonDemoReplay": "Repetir",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Pierde",
   "explanationDoesNotMeetGoal": "No cumple el objetivo",
   "explanationUnavailable": "Esta variante no está disponible.",
+  "explanationExpand": "Mostrar las respuestas",
+  "explanationCollapse": "Ocultar las respuestas",
   "explanationFirst": "Inicio de la variante",
   "explanationPrevious": "Jugada anterior",
   "explanationParent": "Volver a la variante superior",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Abrir en el tablero libre",
   "lessonExplanationShort": "Explicación",
   "lessonFreeBoardInvite": "¿Aún tienes dudas? Prueba otras ideas desde esta posición, desde tu lado del tablero.",
-  "lessonReturn": "Volver",
   "lessonTeacherVoice": "Voz de Viktor",
   "lessonTeacherVoiceHint": "Leer las explicaciones en voz alta",
   "lessonSoundHint": "Sonidos de las piezas y voz de Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Aún no has terminado este maratón",
   "historyEmptyFilteredGames": "No hay partidas con estos filtros.",
   "historyEmptyFilteredSpeedruns": "No hay speedruns con estos filtros.",
-  "historyEmptyFilteredMarathons": "No hay maratones con estos filtros."
+  "historyEmptyFilteredMarathons": "No hay maratones con estos filtros.",
+  "lessonVariationClose": "Cerrar la variante y volver a la explicación",
+  "lessonVariationPrevious": "Jugada anterior de la variante",
+  "lessonVariationNext": "Jugada siguiente de la variante",
+  "lessonPresentationClose": "Cerrar y ver el tablero"
 }

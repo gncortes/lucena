@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Cada um já tem uma voz. Toque num deles para mudar.",
   "tourKeepVoices": "Manter assim",
   "lessonPrevious": "Passo anterior",
+  "lessonFooterBack": "Voltar",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Abrir definições de voz do dispositivo",
   "blindTitle": "Às cegas",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Não é esse. Pense no que a lição mostrou sobre “{topic}”.",
   "lessonThinkMistakeGeneric": "O seu lance {move} não funciona aqui. Veja porquê:",
   "lessonVariationShow": "Ver a variante",
-  "lessonVariationExit": "Voltar à posição do passo",
   "lessonDemoBack": "Lance anterior",
   "lessonDemoForward": "Próximo lance",
   "lessonDemoReplay": "Repetir",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Perde",
   "explanationDoesNotMeetGoal": "Não cumpre o objetivo",
   "explanationUnavailable": "Esta variante está indisponível.",
+  "explanationExpand": "Mostrar as respostas",
+  "explanationCollapse": "Esconder as respostas",
   "explanationFirst": "Início da variante",
   "explanationPrevious": "Lance anterior",
   "explanationParent": "Voltar à variante pai",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Abrir no tabuleiro livre",
   "lessonExplanationShort": "Explicação",
   "lessonFreeBoardInvite": "Ainda com dúvidas? Teste outras ideias a partir desta posição, do seu lado do tabuleiro.",
-  "lessonReturn": "Voltar",
   "lessonTeacherVoice": "Voz do Viktor",
   "lessonTeacherVoiceHint": "Ler as explicações em voz alta",
   "lessonSoundHint": "Sons das peças e voz do Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Ainda não concluiu esta maratona",
   "historyEmptyFilteredGames": "Nenhuma partida com estes filtros.",
   "historyEmptyFilteredSpeedruns": "Nenhum speedrun com estes filtros.",
-  "historyEmptyFilteredMarathons": "Nenhuma maratona com estes filtros."
+  "historyEmptyFilteredMarathons": "Nenhuma maratona com estes filtros.",
+  "lessonVariationClose": "Fechar a variante e voltar à explicação",
+  "lessonVariationPrevious": "Lance anterior da variante",
+  "lessonVariationNext": "Próximo lance da variante",
+  "lessonPresentationClose": "Fechar e ver o tabuleiro"
 }

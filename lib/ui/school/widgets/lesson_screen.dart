@@ -27,10 +27,8 @@ import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
-import '../../core/keys/explanation_keys.dart';
 import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
@@ -55,7 +53,7 @@ class LessonScreen extends StatefulWidget {
 
 class _LessonScreenState extends State<LessonScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  // O tabuleiro "pousa" a cada passo novo: um fade curto e uma leve escala.
+  // O tabuleiro entra a cada passo novo com um esmaecer curto.
   late final _landing = AnimationController(
     vsync: this,
     duration: AppMotion.component,
@@ -63,6 +61,15 @@ class _LessonScreenState extends State<LessonScreen>
   );
 
   ChessboardController? _board;
+
+  // Apresentação (T65 §8). Caso B: a folha cobre o tabuleiro, sem rodapé e
+  // sem relógio, até o fim da fala (ou do tempo de leitura) ou o X.
+  final _speechContent = GlobalKey();
+  final _presentingModal = ValueNotifier(false);
+  bool _presentHandled = false;
+  bool _presentExpanded = false;
+  bool _presentSpoke = false;
+  Duration _presentWait = Duration.zero;
 
   // Sacode o tabuleiro no lance errado.
   // A casa ou o lance tocado na fala, por um instante no tabuleiro.
@@ -74,6 +81,14 @@ class _LessonScreenState extends State<LessonScreen>
   VariationCursor? _authoredVariation;
 
   final _variation = ValueNotifier<SpeechLineCursor?>(null);
+
+  // A entrada na variante segue a sequência do canvas: a folha sai, o
+  // tabuleiro anda, entra a faixa e, por fim, os controles. [_stage] conta
+  // quantos passos já valem (3: tudo à vista); a fala só troca com a folha
+  // já fora ([_speechHeld] segura o texto do passo até lá).
+  final _stage = ValueNotifier<int>(0);
+  final _entryTimers = <Timer>[];
+  bool _speechHeld = false;
 
   // As variantes da fala mostrada, guardadas pela fala e pelas posições.
   String? _linesKey;
@@ -113,6 +128,9 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   Duration _demoWait = Duration.zero;
+
+  // O anel do ⏭ da demonstração (-1: falando; nulo: sem anel).
+  final _demoRing = ValueNotifier<double?>(null);
   Duration? _lastTickElapsed;
   String? _demoAt;
   bool _demoSpoke = false;
@@ -160,12 +178,16 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.layout == LessonLayoutMode.solving) {
       _elapsed.value = cubit.stepElapsed;
     }
+    if (state.presenting && _presentingModal.value) {
+      // O relógio do passo está parado na apresentação: o tempo vem do tick.
+      _pacePresentation(cubit, state, const Duration(milliseconds: 250));
+    }
     switch (state.current) {
       case DemoStep(:final line)
           when state.demoPlaying && state.demoMove < line.length:
         _paceDemo(cubit, state, delta);
       default:
-        break;
+        _demoRing.value = null;
     }
   }
 
@@ -174,6 +196,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// leitura pelo tamanho da fala. A velocidade da voz vale para os dois.
   void _paceDemo(LessonCubit cubit, LessonState state, Duration delta) {
     if (_authoredVariation != null || _variation.value != null) {
+      _demoRing.value = null;
       return;
     }
     final at = '${state.current!.id}:${state.demoMove}';
@@ -187,17 +210,29 @@ class _LessonScreenState extends State<LessonScreen>
     final speech = TeacherSpeech.speechOf(context)?.state;
     final speed = speech?.settings.speed ?? 1.0;
     final text = state.speech ?? '';
-    if (speech != null && speech.isSpeaking(text)) {
+    // Fala audível: som do app e voz do Viktor ligados. Sem isso, a fala que
+    // ainda conste como "em andamento" (botão de áudio, voz presa) não segura
+    // a demonstração: vale o tempo de leitura, com teto (T65, §7).
+    final audible =
+        (context.read<SettingsCubit>().state?.sound ?? true) &&
+        (speech?.settings.enabled ?? false);
+    if (audible && speech!.isSpeaking(text)) {
       // Ainda falando: o relógio conta a partir do fim da fala.
       _demoSpoke = true;
       _demoWait = Duration.zero;
+      _demoRing.value = DemoRing.speaking;
       return;
     }
-    final reading = max(DemoPace.minReadMs, text.length * DemoPace.msPerChar);
-    final waitMs =
-        ((_demoSpoke ? 0 : reading) + DemoPace.pauseMs) / max(speed, 0.5);
+    final waitMs = DemoPace.waitMs(
+      length: text.length,
+      spoke: _demoSpoke,
+      speed: speed,
+    );
+    _demoRing.value = (_demoWait.inMilliseconds / waitMs).clamp(0.0, 1.0);
     if (_demoWait.inMilliseconds >= waitMs) {
       _demoAt = null;
+      // O lance sai: o anel zera na hora (decisão do orquestrador).
+      _demoRing.value = 0;
       unawaited(cubit.demoForward());
     }
   }
@@ -213,8 +248,12 @@ class _LessonScreenState extends State<LessonScreen>
     _shake.dispose();
     _landing.dispose();
     _elapsed.dispose();
+    _demoRing.dispose();
+    _presentingModal.dispose();
     _flash.dispose();
     _variation.dispose();
+    _stage.dispose();
+    _cancelEntry();
     super.dispose();
   }
 
@@ -252,10 +291,12 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
+    var cleared = false;
     if (state.fen != previous.fen ||
         state.step != previous.step ||
         state.speech != previous.speech ||
         state.layout != previous.layout) {
+      cleared = _authoredVariation != null;
       _authoredVariation = null;
     }
     _previous = state;
@@ -278,6 +319,18 @@ class _LessonScreenState extends State<LessonScreen>
             curve: AppMotion.enter,
           );
         }
+      }
+    }
+    // Saiu da Solução vista (Tentar de novo): a folha recolhe até o tabuleiro.
+    if (previous.solutionSeen && !state.solutionSeen && _sheet.isAttached) {
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(_sheetMin);
+      } else {
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
       }
     }
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
@@ -305,6 +358,16 @@ class _LessonScreenState extends State<LessonScreen>
     }
     if (_authoredVariation != null) {
       return;
+    }
+    // Saiu de uma variante da explicação (Voltar, Tentar de novo...): o
+    // tabuleiro volta a ser o do passo, com quem joga dele (o da variante é
+    // sem toque).
+    if (cleared) {
+      _board?.updatePosition(
+        _gameData(state),
+        animate: false,
+        resetPremove: true,
+      );
     }
     final board = _board;
     if (board == null) {
@@ -390,33 +453,72 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// O tabuleiro na variante, no lance do [cursor]; a folha recolhe para o
-  /// tabuleiro aparecer inteiro.
+  /// O tabuleiro na variante, no lance do [cursor]; a folha sai para baixo
+  /// (fica montada, com o tamanho e a rolagem) e a faixa e os controles entram.
   void _showLine(BuildContext context, SpeechLineCursor cursor) {
-    final opening = _variation.value == null;
     _flash.clear();
+    final entering = _variation.value == null && _authoredVariation == null;
     _variation.value = cursor;
-    _board?.updatePosition(
-      _lineGame(cursor),
-      animate: true,
-      resetPremove: true,
-    );
-    if (opening && _sheet.isAttached) {
-      if (AppMotion.of(context).disabled) {
-        _sheet.jumpTo(_sheetMin);
-      } else {
-        _sheet.animateTo(
-          _sheetMin,
-          duration: AppMotion.of(context).component,
-          curve: AppMotion.enter,
-        );
-      }
+    _enterVariant(entering, () {
+      _board?.updatePosition(
+        _lineGame(cursor),
+        animate: true,
+        resetPremove: true,
+      );
+    });
+  }
+
+  void _cancelEntry() {
+    for (final timer in _entryTimers) {
+      timer.cancel();
     }
+    _entryTimers.clear();
+  }
+
+  /// Entrar na variante: a folha sai (300 ms), o tabuleiro anda, a faixa
+  /// entra 100 ms depois e os controles aos 450 ms. Dentro da variante, ou
+  /// sem movimento, tudo vale já.
+  void _enterVariant(bool entering, VoidCallback showBoard) {
+    _cancelEntry();
+    if (!entering || AppMotion.of(context).disabled) {
+      _speechHeld = false;
+      _stage.value = 3;
+      showBoard();
+      return;
+    }
+    final sheet = AppMotion.of(context).component;
+    _stage.value = 0;
+    _speechHeld = true;
+    _entryTimers
+      ..add(
+        Timer(sheet, () {
+          if (!mounted) return;
+          setState(() => _speechHeld = false);
+          showBoard();
+          _stage.value = 1;
+        }),
+      )
+      ..add(Timer(sheet + AppMotion.of(context).state, () => _stage.value = 2))
+      ..add(
+        Timer(
+          sheet + AppMotion.of(context).state + AppMotion.of(context).component,
+          () => _stage.value = 3,
+        ),
+      );
   }
 
   void _showAuthoredVariation(VariationCursor? cursor) {
     _flash.clear();
+    final entering =
+        cursor != null &&
+        _variation.value == null &&
+        _authoredVariation == null;
     _variation.value = null;
+    if (cursor == null) {
+      _cancelEntry();
+      _speechHeld = false;
+      _stage.value = 0;
+    }
     setState(() => _authoredVariation = cursor);
     final state = context.read<LessonCubit>().state;
     if (cursor == null) {
@@ -427,20 +529,22 @@ class _LessonScreenState extends State<LessonScreen>
       );
     } else {
       final position = GameRules.fromFen(cursor.fen);
-      _board?.updatePosition(
-        GameData(
-          fen: cursor.fen,
-          playerSide: PlayerSide.none,
-          sideToMove: position?.turn ?? Side.white,
-          validMoves: const {},
-          lastMove: cursor.lastMove,
-          kingSquareInCheck: position == null
-              ? null
-              : GameRules.checkedKing(position),
-        ),
-        animate: true,
-        resetPremove: true,
-      );
+      _enterVariant(entering, () {
+        _board?.updatePosition(
+          GameData(
+            fen: cursor.fen,
+            playerSide: PlayerSide.none,
+            sideToMove: position?.turn ?? Side.white,
+            validMoves: const {},
+            lastMove: cursor.lastMove,
+            kingSquareInCheck: position == null
+                ? null
+                : GameRules.checkedKing(position),
+          ),
+          animate: true,
+          resetPremove: true,
+        );
+      });
     }
   }
 
@@ -449,6 +553,8 @@ class _LessonScreenState extends State<LessonScreen>
     if (_variation.value == null) {
       return;
     }
+    _cancelEntry();
+    _stage.value = 0;
     _variation.value = null;
     final state = context.read<LessonCubit>().state;
     if (state.fen == null || state.current == null) {
@@ -586,6 +692,16 @@ class _LessonScreenState extends State<LessonScreen>
                     ),
                   ),
               ],
+              // A barra contínua no pé da AppBar: some no fim da parte e na
+              // formatura (PartFinished fica como na V1).
+              bottom:
+                  state.ready &&
+                      !state.missing &&
+                      !state.finished &&
+                      !state.courseFinished &&
+                      state.current != null
+                  ? _progressBar(context, state)
+                  : null,
             ),
             body: BoardViewport(
               usefulHeight: BoardViewport.usefulHeightOf(context),
@@ -593,6 +709,28 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           );
         },
+      ),
+    );
+  }
+
+  PreferredSizeWidget _progressBar(BuildContext context, LessonState state) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Semantics(
+        label: context.l10n.lessonStep(state.step + 1, state.stepCount),
+        child: ExcludeSemantics(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(end: state.progress.clamp(0.0, 1.0)),
+            duration: AppMotion.of(context).component,
+            curve: AppMotion.enter,
+            builder: (context, value, _) => LinearProgressIndicator(
+              key: LessonKeys.progress,
+              value: value,
+              minHeight: 4,
+              borderRadius: BorderRadius.zero,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -626,28 +764,8 @@ class _LessonScreenState extends State<LessonScreen>
                       SizedBox.shrink(
                         key: LessonKeys.step(state.lesson!.id, step.id),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Semantics(
-                                label: l10n.lessonStep(
-                                  state.step + 1,
-                                  state.stepCount,
-                                ),
-                                child: ExcludeSemantics(
-                                  child: StepProgress(
-                                    key: LessonKeys.progress,
-                                    total: state.stepCount,
-                                    value: state.progress * state.stepCount,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 12 dp entre a barra e o tabuleiro: topo em 80 dp.
+                      const SizedBox(height: 12),
                       if (hasBoard) ...[
                         Expanded(
                           child: _exerciseArea(
@@ -688,7 +806,7 @@ class _LessonScreenState extends State<LessonScreen>
                                           onMoving: (value) =>
                                               _sheetMoving.value = value,
                                           padding: EdgeInsets.only(
-                                            bottom: footer,
+                                            bottom: footer + _endGap,
                                           ),
                                           children: [
                                             _speechSheet(
@@ -719,10 +837,30 @@ class _LessonScreenState extends State<LessonScreen>
                     // A altura de verdade dos botões (com a margem acima
                     // deles): a fala termina antes dela.
                     child: ListenableBuilder(
-                      listenable: Listenable.merge([_sheetMoving, _variation]),
+                      listenable: Listenable.merge([
+                        _sheetMoving,
+                        _variation,
+                        _presentingModal,
+                        _stage,
+                      ]),
                       builder: (context, _) {
-                        final covered = _sheetMoving.value;
                         final variation = _variation.value;
+                        final authored = _authoredVariation;
+                        final variantOn = variation != null || authored != null;
+                        // Entrando na variante, o rodapé da demo sai junto
+                        // com a folha e os controles novos só aparecem aos
+                        // 450 ms (etapa 3): nada fica parado no meio.
+                        final entering = variantOn && _stage.value < 3;
+                        final covered =
+                            _sheetMoving.value ||
+                            _presentingModal.value ||
+                            entering;
+                        final inVariant = variantOn && _stage.value >= 1;
+                        // Na apresentação B o rodapé nasce oculto: sem
+                        // animação de saída por cima do modal.
+                        final hideTime = _presentingModal.value
+                            ? Duration.zero
+                            : AppMotion.of(context).component;
                         // Os botões saem só enquanto a folha anda (arrasto
                         // ou animação) e voltam quando ela para, recolhida
                         // ou aberta: a fala rola por baixo deles.
@@ -731,38 +869,64 @@ class _LessonScreenState extends State<LessonScreen>
                           child: ExcludeSemantics(
                             excluding: covered,
                             child: AnimatedSlide(
-                              duration: AppMotion.of(context).component,
+                              duration: hideTime,
                               curve: AppMotion.exit,
                               offset: covered
                                   ? const Offset(0, 1)
                                   : Offset.zero,
                               child: AnimatedOpacity(
-                                duration: AppMotion.of(context).component,
+                                duration: hideTime,
                                 opacity: covered ? 0 : 1,
                                 child: _SizeReporter(
                                   onSize: _onFooterSize,
                                   child: AnimatedSwitcher(
-                                    duration: AppMotion.of(context).component,
+                                    // 100 ms saindo e 100 ms entrando: o
+                                    // rodapé antigo nunca cobre o texto novo.
+                                    duration: AppMotion.of(context).state,
+                                    transitionBuilder: (child, animation) =>
+                                        FadeTransition(
+                                          opacity: animation.drive(
+                                            CurveTween(
+                                              curve: const Interval(.5, 1),
+                                            ),
+                                          ),
+                                          child: child,
+                                        ),
                                     child: KeyedSubtree(
-                                      key: ValueKey((
-                                        state.layout,
-                                        variation != null,
-                                      )),
-                                      child: variation != null
+                                      key: ValueKey((state.layout, inVariant)),
+                                      child: inVariant
                                           ? KeyedSubtree(
                                               key: LessonKeys.footer,
                                               child: VariationControls(
-                                                cursor: variation,
+                                                canPrevious: variation != null
+                                                    ? variation.canPrevious
+                                                    : authored!.canPrevious,
+                                                canNext: variation != null
+                                                    ? variation.canNext
+                                                    : authored!.canNext,
                                                 wrong: _wrongShown(state),
-                                                onExit: () => _exitLine(),
-                                                onBack: () => _showLine(
-                                                  context,
-                                                  variation.previous(),
-                                                ),
-                                                onForward: () => _showLine(
-                                                  context,
-                                                  variation.next(),
-                                                ),
+                                                onExit: () => variation != null
+                                                    ? _exitLine()
+                                                    : _showAuthoredVariation(
+                                                        null,
+                                                      ),
+                                                onBack: () => variation != null
+                                                    ? _showLine(
+                                                        context,
+                                                        variation.previous(),
+                                                      )
+                                                    : _showAuthoredVariation(
+                                                        authored!.previous(),
+                                                      ),
+                                                onForward: () =>
+                                                    variation != null
+                                                    ? _showLine(
+                                                        context,
+                                                        variation.next(),
+                                                      )
+                                                    : _showAuthoredVariation(
+                                                        authored!.next(),
+                                                      ),
                                               ),
                                             )
                                           : state.layout ==
@@ -806,6 +970,11 @@ class _LessonScreenState extends State<LessonScreen>
         side,
         side,
       );
+      _openSolutionSheet(
+        state,
+        box.maxHeight - rect.bottom - ExerciseLayout.gutter,
+      );
+      _openPresentation(context, state, step, area, rect);
       return Stack(
         children: [
           Positioned.fromRect(
@@ -854,24 +1023,317 @@ class _LessonScreenState extends State<LessonScreen>
           ),
           Positioned.fill(
             child: ValueListenableBuilder(
-              valueListenable: _footerHeight,
-              builder: (context, footer, _) => ViktorSheet(
-                key: LessonKeys.viktorSheet,
-                top: rect.bottom + ExerciseLayout.gutter,
-                controller: _sheet,
-                scrollKey: LessonKeys.scroll,
-                closeKey: LessonKeys.closeSheet,
-                onMinimumChanged: (value) => _sheetMin = value,
-                onMoving: (value) => _sheetMoving.value = value,
-                padding: EdgeInsets.only(bottom: footer),
-                children: [_speechSheet(context, state, step, viktor)],
+              valueListenable: _variation,
+              builder: (context, line, child) {
+                final motion = AppMotion.of(context);
+                final variant = line != null || _authoredVariation != null;
+                // A folha sai para baixo e fica montada: o tamanho e a
+                // rolagem voltam como estavam ao fechar a variante.
+                return AnimatedSlide(
+                  offset: variant ? const Offset(0, 1) : Offset.zero,
+                  duration: motion.component,
+                  curve: variant ? AppMotion.exit : AppMotion.enter,
+                  child: IgnorePointer(
+                    ignoring: variant,
+                    child: ExcludeSemantics(excluding: variant, child: child),
+                  ),
+                );
+              },
+              child: ValueListenableBuilder(
+                valueListenable: _footerHeight,
+                builder: (context, footer, _) => ListenableBuilder(
+                  listenable: _presentingModal,
+                  // Na apresentação B não há rodapé: o texto vai até o fim.
+                  builder: (context, _) => ViktorSheet(
+                    key: LessonKeys.viktorSheet,
+                    top: rect.bottom + ExerciseLayout.gutter,
+                    controller: _sheet,
+                    scrollKey: LessonKeys.scroll,
+                    closeKey: _presentingModal.value
+                        ? LessonKeys.presentationClose
+                        : LessonKeys.closeSheet,
+                    closeTooltip: _presentingModal.value
+                        ? context.l10n.lessonPresentationClose
+                        : null,
+                    modalKey: _presentingModal.value
+                        ? LessonKeys.presentation
+                        : null,
+                    onMinimumChanged: (value) => _sheetMin = value,
+                    onMoving: (value) => _sheetMoving.value = value,
+                    onExpanded: _onSheetExpanded,
+                    padding: EdgeInsets.only(
+                      bottom: (_presentingModal.value ? 0 : footer) + _endGap,
+                    ),
+                    children: [
+                      KeyedSubtree(
+                        key: _speechContent,
+                        child: _speechSheet(context, state, step, viktor),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+            ),
+          ),
+          // A faixa da variante: os lances, o da vez em destaque, e o texto.
+          PositionedDirectional(
+            // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 dos lados.
+            top: rect.bottom + AppSpacing.lg,
+            start: AppSpacing.lg,
+            end: AppSpacing.lg,
+            child: ListenableBuilder(
+              listenable: Listenable.merge([_variation, _stage]),
+              builder: (context, _) {
+                final line = _variation.value;
+                final strip = _stage.value >= 2
+                    ? _stripOf(context, state, line)
+                    : null;
+                return AnimatedOpacity(
+                  opacity: strip == null ? 0 : 1,
+                  duration: AppMotion.of(context).state,
+                  child: IgnorePointer(
+                    ignoring: strip == null,
+                    child: strip == null
+                        ? const SizedBox(width: double.infinity)
+                        : VariationStrip(
+                            key: LessonKeys.variationStrip,
+                            moves: strip.moves,
+                            current: strip.current,
+                            text: strip.text,
+                          ),
+                  ),
+                );
+              },
             ),
           ),
         ],
       );
     },
   );
+
+  /// O que a faixa da variante mostra: os lances da linha, o da vez e o
+  /// texto (na fala, o parágrafo que cita a linha; na explicação, o do lance).
+  ({List<String> moves, int current, String text})? _stripOf(
+    BuildContext context,
+    LessonState state,
+    SpeechLineCursor? line,
+  ) {
+    final authored = _authoredVariation;
+    if (authored != null) {
+      return (
+        moves: authored.variation.movesSan,
+        current: authored.ply,
+        text: authored.texts.isEmpty
+            ? ''
+            : WikiMarkup.parse(authored.texts.first).text,
+      );
+    }
+    if (line == null) return null;
+    final step = state.current;
+    final said = step == null
+        ? null
+        : state.layout == LessonLayoutMode.solving
+        ? _promptText(context, state, step)
+        : _said(context, state);
+    final marked = WikiMarkup.parse(said ?? '').text;
+    final first = line.line.links.first.text;
+    final paragraphs = marked.split('\n').where((p) => p.trim().isNotEmpty);
+    return (
+      moves: [for (final link in line.line.links) link.text],
+      current: line.ply,
+      text: paragraphs.firstWhere(
+        (p) => p.contains(first),
+        orElse: () => paragraphs.isEmpty ? '' : paragraphs.first,
+      ),
+    );
+  }
+
+  /// Apresentação do passo (T65 §8): mede o objetivo e decide. Cabe entre o
+  /// tabuleiro e o rodapé (A): o painel fica parado e o relógio corre já. Não
+  /// cabe (B): a folha abre cobrindo o tabuleiro, sem rodapé nem relógio.
+  void _openPresentation(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+    Size area,
+    Rect rect,
+  ) {
+    if (!state.presenting) {
+      _presentHandled = false;
+      if (_presentingModal.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _endPresentation();
+        });
+      }
+      return;
+    }
+    if (_presentHandled) return;
+    _presentHandled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final cubit = context.read<LessonCubit>();
+      // Cabe: tudo o que a folha mostra (cabeçalho, contexto e objetivo,
+      // medido na tela) entre o tabuleiro e o rodapé, com a alça no alto.
+      final content = _speechContent.currentContext?.size?.height;
+      final fits =
+          content == null ||
+          rect.bottom +
+                  ExerciseLayout.gutter +
+                  _handleHeight +
+                  content +
+                  _footerHeight.value +
+                  _endGap <=
+              area.height;
+      if (fits || !cubit.state.presenting) {
+        unawaited(cubit.startStepClock());
+        return;
+      }
+      _presentWait = Duration.zero;
+      _presentSpoke = false;
+      _presentExpanded = false;
+      _presentingModal.value = true;
+      if (!_sheet.isAttached) return;
+      // A folha sobe até a altura do texto (alça, conteúdo e respiro final),
+      // no máximo até os 76 dp livres no alto (LICOES-V2 §5, §8).
+      final ceiling = 1 - ViktorSheet.openGap / area.height;
+      final wanted = (_handleHeight + content + _endGap) / area.height;
+      // Texto curto: a folha ainda sobe um pouco, para ser o modal com o X
+      // (abrir é passar de 3% do mínimo).
+      final target = wanted
+          .clamp(min(_sheetMin + .04, ceiling), ceiling)
+          .toDouble();
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(target);
+        _presentExpanded = true;
+      } else {
+        unawaited(
+          _sheet
+              .animateTo(
+                target,
+                duration: AppMotion.of(context).panel,
+                curve: AppMotion.enter,
+              )
+              .then((_) {
+                if (mounted && _presentingModal.value) {
+                  _presentExpanded = true;
+                }
+              }),
+        );
+      }
+    });
+  }
+
+  /// Fim da apresentação B: a folha diminui até o tabuleiro, o rodapé entra
+  /// e o relógio começa.
+  void _endPresentation() {
+    if (!_presentingModal.value) return;
+    _presentingModal.value = false;
+    if (_sheet.isAttached && _sheet.size > _sheetMin + .01) {
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(_sheetMin);
+      } else {
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        );
+      }
+    }
+    unawaited(context.read<LessonCubit>().startStepClock());
+  }
+
+  /// A folha abriu ou fechou: na apresentação B, abrir arma o fim e
+  /// recolher (o X) encerra.
+  void _onSheetExpanded(bool expanded) {
+    if (!_presentingModal.value) return;
+    if (expanded) {
+      _presentExpanded = true;
+    } else if (_presentExpanded) {
+      _endPresentation();
+    }
+  }
+
+  /// A apresentação acaba com a fala (ou, sem voz, no tempo de leitura).
+  void _pacePresentation(LessonCubit cubit, LessonState state, Duration delta) {
+    if (!_presentExpanded) return;
+    final speech = TeacherSpeech.speechOf(context)?.state;
+    final text = state.step < 0
+        ? ''
+        : (_promptText(context, state, state.current!) ?? '');
+    final audible =
+        (context.read<SettingsCubit>().state?.sound ?? true) &&
+        (speech?.settings.enabled ?? false);
+    if (audible && speech!.isSpeaking(text)) {
+      _presentSpoke = true;
+      _presentWait = Duration.zero;
+      return;
+    }
+    _presentWait += delta;
+    final waitMs = DemoPace.waitMs(
+      length: text.length,
+      spoke: _presentSpoke,
+      speed: speech?.settings.speed ?? 1.0,
+    );
+    if (_presentWait.inMilliseconds >= waitMs) _endPresentation();
+  }
+
+  /// Solução vista em tela baixa (T65 §4, E6): se entre o tabuleiro e o
+  /// rodapé de 2 linhas sobra menos que o cabeçalho (64) e 4 linhas de texto
+  /// (160 dp), a folha abre expandida, como modal sobre o tabuleiro; o X
+  /// recolhe até a borda dele.
+  void _openSolutionSheet(LessonState state, double below) {
+    if (!state.solutionSeen) {
+      _solutionHandled = false;
+      return;
+    }
+    if (_solutionHandled) return;
+    _solutionHandled = true;
+    if (below - _solutionFooterHeight >= _solutionMinSheet) return;
+    _expandSolutionSheet(attempts: 5);
+  }
+
+  /// Abre a folha até o máximo. A folha pode ainda não estar ligada ao
+  /// controle neste quadro, ou um relayout (o rodapé que cresce) pode
+  /// devolvê-la ao mínimo no meio da animação: tenta de novo, sem desistir
+  /// da primeira vez (ao vivo, no aparelho, a folha ficava recolhida).
+  void _expandSolutionSheet({required int attempts}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          attempts <= 0 ||
+          !context.read<LessonCubit>().state.solutionSeen) {
+        return;
+      }
+      if (!_sheet.isAttached) {
+        _expandSolutionSheet(attempts: attempts - 1);
+        return;
+      }
+      if (AppMotion.of(context).disabled) {
+        _sheet.jumpTo(1);
+        return;
+      }
+      // O controle limita ao tamanho máximo da folha.
+      _sheet
+          .animateTo(
+            1,
+            duration: AppMotion.of(context).component,
+            curve: AppMotion.enter,
+          )
+          .then((_) {
+            if (!mounted || !_sheet.isAttached) return;
+            if (_sheet.size <= _sheetMin + .02) {
+              _expandSolutionSheet(attempts: attempts - 1);
+            }
+          });
+    });
+  }
+
+  bool _solutionHandled = false;
+
+  /// Rodapé da Solução vista: 12 + 48 + 12 + 48 + 24 (LICOES-V2 §4).
+  static const _solutionFooterHeight = 144.0;
+
+  /// Cabeçalho do Viktor (64) + 4 linhas de texto de 24 dp.
+  static const _solutionMinSheet = 160.0;
 
   /// Room kept below the board for the collapsed sheet: the shared peek plus
   /// Viktor's header row (avatar 56 minus the 8 gap), now always in the sheet
@@ -932,6 +1394,10 @@ class _LessonScreenState extends State<LessonScreen>
         ),
       if (hint is NormalMove)
         Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
+      // Solução vista: a seta verde (a da dica) no lance certo.
+      if (state.solutionSeen)
+        if (state.solutionMove case final NormalMove move)
+          Arrow(color: const Color(0xcc15781b), orig: move.from, dest: move.to),
     };
     // Cada passo novo: o tabuleiro "pousa" (o controle volta do zero ao
     // trocar de passo, sem refazer o tabuleiro).
@@ -939,10 +1405,8 @@ class _LessonScreenState extends State<LessonScreen>
       animation: _landing,
       builder: (context, child) {
         final value = AppMotion.enter.transform(_landing.value);
-        return Opacity(
-          opacity: 0.3 + 0.7 * value,
-          child: Transform.scale(scale: 0.95 + 0.05 * value, child: child),
-        );
+        // Só um esmaecer: as peças que andam já se movem sozinhas (§8).
+        return Opacity(opacity: 0.3 + 0.7 * value, child: child);
       },
       child: _shakingBoard(context, state, boardSettings, board, size, shapes),
     );
@@ -1105,6 +1569,7 @@ class _LessonScreenState extends State<LessonScreen>
         inDemo: state.current is DemoStep && state.demoMove > 0,
       ),
       correctMoveTitle: context.l10n.lessonCorrectMove,
+      solutionSeen: state.solutionSeen,
     );
     final attempted = state.attemptedSan ?? state.thinkMistake;
     if (attempted == null ||
@@ -1122,25 +1587,29 @@ class _LessonScreenState extends State<LessonScreen>
     return ExplanationPayload(
       positionId: payload.positionId,
       state: ExplanationState.incorrect,
-      explanations: [
-        ExplanationBlock(
-          id: 'played-unmapped',
-          kind: ExplanationKind.playedIncorrect,
-          texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
-        ),
-        for (final block in payload.explanations)
-          // A explicação do lance certo ganha o título dela (D13–D16).
-          if (block.kind == ExplanationKind.context && block.title.isEmpty)
-            ExplanationBlock(
-              id: block.id,
-              kind: block.kind,
-              title: context.l10n.lessonCorrectMove,
-              texts: block.texts,
-              variations: block.variations,
-            )
-          else
-            block,
-      ],
+      explanations: _correctFirst(
+        state.solutionSeen,
+        context.l10n.lessonCorrectMove,
+        [
+          ExplanationBlock(
+            id: 'played-unmapped',
+            kind: ExplanationKind.playedIncorrect,
+            texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
+          ),
+          for (final block in payload.explanations)
+            // A explicação do lance certo ganha o título dela (D13–D16).
+            if (block.kind == ExplanationKind.context && block.title.isEmpty)
+              ExplanationBlock(
+                id: block.id,
+                kind: block.kind,
+                title: context.l10n.lessonCorrectMove,
+                texts: block.texts,
+                variations: block.variations,
+              )
+            else
+              block,
+        ],
+      ),
     );
   }
 
@@ -1171,7 +1640,7 @@ class _LessonScreenState extends State<LessonScreen>
           ? null
           : _explanationFor(context, state),
       onVariation: _showAuthoredVariation,
-      activeVariation: _authoredVariation,
+      activeVariation: _speechHeld ? null : _authoredVariation,
       text: prompting && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
@@ -1221,8 +1690,6 @@ class _LessonScreenState extends State<LessonScreen>
       children: [
         // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
         // exercício. No resto, o Viktor já diz o que fazer.
-        // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
-        // exercício. No resto, o Viktor já diz o que fazer.
         if (viktor != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -1238,12 +1705,17 @@ class _LessonScreenState extends State<LessonScreen>
         if ((state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
             state.fen != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            // Em cima, 0: o último bloco da explicação já termina com 16.
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Divider(),
-                const SizedBox(height: 8),
+                // Canvas: 16 + linha + 16 até "Ainda com dúvida?".
+                Divider(
+                  height: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+                const SizedBox(height: 16),
                 // End of the explanation (PropV2Licao*): 16/24 onSurfaceVariant.
                 Text(
                   context.l10n.lessonFreeBoardInvite,
@@ -1306,40 +1778,15 @@ class _LessonScreenState extends State<LessonScreen>
     child: LessonFooterSurface(child: child),
   );
 
-  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton centrado,
-  /// CompRodapeLicao `voltar-posicao`) sobe uma variante, ou sai dela se já
-  /// estiver na raiz. Ao contrário do rodapé dos botões flutuantes, o fundo
-  /// é sólido (o texto que rola não aparece atrás) com um esmaecer no topo.
-  Widget _variationFooter(BuildContext context, LessonState state) {
-    final cursor = _authoredVariation!;
-    final payload = state.explanation;
-    return _footer(
-      context,
-      child: Align(
-        heightFactor: 1,
-        child: TextButton.icon(
-          key: ExplanationKeys.restore,
-          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-          onPressed: () => _showAuthoredVariation(
-            cursor.variation.parentId == null
-                ? null
-                : payload?.parentCursor(cursor.variation),
-          ),
-          icon: const Icon(Icons.undo),
-          label: Text(context.l10n.lessonReturn),
-        ),
-      ),
-    );
-  }
-
   /// O texto do botão principal: "Explicação" no passo de pensar (D16),
-  /// "Concluir" no último passo, "Continuar" no resto.
+  /// "Concluir a aula" no último passo da aula, "Continuar" no resto.
   String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
     final l10n = context.l10n;
     final isLast = state.step + 1 >= state.stepCount;
     if (step is ThinkStep) return l10n.lessonExplanationShort;
     if (state.returnTo != null) return l10n.lessonBackToTest;
-    if (isLast && state.part != null) return l10n.lessonFinishPart;
+    // Último passo de uma parte: segue para a próxima parte (LICOES-V2 §3).
+    if (isLast && state.part != null) return l10n.lessonContinue;
     return isLast ? l10n.lessonFinish : l10n.lessonContinue;
   }
 
@@ -1350,9 +1797,6 @@ class _LessonScreenState extends State<LessonScreen>
   Widget _solvingFooter(BuildContext context, LessonState state) {
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
-    if (_authoredVariation != null) {
-      return _variationFooter(context, state);
-    }
     final step = state.current!;
     final colors = Theme.of(context).colorScheme;
     final canHint =
@@ -1470,9 +1914,6 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// Com o professor falando: voltar um passo, tentar de novo e continuar.
   Widget _actions(BuildContext context, LessonState state) {
-    if (_authoredVariation != null) {
-      return _variationFooter(context, state);
-    }
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
     final step = state.current!;
@@ -1480,27 +1921,38 @@ class _LessonScreenState extends State<LessonScreen>
     if (step is DemoStep && state.phase != StepPhase.done) {
       return KeyedSubtree(
         key: LessonKeys.footer,
-        child: DemoControls(state: state, height: _actionsHeight),
+        child: DemoControls(
+          state: state,
+          height: _actionsHeight,
+          ring: _demoRing,
+        ),
+      );
+    }
+    // Com a explicação aberta (T65 §3, §4): o rodapé do canvas, de botões de
+    // texto em partes iguais, no lugar do FAB e da pílula.
+    final explanation = state.explanation;
+    final failed = state.phase == StepPhase.failed;
+    if (failed && state.solutionSeen) {
+      return _solutionFooter(context, state);
+    }
+    if (failed &&
+        (explanation?.explanations.any(
+              (b) => b.kind == ExplanationKind.mainSolution,
+            ) ??
+            false)) {
+      return _errorFooter(context, state, step);
+    }
+    if (explanation != null && !failed && state.phase != StepPhase.waiting) {
+      return _panelFooter(
+        context,
+        children: [
+          _backButton(context, state),
+          _continueButton(context, state, step),
+        ],
       );
     }
     final review = state.phase == StepPhase.failed && state.reviewStep != null;
     if (state.phase == StepPhase.failed) {
-      VariationCursor? solution;
-      for (final block
-          in state.explanation?.explanations ?? const <ExplanationBlock>[]) {
-        if (block.kind != ExplanationKind.mainSolution &&
-            block.kind != ExplanationKind.playedCorrect &&
-            block.kind != ExplanationKind.otherSolutions) {
-          continue;
-        }
-        for (final variation in block.variations) {
-          if (variation.parentId != null) continue;
-          solution = state.explanation?.openVariation(variation);
-          if (solution != null) break;
-        }
-        if (solution != null) break;
-      }
-      final solutionCursor = solution;
       Widget action(
         Key key,
         IconData icon,
@@ -1574,11 +2026,11 @@ class _LessonScreenState extends State<LessonScreen>
             Row(
               children: [
                 action(
-                  LessonKeys.nextButton,
+                  LessonKeys.seeSolution,
                   Icons.lightbulb_outline,
                   l10n.lessonSeeSolution,
-                  solutionCursor != null
-                      ? () => _showAuthoredVariation(solutionCursor)
+                  state.explanation != null
+                      ? cubit.seeSolution
                       : state.canContinue
                       ? cubit.next
                       : null,
@@ -1651,9 +2103,189 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
+  /// O rodapé do painel (CompRodapeLicao `rodape_botoes`): fundo da folha,
+  /// borda de cima de 1 dp, padding 12/16/24; as linhas em [children] e os
+  /// botões de cada linha em partes iguais, 12 dp entre eles.
+  Widget _panelFooter(BuildContext context, {required List<Widget> children}) =>
+      _footerBox(
+        key: LessonKeys.footer,
+        context: context,
+        // Os botões da fileira da mesma altura se um rótulo quebrar linha.
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (index, child) in children.indexed) ...[
+                if (index > 0) const SizedBox(width: AppSpacing.md),
+                Expanded(child: child),
+              ],
+            ],
+          ),
+        ),
+      );
+
+  Widget _footerBox({
+    required Key key,
+    required BuildContext context,
+    required Widget child,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      key: key,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        border: Border(top: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        child: child,
+      ),
+    );
+  }
+
+  ButtonStyle _footerButtonStyle(BuildContext context) => ButtonStyle(
+    minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+    padding: const WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+    ),
+    shape: const WidgetStatePropertyAll(StadiumBorder()),
+    textStyle: WidgetStatePropertyAll(Theme.of(context).textTheme.labelLarge),
+  );
+
+  Widget _outlinedButton(
+    BuildContext context, {
+    required Key key,
+    required String label,
+    required VoidCallback? onPressed,
+    String? tooltip,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    final button = OutlinedButton(
+      key: key,
+      style: _footerButtonStyle(context).copyWith(
+        foregroundColor: WidgetStatePropertyAll(colors.primary),
+        side: WidgetStateProperty.resolveWith(
+          (states) => BorderSide(
+            color: states.contains(WidgetState.disabled)
+                ? colors.onSurface.withValues(alpha: .12)
+                : colors.outline,
+          ),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    );
+    return tooltip == null ? button : Tooltip(message: tooltip, child: button);
+  }
+
+  /// "Voltar" (o passo anterior; o tooltip é `lessonPrevious`).
+  Widget _backButton(BuildContext context, LessonState state) =>
+      _outlinedButton(
+        context,
+        key: LessonKeys.backButton,
+        label: context.l10n.lessonFooterBack,
+        tooltip: context.l10n.lessonPrevious,
+        onPressed: state.canGoBack ? context.read<LessonCubit>().back : null,
+      );
+
+  /// "Continuar" cheio, ou o texto do passo (Concluir, Voltar ao teste...).
+  Widget _continueButton(
+    BuildContext context,
+    LessonState state,
+    LessonStep step, {
+    bool filled = true,
+  }) {
+    final cubit = context.read<LessonCubit>();
+    final label = _nextLabel(context, state, step);
+    final onPressed = state.canContinue ? cubit.next : null;
+    if (!filled) {
+      return _outlinedButton(
+        context,
+        key: LessonKeys.nextButton,
+        label: label,
+        onPressed: onPressed,
+      );
+    }
+    return FilledButton(
+      key: LessonKeys.nextButton,
+      style: _footerButtonStyle(context),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    );
+  }
+
+  /// Explicação do erro (E2): Voltar | Ver solução | Continuar, 1:1:1; só o
+  /// Continuar é cheio.
+  Widget _errorFooter(
+    BuildContext context,
+    LessonState state,
+    LessonStep step,
+  ) => _panelFooter(
+    context,
+    children: [
+      _backButton(context, state),
+      _outlinedButton(
+        context,
+        key: LessonKeys.seeSolution,
+        label: context.l10n.lessonSeeSolution,
+        onPressed: context.read<LessonCubit>().seeSolution,
+      ),
+      _continueButton(context, state, step),
+    ],
+  );
+
+  /// Solução vista (E5): em cima, Tentar de novo cheio com o ícone; embaixo,
+  /// Voltar | Continuar em contorno (um só primário na tela).
+  Widget _solutionFooter(BuildContext context, LessonState state) {
+    final cubit = context.read<LessonCubit>();
+    final step = state.current!;
+    return KeyedSubtree(
+      key: LessonKeys.footer,
+      child: _footerBox(
+        key: LessonKeys.solutionFooter,
+        context: context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.icon(
+              key: LessonKeys.retryButton,
+              style: _footerButtonStyle(context),
+              onPressed: cubit.retry,
+              icon: const Icon(Icons.replay, size: 18),
+              label: Text(
+                context.l10n.lessonRetry,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: _backButton(context, state)),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: _continueButton(context, state, step, filled: false),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
+
+  /// Folga depois do último item da folha, além da altura do rodapé: ele
+  /// nunca encosta no rodapé nem no anel da demonstração.
+  static const _endGap = AppSpacing.md;
+  // A alça da folha: 8 dp em cima e 4 dp dela.
+  static const _handleHeight = 12.0;
 }
 
 /// Na demonstração, a folha mostra só a fala do lance (TelaLicaoDemoFim):
@@ -1700,6 +2332,7 @@ ExplanationPayload demoSheetPayload(
 ExplanationPayload wrongMoveSheetPayload(
   ExplanationPayload payload, {
   required String correctMoveTitle,
+  bool solutionSeen = false,
 }) {
   if (payload.state != ExplanationState.incorrect ||
       !payload.explanations.any(
@@ -1711,7 +2344,7 @@ ExplanationPayload wrongMoveSheetPayload(
     positionId: payload.positionId,
     reviewStepId: payload.reviewStepId,
     state: payload.state,
-    explanations: [
+    explanations: _correctFirst(solutionSeen, correctMoveTitle, [
       for (final b in payload.explanations)
         if (b.kind == ExplanationKind.mainSolution)
           ExplanationBlock(
@@ -1721,10 +2354,28 @@ ExplanationPayload wrongMoveSheetPayload(
             texts: b.texts,
             variations: b.variations,
           )
-        else if (!(b.kind == ExplanationKind.context && b.title.isNotEmpty))
+        // A citação de contexto só fica na Solução vista (LICOES-V2 §4).
+        else if (solutionSeen ||
+            !(b.kind == ExplanationKind.context && b.title.isNotEmpty))
           b,
-    ],
+    ]),
   );
+}
+
+/// Solução vista (T65 §4): Lance certo, depois o lance do aluno ("Lance
+/// errado") e "Também não funcionam" (a citação de contexto vai por último,
+/// em `ExplanationCards._ordered`). Sem a solução
+/// vista, a ordem é a do conteúdo (erro antes do certo, §3).
+List<ExplanationBlock> _correctFirst(
+  bool solutionSeen,
+  String correctMoveTitle,
+  List<ExplanationBlock> blocks,
+) {
+  if (!solutionSeen) return blocks;
+  bool isCorrect(ExplanationBlock b) =>
+      b.kind == ExplanationKind.mainSolution ||
+      (b.kind == ExplanationKind.context && b.title == correctMoveTitle);
+  return [...blocks.where(isCorrect), ...blocks.where((b) => !isCorrect(b))];
 }
 
 /// Abre a próxima aula da trilha no lugar desta.

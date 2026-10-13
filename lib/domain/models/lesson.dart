@@ -638,9 +638,14 @@ class LessonCheckpoint {
     this.reviewStep,
     this.attemptedSan,
     this.thinkMistake,
+    this.solutionSeen = false,
   });
 
   final String lessonId;
+
+  /// The student asked for the solution of the failed step (T65 §4): the app
+  /// reopens on the "solution seen" screen.
+  final bool solutionSeen;
 
   /// The last answer at this step (T65 §7): with it the explanation of a
   /// wrong move comes back after the app is closed.
@@ -728,6 +733,7 @@ class LessonCheckpoint {
     reviewStep: reviewStep,
     attemptedSan: attemptedSan,
     thinkMistake: thinkMistake,
+    solutionSeen: solutionSeen,
   );
 
   Map<String, dynamic> toJson() => {
@@ -752,6 +758,7 @@ class LessonCheckpoint {
     'reviewStep': ?reviewStep,
     'attemptedSan': ?attemptedSan,
     'thinkMistake': ?thinkMistake,
+    if (solutionSeen) 'solutionSeen': true,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -787,6 +794,7 @@ class LessonCheckpoint {
       reviewStep: json['reviewStep'] as String?,
       attemptedSan: json['attemptedSan'] as String?,
       thinkMistake: json['thinkMistake'] as String?,
+      solutionSeen: json['solutionSeen'] as bool? ?? false,
     );
   }
 
@@ -811,7 +819,8 @@ class LessonCheckpoint {
       other.failed == failed &&
       other.reviewStep == reviewStep &&
       other.attemptedSan == attemptedSan &&
-      other.thinkMistake == thinkMistake;
+      other.thinkMistake == thinkMistake &&
+      other.solutionSeen == solutionSeen;
 
   @override
   int get hashCode => Object.hash(
@@ -829,7 +838,14 @@ class LessonCheckpoint {
     mistakes,
     demoMove,
     reviewReturn,
-    Object.hash(attempt, failed, reviewStep, attemptedSan, thinkMistake),
+    Object.hash(
+      attempt,
+      failed,
+      reviewStep,
+      attemptedSan,
+      thinkMistake,
+      solutionSeen,
+    ),
   );
 
   static bool _sameList(List<String> a, List<String> b) {

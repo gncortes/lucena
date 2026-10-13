@@ -47,6 +47,7 @@ import 'package:lucena/data/repositories/pace/pace_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
@@ -272,6 +273,10 @@ Future<Dependencies> e2eDependencies() async {
     ),
     endgameProgressRepository: LocalEndgameProgressRepository(
       PreferencesService(),
+    ),
+    // As explicações de erro de verdade (o painel da lição V2).
+    exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
+      const AssetService(),
     ),
     drawOfferRepository: e2eDraws,
     // As preferências de verdade; o sintetizador, sem som.

@@ -567,6 +567,7 @@
   "tourCharacterVoicesBody": "Ognuno ha già una voce. Toccane uno per cambiarla.",
   "tourKeepVoices": "Lascia così",
   "lessonPrevious": "Passo precedente",
+  "lessonFooterBack": "Indietro",
   "voiceSpeedValue": "{speed}×",
   "voiceOpenSystem": "Apri le impostazioni vocali del dispositivo",
   "blindTitle": "Alla cieca",
@@ -745,7 +746,6 @@
   "lessonMistakeGeneric": "Non è questa. Pensa a ciò che la lezione ha mostrato su «{topic}».",
   "lessonThinkMistakeGeneric": "La tua mossa {move} qui non funziona. Ecco perché:",
   "lessonVariationShow": "Vedi la variante",
-  "lessonVariationExit": "Torna alla posizione del passo",
   "lessonDemoBack": "Mossa precedente",
   "lessonDemoForward": "Mossa successiva",
   "lessonDemoReplay": "Ripeti",
@@ -1075,6 +1075,8 @@
   "explanationLosing": "Perde",
   "explanationDoesNotMeetGoal": "Non raggiunge l’obiettivo",
   "explanationUnavailable": "Questa variante non è disponibile.",
+  "explanationExpand": "Mostra le risposte",
+  "explanationCollapse": "Nascondi le risposte",
   "explanationFirst": "Inizio della variante",
   "explanationPrevious": "Mossa precedente",
   "explanationParent": "Torna alla variante superiore",
@@ -1096,7 +1098,6 @@
   "lessonOpenFreeBoard": "Apri sulla scacchiera libera",
   "lessonExplanationShort": "Spiegazione",
   "lessonFreeBoardInvite": "Hai ancora dubbi? Prova altre idee da questa posizione, dal tuo lato della scacchiera.",
-  "lessonReturn": "Indietro",
   "lessonTeacherVoice": "Voce di Viktor",
   "lessonTeacherVoiceHint": "Leggere le spiegazioni ad alta voce",
   "lessonSoundHint": "Suoni dei pezzi e voce di Viktor",
@@ -1177,5 +1178,9 @@
   "marathonNotFinishedYet": "Non hai ancora completato questa maratona",
   "historyEmptyFilteredGames": "Nessuna partita con questi filtri.",
   "historyEmptyFilteredSpeedruns": "Nessuno speedrun con questi filtri.",
-  "historyEmptyFilteredMarathons": "Nessuna maratona con questi filtri."
+  "historyEmptyFilteredMarathons": "Nessuna maratona con questi filtri.",
+  "lessonVariationClose": "Chiudi la variante e torna alla spiegazione",
+  "lessonVariationPrevious": "Mossa precedente della variante",
+  "lessonVariationNext": "Mossa successiva della variante",
+  "lessonPresentationClose": "Chiudi e guarda la scacchiera"
 }
