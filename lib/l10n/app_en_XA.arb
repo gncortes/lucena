@@ -660,6 +660,8 @@
   "marathonBest": "[Möšt tîmé léft one two]",
   "marathonLeft": "[Tîmé léft one]",
   "marathonLeftValue": "[Tîmé léft: {time} one two]",
+  "marathonBestValue": "[Möšt tîmé léft: {time} one two three]",
+  "speedrunStageTimeValue": "[Štåĝé {stage} öf {total}: {time} one two three]",
   "marathonDayLeft": "[{when} · léft one two]",
   "speedrunModeClassic": "[Çlåššîç one]",
   "homeJourneyBodyPlayer": "[Pŕåçtîçé thé båšîç çhéçkmåtéš åñd tåké öñ évéŕý öppöñéñt, fŕöm Çöçö tö Štöçkfîšh. one two three four five six seven]",

@@ -660,6 +660,8 @@
   "marathonBest": "Больше всего времени в запасе",
   "marathonLeft": "Осталось времени",
   "marathonLeftValue": "Осталось времени: {time}",
+  "marathonBestValue": "Больше всего времени в запасе: {time}",
+  "speedrunStageTimeValue": "Этап {stage} из {total}: {time}",
   "marathonDayLeft": "{when} · осталось",
   "speedrunModeClassic": "Классика",
   "homeJourneyBodyPlayer": "Отработай базовые маты и брось вызов каждому сопернику, от Коко до Stockfish.",

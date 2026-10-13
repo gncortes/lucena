@@ -660,6 +660,8 @@
   "marathonBest": "最多の残り時間",
   "marathonLeft": "残り時間",
   "marathonLeftValue": "残り時間：{time}",
+  "marathonBestValue": "最多の残り時間：{time}",
+  "speedrunStageTimeValue": "ステージ {stage}/{total}：{time}",
   "marathonDayLeft": "{when} · 残り",
   "speedrunModeClassic": "クラシック",
   "homeJourneyBodyPlayer": "基本のチェックメイトを練習し、ココからStockfishまで全員に挑もう。",

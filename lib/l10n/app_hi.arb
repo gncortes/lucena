@@ -660,6 +660,8 @@
   "marathonBest": "सबसे ज़्यादा बचा समय",
   "marathonLeft": "बचा हुआ समय",
   "marathonLeftValue": "बचा हुआ समय: {time}",
+  "marathonBestValue": "सबसे ज़्यादा बचा समय: {time}",
+  "speedrunStageTimeValue": "चरण {stage} / {total}: {time}",
   "marathonDayLeft": "{when} · शेष",
   "speedrunModeClassic": "क्लासिक",
   "homeJourneyBodyPlayer": "बुनियादी मात का अभ्यास करें और कोको से Stockfish तक हर प्रतिद्वंद्वी को चुनौती दें।",

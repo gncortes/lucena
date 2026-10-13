@@ -660,6 +660,8 @@
   "marathonBest": "En çok kalan süre",
   "marathonLeft": "Kalan süre",
   "marathonLeftValue": "Kalan süre: {time}",
+  "marathonBestValue": "En çok kalan süre: {time}",
+  "speedrunStageTimeValue": "Aşama {stage}/{total}: {time}",
   "marathonDayLeft": "{when} · kaldı",
   "speedrunModeClassic": "Klasik",
   "homeJourneyBodyPlayer": "Temel matları çalış ve Coco'dan Stockfish'e her rakibe meydan oku.",

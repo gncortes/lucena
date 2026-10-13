@@ -246,9 +246,11 @@ class SpeedrunStageRow extends StatelessWidget {
     final height = current ? 108.0 : 84.0;
     final doneColor = ChangeColors.of(context, up: true);
     final first = index == 0;
-    return SizedBox(
-      height: height,
+    return ConstrainedBox(
+      // 84/108 no artboard; o texto maior (fonte 2,0) cresce a linha.
+      constraints: BoxConstraints(minHeight: height),
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           // A linha da trilha, atrás dos retratos: só a metade de baixo na
           // primeira etapa e só a de cima na última. Até a etapa da vez, ela
@@ -256,22 +258,31 @@ class SpeedrunStageRow extends StatelessWidget {
           PositionedDirectional(
             start: _railX - 2,
             width: 4,
-            top: first ? height / 2 : 0,
-            bottom: height / 2,
-            child: ColoredBox(
-              color: done || current ? doneColor : colors.outlineVariant,
+            top: 0,
+            bottom: 0,
+            child: Column(
+              children: [
+                Expanded(
+                  child: first
+                      ? const SizedBox.shrink()
+                      : ColoredBox(
+                          color: done || current
+                              ? doneColor
+                              : colors.outlineVariant,
+                          child: const SizedBox.expand(),
+                        ),
+                ),
+                Expanded(
+                  child: last
+                      ? const SizedBox.shrink()
+                      : ColoredBox(
+                          color: done ? doneColor : colors.outlineVariant,
+                          child: const SizedBox.expand(),
+                        ),
+                ),
+              ],
             ),
           ),
-          if (!last)
-            PositionedDirectional(
-              start: _railX - 2,
-              width: 4,
-              top: height / 2,
-              bottom: 0,
-              child: ColoredBox(
-                color: done ? doneColor : colors.outlineVariant,
-              ),
-            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -291,83 +302,74 @@ class SpeedrunStageRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  // A linha tem altura fixa (a trilha passa no meio dela):
-                  // se o texto não couber (árabe, letra grande), ele encolhe
-                  // um pouco em vez de estourar.
-                  child: LayoutBuilder(
-                    builder: (context, box) => FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: SizedBox(
-                        width: box.maxWidth,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              opponentName(l10n, characters, stage.opponent),
-                              style:
-                                  (current
-                                          ? theme.textTheme.titleLarge
-                                          : theme.textTheme.titleMedium)
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: ahead
-                                            ? colors.onSurfaceVariant
-                                            : null,
-                                      ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              key: noteKey,
-                              note != null
-                                  ? l10n.speedrunStageNote(
-                                      index + 1,
-                                      speedrun.stages.length,
-                                      note!,
-                                    )
-                                  : [
-                                      l10n.speedrunStageOf(
-                                        index + 1,
-                                        speedrun.stages.length,
-                                      ),
-                                      // Quando o final muda de etapa para etapa, o nome
-                                      // dele vem junto.
-                                      if (speedrun.kind !=
-                                              SpeedrunKind.ending &&
-                                          speedrun.kind !=
-                                              SpeedrunKind.marathon)
-                                        endgameName(
-                                          l10n,
-                                          stage.position.subcategory,
-                                        ),
-                                    ].join(' · '),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                            if (losses > 0)
-                              Text(
-                                l10n.speedrunLosses(losses),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: colors.error,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            if ((current && showNow) || last) ...[
-                              const SizedBox(height: 6),
-                              TrailBadge(
-                                text: current && showNow
-                                    ? l10n.speedrunNow
-                                    : l10n.journeyBoss,
-                                color: current && showNow
-                                    ? colors.primary
-                                    : colors.tertiary,
-                              ),
-                            ],
-                          ],
+                  // A linha cresce com o texto (fonte grande, árabe); a
+                  // trilha acompanha.
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          opponentName(l10n, characters, stage.opponent),
+                          style:
+                              (current
+                                      ? theme.textTheme.titleLarge
+                                      : theme.textTheme.titleMedium)
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: ahead
+                                        ? colors.onSurfaceVariant
+                                        : null,
+                                  ),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Text(
+                          key: noteKey,
+                          note != null
+                              ? l10n.speedrunStageNote(
+                                  index + 1,
+                                  speedrun.stages.length,
+                                  note!,
+                                )
+                              : [
+                                  l10n.speedrunStageOf(
+                                    index + 1,
+                                    speedrun.stages.length,
+                                  ),
+                                  // Quando o final muda de etapa para etapa, o nome
+                                  // dele vem junto.
+                                  if (speedrun.kind != SpeedrunKind.ending &&
+                                      speedrun.kind != SpeedrunKind.marathon)
+                                    endgameName(
+                                      l10n,
+                                      stage.position.subcategory,
+                                    ),
+                                ].join(' · '),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                        if (losses > 0)
+                          Text(
+                            l10n.speedrunLosses(losses),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.error,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        if ((current && showNow) || last) ...[
+                          const SizedBox(height: 6),
+                          TrailBadge(
+                            text: current && showNow
+                                ? l10n.speedrunNow
+                                : l10n.journeyBoss,
+                            color: current && showNow
+                                ? colors.primary
+                                : colors.tertiary,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),

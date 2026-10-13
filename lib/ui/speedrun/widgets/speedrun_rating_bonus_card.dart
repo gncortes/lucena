@@ -81,15 +81,11 @@ class SpeedrunRatingBonusCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: style.color.withValues(alpha: 0.2),
+                color: Theme.of(context).colorScheme.surfaceContainerLowest,
                 shape: BoxShape.circle,
               ),
               child: ExcludeSemantics(
-                child: Icon(
-                  Icons.trending_up,
-                  size: 24,
-                  color: style.onContainer,
-                ),
+                child: Icon(Icons.trending_up, size: 24, color: style.color),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -124,9 +120,9 @@ class SpeedrunRatingBonusCard extends StatelessWidget {
     );
   }
 
-  /// "+N" e "antes → depois" isolados como LTR dentro do texto (árabe usa ←).
+  /// "+N" e "antes → depois" isolados como LTR dentro do texto .
   static String _isolate(String text) => text.replaceAllMapped(
-    RegExp(r'\d+ [→←] \d+|\+\d+'),
+    RegExp(r'\d+ → \d+|\+\d+'),
     (match) => HistoryLabels.ltr(match[0]!),
   );
 }

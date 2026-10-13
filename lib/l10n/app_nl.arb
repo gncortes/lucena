@@ -660,6 +660,8 @@
   "marathonBest": "Meeste tijd over",
   "marathonLeft": "Tijd over",
   "marathonLeftValue": "Tijd over: {time}",
+  "marathonBestValue": "Meeste tijd over: {time}",
+  "speedrunStageTimeValue": "Etappe {stage} van {total}: {time}",
   "marathonDayLeft": "{when} · over",
   "speedrunModeClassic": "Klassiek",
   "homeJourneyBodyPlayer": "Oefen de basismatten en daag elke tegenstander uit, van Coco tot Stockfish.",

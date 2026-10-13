@@ -420,6 +420,7 @@ void main() {
 
     final matrix = {
       'perdeu': SpeedrunRunEnd.lost,
+      'empatou': SpeedrunRunEnd.drawn,
       'sem tempo': SpeedrunRunEnd.timeout,
       'desistiu': SpeedrunRunEnd.abandoned,
     };
@@ -453,6 +454,21 @@ void main() {
                 expect(rect.left, greaterThanOrEqualTo(0), reason: '$key');
                 expect(rect.right, lessThanOrEqualTo(size.width));
               }
+              // A nota "· … aqui" da etapa que parou não encosta no nome da
+              // seguinte, nem em fonte 2,0 (a linha cresce com o texto).
+              await tester.scrollUntilVisible(
+                find.byKey(SpeedrunKeys.stage(2)),
+                100,
+              );
+              final note = tester.getRect(
+                find.byKey(SpeedrunKeys.stageNote(1)),
+              );
+              expect(note.left, greaterThanOrEqualTo(0));
+              expect(note.right, lessThanOrEqualTo(size.width));
+              final next = tester.getRect(find.byKey(SpeedrunKeys.stage(2)));
+              expect(next.top, greaterThanOrEqualTo(note.bottom));
+              final title = tester.widget<AppBar>(find.byType(AppBar));
+              expect(title.centerTitle, isTrue);
               final retry = tester.getRect(find.byKey(SpeedrunKeys.retry));
               expect(retry.height, greaterThanOrEqualTo(48));
               expect(retry.bottom, lessThanOrEqualTo(size.height));
@@ -478,7 +494,7 @@ void main() {
         expect(tester.takeException(), isNull);
         final card = text(tester, SpeedrunKeys.ratingBonusEarned);
         expect(card, contains(HistoryLabels.ltr('+110')));
-        expect(card, contains(HistoryLabels.ltr('1150 ← 1260')));
+        expect(card, contains(HistoryLabels.ltr('1150 → 1260')));
       });
     }
   });

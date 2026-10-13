@@ -135,7 +135,7 @@ void main() {
   }
 
   testWidgets(
-    'árabe isola "+N" e "antes ← depois" como LTR e espelha o ícone',
+    'árabe isola "+N" e "antes → depois" como LTR e espelha o ícone',
     (tester) async {
       await pump(
         tester,
@@ -144,7 +144,7 @@ void main() {
       );
       final shown = text(tester, SpeedrunKeys.ratingBonusEarned);
       expect(shown, contains(HistoryLabels.ltr('+30')));
-      expect(shown, contains(HistoryLabels.ltr('1237 ← 1267')));
+      expect(shown, contains(HistoryLabels.ltr('1237 → 1267')));
       final card = tester.getRect(find.byKey(SpeedrunKeys.ratingBonusEarned));
       final icon = tester.getRect(find.byIcon(Icons.trending_up));
       expect(icon.right, greaterThan(card.center.dx));

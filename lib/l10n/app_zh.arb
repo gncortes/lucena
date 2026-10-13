@@ -660,6 +660,8 @@
   "marathonBest": "剩余时间最多",
   "marathonLeft": "剩余时间",
   "marathonLeftValue": "剩余时间：{time}",
+  "marathonBestValue": "剩余时间最多：{time}",
+  "speedrunStageTimeValue": "第 {stage}/{total} 阶段：{time}",
   "marathonDayLeft": "{when} · 剩余",
   "speedrunModeClassic": "经典",
   "homeJourneyBodyPlayer": "练习基本杀法，挑战从可可到 Stockfish 的每一位对手。",

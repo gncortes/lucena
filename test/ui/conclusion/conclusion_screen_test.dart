@@ -10,6 +10,9 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/conclusion.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/domain/use_cases/clock_format.dart';
+import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
@@ -73,11 +76,17 @@ void main() {
     bool disableAnimations = false,
     SpeechCubit? speech,
     FakeOpponentRepository? opponent,
+    FakeJourneyRepository? journey,
+    Future<(int, int)> Function(FakeSpeedrunRepository)? marathon,
+    Size size = const Size(412, 2400),
+    double scale = 1,
+    Locale locale = const Locale('en'),
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
     final speedruns = FakeSpeedrunRepository(progress);
     await tester.runAsync(() async {
+      final run = await marathon?.call(speedruns);
       final game = Attempt(
         positionId: samplePositions[0].id,
         playedAt: now(),
@@ -94,12 +103,15 @@ void main() {
           AttemptOutcome.draw => GameEndReason.stalemate,
         },
         moves: moves,
+        userClock: run == null ? null : const Duration(seconds: 10),
+        speedrunAttemptId: run?.$1,
+        speedrunStage: run?.$2,
       );
       final id = await progress.addAttempt(game);
       await GameReporter(
         rating: rating,
         achievements: achievements,
-        journey: FakeJourneyRepository(),
+        journey: journey ?? FakeJourneyRepository(),
         progress: progress,
         speedruns: speedruns,
         positions: FakePositionsRepository(),
@@ -109,7 +121,7 @@ void main() {
         progress: progress,
         rating: rating,
         achievements: achievements,
-        journey: FakeJourneyRepository(),
+        journey: journey ?? FakeJourneyRepository(),
         speedruns: speedruns,
         positions: FakePositionsRepository(),
         characters: FakeCharacterRepository(),
@@ -121,7 +133,6 @@ void main() {
       await cubit.load(id, 'en');
     });
     addTearDown(cubit.close);
-    const size = Size(412, 2400);
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
@@ -137,9 +148,11 @@ void main() {
         shareRepository: share,
         settingsCubit: settings,
         speechCubit: speech,
+        locale: locale,
         child: MediaQuery(
           data: MediaQueryData(
             size: size,
+            textScaler: TextScaler.linear(scale),
             disableAnimations: disableAnimations,
           ),
           child: BlocProvider.value(
@@ -164,6 +177,51 @@ void main() {
     final png = share.shared.single.png;
     return ByteData.sublistView(png, 20, 24).getUint32(0);
   }
+
+  group('Maratona concluída', () {
+    for (final locale in [const Locale('en'), const Locale('ar')]) {
+      testWidgets('o painel mostra "Tempo que sobrou", como o resumo '
+          '(${locale.languageCode})', (tester) async {
+        final marathon = sampleMarathon;
+        final stages = marathon.stages.length;
+        final pace = SpeedrunPaces.idFor(marathon.id, sampleSpeedrunTime);
+        await open(
+          tester,
+          locale: locale,
+          journey: FakeJourneyRepository(speedruns: [marathon]),
+          marathon: (speedruns) async {
+            final attempt = await speedruns.start(pace, now());
+            for (var stage = 0; stage < stages - 1; stage++) {
+              await progress.addAttempt(
+                Attempt(
+                  positionId: samplePositions[0].id,
+                  playedAt: now(),
+                  outcome: AttemptOutcome.win,
+                  fulfilled: true,
+                  opponent: OpponentKind.maia,
+                  userClock: const Duration(seconds: 10),
+                  speedrunAttemptId: attempt.id,
+                  speedrunStage: stage,
+                ),
+              );
+            }
+            return (attempt.id, stages - 1);
+          },
+        );
+
+        final label = AppLocalizations.of(
+          tester.element(find.byKey(ConclusionKeys.run)),
+        );
+        expect(find.text(label.marathonLeft), findsOneWidget);
+        expect(find.text(label.conclusionTotalTime), findsNothing);
+        final left = Duration(seconds: 180 - stages * 10);
+        expect(
+          tester.widget<Text>(find.byKey(ConclusionKeys.total)).data,
+          RunTimeFormat.clock(left),
+        );
+      });
+    }
+  });
 
   group('análise rápida', () {
     testWidgets('partida curta: começa sozinha, no fim da tela, andando', (

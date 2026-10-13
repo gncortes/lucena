@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
-import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
@@ -17,6 +17,7 @@ import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
@@ -52,7 +53,12 @@ class MarathonAttemptView extends StatelessWidget {
     final best = summary.records.best;
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
-      appBar: AppBar(title: Text(speedrunName(l10n, characters, speedrun))),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          endgameName(l10n, speedrun.stages.first.position.subcategory),
+        ),
+      ),
       bottomNavigationBar: completed
           ? null
           : SafeArea(
@@ -81,8 +87,9 @@ class MarathonAttemptView extends StatelessWidget {
                 if (completed) ...[
                   TimeDisplay(
                     value: runTime(context, recordTime(speedrun, run.total)),
-                    semanticsLabel:
-                        '${l10n.marathonLeft}: ${runTime(context, recordTime(speedrun, run.total))}',
+                    semanticsLabel: l10n.marathonLeftValue(
+                      runTime(context, recordTime(speedrun, run.total)),
+                    ),
                     type: TimeDisplayType.record,
                     size: TimeDisplaySize.block,
                     state: TimeDisplayState.highlight,
@@ -140,12 +147,18 @@ class MarathonAttemptView extends StatelessWidget {
                   ? SpeedrunStageStatus.current
                   : SpeedrunStageStatus.ahead,
               trailing: stage.done || stage.losses > 0
-                  ? TimeDisplay(
-                      value: runTime(context, stage.time),
-                      semanticsLabel:
-                          '${l10n.speedrunStageOf(index + 1, total)}: ${runTime(context, stage.time)}',
-                      size: TimeDisplaySize.inline,
-                      textKey: SpeedrunKeys.stageTime(index),
+                  ? Semantics(
+                      container: true,
+                      excludeSemantics: true,
+                      label: l10n.speedrunStageTimeValue(
+                        index + 1,
+                        total,
+                        runTime(context, stage.time),
+                      ),
+                      child: RunClock(
+                        stage.time,
+                        textKey: SpeedrunKeys.stageTime(index),
+                      ),
                     )
                   : null,
             ),
@@ -215,7 +228,7 @@ class _EndCard extends StatelessWidget {
         l10n.marathonTimeoutHero(stage + 1, total),
       ),
       SpeedrunRunEnd.abandoned => (
-        Icons.do_not_disturb_on,
+        Icons.do_not_disturb_on_outlined,
         l10n.speedrunAbandonedHero(stage + 1, total),
       ),
       _ => (Icons.remove, l10n.speedrunLostHero(stage + 1, total)),
@@ -231,7 +244,8 @@ class _EndCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
-        vertical: AppSpacing.xl,
+        // 20 no artboard.
+        vertical: AppSpacing.lg + AppSpacing.xs,
       ),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
@@ -453,7 +467,7 @@ class _RecordCard extends StatelessWidget {
           ),
           TimeDisplay(
             value: value,
-            semanticsLabel: [l10n.marathonBest, value].join(': '),
+            semanticsLabel: l10n.marathonBestValue(value),
             type: TimeDisplayType.record,
             size: TimeDisplaySize.inline,
             textKey: SpeedrunKeys.marathonRecord,
@@ -480,9 +494,11 @@ class _Chips extends StatelessWidget {
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
-        _Chip(
-          icon: paceIcon(PaceCategory.of(speedrun.time)),
-          label: HistoryLabels.ltr(paceLabel(l10n, speedrun.time)),
+        TimeDisplay(
+          value: paceLabel(l10n, speedrun.time),
+          semanticsLabel: paceLabel(l10n, speedrun.time),
+          type: TimeDisplayType.pace,
+          size: TimeDisplaySize.pill,
         ),
         _Chip(icon: Icons.all_inclusive, label: l10n.marathonSection),
         if (endedAt != null)

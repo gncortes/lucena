@@ -660,6 +660,8 @@
   "marathonBest": "Más tiempo sobrante",
   "marathonLeft": "Tiempo sobrante",
   "marathonLeftValue": "Tiempo sobrante: {time}",
+  "marathonBestValue": "Más tiempo sobrante: {time}",
+  "speedrunStageTimeValue": "Etapa {stage} de {total}: {time}",
   "marathonDayLeft": "{when} · sobró",
   "speedrunModeClassic": "Clásico",
   "homeJourneyBodyPlayer": "Practica los mates básicos y desafía a cada rival, de Coco a Stockfish.",

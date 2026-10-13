@@ -978,6 +978,9 @@ class _RunState extends State<_Run> {
         ? Duration.zero
         : times.reduce((a, b) => a > b ? a : b);
     final record = run.previousBest;
+    // Na Maratona o que conta é o tempo que sobrou no banco, o mesmo valor
+    // do resumo; nas demais, o tempo gasto.
+    final bankLeft = kind == ConclusionKind.marathonEnd ? run.bankLeft : null;
     return Container(
       key: ConclusionKeys.run,
       padding: const EdgeInsets.all(AppSpacing.insideCard),
@@ -992,15 +995,20 @@ class _RunState extends State<_Run> {
           // a partida se perdeu); fica só o detalhe, para quem quiser.
           if (!_lost) ...[
             Text(
-              ended ? l10n.conclusionTotalTime : l10n.conclusionTotalSoFar,
+              bankLeft != null
+                  ? l10n.marathonLeft
+                  : ended
+                  ? l10n.conclusionTotalTime
+                  : l10n.conclusionTotalSoFar,
               textAlign: TextAlign.center,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
             Text(
-              time(spent),
+              bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
               key: ConclusionKeys.total,
+              textDirection: bankLeft != null ? TextDirection.ltr : null,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,

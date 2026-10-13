@@ -660,6 +660,8 @@
   "marathonBest": "Sisa waktu terbanyak",
   "marathonLeft": "Sisa waktu",
   "marathonLeftValue": "Sisa waktu: {time}",
+  "marathonBestValue": "Sisa waktu terbanyak: {time}",
+  "speedrunStageTimeValue": "Tahap {stage} dari {total}: {time}",
   "marathonDayLeft": "{when} · sisa",
   "speedrunModeClassic": "Klasik",
   "homeJourneyBodyPlayer": "Latih skakmat dasar dan tantang setiap lawan, dari Coco sampai Stockfish.",

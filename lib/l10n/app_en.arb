@@ -3431,6 +3431,32 @@
       }
     }
   },
+  "marathonBestValue": "Most time left: {time}",
+  "@marathonBestValue": {
+    "description": "Screen-reader label of the Marathon record: the most time left in the bank (label and value in one string).",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "1:52.8"
+      }
+    }
+  },
+  "speedrunStageTimeValue": "Stage {stage} of {total}: {time}",
+  "@speedrunStageTimeValue": {
+    "description": "Screen-reader label of the time of one stage in a speedrun summary (stage, total and time in one string).",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String",
+        "example": "0:41.0"
+      }
+    }
+  },
   "marathonDayLeft": "{when} · left",
   "@marathonDayLeft": {
     "description": "Date of a completed Marathon attempt in the Marathon history, followed by 'left' because the time shown is the time left in the bank.",
