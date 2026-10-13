@@ -17,6 +17,7 @@ import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
+import 'package:lucena/domain/use_cases/marathon.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -234,6 +235,76 @@ void main() {
         );
       });
     }
+  });
+
+  group('fonte 2,0', () {
+    // Largo de propósito: a fonte dos testes (Ahem, um quadrado por letra)
+    // não cabe em 360 a 2,0, e a largura não muda o círculo de 28 fixo.
+    testWidgets('o número "10" da etapa cabe inteiro (pílula)', (tester) async {
+      final base = sampleSpeedruns[1];
+      final marathon = Marathon.of(
+        base.copyWith(
+          stages: [
+            for (var i = 0; i < 10; i++)
+              base.stages.first.copyWith(id: '${base.id}/$i'),
+          ],
+        ),
+      );
+      final pace = SpeedrunPaces.idFor(marathon.id, sampleSpeedrunTime);
+      await open(
+        tester,
+        size: const Size(900, 2400),
+        scale: 2,
+        journey: FakeJourneyRepository(speedruns: [marathon]),
+        marathon: (speedruns) async {
+          final attempt = await speedruns.start(pace, now());
+          for (var stage = 0; stage < 9; stage++) {
+            await progress.addAttempt(
+              Attempt(
+                positionId: samplePositions[0].id,
+                playedAt: now(),
+                outcome: AttemptOutcome.win,
+                fulfilled: true,
+                opponent: OpponentKind.maia,
+                userClock: const Duration(seconds: 10),
+                speedrunAttemptId: attempt.id,
+                speedrunStage: stage,
+              ),
+            );
+          }
+          return (attempt.id, 9);
+        },
+      );
+      await tester.tap(find.byKey(ConclusionKeys.runDetails));
+      await tester.pumpAndSettle();
+      final number = find.descendant(
+        of: find.byKey(ConclusionKeys.stage(9)),
+        matching: find.text('10'),
+      );
+      final badge = find.ancestor(of: number, matching: find.byType(Container));
+      final box = tester.getRect(badge.first);
+      final text = tester.getRect(number);
+      // Numa linha só e dentro da pílula (antes o "0" descia e era cortado).
+      expect(box.width, greaterThanOrEqualTo(text.width));
+      expect(box.height, greaterThanOrEqualTo(text.height));
+      expect(text.height, lessThan(text.width * 2));
+    });
+
+    testWidgets('o rating cabe em 360 sem encolher a fonte', (tester) async {
+      await open(tester, size: const Size(360, 2400), scale: 2);
+      expect(find.byKey(ConclusionKeys.ratingValue), findsOneWidget);
+      // Sem FittedBox: o valor desce de linha em vez de diminuir.
+      expect(
+        find.ancestor(
+          of: find.byKey(ConclusionKeys.ratingValue),
+          matching: find.byType(FittedBox),
+        ),
+        findsNothing,
+      );
+      final card = tester.getRect(find.byKey(ConclusionKeys.rating));
+      final value = tester.getRect(find.byKey(ConclusionKeys.ratingValue));
+      expect(value.right, lessThanOrEqualTo(card.right));
+    });
   });
 
   group('análise rápida', () {

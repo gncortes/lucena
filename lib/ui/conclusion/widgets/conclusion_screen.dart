@@ -881,36 +881,34 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppShape.large),
       ),
-      child: Row(
+      // Numa linha; com fonte grande em 360, o valor desce para a de baixo
+      // (sem encolher a fonte que o jogador escolheu).
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: AppSpacing.xs,
         children: [
-          Icon(Icons.trending_up_rounded, color: colors.primary),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              context.l10n.reportRatingLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall,
-            ),
-          ),
-          // Com fonte grande em 360 o valor não cabe: encolhe só ele.
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.sizeOf(context).width * 0.6,
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerEnd,
-              child: AnimatedBuilder(
-                animation: _counting,
-                builder: (context, _) => RatingValue(
-                  rating: (before + (after - before) * _counting.value).round(),
-                  change: ((after - before) * _counting.value).round(),
-                  up: after >= before,
-                  valueKey: ConclusionKeys.ratingValue,
-                  changeKey: ConclusionKeys.ratingDelta,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.trending_up_rounded, color: colors.primary),
+              const SizedBox(width: AppSpacing.md),
+              Flexible(
+                child: Text(
+                  context.l10n.reportRatingLabel,
+                  style: theme.textTheme.titleSmall,
                 ),
               ),
+            ],
+          ),
+          AnimatedBuilder(
+            animation: _counting,
+            builder: (context, _) => RatingValue(
+              rating: (before + (after - before) * _counting.value).round(),
+              change: ((after - before) * _counting.value).round(),
+              up: after >= before,
+              valueKey: ConclusionKeys.ratingValue,
+              changeKey: ConclusionKeys.ratingDelta,
             ),
           ),
         ],
@@ -1051,7 +1049,8 @@ class _RunState extends State<_Run> {
             ),
           if (ended && record != null && !run.newRecord)
             Text(
-              '${l10n.speedrunBest}: ${HistoryLabels.ltr(time(record))}',
+              // O valor não quebra no meio ("2 min / 50.0 s") com fonte grande.
+              '${l10n.speedrunBest}: ${HistoryLabels.ltr(time(record).replaceAll(' ', '\u00A0'))}',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -1127,13 +1126,14 @@ class _StageRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
+          // Círculo de 28; com fonte grande vira pílula, sem cortar o "10".
           Container(
-            width: 28,
-            height: 28,
+            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: accent.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(AppShape.full),
             ),
             child: Text(
               '$number',
