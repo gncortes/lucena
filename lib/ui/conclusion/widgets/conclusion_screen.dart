@@ -78,7 +78,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
-    return PopScope(
+    final scaffold = PopScope(
       canPop: conclusion?.run?.nextChallenge == null,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _close(context);
@@ -124,21 +124,31 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                     card: _card,
                     analysis: _analysis,
                   ),
-                  if (widget.fresh && conclusion.achievements.isNotEmpty)
-                    AchievementToasts(
-                      achievements: conclusion.achievements,
-                      characters: state.characters,
-                      onTap: (achievement) => showAchievementDetail(
-                        context,
-                        achievement: achievement,
-                        unlocked: conclusion.unlocked[achievement.id],
-                        characters: state.characters,
-                        speedrunId: conclusion.run?.speedrunId,
-                      ),
-                    ),
                 ],
               ),
       ),
+    );
+    // O aviso de conquista vai por cima da tela inteira, AppBar incluída
+    // (TelaConclusaoAviso: 8 do topo), sem cobrir o título do painel.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        scaffold,
+        if (widget.fresh &&
+            conclusion != null &&
+            conclusion.achievements.isNotEmpty)
+          AchievementToasts(
+            achievements: conclusion.achievements,
+            characters: state.characters,
+            onTap: (achievement) => showAchievementDetail(
+              context,
+              achievement: achievement,
+              unlocked: conclusion.unlocked[achievement.id],
+              characters: state.characters,
+              speedrunId: conclusion.run?.speedrunId,
+            ),
+          ),
+      ],
     );
   }
 }

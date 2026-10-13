@@ -14,7 +14,9 @@ import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
+import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
+import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -81,6 +83,8 @@ void main() {
     Size size = const Size(412, 2400),
     double scale = 1,
     Locale locale = const Locale('en'),
+    bool fresh = false,
+    bool settled = true,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
@@ -157,12 +161,19 @@ void main() {
           ),
           child: BlocProvider.value(
             value: cubit,
-            child: const ConclusionScreen(),
+            child: ConclusionScreen(fresh: fresh),
           ),
         ),
       ),
     );
-    await settle(tester);
+    if (settled) {
+      await settle(tester);
+    } else {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 60)),
+      );
+      await tester.pump();
+    }
   }
 
   /// Compartilha e devolve a altura da imagem (no cabeçalho do PNG).
@@ -437,5 +448,25 @@ void main() {
       );
       expect(find.byKey(ConclusionKeys.winnerGlow), findsNothing);
     });
+  });
+
+  group('aviso de conquista', () {
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
+        tester,
+      ) async {
+        await open(tester, size: size, fresh: true, settled: false);
+        await tester.pump(AchievementToasts.duration * 0.3);
+        final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
+        final title = tester.getRect(find.byKey(ConclusionKeys.title));
+        expect(toast.top, closeTo(8, 1));
+        expect(toast.bottom, lessThanOrEqualTo(title.top));
+        // Some sozinho e o título fica livre.
+        await tester.pump(AchievementToasts.duration);
+        await tester.pumpAndSettle();
+        expect(find.byKey(AchievementsKeys.toast).hitTestable(), findsNothing);
+        expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
+      });
+    }
   });
 }
