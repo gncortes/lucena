@@ -141,6 +141,54 @@ void main() {
     expect(find.byKey(LessonKeys.variationExit), findsNothing);
   });
 
+  testWidgets('entrar na variante: o rodapé da demo sai com a folha e os '
+      'controles novos aparecem aos 450 ms', (tester) async {
+    await pump(tester, said);
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.descendant(
+        of: find.byKey(LessonKeys.speech),
+        matching: find.byType(RichText),
+      ),
+    );
+    final caret = paragraph.getOffsetForCaret(
+      TextPosition(offset: said.indexOf('Ke7') + 1),
+      Rect.zero,
+    );
+    double footerOpacity() => tester
+        .widget<AnimatedOpacity>(
+          find
+              .ancestor(
+                of: find.byKey(LessonKeys.footer),
+                matching: find.byType(AnimatedOpacity),
+              )
+              .first,
+        )
+        .opacity;
+    expect(footerOpacity(), 1);
+    await tester.tapAt(paragraph.localToGlobal(caret + const Offset(3, 8)));
+    // Folha saindo, tabuleiro andando, faixa entrando: sem rodapé algum.
+    for (final ms in [50, 150, 150, 70]) {
+      await tester.pump(Duration(milliseconds: ms));
+      expect(footerOpacity(), 0, reason: 'oculto antes dos 450 ms');
+    }
+    expect(
+      tester
+          .widget<IgnorePointer>(
+            find
+                .ancestor(
+                  of: find.byKey(LessonKeys.footer),
+                  matching: find.byType(IgnorePointer),
+                )
+                .first,
+          )
+          .ignoring,
+      isTrue,
+    );
+    await tester.pumpAndSettle();
+    expect(footerOpacity(), 1);
+    expect(find.byKey(LessonKeys.variationExit), findsOneWidget);
+  });
+
   testWidgets('o lance no texto abre a variante e as setas andam por ela', (
     tester,
   ) async {
