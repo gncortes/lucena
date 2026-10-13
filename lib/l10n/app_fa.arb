@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "این نیست. به آنچه درس دربارهٔ «{topic}» نشان داد فکر کن.",
   "lessonThinkMistakeGeneric": "حرکت {move} شما اینجا جواب نمی‌دهد. ببینید چرا:",
   "lessonVariationShow": "دیدن واریانت",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "حرکت قبلی",
   "lessonDemoForward": "حرکت بعدی",
   "lessonDemoReplay": "تکرار",

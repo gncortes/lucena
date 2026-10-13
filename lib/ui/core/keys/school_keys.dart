@@ -93,6 +93,14 @@ abstract final class LessonKeys {
   static const variationExit = Key('lesson.variation.exit');
   static const variationBack = Key('lesson.variation.back');
   static const variationForward = Key('lesson.variation.forward');
+  static const variationSheet = Key('lesson.variation.sheet');
+  static const variationSheetClose = Key('lesson.variation.sheet.close');
+  static Key variationMove(int ply) => Key('lesson.variation.move.$ply');
+  static Key variationBranch(String id) => Key('lesson.variation.branch.$id');
+  static Key variationBranchMove(String id, int ply) =>
+      Key('lesson.variation.branch.$id.move.$ply');
+  static Key variationResult(String id) =>
+      Key('lesson.variation.branch.$id.result');
 
   /// O selo de linha errada: junto ao tabuleiro e nos controles.
   static const wrongLine = Key('lesson.wrongLine.board');

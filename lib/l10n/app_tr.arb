@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Bu değil. Dersin “{topic}” hakkında gösterdiklerini düşün.",
   "lessonThinkMistakeGeneric": "{move} hamlen burada işe yaramıyor. Nedenine bak:",
   "lessonVariationShow": "Varyantı gör",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Önceki hamle",
   "lessonDemoForward": "Sonraki hamle",
   "lessonDemoReplay": "Tekrar",

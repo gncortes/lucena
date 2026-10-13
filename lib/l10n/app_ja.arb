@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "その手ではありません。レッスンが「{topic}」について示したことを考えましょう。",
   "lessonThinkMistakeGeneric": "あなたの手 {move} はここではうまくいきません。理由を見てみましょう：",
   "lessonVariationShow": "変化を見る",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "前の手",
   "lessonDemoForward": "次の手",
   "lessonDemoReplay": "もう一度",

@@ -3850,6 +3850,15 @@
   "@lessonPresentationClose": {
     "description": "Tooltip and label of the X that closes the step presentation sheet and shows the board."
   },
+  "lessonVariationAlternative": "Alternative to {move}",
+  "@lessonVariationAlternative": {
+    "description": "Screen reader label of a side line in the variation strip; {move} is the main-line move it replaces.",
+    "placeholders": {"move": {"type": "String"}}
+  },
+  "lessonLineResultDraw": "draw",
+  "@lessonLineResultDraw": {
+    "description": "Screen reader reading of the = symbol that closes a side line in the variation strip."
+  },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
     "description": "Tooltip: go back one move in the demonstration."

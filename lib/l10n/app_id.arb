@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Bukan itu. Ingat apa yang ditunjukkan pelajaran tentang “{topic}”.",
   "lessonThinkMistakeGeneric": "Langkahmu {move} tidak berhasil di sini. Lihat alasannya:",
   "lessonVariationShow": "Lihat variasinya",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Langkah sebelumnya",
   "lessonDemoForward": "Langkah berikutnya",
   "lessonDemoReplay": "Ulangi",

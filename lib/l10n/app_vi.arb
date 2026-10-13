@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Không phải nước đó. Hãy nghĩ về điều bài học đã chỉ ra về “{topic}”.",
   "lessonThinkMistakeGeneric": "Nước {move} của bạn không hiệu quả ở đây. Hãy xem vì sao:",
   "lessonVariationShow": "Xem biến",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Nước trước",
   "lessonDemoForward": "Nước tiếp",
   "lessonDemoReplay": "Xem lại",

@@ -18,7 +18,9 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
+import '../../../domain/models/variation_tree.dart';
 import '../../../domain/use_cases/speech_lines.dart';
+import '../../../domain/use_cases/variation_tree_builder.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
@@ -82,6 +84,17 @@ class _LessonScreenState extends State<LessonScreen>
   VariationCursor? _authoredVariation;
 
   final _variation = ValueNotifier<SpeechLineCursor?>(null);
+
+  // Sub-variante da faixa (T68): onde o aluno está quando não é na linha
+  // principal. Nulo: na principal, no lance do cursor acima. Com ramo, o
+  // cursor fica no ponto de partida dele (`at`).
+  final _branch = ValueNotifier<TreePosition?>(null);
+  VariationTree? _tree;
+  Object? _treeKey;
+
+  // A folha da faixa (segunda ViktorSheet, só no modo variante) e se está
+  // aberta; a variante salva no checkpoint (T68).
+  final _variationSheet = DraggableScrollableController();
 
   // A entrada na variante segue a sequência do canvas: a folha sai, o
   // tabuleiro anda, entra a faixa e, por fim, os controles. [_stage] conta
@@ -253,6 +266,8 @@ class _LessonScreenState extends State<LessonScreen>
     _presentingModal.dispose();
     _flash.dispose();
     _variation.dispose();
+    _branch.dispose();
+    _variationSheet.dispose();
     _stage.dispose();
     _cancelEntry();
     super.dispose();
@@ -293,12 +308,16 @@ class _LessonScreenState extends State<LessonScreen>
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
     var cleared = false;
-    if (state.fen != previous.fen ||
-        state.step != previous.step ||
-        state.speech != previous.speech ||
-        state.layout != previous.layout) {
+    // O 1º estado (o anterior ainda é o vazio) só povoa a tela: não fecha a
+    // variante que a restauração acabou de reabrir.
+    if (previous.ready &&
+        (state.fen != previous.fen ||
+            state.step != previous.step ||
+            state.speech != previous.speech ||
+            state.layout != previous.layout)) {
       cleared = _authoredVariation != null;
       _authoredVariation = null;
+      _branch.value = null;
     }
     _previous = state;
     final cubit = context.read<LessonCubit>();
@@ -346,12 +365,14 @@ class _LessonScreenState extends State<LessonScreen>
     if (_variation.value != null) {
       final changed =
           state.step != previous.step ||
-          state.fen != previous.fen ||
-          state.speech != previous.speech ||
-          state.layout != previous.layout;
+          previous.ready &&
+              (state.fen != previous.fen ||
+                  state.speech != previous.speech ||
+                  state.layout != previous.layout);
       if (!changed) {
         return;
       }
+      _branch.value = null;
       _variation.value = null;
     }
     if (state.fen == null || state.current == null) {
@@ -459,14 +480,96 @@ class _LessonScreenState extends State<LessonScreen>
   void _showLine(BuildContext context, SpeechLineCursor cursor) {
     _flash.clear();
     final entering = _variation.value == null && _authoredVariation == null;
+    // O ramo, o cursor e a árvore mudam juntos, no mesmo quadro.
+    _branch.value = null;
     _variation.value = cursor;
+    _syncTree();
     _enterVariant(entering, () {
       _board?.updatePosition(
         _lineGame(cursor),
-        animate: true,
+        animate: !AppMotion.of(this.context).disabled,
         resetPremove: true,
       );
     });
+  }
+
+  /// A árvore da faixa para a variante aberta (guardada enquanto for a mesma).
+  VariationTree? _syncTree() {
+    final cubit = context.read<LessonCubit>();
+    final state = cubit.state;
+    final authored = _authoredVariation;
+    final line = _variation.value?.line;
+    if (authored != null && state.explanation != null) {
+      if (!identical(_treeKey, authored.variation)) {
+        _tree = VariationTreeBuilder.fromExplanation(
+          payload: state.explanation!,
+          cursor: authored,
+        );
+        _treeKey = authored.variation;
+      }
+    } else if (line != null && state.current != null) {
+      if (!identical(_treeKey, line)) {
+        final step = state.current!;
+        final ucis = [for (final move in line.moves) move.uci];
+        final cited = step.lines.where((l) => l.matches(ucis)).firstOrNull;
+        final lessonId = state.lesson?.id ?? '';
+        _tree = VariationTreeBuilder.fromSpeech(
+          line: line,
+          branches: cited?.branches ?? const [],
+          letters: MoveNotation.letters.pieceLetters(context.l10n) ?? const {},
+          comment: (id, ply) =>
+              state.texts.alternative(lessonId, step.id, id, ply),
+        );
+        _treeKey = line;
+      }
+    } else {
+      _tree = null;
+      _treeKey = null;
+    }
+    return _tree;
+  }
+
+  /// O lance da vez na árvore: o ramo, ou o ponto da linha principal.
+  TreePosition? get _position {
+    if (_branch.value case final branch?) return branch;
+    if (_authoredVariation case final authored?) {
+      return TreePosition.main(authored.ply);
+    }
+    if (_variation.value case final line?) return TreePosition.main(line.ply);
+    return null;
+  }
+
+  /// O tabuleiro, a faixa e o comentário vão juntos para [target]: o cursor,
+  /// o ramo e o tabuleiro mudam no mesmo instante (sem quadro no meio), e a
+  /// peça desliza com a animação do tabuleiro (uma só, de onde está até lá).
+  void _goTo(TreePosition target) {
+    final tree = _syncTree();
+    if (tree == null || !tree.contains(target)) return;
+    _flash.clear();
+    final branch = target.branch == null ? null : tree.branchOf(target.branch!);
+    final mainPly = branch?.at ?? target.ply;
+    if (_authoredVariation case final authored?) {
+      setState(() => _authoredVariation = authored.at(mainPly));
+    } else if (_variation.value case final line?) {
+      _variation.value = SpeechLineCursor(line.line, mainPly);
+    }
+    _branch.value = branch == null ? null : target;
+    final fen = tree.fenAt(target);
+    final position = GameRules.fromFen(fen);
+    _board?.updatePosition(
+      GameData(
+        fen: fen,
+        playerSide: PlayerSide.none,
+        sideToMove: position?.turn ?? Side.white,
+        validMoves: const {},
+        lastMove: tree.lastMoveAt(target),
+        kingSquareInCheck: position == null
+            ? null
+            : GameRules.checkedKing(position),
+      ),
+      animate: !AppMotion.of(context).disabled,
+      resetPremove: true,
+    );
   }
 
   void _cancelEntry() {
@@ -515,12 +618,14 @@ class _LessonScreenState extends State<LessonScreen>
         _variation.value == null &&
         _authoredVariation == null;
     _variation.value = null;
+    _branch.value = null;
     if (cursor == null) {
       _cancelEntry();
       _speechHeld = false;
       _stage.value = 0;
     }
     setState(() => _authoredVariation = cursor);
+    _syncTree();
     final state = context.read<LessonCubit>().state;
     if (cursor == null) {
       _board?.updatePosition(
@@ -542,7 +647,7 @@ class _LessonScreenState extends State<LessonScreen>
                 ? null
                 : GameRules.checkedKing(position),
           ),
-          animate: true,
+          animate: !AppMotion.of(context).disabled,
           resetPremove: true,
         );
       });
@@ -556,7 +661,9 @@ class _LessonScreenState extends State<LessonScreen>
     }
     _cancelEntry();
     _stage.value = 0;
+    _branch.value = null;
     _variation.value = null;
+    _syncTree();
     final state = context.read<LessonCubit>().state;
     if (state.fen == null || state.current == null) {
       return;
@@ -567,6 +674,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// A linha mostrada no tabuleiro é a errada da aula: a variante aberta
   /// que o JSON do passo marca, ou a demonstração marcada.
   bool _wrongShown(LessonState state) {
+    if (_branch.value != null) return false;
     final cursor = _variation.value;
     if (cursor == null) return state.wrongDemo;
     return state.current?.wrongLine([
@@ -843,6 +951,7 @@ class _LessonScreenState extends State<LessonScreen>
                         _variation,
                         _presentingModal,
                         _stage,
+                        _branch,
                       ]),
                       builder: (context, _) {
                         final variation = _variation.value;
@@ -899,35 +1008,22 @@ class _LessonScreenState extends State<LessonScreen>
                                           ? KeyedSubtree(
                                               key: LessonKeys.footer,
                                               child: VariationControls(
-                                                canPrevious: variation != null
-                                                    ? variation.canPrevious
-                                                    : authored!.canPrevious,
-                                                canNext: variation != null
-                                                    ? variation.canNext
-                                                    : authored!.canNext,
+                                                canPrevious: _canStep(
+                                                  previous: true,
+                                                ),
+                                                canNext: _canStep(
+                                                  previous: false,
+                                                ),
                                                 wrong: _wrongShown(state),
                                                 onExit: () => variation != null
                                                     ? _exitLine()
                                                     : _showAuthoredVariation(
                                                         null,
                                                       ),
-                                                onBack: () => variation != null
-                                                    ? _showLine(
-                                                        context,
-                                                        variation.previous(),
-                                                      )
-                                                    : _showAuthoredVariation(
-                                                        authored!.previous(),
-                                                      ),
+                                                onBack: () =>
+                                                    _step(previous: true),
                                                 onForward: () =>
-                                                    variation != null
-                                                    ? _showLine(
-                                                        context,
-                                                        variation.next(),
-                                                      )
-                                                    : _showAuthoredVariation(
-                                                        authored!.next(),
-                                                      ),
+                                                    _step(previous: false),
                                               ),
                                             )
                                           : state.layout ==
@@ -1077,35 +1173,51 @@ class _LessonScreenState extends State<LessonScreen>
               ),
             ),
           ),
-          // A faixa da variante: os lances, o da vez em destaque, e o texto.
+          // A faixa da variante (T68): uma segunda folha do Viktor, só no
+          // modo variante, com as linhas de lances e o comentário. Recolhida
+          // logo abaixo do tabuleiro; arrastada, abre até perto do alto.
           ListenableBuilder(
-            listenable: Listenable.merge([_variation, _stage, _footerHeight]),
+            listenable: Listenable.merge([
+              _variation,
+              _branch,
+              _stage,
+              _footerHeight,
+            ]),
             builder: (context, _) {
-              final line = _variation.value;
-              final strip = _stage.value >= 2
-                  ? _stripOf(context, state, line)
-                  : null;
-              // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 dos lados,
-              // até o topo dos controles: o texto inteiro, rolando se não
-              // couber.
-              return PositionedDirectional(
-                top: rect.bottom + AppSpacing.lg,
-                start: AppSpacing.lg,
-                end: AppSpacing.lg,
-                bottom: _footerHeight.value,
+              final strip = _stage.value >= 2 ? _stripOf(context, state) : null;
+              final on = _variation.value != null || _authoredVariation != null;
+              if (!on) {
+                return const Positioned(width: 0, height: 0, child: SizedBox());
+              }
+              return Positioned.fill(
                 child: AnimatedOpacity(
                   opacity: strip == null ? 0 : 1,
                   duration: AppMotion.of(context).state,
                   child: IgnorePointer(
                     ignoring: strip == null,
-                    child: strip == null
-                        ? const SizedBox(width: double.infinity)
-                        : VariationStrip(
+                    child: ViktorSheet(
+                      key: LessonKeys.variationSheet,
+                      top: rect.bottom + ExerciseLayout.gutter,
+                      controller: _variationSheet,
+                      scrollKey: LessonKeys.variationStripScroll,
+                      closeKey: LessonKeys.variationSheetClose,
+                      closeTooltip: context.l10n.lessonPresentationClose,
+                      padding: EdgeInsets.only(
+                        bottom: _footerHeight.value + _endGap,
+                      ),
+                      children: [
+                        if (strip != null)
+                          VariationStrip(
                             key: LessonKeys.variationStrip,
-                            moves: strip.moves,
-                            current: strip.current,
+                            tree: strip.tree,
+                            position: strip.position,
                             text: strip.text,
-                          ),
+                            onSelect: _goTo,
+                          )
+                        else
+                          const SizedBox(width: double.infinity),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -1116,23 +1228,34 @@ class _LessonScreenState extends State<LessonScreen>
     },
   );
 
-  /// O que a faixa da variante mostra: os lances da linha, o da vez e o
-  /// texto (na fala, o parágrafo que cita a linha; na explicação, o do lance).
-  ({List<String> moves, int current, String text})? _stripOf(
+  /// O que a faixa da variante mostra: a árvore, o lance da vez e o texto
+  /// (no ramo, o dele ou o da alternativa; na linha principal, na fala o
+  /// parágrafo que cita a linha e na explicação o do lance).
+  ({VariationTree tree, TreePosition position, String text})? _stripOf(
     BuildContext context,
     LessonState state,
-    SpeechLineCursor? line,
   ) {
+    final tree = _syncTree();
+    final position = _position;
+    if (tree == null || position == null) return null;
+    if (tree.commentAt(position) case final comment?) {
+      return (
+        tree: tree,
+        position: position,
+        text: WikiMarkup.parse(comment).text,
+      );
+    }
     final authored = _authoredVariation;
     if (authored != null) {
       return (
-        moves: authored.variation.movesSan,
-        current: authored.ply,
+        tree: tree,
+        position: position,
         text: authored.texts.isEmpty
             ? ''
             : WikiMarkup.parse(authored.texts.first).text,
       );
     }
+    final line = _variation.value;
     if (line == null) return null;
     final step = state.current;
     final said = step == null
@@ -1144,13 +1267,27 @@ class _LessonScreenState extends State<LessonScreen>
     final first = line.line.links.first.text;
     final paragraphs = marked.split('\n').where((p) => p.trim().isNotEmpty);
     return (
-      moves: [for (final link in line.line.links) link.text],
-      current: line.ply,
+      tree: tree,
+      position: position,
       text: paragraphs.firstWhere(
         (p) => p.contains(first),
         orElse: () => paragraphs.isEmpty ? '' : paragraphs.first,
       ),
     );
+  }
+
+  bool _canStep({required bool previous}) {
+    final tree = _tree;
+    final position = _position;
+    if (tree == null || position == null) return false;
+    return previous ? tree.canPrevious(position) : tree.canNext(position);
+  }
+
+  void _step({required bool previous}) {
+    final tree = _tree;
+    final position = _position;
+    if (tree == null || position == null) return;
+    _goTo(previous ? tree.previous(position) : tree.next(position));
   }
 
   /// Apresentação do passo (T65 §8): mede o objetivo e decide. Cabe entre o
@@ -1447,10 +1584,12 @@ class _LessonScreenState extends State<LessonScreen>
         textDirection: TextDirection.ltr,
         // O destaque da fala muda sozinho: só o tabuleiro é refeito.
         child: ListenableBuilder(
-          listenable: Listenable.merge([_flash, _variation]),
+          listenable: Listenable.merge([_flash, _variation, _branch]),
           builder: (context, _) {
             final variation = _variation.value;
-            final previewFen = _authoredVariation?.fen ?? variation?.fen;
+            final previewFen = _branch.value != null
+                ? _tree?.fenAt(_branch.value!)
+                : _authoredVariation?.fen ?? variation?.fen;
             final chessboard = Chessboard(
               key: LessonKeys.board,
               size: size,
@@ -1749,7 +1888,10 @@ class _LessonScreenState extends State<LessonScreen>
                   ),
                   onPressed: () => context.push(
                     Routes.freeBoardAt(
-                      _authoredVariation?.fen ??
+                      (_branch.value != null
+                              ? _tree?.fenAt(_branch.value!)
+                              : null) ??
+                          _authoredVariation?.fen ??
                           _variation.value?.fen ??
                           state.fen!,
                       view: (step?.side ?? Side.white).name,

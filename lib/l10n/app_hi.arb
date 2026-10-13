@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "यह नहीं। सोचें कि पाठ ने “{topic}” के बारे में क्या दिखाया।",
   "lessonThinkMistakeGeneric": "आपकी चाल {move} यहाँ काम नहीं करती। देखिए क्यों:",
   "lessonVariationShow": "वेरिएशन देखें",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "पिछली चाल",
   "lessonDemoForward": "अगली चाल",
   "lessonDemoReplay": "दोहराएँ",

@@ -16,6 +16,7 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/ui/core/keys/explanation_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -248,15 +249,19 @@ void main() {
     // A faixa: lances da linha, o da vez em destaque, texto do Viktor.
     expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
     expect(find.byKey(LessonKeys.variationStripCurrent), findsOneWidget);
-    // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 de cada lado.
+    // T68: a faixa é a folha do Viktor logo abaixo do tabuleiro (gutter 8),
+    // sem cabeçalho, com as linhas recuadas 16 dp do lado.
     final board = tester.getRect(find.byKey(LessonKeys.board));
+    final panel = tester.getRect(find.byKey(LessonKeys.variationSheet));
+    expect(panel.left, 0);
     final strip = tester.getRect(find.byKey(LessonKeys.variationStrip));
-    expect(strip.top, board.bottom + 16);
-    expect(strip.left, 16);
+    expect(strip.top, greaterThanOrEqualTo(board.bottom + 8));
     expect(
-      tester.view.physicalSize.width / tester.view.devicePixelRatio -
-          strip.right,
-      16,
+      find.descendant(
+        of: find.byKey(LessonKeys.variationSheet),
+        matching: find.byKey(ViktorSheetKeys.header),
+      ),
+      findsNothing,
     );
     // Sem ir antes do primeiro lance: o anterior só desliga em 0.
     await press(tester, LessonKeys.variationExit);
@@ -304,9 +309,8 @@ void main() {
               matching: find.byType(Text),
             ),
           )
-          .map((text) => text.data)
-          .whereType<String>()
-          .join();
+          .last
+          .data!;
       void link(String notation) =>
           tester.widget<TeacherSpeech>(find.byType(TeacherSpeech).last).onLink!(
             SpeechLink(

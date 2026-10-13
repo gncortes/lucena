@@ -746,6 +746,8 @@
   "lessonVariationPrevious": "Lance anterior da variante",
   "lessonVariationNext": "Próximo lance da variante",
   "lessonPresentationClose": "Fechar e ver o tabuleiro",
+  "lessonVariationAlternative": "Alternativa a {move}",
+  "lessonLineResultDraw": "empate",
   "lessonDemoBack": "Lance anterior",
   "lessonDemoForward": "Próximo lance",
   "lessonDemoReplay": "Repetir",

@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Не этот. Вспомни, что урок показал о «{topic}».",
   "lessonThinkMistakeGeneric": "Твой ход {move} здесь не работает. Посмотри почему:",
   "lessonVariationShow": "Посмотреть вариант",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Предыдущий ход",
   "lessonDemoForward": "Следующий ход",
   "lessonDemoReplay": "Повторить",

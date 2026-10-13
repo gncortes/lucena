@@ -746,6 +746,8 @@
   "lessonVariationPrevious": "[Pŕévîöûš mövé îñ thé lîñé one two three]",
   "lessonVariationNext": "[Ñéxt mövé îñ thé lîñé one two three]",
   "lessonPresentationClose": "[Çlöšé åñd šéé thé böåŕd one two three]",
+  "lessonVariationAlternative": "[Åltéŕñåtîvé tö {move} one two three]",
+  "lessonLineResultDraw": "[dŕåw one]",
   "lessonDemoBack": "[Pŕévîöûš mövé one two]",
   "lessonDemoForward": "[Ñéxt mövé one]",
   "lessonDemoReplay": "[Ŕéplåý one]",

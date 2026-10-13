@@ -742,6 +742,8 @@
   "lessonMistakeGeneric": "Nicht dieser. Denk daran, was die Lektion über „{topic}“ gezeigt hat.",
   "lessonThinkMistakeGeneric": "Dein Zug {move} funktioniert hier nicht. Sieh dir an, warum:",
   "lessonVariationShow": "Variante ansehen",
+  "lessonVariationAlternative": "Alternative to {move}",
+  "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Vorheriger Zug",
   "lessonDemoForward": "Nächster Zug",
   "lessonDemoReplay": "Wiederholen",

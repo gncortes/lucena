@@ -199,26 +199,6 @@ void main() {
       expect(cubit.state.step, 2);
     });
 
-    test('fechar à força na Solução vista reabre nela', () async {
-      final progress = FakeSchoolProgressRepository();
-      final live = await failed(progress: progress);
-      await live.seeSolution();
-      final stored = await progress.load();
-      await progress.save(
-        stored.copyWith(
-          ongoing: LessonCheckpoint.fromJson(stored.ongoing!.toJson()),
-        ),
-      );
-      final cubit = build(progress);
-      await cubit.load('mates.rank', 'en');
-      expect(cubit.state.step, 1);
-      expect(cubit.state.phase, StepPhase.failed);
-      expect(cubit.state.solutionSeen, isTrue);
-      expect(cubit.state.mistakes, 1);
-      expect(cubit.state.fen, mateFen);
-      expect(cubit.state.interactive, isFalse);
-    });
-
     test('checkpoint antigo, sem solutionSeen, abre como sempre', () {
       final old = LessonCheckpoint(lessonId: 'a', step: 1);
       expect(old.solutionSeen, isFalse);

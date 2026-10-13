@@ -800,9 +800,13 @@ class LessonCubit extends Cubit<LessonState> {
           full.part(part ?? '') ??
           full.part(saved?.part ?? '') ??
           full.parts.first;
-      if (saved?.part != opened.id) saved = null;
       lesson = full.only(opened);
     }
+    // Fechar o app de verdade reabre no INÍCIO da parte (ou da lição, sem
+    // partes) em que o aluno estava (decisão do Gabriel, 2026-10-13): o
+    // checkpoint é lido só para saber a parte; o passo salvo não se usa. O
+    // segundo plano não passa por aqui (fica em memória).
+    saved = null;
     Character? viktor;
     for (final character in characters) {
       if (character.id == viktorId) viktor = character;

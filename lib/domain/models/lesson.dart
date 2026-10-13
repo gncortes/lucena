@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import 'game_setup.dart';
 import 'journey.dart';
+import 'variation_tree.dart';
 import '../use_cases/wiki_markup.dart';
 
 /// A Escola do Viktor: as aulas do iniciante, em módulos, na ordem em que se
@@ -240,10 +241,18 @@ class MoveStep extends LessonStep {
 /// Uma variante citada numa fala, descrita no JSON da aula: os lances
 /// (UCI) a partir da posição de onde ela sai e se é a linha errada.
 class CitedLine {
-  const CitedLine({required this.uci, this.wrong = false});
+  const CitedLine({
+    required this.uci,
+    this.wrong = false,
+    this.branches = const [],
+  });
 
   final List<String> uci;
   final bool wrong;
+
+  /// As alternativas à linha, mostradas recuadas na faixa (T68). Não mudam
+  /// [matches] nem o selo de linha errada.
+  final List<CitedBranch> branches;
 
   /// A variante [ucis] é esta: uma começa com a outra (a fala pode citar só
   /// o começo da linha, ou a linha inteira e mais).
@@ -255,6 +264,29 @@ class CitedLine {
     }
     return true;
   }
+}
+
+/// Uma alternativa a um lance de uma [CitedLine] (T68): `at` lances da
+/// linha jogados antes; a alternativa substitui o lance `at + 1`.
+/// `{"id":"g4","at":2,"uci":["g3g4","f7g6"],"glyphs":["?",null],"result":"draw"}`.
+/// Comentários no JSON da aula: `step.<passo>.alt.<id>` (da alternativa) e
+/// `step.<passo>.alt.<id>.m<k>` (do lance k, opcional).
+class CitedBranch {
+  const CitedBranch({
+    required this.id,
+    required this.at,
+    required this.uci,
+    this.glyphs = const [],
+    this.result,
+  });
+
+  final String id;
+  final int at;
+  final List<String> uci;
+
+  /// Avaliação de cada lance (`?`, `!`), do tamanho de [uci]; vazio, nenhuma.
+  final List<String?> glyphs;
+  final VariationResult? result;
 }
 
 /// Um lance errado previsto num passo de lance, de jogar ou de pensar: a
@@ -470,6 +502,11 @@ class LessonTexts {
   /// O que o Viktor diz ao abrir o passo.
   String? step(String lessonId, String stepId) => say('$lessonId.$stepId');
 
+  /// O comentário de uma alternativa citada (T68): o dela (`...alt.<id>`) ou,
+  /// com [ply], o do lance (`...alt.<id>.m<ply>`).
+  String? alternative(String lessonId, String stepId, String id, [int? ply]) =>
+      plain('$lessonId.$stepId.alt.$id${ply == null ? '' : '.m$ply'}');
+
   /// A dica depois de um erro no passo.
   String? hint(String lessonId, String stepId) => say('$lessonId.$stepId.hint');
 
@@ -642,6 +679,8 @@ class LessonCheckpoint {
   });
 
   final String lessonId;
+
+  /// A variante aberta na faixa (T68); nula, nenhuma.
 
   /// The student asked for the solution of the failed step (T65 §4): the app
   /// reopens on the "solution seen" screen.
