@@ -101,7 +101,7 @@ class _LessonScreenState extends State<LessonScreen>
   RevealEvent? _revealing;
 
   // A folha da faixa (segunda ViktorSheet, só no modo variante) e se está
-  // aberta; a variante salva no checkpoint (T68).
+  // aberta (T68). Fica só na memória da tela: fechar o app sai da variante.
   final _variationSheet = DraggableScrollableController();
 
   // A entrada na variante segue a sequência do canvas: a folha sai, o
@@ -317,8 +317,8 @@ class _LessonScreenState extends State<LessonScreen>
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
     var cleared = false;
-    // O 1º estado (o anterior ainda é o vazio) só povoa a tela: não fecha a
-    // variante que a restauração acabou de reabrir.
+    // O 1º estado (o anterior ainda é o vazio) só povoa a tela: não há
+    // variante aberta para fechar.
     if (previous.ready &&
         (state.fen != previous.fen ||
             state.step != previous.step ||

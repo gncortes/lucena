@@ -764,7 +764,7 @@
   "endgameFinalTest": "Test final",
   "endgameTestAdvice": "Conseil : fais d'abord les chapitres. Le test reste ouvert quand tu veux t'entraîner.",
   "endgameStartLesson": "Commencer le chapitre 1",
-  "endgameResumePart": "Reprendre le chapitre {part}",
+  "endgameRestartPart": "Recommencer le chapitre {part}",
   "endgameNextPart": "Passer au chapitre {part}",
   "endgameResumeTest": "Reprendre le test final",
   "endgameContinueTest": "Passer le test final",

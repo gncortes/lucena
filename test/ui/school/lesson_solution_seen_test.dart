@@ -144,7 +144,7 @@ void main() {
     );
 
     test('seeSolution marca a solução vista, com a seta no lance certo, e '
-        'guarda no checkpoint', () async {
+        'não vai para o checkpoint', () async {
       final progress = FakeSchoolProgressRepository();
       final cubit = await failed(progress: progress);
       await cubit.seeSolution();
@@ -152,13 +152,9 @@ void main() {
       expect(cubit.state.phase, StepPhase.failed);
       expect(cubit.state.mistakes, 1);
       expect(cubit.state.solutionMove?.uci, 'a1a8');
+      // Fechar o app volta ao início da parte: nada do erro é gravado.
       final stored = (await progress.load()).ongoing!;
-      expect(stored.solutionSeen, isTrue);
-      expect(stored.toJson()['solutionSeen'], isTrue);
-      // Só quando verdadeiro.
-      await cubit.retry();
-      final cleared = (await progress.load()).ongoing!;
-      expect(cleared.toJson().containsKey('solutionSeen'), isFalse);
+      expect(stored.toJson().containsKey('solutionSeen'), isFalse);
     });
 
     test('seeSolution fora do erro explicado não faz nada', () async {
@@ -199,10 +195,13 @@ void main() {
       expect(cubit.state.step, 2);
     });
 
-    test('checkpoint antigo, sem solutionSeen, abre como sempre', () {
-      final old = LessonCheckpoint(lessonId: 'a', step: 1);
-      expect(old.solutionSeen, isFalse);
-      expect(LessonCheckpoint.fromJson(old.toJson())!.solutionSeen, isFalse);
+    test('checkpoint antigo, com solutionSeen, ainda é lido', () {
+      final old = LessonCheckpoint.fromJson({
+        'lesson': 'a',
+        'step': 1,
+        'solutionSeen': true,
+      });
+      expect(old, LessonCheckpoint(lessonId: 'a', step: 1, open: false));
     });
   });
 

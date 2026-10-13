@@ -764,7 +764,7 @@
   "endgameFinalTest": "آزمون پایانی",
   "endgameTestAdvice": "نکته: اول فصل‌ها را انجام بده. آزمون هر وقت بخواهی برای تمرین باز است.",
   "endgameStartLesson": "شروع فصل ۱",
-  "endgameResumePart": "ادامهٔ فصل {part}",
+  "endgameRestartPart": "شروع دوبارهٔ فصل {part}",
   "endgameNextPart": "رفتن به فصل {part}",
   "endgameResumeTest": "ادامهٔ آزمون پایانی",
   "endgameContinueTest": "شرکت در آزمون نهایی",

@@ -764,7 +764,7 @@
   "endgameFinalTest": "Tes akhir",
   "endgameTestAdvice": "Saran: kerjakan bab-babnya dulu. Tes terbuka kapan pun kamu mau berlatih.",
   "endgameStartLesson": "Mulai bab 1",
-  "endgameResumePart": "Lanjutkan bab {part}",
+  "endgameRestartPart": "Ulangi bab {part}",
   "endgameNextPart": "Ke bab {part}",
   "endgameResumeTest": "Lanjutkan tes akhir",
   "endgameContinueTest": "Ikuti tes akhir",

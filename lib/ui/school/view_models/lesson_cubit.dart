@@ -764,49 +764,23 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     if (saved != null && saved.lessonId != lessonId) saved = null;
-    LessonPart? opened;
-    var lesson = full;
-    if (full.parts.isNotEmpty) {
-      // Checkpoint de antes das partes: o passo contava na aula inteira.
-      if (saved != null && saved.part == null) {
-        final located = full.locate(saved.step);
-        saved = located == null
-            ? null
-            : LessonCheckpoint(
-                lessonId: saved.lessonId,
-                step: located.$2,
-                fen: saved.fen,
-                collected: saved.collected,
-                turn: saved.turn,
-                moves: saved.moves,
-                open: saved.open,
-                part: located.$1.id,
-                stepId: saved.stepId,
-                stepStartedAt: saved.stepStartedAt,
-                stepPausedAt: saved.stepPausedAt,
-                hintsShown: saved.hintsShown,
-                mistakes: saved.mistakes,
-                demoMove: saved.demoMove,
-                demoPlaying: saved.demoPlaying,
-                reviewReturn: saved.reviewReturn,
-                attempt: saved.attempt,
-                failed: saved.failed,
-                reviewStep: saved.reviewStep,
-                attemptedSan: saved.attemptedSan,
-                thinkMistake: saved.thinkMistake,
-              );
-      }
-      opened =
-          full.part(part ?? '') ??
-          full.part(saved?.part ?? '') ??
-          full.parts.first;
-      lesson = full.only(opened);
-    }
     // Fechar o app de verdade reabre no INÍCIO da parte (ou da lição, sem
     // partes) em que o aluno estava (decisão do Gabriel, 2026-10-13): o
     // checkpoint é lido só para saber a parte; o passo salvo não se usa. O
     // segundo plano não passa por aqui (fica em memória).
-    saved = null;
+    LessonPart? opened;
+    var lesson = full;
+    if (full.parts.isNotEmpty) {
+      // Checkpoint de antes das partes: o passo contava na aula inteira.
+      final savedPart = saved == null
+          ? null
+          : saved.part ?? full.locate(saved.step)?.$1.id;
+      opened =
+          full.part(part ?? '') ??
+          full.part(savedPart ?? '') ??
+          full.parts.first;
+      lesson = full.only(opened);
+    }
     Character? viktor;
     for (final character in characters) {
       if (character.id == viktorId) viktor = character;
@@ -824,42 +798,8 @@ class LessonCubit extends Cubit<LessonState> {
       partCount: full.parts.length,
       references: references,
     );
-    if (saved != null && saved.step < lesson.steps.length) {
-      _reviewReturn = saved.reviewReturn;
-      emit(
-        _resumeAttempt(
-          _restore(base, saved).copyWith(returnTo: _reviewReturn?.step),
-          saved,
-        ),
-      );
-      // Fechou na Solução vista: volta nela (só se o erro voltou também).
-      if (saved.solutionSeen && state.showsMistake && state.result == null) {
-        emit(state.copyWith(solutionSeen: true));
-      }
-      // A wrong move keeps its explanation: emit() does not fetch it for a
-      // move answered at the same step (the live path asks it explicitly).
-      if (_decision case final decision?
-          when decision.incorrect &&
-              decision.kind != 'think' &&
-              decision.step == state.step) {
-        await _loadExplanation(state);
-      }
-    } else {
-      emit(_open(base, 0));
-    }
+    emit(_open(base, 0));
     await _save();
-    if (state.phase == StepPhase.waiting) {
-      switch (state.current) {
-        case MoveStep step:
-          unawaited(_finishLineReply(step));
-        case PlayStep step:
-          unawaited(_replyPlay(step));
-        case ThinkStep():
-          unawaited(_finishThink());
-        default:
-          break;
-      }
-    }
   }
 
   /// O id do Viktor nas fichas dos personagens.
@@ -984,8 +924,8 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
-  /// Sai da aula pelo voltar: o passo fica guardado, mas o app não reabre
-  /// nela.
+  /// Sai da aula pelo voltar: a parte fica guardada, mas o app não reabre
+  /// nela. Entrar de novo recomeça a parte, como ao fechar o app.
   Future<void> leave() async {
     if (state.finished) {
       return;
@@ -1195,80 +1135,6 @@ class LessonCubit extends Cubit<LessonState> {
     ),
     emotion: Emotion.focused,
   );
-
-  /// Reopening the app on a wrong answer (T65 §7): the failed phase, the
-  /// numbered move and the explanation come back. The decision is restored
-  /// too, so the repository returns the same payload for the step id.
-  LessonState _resumeAttempt(LessonState restored, LessonCheckpoint saved) {
-    final attempt = saved.attempt;
-    final steps = restored.lesson?.steps ?? const <LessonStep>[];
-    if (attempt == null ||
-        attempt.step < 0 ||
-        attempt.step >= steps.length ||
-        steps[attempt.step].id != attempt.id ||
-        !(attempt.step == restored.step ||
-            (attempt.kind == 'think' && restored.step == attempt.step + 1))) {
-      return restored;
-    }
-    _decision = (
-      step: attempt.step,
-      id: attempt.id,
-      kind: attempt.kind,
-      fen: attempt.fen,
-      turn: attempt.turn,
-      uci: attempt.uci,
-      incorrect: attempt.incorrect,
-    );
-    if (!attempt.incorrect) return restored;
-    final texts = restored.texts;
-    final lessonId = restored.lesson!.id;
-    final answered = steps[attempt.step];
-    if (attempt.kind == 'think' && answered is ThinkStep) {
-      final said = _mistakeTextIn(
-        texts,
-        lessonId,
-        answered.mistakes[attempt.uci]?.say,
-      );
-      if (said != null) return _thinkSaid(restored, answered, said);
-      return restored.copyWith(
-        thinkMistake: saved.thinkMistake,
-        emotion: Emotion.focused,
-      );
-    }
-    final step = restored.current;
-    final mistake = switch (step) {
-      MoveStep(:final mistakes) ||
-      PlayStep(:final mistakes) => mistakes[attempt.uci],
-      _ => null,
-    };
-    if (saved.failed) {
-      final text = _mistakeTextIn(texts, lessonId, mistake?.say);
-      return restored.copyWith(
-        phase: StepPhase.failed,
-        speech: text ?? texts.say('coach.wrong'),
-        genericMistake: mistake != null && text == null,
-        reviewStep: saved.reviewStep,
-        clearReview: saved.reviewStep == null,
-        clearHint: true,
-        attemptedSan: saved.attemptedSan,
-        emotion: Emotion.focused,
-      );
-    }
-    if (step is! MoveStep) return restored;
-    // A wrong move in a move step: the piece went back, the hint speaks and,
-    // from the second mistake, the arrow shows the move.
-    final hint = texts.hint(lessonId, step.id);
-    return restored.copyWith(
-      speech: hint ?? texts.say('coach.wrong'),
-      genericMistake: hint == null,
-      hint: restored.mistakes >= 2 && restored.turn < step.line.length
-          ? Move.parse(step.line[restored.turn].accept.first)
-          : null,
-      attemptedSan: saved.attemptedSan,
-      wrongMove: true,
-      emotion: Emotion.focused,
-    );
-  }
 
   /// A explicação [next] mostra um lance (seta, demonstração ou passo de
   /// lance).
@@ -2187,24 +2053,6 @@ class LessonCubit extends Cubit<LessonState> {
     mistakes: state.mistakes,
     demoMove: state.demoMove,
     demoPlaying: state.demoPlaying,
-    reviewReturn: _reviewReturn,
-    attempt: switch (_decision) {
-      final d? => LessonAttempt(
-        step: d.step,
-        id: d.id,
-        kind: d.kind,
-        fen: d.fen,
-        turn: d.turn,
-        uci: d.uci,
-        incorrect: d.incorrect,
-      ),
-      null => null,
-    },
-    failed: state.phase == StepPhase.failed && state.result == null,
-    reviewStep: state.reviewStep,
-    attemptedSan: state.attemptedSan,
-    thinkMistake: state.thinkMistake,
-    solutionSeen: state.solutionSeen,
   );
 
   Position? _position() {

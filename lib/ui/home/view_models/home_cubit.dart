@@ -154,8 +154,6 @@ class EndgameSummary {
     this.exerciseNumber,
     this.exerciseCount,
     this.lessonOpen = false,
-    this.step,
-    this.stepCount,
     this.partId,
     this.partNumber,
     this.partCount,
@@ -186,10 +184,9 @@ class EndgameSummary {
   final int? exerciseNumber;
   final int? exerciseCount;
 
-  /// A lição (os passos) começada e não terminada, e o passo em que parou.
+  /// A lição (os passos) começada e não terminada. O passo não aparece:
+  /// fechar o app reabre no início da parte (ou da lição, sem partes).
   final bool lessonOpen;
-  final int? step;
-  final int? stepCount;
 }
 
 class HomeCubit extends Cubit<HomeState> {
@@ -407,7 +404,7 @@ class HomeCubit extends Cubit<HomeState> {
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
     }
-    // Numa aula em partes, o passo conta dentro da parte.
+    // Numa aula em partes, o cartão mostra a parte; sem partes, a nota.
     final checkpoint = lessonOpen
         ? EndgameLessonRules.migrate(lesson, ongoing)
         : null;
@@ -426,14 +423,6 @@ class HomeCubit extends Cubit<HomeState> {
       exerciseNumber: exerciseIndex < 0 ? null : exerciseIndex + 1,
       exerciseCount: exerciseIndex < 0 ? null : lesson.exercises.length,
       lessonOpen: lessonOpen,
-      step: !lessonOpen
-          ? null
-          : part != null
-          ? checkpoint!.step + 1
-          : ongoing.step + 1,
-      stepCount: !lessonOpen
-          ? null
-          : part?.steps.length ?? lesson.lesson.steps.length,
       partId: part?.id,
       partNumber: part == null ? null : lesson.lesson.parts.indexOf(part) + 1,
       partCount: part == null ? null : lesson.lesson.parts.length,

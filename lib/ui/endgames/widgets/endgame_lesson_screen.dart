@@ -590,14 +590,15 @@ class _ContinueBar extends StatelessWidget {
     final VoidCallback onPressed;
     if (part != null) {
       final number = lesson.lesson.sections.indexOf(part) + 1;
-      // A parte começada (passou do primeiro passo) é retomada; sem nada
-      // feito, a aula começa; senão, segue para a próxima parte.
+      // A parte começada (passou do primeiro passo) recomeça do início, como
+      // ao fechar o app; sem nada feito, a aula começa; senão, segue para a
+      // próxima parte.
       final resume =
           state.lessonOngoing &&
           state.ongoingStep > 0 &&
           (lesson.lesson.parts.isEmpty || state.ongoingPart == part.id);
       label = resume
-          ? l10n.endgameResumePart(number)
+          ? l10n.endgameRestartPart(number)
           : state.partsDone.isEmpty
           ? l10n.endgameStartLesson
           : l10n.endgameNextPart(number);

@@ -3929,9 +3929,9 @@
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
-  "endgameResumePart": "Resume chapter {part}",
-  "@endgameResumePart": {
-    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student left in the middle.",
+  "endgameRestartPart": "Restart chapter {part}",
+  "@endgameRestartPart": {
+    "description": "Fixed bottom button on the endgame lesson screen: restart the part the student left in the middle (closing the app reopens it at its first step).",
     "placeholders": {
       "part": {
         "type": "int"

@@ -764,7 +764,7 @@
   "endgameFinalTest": "Eindtoets",
   "endgameTestAdvice": "Tip: doe eerst de hoofdstukken. De toets staat open wanneer je wilt oefenen.",
   "endgameStartLesson": "Hoofdstuk 1 beginnen",
-  "endgameResumePart": "Hoofdstuk {part} hervatten",
+  "endgameRestartPart": "Hoofdstuk {part} opnieuw beginnen",
   "endgameNextPart": "Naar hoofdstuk {part}",
   "endgameResumeTest": "Eindtoets hervatten",
   "endgameContinueTest": "Eindtoets maken",

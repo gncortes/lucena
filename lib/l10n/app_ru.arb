@@ -764,7 +764,7 @@
   "endgameFinalTest": "Итоговый тест",
   "endgameTestAdvice": "Совет: сначала пройдите главы. Тест открыт, когда захотите потренироваться.",
   "endgameStartLesson": "Начать главу 1",
-  "endgameResumePart": "Вернуться к главе {part}",
+  "endgameRestartPart": "Начать главу {part} заново",
   "endgameNextPart": "Перейти к главе {part}",
   "endgameResumeTest": "Продолжить итоговый тест",
   "endgameContinueTest": "Пройти итоговый тест",

@@ -764,7 +764,7 @@
   "endgameFinalTest": "期末测试",
   "endgameTestAdvice": "提示：先完成各章。测试随时开放，想练就练。",
   "endgameStartLesson": "开始第 1 章",
-  "endgameResumePart": "继续第 {part} 章",
+  "endgameRestartPart": "重新开始第 {part} 章",
   "endgameNextPart": "前往第 {part} 章",
   "endgameResumeTest": "继续期末测试",
   "endgameContinueTest": "参加最终测试",
