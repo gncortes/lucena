@@ -81,6 +81,7 @@ abstract final class LessonKeys {
   static const moreHintButton = Key('lesson.think.moreHint');
   static const demoBack = Key('lesson.demo.back');
   static const demoForward = Key('lesson.demo.forward');
+  static const demoRing = Key('lesson.demo.ring');
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');
 

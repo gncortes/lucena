@@ -159,7 +159,7 @@ void main() {
     // No fim, a seta de próximo lance desliga.
     expect(
       tester
-          .widget<FloatingActionButton>(find.byKey(LessonKeys.variationForward))
+          .widget<IconButton>(find.byKey(LessonKeys.variationForward))
           .onPressed,
       isNull,
     );

@@ -112,6 +112,9 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   Duration _demoWait = Duration.zero;
+
+  // O anel do ⏭ da demonstração (-1: falando; nulo: sem anel).
+  final _demoRing = ValueNotifier<double?>(null);
   Duration? _lastTickElapsed;
   String? _demoAt;
   bool _demoSpoke = false;
@@ -164,7 +167,7 @@ class _LessonScreenState extends State<LessonScreen>
           when state.demoPlaying && state.demoMove < line.length:
         _paceDemo(cubit, state, delta);
       default:
-        break;
+        _demoRing.value = null;
     }
   }
 
@@ -173,6 +176,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// leitura pelo tamanho da fala. A velocidade da voz vale para os dois.
   void _paceDemo(LessonCubit cubit, LessonState state, Duration delta) {
     if (_authoredVariation != null || _variation.value != null) {
+      _demoRing.value = null;
       return;
     }
     final at = '${state.current!.id}:${state.demoMove}';
@@ -186,15 +190,25 @@ class _LessonScreenState extends State<LessonScreen>
     final speech = TeacherSpeech.speechOf(context)?.state;
     final speed = speech?.settings.speed ?? 1.0;
     final text = state.speech ?? '';
-    if (speech != null && speech.isSpeaking(text)) {
+    // Fala audível: som do app e voz do Viktor ligados. Sem isso, a fala que
+    // ainda conste como "em andamento" (botão de áudio, voz presa) não segura
+    // a demonstração: vale o tempo de leitura, com teto (T65, §7).
+    final audible =
+        (context.read<SettingsCubit>().state?.sound ?? true) &&
+        (speech?.settings.enabled ?? false);
+    if (audible && speech!.isSpeaking(text)) {
       // Ainda falando: o relógio conta a partir do fim da fala.
       _demoSpoke = true;
       _demoWait = Duration.zero;
+      _demoRing.value = DemoRing.speaking;
       return;
     }
-    final reading = max(DemoPace.minReadMs, text.length * DemoPace.msPerChar);
-    final waitMs =
-        ((_demoSpoke ? 0 : reading) + DemoPace.pauseMs) / max(speed, 0.5);
+    final waitMs = DemoPace.waitMs(
+      length: text.length,
+      spoke: _demoSpoke,
+      speed: speed,
+    );
+    _demoRing.value = (_demoWait.inMilliseconds / waitMs).clamp(0.0, 1.0);
     if (_demoWait.inMilliseconds >= waitMs) {
       _demoAt = null;
       unawaited(cubit.demoForward());
@@ -212,6 +226,7 @@ class _LessonScreenState extends State<LessonScreen>
     _shake.dispose();
     _landing.dispose();
     _elapsed.dispose();
+    _demoRing.dispose();
     _flash.dispose();
     _variation.dispose();
     super.dispose();
@@ -1590,7 +1605,11 @@ class _LessonScreenState extends State<LessonScreen>
     if (step is DemoStep && state.phase != StepPhase.done) {
       return KeyedSubtree(
         key: LessonKeys.footer,
-        child: DemoControls(state: state, height: _actionsHeight),
+        child: DemoControls(
+          state: state,
+          height: _actionsHeight,
+          ring: _demoRing,
+        ),
       );
     }
     // Com a explicação aberta (T65 §3, §4): o rodapé do canvas, de botões de
