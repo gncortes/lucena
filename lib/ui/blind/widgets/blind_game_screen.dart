@@ -1508,8 +1508,8 @@ class _ActionChip extends StatelessWidget {
         ? const VisualDensity(horizontal: -2, vertical: -3)
         : VisualDensity.standard,
     padding: EdgeInsets.zero,
-    // Canvas: o texto fica colado ao ícone (gap do avatar já é 8).
-    labelPadding: const EdgeInsetsDirectional.only(end: 8),
+    // Canvas (CompChip): texto colado ao ícone e 16 de folga no fim.
+    labelPadding: const EdgeInsetsDirectional.only(end: 16),
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     avatar: Icon(
       icon,
