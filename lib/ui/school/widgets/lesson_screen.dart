@@ -30,7 +30,6 @@ import '../../core/keys/school_keys.dart';
 import '../../core/keys/explanation_keys.dart';
 import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
@@ -610,6 +609,16 @@ class _LessonScreenState extends State<LessonScreen>
                     ),
                   ),
               ],
+              // A barra contínua no pé da AppBar: some no fim da parte e na
+              // formatura (PartFinished fica como na V1).
+              bottom:
+                  state.ready &&
+                      !state.missing &&
+                      !state.finished &&
+                      !state.courseFinished &&
+                      state.current != null
+                  ? _progressBar(context, state)
+                  : null,
             ),
             body: BoardViewport(
               usefulHeight: BoardViewport.usefulHeightOf(context),
@@ -617,6 +626,28 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           );
         },
+      ),
+    );
+  }
+
+  PreferredSizeWidget _progressBar(BuildContext context, LessonState state) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Semantics(
+        label: context.l10n.lessonStep(state.step + 1, state.stepCount),
+        child: ExcludeSemantics(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(end: state.progress.clamp(0.0, 1.0)),
+            duration: AppMotion.of(context).component,
+            curve: AppMotion.enter,
+            builder: (context, value, _) => LinearProgressIndicator(
+              key: LessonKeys.progress,
+              value: value,
+              minHeight: 4,
+              borderRadius: BorderRadius.zero,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -650,28 +681,8 @@ class _LessonScreenState extends State<LessonScreen>
                       SizedBox.shrink(
                         key: LessonKeys.step(state.lesson!.id, step.id),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Semantics(
-                                label: l10n.lessonStep(
-                                  state.step + 1,
-                                  state.stepCount,
-                                ),
-                                child: ExcludeSemantics(
-                                  child: StepProgress(
-                                    key: LessonKeys.progress,
-                                    total: state.stepCount,
-                                    value: state.progress * state.stepCount,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 12 dp entre a barra e o tabuleiro: topo em 80 dp.
+                      const SizedBox(height: 12),
                       if (hasBoard) ...[
                         Expanded(
                           child: _exerciseArea(

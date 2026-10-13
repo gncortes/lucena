@@ -137,8 +137,8 @@ void main() {
     expect(board.height, closeTo(side, 1), reason: '$state: board side');
     expect(board.left, closeTo(8, 1), reason: '$state: board start');
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
-    expect(progress.top, closeTo(64, 1), reason: '$state: progress top');
-    expect(progress.height, closeTo(8, 1), reason: '$state: progress height');
+    expect(progress.top, closeTo(56, 1), reason: '$state: progress top');
+    expect(progress.height, closeTo(4, 1), reason: '$state: progress height');
     // Viktor (header and speech) lives in the sheet, below the board.
     final teacher = find.byWidgetPredicate(
       (widget) =>

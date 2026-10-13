@@ -358,7 +358,7 @@ void main() {
     expect(board.center.dx, closeTo(size.width / 2, 1));
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
     expect(board.top, greaterThanOrEqualTo(progress.bottom));
-    expect(board.top - progress.bottom, lessThanOrEqualTo(16));
+    expect(board.top - progress.bottom, lessThanOrEqualTo(20));
     final teacher = find.byWidgetPredicate(
       (widget) =>
           widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,

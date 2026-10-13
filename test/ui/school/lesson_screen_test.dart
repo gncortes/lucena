@@ -362,6 +362,19 @@ void main() {
     expect(find.byKey(LessonKeys.progress), findsOneWidget);
   });
 
+  testWidgets('barra contínua no pé da AppBar: 4 dp, cresce ao avançar', (
+    tester,
+  ) async {
+    await pump(tester, intro: 'Short.');
+    LinearProgressIndicator bar() =>
+        tester.widget<LinearProgressIndicator>(find.byKey(LessonKeys.progress));
+    final before = bar().value!;
+    expect(tester.getSize(find.byKey(LessonKeys.progress)).height, 4);
+    expect(tester.getTopLeft(find.byKey(LessonKeys.progress)).dy, 56);
+    await toStars(tester);
+    expect(bar().value!, greaterThan(before));
+  });
+
   testWidgets('estrelas: arrastar a torre na diagonal não anda, ela volta e '
       'o Viktor diz como a torre anda', (tester) async {
     await pump(tester, intro: 'Short.');
