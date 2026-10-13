@@ -229,7 +229,10 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         color: _moveColor(context, variation),
       ),
     );
-    if (!principal) return move;
+    // Contrato 3.3: "Também não funcionam" sem letra.
+    if (!principal || block.kind == ExplanationKind.failedAlternatives) {
+      return move;
+    }
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

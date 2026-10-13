@@ -374,6 +374,20 @@ void main() {
         find.byKey(ExplanationKeys.restore),
       );
       expect(back.style?.backgroundColor, isNull);
+      // Canvas voltar-posicao: centrado, sobre fundo sólido com esmaecer no
+      // topo (o texto que rola não aparece atrás).
+      final width =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      expect(
+        tester.getCenter(find.byKey(ExplanationKeys.restore)).dx,
+        closeTo(width / 2, 1),
+      );
+      final footer = tester.widget<DecoratedBox>(find.byKey(LessonKeys.footer));
+      final gradient =
+          (footer.decoration as BoxDecoration).gradient! as LinearGradient;
+      expect(gradient.colors.first.a, 0);
+      expect(gradient.colors.last.a, 1);
+      expect(gradient.colors[1].a, 1);
       await activate(ExplanationKeys.restore);
       expect(fen(tester), payload.parentCursor(child)!.fen);
       expect(fen(tester), origin);

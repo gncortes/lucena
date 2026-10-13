@@ -1098,13 +1098,17 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   ExplanationPayload _explanationFor(BuildContext context, LessonState state) {
-    final payload = demoSheetPayload(
-      state.explanation ??
-          ExplanationPayload.context([?_baseSpeech(context, state)]),
-      inDemo: state.current is DemoStep && state.demoMove > 0,
+    final payload = wrongMoveSheetPayload(
+      demoSheetPayload(
+        state.explanation ??
+            ExplanationPayload.context([?_baseSpeech(context, state)]),
+        inDemo: state.current is DemoStep && state.demoMove > 0,
+      ),
+      correctMoveTitle: context.l10n.lessonCorrectMove,
     );
     final attempted = state.attemptedSan ?? state.thinkMistake;
     if (attempted == null ||
+        (state.current is DemoStep && state.demoMove > 0) ||
         payload.explanations.any(
           (b) => b.kind == ExplanationKind.playedIncorrect,
         )) {
@@ -1320,25 +1324,41 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton sem fundo,
-  /// como no canvas) sobe uma variante, ou sai dela se já estiver na raiz.
+  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton centrado,
+  /// CompRodapeLicao `voltar-posicao`) sobe uma variante, ou sai dela se já
+  /// estiver na raiz. Ao contrário do rodapé dos botões flutuantes, o fundo
+  /// é sólido (o texto que rola não aparece atrás) com um esmaecer no topo.
   Widget _variationFooter(BuildContext context, LessonState state) {
     final cursor = _authoredVariation!;
     final payload = state.explanation;
-    return _footer(
-      context,
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: TextButton.icon(
-          key: ExplanationKeys.restore,
-          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-          onPressed: () => _showAuthoredVariation(
-            cursor.variation.parentId == null
-                ? null
-                : payload?.parentCursor(cursor.variation),
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    return DecoratedBox(
+      key: LessonKeys.footer,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [background.withValues(alpha: 0), background, background],
+          // Canvas: 24 dp de esmaecer acima do botão.
+          stops: const [0, 0.3, 1],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+        child: Align(
+          alignment: Alignment.center,
+          heightFactor: 1,
+          child: TextButton.icon(
+            key: ExplanationKeys.restore,
+            style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+            onPressed: () => _showAuthoredVariation(
+              cursor.variation.parentId == null
+                  ? null
+                  : payload?.parentCursor(cursor.variation),
+            ),
+            icon: const Icon(Icons.undo),
+            label: Text(context.l10n.lessonReturn),
           ),
-          icon: const Icon(Icons.undo),
-          label: Text(context.l10n.lessonReturn),
         ),
       ),
     );
@@ -1676,10 +1696,25 @@ ExplanationPayload demoSheetPayload(
   required bool inDemo,
 }) {
   if (!inDemo) return payload;
-  final rest = payload.explanations
-      .where((b) => b.kind != ExplanationKind.context)
-      .toList();
-  if (rest.isEmpty || rest.length == payload.explanations.length) {
+  bool isSolution(ExplanationBlock b) =>
+      b.kind == ExplanationKind.mainSolution ||
+      b.kind == ExplanationKind.otherSolutions ||
+      b.kind == ExplanationKind.failedAlternatives;
+  final rest = [
+    for (final b in payload.explanations)
+      if (b.kind != ExplanationKind.context)
+        // Só a fala do lance: sem o título da seção nem as linhas de
+        // variante ("Esta continuação…", "Continuação: …").
+        if (isSolution(b))
+          ExplanationBlock(
+            id: b.id,
+            kind: ExplanationKind.context,
+            texts: b.texts,
+          )
+        else
+          b,
+  ];
+  if (payload.explanations.every((b) => b.kind == ExplanationKind.context)) {
     return payload;
   }
   return ExplanationPayload(
@@ -1687,6 +1722,40 @@ ExplanationPayload demoSheetPayload(
     reviewStepId: payload.reviewStepId,
     state: payload.state,
     explanations: rest,
+  );
+}
+
+/// Lance errado (PropV2LicaoPensarErrado): LANCE ERRADO, LANCE CERTO e
+/// TAMBÉM NÃO FUNCIONAM; sem a seção da posição e com a solução principal
+/// intitulada "Lance certo" em vez do título do conteúdo.
+@visibleForTesting
+ExplanationPayload wrongMoveSheetPayload(
+  ExplanationPayload payload, {
+  required String correctMoveTitle,
+}) {
+  if (payload.state != ExplanationState.incorrect ||
+      !payload.explanations.any(
+        (b) => b.kind == ExplanationKind.playedIncorrect,
+      )) {
+    return payload;
+  }
+  return ExplanationPayload(
+    positionId: payload.positionId,
+    reviewStepId: payload.reviewStepId,
+    state: payload.state,
+    explanations: [
+      for (final b in payload.explanations)
+        if (b.kind == ExplanationKind.mainSolution)
+          ExplanationBlock(
+            id: b.id,
+            kind: b.kind,
+            title: correctMoveTitle,
+            texts: b.texts,
+            variations: b.variations,
+          )
+        else if (!(b.kind == ExplanationKind.context && b.title.isNotEmpty))
+          b,
+    ],
   );
 }
 

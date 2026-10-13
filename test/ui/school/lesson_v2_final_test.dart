@@ -131,4 +131,70 @@ void main() {
     final only = ExplanationPayload.context(['Only context.']);
     expect(demoSheetPayload(only, inDemo: true), same(only));
   });
+
+  test('demoSheetPayload keeps only the move speech: no section title, '
+      'no variation lines', () {
+    final line = ExplanationVariation(
+      id: 'A',
+      label: '1.Re4',
+      outcome: VariationOutcome.accepted,
+      texts: ['Esta continuação conserva a vitória.', 'Continuação: 1.Re4'],
+      originFen: fen,
+      movesUci: ['a1a8'],
+      movesSan: ['1.Ra8'],
+      validated: true,
+    );
+    final payload = ExplanationPayload(
+      positionId: 'p',
+      state: ExplanationState.review,
+      explanations: [
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'Fixed',
+          texts: ['Fixed.'],
+        ),
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          title: 'A ideia principal',
+          texts: ['3.Rg5. Move speech.'],
+          variations: [line],
+        ),
+      ],
+    );
+    final shown = demoSheetPayload(payload, inDemo: true).explanations.single;
+    expect(shown.texts, ['3.Rg5. Move speech.']);
+    expect(shown.variations, isEmpty);
+    expect(shown.title, isEmpty);
+    expect(shown.kind, ExplanationKind.context);
+  });
+
+  test('wrongMoveSheetPayload: WRONG MOVE, CORRECT MOVE, DO NOT WORK, '
+      'without the position section', () {
+    ExplanationBlock block(String id, ExplanationKind kind, [String t = '']) =>
+        ExplanationBlock(id: id, kind: kind, title: t, texts: [id]);
+    final payload = ExplanationPayload(
+      positionId: 'p',
+      state: ExplanationState.incorrect,
+      explanations: [
+        block('played', ExplanationKind.playedIncorrect),
+        block('ctx', ExplanationKind.context, 'A posição e o objetivo'),
+        block('main', ExplanationKind.mainSolution, 'A ideia principal'),
+        block('fail', ExplanationKind.failedAlternatives),
+      ],
+    );
+    final out = wrongMoveSheetPayload(payload, correctMoveTitle: 'Lance certo');
+    expect(out.explanations.map((b) => b.id), ['played', 'main', 'fail']);
+    expect(out.explanations[1].title, 'Lance certo');
+    final correct = ExplanationPayload(
+      positionId: 'p',
+      state: ExplanationState.correct,
+      explanations: payload.explanations,
+    );
+    expect(
+      wrongMoveSheetPayload(correct, correctMoveTitle: 'x'),
+      same(correct),
+    );
+  });
 }

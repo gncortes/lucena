@@ -317,6 +317,10 @@ void main() {
     expect(wrong.style?.color, isNot(theme.colorScheme.primary));
     expect(wrong.style?.fontWeight, FontWeight.w700);
     expect(find.text('DRAWS'), findsOneWidget);
+    // Contrato 3.3: letra só na solução; "Também não funcionam" sem letra.
+    expect(find.text('A) '), findsOneWidget);
+    expect(find.text('B) '), findsNothing);
+    expect(find.textContaining('B)'), findsNothing);
     // The correct line has no result label (accepted, as the section).
     final right = tester.widget<Text>(find.text('1.d4'));
     expect(right.style?.color, theme.colorScheme.primary);
