@@ -238,29 +238,39 @@ class _ViktorSheetState extends State<ViktorSheet> {
                         crossAxisMargin: 6,
                         child: ShaderMask(
                           blendMode: BlendMode.dstIn,
-                          // Recolhida: o fim da folha some em dp (não em
-                          // fração), para o rótulo da seção seguinte não
-                          // aparecer cortado logo abaixo do cabeçalho.
-                          shaderCallback: (rect) => LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: _expanded
-                                ? [Colors.white, Colors.white]
-                                : [
-                                    Colors.white,
-                                    Colors.white,
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                  ],
-                            stops: _expanded
-                                ? null
-                                : [
-                                    0,
-                                    math.max(0, 1 - 24 / rect.height),
-                                    math.max(0, 1 - 12 / rect.height),
-                                    1,
-                                  ],
-                          ).createShader(rect),
+                          // Recolhida: o que fica acima do rodapé (a área
+                          // visível, sem o `padding` de baixo) esmaece em dp
+                          // nos últimos 12 dp, para o rótulo da seção seguinte
+                          // não aparecer cortado logo abaixo do cabeçalho.
+                          shaderCallback: (rect) {
+                            final visible = math.max(
+                              1.0,
+                              rect.height -
+                                  widget.padding
+                                      .resolve(Directionality.of(context))
+                                      .bottom,
+                            );
+                            return LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: _expanded
+                                  ? [Colors.white, Colors.white]
+                                  : [
+                                      Colors.white,
+                                      Colors.white,
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                    ],
+                              stops: _expanded
+                                  ? null
+                                  : [
+                                      0,
+                                      math.max(0, (visible - 12) / rect.height),
+                                      math.max(0, (visible - 4) / rect.height),
+                                      1,
+                                    ],
+                            ).createShader(rect);
+                          },
                           child: ListView(
                             key: widget.scrollKey,
                             controller: scroll,

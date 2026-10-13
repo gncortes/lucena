@@ -565,12 +565,16 @@ class TeacherSpeech extends StatelessWidget {
         activeCursor: activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
             onVariation != null &&
+            // O rótulo real é "A"/"B": vale o primeiro lance da variação.
+            variation.movesSan.isNotEmpty &&
             SpeechLinks.find(
-              variation.label,
+              variation.movesSan.first,
               SpeechLinks.lettersFor(
                 Localizations.localeOf(context).languageCode,
               ),
-            ).any((link) => link.isMove && link.text == variation.label) &&
+            ).any(
+              (link) => link.isMove && link.text == variation.movesSan.first,
+            ) &&
             SpeechLinks.find(
               WikiMarkup.plain(text),
               SpeechLinks.lettersFor(
