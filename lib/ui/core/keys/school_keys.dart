@@ -142,6 +142,42 @@ abstract final class LessonKeys {
 
   /// Uma estrela que falta pegar.
   static Key star(String square) => Key('lesson.star.$square');
+
+  // --- T70: fluxo da lição (contrato `T70-estados-licao-contrato.md`) ---
+
+  /// O "Ver resposta" do rodapé do erro (botão cheio).
+  static const showAnswerButton = Key('lesson.branch.showAnswer');
+
+  /// "Ver enunciado completo" / "Ocultar enunciado" (um link só).
+  static const fullStatementLink = Key('lesson.fullStatement');
+
+  /// Prático: "Voltar" (desfaz o par), "Continuar" (refaz / próxima parte).
+  static const practiceBack = Key('lesson.practice.back');
+  static const practiceContinue = Key('lesson.practice.continue');
+
+  /// Convite: "Voltar" ao último passo de aprendizado.
+  static const practiceInviteBack = Key('lesson.practice.inviteBack');
+  static const practiceHintLead = Key('lesson.practice.hintLead');
+  static const demoBackToScript = Key('lesson.demo.backToScript');
+  static const engineErrorSnack = Key('lesson.engine.error');
+  static const sheetTyping = Key('lesson.sheet.typing');
+  static Key alreadySeen(String uci) => Key('lesson.alreadySeen.$uci');
+  static const lessonExitButton = Key('lesson.footer.exit');
+  static const correctTitle = Key('lesson.correct.title');
+  static Key failedAlternative(String uci) =>
+      Key('lesson.failedAlternative.$uci');
+  static const showAnswerLink = Key('lesson.showAnswer');
+  static const fullExplanationLink = Key('lesson.fullExplanation');
+  static const yourTurnLine = Key('lesson.sheet.yourTurn');
+  static const wrongMoveNotice = Key('lesson.wrongMove.notice');
+  static const practiceInvite = Key('lesson.practice.invite');
+  static const practiceButton = Key('lesson.practice.start');
+  static const practiceSpeech = Key('lesson.practice.speech');
+  static const practiceBoard = Key('lesson.practice.board');
+  static const practiceSpeechClose = Key('lesson.practice.speech.close');
+  static const practiceSpeechScroll = Key('lesson.practice.speech.scroll');
+  static const practiceViktor = Key('lesson.practice.viktor');
+  static const practiceTyping = Key('lesson.practice.typing');
 }
 
 /// Os desafios das estrelas: a lista e um desafio.

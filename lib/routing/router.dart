@@ -21,6 +21,7 @@ import '../data/repositories/settings/settings_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
+import '../domain/use_cases/engine_fallback.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
@@ -479,6 +480,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       progress: context.read<SchoolProgressRepository>(),
                       characters: context.read<CharacterRepository>(),
                       opponent: context.read<OpponentRepository>(),
+                      engine: _engineFallback(context),
                     )..load(id, _language(context)),
                     child: LessonScreen(key: ValueKey('lesson.$id')),
                   );
@@ -597,6 +599,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           ),
                           characters: context.read<CharacterRepository>(),
                           opponent: context.read<OpponentRepository>(),
+                          engine: _engineFallback(context),
                         )..load(id, _language(context), part: part),
                         child: LessonScreen(key: ValueKey('lesson.$id.$part')),
                       );
@@ -1088,3 +1091,18 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
+
+/// O motor da lição para o lance fora dos dados (T70, crit. 8): o Stockfish
+/// avalia e responde com a melhor jogada.
+EngineFallback _engineFallback(BuildContext context) {
+  final evaluation = context.read<EvaluationRepository>();
+  final opponent = context.read<OpponentRepository>();
+  return EngineFallback(
+    evaluate: (position, pov) => evaluation.evaluate(position, pov: pov),
+    bestMove: (position) => opponent.pickMove(
+      position,
+      thinkTime: const Duration(milliseconds: 500),
+      kind: OpponentKind.stockfish,
+    ),
+  );
+}

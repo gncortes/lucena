@@ -174,31 +174,33 @@ void main() {
     },
   );
 
-  test('pensar: o lance certo segue no tabuleiro, com "correto"', () async {
-    final cubit = await open();
-    await cubit.play(Move.parse('c1c4')!);
-    expect(cubit.state.current?.id, 'demo');
-    // A demonstração já começa depois do lance do aluno, sem refazê-lo.
-    expect(cubit.state.demoMove, 1);
-    expect(cubit.state.lastMove, Move.parse('c1c4'));
-    expect(cubit.state.speech, startsWith('Correct!'));
-  });
+  test(
+    'pensar: o lance certo segue no tabuleiro, sem frase de acerto',
+    () async {
+      final cubit = await open();
+      await cubit.play(Move.parse('c1c4')!);
+      expect(cubit.state.current?.id, 'demo');
+      // A demonstração já começa depois do lance do aluno, sem refazê-lo.
+      expect(cubit.state.demoMove, 1);
+      expect(cubit.state.lastMove, Move.parse('c1c4'));
+      expect(cubit.state.correct, isTrue);
+      expect(cubit.state.speech, isNot(startsWith('Correct!')));
+    },
+  );
 
-  test('pensar: outro lance aceito também é "correto", sem seguir no '
-      'tabuleiro', () async {
+  test('pensar: outro lance aceito chega ao mesmo estado correto', () async {
     final cubit = await open();
     await cubit.play(Move.parse('c1c5')!);
     expect(cubit.state.current?.id, 'demo');
-    expect(cubit.state.demoMove, 0);
-    expect(cubit.state.speech, startsWith('Correct!'));
+    expect(cubit.state.demoMove, 1);
+    expect(cubit.state.correct, isTrue);
   });
 
-  test('pensar: lance diferente abre a explicação do começo', () async {
+  test('pensar: lance fora dos dados, sem motor: a peça volta', () async {
     final cubit = await open();
     await cubit.play(Move.parse('c1c2')!);
-    expect(cubit.state.current?.id, 'demo');
-    expect(cubit.state.demoMove, 0);
-    expect(cubit.state.speech, isNot(startsWith('Correct!')));
+    expect(cubit.state.current?.id, 'think');
+    expect(cubit.state.wrongNotice, isTrue);
   });
 
   test('pensar: a explicação começa pelo contexto do enunciado, sem a '

@@ -285,7 +285,8 @@ void main() {
       final cubit = await pump(tester);
       await toExplanation(tester, cubit);
       await frames(tester, 1500);
-      final old = 'Isso, correto';
+      // T70: o acerto não tem frase de elogio; vale o começo da explicação.
+      final old = cubit.state.speech!.split(' ').take(3).join(' ');
       expect(find.textContaining(old, findRichText: true), findsWidgets);
       await expectNoIntermediate(
         tester,

@@ -2140,9 +2140,13 @@
     "description": "One line under the endgame lessons card on the home screen."
   },
   "homeForYou": "Endgames for you",
-  "@homeForYou": {"description": "Home path: the endgame lessons recommended by the level test."},
+  "@homeForYou": {
+    "description": "Home path: the endgame lessons recommended by the level test."
+  },
   "homeForYouBody": "Your own endgame study, built from your level test: the lessons you still need, in order.",
-  "@homeForYouBody": {"description": "Home path body for the personalised endgame study."},
+  "@homeForYouBody": {
+    "description": "Home path body for the personalised endgame study."
+  },
   "endgamesTitle": "Endgame lessons",
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
@@ -2386,7 +2390,9 @@
     }
   },
   "exerciseCorrect": "Correct!",
-  "@exerciseCorrect": {"description": "Badge that pops up below the exercise board when the student solves it with the right moves."},
+  "@exerciseCorrect": {
+    "description": "Badge that pops up below the exercise board when the student solves it with the right moves."
+  },
   "exerciseSolved": "Solved!",
   "@exerciseSolved": {
     "description": "Title of the card after solving an exercise."
@@ -2416,9 +2422,13 @@
     "description": "Button that asks for a hint in an exercise."
   },
   "exerciseHintFree": "Hint",
-  "@exerciseHintFree": {"description": "Hint button when the exercise is already worth nothing: the hint costs nothing."},
+  "@exerciseHintFree": {
+    "description": "Hint button when the exercise is already worth nothing: the hint costs nothing."
+  },
   "exerciseHintLast": "Hint (the exercise stops scoring)",
-  "@exerciseHintLast": {"description": "Hint button when the exercise is worth one point: taking it means the exercise no longer scores."},
+  "@exerciseHintLast": {
+    "description": "Hint button when the exercise is worth one point: taking it means the exercise no longer scores."
+  },
   "exerciseMissing": "This exercise does not exist.",
   "@exerciseMissing": {
     "description": "When the exercise in the link does not exist."
@@ -3834,7 +3844,7 @@
   "@lessonVariationShow": {
     "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
   },
-    "lessonVariationClose": "Close the line and return to the explanation",
+  "lessonVariationClose": "Close the line and return to the explanation",
   "@lessonVariationClose": {
     "description": "Tooltip of the X in the line mode footer: leave the cited line and show the explanation panel again."
   },
@@ -3853,7 +3863,11 @@
   "lessonVariationAlternative": "Alternative to {move}",
   "@lessonVariationAlternative": {
     "description": "Screen reader label of a side line in the variation strip; {move} is the main-line move it replaces.",
-    "placeholders": {"move": {"type": "String"}}
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
   },
   "lessonLineResultDraw": "draw",
   "@lessonLineResultDraw": {
@@ -3872,9 +3886,13 @@
     "description": "Tooltip: replay the demonstration from the start."
   },
   "lessonDemoPause": "Pause",
-  "@lessonDemoPause": {"description": "Lesson demo control: pause the moves playing by themselves."},
-  "lessonDemoPlay": "Play",
-  "@lessonDemoPlay": {"description": "Lesson demo control: resume the moves playing by themselves."},
+  "@lessonDemoPause": {
+    "description": "Lesson demo control: pause the moves playing by themselves."
+  },
+  "lessonDemoPlay": "Resume",
+  "@lessonDemoPlay": {
+    "description": "Lesson demo control: resume the moves playing by themselves."
+  },
   "lessonPartDone": "Chapter {part} complete",
   "@lessonPartDone": {
     "description": "Title of the card at the end of a lesson part.",
@@ -3898,21 +3916,37 @@
     "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
   },
   "lessonReviewPart": "Review",
-  "@lessonReviewPart": {"description": "Button at the end of a lesson stage: go through this stage again."},
+  "@lessonReviewPart": {
+    "description": "Button at the end of a lesson stage: go through this stage again."
+  },
   "lessonPartNext": "Next",
-  "@lessonPartNext": {"description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."},
+  "@lessonPartNext": {
+    "description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."
+  },
   "lessonPartLearned": "What you learned",
-  "@lessonPartLearned": {"description": "Heading above the stage summary on the stage-done screen."},
+  "@lessonPartLearned": {
+    "description": "Heading above the stage summary on the stage-done screen."
+  },
   "lessonAllPartsDone": "All chapters complete",
-  "@lessonAllPartsDone": {"description": "Title when the last lesson part is done."},
+  "@lessonAllPartsDone": {
+    "description": "Title when the last lesson part is done."
+  },
   "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
-  "@lessonAllPartsDoneBody": {"description": "Under the title when all lesson parts are done: invite to the final test."},
+  "@lessonAllPartsDoneBody": {
+    "description": "Under the title when all lesson parts are done: invite to the final test."
+  },
   "lessonCloseSpeech": "Close",
-  "@lessonCloseSpeech": {"description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."},
+  "@lessonCloseSpeech": {
+    "description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."
+  },
   "lessonHideMarks": "Hide the marks",
-  "@lessonHideMarks": {"description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."},
+  "@lessonHideMarks": {
+    "description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."
+  },
   "lessonShowMarks": "Show the marks",
-  "@lessonShowMarks": {"description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."},
+  "@lessonShowMarks": {
+    "description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."
+  },
   "lessonBackToLesson": "Back to the lesson",
   "@lessonBackToLesson": {
     "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
@@ -3992,7 +4026,8 @@
         "type": "String"
       }
     }
-  },  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
+  },
+  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
   "@lessonThinkCalm": {
     "description": "Teacher's short prompt in a think step, after who moves: take your time and find the winning sequence ('line') or the idea of the position (other). The step's own context comes later, in the explanation.",
     "placeholders": {
@@ -4001,7 +4036,6 @@
       }
     }
   },
-
   "endgameTestCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
   "@endgameTestCount": {
     "description": "Final test card title: number of exercises.",
@@ -4071,7 +4105,9 @@
     "description": "Final test card subtitle when all exercises were done but the goal was not reached."
   },
   "endgameTestLessonLeft": "Score reached: finish the lesson",
-  "@endgameTestLessonLeft": {"description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."},
+  "@endgameTestLessonLeft": {
+    "description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."
+  },
   "graduationDiploma": "Diploma",
   "@graduationDiploma": {
     "description": "Title on the graduation diploma."
@@ -5196,55 +5232,181 @@
     "description": "Result screen: marker on the grade the student reached."
   },
   "exercisesDoneScore": "{score} of {max} possible points",
-  "@exercisesDoneScore": {"description": "Headline score on the exercises-done screen: points earned over the possible total.", "placeholders": {"score": {"type": "int"}, "max": {"type": "int"}}},
+  "@exercisesDoneScore": {
+    "description": "Headline score on the exercises-done screen: points earned over the possible total.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseGradePoints": "{min} of {max} points",
-  "@exerciseGradePoints": {"description": "On a grade tier of the exercises-done ladder: the points the tier requires, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "@exerciseGradePoints": {
+    "description": "On a grade tier of the exercises-done ladder: the points the tier requires, over the total.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
-  "@exercisesDoneDiplomaFor": {"description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).", "placeholders": {"grade": {"type": "String"}, "title": {"type": "String"}}},
+  "@exercisesDoneDiplomaFor": {
+    "description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).",
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "exercisesIntroSpeech": "Time to show what you learned. Your first try is what counts: after that it is free practice, and to count again just redo the exercises.",
-  "@exercisesIntroSpeech": {"description": "Viktor's speech on the screen before the exercises of an endgame lesson: mistakes and hints cost a star, the grade is set once all are solved."},
+  "@exercisesIntroSpeech": {
+    "description": "Viktor's speech on the screen before the exercises of an endgame lesson: mistakes and hints cost a star, the grade is set once all are solved."
+  },
   "exercisesIntroChipMinimum": "at least {min} of {max} points",
-  "@exercisesIntroChipMinimum": {"description": "Chip on the exercises intro: the minimum stars to pass, over the total.", "placeholders": {"min": {"type": "int"}, "max": {"type": "int"}}},
+  "@exercisesIntroChipMinimum": {
+    "description": "Chip on the exercises intro: the minimum stars to pass, over the total.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "exercisesIntroChipThink": "No time limit",
-  "@exercisesIntroChipThink": {"description": "Exercises intro card title: there is no time limit per position (a timer only counts up)."},
+  "@exercisesIntroChipThink": {
+    "description": "Exercises intro card title: there is no time limit per position (a timer only counts up)."
+  },
   "exercisesIntroCountBody": "Ordered from the simplest to the hardest.",
-  "@exercisesIntroCountBody": {"description": "Exercises intro card: the exercises go from the simplest to the hardest."},
+  "@exercisesIntroCountBody": {
+    "description": "Exercises intro card: the exercises go from the simplest to the hardest."
+  },
   "exercisesIntroMinTitle": "At least {min} points",
-  "@exercisesIntroMinTitle": {"description": "Exercises intro card title: minimum points to pass.", "placeholders": {"min": {"type": "int"}}},
+  "@exercisesIntroMinTitle": {
+    "description": "Exercises intro card title: minimum points to pass.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "exercisesIntroMinBody": "Out of {max} possible points, to pass the lesson.",
-  "@exercisesIntroMinBody": {"description": "Exercises intro card body: out of how many possible points.", "placeholders": {"max": {"type": "int"}}},
+  "@exercisesIntroMinBody": {
+    "description": "Exercises intro card body: out of how many possible points.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "exercisesIntroThinkBody": "Think about each position before moving: that is how you learn.",
-  "@exercisesIntroThinkBody": {"description": "Exercises intro card body: think about each position before moving."},
+  "@exercisesIntroThinkBody": {
+    "description": "Exercises intro card body: think about each position before moving."
+  },
   "exercisePoints": "{count, plural, =1{1 point} other{{count} points}}",
-  "@exercisePoints": {"description": "How many points an exercise is worth right now (the star in the app bar) or a star in the legend.", "placeholders": {"count": {"type": "int"}}},
+  "@exercisePoints": {
+    "description": "How many points an exercise is worth right now (the star in the app bar) or a star in the legend.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exercisesIntroStarLegend": "Gold is worth 3 points, silver 2 and bronze 1. Every mistake and every hint takes one point off.",
-  "@exercisesIntroStarLegend": {"description": "On the exercises intro, under the three stars: what gold, silver and bronze are worth, and that mistakes and hints take a point off."},
+  "@exercisesIntroStarLegend": {
+    "description": "On the exercises intro, under the three stars: what gold, silver and bronze are worth, and that mistakes and hints take a point off."
+  },
   "exerciseLichess": "Analyse on Lichess",
-  "@exerciseLichess": {"description": "Button on a solved-series exercise: open the position in the Lichess analysis board."},
+  "@exerciseLichess": {
+    "description": "Button on a solved-series exercise: open the position in the Lichess analysis board."
+  },
   "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
-  "@exerciseTurn": {"description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.", "placeholders": {"side": {"type": "String"}}},
+  "@exerciseTurn": {
+    "description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseYourTurn": "{side, select, white{Your turn: White to play} other{Your turn: Black to play}}",
-  "@exerciseYourTurn": {"description": "Right below the exercise board while the student solves: it is their turn, with the side they play.", "placeholders": {"side": {"type": "String"}}},
+  "@exerciseYourTurn": {
+    "description": "Right below the exercise board while the student solves: it is their turn, with the side they play.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
   "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
-  "@exercisesIntroAfter": {"description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."},
+  "@exercisesIntroAfter": {
+    "description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."
+  },
   "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",
-  "@exerciseScoreLocked": {"description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."},
+  "@exerciseScoreLocked": {
+    "description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."
+  },
   "exercisesDoneShareText": "I completed the lesson “{title}” in Lucena with {score} of {max} points! {link}",
-  "@exercisesDoneShareText": {"description": "Text shared with the endgame lesson diploma image.", "placeholders": {"title": {"type": "String"}, "score": {"type": "int"}, "max": {"type": "int"}, "link": {"type": "String"}}},
+  "@exercisesDoneShareText": {
+    "description": "Text shared with the endgame lesson diploma image.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "endgamesHideDone": "Hide completed lessons",
-  "@endgamesHideDone": {"description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."},
+  "@endgamesHideDone": {
+    "description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."
+  },
   "exercisesDonePractice": "Practise this endgame",
-  "@exercisesDonePractice": {"description": "Button on the exercises-done screen when passed: go practise the lesson's endgame."},
+  "@exercisesDonePractice": {
+    "description": "Button on the exercises-done screen when passed: go practise the lesson's endgame."
+  },
   "exercisesDoneFinish": "Finish",
-  "@exercisesDoneFinish": {"description": "Button on the exercises-done screen: close it and go back to the lesson."},
+  "@exercisesDoneFinish": {
+    "description": "Button on the exercises-done screen: close it and go back to the lesson."
+  },
   "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
-  "@exercisesDoneRetrySpeech": {"description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."},
+  "@exercisesDoneRetrySpeech": {
+    "description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."
+  },
   "externalPageOfflineTitle": "This needs the internet",
-  "@externalPageOfflineTitle": {"description": "Title shown in the in-app page sheet (Wikipedia, Lichess) when the page cannot load (no internet)."},
+  "@externalPageOfflineTitle": {
+    "description": "Title shown in the in-app page sheet (Wikipedia, Lichess) when the page cannot load (no internet)."
+  },
   "externalPageOfflineBody": "Connect to the internet to read this page. The lesson goes on as normal.",
-  "@externalPageOfflineBody": {"description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."},
+  "@externalPageOfflineBody": {
+    "description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."
+  },
   "wikiOpen": "Open {name} on Wikipedia",
-  "@wikiOpen": {"description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.", "placeholders": {"name": {"type": "String"}}},
+  "@wikiOpen": {
+    "description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "starChallengeIntroTitle": "Star hunt",
   "@starChallengeIntroTitle": {
     "description": "Title of the card before starting a star challenge: the name of the game."
@@ -5309,51 +5471,115 @@
     "description": "Help: pause is available between Classic games, not between Marathon stages."
   },
   "endgamesFilters": "Filters",
-  "@endgamesFilters": {"description": "Endgame lessons: tooltip of the filter button and title of the filter sheet."},
+  "@endgamesFilters": {
+    "description": "Endgame lessons: tooltip of the filter button and title of the filter sheet."
+  },
   "endgamesFilterOrder": "Order",
-  "@endgamesFilterOrder": {"description": "Filter sheet: heading of the order options."},
+  "@endgamesFilterOrder": {
+    "description": "Filter sheet: heading of the order options."
+  },
   "endgamesSortTrail": "Course order",
-  "@endgamesSortTrail": {"description": "Filter sheet: order of the course (by module)."},
+  "@endgamesSortTrail": {
+    "description": "Filter sheet: order of the course (by module)."
+  },
   "endgamesSortEasiest": "Easiest first",
-  "@endgamesSortEasiest": {"description": "Filter sheet: order from the easiest lesson to the hardest."},
+  "@endgamesSortEasiest": {
+    "description": "Filter sheet: order from the easiest lesson to the hardest."
+  },
   "endgamesFilterLevel": "Difficulty",
-  "@endgamesFilterLevel": {"description": "Filter sheet: heading of the difficulty options (rating bands)."},
+  "@endgamesFilterLevel": {
+    "description": "Filter sheet: heading of the difficulty options (rating bands)."
+  },
   "endgamesFilterKind": "Type of endgame",
-  "@endgamesFilterKind": {"description": "Filter sheet: heading of the endgame type options."},
+  "@endgamesFilterKind": {
+    "description": "Filter sheet: heading of the endgame type options."
+  },
   "endgamesFilterStatus": "Progress",
-  "@endgamesFilterStatus": {"description": "Filter sheet: heading of the lesson progress options."},
+  "@endgamesFilterStatus": {
+    "description": "Filter sheet: heading of the lesson progress options."
+  },
   "endgamesKindPawn": "Pawn endgames",
-  "@endgamesKindPawn": {"description": "Endgame type: only kings and pawns."},
+  "@endgamesKindPawn": {
+    "description": "Endgame type: only kings and pawns."
+  },
   "endgamesKindQueen": "Queen endgames",
-  "@endgamesKindQueen": {"description": "Endgame type: with a queen."},
+  "@endgamesKindQueen": {
+    "description": "Endgame type: with a queen."
+  },
   "endgamesKindRook": "Rook endgames",
-  "@endgamesKindRook": {"description": "Endgame type: with a rook."},
+  "@endgamesKindRook": {
+    "description": "Endgame type: with a rook."
+  },
   "endgamesKindBishop": "Bishop endgames",
-  "@endgamesKindBishop": {"description": "Endgame type: with a bishop."},
+  "@endgamesKindBishop": {
+    "description": "Endgame type: with a bishop."
+  },
   "endgamesKindKnight": "Knight endgames",
-  "@endgamesKindKnight": {"description": "Endgame type: with a knight."},
+  "@endgamesKindKnight": {
+    "description": "Endgame type: with a knight."
+  },
   "endgamesKindMinor": "Minor pieces",
-  "@endgamesKindMinor": {"description": "Endgame type: bishops or knights, without queens or rooks."},
+  "@endgamesKindMinor": {
+    "description": "Endgame type: bishops or knights, without queens or rooks."
+  },
   "endgamesStatusOpen": "Not started",
-  "@endgamesStatusOpen": {"description": "Lesson progress filter: nothing done yet."},
+  "@endgamesStatusOpen": {
+    "description": "Lesson progress filter: nothing done yet."
+  },
   "endgamesStatusStarted": "In progress",
-  "@endgamesStatusStarted": {"description": "Lesson progress filter: started but not passed."},
+  "@endgamesStatusStarted": {
+    "description": "Lesson progress filter: started but not passed."
+  },
   "endgamesStatusPassed": "Completed",
-  "@endgamesStatusPassed": {"description": "Lesson progress filter: passed."},
+  "@endgamesStatusPassed": {
+    "description": "Lesson progress filter: passed."
+  },
   "endgamesFiltersClear": "Clear",
-  "@endgamesFiltersClear": {"description": "Removes every active filter (short button)."},
+  "@endgamesFiltersClear": {
+    "description": "Removes every active filter (short button)."
+  },
   "endgamesFiltersShow": "{count, plural, =0{No lessons} =1{Show 1 lesson} other{Show {count} lessons}}",
-  "@endgamesFiltersShow": {"description": "Filter sheet: closes it showing how many lessons match.", "placeholders": {"count": {"type": "int"}}},
+  "@endgamesFiltersShow": {
+    "description": "Filter sheet: closes it showing how many lessons match.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "endgamesFiltersEmpty": "No lesson matches these filters.",
-  "@endgamesFiltersEmpty": {"description": "Endgame lessons: no lesson matches the active filters."},
+  "@endgamesFiltersEmpty": {
+    "description": "Endgame lessons: no lesson matches the active filters."
+  },
   "endgamesFiltersClearAll": "Clear filters",
-  "@endgamesFiltersClearAll": {"description": "Button in the empty state: remove every filter."},
+  "@endgamesFiltersClearAll": {
+    "description": "Button in the empty state: remove every filter."
+  },
   "endgamesLevelSection": "{level} · {range}",
-  "@endgamesLevelSection": {"description": "Section heading when sorted by difficulty: the band name and its rating range.", "placeholders": {"level": {"type": "String"}, "range": {"type": "String"}}},
+  "@endgamesLevelSection": {
+    "description": "Section heading when sorted by difficulty: the band name and its rating range.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      }
+    }
+  },
   "endgamesLevelNone": "Other lessons",
-  "@endgamesLevelNone": {"description": "Section heading for lessons without a difficulty band."},
+  "@endgamesLevelNone": {
+    "description": "Section heading for lessons without a difficulty band."
+  },
   "endgamesFiltersCount": "{count}",
-  "@endgamesFiltersCount": {"description": "Badge on the filter button: how many filters are active.", "placeholders": {"count": {"type": "int"}}},
+  "@endgamesFiltersCount": {
+    "description": "Badge on the filter button: how many filters are active.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "endgameLessonFailed": "Lesson failed review: it will be redone.",
   "@endgameLessonFailed": {
     "description": "Banner on an endgame lesson whose content failed review and will be rewritten."
@@ -5381,27 +5607,63 @@
   "explanationFirst": "Start of line",
   "explanationPrevious": "Previous move",
   "explanationParent": "Return to parent variation",
-  "@explanationParent": {"description": "Explanation panel: leave the current branch and return to its immediate parent variation, which may itself be a variation"},
+  "@explanationParent": {
+    "description": "Explanation panel: leave the current branch and return to its immediate parent variation, which may itself be a variation"
+  },
   "explanationNext": "Next move",
   "explanationLast": "End of line",
   "explanationReturn": "Return to position",
-  "@explanationContext": {"description": "Explanation panel: Context"},
-  "@explanationPlayedIncorrect": {"description": "Explanation panel: PlayedIncorrect"},
-  "@explanationPlayedCorrect": {"description": "Explanation panel: PlayedCorrect"},
-  "@explanationMainSolution": {"description": "Explanation panel: MainSolution"},
-  "@explanationOtherSolutions": {"description": "Explanation panel: OtherSolutions"},
-  "@explanationFailedAlternatives": {"description": "Explanation panel: FailedAlternatives"},
-  "@explanationAccepted": {"description": "Explanation panel: Accepted"},
-  "@explanationLosing": {"description": "Explanation panel: Losing"},
-  "@explanationDoesNotMeetGoal": {"description": "Explanation panel: DoesNotMeetGoal"},
-  "@explanationUnavailable": {"description": "Explanation panel: Unavailable"},
-  "@explanationExpand": {"description": "Explanation card: accessibility label of the chevron that shows the replies"},
-  "@explanationCollapse": {"description": "Explanation card: accessibility label of the chevron that hides the replies"},
-  "@explanationFirst": {"description": "Explanation panel: First"},
-  "@explanationPrevious": {"description": "Explanation panel: Previous"},
-  "@explanationNext": {"description": "Explanation panel: Next"},
-  "@explanationLast": {"description": "Explanation panel: Last"},
-  "@explanationReturn": {"description": "Explanation panel: Return"},
+  "@explanationContext": {
+    "description": "Explanation panel: Context"
+  },
+  "@explanationPlayedIncorrect": {
+    "description": "Explanation panel: PlayedIncorrect"
+  },
+  "@explanationPlayedCorrect": {
+    "description": "Explanation panel: PlayedCorrect"
+  },
+  "@explanationMainSolution": {
+    "description": "Explanation panel: MainSolution"
+  },
+  "@explanationOtherSolutions": {
+    "description": "Explanation panel: OtherSolutions"
+  },
+  "@explanationFailedAlternatives": {
+    "description": "Explanation panel: FailedAlternatives"
+  },
+  "@explanationAccepted": {
+    "description": "Explanation panel: Accepted"
+  },
+  "@explanationLosing": {
+    "description": "Explanation panel: Losing"
+  },
+  "@explanationDoesNotMeetGoal": {
+    "description": "Explanation panel: DoesNotMeetGoal"
+  },
+  "@explanationUnavailable": {
+    "description": "Explanation panel: Unavailable"
+  },
+  "@explanationExpand": {
+    "description": "Explanation card: accessibility label of the chevron that shows the replies"
+  },
+  "@explanationCollapse": {
+    "description": "Explanation card: accessibility label of the chevron that hides the replies"
+  },
+  "@explanationFirst": {
+    "description": "Explanation panel: First"
+  },
+  "@explanationPrevious": {
+    "description": "Explanation panel: Previous"
+  },
+  "@explanationNext": {
+    "description": "Explanation panel: Next"
+  },
+  "@explanationLast": {
+    "description": "Explanation panel: Last"
+  },
+  "@explanationReturn": {
+    "description": "Explanation panel: Return"
+  },
   "gameChallengeTitle": "{opponent} Challenge",
   "gameDrawOfferTitle": "Offer a draw?",
   "gameDrawOfferHint": "Your opponent can accept or decline the offer.",
@@ -5473,21 +5735,52 @@
     "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
   "lessonTeacherVoice": "Viktor's voice",
-  "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
+  "@lessonTeacherVoice": {
+    "description": "Teacher voice toggle in the lesson sound dialog."
+  },
   "lessonTeacherVoiceHint": "Read the explanations aloud",
-  "@lessonTeacherVoiceHint": {"description": "Explains automatic lesson narration."},
+  "@lessonTeacherVoiceHint": {
+    "description": "Explains automatic lesson narration."
+  },
   "lessonSoundHint": "Piece sounds and Viktor’s voice",
-  "@lessonSoundHint": {"description": "Describes the global sound toggle in a lesson."},
+  "@lessonSoundHint": {
+    "description": "Describes the global sound toggle in a lesson."
+  },
   "lessonSoundOn": "Sound and voice: on, speed {speed}",
   "lessonSoundOff": "Sound and voice: off",
-  "@lessonSoundOn": {"description": "Accessible label for the enabled lesson sound button and its localized speed.", "placeholders": {"speed": {"type": "String"}}},
-  "@lessonSoundOff": {"description": "Accessible label for the disabled lesson sound button."},
+  "@lessonSoundOn": {
+    "description": "Accessible label for the enabled lesson sound button and its localized speed.",
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "@lessonSoundOff": {
+    "description": "Accessible label for the disabled lesson sound button."
+  },
   "gameDrawOfferHintNamed": "{name} can accept or decline. If they decline, the game goes on.",
-  "@gameDrawOfferHintNamed": {"description": "Draw offer sheet: what happens after the player offers a draw to the named opponent character.", "placeholders": {"name": {"type": "String"}}},
+  "@gameDrawOfferHintNamed": {
+    "description": "Draw offer sheet: what happens after the player offers a draw to the named opponent character.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "gameKeepPlaying": "Keep playing",
-  "@gameKeepPlaying": {"description": "Secondary button of the resign and draw sheets: closes the sheet and the game goes on."},
+  "@gameKeepPlaying": {
+    "description": "Secondary button of the resign and draw sheets: closes the sheet and the game goes on."
+  },
   "speedrunQuitHint": "{count, plural, =0{The attempt ends here and stays in your history.} =1{You lose the stage you won in this attempt.} other{You lose the {count} stages you won in this attempt.}}",
-  "@speedrunQuitHint": {"description": "Hint of the sheet that confirms leaving a speedrun in the middle: what is lost, by how many stages were already won in this attempt.", "placeholders": {"count": {"type": "int"}}},
+  "@speedrunQuitHint": {
+    "description": "Hint of the sheet that confirms leaving a speedrun in the middle: what is lost, by how many stages were already won in this attempt.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "gameSoundLabelOn": "Sound",
   "gameSoundLabelOff": "No sound",
   "@gameSoundLabelOn": {
@@ -6054,15 +6347,131 @@
     "description": "History: Marathon tab empty after filtering."
   },
   "lessonHideNextMoves": "Hide the next moves",
-  "@lessonHideNextMoves": {"description": "Tooltip: cover the moves the student has not seen yet in the variation strip."},
+  "@lessonHideNextMoves": {
+    "description": "Tooltip: cover the moves the student has not seen yet in the variation strip."
+  },
   "lessonShowAllMoves": "Show all moves",
-  "@lessonShowAllMoves": {"description": "Tooltip: stop covering the moves in the variation strip."},
+  "@lessonShowAllMoves": {
+    "description": "Tooltip: stop covering the moves in the variation strip."
+  },
   "lessonHiddenMoves": "Hidden moves",
-  "@lessonHiddenMoves": {"description": "Screen reader label of the block that covers the unseen moves."},
+  "@lessonHiddenMoves": {
+    "description": "Screen reader label of the block that covers the unseen moves."
+  },
   "lessonRevealNextMove": "reveal the next move",
-  "@lessonRevealNextMove": {"description": "Screen reader hint of the tap on the block that covers the unseen moves."},
+  "@lessonRevealNextMove": {
+    "description": "Screen reader hint of the tap on the block that covers the unseen moves."
+  },
   "lessonVariationEndBranch": "End of the alternative",
-  "@lessonVariationEndBranch": {"description": "Tooltip of the disabled next button at the end of an alternative."},
+  "@lessonVariationEndBranch": {
+    "description": "Tooltip of the disabled next button at the end of an alternative."
+  },
   "lessonVariationEndLine": "End of the line",
-  "@lessonVariationEndLine": {"description": "Tooltip of the disabled next button at the end of the main line."}
+  "@lessonVariationEndLine": {
+    "description": "Tooltip of the disabled next button at the end of the main line."
+  },
+  "lessonYourTurnPlay": "Your turn: play with {side}.",
+  "@lessonYourTurnPlay": {
+    "description": "Collapsed lesson sheet, first line: the student plays the side given (White/Black).",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonShowAnswer": "Show answer",
+  "@lessonShowAnswer": {
+    "description": "Link and button that reveal the correct move of a think step."
+  },
+  "lessonAlreadySeen": "Already seen",
+  "@lessonAlreadySeen": {
+    "description": "Note under a failed alternative the student already opened."
+  },
+  "lessonSeeFullExplanation": "See the full explanation",
+  "@lessonSeeFullExplanation": {
+    "description": "Link at the end of the short explanation: swaps it for the full text."
+  },
+  "lessonSeeFullStatement": "See the full prompt",
+  "@lessonSeeFullStatement": {
+    "description": "Link in the collapsed lesson sheet that expands the full prompt."
+  },
+  "lessonHideStatement": "Hide prompt",
+  "@lessonHideStatement": {
+    "description": "Same link as lessonSeeFullStatement once the prompt is expanded."
+  },
+  "lessonWrongMoveTryAnother": "Wrong move. Try another move.",
+  "@lessonWrongMoveTryAnother": {
+    "description": "First line of the collapsed sheet after a wrong move with no branch."
+  },
+  "lessonEngineError": "An unexpected error occurred. Try again.",
+  "@lessonEngineError": {
+    "description": "Snackbar when the engine failed to answer a move outside the lesson data."
+  },
+  "lessonAlsoCorrect": "Also correct. The lesson continues with {move}.",
+  "@lessonAlsoCorrect": {
+    "description": "Shown when the student played another accepted move; {move} is the lesson move.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonExit": "Leave the lesson",
+  "@lessonExit": {
+    "description": "Tooltip of the footer X outside a branch."
+  },
+  "lessonDemoBackToScript": "Back to the demonstration",
+  "@lessonDemoBackToScript": {
+    "description": "Primary button shown when the student left the demonstration script."
+  },
+  "lessonEngineMove": "Watch {side}'s reply to this move.",
+  "@lessonEngineMove": {
+    "description": "Generic comment on the student move when the engine answers; {side} is the opponent side.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonEngineReply": "With this reply, {side} finds a resource against your plan.",
+  "@lessonEngineReply": {
+    "description": "Generic comment on the engine reply; {side} is the opponent side.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonEngineAlsoWins": "Well done: this path also wins. Keep going.",
+  "@lessonEngineAlsoWins": {
+    "description": "Engine said the student move keeps the win (demonstration)."
+  },
+  "lessonEngineAlsoHolds": "Well done: this path also holds the draw. Keep going.",
+  "@lessonEngineAlsoHolds": {
+    "description": "Engine said the student move keeps the draw (demonstration)."
+  },
+  "lessonEngineAlsoWinsShowMain": "Well done: this path also wins. Now see the main line.",
+  "@lessonEngineAlsoWinsShowMain": {
+    "description": "Engine said the student move keeps the win (learning step)."
+  },
+  "lessonEngineAlsoHoldsShowMain": "Well done: this path also holds the draw. Now see the main line.",
+  "@lessonEngineAlsoHoldsShowMain": {
+    "description": "Engine said the student move keeps the draw (learning step)."
+  },
+  "lessonShowSpeech": "Show Viktor's message",
+  "@lessonShowSpeech": {
+    "description": "Tooltip to show Viktor's speech again."
+  },
+  "lessonBranchMoveFallback": "After this move, the opponent finds a resource.",
+  "@lessonBranchMoveFallback": {
+    "description": "Neutral comment on the student move in a branch with no authored text."
+  },
+  "lessonPracticeInvite": "Now practise the idea you have just seen.",
+  "@lessonPracticeInvite": {
+    "description": "Viktor balloon on the practice invite screen."
+  },
+  "lessonPracticeStart": "Let's practice",
+  "@lessonPracticeStart": {
+    "description": "Primary button of the practice invite."
+  }
 }
