@@ -1869,6 +1869,20 @@ void main() {
       expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
     });
 
+    testWidgets('empate (afogamento): o selo mostra o empate e some em 1,6 s', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: 'k7/8/1K6/8/8/8/2Q5/8 w - - 0 1',
+        mode: vsMachine,
+      );
+      await moveNow(tester, 'c2', 'c7');
+      expect(textOf(tester, FreeBoardKeys.endFlash), 'Draw');
+      await tester.pump(const Duration(milliseconds: 1700));
+      expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
+    });
+
     testWidgets('abrir a tela com a partida já terminada: sem selo', (
       tester,
     ) async {

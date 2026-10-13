@@ -171,8 +171,10 @@ void main() {
     await t.settings.setSound(enabled: false);
     await tick(2);
     final first = progress()!;
-    await tick(2);
-    expect(progress()!, greaterThan(first));
+    expect(first, greaterThan(0));
+    // Quando o lance sai o anel zera na hora (não fica cheio nem desenrola).
+    await tick(1);
+    expect(progress()!, lessThan(first));
     // Pausada: sem anel.
     t.lesson.demoTogglePause();
     await tick(2);

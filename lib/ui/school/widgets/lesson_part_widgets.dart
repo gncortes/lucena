@@ -352,15 +352,19 @@ class _ControlButton extends StatelessWidget {
         elevation: 0,
         backgroundColor: background,
         foregroundColor: foreground,
-        disabledBackgroundColor: background.withValues(alpha: 0.38),
-        disabledForegroundColor: foreground.withValues(alpha: 0.38),
+        disabledBackgroundColor: background,
+        disabledForegroundColor: foreground,
       ),
     );
+    // Desligado: 0,38 no botão inteiro (fundo e ícone juntos), como no canvas.
+    final dimmed = onPressed == null
+        ? Opacity(opacity: 0.38, child: button)
+        : button;
     final ring = this.ring;
     return SizedBox.square(
       dimension: size,
       child: ring == null
-          ? button
+          ? dimmed
           : Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.center,
@@ -372,7 +376,7 @@ class _ControlButton extends StatelessWidget {
                     child: IgnorePointer(child: DemoRing(progress: ring)),
                   ),
                 ),
-                button,
+                dimmed,
               ],
             ),
     );
@@ -384,7 +388,7 @@ class _ControlButton extends StatelessWidget {
 /// horário. Com a voz falando, o trilho fica tracejado e sem arco. Sem valor
 /// (demonstração pausada ou no fim), nada. Com movimento reduzido, o arco
 /// anda em degraus de 25 %.
-class DemoRing extends StatelessWidget {
+class DemoRing extends StatefulWidget {
   const DemoRing({required this.progress, super.key});
 
   /// 0 a 1; [speaking] com a voz falando; nulo sem anel.
@@ -400,13 +404,32 @@ class DemoRing extends StatelessWidget {
   static const tick = Duration(milliseconds: 250);
 
   @override
+  State<DemoRing> createState() => _DemoRingState();
+}
+
+class _DemoRingState extends State<DemoRing> {
+  double _last = 0;
+
+  /// Muda quando o valor cai (o lance saiu): o arco recomeça em 0 na hora,
+  /// sem "desenrolar" de volta.
+  int _restarts = 0;
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final reduced = AppMotion.of(context).disabled;
     return ValueListenableBuilder<double?>(
-      valueListenable: progress,
+      valueListenable: widget.progress,
       builder: (context, value, _) {
-        if (value == null) return const SizedBox.square(dimension: diameter);
+        const diameter = DemoRing.diameter;
+        if (value == null) {
+          _last = 0;
+          return const SizedBox.square(dimension: diameter);
+        }
+        if (value >= 0) {
+          if (value < _last) _restarts++;
+          _last = value;
+        }
         final isSpeaking = value < 0;
         Widget paint(double v) => CustomPaint(
           key: LessonKeys.demoRing,
@@ -421,8 +444,9 @@ class DemoRing extends StatelessWidget {
         if (isSpeaking) return paint(0);
         if (reduced) return paint((value.clamp(0.0, 1.0) * 4).floor() / 4);
         return TweenAnimationBuilder<double>(
+          key: ValueKey(_restarts),
           tween: Tween(end: value.clamp(0.0, 1.0)),
-          duration: tick,
+          duration: DemoRing.tick,
           // Contínuo entre os tiques: linear, não o "enter" das telas.
           curve: AppMotion.linear,
           builder: (context, v, _) => paint(v),
@@ -448,9 +472,11 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const stroke = DemoRing.stroke;
+    // Linha do traço no raio 27 (canvas `redondo`: círculo r=27, traço 3).
+    const inset = stroke / 2 + 1.5;
     final rect =
-        Offset(stroke / 2, stroke / 2) &
-        Size(size.width - stroke, size.height - stroke);
+        const Offset(inset, inset) &
+        Size(size.width - 2 * inset, size.height - 2 * inset);
     final trackPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke

@@ -211,6 +211,8 @@ class _LessonScreenState extends State<LessonScreen>
     _demoRing.value = (_demoWait.inMilliseconds / waitMs).clamp(0.0, 1.0);
     if (_demoWait.inMilliseconds >= waitMs) {
       _demoAt = null;
+      // O lance sai: o anel zera na hora (decisão do orquestrador).
+      _demoRing.value = 0;
       unawaited(cubit.demoForward());
     }
   }
