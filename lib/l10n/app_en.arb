@@ -3829,10 +3829,6 @@
   "@lessonVariationNext": {
     "description": "Tooltip: go forward one move in the cited line."
   },
-"lessonVariationExit": "Back to the lesson position",
-  "@lessonVariationExit": {
-    "description": "Lesson footer button (tooltip): leave the cited line and show the lesson step position again."
-  },
   "lessonDemoBack": "Previous move",
   "@lessonDemoBack": {
     "description": "Tooltip: go back one move in the demonstration."
@@ -5446,8 +5442,6 @@
   "@lessonFreeBoardInvite": {
     "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
-  "lessonReturn": "Back",
-  "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},
   "lessonTeacherVoice": "Viktor's voice",
   "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
   "lessonTeacherVoiceHint": "Read the explanations aloud",
