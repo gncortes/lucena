@@ -275,7 +275,6 @@
   "sideWhite": "Wit",
   "speedrunAbandon": "Poging staken",
   "speedrunAbandonQuestion": "Deze poging staken? Hij blijft zonder record in de geschiedenis.",
-  "speedrunAbandoned": "Poging gestaakt: geen record",
   "speedrunBest": "Je beste tijd",
   "speedrunContinue": "Verder",
   "speedrunContinueGame": "Partij hervatten",
@@ -285,10 +284,8 @@
   "speedrunFinished": "Speedrun voltooid",
   "speedrunFullSection": "Volledige reis",
   "speedrunFullTitle": "Volledige reis",
-  "speedrunHistory": "Tijden",
   "speedrunIntro": "Speel alle etappes zo snel mogelijk. Alleen jouw klok telt; een verloren etappe speel je opnieuw terwijl de tijd doorloopt.",
   "speedrunKeepGoing": "Doorspelen",
-  "speedrunLosses": "{count, plural, =0{Geen nederlagen} =1{1 nederlaag} other{{count} nederlagen}}",
   "speedrunNewRecord": "Nieuw persoonlijk record",
   "speedrunNoRecord": "Nog geen tijd",
   "speedrunPauseHint": "Pauzeer wanneer je wilt: de tijd loopt alleen tijdens je partijen.",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Totaal",
-  "speedrunVersusRecord": "{difference} s t.o.v. record {record}",
   "teacherName": "Meester {name}",
   "tourBack": "Terug",
   "tourBoardTitle": "Kies je bord",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "Je eerste tijd verschijnt hier",
   "speedrunHelp": "Hoe het werkt",
   "speedrunStageOf": "Etappe {stage} van {total}",
-  "speedrunNow": "Nu",
   "paceTitle": "Kies het tempo",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "Hoi, {name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "Je hebt deze marathon nog niet afgerond",
   "historyEmptyFilteredGames": "Geen partijen met deze filters.",
   "historyEmptyFilteredSpeedruns": "Geen speedruns met deze filters.",
-  "historyEmptyFilteredMarathons": "Geen marathons met deze filters."
+  "historyEmptyFilteredMarathons": "Geen marathons met deze filters.",
+  "speedrunTimeUntilDrawn": "Tijd tot remise: {time}",
+  "speedrunContinueStage": "Doorgaan · etappe {stage} van {total}"
 }

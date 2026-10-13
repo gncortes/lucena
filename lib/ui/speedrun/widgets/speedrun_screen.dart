@@ -1,28 +1,28 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
+import '../../../domain/models/character.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../routing/routes.dart';
+import '../../journey/widgets/journey_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/step_progress.dart';
-import '../../core/widgets/time_display.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
-import '../../core/theme/app_shape.dart';
 
-/// Um speedrun antes de começar: quem ou o que é, o ritmo, o melhor tempo (ou
-/// o convite para o primeiro), a trilha das etapas com o melhor tempo de cada
-/// uma e o histórico das tentativas. "Começar" fica fixo embaixo.
+/// Um speedrun antes de começar (artboards `SpeedrunDetalhe*` e
+/// `MaratonaDetalhe`): quem ou o que é, o ritmo e o nível, o recorde (ou a
+/// oferta de rating de quem nunca concluiu, ou a tentativa em andamento) e a
+/// trilha das etapas. O histórico das tentativas fica na tela dele. "Começar"
+/// (ou "Continuar") fica fixo embaixo.
 class SpeedrunScreen extends StatelessWidget {
   const SpeedrunScreen({super.key});
 
@@ -30,13 +30,12 @@ class SpeedrunScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final state = context.watch<SpeedrunCubit>().state;
     final summary = state.selected;
     if (summary == null) {
       return Scaffold(
         key: SpeedrunKeys.screen,
-        appBar: AppBar(title: Text(l10n.speedrunTitle)),
+        appBar: AppBar(centerTitle: true, title: Text(l10n.speedrunTitle)),
         body: state.all != null
             ? null
             : const Center(child: CircularProgressIndicator()),
@@ -44,175 +43,70 @@ class SpeedrunScreen extends StatelessWidget {
     }
     final characters = state.characters;
     final speedrun = summary.speedrun;
-    final records = summary.records;
     final ongoing = summary.ongoing;
-    final best = records.best;
+    final total = speedrun.stages.length;
     return Scaffold(
       key: SpeedrunKeys.screen,
-      appBar: AppBar(title: Text(speedrunName(l10n, characters, speedrun))),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: ongoing == null
-              ? FilledButton.icon(
-                  key: SpeedrunKeys.start,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(l10n.speedrunStartStages(speedrun.stages.length)),
-                  onPressed: () => _start(context, speedrun),
-                )
-              // O app fechou no meio de uma etapa: ela continua de onde
-              // parou.
-              : FilledButton.icon(
-                  key: SpeedrunKeys.resume,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(l10n.speedrunContinueGame),
-                  onPressed: () async {
-                    final cubit = context.read<SpeedrunCubit>();
-                    final route = await cubit.resume();
-                    if (route == null || !context.mounted) return;
-                    await context.push(route);
-                    if (context.mounted) {
-                      await cubit.load(speedrunId: speedrun.id);
-                    }
-                  },
-                ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          speedrun.kind == SpeedrunKind.marathon
+              ? l10n.marathonSection
+              : l10n.speedrunTitle,
         ),
       ),
+      bottomNavigationBar: ongoing == null
+          ? SpeedrunActionBar(
+              buttonKey: SpeedrunKeys.start,
+              icon: Icons.play_arrow_rounded,
+              label: l10n.speedrunStartStages(total),
+              onPressed: () => startSpeedrun(context, speedrun),
+            )
+          // O app fechou no meio de uma etapa: ela continua de onde parou.
+          : SpeedrunActionBar(
+              buttonKey: SpeedrunKeys.resume,
+              icon: Icons.play_arrow_rounded,
+              label: l10n.speedrunContinueStage(
+                ongoing.currentStage + 1,
+                total,
+              ),
+              onPressed: () async {
+                final cubit = context.read<SpeedrunCubit>();
+                final route = await cubit.resume();
+                if (route == null || !context.mounted) return;
+                await context.push(route);
+                if (context.mounted) {
+                  await cubit.load(speedrunId: speedrun.id);
+                }
+              },
+            ),
       body: ListView(
         padding: scrollPadding(context),
         children: [
-          // Quem ou o que é, as etapas e o ritmo.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Row(
-              children: [
-                SpeedrunPicture(speedrun, characters: characters, size: 72),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        speedrunName(l10n, characters, speedrun),
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        l10n.speedrunStagesCount(speedrun.stages.length),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        key: SpeedrunKeys.paceBadge,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colors.secondaryContainer,
-                          borderRadius: BorderRadius.circular(AppShape.large),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // O ícone da categoria: raio, chama, relógio.
-                            Icon(
-                              paceIcon(PaceCategory.of(speedrun.time)),
-                              size: 16,
-                              color: colors.onSecondaryContainer,
-                            ),
-                            const SizedBox(width: 4),
-                            // Rótulo longo (outros idiomas) quebra a linha.
-                            Flexible(
-                              child: Text(
-                                paceLabel(l10n, speedrun.time),
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: colors.onSecondaryContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Quanto concluir renderia de rating (clássico e Maratona). Some
-          // se já foi pago no grupo ou se não dá bônus.
-          if (state.offer > 0)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: SpeedrunRatingBonusCard.offer(
-                points: state.offer,
-                group: PaceCategory.of(speedrun.time),
-              ),
-            ),
-          // O melhor tempo em destaque; sem ele, o convite.
+          SpeedrunHeader(speedrun: speedrun, characters: characters),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: best == null
-                ? Row(
-                    children: [
-                      Icon(Icons.timer_outlined, color: colors.outline),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          l10n.speedrunFirstTimeInvite,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TimeDisplay(
-                      value: runTime(context, recordTime(speedrun, best)),
-                      semanticsLabel:
-                          '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonBest : l10n.speedrunBest}: ${runTime(context, recordTime(speedrun, best))}',
-                      type: TimeDisplayType.record,
-                      state: TimeDisplayState.highlight,
-                      label: speedrun.kind == SpeedrunKind.marathon
-                          ? l10n.marathonBest
-                          : l10n.speedrunBest,
-                      textKey: SpeedrunKeys.best,
-                    ),
-                  ),
+            child: _Block(state: state, summary: summary),
           ),
-          _header(context, l10n.speedrunStages),
-          // Em andamento, o progresso por passos: uma barra por etapa.
-          if (ongoing != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: StepProgress(
-                key: SpeedrunKeys.progress,
-                total: speedrun.stages.length,
-                value: ongoing.currentStage.toDouble(),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
+            child: Text(
+              l10n.speedrunStages,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
+          ),
           // A ordem das etapas, uma embaixo da outra: quem o jogador
-          // enfrenta, até onde a tentativa em andamento chegou e o melhor
-          // tempo de cada etapa.
+          // enfrenta e, com uma tentativa em andamento, até onde ela chegou
+          // e o tempo das etapas feitas.
           for (final (index, stage) in speedrun.stages.indexed)
             SpeedrunStageRow(
               key: SpeedrunKeys.stageCard(index),
               index: index,
               stage: stage,
               speedrun: speedrun,
-              last: index == speedrun.stages.length - 1,
+              last: index == total - 1,
               status: ongoing == null
                   ? SpeedrunStageStatus.idle
                   : index < ongoing.currentStage
@@ -220,149 +114,343 @@ class SpeedrunScreen extends StatelessWidget {
                   : index == ongoing.currentStage
                   ? SpeedrunStageStatus.current
                   : SpeedrunStageStatus.ahead,
-              // O melhor tempo da etapa, em qualquer tentativa concluída.
-              trailing: switch (records.bestStages[index]) {
-                final best? => TimeDisplay(
-                  value: runTime(context, best),
-                  semanticsLabel:
-                      '${l10n.speedrunStageOf(index + 1, speedrun.stages.length)}, ${l10n.speedrunBest}: ${runTime(context, best)}',
-                  type: TimeDisplayType.record,
-                  size: TimeDisplaySize.inline,
-                  textKey: SpeedrunKeys.stageRecord(index),
-                ),
-                null => null,
-              },
+              trailing: ongoing != null && index < ongoing.currentStage
+                  ? TimeDisplay(
+                      value: runTime(context, ongoing.stages[index].time),
+                      semanticsLabel: l10n.speedrunStageTimeValue(
+                        index + 1,
+                        total,
+                        runTime(context, ongoing.stages[index].time),
+                      ),
+                      type: TimeDisplayType.duration,
+                      size: TimeDisplaySize.inline,
+                      textKey: SpeedrunKeys.stageTime(index),
+                    )
+                  : null,
             ),
-          if (records.completed.isNotEmpty || summary.abandoned.isNotEmpty) ...[
-            _header(context, l10n.speedrunHistory),
-            ..._history(context, speedrun, [
-              ...records.completed,
-              ...summary.abandoned,
-            ]),
-          ],
         ],
       ),
     );
   }
+}
 
-  // "Começar": abre a primeira etapa, no ritmo escolhido na lista. Daí em
-  // diante a partida segue sozinha de uma etapa para a outra.
-  Future<void> _start(BuildContext context, Speedrun speedrun) async {
-    final cubit = context.read<SpeedrunCubit>();
-    final started = await cubit.startWith(speedrun.time);
-    if (started == null || !context.mounted) return;
-    final (paced, attempt) = started;
-    await context.push(
-      Routes.challengeGame(
-        paced.stages.first,
-        speedrunId: paced.id,
-        attemptId: attempt,
-        stage: 0,
-      ),
-    );
-    if (context.mounted) await cubit.load(speedrunId: speedrun.id);
-  }
+// O que vem logo abaixo do cabeçalho: a tentativa em andamento, o recorde ou,
+// para quem nunca concluiu, a oferta de rating e a melhor tentativa.
+class _Block extends StatelessWidget {
+  const _Block({required this.state, required this.summary});
 
-  Widget _header(BuildContext context, String text) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 8),
-      child: Text(
-        text,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
+  final SpeedrunState state;
+  final SpeedrunSummary summary;
 
-  // As tentativas terminadas, da mais recente para a mais antiga, com o
-  // título de cada mês: as concluídas com o tempo, as abandonadas com a
-  // etapa em que pararam.
-  List<Widget> _history(
-    BuildContext context,
-    Speedrun speedrun,
-    List<SpeedrunRun> runs,
-  ) {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final l10n = context.l10n;
-    final locale = Localizations.localeOf(context).toString();
-    final month = DateFormat.yMMMM(locale);
-    final date = DateFormat.MMMd(locale).add_Hm();
-    DateTime endOf(SpeedrunRun run) =>
-        (run.finishedAt ?? run.attempt.abandonedAt!).toLocal();
-    final sorted = [...runs]..sort((a, b) => endOf(b).compareTo(endOf(a)));
-    final children = <Widget>[];
-    String? current;
-    var months = 0;
-    for (final (index, run) in sorted.indexed) {
-      final endedAt = endOf(run);
-      final label = month.format(endedAt);
-      if (label != current) {
-        current = label;
-        children.add(
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 4),
+    final speedrun = summary.speedrun;
+    final ongoing = summary.ongoing;
+    if (ongoing != null) {
+      return _OngoingCard(
+        speedrun: speedrun,
+        run: ongoing,
+        characters: state.characters,
+        offer: state.ongoingOffer,
+      );
+    }
+    final best = summary.records.best;
+    if (best != null) return _RecordCard(speedrun: speedrun, best: best);
+    final reached = summary.furthestStage;
+    // Sem tentativa terminada e sem oferta, só o convite.
+    if (state.offer <= 0 && reached == null) {
+      return Row(
+        children: [
+          ExcludeSemantics(
+            child: Icon(Icons.timer_outlined, color: colors.outline),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
             child: Text(
-              label,
-              key: SpeedrunKeys.month(months++),
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.primary,
+              l10n.speedrunFirstTimeInvite,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
             ),
           ),
-        );
-      }
-      final total = speedrun.stages.length;
-      children.add(
-        Card(
-          key: SpeedrunKeys.run(index),
-          margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          color: colors.surfaceContainerLow,
-          clipBehavior: Clip.antiAlias,
-          child: ListTile(
-            // Os detalhes da tentativa: o tempo e as derrotas de cada etapa.
-            onTap: () => context.push(
-              Routes.speedrunAttempt(speedrun.id, run.attempt.id),
-            ),
-            trailing: Icon(
-              Directionality.of(context) == TextDirection.rtl
-                  ? Icons.chevron_left
-                  : Icons.chevron_right,
-              color: colors.onSurfaceVariant,
-            ),
-            leading: Icon(
-              run.completed ? Icons.check_circle_rounded : Icons.timer_outlined,
-              color: run.completed ? colors.primary : colors.outline,
-            ),
-            title: run.completed
-                ? Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TimeDisplay(
-                      value: runTime(context, recordTime(speedrun, run.total)),
-                      semanticsLabel:
-                          '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonLeft : l10n.speedrunTotal}: ${runTime(context, recordTime(speedrun, run.total))}',
-                      type: TimeDisplayType.duration,
-                      size: TimeDisplaySize.inline,
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Some se já foi pago no grupo ou se não dá bônus.
+        if (state.offer > 0)
+          SpeedrunRatingBonusCard.offer(
+            points: state.offer,
+            group: PaceCategory.of(speedrun.time),
+          ),
+        if (reached != null)
+          _BestAttemptRow(
+            speedrun: speedrun,
+            stage: reached,
+            padTop: state.offer > 0,
+          ),
+      ],
+    );
+  }
+}
+
+// O recorde, com o caminho para o histórico: o cartão inteiro toca.
+class _RecordCard extends StatelessWidget {
+  const _RecordCard({required this.speedrun, required this.best});
+
+  final Speedrun speedrun;
+  final Duration best;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final marathon = speedrun.kind == SpeedrunKind.marathon;
+    final label = marathon ? l10n.marathonBest : l10n.speedrunYourRecord;
+    final value = runTime(context, recordTime(speedrun, best));
+    final record = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.xs,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontSize: 13,
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        TimeDisplay(
+          value: value,
+          semanticsLabel: marathon
+              ? l10n.marathonBestValue(value)
+              : '$label: $value',
+          type: TimeDisplayType.record,
+          state: TimeDisplayState.highlight,
+          textKey: SpeedrunKeys.best,
+        ),
+      ],
+    );
+    final link = _HistoryLink(withChevron: true);
+    // Com a fonte grande, o link vai para baixo do recorde.
+    final large = MediaQuery.textScalerOf(context).scale(14) > 21;
+    return Material(
+      key: SpeedrunKeys.recordCard,
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      clipBehavior: Clip.antiAlias,
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          key: SpeedrunKeys.seeHistory,
+          onTap: () => context.push(Routes.speedrunHistory(speedrun.id)),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            // 12/8/12/16 no artboard (cima, fim, baixo, início).
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 8, 12),
+              child: large
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: AppSpacing.sm,
+                      children: [record, link],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(child: record),
+                        Flexible(child: link),
+                      ],
                     ),
-                  )
-                : Text(
-                    l10n.speedrunStoppedAt(
-                      math.min(run.currentStage + 1, total),
-                      total,
-                    ),
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-            subtitle: Text(
-              '${date.format(endedAt)} · ${l10n.speedrunLosses(run.losses)}',
             ),
           ),
         ),
-      );
-    }
-    return children;
+      ),
+    );
+  }
+}
+
+// "Ver histórico" com o ícone e, no cartão do recorde, a seta.
+class _HistoryLink extends StatelessWidget {
+  const _HistoryLink({this.withChevron = false});
+
+  final bool withChevron;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.xs,
+      children: [
+        ExcludeSemantics(child: Icon(Icons.history, size: 18, color: primary)),
+        Flexible(
+          child: Text(
+            l10n.speedrunSeeHistory,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: primary,
+            ),
+          ),
+        ),
+        if (withChevron)
+          ExcludeSemantics(
+            child: Icon(
+              rtl ? Icons.chevron_left : Icons.chevron_right,
+              size: 24,
+              color: primary,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// "Melhor tentativa: etapa N de 10" e "Ver histórico", para quem nunca
+// concluiu: a linha inteira toca.
+class _BestAttemptRow extends StatelessWidget {
+  const _BestAttemptRow({
+    required this.speedrun,
+    required this.stage,
+    required this.padTop,
+  });
+
+  final Speedrun speedrun;
+
+  /// O índice da etapa mais longe a que chegou.
+  final int stage;
+  final bool padTop;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: EdgeInsets.only(top: padTop ? AppSpacing.md : 0),
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          key: SpeedrunKeys.bestAttempt,
+          borderRadius: BorderRadius.circular(AppShape.small),
+          onTap: () => context.push(Routes.speedrunHistory(speedrun.id)),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Row(
+              spacing: AppSpacing.sm,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(Icons.stairs, size: 18, color: colors.outline),
+                ),
+                Expanded(
+                  child: Text(
+                    l10n.speedrunBestAttempt(stage + 1, speedrun.stages.length),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                const Flexible(child: _HistoryLink()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// A tentativa que o app deixou no meio de uma etapa: onde parou, o tempo até
+// aqui e quanto de rating ela vai render ao concluir.
+class _OngoingCard extends StatelessWidget {
+  const _OngoingCard({
+    required this.speedrun,
+    required this.run,
+    required this.characters,
+    required this.offer,
+  });
+
+  final Speedrun speedrun;
+  final SpeedrunRun run;
+  final List<Character> characters;
+  final int offer;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final total = speedrun.stages.length;
+    final stage = run.currentStage;
+    final body = theme.textTheme.bodyMedium?.copyWith(
+      color: colors.onSecondaryContainer,
+    );
+    return Container(
+      key: SpeedrunKeys.ongoingCard,
+      // 14/16 no artboard.
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: colors.secondaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.md,
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              Icons.pause_circle,
+              size: 24,
+              color: colors.onSecondaryContainer,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.speedrunOngoingTitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSecondaryContainer,
+                  ),
+                ),
+                Text(
+                  l10n.speedrunOngoingStoppedAt(
+                    stage + 1,
+                    total,
+                    opponentName(
+                      l10n,
+                      characters,
+                      speedrun.stages[stage].opponent,
+                    ),
+                  ),
+                  style: body,
+                ),
+                Text(
+                  l10n.speedrunTimeSoFar(runTime(context, run.total)),
+                  style: body,
+                ),
+                if (offer > 0) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  KeyedSubtree(
+                    key: SpeedrunKeys.ongoingOffer,
+                    child: SpeedrunOfferLine(points: offer, style: body),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

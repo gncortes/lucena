@@ -275,7 +275,6 @@
   "sideWhite": "Bianco",
   "speedrunAbandon": "Abbandona il tentativo",
   "speedrunAbandonQuestion": "Abbandonare questo tentativo? Resta nella cronologia, senza record.",
-  "speedrunAbandoned": "Tentativo abbandonato: nessun record",
   "speedrunBest": "Il tuo miglior tempo",
   "speedrunContinue": "Continua",
   "speedrunContinueGame": "Continua la partita",
@@ -285,10 +284,8 @@
   "speedrunFinished": "Speedrun completato",
   "speedrunFullSection": "Percorso completo",
   "speedrunFullTitle": "Percorso completo",
-  "speedrunHistory": "Tempi",
   "speedrunIntro": "Gioca tutte le tappe il più in fretta possibile. Conta solo il tuo orologio; una tappa persa si rigioca con il cronometro in corsa.",
   "speedrunKeepGoing": "Continua a giocare",
-  "speedrunLosses": "{count, plural, =0{Nessuna sconfitta} =1{1 sconfitta} other{{count} sconfitte}}",
   "speedrunNewRecord": "Nuovo record personale",
   "speedrunNoRecord": "Ancora nessun tempo",
   "speedrunPauseHint": "Fai una pausa quando vuoi: il cronometro corre solo nelle tue partite.",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Totale",
-  "speedrunVersusRecord": "{difference} s rispetto al record {record}",
   "teacherName": "Maestro {name}",
   "tourBack": "Indietro",
   "tourBoardTitle": "Scegli la tua scacchiera",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "Il tuo primo tempo apparirà qui",
   "speedrunHelp": "Come funziona",
   "speedrunStageOf": "Tappa {stage} di {total}",
-  "speedrunNow": "Adesso",
   "paceTitle": "Scegli il ritmo",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "Ciao, {name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "Non hai ancora completato questa maratona",
   "historyEmptyFilteredGames": "Nessuna partita con questi filtri.",
   "historyEmptyFilteredSpeedruns": "Nessuno speedrun con questi filtri.",
-  "historyEmptyFilteredMarathons": "Nessuna maratona con questi filtri."
+  "historyEmptyFilteredMarathons": "Nessuna maratona con questi filtri.",
+  "speedrunTimeUntilDrawn": "Tempo fino alla patta: {time}",
+  "speedrunContinueStage": "Continua · tappa {stage} di {total}"
 }

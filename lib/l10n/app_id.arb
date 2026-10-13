@@ -275,7 +275,6 @@
   "sideWhite": "Putih",
   "speedrunAbandon": "Hentikan percobaan",
   "speedrunAbandonQuestion": "Hentikan percobaan ini? Tetap ada di riwayat tanpa rekor.",
-  "speedrunAbandoned": "Percobaan dihentikan: tanpa rekor",
   "speedrunBest": "Waktu terbaikmu",
   "speedrunContinue": "Lanjut",
   "speedrunContinueGame": "Lanjutkan permainan",
@@ -285,10 +284,8 @@
   "speedrunFinished": "Speedrun selesai",
   "speedrunFullSection": "Perjalanan penuh",
   "speedrunFullTitle": "Perjalanan penuh",
-  "speedrunHistory": "Waktu",
   "speedrunIntro": "Mainkan semua tahap secepat mungkin. Hanya jammu yang dihitung; tahap yang kalah dimainkan lagi dengan pengatur waktu tetap berjalan.",
   "speedrunKeepGoing": "Terus main",
-  "speedrunLosses": "{count, plural, =0{Tanpa kekalahan} other{{count} kekalahan}}",
   "speedrunNewRecord": "Rekor pribadi baru",
   "speedrunNoRecord": "Belum ada waktu",
   "speedrunPauseHint": "Istirahat kapan saja: pengatur waktu hanya berjalan saat kamu bermain.",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} mnt + {increment} dtk",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Total",
-  "speedrunVersusRecord": "{difference} dtk dibanding rekor {record}",
   "teacherName": "Guru {name}",
   "tourBack": "Kembali",
   "tourBoardTitle": "Pilih papanmu",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "Waktu pertamamu akan muncul di sini",
   "speedrunHelp": "Cara kerjanya",
   "speedrunStageOf": "Tahap {stage} dari {total}",
-  "speedrunNow": "Sekarang",
   "paceTitle": "Pilih kontrol waktu",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "Hai, {name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "Kamu belum menyelesaikan maraton ini",
   "historyEmptyFilteredGames": "Tidak ada permainan dengan filter ini.",
   "historyEmptyFilteredSpeedruns": "Tidak ada speedrun dengan filter ini.",
-  "historyEmptyFilteredMarathons": "Tidak ada maraton dengan filter ini."
+  "historyEmptyFilteredMarathons": "Tidak ada maraton dengan filter ini.",
+  "speedrunTimeUntilDrawn": "Waktu hingga seri: {time}",
+  "speedrunContinueStage": "Lanjutkan · tahap {stage} dari {total}"
 }

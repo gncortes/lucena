@@ -137,7 +137,6 @@ class MarathonAttemptView extends StatelessWidget {
               stage: speedrun.stages[index],
               speedrun: speedrun,
               last: index == total - 1,
-              showNow: false,
               note: !completed && index == stopped ? _note(l10n, end) : null,
               noteKey: SpeedrunKeys.stageNote(index),
               status: stage.done

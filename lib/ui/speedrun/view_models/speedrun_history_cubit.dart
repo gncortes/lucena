@@ -5,7 +5,6 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
-import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
@@ -124,7 +123,7 @@ class SpeedrunHistoryCubit extends Cubit<SpeedrunHistoryState> {
           run: run,
           end: speedrun.kind == SpeedrunKind.marathon
               ? MarathonEnd.of(speedrun, run)
-              : _endOf(run),
+              : SpeedrunScore.endOf(run),
           endedAt: run.finishedAt ?? run.attempt.abandonedAt!,
           record: run.attempt.id == record?.attempt.id,
           bonus: run.completed ? bonuses[run.attempt.id] : null,
@@ -143,18 +142,5 @@ class SpeedrunHistoryCubit extends Cubit<SpeedrunHistoryState> {
         year: _now().toLocal().year,
       ),
     );
-  }
-
-  // Perder ou empatar a etapa encerra a tentativa (P1); sem partida perdida
-  // no fim, foi o jogador que desistiu.
-  static SpeedrunRunEnd _endOf(SpeedrunRun run) {
-    if (run.completed) return SpeedrunRunEnd.completed;
-    final last = run.attempt.games.lastOrNull;
-    if (last == null || last.fulfilled) return SpeedrunRunEnd.abandoned;
-    return switch (last.outcome) {
-      AttemptOutcome.draw => SpeedrunRunEnd.drawn,
-      AttemptOutcome.loss => SpeedrunRunEnd.lost,
-      _ => SpeedrunRunEnd.abandoned,
-    };
   }
 }

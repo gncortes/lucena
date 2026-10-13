@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
@@ -121,6 +122,57 @@ void main() {
       SpeedrunScore.previousBest(records, runs.first),
       const Duration(seconds: 70),
     );
+  });
+
+  group('como a tentativa clássica terminou', () {
+    SpeedrunRunEnd endOf(List<Attempt> games) =>
+        SpeedrunScore.endOf(SpeedrunScore.run(speedrun, attempt(1, games)));
+
+    test('todas as etapas cumpridas: concluída', () {
+      expect(
+        endOf([game(1, 0, seconds: 30), game(1, 1, seconds: 40)]),
+        SpeedrunRunEnd.completed,
+      );
+    });
+
+    test('sem partida, ou largada após vencer: desistiu', () {
+      expect(endOf([]), SpeedrunRunEnd.abandoned);
+      expect(endOf([game(1, 0, seconds: 30)]), SpeedrunRunEnd.abandoned);
+    });
+
+    test('a última partida perdida: perdeu (a desistência da partida '
+        'também)', () {
+      expect(
+        endOf([game(1, 0, seconds: 30), game(1, 1, seconds: 5, won: false)]),
+        SpeedrunRunEnd.lost,
+      );
+      expect(
+        endOf([
+          game(1, 0, seconds: 30),
+          game(
+            1,
+            1,
+            seconds: 5,
+            won: false,
+          ).copyWith(endReason: GameEndReason.resign),
+        ]),
+        SpeedrunRunEnd.lost,
+      );
+    });
+
+    test('a última partida empatada: empatou', () {
+      expect(
+        endOf([
+          game(1, 0, seconds: 30),
+          game(1, 1, seconds: 5).copyWith(
+            outcome: AttemptOutcome.draw,
+            fulfilled: false,
+            endReason: GameEndReason.stalemate,
+          ),
+        ]),
+        SpeedrunRunEnd.drawn,
+      );
+    });
   });
 
   group('como o tempo aparece', () {

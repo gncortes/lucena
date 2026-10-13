@@ -90,14 +90,16 @@ void main() {
     // A diferença para o recorde fica no resumo da tentativa.
     await speedrun.back();
     await speedrun.openHistory(0);
-    speedrun.expectRecordDifference('-2.0 s vs. record 0:12.0');
+    speedrun.expectRecordDifference('2.0 s faster than the previous record');
+    await speedrun.back();
     await speedrun.back();
 
     await runRung($, 8, 7);
     await speedrun.expectNewRecord(record: false);
     await speedrun.back();
     await speedrun.openHistory(0);
-    speedrun.expectRecordDifference('+5.0 s vs. record 0:10.0');
+    speedrun.expectRecordDifference('5.0 s short of your record');
+    await speedrun.back();
     await speedrun.back();
     await speedrun.expectBest('0:10.0');
   });
@@ -181,9 +183,6 @@ void main() {
     await speedrun.back();
 
     await speedrun.expectBest('0:13.0');
-    await speedrun.expectStageRecord(0, '0:03.0');
-    await speedrun.expectStageRecord(1, '0:04.0');
-    await speedrun.expectStageRecord(2, '0:06.0');
     await speedrun.back();
     await speedrun.expectItemBest(_endingRun, '0:13.0');
   });
@@ -207,6 +206,7 @@ void main() {
     // Tocar na tentativa abre o resumo dela, com a marca de cada etapa.
     await speedrun.openHistory(0);
     await speedrun.expectAbandonedDetails(firstStage: '0:03.0');
+    await speedrun.back();
     await speedrun.back();
 
     await app.restart();

@@ -153,16 +153,30 @@ class SpeedrunRobot {
     await $.pumpAndSettle();
   }
 
-  /// Na tela do speedrun: o texto da tentativa [index] do histórico (0 é a
-  /// mais recente).
-  Future<void> expectHistory(int index, String text) async {
-    await $(SpeedrunKeys.run(index)).scrollTo();
-    expectTextIn(find.byKey(SpeedrunKeys.run(index)), text);
+  /// Na tela do speedrun: abre o histórico (pelo cartão do recorde ou, sem
+  /// recorde, pela linha "Melhor tentativa").
+  Future<void> openHistoryScreen() async {
+    final link = find.byKey(SpeedrunKeys.seeHistory).evaluate().isNotEmpty
+        ? SpeedrunKeys.seeHistory
+        : SpeedrunKeys.bestAttempt;
+    await $(link).tap();
+    await $(SpeedrunKeys.historyScreen).waitUntilVisible();
   }
 
-  /// Toca na tentativa [index] do histórico: abre os detalhes dela.
+  /// Na tela do speedrun: abre o histórico, confere o texto da tentativa
+  /// [index] (0 é a mais recente) e volta.
+  Future<void> expectHistory(int index, String text) async {
+    await openHistoryScreen();
+    await $(SpeedrunKeys.historyRun(index)).scrollTo();
+    expectTextIn(find.byKey(SpeedrunKeys.historyRun(index)), text);
+    await back();
+  }
+
+  /// Na tela do speedrun: abre o histórico e toca na tentativa [index]: abre
+  /// o resumo dela. Voltar leva ao histórico; mais um volta ao speedrun.
   Future<void> openHistory(int index) async {
-    await $(SpeedrunKeys.run(index)).scrollTo().tap();
+    await openHistoryScreen();
+    await $(SpeedrunKeys.historyRun(index)).scrollTo().tap();
     await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
   }
 
@@ -193,7 +207,7 @@ class SpeedrunRobot {
     expect(times[stage], time);
   }
 
-  /// No resumo: o texto da etapa [stage] (o adversário, as derrotas).
+  /// No resumo: o texto da etapa [stage] (o adversário, a nota).
   void expectStageText(int stage, String text) {
     expectTextIn(find.byKey(SpeedrunKeys.stage(stage)), text);
   }
@@ -211,12 +225,6 @@ class SpeedrunRobot {
   Future<void> expectBest(String time) async {
     await _waitForText(SpeedrunKeys.best, time);
     expect(_text(SpeedrunKeys.best), time);
-  }
-
-  /// O melhor tempo de uma etapa (por adversário), na tela do speedrun.
-  Future<void> expectStageRecord(int stage, String time) async {
-    await $(SpeedrunKeys.stageRecord(stage)).scrollTo();
-    expect(_text(SpeedrunKeys.stageRecord(stage)), time);
   }
 
   Future<void> expectItemBest(String id, String time) async {

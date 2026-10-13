@@ -31,15 +31,10 @@ class SpeedrunBonusPayer {
     final added = <SpeedrunBonus>[];
     for (final (index, completion) in completions.indexed) {
       if (paid.contains(completion.attempt.id)) continue;
-      // O rating de quando a tentativa começou: o número que o detalhe
-      // ofereceu.
-      final rating = await _rating.at(completion.attempt.startedAt);
-      final points = SpeedrunRatingBonus.of(
+      final points = await _pointsOf(
+        completion.attempt,
         completion.slot,
-        rating: rating.rounded,
-        previous: [
-          for (final previous in completions.take(index)) previous.slot,
-        ],
+        completions.take(index),
       );
       if (points == 0) continue;
       final bonus = await _rating.addSpeedrunBonus(
@@ -71,6 +66,34 @@ class SpeedrunBonusPayer {
       slot,
       rating: (await _rating.current()).rounded,
       previous: [for (final completion in completions) completion.slot],
+    );
+  }
+
+  /// Quanto concluir a tentativa [attempt], ainda em andamento, vai render:
+  /// o rating de quando ela começou e as conclusões até aqui. É o número que
+  /// o detalhe mostra e o que `payPending` paga, fixo para a tentativa. Zero
+  /// se ela não dá bônus ou se o grupo já foi concluído.
+  Future<int> offerOf(SpeedrunAttempt attempt) async {
+    if (!attempt.bonusEligible) return 0;
+    final bases = await _journey.speedruns();
+    final speedrun = SpeedrunPaces.resolve(bases, attempt.speedrunId);
+    final slot = speedrun == null ? null : SpeedrunRatingBonus.slotOf(speedrun);
+    if (slot == null) return 0;
+    return _pointsOf(attempt, slot, await _completions(bases));
+  }
+
+  // O rating de quando a tentativa começou, com a cadeia só das conclusões
+  // anteriores a ela.
+  Future<int> _pointsOf(
+    SpeedrunAttempt attempt,
+    SpeedrunBonusSlot slot,
+    Iterable<_Completion> previous,
+  ) async {
+    final rating = await _rating.at(attempt.startedAt);
+    return SpeedrunRatingBonus.of(
+      slot,
+      rating: rating.rounded,
+      previous: [for (final completion in previous) completion.slot],
     );
   }
 

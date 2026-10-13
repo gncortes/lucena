@@ -275,7 +275,6 @@
   "sideWhite": "白",
   "speedrunAbandon": "挑戦をやめる",
   "speedrunAbandonQuestion": "この挑戦をやめますか？記録なしで履歴に残ります。",
-  "speedrunAbandoned": "中断した挑戦：記録なし",
   "speedrunBest": "自己ベスト",
   "speedrunContinue": "続ける",
   "speedrunContinueGame": "対局を続ける",
@@ -285,10 +284,8 @@
   "speedrunFinished": "スピードラン完了",
   "speedrunFullSection": "ジャーニー全体",
   "speedrunFullTitle": "ジャーニー全編",
-  "speedrunHistory": "タイム",
   "speedrunIntro": "すべてのステージをできるだけ速くプレイしましょう。計測されるのは自分の時計だけです。負けたステージはタイマーを止めずにやり直します。",
   "speedrunKeepGoing": "続ける",
-  "speedrunLosses": "{count, plural, =0{負けなし} other{{count}敗}}",
   "speedrunNewRecord": "自己ベスト更新",
   "speedrunNoRecord": "記録なし",
   "speedrunPauseHint": "好きなときに休憩できます。タイマーが進むのは対局中だけです。",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes}分 + {increment}秒",
   "speedrunTitle": "スピードラン",
   "speedrunTotal": "合計",
-  "speedrunVersusRecord": "記録 {record} と比べて {difference}秒",
   "teacherName": "{name}先生",
   "tourBack": "戻る",
   "tourBoardTitle": "盤を選びましょう",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "最初のタイムがここに表示されます",
   "speedrunHelp": "遊び方",
   "speedrunStageOf": "ステージ {stage}/{total}",
-  "speedrunNow": "次はこちら",
   "paceTitle": "持ち時間を選ぶ",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "こんにちは、{name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "このマラソンはまだ完走していません",
   "historyEmptyFilteredGames": "この条件に合う対局はありません。",
   "historyEmptyFilteredSpeedruns": "この条件に合うスピードランはありません。",
-  "historyEmptyFilteredMarathons": "この条件に合うマラソンはありません。"
+  "historyEmptyFilteredMarathons": "この条件に合うマラソンはありません。",
+  "speedrunTimeUntilDrawn": "引き分けまでの時間: {time}",
+  "speedrunContinueStage": "続ける · ステージ {stage}/{total}"
 }

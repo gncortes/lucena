@@ -275,7 +275,6 @@
   "sideWhite": "白方",
   "speedrunAbandon": "放弃本次挑战",
   "speedrunAbandonQuestion": "放弃这次挑战？它会留在记录中，但不计纪录。",
-  "speedrunAbandoned": "已放弃：不计纪录",
   "speedrunBest": "你的最佳成绩",
   "speedrunContinue": "继续",
   "speedrunContinueGame": "继续对局",
@@ -285,10 +284,8 @@
   "speedrunFinished": "速通完成",
   "speedrunFullSection": "完整征程",
   "speedrunFullTitle": "完整征程",
-  "speedrunHistory": "用时",
   "speedrunIntro": "尽快完成所有关卡。只计算你自己的用时；输掉的关卡要在计时继续的情况下重下。",
   "speedrunKeepGoing": "继续下",
-  "speedrunLosses": "{count, plural, =0{没有输棋} other{输 {count} 局}}",
   "speedrunNewRecord": "个人新纪录",
   "speedrunNoRecord": "尚无成绩",
   "speedrunPauseHint": "随时可以休息：只有在你的对局中才计时。",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} 分 + {increment} 秒",
   "speedrunTitle": "速通",
   "speedrunTotal": "总计",
-  "speedrunVersusRecord": "比纪录 {record} {difference} 秒",
   "teacherName": "{name}老师",
   "tourBack": "上一步",
   "tourBoardTitle": "选择你的棋盘",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "你的第一个成绩会显示在这里",
   "speedrunHelp": "玩法说明",
   "speedrunStageOf": "第 {stage}/{total} 阶段",
-  "speedrunNow": "当前",
   "paceTitle": "选择时限",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "你好，{name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "你还没有完成这次马拉松",
   "historyEmptyFilteredGames": "没有符合这些筛选条件的对局。",
   "historyEmptyFilteredSpeedruns": "没有符合这些筛选条件的速通。",
-  "historyEmptyFilteredMarathons": "没有符合这些筛选条件的马拉松。"
+  "historyEmptyFilteredMarathons": "没有符合这些筛选条件的马拉松。",
+  "speedrunTimeUntilDrawn": "距离和棋的用时：{time}",
+  "speedrunContinueStage": "继续 · 第 {stage}/{total} 阶段"
 }

@@ -275,7 +275,6 @@
   "sideWhite": "Białe",
   "speedrunAbandon": "Przerwij próbę",
   "speedrunAbandonQuestion": "Przerwać tę próbę? Zostanie w historii bez rekordu.",
-  "speedrunAbandoned": "Próba przerwana: bez rekordu",
   "speedrunBest": "Twój najlepszy czas",
   "speedrunContinue": "Dalej",
   "speedrunContinueGame": "Wróć do partii",
@@ -285,10 +284,8 @@
   "speedrunFinished": "Speedrun ukończony",
   "speedrunFullSection": "Cała podróż",
   "speedrunFullTitle": "Cała Podróż",
-  "speedrunHistory": "Czasy",
   "speedrunIntro": "Rozegraj wszystkie etapy jak najszybciej. Liczy się tylko twój zegar; przegrany etap gra się ponownie przy biegnącym czasie.",
   "speedrunKeepGoing": "Graj dalej",
-  "speedrunLosses": "{count, plural, =0{Bez porażek} =1{1 porażka} few{{count} porażki} other{{count} porażek}}",
   "speedrunNewRecord": "Nowy rekord osobisty",
   "speedrunNoRecord": "Jeszcze bez czasu",
   "speedrunPauseHint": "Rób przerwy, kiedy chcesz: czas biegnie tylko w twoich partiach.",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Razem",
-  "speedrunVersusRecord": "{difference} s względem rekordu {record}",
   "teacherName": "Mistrz {name}",
   "tourBack": "Wstecz",
   "tourBoardTitle": "Wybierz swoją szachownicę",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "Twój pierwszy czas pojawi się tutaj",
   "speedrunHelp": "Jak to działa",
   "speedrunStageOf": "Etap {stage} z {total}",
-  "speedrunNow": "Teraz",
   "paceTitle": "Wybierz tempo",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "Cześć, {name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "Nie ukończono jeszcze tego maratonu",
   "historyEmptyFilteredGames": "Brak partii dla tych filtrów.",
   "historyEmptyFilteredSpeedruns": "Brak speedrunów dla tych filtrów.",
-  "historyEmptyFilteredMarathons": "Brak maratonów dla tych filtrów."
+  "historyEmptyFilteredMarathons": "Brak maratonów dla tych filtrów.",
+  "speedrunTimeUntilDrawn": "Czas do remisu: {time}",
+  "speedrunContinueStage": "Kontynuuj · etap {stage} z {total}"
 }

@@ -275,7 +275,6 @@
   "sideWhite": "सफ़ेद",
   "speedrunAbandon": "प्रयास छोड़ें",
   "speedrunAbandonQuestion": "यह प्रयास छोड़ें? यह बिना रिकॉर्ड के इतिहास में रहेगा।",
-  "speedrunAbandoned": "प्रयास छोड़ा गया: कोई रिकॉर्ड नहीं",
   "speedrunBest": "आपका सबसे अच्छा समय",
   "speedrunContinue": "जारी रखें",
   "speedrunContinueGame": "बाज़ी जारी रखें",
@@ -285,10 +284,8 @@
   "speedrunFinished": "स्पीडरन पूरा",
   "speedrunFullSection": "पूरी यात्रा",
   "speedrunFullTitle": "पूरी यात्रा",
-  "speedrunHistory": "समय",
   "speedrunIntro": "सभी चरण जितनी जल्दी हो सके खेलें। सिर्फ़ आपकी घड़ी गिनी जाती है; हारा हुआ चरण टाइमर चलते हुए फिर खेला जाता है।",
   "speedrunKeepGoing": "खेलते रहें",
-  "speedrunLosses": "{count, plural, =0{कोई हार नहीं} =1{1 हार} other{{count} हार}}",
   "speedrunNewRecord": "नया व्यक्तिगत रिकॉर्ड",
   "speedrunNoRecord": "अभी कोई समय नहीं",
   "speedrunPauseHint": "जब चाहें विराम लें: टाइमर सिर्फ़ आपकी बाज़ियों में चलता है।",
@@ -303,7 +300,6 @@
   "speedrunTimeControl": "{minutes} मिनट + {increment} सेकंड",
   "speedrunTitle": "स्पीडरन",
   "speedrunTotal": "कुल",
-  "speedrunVersusRecord": "रिकॉर्ड {record} से {difference} सेकंड",
   "teacherName": "गुरु {name}",
   "tourBack": "पीछे",
   "tourBoardTitle": "अपना बोर्ड चुनें",
@@ -360,7 +356,6 @@
   "speedrunFirstTimeInvite": "आपका पहला समय यहाँ दिखेगा",
   "speedrunHelp": "यह कैसे काम करता है",
   "speedrunStageOf": "चरण {stage} / {total}",
-  "speedrunNow": "अभी",
   "paceTitle": "समय नियंत्रण चुनें",
   "paceShort": "{minutes}+{increment}",
   "homeHello": "नमस्ते, {name}",
@@ -1177,5 +1172,7 @@
   "marathonNotFinishedYet": "आपने यह मैराथन अभी पूरी नहीं की है",
   "historyEmptyFilteredGames": "इन फ़िल्टरों के साथ कोई खेल नहीं।",
   "historyEmptyFilteredSpeedruns": "इन फ़िल्टरों के साथ कोई स्पीडरन नहीं।",
-  "historyEmptyFilteredMarathons": "इन फ़िल्टरों के साथ कोई मैराथन नहीं।"
+  "historyEmptyFilteredMarathons": "इन फ़िल्टरों के साथ कोई मैराथन नहीं।",
+  "speedrunTimeUntilDrawn": "ड्रॉ तक का समय: {time}",
+  "speedrunContinueStage": "जारी रखें · {total} में से चरण {stage}"
 }
