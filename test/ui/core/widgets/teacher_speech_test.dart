@@ -1,7 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/game_review.dart';
+import 'package:lucena/ui/core/review/move_quality_ui.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
@@ -10,6 +17,7 @@ import 'package:lucena/ui/core/keys/explanation_keys.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_voice_repository.dart';
+import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository.dart';
@@ -17,7 +25,549 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+class _DelayedVoiceRepository extends FakeVoiceRepository {
+  _DelayedVoiceRepository()
+    : super(settings: const VoiceSettings(enabled: false));
+  final saved = Completer<void>();
+
+  @override
+  Future<void> save(VoiceSettings settings) async {
+    await saved.future;
+    await super.save(settings);
+  }
+}
+
 void main() {
+  testWidgets(
+    'editorial text direction preserves fallback SAN and Arabic links',
+    (tester) async {
+      const key = Key('directional-editorial');
+      const lri = '\u2066';
+      const pdi = '\u2069';
+      for (final typed in [false, true]) {
+        for (final (text, direction, moves) in [
+          (
+            '1.Ke3 allows a draw and does not meet the goal.',
+            TextDirection.ltr,
+            ['1.Ke3'],
+          ),
+          (
+            'النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة.',
+            TextDirection.rtl,
+            ['1.Ke3'],
+          ),
+          (
+            'بعد 1...Rh7 يلعب الأبيض Kxe3+ ثم 2.Rd7 ويفوز.',
+            TextDirection.rtl,
+            ['1...Rh7', 'Kxe3+', '2.Rd7'],
+          ),
+        ]) {
+          for (final move in moves) {
+            final tapped = <String>[];
+            await tester.pumpWidget(
+              TestApp(
+                locale: const Locale('ar'),
+                child: Scaffold(
+                  body: TeacherSpeech(
+                    teacher: FakeCharacterRepository.viktor,
+                    text: null,
+                    bubbleKey: key,
+                    typed: typed,
+                    speechContext: SpeechContext.teaching,
+                    lessonV2: true,
+                    onLink: (link) => tapped.add('${link.start}:${link.text}'),
+                    explanation: ExplanationPayload(
+                      positionId: 'direction',
+                      state: ExplanationState.incorrect,
+                      explanations: [
+                        ExplanationBlock(
+                          id: 'played',
+                          kind: ExplanationKind.playedIncorrect,
+                          texts: [text],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
+            final rich = find.descendant(
+              of: find.byKey(key),
+              matching: find.byType(RichText),
+            );
+            final paragraph = tester.renderObject<RenderParagraph>(rich);
+            final drawn = paragraph.text.toPlainText();
+            // The source text is drawn whole; only isolates are added.
+            expect(drawn.replaceAll(lri, '').replaceAll(pdi, ''), text);
+            if (direction == TextDirection.ltr) {
+              expect(drawn, text, reason: 'LTR paragraphs need no isolates');
+            } else {
+              for (final notation in moves) {
+                expect(drawn, contains('$lri$notation$pdi'));
+              }
+            }
+            expect(paragraph.textDirection, direction);
+            expect(
+              Directionality.of(tester.element(find.byType(TeacherSpeech))),
+              TextDirection.rtl,
+            );
+            // Boxes are measured in the drawn text; the tap reports the
+            // offset of the source text.
+            final drawnOffset = drawn.indexOf(move);
+            final boxes = [
+              for (var i = 0; i < move.length; i++)
+                paragraph
+                    .getBoxesForSelection(
+                      TextSelection(
+                        baseOffset: drawnOffset + i,
+                        extentOffset: drawnOffset + i + 1,
+                      ),
+                    )
+                    .single,
+            ];
+            // The whole notation runs left to right, number attached.
+            for (var i = 1; i < boxes.length; i++) {
+              expect(
+                boxes[i].left,
+                greaterThanOrEqualTo(boxes[i - 1].right - .1),
+                reason: '$move char $i in "$text"',
+              );
+            }
+            final san = boxes[move.length ~/ 2];
+            await tester.tapAt(
+              paragraph.localToGlobal(
+                Offset((san.left + san.right) / 2, (san.top + san.bottom) / 2),
+              ),
+            );
+            expect(tapped, ['${text.indexOf(move)}:$move']);
+            expect(tester.takeException(), isNull);
+          }
+        }
+      }
+    },
+  );
+  testWidgets('RTL isolates leave Semantics with the source text', (
+    tester,
+  ) async {
+    const text = 'النقلة 1.Ke3 تحافظ على الوضع.';
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('ar'),
+        child: Scaffold(
+          body: TeacherSpeech(
+            teacher: FakeCharacterRepository.viktor,
+            text: text,
+            speechContext: SpeechContext.teaching,
+            lessonV2: true,
+            onLink: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final labels = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .map((widget) => widget.properties.label ?? '')
+        .where((label) => label.contains('1.Ke3'));
+    expect(labels, isNotEmpty);
+    for (final label in labels) {
+      expect(label, isNot(contains('\u2066')));
+      expect(label, contains(text));
+    }
+    handle.dispose();
+  });
+  for (final (available, enabled) in [
+    (true, false),
+    (true, true),
+    (false, false),
+  ]) {
+    testWidgets(
+      'V2 panel and badge fit with voice=$enabled, TTS=$available, RTL and enlarged text',
+      (tester) async {
+        final voice = FakeVoiceRepository(
+          settings: VoiceSettings(enabled: enabled),
+          voices: available ? null : [],
+        );
+        final speech = SpeechCubit(voice);
+        addTearDown(speech.close);
+        await speech.load();
+        var opened = 0;
+        await tester.pumpWidget(
+          TestApp(
+            speechCubit: speech,
+            child: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 360,
+                  child: MediaQuery(
+                    data: const MediaQueryData(
+                      textScaler: TextScaler.linear(2),
+                    ),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: TeacherSpeech(
+                        teacher: FakeCharacterRepository.viktor,
+                        text: 'The panel remains available.',
+                        speechContext: SpeechContext.teaching,
+                        part: TeacherSpeechPart.header,
+                        lessonV2: true,
+                        onSoundSettings: () => opened++,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+        expect(
+          find.text('1×'),
+          available && enabled ? findsOneWidget : findsNothing,
+        );
+        if (available && enabled) {
+          final label = tester.renderObject<RenderParagraph>(find.text('1×'));
+          final boxes = label.getBoxesForSelection(
+            const TextSelection(baseOffset: 0, extentOffset: 2),
+          );
+          expect(boxes, isNotEmpty);
+          for (final box in boxes) {
+            expect(box.top, greaterThanOrEqualTo(0));
+            expect(box.bottom, lessThanOrEqualTo(label.size.height));
+          }
+          expect(label.size.height, lessThanOrEqualTo(16));
+        }
+        await tester.tap(find.byKey(VoiceKeys.speakButton));
+        await tester.pump();
+        expect(opened, 1);
+        expect(voice.spoken, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'mute during delayed voice preference save prevents manual playback',
+    (tester) async {
+      final voice = _DelayedVoiceRepository();
+      final speech = SpeechCubit(voice);
+      final settings = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(speech.close);
+      addTearDown(settings.close);
+      await speech.load();
+      await settings.load();
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'The teacher must stay muted.',
+              speechContext: SpeechContext.teaching,
+              speaks: true,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await settings.setSound(enabled: false);
+      await tester.pump();
+      voice.saved.complete();
+      await tester.pump();
+      await tester.pump();
+      expect(voice.spoken, isEmpty);
+      expect(speech.state.speaking, isNull);
+      expect(voice.settings.enabled, isTrue);
+    },
+  );
+
+  testWidgets(
+    'V2 sound button opens settings; general mute gates current and future teacher speech',
+    (tester) async {
+      final voice = FakeVoiceRepository(
+        settings: const VoiceSettings(enabled: true, charactersMuted: true),
+      );
+      final speech = SpeechCubit(voice);
+      final settings = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      final text = ValueNotifier('First teaching sentence.');
+      addTearDown(text.dispose);
+      addTearDown(speech.close);
+      addTearDown(settings.close);
+      await speech.load();
+      await settings.load();
+      var opened = 0;
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: ValueListenableBuilder<String>(
+              valueListenable: text,
+              builder: (_, value, _) => TeacherSpeech(
+                teacher: FakeCharacterRepository.viktor,
+                text: value,
+                speechContext: SpeechContext.teaching,
+                lessonV2: true,
+                speaks: true,
+                onSoundSettings: () => opened++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(voice.spoken, hasLength(1));
+      expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+      expect(find.text('1×'), findsOneWidget);
+      expect(find.byTooltip('Sound and voice: on, speed 1×'), findsOneWidget);
+      expect(
+        tester.getSize(find.byKey(VoiceKeys.speakButton)).height,
+        greaterThanOrEqualTo(48),
+      );
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(opened, 1);
+      expect(voice.spoken, hasLength(1));
+      await settings.setSound(enabled: false);
+      await tester.pump();
+      expect(speech.state.speaking, isNull);
+      expect(find.text('1×'), findsNothing);
+      expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
+      expect(find.byTooltip('Sound and voice: off'), findsOneWidget);
+      text.value = 'Next teaching sentence while muted.';
+      await tester.pump();
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(opened, 2);
+      expect(voice.spoken, hasLength(1));
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.charactersMuted, isTrue);
+      await settings.setSound(enabled: true);
+      await tester.pump();
+      expect(voice.spoken, hasLength(1));
+      text.value = 'A new sentence after unmuting.';
+      await tester.pump();
+      await tester.pump();
+      expect(voice.spoken, hasLength(2));
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.charactersMuted, isTrue);
+    },
+  );
+
+  testWidgets('muted teacher does not autoplay initially or play manually', (
+    tester,
+  ) async {
+    final voice = FakeVoiceRepository(
+      settings: const VoiceSettings(enabled: true),
+    );
+    final speech = SpeechCubit(voice);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings(sound: false)),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(speech.close);
+    addTearDown(settings.close);
+    await speech.load();
+    await settings.load();
+    Future<void> show({required bool auto}) async {
+      await tester.pumpWidget(
+        TestApp(
+          settingsCubit: settings,
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'Muted teacher sentence.',
+              speechContext: SpeechContext.teaching,
+              speaks: auto,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(VoiceKeys.speakButton), warnIfMissed: false);
+      await tester.pump();
+    }
+
+    await show(auto: true);
+    await show(auto: false);
+    expect(voice.spoken, isEmpty);
+    expect(voice.settings.enabled, isTrue);
+  });
+
+  testWidgets(
+    'V2 paragraphs keep an eight pixel gap and supplied quality colors',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: 'First paragraph.\n\n1.Kh2? Second paragraph.',
+              speechContext: SpeechContext.teaching,
+              lessonV2: true,
+              onLink: (_) {},
+            ),
+          ),
+        ),
+      );
+      final rich = find.byWidgetPredicate(
+        (widget) =>
+            widget is RichText &&
+            widget.text.toPlainText() ==
+                'First paragraph.\n\n1.Kh2? Second paragraph.',
+      );
+      final paragraph = tester.renderObject<RenderParagraph>(rich);
+      final first = paragraph
+          .getBoxesForSelection(
+            const TextSelection(baseOffset: 0, extentOffset: 16),
+          )
+          .first;
+      final second = paragraph
+          .getBoxesForSelection(
+            const TextSelection(baseOffset: 18, extentOffset: 24),
+          )
+          .first;
+      // Compare line positions: a 24px line box plus the 8px paragraph gap.
+      expect(second.top - first.top, closeTo(32, 0.1));
+      TextSpan? move;
+      tester.widget<RichText>(rich).text.visitChildren((span) {
+        if (span is TextSpan && span.text == '1.Kh2?') move = span;
+        return true;
+      });
+      expect(
+        move?.style?.color,
+        MoveQuality.mistake.listColor(
+          Theme.of(tester.element(find.byType(TeacherSpeech))).brightness,
+        ),
+      );
+    },
+  );
+  testWidgets('V2 highlights repeated SAN only at its own origin', (
+    tester,
+  ) async {
+    ExplanationVariation line(String id, String fen, String text) =>
+        ExplanationVariation(
+          id: id,
+          label: id,
+          outcome: VariationOutcome.accepted,
+          texts: [text],
+          originFen: fen,
+          movesUci: const ['h1h2'],
+          movesSan: const ['1.Kh2'],
+          validated: true,
+        );
+    final a = line('A', '6k1/8/8/8/8/8/3P4/7K w - - 0 1', 'First: 1.Kh2.');
+    final b = line('B', '5k2/8/8/8/8/8/3P4/7K w - - 0 1', 'Second: 1.Kh2.');
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: TeacherSpeech(
+            teacher: FakeCharacterRepository.viktor,
+            text: null,
+            speechContext: SpeechContext.teaching,
+            lessonV2: true,
+            activeVariation: a.open(),
+            onVariation: (_) {},
+            explanation: ExplanationPayload(
+              positionId: 'repeated-san',
+              state: ExplanationState.review,
+              explanations: [
+                for (final variation in [a, b])
+                  ExplanationBlock(
+                    id: variation.id,
+                    kind: ExplanationKind.mainSolution,
+                    texts: variation.texts,
+                    variations: [variation],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    Color? background(String paragraph) {
+      final rich = tester
+          .widgetList<RichText>(find.byType(RichText))
+          .singleWhere((widget) => widget.text.toPlainText() == paragraph);
+      TextSpan? move;
+      rich.text.visitChildren((span) {
+        if (span is TextSpan && (span.text?.contains('Kh2') ?? false)) {
+          move = span;
+        }
+        return true;
+      });
+      expect(move, isNotNull);
+      return move!.style?.backgroundColor;
+    }
+
+    expect(background('First: 1.Kh2.'), isNotNull);
+    expect(background('Second: 1.Kh2.'), isNull);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'editorial opening emphasizes prose without changing SAN or prompt',
+    (tester) async {
+      const text = 'Before 1.Kh2 after.\n\nSecond paragraph.';
+      for (final prompt in [false, true]) {
+        await tester.pumpWidget(
+          TestApp(
+            child: Scaffold(
+              body: TeacherSpeech(
+                teacher: FakeCharacterRepository.viktor,
+                text: null,
+                speechContext: SpeechContext.teaching,
+                lessonV2: true,
+                lessonPromptBubble: prompt,
+                onLink: (_) {},
+                explanation: ExplanationPayload(
+                  positionId: 'opening',
+                  state: ExplanationState.incorrect,
+                  explanations: [
+                    ExplanationBlock(
+                      id: 'played',
+                      kind: ExplanationKind.playedIncorrect,
+                      texts: const ['Before 1.Kh2 after.', 'Second paragraph.'],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final rich = tester
+            .widgetList<RichText>(find.byType(RichText))
+            .singleWhere((widget) => widget.text.toPlainText() == text);
+        final pieces = <String, FontWeight?>{};
+        rich.text.visitChildren((span) {
+          if (span is TextSpan && span.text != null) {
+            pieces[span.text!] = span.style?.fontWeight;
+          }
+          return true;
+        });
+        expect(pieces['Before '], prompt ? isNull : FontWeight.w500);
+        expect(pieces[' after.'], prompt ? isNull : FontWeight.w500);
+        expect(pieces['Second paragraph.'], isNull);
+        expect(pieces['1.Kh2'], FontWeight.w700);
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
   testWidgets(
     'one bubble joins paragraphs and verified inline move replaces SAN button',
     (tester) async {
@@ -525,6 +1075,18 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('voz desligada: sem o chip de velocidade; ligada, ele volta', (
+      tester,
+    ) async {
+      await pumpWithVoice(tester, enabled: false);
+      expect(find.byKey(VoiceKeys.speedButton), findsNothing);
+      expect(find.text('1×'), findsNothing);
+      await tester.tap(find.byKey(VoiceKeys.speakButton));
+      await tester.pump();
+      expect(find.byKey(VoiceKeys.speedButton), findsOneWidget);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('um botão de som só: desligado, liga a voz e fala; ligado, '
         'cala e grava a escolha', (tester) async {
       final (speech, voice) = await pumpWithVoice(tester, enabled: false);
@@ -682,6 +1244,66 @@ void main() {
       voice.emit(TtsProgress(said.indexOf('Tf7') + 1, said.indexOf('Tf7') + 2));
       await tester.pump();
       expect(tapped, ['e4', 'Tf7']);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('RTL: the voice position (source) reveals the whole isolated '
+        'move and announces it', (tester) async {
+      const arabic = 'النقلة 1.Ke3 تحافظ على الوضع بعد 12 نقلة طويلة جدا.';
+      final voice = FakeVoiceRepository(
+        settings: const VoiceSettings(enabled: true),
+        voices: const [TtsVoice(id: 'ar-a', locale: 'ar')],
+      );
+      final speech = SpeechCubit(voice);
+      addTearDown(speech.close);
+      await speech.load();
+      final spoken = <String>[];
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('ar'),
+          speechCubit: speech,
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: arabic,
+              bubbleKey: speech_,
+              speechContext: SpeechContext.teaching,
+              lessonV2: true,
+              typed: true,
+              speaks: true,
+              onLink: (_) {},
+              onSpoken: (link) => spoken.add('${link.start}:${link.text}'),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(voice.spoken.single.$1, arabic, reason: 'voice reads the source');
+      final end = arabic.indexOf('1.Ke3') + '1.Ke3'.length;
+      voice.emit(TtsProgress(end - 1, end));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(spoken, ['${arabic.indexOf('1.Ke3')}:1.Ke3']);
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.descendant(
+          of: find.byKey(speech_),
+          matching: find.byType(RichText),
+        ),
+      );
+      final drawn = paragraph.text.toPlainText();
+      final at = drawn.indexOf('1.Ke3');
+      final clip = tester.widget<ClipPath>(find.byType(ClipPath));
+      final path = clip.clipper!.getClip(paragraph.size);
+      for (var i = 0; i < 5; i++) {
+        final box = paragraph
+            .getBoxesForSelection(
+              TextSelection(baseOffset: at + i, extentOffset: at + i + 1),
+            )
+            .single
+            .toRect();
+        expect(path.contains(box.center), isTrue, reason: 'char $i revealed');
+      }
+      voice.emit(const TtsFinished());
       await tester.pumpAndSettle();
     });
   });

@@ -27,7 +27,10 @@ import '../../conclusion/view_models/conclusion_cubit.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
 import 'clock_row.dart';
+import 'game_actions_bar.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import 'character_bar.dart';
+import 'sound_dialog.dart';
 import 'clock_sheet.dart';
 import '../../core/widgets/versus_intro.dart';
 import 'move_list.dart';
@@ -50,13 +53,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // os tempos sejam refeitos pelo instante atual.
   late final Timer _clockRefresh;
 
-  // A partida contra a máquina acabou: o resultado em destaque por um
-  // instante, antes da troca para a tela de conclusão (T51, B4).
-  bool _concluding = false;
-
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
   bool _confirmingQuit = false;
+  // Só vale uma confirmação dada com o app em primeiro plano.
+  AppLifecycleState _lifecycle = AppLifecycleState.resumed;
 
   @override
   void initState() {
@@ -79,15 +80,31 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   // for a vez da máquina, ela volta a pensar.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lifecycle = state;
     if (state == AppLifecycleState.resumed) {
       context.read<FreeBoardCubit>().resumed();
+    }
+  }
+
+  Future<void> _confirmDraw() async {
+    final cubit = context.read<FreeBoardCubit>();
+    final confirmed = await showDrawSheet(
+      context,
+      opponent: context.read<TalkCubit>().state.character?.name,
+    );
+    if ((confirmed ?? false) && mounted && cubit.state.canOfferDraw) {
+      cubit.offerDraw();
     }
   }
 
   Future<void> _confirmResign() async {
     final cubit = context.read<FreeBoardCubit>();
     final confirmed = await showResignSheet(context);
-    if (confirmed ?? false) cubit.resign();
+    if (confirmed == true &&
+        mounted &&
+        _lifecycle == AppLifecycleState.resumed) {
+      cubit.resign();
+    }
   }
 
   @override
@@ -115,48 +132,24 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final won = await cubit.speedrunStagesWon();
     if (!mounted) return;
     final l10n = context.l10n;
-    final confirmed = await showModalBottomSheet<bool>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              Text(
-                l10n.speedrunQuitTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Text(
-                l10n.speedrunQuitProgress(won),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              FilledButton(
-                key: FreeBoardKeys.speedrunQuitConfirm,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                ),
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.speedrunAbandon),
-              ),
-              TextButton(
-                key: FreeBoardKeys.speedrunQuitCancel,
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.speedrunKeepGoing),
-              ),
-            ],
-          ),
-        ),
-      ),
+    final confirmed = await _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.speedrunQuitSheet,
+      confirmKey: FreeBoardKeys.speedrunQuitConfirm,
+      cancelKey: FreeBoardKeys.speedrunQuitCancel,
+      title: l10n.speedrunQuitTitle,
+      hint: l10n.speedrunQuitHint(won),
+      action: l10n.speedrunAbandon,
+      cancel: l10n.speedrunKeepGoing,
+      destructive: true,
     );
     _confirmingQuit = false;
-    if (!(confirmed ?? false) || !mounted) return;
-    await cubit.quitSpeedrun();
+    if (confirmed != true ||
+        !mounted ||
+        _lifecycle != AppLifecycleState.resumed) {
+      return;
+    }
+    await cubit.quitSpeedrun(confirmed: true);
     if (!mounted) return;
     setState(() => _quitting = true);
     // Só depois de a tela aceitar fechar.
@@ -221,73 +214,94 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
           (cubit.state?.clock ?? const ClockSettings()).position,
     );
     final talk = context.watch<TalkCubit>().state;
-    return BlocListener<FreeBoardCubit, FreeBoardState>(
-      // O personagem vê cada lance, o fim e a partida nova.
+    return BlocListener<TalkCubit, TalkState>(
       listenWhen: (previous, current) =>
-          previous.ready != current.ready ||
-          previous.ucis.length != current.ucis.length ||
-          previous.end != current.end ||
-          previous.startedAt != current.startedAt ||
-          previous.drawOffer != current.drawOffer,
-      listener: (context, state) => context.read<TalkCubit>().update(state),
-      child: BlocListener<FreeBoardCubit, FreeBoardState>(
-        // A máquina recusou o empate: um aviso curto, além da fala.
-        listenWhen: (previous, current) =>
-            previous.drawOffer != current.drawOffer &&
-            current.drawOffer == DrawOffer.declined,
-        listener: (context, state) => ScaffoldMessenger.of(context)
+          previous.speechHintVersion != current.speechHintVersion,
+      listener: (context, state) {
+        final name = state.character?.name;
+        if (name == null) return;
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
-              key: FreeBoardKeys.drawDeclined,
-              content: Text(context.l10n.gameDrawDeclined),
+              key: FreeBoardKeys.speechHint,
+              content: Text(context.l10n.gameSpeechHint(name)),
+              action: SnackBarAction(
+                key: FreeBoardKeys.speechHintAdjust,
+                label: context.l10n.gameSpeechAdjust,
+                onPressed: () => showGameSoundDialog(context),
+              ),
             ),
-          ),
+          );
+      },
+      child: BlocListener<FreeBoardCubit, FreeBoardState>(
+        // O personagem vê cada lance, o fim e a partida nova.
+        listenWhen: (previous, current) =>
+            previous.ready != current.ready ||
+            previous.ucis.length != current.ucis.length ||
+            previous.end != current.end ||
+            previous.startedAt != current.startedAt ||
+            previous.drawOffer != current.drawOffer,
+        listener: (context, state) => context.read<TalkCubit>().update(state),
         child: BlocListener<FreeBoardCubit, FreeBoardState>(
-          // A partida contra a máquina terminou agora: a tela de conclusão
-          // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
-          // fica embaixo do tabuleiro.
-          listenWhen: (previous, current) => previous.end != current.end,
-          listener: (context, state) {
-            if (state.end == null || !state.mode.opponent.isMachine) return;
-            unawaited(_conclude(context, cubit, state));
-          },
-          child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
-            // O tabuleiro só é refeito quando a partida muda, não a cada tique do
-            // relógio.
-            listenWhen: (previous, current) =>
-                !identical(previous.position, current.position) ||
-                previous.moves.length != current.moves.length ||
-                previous.viewedPly != current.viewedPly ||
-                previous.end != current.end ||
-                previous.playerSide != current.playerSide ||
-                previous.machineThinking != current.machineThinking,
-            listener: (context, state) => _onStateChanged(state),
-            builder: (context, state) {
-              // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-              // guarda a partida. No meio de um speedrun, sair encerra a
-              // tentativa: antes, a confirmação.
-              final speedrunOpen =
-                  state.mode.isSpeedrun && state.end == null && !_quitting;
-              return PopScope(
-                canPop: !speedrunOpen,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (didPop) {
-                    if (!state.mode.isSpeedrun) unawaited(cubit.leave());
-                  } else {
-                    unawaited(_confirmQuitSpeedrun(cubit));
-                  }
-                },
-                child: _scaffold(
-                  context,
-                  cubit,
-                  state,
-                  boardSettings,
-                  clockPosition,
-                  talk,
-                ),
-              );
+          // A máquina recusou o empate: um aviso curto, além da fala.
+          listenWhen: (previous, current) =>
+              previous.drawOffer != current.drawOffer &&
+              current.drawOffer == DrawOffer.declined,
+          listener: (context, state) => ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                key: FreeBoardKeys.drawDeclined,
+                content: Text(context.l10n.gameDrawDeclined),
+              ),
+            ),
+          child: BlocListener<FreeBoardCubit, FreeBoardState>(
+            // A partida contra a máquina terminou agora: a tela de conclusão
+            // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
+            // fica embaixo do tabuleiro.
+            listenWhen: (previous, current) => previous.end != current.end,
+            listener: (context, state) {
+              if (!_marathonAdvance(state)) return;
+              unawaited(_conclude(context, cubit, state));
             },
+            child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
+              // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+              // relógio.
+              listenWhen: (previous, current) =>
+                  !identical(previous.position, current.position) ||
+                  previous.moves.length != current.moves.length ||
+                  previous.viewedPly != current.viewedPly ||
+                  previous.end != current.end ||
+                  previous.playerSide != current.playerSide ||
+                  previous.machineThinking != current.machineThinking,
+              listener: (context, state) => _onStateChanged(state),
+              builder: (context, state) {
+                // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+                // guarda a partida. No meio de um speedrun, sair encerra a
+                // tentativa: antes, a confirmação.
+                final speedrunOpen =
+                    state.mode.isSpeedrun && state.end == null && !_quitting;
+                return PopScope(
+                  canPop: !speedrunOpen,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (didPop) {
+                      if (!state.mode.isSpeedrun) unawaited(cubit.leave());
+                    } else {
+                      unawaited(_confirmQuitSpeedrun(cubit));
+                    }
+                  },
+                  child: _scaffold(
+                    context,
+                    cubit,
+                    state,
+                    boardSettings,
+                    clockPosition,
+                    talk,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -307,10 +321,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     if (!state.ready) {
       return Scaffold(
         key: FreeBoardKeys.screen,
-        appBar: AppBar(title: Text(context.l10n.freeBoardTitle)),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(context.l10n.freeBoardTitle),
+        ),
       );
     }
-    final goal = state.mode.goal;
     final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
@@ -328,51 +344,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
           ),
         ),
-        // No treino a barra fica só com os botões: o objetivo aparece no fim.
-        title: goal == null ? Text(context.l10n.freeBoardTitle) : null,
-        // No treino, só propor empate e desistir; virar, trocar o relógio e
-        // recomeçar ficam no tabuleiro livre.
-        actions: training
-            ? [
-                // O som do personagem: liga e desliga a voz dele, e fica
-                // gravado.
-                if (talk.character != null && !talk.isEngine)
-                  const CharacterSoundButton(),
-                if (state.end == null && state.mode.opponent.isMachine) ...[
-                  IconButton(
-                    key: FreeBoardKeys.drawButton,
-                    icon: const Icon(Icons.handshake_outlined),
-                    tooltip: context.l10n.gameOfferDraw,
-                    onPressed: state.canOfferDraw ? cubit.offerDraw : null,
-                  ),
-                  IconButton(
-                    key: FreeBoardKeys.resignButton,
-                    icon: const Icon(Icons.flag_outlined),
-                    tooltip: context.l10n.gameResign,
-                    onPressed: _confirmResign,
-                  ),
-                ],
-              ]
-            : [
-                IconButton(
-                  key: FreeBoardKeys.flipButton,
-                  icon: const Icon(Icons.swap_vert),
-                  tooltip: context.l10n.freeBoardFlip,
-                  onPressed: cubit.flip,
-                ),
-                IconButton(
-                  key: FreeBoardKeys.clockButton,
-                  icon: const Icon(Icons.av_timer_outlined),
-                  tooltip: context.l10n.freeBoardClock,
-                  onPressed: _pickClock,
-                ),
-                IconButton(
-                  key: FreeBoardKeys.newGameButton,
-                  icon: const Icon(Icons.add),
-                  tooltip: context.l10n.freeBoardNewGame,
-                  onPressed: cubit.newGame,
-                ),
-              ],
+        centerTitle: true,
+        title: Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: BoardViewport(
         usefulHeight: BoardViewport.usefulHeightOf(context),
@@ -386,12 +359,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   ? ClockPosition.sides
                   : clockPosition;
               final character = talk.character;
+              // Acabou a partida contra a máquina: o selo fica no tabuleiro e
+              // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
+              final machineEnded =
+                  state.end != null &&
+                  state.mode.opponent.isMachine &&
+                  !_marathonAdvance(state);
+              final barTalk = machineEnded
+                  ? talk.copyWith(clearLine: true)
+                  : talk;
               final nickname = context.select(
                 (ProfileCubit cubit) => cubit.state?.nickname ?? '',
               );
-              // A referência inclui a barra do app e a faixa de lances.
-              // Retrato, nome e relógio compartilham uma única linha;
-              // o balão flutua e não reserva altura.
+              // O centro do tabuleiro é o centro da tela visível (a altura
+              // menos as barras do sistema), como no às cegas e nas
+              // estrelas. Retrato, nome e relógio compartilham uma única
+              // linha; o balão flutua e não reserva altura.
               final clocksAbove =
                   clocks == ClockPosition.top || clocks == ClockPosition.sides
                   ? ClockRow.height
@@ -402,12 +385,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   ? ClockRow.height
                   : 0.0;
               final reserveTop = clocksAbove;
-              final centering = BoardCentering(
+              final centering = BoardCentering.balanced(
                 constraints.biggest,
-                gap: 0,
+                gap: _boardGap,
                 reserveTop: reserveTop,
                 reserveBottom: clocksBelow,
-                centerY: BoardViewport.centerYOf(context),
+                footer: 76,
               );
               const both = [Side.white, Side.black];
               final end = state.end;
@@ -418,10 +401,29 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 children: [
                   CenteredBoardLayout(
                     key: FreeBoardKeys.scrollArea,
-                    gap: 0,
-                    centerY: BoardViewport.centerYOf(context),
+                    gap: _boardGap,
+                    balanced: true,
                     reserveTop: reserveTop,
                     reserveBottom: clocksBelow,
+                    footer: machineEnded
+                        ? _SeeResultBar(
+                            onPressed: () => unawaited(
+                              _conclude(context, cubit, cubit.state),
+                            ),
+                          )
+                        : GameActionsBar(
+                            training: training,
+                            onResign:
+                                state.end == null &&
+                                    state.mode.opponent.isMachine
+                                ? _confirmResign
+                                : null,
+                            onDraw: state.canOfferDraw ? _confirmDraw : null,
+                            onFlip: cubit.flip,
+                            onClock: _pickClock,
+                            onNewGame: cubit.newGame,
+                            showSound: true,
+                          ),
                     // Enquanto o tabuleiro termina o voo, a barra do
                     // adversário desce do alto e a do jogador sobe de baixo.
                     top: GameEntrance(
@@ -433,7 +435,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           if (character != null &&
                               clocks != ClockPosition.bottom)
                             CharacterBar(
-                              talk: talk,
+                              talk: barTalk,
                               avatarSize: 44,
                               showName: false,
                               playerRow: ClockRow(
@@ -444,10 +446,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 board: boardSettings,
                                 talk: talk,
                               ),
-                              speechTop:
-                                  centering.roomAbove - ClockRow.height >= 80
-                                  ? -80
-                                  : ClockRow.height,
+                              speechTop: -80,
                             ),
                           if (character == null && clocks == ClockPosition.top)
                             ClockRow(
@@ -499,6 +498,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           // Toda partida nova contra a máquina abre com o
                           // versus (na Maratona, com a contagem); só então
                           // o relógio corre.
+                          // O selo do resultado sobre o tabuleiro, até o jogador seguir.
+                          if (machineEnded && end != null)
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: _EndFlash(
+                                  end: end,
+                                  userSide: state.mode.userSide,
+                                ),
+                              ),
+                            ),
                           if (state.held)
                             Positioned.fill(
                               child: VersusIntro(
@@ -555,7 +564,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           if (clocks == ClockPosition.bottom &&
                               character != null)
                             CharacterBar(
-                              talk: talk,
+                              talk: barTalk,
                               avatarSize: 44,
                               showName: false,
                               playerRow: ClockRow(
@@ -564,8 +573,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 board: boardSettings,
                                 talk: talk,
                               ),
-                              // O balão acompanha a barra escolhida pelo jogador.
-                              speechTop: -80,
+                              // Mesmo com os relógios embaixo, a fala ocupa
+                              // apenas a região acima do tabuleiro.
+                              speechTop: -(centering.side + 2 * _boardGap + 80),
                             ),
                           if (clocks == ClockPosition.bottom &&
                               character == null)
@@ -582,16 +592,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       ),
                     ),
                   ),
-                  // O resultado em destaque, antes da conclusão.
-                  if (end != null && _concluding)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: _EndFlash(
-                          end: end,
-                          userSide: state.mode.userSide,
-                        ),
-                      ),
-                    ),
                 ],
               );
             },
@@ -601,22 +601,42 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
+  String _title(BuildContext context, FreeBoardState state, TalkState talk) {
+    final l10n = context.l10n;
+    if (state.mode.isSpeedrun) return l10n.speedrunTitle;
+    if (state.mode.challengeId != null && talk.character != null) {
+      return l10n.gameChallengeTitle(talk.character!.name);
+    }
+    final parts = state.mode.positionId?.split('.');
+    if (parts != null && parts.length > 1) return endgameName(l10n, parts[1]);
+    return l10n.freeBoardTitle;
+  }
+
   static bool _ultraBullet(FreeBoardState state) {
     final time = state.clock?.config.of(state.mode.userSide ?? Side.white);
     return time != null && PaceCategory.of(time) == PaceCategory.ultraBullet;
   }
 
-  // A partida acabou: um instante com o resultado em destaque e a tela de
-  // conclusão no lugar desta (voltar dela leva para antes da partida). Na
-  // Maratona, a etapa vencida segue direto para a próxima, sem conclusão.
+  // Só a etapa vencida da Maratona segue sozinha; nas demais partidas contra
+  // a máquina o fim para no tabuleiro até o jogador tocar em "Ver o resultado".
+  bool _marathonAdvance(FreeBoardState state) =>
+      state.end != null &&
+      state.mode.opponent.isMachine &&
+      state.mode.isMarathon &&
+      (state.fulfilled ?? false);
+
+  // A partida acabou: a tela de conclusão no lugar desta (voltar dela leva
+  // para antes da partida). Na Maratona, a etapa vencida segue direto para a
+  // próxima, sem conclusão, depois de um instante com o resultado.
   Future<void> _conclude(
     BuildContext context,
     FreeBoardCubit cubit,
     FreeBoardState state,
   ) async {
-    final pause = AppMotion.of(context).disabled ? Duration.zero : _flashTime;
-    final marathonWin = state.mode.isMarathon && (state.fulfilled ?? false);
-    if (!marathonWin) setState(() => _concluding = true);
+    final marathonWin = _marathonAdvance(state);
+    final pause = AppMotion.of(context).disabled || !marathonWin
+        ? Duration.zero
+        : _flashTime;
     await Future.wait([cubit.saved(), Future<void>.delayed(pause)]);
     if (!context.mounted || cubit.state.end == null) return;
     final step = cubit.state.report?.speedrun;
@@ -673,10 +693,56 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   /// Quanto o resultado fica em destaque antes da conclusão.
   static const _flashTime = AppMotion.celebrate;
+
+  /// Entre as faixas dos jogadores e o tabuleiro (PropV2EtapaSpeedrunP360:
+  /// faixa até 184, tabuleiro de 192 a 548, faixa a partir de 556).
+  static const _boardGap = 8.0;
 }
 
-/// O resultado em destaque por um instante, no meio do tabuleiro, quando a
-/// partida contra a máquina acaba.
+/// O rodapé da partida terminada contra a máquina: só "Ver o resultado"
+/// (PropV2PartidaFim, CompRodapeAcoes com botão de 52).
+class _SeeResultBar extends StatelessWidget {
+  const _SeeResultBar({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surfaceContainerLow,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: colors.outlineVariant)),
+        ),
+        // 76 de altura (a reserva do tabuleiro): botão de 52 e 12 de respiro.
+        child: SizedBox(
+          height: 76,
+          child: Padding(
+            // CompRodapeAcoes: 16 nas laterais (380 dp a 412); 12 em cima e embaixo.
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                key: FreeBoardKeys.seeResultButton,
+                onPressed: onPressed,
+                // CompBotao: 52 de altura, seta antes do texto (18), 14/500.
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(context.l10n.gameSeeResult),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O resultado em destaque, no meio do tabuleiro, quando a partida contra a
+/// máquina acaba.
 class _EndFlash extends StatelessWidget {
   const _EndFlash({required this.end, this.userSide});
 
@@ -804,47 +870,203 @@ class _TwoPlayersEnd extends StatelessWidget {
 }
 
 /// Pergunta antes de desistir. Devolve verdadeiro se o jogador confirmou.
-Future<bool?> showResignSheet(BuildContext context) {
-  return showModalBottomSheet<bool>(
-    context: context,
-    showDragHandle: true,
-    useSafeArea: true,
-    builder: (context) {
-      final theme = Theme.of(context);
-      final l10n = context.l10n;
-      return SafeArea(
-        top: false,
-        child: Padding(
-          key: FreeBoardKeys.resignSheet,
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(l10n.gameResignTitle, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                l10n.gameResignHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+Future<bool?> showResignSheet(BuildContext context) => _showGameConfirmation(
+  context,
+  sheetKey: FreeBoardKeys.resignSheet,
+  confirmKey: FreeBoardKeys.resignConfirmButton,
+  cancelKey: FreeBoardKeys.confirmationCancel,
+  title: context.l10n.gameResignTitle,
+  hint: context.l10n.gameResignHint,
+  action: context.l10n.gameResign,
+  cancel: context.l10n.gameKeepPlaying,
+  icon: Icons.flag_outlined,
+  destructive: true,
+);
+
+/// A oferta só chega ao adversário depois da confirmação explícita. Com
+/// [opponent], a dica diz o nome do personagem.
+Future<bool?> showDrawSheet(BuildContext context, {String? opponent}) =>
+    _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.drawSheet,
+      confirmKey: FreeBoardKeys.drawConfirmButton,
+      cancelKey: FreeBoardKeys.confirmationCancel,
+      title: context.l10n.gameDrawOfferTitle,
+      hint: opponent == null
+          ? context.l10n.gameDrawOfferHint
+          : context.l10n.gameDrawOfferHintNamed(opponent),
+      action: context.l10n.gameOfferDraw,
+      cancel: context.l10n.gameKeepPlaying,
+      icon: Icons.handshake_outlined,
+    );
+
+/// A folha de confirmação das telas de jogo (CompCabecalhoFolha + CompBotao):
+/// o X branco fora, acima do canto final; a alça; título e dica; a ação
+/// principal e o "continuar" contornado, os dois em pílula de 52 na largura
+/// toda. Fechar de qualquer jeito que não seja a ação devolve falso.
+Future<bool?> _showGameConfirmation(
+  BuildContext context, {
+  required Key sheetKey,
+  required Key confirmKey,
+  required Key cancelKey,
+  required String title,
+  required String hint,
+  required String action,
+  required String cancel,
+  IconData? icon,
+  bool destructive = false,
+}) => showModalBottomSheet<bool>(
+  context: context,
+  // Scrim do canvas: 32% de preto (padrao do M3), nao os 54% do Flutter.
+  barrierColor: Colors.black.withValues(alpha: 0.32),
+  backgroundColor: Colors.transparent,
+  useSafeArea: true,
+  isScrollControlled: true,
+  builder: (context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    const buttonHeight = 52.0;
+    const pill = StadiumBorder();
+    final confirmStyle = FilledButton.styleFrom(
+      minimumSize: const Size.fromHeight(buttonHeight),
+      shape: pill,
+      backgroundColor: destructive ? colors.error : null,
+      foregroundColor: destructive ? colors.onError : null,
+    );
+    void confirm() => Navigator.of(context).pop(true);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // O X fica no canto final: espelha nos idiomas da direita para a
+        // esquerda. O círculo tem 44 (12 acima da folha, 16 da borda) e a
+        // área de toque, 48.
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 14, bottom: 10),
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              excludeFromSemantics: true,
+              onTap: () => Navigator.of(context).pop(false),
+              child: SizedBox.square(
+                dimension: kMinInteractiveDimension,
+                child: Center(
+                  child: Material(
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      key: FreeBoardKeys.confirmationClose,
+                      style: IconButton.styleFrom(
+                        minimumSize: const Size(44, 44),
+                        maximumSize: const Size(44, 44),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      constraints: const BoxConstraints.tightFor(
+                        width: 44,
+                        height: 44,
+                      ),
+                      color: Colors.black87,
+                      tooltip: MaterialLocalizations.of(context)
+                          .closeButtonTooltip,
+                      onPressed: () => Navigator.of(context).pop(false),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                key: FreeBoardKeys.resignConfirmButton,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  backgroundColor: theme.colorScheme.error,
-                  foregroundColor: theme.colorScheme.onError,
-                ),
-                icon: const Icon(Icons.flag),
-                onPressed: () => Navigator.of(context).pop(true),
-                label: Text(l10n.gameResign),
-              ),
-            ],
+            ),
           ),
         ),
-      );
-    },
-  );
-}
+        Flexible(
+          child: Material(
+            key: sheetKey,
+            color: colors.surfaceContainerLow,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppShape.extraLarge),
+            ),
+            child: SafeArea(
+              top: false,
+              // Com fonte grande, a folha rola: os dois botões continuam ao
+              // alcance.
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // A alça, 32×4 numa faixa de 48.
+                    SizedBox(
+                      height: 48,
+                      child: Center(
+                        child: Container(
+                          width: 32,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: colors.onSurfaceVariant.withValues(
+                              alpha: .4,
+                            ),
+                            borderRadius: BorderRadius.circular(AppShape.full),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 4,
+                        children: [
+                          Text(title, style: theme.textTheme.titleLarge),
+                          Text(
+                            hint,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 8,
+                        children: [
+                          if (icon == null)
+                            FilledButton(
+                              key: confirmKey,
+                              style: confirmStyle,
+                              onPressed: confirm,
+                              child: Text(action, textAlign: TextAlign.center),
+                            )
+                          else
+                            FilledButton.icon(
+                              key: confirmKey,
+                              style: confirmStyle,
+                              icon: Icon(icon),
+                              onPressed: confirm,
+                              label: Text(action, textAlign: TextAlign.center),
+                            ),
+                          OutlinedButton(
+                            key: cancelKey,
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(buttonHeight),
+                              shape: pill,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: Text(cancel, textAlign: TextAlign.center),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  },
+);

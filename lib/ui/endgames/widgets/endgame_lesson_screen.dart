@@ -377,7 +377,8 @@ class _PartTile extends StatelessWidget {
                   ),
                 ],
               ),
-              if (summary != null) ...[
+              // TelaAula: só o capítulo atual mostra a descrição.
+              if (recommended && summary != null) ...[
                 const SizedBox(height: AppSpacing.xs),
                 Padding(
                   padding: const EdgeInsetsDirectional.only(start: 40),

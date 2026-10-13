@@ -48,6 +48,26 @@ void main() {
     return NormalMove(from: from, to: star);
   }
 
+  test('grava o desafio aberto (o app reabre no Pronto dele) e limpa ao sair; '
+      'a rodada em si não é gravada', () async {
+    final challenge = cubit();
+    await challenge.load(ChallengePiece.bishop, ChallengeLevel.hard);
+    expect(progress.opened?.piece, ChallengePiece.bishop);
+    expect(progress.opened?.level, ChallengeLevel.hard);
+
+    challenge.start();
+    expect(progress.opened?.key, 'bishop.hard');
+
+    await challenge.leave();
+    expect(progress.opened, isNull);
+  });
+
+  test('o desafio aberto lido do que foi gravado', () {
+    expect(OpenStarChallenge.parse('queen.named')?.level, ChallengeLevel.named);
+    expect(OpenStarChallenge.parse('dragon.easy'), isNull);
+    expect(OpenStarChallenge.parse(null), isNull);
+  });
+
   test('monta, espera o "vai", e a estrela aparece com o relógio', () async {
     final challenge = cubit();
     await challenge.load(ChallengePiece.rook, ChallengeLevel.easy);

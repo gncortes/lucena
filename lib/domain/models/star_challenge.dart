@@ -114,6 +114,26 @@ enum ChallengeLevel {
   }
 }
 
+/// O desafio aberto na tela: a peça e o nível.
+class OpenStarChallenge {
+  const OpenStarChallenge(this.piece, this.level);
+
+  final ChallengePiece piece;
+  final ChallengeLevel level;
+
+  String get key => StarChallengeProgress.keyOf(piece, level);
+
+  /// Lê o [key] gravado; nulo se faltar ou não for um desafio.
+  static OpenStarChallenge? parse(String? key) {
+    final parts = key?.split('.');
+    if (parts == null || parts.length != 2) return null;
+    final piece = ChallengePiece.byName(parts[0]);
+    final level = ChallengeLevel.byName(parts[1]);
+    if (piece == null || level == null) return null;
+    return OpenStarChallenge(piece, level);
+  }
+}
+
 /// Os melhores resultados por peça e nível (pontos).
 class StarChallengeProgress {
   const StarChallengeProgress({this.best = const {}});

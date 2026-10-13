@@ -11,6 +11,8 @@ class TalkSnapshot {
     required this.plies,
     required this.memory,
     this.lineId,
+    this.dismissedLineIds = const [],
+    this.speechHintShown = false,
   });
 
   /// De que partida é: o início dela.
@@ -22,12 +24,16 @@ class TalkSnapshot {
 
   /// A fala no balão. Nula: balão fechado.
   final String? lineId;
+  final List<String> dismissedLineIds;
+  final bool speechHintShown;
 
   Map<String, dynamic> toJson() => {
     'game': gameStartedAt.toUtc().toIso8601String(),
     'plies': plies,
     'memory': memory.toJson(),
     'line': lineId,
+    'dismissed': dismissedLineIds,
+    'speechHintShown': speechHintShown,
   };
 
   static TalkSnapshot? fromJson(Object? json) {
@@ -40,6 +46,10 @@ class TalkSnapshot {
       plies: json['plies'] as int? ?? 0,
       memory: TalkMemory.fromJson(memory),
       lineId: json['line'] as String?,
+      dismissedLineIds: json['dismissed'] is List
+          ? (json['dismissed'] as List).whereType<String>().toSet().toList()
+          : const [],
+      speechHintShown: json['speechHintShown'] == true,
     );
   }
 }
@@ -48,6 +58,10 @@ abstract class TalkRepository {
   Future<TalkSnapshot?> load();
 
   Future<void> save(TalkSnapshot snapshot);
+
+  /// Intervalo global da dica, independente da partida em andamento.
+  Future<DateTime?> loadSpeechHintShownAt();
+  Future<void> saveSpeechHintShownAt(DateTime shownAt);
 }
 
 /// Gravado nas preferências, como a partida em andamento.
@@ -55,6 +69,7 @@ class LocalTalkRepository implements TalkRepository {
   LocalTalkRepository(this._preferences);
 
   static const _key = 'talk.ongoing';
+  static const _speechHintKey = 'talk.speechHint.shownAt';
 
   final PreferencesService _preferences;
 
@@ -72,4 +87,14 @@ class LocalTalkRepository implements TalkRepository {
   @override
   Future<void> save(TalkSnapshot snapshot) =>
       _preferences.setString(_key, jsonEncode(snapshot.toJson()));
+
+  @override
+  Future<DateTime?> loadSpeechHintShownAt() async {
+    final value = await _preferences.getString(_speechHintKey);
+    return value == null ? null : DateTime.tryParse(value);
+  }
+
+  @override
+  Future<void> saveSpeechHintShownAt(DateTime shownAt) =>
+      _preferences.setString(_speechHintKey, shownAt.toUtc().toIso8601String());
 }

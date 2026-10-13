@@ -82,6 +82,38 @@ class BoardCentering {
   /// A altura do rodapé, colado embaixo da área.
   final double footer;
 
+  /// Como [BoardCentering], mas com o bloco (reserva de cima, tabuleiro,
+  /// reserva de baixo) centrado entre o topo da área e o rodapé: a sobra
+  /// vertical se divide meio a meio. O tabuleiro é o maior que cabe na
+  /// largura e na altura útil depois das reservas e dos [gap].
+  factory BoardCentering.balanced(
+    Size area, {
+    double footer = 0,
+    double gap = AppSpacing.sm,
+    double reserveTop = 0,
+    double reserveBottom = 0,
+    double maxBoard = double.infinity,
+  }) {
+    final useful = max(0.0, area.height - footer);
+    final topExtent = reserveTop > 0 ? reserveTop + gap : 0.0;
+    final bottomExtent = reserveBottom > 0 ? reserveBottom + gap : 0.0;
+    final side = max(
+      0.0,
+      min(min(area.width, maxBoard), useful - topExtent - bottomExtent),
+    );
+    final spare = useful - topExtent - side - bottomExtent;
+    return BoardCentering(
+      area,
+      footer: footer,
+      gap: gap,
+      reserveTop: reserveTop,
+      reserveBottom: reserveBottom,
+      maxBoard: maxBoard,
+      minFraction: 0,
+      centerY: max(0.0, spare) / 2 + topExtent + side / 2,
+    );
+  }
+
   /// Onde fica o centro do tabuleiro, nas coordenadas da área.
   final double centerY;
 
@@ -174,6 +206,8 @@ class CenteredBoardLayout extends StatelessWidget {
     this.aboveInset = 0,
     this.centerY,
     this.minBoardSide,
+    this.balanced = false,
+    this.measureBlock = false,
     super.key,
   });
 
@@ -210,6 +244,16 @@ class CenteredBoardLayout extends StatelessWidget {
   /// tabuleiro deste lado e o conteúdo superior na altura natural.
   final double? minBoardSide;
 
+  /// O bloco (reserva de cima, tabuleiro, reserva de baixo) fica centrado
+  /// entre o topo da área e o rodapé, com a sobra meio a meio; ignora
+  /// [centerY] (ver [BoardCentering.balanced]).
+  final bool balanced;
+
+  /// Com [balanced], o que vai em cima e embaixo do tabuleiro é medido na
+  /// altura natural, em vez das reservas (o Às cegas: seletor e relógios em
+  /// cima, relógio e "Sua vez" embaixo).
+  final bool measureBlock;
+
   @override
   Widget build(BuildContext context) {
     Widget? side(Widget? child, Alignment alignment) => child == null
@@ -233,6 +277,8 @@ class CenteredBoardLayout extends StatelessWidget {
       aboveInset: aboveInset,
       centerY: centerY,
       minBoardSide: minBoardSide,
+      balanced: balanced,
+      measureBlock: measureBlock,
       viewportHeight: viewportHeight,
     );
     if (minBoardSide == null) return layout();
@@ -261,6 +307,8 @@ class _CenteredBoard
     required this.aboveInset,
     required this.centerY,
     required this.minBoardSide,
+    required this.balanced,
+    required this.measureBlock,
     required this.viewportHeight,
   });
 
@@ -279,6 +327,8 @@ class _CenteredBoard
   final double aboveInset;
   final double? centerY;
   final double? minBoardSide;
+  final bool balanced;
+  final bool measureBlock;
   final double? viewportHeight;
 
   @override
@@ -322,6 +372,8 @@ class _RenderCenteredBoard extends RenderBox
         old.aboveInset != widget.aboveInset ||
         old.centerY != widget.centerY ||
         old.minBoardSide != widget.minBoardSide ||
+        old.balanced != widget.balanced ||
+        old.measureBlock != widget.measureBlock ||
         old.viewportHeight != widget.viewportHeight) {
       markNeedsLayout();
     }
@@ -361,19 +413,35 @@ class _RenderCenteredBoard extends RenderBox
       footerHeight = footer.size.height;
       _place(footer, Offset(0, size.height - footerHeight));
     }
-    var geometry = BoardCentering(
-      size,
-      footer: footerHeight,
-      gap: config.gap,
-      gutter: config.gutter,
-      reserveTop: config.reserveTop,
-      reserveBottom: config.reserveBottom,
-      minFraction: config.minFraction,
-      maxBoard: config.maxBoard,
-      aboveInset: config.aboveInset,
-      centerY: config.centerY,
-    );
     final top = childForSlot(_Slot.top);
+    final bottom = childForSlot(_Slot.bottom);
+    double measured(RenderBox? child, double reserve) {
+      if (!config.measureBlock || child == null) return reserve;
+      child.layout(BoxConstraints.tightFor(width: width), parentUsesSize: true);
+      return child.size.height;
+    }
+
+    var geometry = config.balanced
+        ? BoardCentering.balanced(
+            size,
+            footer: footerHeight,
+            gap: config.gap,
+            reserveTop: measured(top, config.reserveTop),
+            reserveBottom: measured(bottom, config.reserveBottom),
+            maxBoard: config.maxBoard,
+          )
+        : BoardCentering(
+            size,
+            footer: footerHeight,
+            gap: config.gap,
+            gutter: config.gutter,
+            reserveTop: config.reserveTop,
+            reserveBottom: config.reserveBottom,
+            minFraction: config.minFraction,
+            maxBoard: config.maxBoard,
+            aboveInset: config.aboveInset,
+            centerY: config.centerY,
+          );
     if (config.minBoardSide case final minimum?) {
       top?.layout(BoxConstraints.tightFor(width: width), parentUsesSize: true);
       final topHeight = top?.size.height ?? 0;
@@ -425,7 +493,6 @@ class _RenderCenteredBoard extends RenderBox
       final free = room - top.size.height;
       _place(top, Offset(0, free * (config.topAlignment.y + 1) / 2));
     }
-    final bottom = childForSlot(_Slot.bottom);
     if (bottom != null) {
       final room = geometry.roomBelow;
       bottom.layout(

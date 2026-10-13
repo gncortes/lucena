@@ -171,6 +171,9 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   Future<void> load(ChallengePiece piece, ChallengeLevel level) async {
     final best = (await _progress.load()).bestOf(piece, level);
     if (isClosed) return;
+    // Fechado à força, o app reabre no Pronto deste desafio.
+    await _progress.setOpen(OpenStarChallenge(piece, level));
+    if (isClosed) return;
     _board = StarChallengeRules.start(piece, level, _random);
     _starExpiresAt = null;
     emit(
@@ -301,6 +304,9 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
     emit(state.copyWith(phase: ChallengePhase.running));
     _startTimer();
   }
+
+  /// O aluno saiu da tela: o app não reabre mais no desafio.
+  Future<void> leave() => _progress.setOpen(null);
 
   /// De novo, com outro tabuleiro.
   Future<void> retry() async {

@@ -94,6 +94,10 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// enquanto ela continua ou até a conta terminar.
     GameReport? report,
 
+    /// O rating atual do jogador, na linha de detalhe da faixa dele. Nulo até
+    /// ser lido ou sem quem o conte.
+    int? userRating,
+
     /// O lance que o jogador está revendo: quantos lances estão no tabuleiro
     /// (0 é a posição de início). Nulo: a posição atual da partida.
     int? viewedPly,

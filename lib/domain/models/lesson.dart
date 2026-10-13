@@ -533,6 +533,87 @@ class SchoolProgress {
   );
 }
 
+/// The student's last answer at a decision point (move, play or think step):
+/// enough to ask the repository for the same explanation again when the app
+/// reopens.
+class LessonAttempt {
+  const LessonAttempt({
+    required this.step,
+    required this.id,
+    required this.kind,
+    required this.fen,
+    required this.turn,
+    required this.uci,
+    required this.incorrect,
+  });
+
+  /// Index of the step where the answer was given.
+  final int step;
+
+  /// Id of that step and its kind (`move`, `play`, `think`).
+  final String id;
+  final String kind;
+
+  /// Position before the answer, the student's turn number and the move.
+  final String fen;
+  final int turn;
+  final String uci;
+  final bool incorrect;
+
+  Map<String, dynamic> toJson() => {
+    'step': step,
+    'id': id,
+    'kind': kind,
+    'fen': fen,
+    'turn': turn,
+    'uci': uci,
+    'incorrect': incorrect,
+  };
+
+  static LessonAttempt? fromJson(Object? json) {
+    if (json is! Map<String, dynamic>) return null;
+    final (step, id, kind, fen, turn, uci) = (
+      json['step'],
+      json['id'],
+      json['kind'],
+      json['fen'],
+      json['turn'],
+      json['uci'],
+    );
+    if (step is! int ||
+        id is! String ||
+        kind is! String ||
+        fen is! String ||
+        turn is! int ||
+        uci is! String) {
+      return null;
+    }
+    return LessonAttempt(
+      step: step,
+      id: id,
+      kind: kind,
+      fen: fen,
+      turn: turn,
+      uci: uci,
+      incorrect: json['incorrect'] as bool? ?? false,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is LessonAttempt &&
+      other.step == step &&
+      other.id == id &&
+      other.kind == kind &&
+      other.fen == fen &&
+      other.turn == turn &&
+      other.uci == uci &&
+      other.incorrect == incorrect;
+
+  @override
+  int get hashCode => Object.hash(step, id, kind, fen, turn, uci, incorrect);
+}
+
 /// Onde o aluno parou dentro de uma aula: o passo e o tabuleiro dele.
 class LessonCheckpoint {
   const LessonCheckpoint({
@@ -552,9 +633,28 @@ class LessonCheckpoint {
     this.demoMove = 0,
     this.demoPlaying = false,
     this.reviewReturn,
+    this.attempt,
+    this.failed = false,
+    this.reviewStep,
+    this.attemptedSan,
+    this.thinkMistake,
   });
 
   final String lessonId;
+
+  /// The last answer at this step (T65 §7): with it the explanation of a
+  /// wrong move comes back after the app is closed.
+  final LessonAttempt? attempt;
+
+  /// The step was failed (wrong move with the 2×2 footer).
+  final bool failed;
+
+  /// The earlier step the wrong move points to ("Rever a ideia").
+  final String? reviewStep;
+
+  /// The wrong move, numbered (`1.Kd2`), in a move step and in a think step.
+  final String? attemptedSan;
+  final String? thinkMistake;
 
   /// A parte aberta (aula em partes, T51). Nula: checkpoint da aula inteira
   /// ([step] conta desde o começo da aula); numa aula de finais, a parte é
@@ -623,6 +723,11 @@ class LessonCheckpoint {
     demoMove: demoMove,
     demoPlaying: demoPlaying,
     reviewReturn: reviewReturn,
+    attempt: attempt,
+    failed: failed,
+    reviewStep: reviewStep,
+    attemptedSan: attemptedSan,
+    thinkMistake: thinkMistake,
   );
 
   Map<String, dynamic> toJson() => {
@@ -642,6 +747,11 @@ class LessonCheckpoint {
     if (demoMove > 0) 'demoMove': demoMove,
     'demoPlaying': demoPlaying,
     'reviewReturn': ?reviewReturn?.toJson(),
+    'attempt': ?attempt?.toJson(),
+    if (failed) 'failed': true,
+    'reviewStep': ?reviewStep,
+    'attemptedSan': ?attemptedSan,
+    'thinkMistake': ?thinkMistake,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -672,6 +782,11 @@ class LessonCheckpoint {
       demoMove: json['demoMove'] as int? ?? 0,
       demoPlaying: json['demoPlaying'] as bool? ?? false,
       reviewReturn: LessonCheckpoint.fromJson(json['reviewReturn']),
+      attempt: LessonAttempt.fromJson(json['attempt']),
+      failed: json['failed'] as bool? ?? false,
+      reviewStep: json['reviewStep'] as String?,
+      attemptedSan: json['attemptedSan'] as String?,
+      thinkMistake: json['thinkMistake'] as String?,
     );
   }
 
@@ -691,7 +806,12 @@ class LessonCheckpoint {
       other.hintsShown == hintsShown &&
       other.mistakes == mistakes &&
       other.demoMove == demoMove &&
-      other.reviewReturn == reviewReturn;
+      other.reviewReturn == reviewReturn &&
+      other.attempt == attempt &&
+      other.failed == failed &&
+      other.reviewStep == reviewStep &&
+      other.attemptedSan == attemptedSan &&
+      other.thinkMistake == thinkMistake;
 
   @override
   int get hashCode => Object.hash(
@@ -709,6 +829,7 @@ class LessonCheckpoint {
     mistakes,
     demoMove,
     reviewReturn,
+    Object.hash(attempt, failed, reviewStep, attemptedSan, thinkMistake),
   );
 
   static bool _sameList(List<String> a, List<String> b) {

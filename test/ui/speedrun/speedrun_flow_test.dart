@@ -128,9 +128,10 @@ void main() {
           await tester.binding.handlePopRoute();
           await tester.pumpAndSettle();
           expect(
-            find.text('Give up this speedrun? You lose the 2 stages won.'),
+            find.text('You lose the 2 stages you won in this attempt.'),
             findsOneWidget,
           );
+          expect(find.byKey(FreeBoardKeys.speedrunQuitSheet), findsOneWidget);
           await tester.tap(find.byKey(FreeBoardKeys.speedrunQuitCancel));
           await tester.pumpAndSettle();
           expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
@@ -266,11 +267,14 @@ void main() {
     expect(find.byKey(FreeBoardKeys.marathonBanner), findsNothing);
     expect(game().state.clock!.running, isNotNull);
 
-    // 20 s depois, a etapa é perdida: a conclusão da etapa perdida abre no
-    // lugar da partida.
+    // 20 s depois, a etapa é perdida: a partida para no tabuleiro (canvas
+    // PropV2PartidaFim) e "Ver o resultado" abre a conclusão no lugar dela.
     now.advance(const Duration(seconds: 20));
     game().resign();
     await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);
     expect(find.byKey(ConclusionKeys.title), findsOneWidget);

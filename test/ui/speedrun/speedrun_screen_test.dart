@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_screen.dart';
@@ -164,6 +165,34 @@ void main() {
     await pump(tester);
 
     // Da mais recente para a mais antiga.
+    final best = tester.widget<TimeDisplay>(
+      find.ancestor(
+        of: find.byKey(SpeedrunKeys.best),
+        matching: find.byType(TimeDisplay),
+      ),
+    );
+    expect(best.type, TimeDisplayType.record);
+    expect(best.size, TimeDisplaySize.pill);
+    expect(best.state, TimeDisplayState.highlight);
+    expect(best.value, RunTimeFormat.clock(Duration(seconds: total * 10)));
+    expect(best.semanticsLabel, 'Your best time: ${best.value}');
+    final stageRecord = tester.widget<TimeDisplay>(
+      find.ancestor(
+        of: find.byKey(SpeedrunKeys.stageRecord(0)),
+        matching: find.byType(TimeDisplay),
+      ),
+    );
+    expect(stageRecord.type, TimeDisplayType.record);
+    expect(stageRecord.size, TimeDisplaySize.inline);
+    final history = tester.widget<TimeDisplay>(
+      find.descendant(
+        of: find.byKey(SpeedrunKeys.run(0)),
+        matching: find.byType(TimeDisplay),
+      ),
+    );
+    expect(history.type, TimeDisplayType.duration);
+    expect(history.size, TimeDisplaySize.inline);
+    expect(history.value, best.value);
     expect(
       find.descendant(
         of: find.byKey(SpeedrunKeys.run(0)),

@@ -8,7 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/run_clock.dart';
+import '../../core/widgets/time_display.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/step_progress.dart';
 import '../view_models/speedrun_cubit.dart';
@@ -64,22 +64,15 @@ class SpeedrunAttemptScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  speedrun.kind == SpeedrunKind.marathon
+                TimeDisplay(
+                  value: runTime(context, recordTime(speedrun, run.total)),
+                  semanticsLabel:
+                      '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonLeft : l10n.speedrunTotal}: ${runTime(context, recordTime(speedrun, run.total))}',
+                  size: TimeDisplaySize.block,
+                  label: speedrun.kind == SpeedrunKind.marathon
                       ? l10n.marathonLeft
                       : l10n.speedrunTotal,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: RunClock(
-                    recordTime(speedrun, run.total),
-                    large: true,
-                    textKey: SpeedrunKeys.total,
-                  ),
+                  textKey: SpeedrunKeys.total,
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -124,7 +117,13 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                   ? SpeedrunStageStatus.idle
                   : SpeedrunStageStatus.ahead,
               trailing: stage.done || stage.losses > 0
-                  ? RunClock(stage.time, textKey: SpeedrunKeys.stageTime(index))
+                  ? TimeDisplay(
+                      value: runTime(context, stage.time),
+                      semanticsLabel:
+                          '${l10n.speedrunStageOf(index + 1, total)}: ${runTime(context, stage.time)}',
+                      size: TimeDisplaySize.inline,
+                      textKey: SpeedrunKeys.stageTime(index),
+                    )
                   : null,
             ),
         ],

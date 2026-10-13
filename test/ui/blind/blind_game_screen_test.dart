@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/blind/widgets/blind_game_screen.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_blind_log_repository.dart';
@@ -30,10 +33,18 @@ void main() {
     bool permitted = true,
     Size size = const Size(400, 900),
     bool systemBars = false,
+    TextDirection direction = TextDirection.ltr,
+    ThemeMode themeMode = ThemeMode.light,
+    Locale locale = const Locale('en'),
+    double textScale = 1,
+    String fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
+    ClockConfig? clock,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
     if (systemBars) {
       tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 32);
       tester.view.padding = const FakeViewPadding(top: 24, bottom: 32);
@@ -58,12 +69,13 @@ void main() {
     await settings.load();
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     await cubit.load(
-      fen: '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
+      fen: fen,
       userSide: Side.white,
       kind: OpponentKind.maia,
       level: 1000,
       language: 'en-US',
       phrases: blindPhrases(l10n),
+      clock: clock,
     );
     await cubit.start();
     await cubit.release();
@@ -72,8 +84,13 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) =>
-              BlocProvider.value(value: cubit, child: const BlindGameScreen()),
+          builder: (context, state) => Directionality(
+            textDirection: direction,
+            child: BlocProvider.value(
+              value: cubit,
+              child: const BlindGameScreen(),
+            ),
+          ),
         ),
         GoRoute(
           path: '/result',
@@ -92,6 +109,8 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
+        themeMode: themeMode,
         settingsCubit: settings,
         router: router,
         child: const SizedBox.shrink(),
@@ -99,6 +118,333 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
+    testWidgets('seletor do canvas 111×36 tem três alvos em $direction', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await pump(tester, direction: direction);
+        final picker = find.byType(SegmentedButton<BlindView>);
+        expect(tester.getSize(picker), const Size(111, 36));
+        expect(
+          tester
+              .widget<Icon>(find.byKey(BlindKeys.view(BlindView.hidden)))
+              .icon,
+          Icons.visibility_off_outlined,
+        );
+        for (final view in BlindView.values) {
+          final icon = find.byKey(BlindKeys.view(view));
+          final node = tester.getSemantics(icon);
+          expect(node.rect.size, const Size(37, 36));
+          expect(
+            node.getSemanticsData().hasAction(SemanticsAction.tap),
+            isTrue,
+          );
+          tester
+              .renderObject(icon)
+              .owner!
+              .semanticsOwner!
+              .performAction(node.id, SemanticsAction.tap);
+          await tester.pumpAndSettle();
+          expect(cubit.state.view, view);
+          for (final dx in [-15.0, 15.0]) {
+            cubit.setView(
+              view == BlindView.board ? BlindView.hidden : BlindView.board,
+            );
+            await tester.pumpAndSettle();
+            await tester.tapAt(tester.getCenter(icon) + Offset(dx, 0));
+            await tester.pumpAndSettle();
+            expect(cubit.state.view, view);
+          }
+        }
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+  }
+
+  for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+    testWidgets('barra e ícones de voz seguem paleta Canvas em $mode', (
+      tester,
+    ) async {
+      await pump(tester, themeMode: mode);
+      final action = find.byKey(BlindKeys.narratePosition);
+      final colors = Theme.of(tester.element(action)).colorScheme;
+      final frame = tester
+          .widgetList<DecoratedBox>(
+            find.ancestor(of: action, matching: find.byType(DecoratedBox)),
+          )
+          .map((box) => box.decoration)
+          .whereType<BoxDecoration>()
+          .singleWhere(
+            (box) =>
+                box.boxShadow?.any((shadow) => shadow.blurRadius == 12) ??
+                false,
+          );
+      expect(
+        frame.color,
+        mode == ThemeMode.light ? Colors.white : colors.surfaceContainerLow,
+      );
+      for (final key in [
+        BlindKeys.narratePosition,
+        BlindKeys.narrateGame,
+        BlindKeys.copyLog,
+      ]) {
+        final chip = tester.widget<ActionChip>(
+          find.descendant(
+            of: find.byKey(key),
+            matching: find.byType(ActionChip),
+          ),
+        );
+        expect((chip.avatar! as Icon).color, colors.onSurfaceVariant);
+        expect(tester.getSize(find.byKey(key)).height, 28);
+      }
+      final icon = tester.widget<Icon>(
+        find.descendant(of: action, matching: find.byType(Icon)),
+      );
+      expect(icon.icon, Icons.hearing_outlined);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets(
+    'fonte 2 no piso mantém dica completa e chips sem corte vertical',
+    (tester) async {
+      await pump(
+        tester,
+        size: const Size(360, 740),
+        textScale: 2,
+        locale: const Locale('pt'),
+      );
+      final hint = find.byKey(BlindKeys.hint);
+      final text = tester.widget<Text>(hint).data!;
+      expect(text, tester.element(hint).l10n.blindMicHint);
+      void expectTextFits(Finder finder) {
+        final paragraph = tester.renderObject<RenderParagraph>(finder);
+        final data = paragraph.text.toPlainText();
+        final boxes = paragraph.getBoxesForSelection(
+          TextSelection(baseOffset: 0, extentOffset: data.length),
+        );
+        expect(boxes, isNotEmpty);
+        for (final box in boxes) {
+          expect(box.bottom, lessThanOrEqualTo(paragraph.size.height + 1));
+        }
+      }
+
+      expectTextFits(hint);
+      expectTextFits(
+        find.descendant(
+          of: find.byKey(BlindKeys.narratePosition),
+          matching: find.byType(Text),
+        ),
+      );
+      expect(find.byKey(BlindKeys.mic), findsOneWidget);
+      final boardBeforeProposal = tester.getRect(
+        find.byKey(BlindKeys.emptyBoard),
+      );
+      final audioHeight = tester
+          .getSize(
+            find.ancestor(of: hint, matching: find.byType(SizedBox)).first,
+          )
+          .height;
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pump(const Duration(milliseconds: 600));
+      input.hear(['rook a7']);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+      expect(
+        tester.getRect(find.byKey(BlindKeys.emptyBoard)),
+        boardBeforeProposal,
+      );
+      expect(
+        tester
+            .getSize(
+              find
+                  .ancestor(
+                    of: find.byKey(BlindKeys.reRecord),
+                    matching: find.byType(SizedBox),
+                  )
+                  .first,
+            )
+            .height,
+        audioHeight,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
+    testWidgets('proposta em $direction usa botões 44 e margem final 6', (
+      tester,
+    ) async {
+      await pump(tester, direction: direction);
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pump(const Duration(milliseconds: 600));
+      input.hear(['rook a7']);
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      for (final key in [
+        BlindKeys.reject,
+        BlindKeys.confirm,
+        BlindKeys.sayProposal,
+      ]) {
+        expect(tester.getSize(find.byKey(key)), const Size.square(44));
+      }
+      final pillFinder = find
+          .ancestor(
+            of: find.byKey(BlindKeys.proposal),
+            matching: find.byType(Container),
+          )
+          .first;
+      final pill = tester.getRect(pillFinder);
+      final reject = tester.getRect(find.byKey(BlindKeys.reject));
+      final speaker = tester.getRect(find.byKey(BlindKeys.sayProposal));
+      if (direction == TextDirection.ltr) {
+        expect(pill.left - reject.right, 8);
+        expect(pill.right - speaker.right, 6);
+      } else {
+        expect(reject.left - pill.right, 8);
+        expect(speaker.left - pill.left, 6);
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('painel pinta 158/154 dp com reserva estável para o tabuleiro', (
+    tester,
+  ) async {
+    await pump(tester, size: const Size(360, 740));
+    final surface = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          ((widget.decoration as BoxDecoration).boxShadow?.any(
+                (shadow) => shadow.blurRadius == 12,
+              ) ??
+              false),
+    );
+    final board = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+    final idle = tester.getRect(surface);
+    expect(idle.height, 158);
+    expect(idle.bottom, 740);
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pump(const Duration(milliseconds: 600));
+    input.hear(['rook a7']);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pumpAndSettle();
+    expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+    final proposal = tester.getRect(surface);
+    expect(proposal.height, 154);
+    expect(proposal.bottom, idle.bottom);
+    expect(tester.getRect(find.byKey(BlindKeys.emptyBoard)), board);
+    expect(
+      tester.getSize(find.byKey(BlindKeys.sayProposal)),
+      const Size.square(44),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('ação semântica do microfone inicia e envia a gravação', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await pump(tester);
+      void activate() {
+        final mic = find.byKey(BlindKeys.mic);
+        final node = tester.getSemantics(mic);
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        tester
+            .renderObject(mic)
+            .owner!
+            .semanticsOwner!
+            .performAction(node.id, SemanticsAction.tap);
+      }
+
+      activate();
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.byKey(BlindKeys.recording), findsOneWidget);
+      input.hear(['rook a7']);
+      await tester.pump(const Duration(milliseconds: 100));
+      activate();
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('X externo cancela a desistência e preserva a partida', (
+    tester,
+  ) async {
+    await pump(tester);
+    final before = cubit.state.position!.fen;
+    await tester.tap(find.byKey(BlindKeys.resign));
+    await tester.pumpAndSettle();
+    final close = find.byTooltip('Close');
+    expect(tester.getSize(close), const Size.square(44));
+    expect(
+      tester.getRect(close).bottom,
+      lessThan(tester.getRect(find.byType(AlertDialog)).top),
+    );
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(cubit.state.phase, BlindPhase.playerTurn);
+    expect(cubit.state.position!.fen, before);
+  });
+
+  testWidgets('X externo recusa permissão sem solicitá-la', (tester) async {
+    await pump(tester, permitted: false);
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pumpAndSettle();
+    expect(find.text('Use the microphone?'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(cubit.state.mic, MicPermission.denied);
+    expect(input.requests, 0);
+    expect(cubit.state.phase, BlindPhase.playerTurn);
+    expect(find.byKey(BlindKeys.board), findsOneWidget);
+  });
+
+  testWidgets('X externo permanece à direita em RTL', (tester) async {
+    await pump(tester, direction: TextDirection.rtl);
+    await tester.tap(find.byKey(BlindKeys.resign));
+    await tester.pumpAndSettle();
+    final close = find.byTooltip('Close');
+    expect(tester.getSize(close), const Size.square(44));
+    expect(
+      tester.getCenter(close).dx,
+      greaterThan(tester.getCenter(find.byType(AlertDialog)).dx),
+    );
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+    expect(cubit.state.phase, BlindPhase.playerTurn);
+  });
+
+  testWidgets('X externo cancela escolha ambígua sem jogar', (tester) async {
+    await pump(tester, fen: '4k3/8/8/8/8/R6R/8/4K3 w - - 0 1');
+    final before = cubit.state.position!.fen;
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pump(const Duration(milliseconds: 600));
+    input.hear(['rook f3']);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byKey(BlindKeys.mic));
+    await tester.pumpAndSettle();
+    expect(find.byType(SimpleDialog), findsOneWidget);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SimpleDialog), findsNothing);
+    expect(cubit.state.phase, BlindPhase.playerTurn);
+    expect(cubit.state.position!.fen, before);
+  });
 
   testWidgets('a vez do jogador, só as casas; o microfone escuta e o lance '
       'dito é jogado', (tester) async {
@@ -149,23 +495,28 @@ void main() {
 
   for (final size in [
     const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
-    testWidgets('B6b $size: centro real nas vistas e ao confirmar fala', (
+    testWidgets('B6b $size: vão igual nas vistas e ao confirmar fala', (
       tester,
     ) async {
       await pump(tester, size: size, systemBars: true);
       final before = tester.getRect(find.byKey(BlindKeys.emptyBoard));
-      final center = (24 + size.height - 32) / 2;
-      expect(before.center.dy, closeTo(center, 1));
+      expect(tester.widget<AppBar>(find.byType(AppBar)).centerTitle, isTrue);
+      expect(
+        tester.getCenter(find.byType(SegmentedButton<BlindView>)).dx,
+        closeTo(size.width / 2, 1),
+      );
+      expectEqualGaps(tester);
       expect(before.width, greaterThanOrEqualTo(120));
       await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
       await tester.pumpAndSettle();
-      expect(
-        tester.getCenter(find.byKey(BlindKeys.board)).dy,
-        closeTo(center, 1),
-      );
+      expect(tester.getRect(find.byKey(BlindKeys.board)), before);
       final gesture = await tester.startGesture(
         tester.getCenter(find.byKey(BlindKeys.mic)),
       );
@@ -175,30 +526,104 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
       expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+      expectEqualGaps(tester);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final size in [
+    const Size(360, 740),
+    const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
+    const Size(412, 915),
+    const Size(412, 917),
+    const Size(414, 896),
+  ]) {
+    testWidgets('Canvas $size: largura disponível, cantos retos e vão igual', (
+      tester,
+    ) async {
+      await pump(tester, size: size);
+      final emptyFinder = find.byKey(BlindKeys.emptyBoard);
+      final before = tester.getRect(emptyFinder);
+      final position = tester.widget<PositionBoard>(
+        find.descendant(of: emptyFinder, matching: find.byType(PositionBoard)),
+      );
+      expect(position.radius, 0);
+      expect(position.orientation, Side.white);
+      expect(position.coordinates, isTrue);
+      expect(before.center.dx, size.width / 2);
+      expectEqualGaps(tester);
       expect(
-        tester.getCenter(find.byKey(BlindKeys.board)).dy,
-        closeTo(center, 1),
+        tester.getRect(find.byKey(BlindKeys.status)).top - before.bottom,
+        closeTo(8, 0.1),
+      );
+      // No piso a altura do painel limita o lado. Nas demais resoluções,
+      // o tabuleiro usa a largura toda, sem a margem antiga de 16 dp.
+      expect(before.width, greaterThan(size.width - 32));
+      expect(before.width, lessThanOrEqualTo(size.width));
+      if (size.height >= 800) expect(before.width, closeTo(size.width, 1));
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.toolbarHeight, 64);
+      await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byKey(BlindKeys.board)), before);
+      await tester.tap(find.byKey(BlindKeys.view(BlindView.empty)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pump();
+      input.hear(['rook a7']);
+      await tester.pump();
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.proposal), findsOneWidget);
+      expect(tester.getRect(emptyFinder), before);
+      expect(
+        tester.getRect(find.byKey(BlindKeys.status)).top - before.bottom,
+        closeTo(8, 0.1),
       );
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('T64: o tabuleiro (com peças ou só as casas) no centro do '
+  testWidgets('vista oculta preserva raio 16 e centro', (tester) async {
+    await pump(tester);
+    final before = tester.getRect(find.byKey(BlindKeys.emptyBoard));
+    await tester.tap(find.byKey(BlindKeys.view(BlindView.hidden)));
+    await tester.pumpAndSettle();
+    final hidden = find
+        .ancestor(
+          of: find.byWidgetPredicate(
+            (widget) =>
+                widget is Icon &&
+                widget.icon == Icons.visibility_off_outlined &&
+                widget.size == 56,
+          ),
+          matching: find.byType(Container),
+        )
+        .first;
+    final box = tester.widget<Container>(hidden).decoration! as BoxDecoration;
+    expect(box.borderRadius, BorderRadius.circular(16));
+    expect(tester.getRect(hidden), before);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('T65: o bloco seletor + tabuleiro + "Sua vez" no centro do '
       'espaço entre a barra do app e o painel de baixo', (tester) async {
     await pump(tester);
     final appBar = tester.getRect(find.byType(AppBar));
     final area = tester.getRect(find.byKey(BlindKeys.boardArea));
     expect(area.top, appBar.bottom);
     final empty = tester.getRect(find.byKey(BlindKeys.emptyBoard));
-    expect(empty.center.dy, closeTo(450, 1));
+    expectEqualGaps(tester);
     expect(
       tester.getRect(find.byKey(BlindKeys.status)).top,
       greaterThanOrEqualTo(empty.bottom),
     );
     await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
     await tester.pumpAndSettle();
-    final board = tester.getRect(find.byKey(BlindKeys.board));
-    expect(board.center.dy, closeTo(450, 1));
+    expect(tester.getRect(find.byKey(BlindKeys.board)), empty);
+    expectEqualGaps(tester);
     expect(tester.takeException(), isNull);
   });
 
@@ -342,6 +767,58 @@ void main() {
     expect(find.byKey(BlindKeys.typeField), findsOneWidget);
   });
 
+  for (final (size, keyboard) in [
+    (const Size(360, 740), 300.0),
+    (const Size(412, 917), 300.0),
+  ]) {
+    testWidgets('T65 $size, teclado aberto: relógios, mini tabuleiro e '
+        '"Sua vez" à vista, nunca a área vazia', (tester) async {
+      await pump(
+        tester,
+        size: size,
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 5)),
+        ),
+      );
+      await tester.tap(find.byKey(BlindKeys.typeField));
+      await tester.pumpAndSettle();
+      tester.view.viewInsets = FakeViewPadding(bottom: keyboard);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final opponent = tester.getRect(find.byKey(BlindKeys.opponentClock));
+      final user = tester.getRect(find.byKey(BlindKeys.userClock));
+      final status = tester.getRect(find.byKey(BlindKeys.status));
+      final field = tester.getRect(find.byKey(BlindKeys.typeField));
+      final appBar = tester.getRect(find.byType(AppBar));
+      // Na ordem: adversário, jogador, "Sua vez", tudo acima do painel.
+      expect(opponent.top, greaterThanOrEqualTo(appBar.bottom));
+      expect(user.top, greaterThan(opponent.bottom));
+      expect(status.top, greaterThan(user.top));
+      expect(status.bottom, lessThan(field.top));
+      // O relógio corre: para antes de o teste acabar.
+      await cubit.pauseForBackground();
+    });
+  }
+
+  testWidgets('teclado aberto com pouquíssima altura: "Sua vez" fica', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      size: const Size(360, 740),
+      clock: ClockConfig.same(const TimeControl(initial: Duration(minutes: 5))),
+    );
+    await tester.tap(find.byKey(BlindKeys.typeField));
+    await tester.pumpAndSettle();
+    tester.view.viewInsets = const FakeViewPadding(bottom: 420);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(BlindKeys.status), findsOneWidget);
+    await cubit.pauseForBackground();
+  });
+
   testWidgets('as ações em voz ficam à vista também gravando e confirmando', (
     tester,
   ) async {
@@ -369,5 +846,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(BlindKeys.helpSheet), findsOneWidget);
     expect(find.textContaining('K king, Q queen'), findsOneWidget);
+    final close = find.byTooltip('Close');
+    expect(tester.getSize(close), const Size.square(44));
+    expect(
+      tester.getRect(close).bottom,
+      lessThan(tester.getRect(find.byKey(BlindKeys.helpSheet)).top),
+    );
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+    expect(find.byKey(BlindKeys.helpSheet), findsNothing);
+    expect(cubit.state.phase, BlindPhase.playerTurn);
   });
+}
+
+/// T65: o seletor, o tabuleiro e "Sua vez" formam um bloco com o mesmo vão
+/// (1 dp) entre a barra do app e o seletor e entre "Sua vez" e o painel.
+void expectEqualGaps(WidgetTester tester) {
+  final area = tester.getRect(find.byKey(BlindKeys.boardArea));
+  final picker = tester.getRect(find.byType(SegmentedButton<BlindView>));
+  final status = tester.getRect(find.byKey(BlindKeys.status));
+  final above = picker.top - area.top;
+  final below = area.bottom - status.bottom;
+  expect(above, greaterThanOrEqualTo(0));
+  expect(above, closeTo(below, 1));
 }

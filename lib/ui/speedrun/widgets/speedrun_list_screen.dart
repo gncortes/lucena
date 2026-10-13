@@ -12,6 +12,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/time_display.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
@@ -319,13 +320,14 @@ class _Card extends StatelessWidget {
               // O lado direito é só do melhor tempo, em destaque.
               if (best != null) ...[
                 const SizedBox(width: 8),
-                Text(
-                  runTime(context, recordTime(speedrun, best)),
-                  key: SpeedrunKeys.itemBest(speedrun.id),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: colors.primary,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+                Flexible(
+                  child: TimeDisplay(
+                    value: runTime(context, recordTime(speedrun, best)),
+                    semanticsLabel:
+                        '${speedrun.kind == SpeedrunKind.marathon ? l10n.marathonBest : l10n.speedrunBest}: ${runTime(context, recordTime(speedrun, best))}',
+                    type: TimeDisplayType.record,
+                    size: TimeDisplaySize.inline,
+                    textKey: SpeedrunKeys.itemBest(speedrun.id),
                   ),
                 ),
               ],
