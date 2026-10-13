@@ -601,7 +601,7 @@ class _LessonScreenState extends State<LessonScreen>
     if (target == null || tree == null || _seenId == null) return;
     if (!tree.contains(target)) return;
     final seen = _seenSet;
-    final fresh = tree.revealPath(target).where(seen.add).toList();
+    final fresh = tree.pathTo(target).where(seen.add).toList();
     if (fresh.isEmpty) return;
     if (animate && fresh.contains(target) && _hideUnseen) {
       _revealing = (position: target, stamp: (_revealing?.stamp ?? 0) + 1);
@@ -618,7 +618,7 @@ class _LessonScreenState extends State<LessonScreen>
     final moves = tree.rows[rowIndex].moves;
     final firstHidden = moves.where((m) => !seen.contains(m.position));
     if (firstHidden.isEmpty) return;
-    final path = tree.revealPath(firstHidden.first.position);
+    final path = tree.pathTo(firstHidden.first.position);
     final target = path.firstWhere(
       (p) => !seen.contains(p),
       orElse: () => firstHidden.first.position,

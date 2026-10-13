@@ -257,12 +257,23 @@ void main() {
       }
       // Centrado na linha de 48 e a 12 dp do fim do último revelado.
       expect(block(tester, 0).center.dy, closeTo(line.center.dy, .5));
-      expect(block(tester, 0).left - shown.right, greaterThanOrEqualTo(11.5));
-      // Espaço entre textos vizinhos da linha: pelo menos 12 dp.
-      expect(
-        textOf(tester, m3).left - textOf(tester, m2).right,
-        greaterThanOrEqualTo(11.5),
-      );
+      expect(block(tester, 0).left - shown.right, closeTo(12, .5));
+      // Espaço entre textos vizinhos da linha (de 36 dp ou mais): 12 dp.
+      final pairs = [
+        [m1, m2],
+        [m2, m3],
+        [d2a, d2b],
+        [d3a, d3b],
+      ];
+      for (final [a, b] in pairs) {
+        final left = textOf(tester, a);
+        final right = textOf(tester, b);
+        if (left.width >= 36 && right.width >= 36) {
+          expect(right.left - left.right, closeTo(12, .5), reason: '$a $b');
+        } else {
+          expect(right.left - left.right, greaterThanOrEqualTo(11.5));
+        }
+      }
       // Os 3 botões e o alvo de 48 dp do botão do canto.
       final toggle = tester.getRect(
         find.byKey(LessonKeys.variationHiddenToggle),
@@ -289,6 +300,38 @@ void main() {
     expect(rects(), before);
     await tapKey(tester, LessonKeys.variationForward);
     expect(rects(), before);
+    // Mudar o lance da vez (negrito) também não move nenhum lance.
+    await tapKey(tester, LessonKeys.variationBack);
+    expect(rects(), before);
+    await tapKey(tester, LessonKeys.variationHiddenBlock(1));
+    expect(rects(), before);
+    await tapKey(tester, m1);
+    expect(rects(), before);
+  });
+
+  testWidgets('o lance reserva a largura do negrito (fonte real não muda '
+      'o espaço ao mudar a vez)', (tester) async {
+    await pump(tester);
+    await openLine(tester);
+    for (final key in [m1, m2, m3, d2a, d2b]) {
+      final text = tester.widget<Text>(
+        find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+      );
+      final painter = TextPainter(
+        text: TextSpan(
+          text: text.data,
+          style: text.style!.copyWith(fontWeight: FontWeight.w600),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final box = tester.getSize(
+        find
+            .descendant(of: find.byKey(key), matching: find.byType(SizedBox))
+            .first,
+      );
+      expect(box.width, closeTo(painter.width, .5), reason: '$key');
+      painter.dispose();
+    }
   });
 
   testWidgets('⏭ revela: lance da vez, tabuleiro e o bloco desliza em 240 ms', (
@@ -359,11 +402,11 @@ void main() {
     expect(boardFen(tester), replay(['c1d1', 'd8e7']));
     expect(block(tester, 0).left, closeTo(textOf(tester, m3).left, .5));
     expect(block(tester, 1).left, closeTo(textOf(tester, d2a).left, .5));
-    await tapKey(tester, LessonKeys.variationHiddenBlock(1));
-    expect(current(tester), '2.Rd4');
-    expect(blockFinder(0), findsNothing);
+    // 2.Rd4 (o lance da principal que o ramo troca) continua coberto.
+    expect(block(tester, 0).left, closeTo(textOf(tester, m3).left, .5));
     await tapKey(tester, LessonKeys.variationHiddenBlock(1));
     expect(current(tester), '2.Rd2?');
+    expect(block(tester, 0).left, closeTo(textOf(tester, m3).left, .5));
     expect(block(tester, 1).left, closeTo(textOf(tester, d2b).left, .5));
     expect(tester.getRect(find.byKey(LessonKeys.variationSheet)), closed);
   });
@@ -372,10 +415,23 @@ void main() {
       'da alternativa', (tester) async {
     await pump(tester);
     await openLine(tester);
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 2; i++) {
       await tapKey(tester, LessonKeys.variationHiddenBlock(1));
     }
-    await tapKey(tester, LessonKeys.variationForward);
+    final resultFinder = find.byKey(LessonKeys.variationResult('d2'));
+    final resting = tester.getRect(resultFinder);
+    final full = block(tester, 1);
+    await tester.tap(find.byKey(LessonKeys.variationForward));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 120));
+    // O "=" sai junto com o lance: ainda deslizando, e o bloco encolheu
+    // para o fim do "=" + 8, sem passar do que tinha.
+    expect(blockFinder(1), findsOneWidget);
+    expect(tester.getRect(resultFinder).left, greaterThan(resting.left + .5));
+    expect(block(tester, 1).width, lessThan(full.width));
+    expect(block(tester, 1).right, lessThanOrEqualTo(resting.right + 8.5));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(resultFinder), resting);
     expect(current(tester), 'Ke6');
     expect(blockFinder(1), findsNothing);
     final result = find.byKey(LessonKeys.variationResult('d2'));
@@ -446,8 +502,9 @@ void main() {
     await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect(settingsOf.state!.lessonHiddenMoves, isTrue);
-    expect(blockFinder(0), findsNothing);
-    expect(covered(tester, m3), isFalse);
+    // 2.Rd4 (o lance que o ramo troca) nunca foi visto: continua coberto.
+    expect(block(tester, 0).left, closeTo(textOf(tester, m3).left, .5));
+    expect(covered(tester, m3), isTrue);
     expect(covered(tester, d2a), isFalse);
     expect(covered(tester, d2b), isTrue);
     expect(block(tester, 1).left, closeTo(textOf(tester, d2b).left, .5));

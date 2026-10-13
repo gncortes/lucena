@@ -219,7 +219,11 @@ class _VariationStripState extends State<VariationStrip> {
                 text: text,
                 style: body.copyWith(color: colors.onSurface),
                 hiddenMoves: widget.hideUnseen
-                    ? _hiddenNotations(tree, widget.revealed)
+                    ? _hiddenNotations(
+                        tree,
+                        widget.revealed,
+                        widget.position,
+                      )
                     : const {},
               ),
             ],
@@ -229,18 +233,34 @@ class _VariationStripState extends State<VariationStrip> {
     );
   }
 
-  /// A notação (sem número e sem !?) dos lances que estão todos cobertos.
+  /// A notação (sem número e sem !?) dos lances cobertos. O lance citado
+  /// segue o estado do lance da linha em foco (a principal, ou a principal até
+  /// o ramo mais o ramo); o que não aparece nela só vale coberto se todas as
+  /// ocorrências na árvore estiverem cobertas.
   static Set<String> _hiddenNotations(
     VariationTree tree,
     Set<TreePosition> revealed,
+    TreePosition focus,
   ) {
-    final covered = <String, bool>{};
+    String sanOf(String label) => label
+        .replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), '')
+        .replaceFirst(RegExp(r'[!?]+$'), '');
+    final all = <String, bool>{};
+    final line = <String, bool>{};
+    final inLine = {
+      ...tree.pathTo(focus),
+      if (focus.branch case final id?)
+        for (var k = 1; k <= tree.branchOf(id)!.moves.length; k++)
+          TreePosition.branch(id, k)
+      else
+        for (var i = 1; i <= tree.main.length; i++) TreePosition.main(i),
+    };
     void visit(String label, TreePosition position) {
-      final san = label
-          .replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), '')
-          .replaceFirst(RegExp(r'[!?]+$'), '');
+      final san = sanOf(label);
       if (san.isEmpty) return;
-      covered[san] = (covered[san] ?? true) && !revealed.contains(position);
+      final hidden = !revealed.contains(position);
+      all[san] = (all[san] ?? true) && hidden;
+      if (inLine.contains(position)) line[san] = (line[san] ?? true) && hidden;
     }
 
     for (final (i, move) in tree.main.indexed) {
@@ -252,8 +272,8 @@ class _VariationStripState extends State<VariationStrip> {
       }
     }
     return {
-      for (final entry in covered.entries)
-        if (entry.value) entry.key,
+      for (final entry in all.entries)
+        if (line[entry.key] ?? entry.value) entry.key,
     };
   }
 }
@@ -484,10 +504,11 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(_StripRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.row.moves.length != widget.row.moves.length) {
-      _makeKeys();
-      _metrics = null;
-    }
+    if (oldWidget.row.moves.length != widget.row.moves.length) _makeKeys();
+    // Árvore, linha ou estilo novos: a medida antiga não vale, e nenhum quadro
+    // pinta o bloco na posição de antes. (O destaque não move nada: o lance da
+    // vez reserva a largura do negrito, ver `_MoveButton`.)
+    if (_signature(oldWidget) != _signature(widget)) _metrics = null;
     final motion = AppMotion.of(context);
     if (oldWidget.hideUnseen != widget.hideUnseen) {
       final target = widget.hideUnseen ? 1.0 : 0.0;
@@ -512,6 +533,10 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       }
     }
   }
+
+  static String _signature(_StripRow w) =>
+      '${w.row.branch?.id}|${w.row.result}|${w.reserveEnd}|${w.style.hashCode}|'
+      '${w.row.moves.map((m) => m.shown).join(' ')}';
 
   @override
   void dispose() {
@@ -642,9 +667,26 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
           onTap: () => widget.onSelect(move.position),
         ),
       if (row.result case final result?)
-        _resultItem(context, colors, l10n, result, branch!.id),
+        _resultItem(
+          context,
+          colors,
+          l10n,
+          result,
+          branch!.id,
+          sliding == row.moves.length - 1 ? slideFrom * (1 - slide) : 0,
+        ),
     ];
   }
+
+  /// O que desliza para fora junto com o lance revelado.
+  static Widget _slid(double slide, Widget child) => slide > 0
+      ? ClipRect(
+          child: FractionalTranslation(
+            translation: Offset(slide, 0),
+            child: child,
+          ),
+        )
+      : child;
 
   bool get _resultUnseen =>
       widget.row.moves.isNotEmpty && _unseen(widget.row.moves.length - 1);
@@ -655,6 +697,7 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
     AppLocalizations l10n,
     VariationResult result,
     String branchId,
+    double slide,
   ) {
     final covered = _resultUnseen && widget.hideUnseen;
     return Opacity(
@@ -675,10 +718,15 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
               ),
               child: Center(
                 widthFactor: 1,
-                child: Text(
-                  '\u2066${result.symbol}\u2069',
-                  key: LessonKeys.variationResult(branchId),
-                  style: widget.style.copyWith(color: colors.onSurfaceVariant),
+                child: _slid(
+                  slide,
+                  Text(
+                    '\u2066${result.symbol}\u2069',
+                    key: LessonKeys.variationResult(branchId),
+                    style: widget.style.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -702,6 +750,12 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
     final last = row.moves.length - 1;
     bool covered(int i) => i < row.moves.length ? _unseen(i) : _unseen(last);
     final animated = _reveal.isAnimating ? _revealIndex : null;
+    // O "=" sai junto com o último lance do ramo.
+    final resultIndex = row.result == null ? -1 : row.moves.length;
+    final animatedGroup = {
+      ?animated,
+      if (animated == last && resultIndex >= 0) resultIndex,
+    };
     final t = AppMotion.revealCurve.transform(_reveal.value);
     // Agrupa os itens por linha visual (mesmo topo, a 1 dp).
     final lines = <List<int>>[];
@@ -720,7 +774,7 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
     for (final line in lines) {
       final hidden = [
         for (final i in line)
-          if (covered(i) || i == animated) i,
+          if (covered(i) || animatedGroup.contains(i)) i,
       ];
       if (hidden.isEmpty) continue;
       final first = hidden.first;
@@ -729,7 +783,8 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       var left = metrics.texts[first].left;
       var opacity = 1.0;
       if (animated != null && first == animated) {
-        final next = hidden.length > 1 ? hidden[1] : null;
+        final rest = hidden.where((i) => !animatedGroup.contains(i));
+        final next = rest.isEmpty ? null : rest.first;
         final to = next == null ? right : metrics.texts[next].left;
         left = left + (to - left) * t;
         if (next == null) {
@@ -809,6 +864,20 @@ class _MoveButton extends StatelessWidget {
   /// Quanto do texto ainda falta deslizar (fração da largura), ao revelar.
   final double slide;
 
+  double _reservedWidth(BuildContext context) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: '\u2066$shown\u2069',
+        style: style.copyWith(fontWeight: FontWeight.w600),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final width = painter.width;
+    painter.dispose();
+    return width;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -855,14 +924,12 @@ class _MoveButton extends StatelessWidget {
                   widthFactor: 1,
                   child: KeyedSubtree(
                     key: textKey,
-                    child: slide > 0
-                        ? ClipRect(
-                            child: FractionalTranslation(
-                              translation: Offset(slide, 0),
-                              child: text,
-                            ),
-                          )
-                        : text,
+                    // Reserva a largura do negrito (o lance da vez): trocar o
+                    // destaque não move nenhum vizinho nem o bloco.
+                    child: SizedBox(
+                      width: _reservedWidth(context),
+                      child: _StripRowState._slid(slide, text),
+                    ),
                   ),
                 ),
               ),
