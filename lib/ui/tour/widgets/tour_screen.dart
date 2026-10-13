@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +65,7 @@ class TourScreen extends StatelessWidget {
         final currentKey = TourKeys.step(step);
         return Scaffold(
           key: TourKeys.screen,
-          appBar: AppBar(
+          appBar: LucenaAppBar(
             automaticallyImplyLeading: false,
             title: Semantics(
               label: l10n.tourStep(step.index + 1, total),

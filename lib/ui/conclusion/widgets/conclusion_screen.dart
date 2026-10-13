@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -85,7 +86,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
       },
       child: Scaffold(
         key: ConclusionKeys.screen,
-        appBar: AppBar(
+        appBar: LucenaAppBar(
           leading: IconButton(
             key: ConclusionKeys.close,
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,

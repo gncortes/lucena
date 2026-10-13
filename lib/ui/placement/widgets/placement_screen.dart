@@ -1,6 +1,7 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -44,7 +45,7 @@ class PlacementScreen extends StatelessWidget {
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
       appBar: state.view == PlacementView.result
           ? null
-          : AppBar(
+          : LucenaAppBar(
               title: state.view == PlacementView.question
                   ? Text(
                       l10n.placementQuestionOf(state.number),

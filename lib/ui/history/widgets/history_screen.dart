@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/history_filter.dart';
@@ -60,7 +61,7 @@ class _HistoryScreenState extends State<HistoryScreen>
       listener: (context, state) => _restore(state),
       child: Scaffold(
         key: HistoryKeys.screen,
-        appBar: AppBar(
+        appBar: LucenaAppBar(
           centerTitle: true,
           leading: ContainerNavigation.canClose(context)
               ? BackButton(onPressed: () => ContainerNavigation.close(context))

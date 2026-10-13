@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -321,7 +322,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     if (!state.ready) {
       return Scaffold(
         key: FreeBoardKeys.screen,
-        appBar: AppBar(
+        appBar: LucenaAppBar(
           centerTitle: true,
           title: Text(context.l10n.freeBoardTitle),
         ),
@@ -330,7 +331,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final training = state.mode.userSide != null;
     return Scaffold(
       key: FreeBoardKeys.screen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         // Os lances numa faixa, logo abaixo da barra: tocar num deles mostra a
         // posição daquele momento.
         bottom: PreferredSize(

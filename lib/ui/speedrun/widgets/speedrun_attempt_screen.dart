@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
@@ -45,7 +46,10 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     if (summary == null || run == null) {
       return Scaffold(
         key: SpeedrunKeys.attemptScreen,
-        appBar: AppBar(centerTitle: true, title: Text(l10n.speedrunTitle)),
+        appBar: LucenaAppBar(
+          centerTitle: true,
+          title: Text(l10n.speedrunTitle),
+        ),
         body: state.all != null
             ? null
             : const Center(child: CircularProgressIndicator()),
@@ -62,7 +66,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     final stopped = math.min(run.currentStage, total - 1);
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         centerTitle: true,
         title: Text(speedrunName(l10n, state.characters, speedrun)),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/achievement.dart';
@@ -28,7 +29,7 @@ class AchievementsScreen extends StatelessWidget {
     final all = state.all;
     return Scaffold(
       key: AchievementsKeys.screen,
-      appBar: AppBar(title: Text(l10n.achievementsTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.achievementsTitle)),
       body: all == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(

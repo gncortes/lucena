@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -111,7 +112,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
       builder: (context, state) {
         return Scaffold(
           key: CustomPositionKeys.screen,
-          appBar: AppBar(
+          appBar: LucenaAppBar(
             title: Text(l10n.customPositionTitle),
             actions: [
               IconButton(

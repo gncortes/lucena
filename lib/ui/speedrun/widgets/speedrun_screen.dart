@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,7 +36,10 @@ class SpeedrunScreen extends StatelessWidget {
     if (summary == null) {
       return Scaffold(
         key: SpeedrunKeys.screen,
-        appBar: AppBar(centerTitle: true, title: Text(l10n.speedrunTitle)),
+        appBar: LucenaAppBar(
+          centerTitle: true,
+          title: Text(l10n.speedrunTitle),
+        ),
         body: state.all != null
             ? null
             : const Center(child: CircularProgressIndicator()),
@@ -47,7 +51,7 @@ class SpeedrunScreen extends StatelessWidget {
     final total = speedrun.stages.length;
     return Scaffold(
       key: SpeedrunKeys.screen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         centerTitle: true,
         title: Text(
           speedrun.kind == SpeedrunKind.marathon

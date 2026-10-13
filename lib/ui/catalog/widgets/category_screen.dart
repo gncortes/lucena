@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,7 +32,7 @@ class CategoryScreen extends StatelessWidget {
     );
     return Scaffold(
       key: CatalogKeys.categoryScreen,
-      appBar: AppBar(title: Text(categoryName(l10n, category))),
+      appBar: LucenaAppBar(title: Text(categoryName(l10n, category))),
       body: Column(
         children: [
           const GoalFilterBar(),

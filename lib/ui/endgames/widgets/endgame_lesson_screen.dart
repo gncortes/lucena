@@ -1,6 +1,7 @@
 import '../../../domain/models/explanation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +41,7 @@ class EndgameLessonScreen extends StatelessWidget {
         return Scaffold(
           key: EndgameLessonKeys.screen,
           // O número e o título da aula, que pode ser longo, vêm no corpo.
-          appBar: AppBar(
+          appBar: LucenaAppBar(
             actions: [
               if (lesson != null)
                 IconButton(

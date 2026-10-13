@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/speedrun_history_rows.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -54,7 +55,7 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
       ),
       SpeedrunHistoryRow(newRecord: true) => (
         Icons.emoji_events,
-        colors.tertiary,
+        GoalStyle.of(context, PositionGoal.win).color,
         l10n.historyNewRecord,
         null,
       ),

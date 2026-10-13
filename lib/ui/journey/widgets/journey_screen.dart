@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,7 +31,7 @@ class JourneyScreen extends StatelessWidget {
     );
     return Scaffold(
       key: JourneyKeys.screen,
-      appBar: AppBar(title: Text(l10n.journeyTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.journeyTitle)),
       body: progress == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(

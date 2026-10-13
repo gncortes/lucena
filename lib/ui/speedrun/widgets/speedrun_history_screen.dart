@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
@@ -30,7 +31,7 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     final speedrun = state.speedrun;
     return Scaffold(
       key: SpeedrunKeys.historyScreen,
-      appBar: AppBar(title: Text(l10n.historyTitle), centerTitle: true),
+      appBar: LucenaAppBar(title: Text(l10n.historyTitle), centerTitle: true),
       body: speedrun == null
           ? (state.loaded
                 ? null

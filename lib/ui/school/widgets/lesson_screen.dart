@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -643,7 +644,7 @@ class _LessonScreenState extends State<LessonScreen>
           final lesson = state.lesson;
           return Scaffold(
             key: LessonKeys.screen,
-            appBar: AppBar(
+            appBar: LucenaAppBar(
               // Só o título (da parte, na aula em partes, ou da aula) e, no
               // canto da aula em partes, onde ela está: "1/5". Na escola, o
               // iniciante não vê quantas aulas faltam.

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -53,7 +54,7 @@ class MarathonAttemptView extends StatelessWidget {
     final best = summary.records.best;
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         centerTitle: true,
         title: Text(
           endgameName(l10n, speedrun.stages.first.position.subcategory),
