@@ -68,6 +68,10 @@ void main() {
       'Timer.periodic(const Duration(milliseconds: 250)':
           'cronômetro do passo e ritmo da demonstração: tempo, não animação',
     },
+    'lib/ui/school/widgets/lesson_part_widgets.dart': {
+      'tick = Duration(milliseconds: 250)':
+          'o anel acompanha o tique de 250 ms da demonstração',
+    },
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',
     },
