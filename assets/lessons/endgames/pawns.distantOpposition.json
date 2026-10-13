@@ -684,7 +684,7 @@
         {
           "type": "think",
           "id": "t_outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "hints": 3,
           "ask": "plan",
           "ref": "capablanca",
@@ -699,13 +699,13 @@
         {
           "type": "talk",
           "id": "outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "ref": "capablanca"
         },
         {
           "type": "demo",
           "id": "d_outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "side": "white",
           "goal": "win",
           "line": [
@@ -724,7 +724,7 @@
         {
           "type": "move",
           "id": "outflankMove",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "goal": "win",
           "ref": "capablanca",
           "line": [
@@ -1331,7 +1331,7 @@
         {
           "type": "think",
           "id": "t_useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "hints": 3,
           "ask": "plan",
           "accept": [
@@ -1345,12 +1345,12 @@
         {
           "type": "talk",
           "id": "useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1"
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4"
         },
         {
           "type": "demo",
           "id": "d_useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "goal": "win",
           "side": "white",
           "line": [
@@ -1377,7 +1377,7 @@
         {
           "type": "move",
           "id": "useReserveMove",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "goal": "win",
           "line": [
             {
@@ -1527,7 +1527,7 @@
         {
           "type": "think",
           "id": "t_synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "hints": 3,
           "ask": "plan",
           "ref": "grigoriev1920",
@@ -1542,7 +1542,7 @@
         {
           "type": "talk",
           "id": "synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "ref": "grigoriev1920",
           "arrows": [
             "f5f4"
@@ -1551,7 +1551,7 @@
         {
           "type": "demo",
           "id": "d_synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "side": "white",
           "goal": "draw",
           "ref": "grigoriev1920",
@@ -1582,7 +1582,7 @@
         {
           "type": "demo",
           "id": "d_synchronizeFinish",
-          "fen": "8/8/8/p7/P7/7p/7k/5K2 b - - 1 1",
+          "fen": "8/8/8/p7/P7/7p/7k/5K2 b - - 1 7",
           "side": "white",
           "goal": "draw",
           "ref": "grigoriev1920",
@@ -1610,7 +1610,7 @@
         {
           "type": "demo",
           "id": "err_synchronize",
-          "fen": "8/8/8/p5Kp/P7/7k/8/8 b - - 1 1",
+          "fen": "8/8/8/p5Kp/P7/7k/8/8 b - - 1 4",
           "side": "black",
           "goal": "win",
           "ref": "grigoriev1920",
@@ -1635,7 +1635,7 @@
         {
           "type": "move",
           "id": "synchronizeMove",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "goal": "draw",
           "ref": "grigoriev1920",
           "line": [
