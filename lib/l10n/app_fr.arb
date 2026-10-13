@@ -1071,6 +1071,8 @@
   "explanationLosing": "Perd",
   "explanationDoesNotMeetGoal": "N’atteint pas l’objectif",
   "explanationUnavailable": "Cette variante est indisponible.",
+  "explanationExpand": "Afficher les réponses",
+  "explanationCollapse": "Masquer les réponses",
   "explanationFirst": "Début de la variante",
   "explanationPrevious": "Coup précédent",
   "explanationParent": "Revenir à la variante parente",

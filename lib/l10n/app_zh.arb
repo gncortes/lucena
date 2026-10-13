@@ -1071,6 +1071,8 @@
   "explanationLosing": "输棋",
   "explanationDoesNotMeetGoal": "未达成目标",
   "explanationUnavailable": "此变化不可用。",
+  "explanationExpand": "显示应对",
+  "explanationCollapse": "隐藏应对",
   "explanationFirst": "变化起点",
   "explanationPrevious": "上一步",
   "explanationParent": "返回上级变化",

@@ -1071,6 +1071,8 @@
   "explanationLosing": "Verliest",
   "explanationDoesNotMeetGoal": "Bereikt het doel niet",
   "explanationUnavailable": "Deze variant is niet beschikbaar.",
+  "explanationExpand": "Antwoorden tonen",
+  "explanationCollapse": "Antwoorden verbergen",
   "explanationFirst": "Begin van de variant",
   "explanationPrevious": "Vorige zet",
   "explanationParent": "Terug naar de bovenliggende variant",

@@ -35,6 +35,13 @@ class ViktorSheet extends StatefulWidget {
           ?.expanded ??
       true;
 
+  /// Baixa a folha até a borda do tabuleiro (a posição recolhida), sem mexer
+  /// no que está nela. Sem [ViktorSheet] acima de [context], não faz nada.
+  static void collapse(BuildContext context) => context
+      .getInheritedWidgetOfExactType<_ViktorSheetPresentation>()
+      ?.sheet
+      ._collapse();
+
   /// Quanto, no fim da folha, fica coberto por botões flutuantes: a fala
   /// que aparece aos poucos rola para a linha nova parar acima disso.
   /// Altura reservada em todos os estados para texto acima das ações.
@@ -65,7 +72,12 @@ class ViktorSheet extends StatefulWidget {
 class _ViktorSheetState extends State<ViktorSheet> {
   final _owned = DraggableScrollableController();
   DraggableScrollableController get _sheet => widget.controller ?? _owned;
-  static const _maximum = .95;
+
+  /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
+  /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
+  /// (LICOES-V2 §5). Calculado no layout.
+  static const _openGap = 76.0;
+  double _maximum = .95;
   double _minimum = .2;
   double? _extent;
   bool _expanded = false;
@@ -135,6 +147,8 @@ class _ViktorSheetState extends State<ViktorSheet> {
     );
   }
 
+  void _collapse() => _animate(_minimum);
+
   void _close() {
     if (_scroll?.hasClients ?? false) _scroll!.jumpTo(0);
     _animate(_minimum);
@@ -151,6 +165,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final height = box.maxHeight;
+      _maximum = (1 - _openGap / height).clamp(.02, 1.0);
       _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
       final area = Size(box.maxWidth, height);
       final geometryChanged =
@@ -214,50 +229,58 @@ class _ViktorSheetState extends State<ViktorSheet> {
                         _animate(_maximum);
                         return true;
                       },
-                      child: ShaderMask(
-                        blendMode: BlendMode.dstIn,
-                        shaderCallback: (rect) => LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: _expanded
-                              ? [Colors.white, Colors.white]
-                              : [
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.transparent,
-                                ],
-                          stops: _expanded ? null : [0, .9, 1],
-                        ).createShader(rect),
-                        child: ListView(
-                          key: widget.scrollKey,
-                          controller: scroll,
-                          padding: widget.padding,
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Container(
-                                  key: ViktorSheetKeys.handle,
-                                  width: 36,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: colors.outlineVariant,
-                                    borderRadius: BorderRadius.circular(
-                                      AppShape.full,
+                      child: RawScrollbar(
+                        key: ViktorSheetKeys.scrollbar,
+                        controller: scroll,
+                        thickness: 4,
+                        radius: const Radius.circular(AppShape.hairline),
+                        thumbColor: colors.outlineVariant,
+                        crossAxisMargin: 6,
+                        child: ShaderMask(
+                          blendMode: BlendMode.dstIn,
+                          shaderCallback: (rect) => LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: _expanded
+                                ? [Colors.white, Colors.white]
+                                : [
+                                    Colors.white,
+                                    Colors.white,
+                                    Colors.transparent,
+                                  ],
+                            stops: _expanded ? null : [0, .9, 1],
+                          ).createShader(rect),
+                          child: ListView(
+                            key: widget.scrollKey,
+                            controller: scroll,
+                            padding: widget.padding,
+                            children: [
+                              Center(
+                                child: Padding(
+                                  // Alça do canvas: 32×4, 8 dp em cima e
+                                  // nada embaixo (o cabeçalho tem a folga).
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Container(
+                                    key: ViktorSheetKeys.handle,
+                                    width: 32,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: colors.outlineVariant,
+                                      borderRadius: BorderRadius.circular(
+                                        AppShape.full,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            for (final child in widget.children)
-                              _ViktorSheetPresentation(
-                                expanded: _expanded,
-                                sheet: this,
-                                child: child,
-                              ),
-                          ],
+                              for (final child in widget.children)
+                                _ViktorSheetPresentation(
+                                  expanded: _expanded,
+                                  sheet: this,
+                                  child: child,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

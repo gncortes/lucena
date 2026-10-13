@@ -1071,6 +1071,8 @@
   "explanationLosing": "Проигрывает",
   "explanationDoesNotMeetGoal": "Не достигает цели",
   "explanationUnavailable": "Этот вариант недоступен.",
+  "explanationExpand": "Показать ответы",
+  "explanationCollapse": "Скрыть ответы",
   "explanationFirst": "Начало варианта",
   "explanationPrevious": "Предыдущий ход",
   "explanationParent": "Вернуться к родительскому варианту",

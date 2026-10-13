@@ -1071,6 +1071,8 @@
   "explanationLosing": "Thua",
   "explanationDoesNotMeetGoal": "Không đạt mục tiêu",
   "explanationUnavailable": "Biến này không khả dụng.",
+  "explanationExpand": "Hiện các nước đáp",
+  "explanationCollapse": "Ẩn các nước đáp",
   "explanationFirst": "Đầu biến",
   "explanationPrevious": "Nước trước",
   "explanationParent": "Quay lại biến thể cấp trên",

@@ -388,7 +388,7 @@ void main() {
     final avatar = tester.widget<CharacterAvatar>(
       find.byType(CharacterAvatar).first,
     );
-    expect(avatar.size, 56);
+    expect(avatar.size, 28);
   }
 
   String timerText(WidgetTester tester) => tester

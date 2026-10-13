@@ -1071,6 +1071,8 @@
   "explanationLosing": "يخسر",
   "explanationDoesNotMeetGoal": "لا يحقق الهدف",
   "explanationUnavailable": "هذا التفرع غير متاح.",
+  "explanationExpand": "إظهار الردود",
+  "explanationCollapse": "إخفاء الردود",
   "explanationFirst": "بداية التفرع",
   "explanationPrevious": "النقلة السابقة",
   "explanationParent": "العودة إلى التفرع الأعلى",

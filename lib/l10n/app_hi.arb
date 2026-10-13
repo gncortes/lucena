@@ -1071,6 +1071,8 @@
   "explanationLosing": "हारता है",
   "explanationDoesNotMeetGoal": "लक्ष्य पूरा नहीं होता",
   "explanationUnavailable": "यह क्रम उपलब्ध नहीं है।",
+  "explanationExpand": "जवाब दिखाएँ",
+  "explanationCollapse": "जवाब छिपाएँ",
   "explanationFirst": "क्रम की शुरुआत",
   "explanationPrevious": "पिछली चाल",
   "explanationParent": "ऊपरी शाखा पर वापस जाएँ",

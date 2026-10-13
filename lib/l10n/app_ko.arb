@@ -1071,6 +1071,8 @@
   "explanationLosing": "패배",
   "explanationDoesNotMeetGoal": "목표 미달성",
   "explanationUnavailable": "이 변화는 사용할 수 없습니다.",
+  "explanationExpand": "응수 보기",
+  "explanationCollapse": "응수 숨기기",
   "explanationFirst": "변화 시작",
   "explanationPrevious": "이전 수",
   "explanationParent": "상위 변화로 돌아가기",

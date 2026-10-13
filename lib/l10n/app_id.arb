@@ -1071,6 +1071,8 @@
   "explanationLosing": "Kalah",
   "explanationDoesNotMeetGoal": "Tidak mencapai tujuan",
   "explanationUnavailable": "Variasi ini tidak tersedia.",
+  "explanationExpand": "Tampilkan balasan",
+  "explanationCollapse": "Sembunyikan balasan",
   "explanationFirst": "Awal variasi",
   "explanationPrevious": "Langkah sebelumnya",
   "explanationParent": "Kembali ke variasi induk",

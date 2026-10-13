@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_language.dart';
-import 'package:lucena/domain/models/game_review.dart';
-import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
@@ -407,29 +406,61 @@ void main() {
     expect(voice.settings.enabled, isTrue);
   });
 
+  Widget v2Speech(
+    String text, {
+    ValueChanged<SpeechLink>? onLink,
+    bool prompt = false,
+    ThemeMode themeMode = ThemeMode.light,
+  }) => TestApp(
+    themeMode: themeMode,
+    child: Scaffold(
+      body: TeacherSpeech(
+        teacher: FakeCharacterRepository.viktor,
+        text: null,
+        speechContext: SpeechContext.teaching,
+        lessonV2: true,
+        lessonPromptBubble: prompt,
+        onLink: onLink ?? (_) {},
+        explanation: ExplanationPayload(
+          positionId: 'v2',
+          state: ExplanationState.review,
+          explanations: [
+            ExplanationBlock(
+              id: 'b',
+              kind: ExplanationKind.playedIncorrect,
+              texts: text.split('\n\n'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  RichText richWith(WidgetTester tester, String contains) => tester
+      .widgetList<RichText>(find.byType(RichText))
+      .firstWhere((w) => w.text.toPlainText().contains(contains));
+
+  TextSpan spanOf(RichText rich, String text) {
+    TextSpan? found;
+    rich.text.visitChildren((span) {
+      if (span is TextSpan && span.text == text) found = span;
+      return true;
+    });
+    return found!;
+  }
+
   testWidgets(
-    'V2 paragraphs keep an eight pixel gap and supplied quality colors',
+    'V2 paragraphs of one idea flow together; the move is primary w500 '
+    'without background or underline',
     (tester) async {
       await tester.pumpWidget(
-        TestApp(
-          child: Scaffold(
-            body: TeacherSpeech(
-              teacher: FakeCharacterRepository.viktor,
-              text: 'First paragraph.\n\n1.Kh2? Second paragraph.',
-              speechContext: SpeechContext.teaching,
-              lessonV2: true,
-              onLink: (_) {},
-            ),
-          ),
-        ),
+        v2Speech('First paragraph.\n\n1.Kh2? Second paragraph.'),
       );
-      final rich = find.byWidgetPredicate(
-        (widget) =>
-            widget is RichText &&
-            widget.text.toPlainText() ==
-                'First paragraph.\n\n1.Kh2? Second paragraph.',
+      final rich = richWith(tester, 'First paragraph.');
+      expect(rich.text.toPlainText(), isNot(contains('\n')));
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.byWidget(rich),
       );
-      final paragraph = tester.renderObject<RenderParagraph>(rich);
       final first = paragraph
           .getBoxesForSelection(
             const TextSelection(baseOffset: 0, extentOffset: 16),
@@ -440,134 +471,198 @@ void main() {
             const TextSelection(baseOffset: 18, extentOffset: 24),
           )
           .first;
-      // Compare line positions: a 24px line box plus the 8px paragraph gap.
-      expect(second.top - first.top, closeTo(32, 0.1));
-      TextSpan? move;
-      tester.widget<RichText>(rich).text.visitChildren((span) {
-        if (span is TextSpan && span.text == '1.Kh2?') move = span;
-        return true;
-      });
-      expect(
-        move?.style?.color,
-        MoveQuality.mistake.listColor(
-          Theme.of(tester.element(find.byType(TeacherSpeech))).brightness,
-        ),
-      );
+      // Same line: no 8 dp gap between paragraphs of the same idea.
+      expect(second.top, first.top);
+      final theme = Theme.of(tester.element(find.byType(TeacherSpeech)));
+      final move = spanOf(rich, '1.Kh2?');
+      expect(move.style?.color, theme.colorScheme.primary);
+      expect(move.style?.fontWeight, FontWeight.w500);
+      expect(move.style?.decoration, isNull);
+      expect(move.style?.backgroundColor, isNull);
+      // Body: 16/24, w400, onSurface.
+      final body = rich.text.style!;
+      expect(body.fontSize, 16);
+      expect(body.fontSize! * body.height!, closeTo(24, .01));
+      expect(body.fontWeight, FontWeight.w400);
+      expect(body.color, theme.colorScheme.onSurface);
     },
   );
-  testWidgets('V2 highlights repeated SAN only at its own origin', (
+
+  testWidgets('V2 square is lighter than the move, w500, no underline', (
     tester,
   ) async {
-    ExplanationVariation line(String id, String fen, String text) =>
-        ExplanationVariation(
-          id: id,
-          label: id,
-          outcome: VariationOutcome.accepted,
-          texts: [text],
-          originFen: fen,
-          movesUci: const ['h1h2'],
-          movesSan: const ['1.Kh2'],
-          validated: true,
-        );
-    final a = line('A', '6k1/8/8/8/8/8/3P4/7K w - - 0 1', 'First: 1.Kh2.');
-    final b = line('B', '5k2/8/8/8/8/8/3P4/7K w - - 0 1', 'Second: 1.Kh2.');
+    await tester.pumpWidget(v2Speech('Go to a7 with 1.Kh2 now.'));
+    final theme = Theme.of(tester.element(find.byType(TeacherSpeech)));
+    final rich = richWith(tester, 'Go to');
+    final square = spanOf(rich, 'a7');
+    expect(
+      square.style?.color,
+      Color.lerp(theme.colorScheme.primary, theme.colorScheme.surface, .20),
+    );
+    expect(square.style?.fontWeight, FontWeight.w500);
+    expect(square.style?.decoration, isNull);
+    expect(spanOf(rich, '1.Kh2').style?.color, theme.colorScheme.primary);
+  });
+
+  testWidgets('V2 square color in dark mode comes from the color scheme', (
+    tester,
+  ) async {
     await tester.pumpWidget(
-      TestApp(
-        child: Scaffold(
-          body: TeacherSpeech(
-            teacher: FakeCharacterRepository.viktor,
-            text: null,
-            speechContext: SpeechContext.teaching,
-            lessonV2: true,
-            activeVariation: a.open(),
-            onVariation: (_) {},
-            explanation: ExplanationPayload(
-              positionId: 'repeated-san',
-              state: ExplanationState.review,
-              explanations: [
-                for (final variation in [a, b])
-                  ExplanationBlock(
-                    id: variation.id,
-                    kind: ExplanationKind.mainSolution,
-                    texts: variation.texts,
-                    variations: [variation],
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      v2Speech('Go to a7 now.', themeMode: ThemeMode.dark),
     );
     await tester.pumpAndSettle();
-    Color? background(String paragraph) {
-      final rich = tester
-          .widgetList<RichText>(find.byType(RichText))
-          .singleWhere((widget) => widget.text.toPlainText() == paragraph);
-      TextSpan? move;
-      rich.text.visitChildren((span) {
-        if (span is TextSpan && (span.text?.contains('Kh2') ?? false)) {
-          move = span;
-        }
-        return true;
-      });
-      expect(move, isNotNull);
-      return move!.style?.backgroundColor;
-    }
+    final rich = richWith(tester, 'Go to');
+    final colors = Theme.of(tester.element(find.byType(TeacherSpeech)))
+        .colorScheme;
+    expect(
+      spanOf(rich, 'a7').style?.color,
+      Color.lerp(colors.primary, colors.onPrimaryContainer, .5),
+    );
+  });
 
-    expect(background('First: 1.Kh2.'), isNotNull);
-    expect(background('Second: 1.Kh2.'), isNull);
-    expect(tester.takeException(), isNull);
+  testWidgets('V2 touch within the 48 dp target triggers the nearest link', (
+    tester,
+  ) async {
+    final taps = <String>[];
+    await tester.pumpWidget(
+      v2Speech('Go to a7 with 1.Kh2 now.', onLink: (l) => taps.add(l.text)),
+    );
+    final finder = find.byWidget(richWith(tester, 'Go to'));
+    final paragraph = tester.renderObject<RenderParagraph>(finder);
+    final origin = tester.getTopLeft(finder);
+    Offset center(int start, int end) =>
+        origin +
+        paragraph
+            .getBoxesForSelection(
+              TextSelection(baseOffset: start, extentOffset: end),
+            )
+            .first
+            .toRect()
+            .center;
+    final a7 = center(6, 8);
+    // 22 dp from the center of the glyph (box ~17 dp wide): still a hit.
+    await tester.tapAt(a7 + const Offset(-22, 0));
+    expect(taps, ['a7']);
+    await tester.tapAt(a7 + const Offset(0, 8));
+    expect(taps, ['a7', 'a7']);
+    // Far away: nothing.
+    await tester.tapAt(a7 + const Offset(60, 0));
+    expect(taps, hasLength(2));
+    final kh2 = center(14, 19);
+    await tester.tapAt(kh2 + const Offset(0, -8));
+    expect(taps.last, '1.Kh2');
   });
 
   testWidgets(
-    'editorial opening emphasizes prose without changing SAN or prompt',
+    'V2 paints the active move behind the text with rounded corners',
     (tester) async {
-      const text = 'Before 1.Kh2 after.\n\nSecond paragraph.';
-      for (final prompt in [false, true]) {
-        await tester.pumpWidget(
-          TestApp(
-            child: Scaffold(
-              body: TeacherSpeech(
-                teacher: FakeCharacterRepository.viktor,
-                text: null,
-                speechContext: SpeechContext.teaching,
-                lessonV2: true,
-                lessonPromptBubble: prompt,
-                onLink: (_) {},
-                explanation: ExplanationPayload(
-                  positionId: 'opening',
-                  state: ExplanationState.incorrect,
-                  explanations: [
+      final a = ExplanationVariation(
+        id: 'A',
+        label: 'A',
+        outcome: VariationOutcome.accepted,
+        texts: const ['First: 1.Kh2.'],
+        originFen: '6k1/8/8/8/8/8/3P4/7K w - - 0 1',
+        movesUci: const ['h1h2'],
+        movesSan: const ['1.Kh2'],
+        validated: true,
+      );
+      final b = ExplanationVariation(
+        id: 'B',
+        label: 'B',
+        outcome: VariationOutcome.accepted,
+        texts: const ['Second: 1.Kh2.'],
+        originFen: '5k2/8/8/8/8/8/3P4/7K w - - 0 1',
+        movesUci: const ['h1h2'],
+        movesSan: const ['1.Kh2'],
+        validated: true,
+      );
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: FakeCharacterRepository.viktor,
+              text: null,
+              speechContext: SpeechContext.teaching,
+              lessonV2: true,
+              activeVariation: a.open(),
+              onVariation: (_) {},
+              explanation: ExplanationPayload(
+                positionId: 'repeated-san',
+                state: ExplanationState.review,
+                explanations: [
+                  for (final variation in [a, b])
                     ExplanationBlock(
-                      id: 'played',
-                      kind: ExplanationKind.playedIncorrect,
-                      texts: const ['Before 1.Kh2 after.', 'Second paragraph.'],
+                      id: variation.id,
+                      kind: ExplanationKind.mainSolution,
+                      texts: variation.texts,
+                      variations: [variation],
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
-        );
-        await tester.pumpAndSettle();
-        final rich = tester
-            .widgetList<RichText>(find.byType(RichText))
-            .singleWhere((widget) => widget.text.toPlainText() == text);
-        final pieces = <String, FontWeight?>{};
+        ),
+      );
+      await tester.pumpAndSettle();
+      final backdrops = find.byWidgetPredicate(
+        (w) =>
+            w is CustomPaint &&
+            w.painter.runtimeType.toString() == '_BackdropPainter',
+      );
+      // One occurrence only: the repeated SAN of the other origin stays plain.
+      expect(backdrops, findsOneWidget);
+      final colors = Theme.of(tester.element(backdrops)).colorScheme;
+      expect(
+        tester.renderObject(backdrops),
+        paints..rrect(color: colors.primary.withValues(alpha: .14)),
+      );
+      // No background on any span.
+      for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
         rich.text.visitChildren((span) {
-          if (span is TextSpan && span.text != null) {
-            pieces[span.text!] = span.style?.fontWeight;
-          }
+          expect(span is TextSpan ? span.style?.backgroundColor : null, isNull);
           return true;
         });
-        expect(pieces['Before '], prompt ? isNull : FontWeight.w500);
-        expect(pieces[' after.'], prompt ? isNull : FontWeight.w500);
-        expect(pieces['Second paragraph.'], isNull);
-        expect(pieces['1.Kh2'], FontWeight.w700);
-        expect(tester.takeException(), isNull);
       }
+      expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('V2 header is a 48 dp row with a 28 dp portrait', (tester) async {
+    await tester.pumpWidget(v2Speech('Texto.'));
+    final header = tester.getRect(find.byKey(ViktorSheetKeys.header));
+    expect(header.height, 48);
+    final avatar = tester.getRect(find.byType(CharacterAvatar));
+    expect(avatar.size, const Size(28, 28));
+    // Right below the header comes the 16 dp label and its 8 dp gap.
+    expect(
+      tester.getTopLeft(find.byKey(ExplanationKeys.header('b'))).dy,
+      closeTo(header.bottom, 1),
+    );
+    expect(
+      tester.getTopLeft(find.textContaining('Texto.')).dy - header.bottom,
+      closeTo(24, 1),
+    );
+  });
+
+  testWidgets('editorial opening has no bold first paragraph', (tester) async {
+    for (final prompt in [false, true]) {
+      await tester.pumpWidget(
+        v2Speech('Before 1.Kh2 after.\n\nSecond paragraph.', prompt: prompt),
+      );
+      await tester.pumpAndSettle();
+      final rich = richWith(tester, 'Before');
+      final weights = <String, FontWeight?>{};
+      rich.text.visitChildren((span) {
+        if (span is TextSpan && span.text != null) {
+          weights[span.text!] = span.style?.fontWeight;
+        }
+        return true;
+      });
+      expect(weights['Before '], isNull);
+      expect(weights['1.Kh2'], FontWeight.w500);
+      expect(tester.takeException(), isNull);
+    }
+  });
   testWidgets(
     'one bubble joins paragraphs and verified inline move replaces SAN button',
     (tester) async {

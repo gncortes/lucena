@@ -365,6 +365,8 @@ void main() {
 
       await activate(ExplanationKeys.variation('A'));
       expect(fen(tester), parent.open()!.fen);
+      // O lance não expande mais a linha: só o chevron (LICOES-V2 §2).
+      await activate(ExplanationKeys.expand('A'));
       await activate(ExplanationKeys.variation('A.1'));
       expect(fen(tester), child.open()!.fen);
       expect(find.byKey(ExplanationKeys.first), findsNothing);

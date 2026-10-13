@@ -1071,6 +1071,8 @@
   "explanationLosing": "Kaybeder",
   "explanationDoesNotMeetGoal": "Hedefe ulaşmaz",
   "explanationUnavailable": "Bu varyant kullanılamıyor.",
+  "explanationExpand": "Yanıtları göster",
+  "explanationCollapse": "Yanıtları gizle",
   "explanationFirst": "Varyantın başı",
   "explanationPrevious": "Önceki hamle",
   "explanationParent": "Üst varyanta dön",

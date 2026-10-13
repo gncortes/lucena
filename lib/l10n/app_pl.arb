@@ -1071,6 +1071,8 @@
   "explanationLosing": "Przegrywa",
   "explanationDoesNotMeetGoal": "Nie osiąga celu",
   "explanationUnavailable": "Ten wariant jest niedostępny.",
+  "explanationExpand": "Pokaż odpowiedzi",
+  "explanationCollapse": "Ukryj odpowiedzi",
   "explanationFirst": "Początek wariantu",
   "explanationPrevious": "Poprzedni ruch",
   "explanationParent": "Wróć do wariantu nadrzędnego",

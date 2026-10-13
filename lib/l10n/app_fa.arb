@@ -1071,6 +1071,8 @@
   "explanationLosing": "می‌بازد",
   "explanationDoesNotMeetGoal": "به هدف نمی‌رسد",
   "explanationUnavailable": "این شاخه در دسترس نیست.",
+  "explanationExpand": "نمایش پاسخ‌ها",
+  "explanationCollapse": "پنهان کردن پاسخ‌ها",
   "explanationFirst": "آغاز شاخه",
   "explanationPrevious": "حرکت قبلی",
   "explanationParent": "بازگشت به شاخهٔ بالاتر",

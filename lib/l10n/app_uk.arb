@@ -1071,6 +1071,8 @@
   "explanationLosing": "Програє",
   "explanationDoesNotMeetGoal": "Не досягає мети",
   "explanationUnavailable": "Цей варіант недоступний.",
+  "explanationExpand": "Показати відповіді",
+  "explanationCollapse": "Сховати відповіді",
   "explanationFirst": "Початок варіанта",
   "explanationPrevious": "Попередній хід",
   "explanationParent": "Повернутися до батьківського варіанта",

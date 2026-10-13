@@ -1071,6 +1071,8 @@
   "explanationLosing": "負け",
   "explanationDoesNotMeetGoal": "目標を達成しない",
   "explanationUnavailable": "この変化は利用できません。",
+  "explanationExpand": "返答を表示",
+  "explanationCollapse": "返答を非表示",
   "explanationFirst": "変化の開始",
   "explanationPrevious": "前の手",
   "explanationParent": "親の変化に戻る",

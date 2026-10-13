@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/explanation.dart';
-import '../../../domain/models/game_review.dart';
 import '../keys/explanation_keys.dart';
-import '../review/move_quality_ui.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import 'lesson_quote.dart';
 
 typedef ExplanationParagraph = ({String text, ExplanationVariation? variation});
 
@@ -139,6 +139,8 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     }
   }
 
+  /// O lance azul do cabeçalho: abre a linha no tabuleiro ([onVariation]).
+  /// Expandir ou recolher é só do chevron ([_toggle]).
   void _select(ExplanationVariation variation) {
     final cursor = widget.payload.openVariation(variation);
     setState(() {
@@ -147,14 +149,31 @@ class _ExplanationCardsState extends State<ExplanationCards> {
       } else {
         _cursor = cursor;
         _unavailable = null;
-        if (widget.lessonV2 &&
-            variation.parentId == null &&
-            widget.payload.variations.any((v) => v.parentId == variation.id)) {
-          if (!_expanded.add(variation.id)) _expanded.remove(variation.id);
-        }
       }
     });
     if (cursor != null) widget.onVariation?.call(cursor);
+  }
+
+  final _lineKeys = <String, GlobalKey>{};
+
+  /// Abre ou fecha as respostas no lugar: não rola para o topo; se o card
+  /// aberto passar da borda de baixo, rola só o necessário (A16).
+  void _toggle(String id) {
+    final opening = !_expanded.contains(id);
+    setState(() {
+      if (!_expanded.add(id)) _expanded.remove(id);
+    });
+    if (!opening) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final target = _lineKeys[id]?.currentContext;
+      if (!mounted || target == null || !target.mounted) return;
+      Scrollable.ensureVisible(
+        target,
+        duration: AppMotion.of(context).component,
+        curve: AppMotion.enter,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
   }
 
   void _move(VariationCursor? cursor) {
@@ -196,90 +215,60 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           )
           .toList();
 
-  /// Cor do lance citado (contrato 3.4): pelo símbolo de qualidade; sem
-  /// símbolo, `primary`. Linha que perde sem símbolo sai como erro grave.
-  Color _moveColor(BuildContext context, ExplanationVariation variation) {
-    final theme = Theme.of(context);
-    final san = variation.movesSan.first;
-    final quality = san.endsWith('??')
-        ? MoveQuality.blunder
-        : san.endsWith('?!')
-        ? MoveQuality.inaccuracy
-        : san.endsWith('?')
-        ? MoveQuality.mistake
-        : san.endsWith('!')
-        ? MoveQuality.great
-        : variation.outcome == VariationOutcome.losing
-        ? MoveQuality.blunder
-        : null;
-    return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
-  }
-
+  /// O lance do cabeçalho da linha: `primary` peso 500, sem sublinhado, mesmo
+  /// com `?`/`!` (o símbolo carrega o resultado; LICOES-V2 §2). A letra só
+  /// aparece com 2+ escolhas do aluno no mesmo ponto ([letter]).
   Widget _v2Title(
     BuildContext context,
-    ExplanationBlock block,
-    ExplanationVariation variation,
-    bool principal,
-  ) {
+    ExplanationVariation variation, {
+    required bool letter,
+  }) {
     final colors = Theme.of(context).colorScheme;
     final move = Text(
       variation.movesSan.first,
-      style: TextStyle(
-        fontWeight: FontWeight.w700,
-        color: _moveColor(context, variation),
-      ),
+      style: TextStyle(fontWeight: FontWeight.w500, color: colors.primary),
     );
-    // Contrato 3.3: "Também não funcionam" sem letra.
-    if (!principal || block.kind == ExplanationKind.failedAlternatives) {
-      return move;
-    }
+    if (!letter) return move;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           '${variation.label}) ',
-          style: TextStyle(fontWeight: FontWeight.w700, color: colors.tertiary),
+          style: TextStyle(fontWeight: FontWeight.w500, color: colors.tertiary),
         ),
         Flexible(child: move),
       ],
     );
   }
 
-  /// O resultado da linha em caixa alta, à direita: sempre em "Também não
-  /// funcionam"; nas outras seções só quando difere do esperado (aceito).
-  List<Widget> _v2Result(
-    BuildContext context,
-    ExplanationBlock block,
-    ExplanationVariation variation,
-  ) {
+  /// O chevron das respostas: 48×48, só expande/recolhe (A15). A margem
+  /// de −12 alinha o glifo à borda do texto, como no canvas (`tentativa`).
+  Widget _chevron(BuildContext context, String id, bool expanded) {
     final colors = Theme.of(context).colorScheme;
-    final failed = block.kind == ExplanationKind.failedAlternatives;
-    final show = failed || variation.outcome != VariationOutcome.accepted;
-    if (!show) return const [];
-    final text = variation.outcomeText ?? _outcome(context, variation.outcome);
-    return [
-      if (!failed && variation.outcome == VariationOutcome.losing)
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: 4),
-          child: Icon(
-            Icons.warning_amber_rounded,
-            size: 16,
-            color: colors.error,
-          ),
-        ),
-      Padding(
-        padding: const EdgeInsetsDirectional.only(start: 8, end: 4),
-        child: Text(
-          text.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontSize: 12,
-            height: 16 / 12,
-            fontWeight: FontWeight.w700,
+    final l10n = context.l10n;
+    final label = expanded ? l10n.explanationCollapse : l10n.explanationExpand;
+    final shift = Directionality.of(context) == TextDirection.rtl
+        ? -12.0
+        : 12.0;
+    return Transform.translate(
+      offset: Offset(shift, 0),
+      child: MergeSemantics(
+        child: Semantics(
+          expanded: expanded,
+          child: IconButton(
+            key: ExplanationKeys.expand(id),
+            tooltip: label,
+            style: IconButton.styleFrom(
+              fixedSize: const Size(48, 48),
+              minimumSize: const Size(48, 48),
+            ),
             color: colors.onSurfaceVariant,
+            onPressed: () => _toggle(id),
+            icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
           ),
         ),
       ),
-    ];
+    );
   }
 
   Widget _line(
@@ -301,64 +290,70 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     final labelled =
         variation.movesSan.isNotEmpty &&
         RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label);
+    final letter =
+        principal &&
+        block.kind != ExplanationKind.failedAlternatives &&
+        block.variations.where((v) => v.parentId == null).length > 1;
     final body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (selector || expandable)
-          MergeSemantics(
-            child: Semantics(
-              selected: selected,
-              expanded: expandable ? expanded : null,
-              label:
-                  '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
-              child: TextButton(
-                key: ExplanationKeys.variation(variation.id),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(44, 44),
-                  padding: EdgeInsets.zero,
-                  alignment: AlignmentDirectional.centerStart,
-                  backgroundColor: selected ? colors.primaryContainer : null,
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
+          Row(
+            children: [
+              Expanded(
+                child: MergeSemantics(
+                  child: Semantics(
+                    selected: selected,
+                    label:
+                        '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton(
+                        key: ExplanationKeys.variation(variation.id),
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(48, 48),
+                          padding: EdgeInsets.zero,
+                          alignment: AlignmentDirectional.centerStart,
+                          tapTargetSize: MaterialTapTargetSize.padded,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onPressed: widget.onVariation == null
+                            ? null
+                            : () => _select(variation),
+                        child: widget.lessonV2 && labelled
+                            ? _v2Title(context, variation, letter: letter)
+                            : Text(
+                                labelled
+                                    ? principal
+                                          ? '${variation.label}) ${variation.movesSan.first}'
+                                          : variation.movesSan.first
+                                    : variation.label,
+                              ),
+                      ),
+                    ),
                   ),
                 ),
-                onPressed: widget.onVariation == null
-                    ? null
-                    : () => _select(variation),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: widget.lessonV2 && labelled
-                          ? _v2Title(context, block, variation, principal)
-                          : Text(
-                              labelled
-                                  ? principal
-                                        ? '${variation.label}) ${variation.movesSan.first}'
-                                        : variation.movesSan.first
-                                  : variation.label,
-                            ),
-                    ),
-                    if (widget.lessonV2 && labelled)
-                      ..._v2Result(context, block, variation),
-                    if (expandable)
-                      Icon(expanded ? Icons.expand_less : Icons.expand_more),
-                  ],
-                ),
               ),
-            ),
+              if (expandable) _chevron(context, variation.id, expanded),
+            ],
           ),
         if (showText && texts.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: principal ? 0 : 8),
             child: _paragraph(texts.join('\n\n'), variation),
           ),
       ],
     );
     // Canvas D14: full-width principal lines, with each child and its replies
     // grouped in one soft block. Ancestry stays in semantics, without a rail.
-    return Column(
+    final line = Column(
+      key: expandable
+          ? _lineKeys.putIfAbsent(variation.id, GlobalKey.new)
+          : null,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         body,
@@ -380,23 +375,32 @@ class _ExplanationCardsState extends State<ExplanationCards> {
             ],
       ],
     );
+    // Card da tentativa: 8 dp em cima e embaixo (canvas `tentativa`).
+    return principal
+        ? Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: line)
+        : line;
   }
 
-  /// Ordem do canvas: o contexto da posição abre, "Também não funcionam"
-  /// fecha e o resto segue a ordem do conteúdo. O contexto que ganhou o
-  /// título "Lance certo" (folha do lance errado) fica onde está.
+  /// O contexto/história (citação): bloco de contexto com título que não é o
+  /// "Lance certo" da folha do lance errado.
+  bool _isQuote(BuildContext context, ExplanationBlock b) =>
+      b.kind == ExplanationKind.context &&
+      b.title.isNotEmpty &&
+      b.title != context.l10n.lessonCorrectMove;
+
+  /// Ordem do canvas: erro (se houver) -> certo -> contexto/história (citação)
+  /// -> "Também não funcionam". O resto segue a ordem do conteúdo.
   List<ExplanationBlock> _ordered(BuildContext context) {
-    final correct = context.l10n.lessonCorrectMove;
     final all = widget.payload.explanations;
-    bool isPosition(ExplanationBlock b) =>
-        b.kind == ExplanationKind.context &&
-        b.title.isNotEmpty &&
-        b.title != correct;
     return [
-      ...all.where(isPosition),
+      ...all.where((b) => b.kind == ExplanationKind.playedIncorrect),
       ...all.where(
-        (b) => !isPosition(b) && b.kind != ExplanationKind.failedAlternatives,
+        (b) =>
+            b.kind != ExplanationKind.playedIncorrect &&
+            b.kind != ExplanationKind.failedAlternatives &&
+            !_isQuote(context, b),
       ),
+      ...all.where((b) => _isQuote(context, b)),
       ...all.where((b) => b.kind == ExplanationKind.failedAlternatives),
     ];
   }
@@ -405,6 +409,8 @@ class _ExplanationCardsState extends State<ExplanationCards> {
   Widget build(BuildContext context) {
     if (!widget.lessonV2) return _legacyBuild(context);
     final blocks = _ordered(context);
+    final theme = Theme.of(context);
+    final rtl = Directionality.of(context) == TextDirection.rtl;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -415,48 +421,60 @@ class _ExplanationCardsState extends State<ExplanationCards> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (index > 0) const Divider(height: 16),
-                if (block.kind != ExplanationKind.context ||
-                    block.title.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      (block.title.isEmpty ||
-                                  block.kind ==
-                                      ExplanationKind.failedAlternatives
-                              ? _title(context, block.kind)
-                              : block.title)
-                          .toUpperCase(),
-                      key: ExplanationKeys.header(block.id),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontSize: 12,
-                        height: 16 / 12,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                // Entre ideias: 16 (o fim do bloco anterior) + linha + 16.
+                if (index > 0) ...[
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  const SizedBox(height: 16),
+                ],
+                if (_isQuote(context, block))
+                  LessonQuote(id: block.id, texts: block.texts)
+                else ...[
+                  if (block.kind != ExplanationKind.context ||
+                      block.title.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        _label(context, block, rtl),
+                        key: ExplanationKeys.header(block.id),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontSize: 12,
+                          height: 16 / 12,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: rtl ? 0 : 0.6,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
-                if (_texts(block).isNotEmpty)
-                  Padding(
-                    key: ExplanationKeys.paragraph(block.id, 0),
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _body(block),
-                  ),
-                for (final variation in block.variations)
-                  if (variation.parentId == null)
-                    _line(context, block, variation),
-                if (_unavailable != null &&
-                    block.variations.any((v) => v.id == _unavailable))
-                  Text(
-                    context.l10n.explanationUnavailable,
-                    key: ExplanationKeys.unavailable,
-                  ),
+                  if (_texts(block).isNotEmpty)
+                    Padding(
+                      key: ExplanationKeys.paragraph(block.id, 0),
+                      padding: EdgeInsets.zero,
+                      child: _body(block),
+                    ),
+                  for (final variation in block.variations)
+                    if (variation.parentId == null)
+                      _line(context, block, variation),
+                  if (_unavailable != null &&
+                      block.variations.any((v) => v.id == _unavailable))
+                    Text(
+                      context.l10n.explanationUnavailable,
+                      key: ExplanationKeys.unavailable,
+                    ),
+                ],
               ],
             ),
           ),
       ],
     );
+  }
+
+  /// O rótulo da seção: caixa alta, menos em árabe (sem caixa).
+  String _label(BuildContext context, ExplanationBlock block, bool rtl) {
+    final text =
+        block.title.isEmpty || block.kind == ExplanationKind.failedAlternatives
+        ? _title(context, block.kind)
+        : block.title;
+    return rtl ? text : text.toUpperCase();
   }
 
   Widget _legacyBuild(BuildContext context) {

@@ -1071,6 +1071,8 @@
   "explanationLosing": "[Löšéš one]",
   "explanationDoesNotMeetGoal": "[Döéš ñöt méét thé ĝöål one two three]",
   "explanationUnavailable": "[Thîš lîñé îš ûñåvåîlåblé. one two three]",
+  "explanationExpand": "[Šhöw thé ŕéplîéš one two]",
+  "explanationCollapse": "[Hîdé thé ŕéplîéš one two]",
   "explanationFirst": "[Štåŕt öf lîñé one two]",
   "explanationPrevious": "[Pŕévîöûš mövé one two]",
   "explanationParent": "[Ŕétûŕñ tö påŕéñt våŕîåtîöñ one two three]",
