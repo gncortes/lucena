@@ -375,6 +375,10 @@ class _RunRow extends StatelessWidget {
         Icons.do_not_disturb_on_outlined,
         l10n.speedrunStoppedAt(stage, total),
       ),
+      SpeedrunRunEnd.timeout => (
+        Icons.timer_off_outlined,
+        l10n.marathonTimeoutHero(stage, total),
+      ),
     };
     final bonus = entry.bonus;
     return InkWell(

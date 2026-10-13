@@ -15,9 +15,6 @@ import 'speedrun_bonus_payer.dart';
 
 part 'speedrun_history_cubit.freezed.dart';
 
-/// Como uma tentativa terminou.
-enum SpeedrunRunEnd { completed, lost, drawn, abandoned }
-
 /// Uma linha do histórico: uma tentativa terminada.
 @freezed
 abstract class SpeedrunHistoryRun with _$SpeedrunHistoryRun {
