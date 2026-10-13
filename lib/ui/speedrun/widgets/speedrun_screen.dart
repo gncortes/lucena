@@ -16,6 +16,7 @@ import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/time_display.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/speedrun_cubit.dart';
+import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
 import '../../core/theme/app_shape.dart';
 
@@ -148,6 +149,16 @@ class SpeedrunScreen extends StatelessWidget {
               ],
             ),
           ),
+          // Quanto concluir renderia de rating (clássico e Maratona). Some
+          // se já foi pago no grupo ou se não dá bônus.
+          if (state.offer > 0)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: SpeedrunRatingBonusCard.offer(
+                points: state.offer,
+                group: PaceCategory.of(speedrun.time),
+              ),
+            ),
           // O melhor tempo em destaque; sem ele, o convite.
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),

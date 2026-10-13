@@ -16,6 +16,7 @@ import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
@@ -294,5 +295,136 @@ void main() {
     final casual = build(profile: const UserProfile());
     await casual.load();
     expect(casual.state.category, SpeedrunCategory.beginner);
+  });
+
+  group('oferta e bônus de rating', () {
+    late FakeRatingRepository rating;
+    late FakeJourneyRepository journey;
+    final marathonId = SpeedrunPaces.idFor(
+      sampleMarathon.id,
+      sampleSpeedrunTime,
+    );
+    final endingId = SpeedrunPaces.idFor(
+      sampleSpeedruns[1].id,
+      sampleSpeedrunTime,
+    );
+    final started = <int, String>{};
+
+    SpeedrunCubit withRating({List<Speedrun>? speedrunsList}) {
+      journey = FakeJourneyRepository(
+        speedruns: speedrunsList ?? [...sampleSpeedruns, sampleMarathon],
+      );
+      rating = FakeRatingRepository(now: now)
+        ..speedrunOf = (id) => started[id]!;
+      settings = FakeSettingsRepository(const AppSettings());
+      final cubit = SpeedrunCubit(
+        journey: journey,
+        speedruns: speedruns,
+        games: games,
+        now: now,
+        settings: settings,
+        rating: rating,
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    Future<int> complete(String speedrunId, int stages) async {
+      final attempt = await speedruns.start(speedrunId, now());
+      started[attempt.id] = speedrunId;
+      for (var index = 0; index < stages; index++) {
+        await win(attempt.id, index, 10);
+      }
+      return attempt.id;
+    }
+
+    test('a oferta da Maratona é a do clássico ×1,5', () async {
+      final cubit = withRating();
+
+      await cubit.load(speedrunId: endingId);
+      final classic = cubit.state.offer;
+      await cubit.load(speedrunId: marathonId);
+
+      // 1150 no Blitz iniciante: 70 no clássico; ×1,5 = 107,8 → 110.
+      expect(classic, 70);
+      expect(cubit.state.offer, 110);
+      expect(cubit.state.bonus, isNull);
+    });
+
+    test('já pago no grupo: a oferta some', () async {
+      final cubit = withRating();
+      await complete(marathonId, sampleMarathon.stages.length);
+
+      await cubit.load(speedrunId: marathonId);
+
+      expect(cubit.state.offer, 0);
+    });
+
+    test('o clássico concluído deixa a Maratona do final em 75%', () async {
+      final cubit = withRating();
+      final id = await complete(endingId, sampleSpeedruns[1].stages.length);
+      // Abrir o resumo paga o que a partida não gravou.
+      await cubit.load(speedrunId: endingId, attemptId: id);
+
+      await cubit.load(speedrunId: marathonId);
+
+      // O rating subiu 70: cheio = 1220 × 10% × 0,45 × 1,5 = 82 → 80; 75% = 60.
+      expect(cubit.state.offer, 60);
+    });
+
+    test('trocar o ritmo da Maratona recalcula a oferta', () async {
+      final cubit = withRating();
+      await cubit.load(speedrunId: marathonId);
+      final blitz = cubit.state.offer;
+
+      const rapid = TimeControl(
+        initial: Duration(minutes: 15),
+        increment: Duration(seconds: 10),
+      );
+      await cubit.chooseMarathonPace(rapid);
+      await cubit.load(
+        speedrunId: SpeedrunPaces.idFor(sampleMarathon.id, rapid),
+      );
+
+      expect(cubit.state.selected!.speedrun.time, rapid);
+      expect(cubit.state.offer, isNot(blitz));
+      expect(cubit.state.offer, greaterThan(0));
+    });
+
+    test('Maratona só da Jornada não dá bônus', () async {
+      final cubit = withRating(
+        speedrunsList: [
+          ...sampleSpeedruns,
+          sampleMarathon.copyWith(journeyOnly: true),
+        ],
+      );
+
+      await cubit.load(speedrunId: marathonId);
+
+      expect(cubit.state.offer, 0);
+    });
+
+    test('o resumo concluído traz o bônus, pago em silêncio', () async {
+      final cubit = withRating();
+      final id = await complete(marathonId, sampleMarathon.stages.length);
+
+      await cubit.load(speedrunId: marathonId, attemptId: id);
+
+      expect(cubit.state.bonus!.points, 110);
+      expect(cubit.state.bonus!.attemptId, id);
+      expect(rating.entries, hasLength(1));
+    });
+
+    test('tentativa que não concluiu não tem bônus', () async {
+      final cubit = withRating();
+      final attempt = await speedruns.start(marathonId, now());
+      started[attempt.id] = marathonId;
+      await win(attempt.id, 0, 10);
+
+      await cubit.load(speedrunId: marathonId, attemptId: attempt.id);
+
+      expect(cubit.state.bonus, isNull);
+      expect(cubit.state.offer, 110);
+    });
   });
 }

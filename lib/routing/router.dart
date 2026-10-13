@@ -998,6 +998,7 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
   profile: context.read<ProfileRepository>(),
+  rating: context.read<RatingRepository>(),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18
