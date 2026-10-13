@@ -34,9 +34,10 @@ void main() {
     AssetEndgameLessonRepository.prefixed(id, read('en')),
   );
   final rawPt = read('pt');
+  final rawEn = read('en');
 
   // passo, fala, id do ramo, FEN do ponto de partida (depois de `at` lances).
-  const expected = [
+  final expected = [
     ('intro', 'step.intro', 'g4', 2, '8/5k2/8/8/4K3/6P1/8/8 w - - 2 2'),
     (
       'convert',
@@ -45,6 +46,17 @@ void main() {
       4,
       '8/5k2/8/4K3/8/6P1/8/8 w - - 4 3',
     ),
+    // 1.Re4 Rf8 2.Rf5 (2.g4? Rg7 =)
+    ('intro', 'step.intro', 'g4f8', 2, '5k2/8/8/8/4K3/6P1/8/8 w - - 2 2'),
+    // 1.Rf4 Re6 2.Re4 (2.e4? Rf6! =)
+    ('diagonal', 'step.diagonal', 'e4', 2, '8/8/4k3/8/5K2/4P3/8/8 w - - 2 2'),
+    // 1.Re2 Re7 2.Re3 (2.Rd3? Rd7 =; 2.Rf3? Rf7 =)
+    for (final (stepId, textKey) in [
+      ('capablanca', 'step.capablanca'),
+      ('capablancaMove', 'step.capablancaMove.done'),
+    ])
+      for (final branchId in ['kd3', 'kf3'])
+        (stepId, textKey, branchId, 2, '8/4k3/8/1p5p/1P5P/8/4K3/8 w - - 2 2'),
   ];
 
   for (final (stepId, textKey, branchId, at, fen) in expected) {
@@ -55,9 +67,13 @@ void main() {
       );
       final letters = SpeechLinks.lettersFor('pt');
       final text = WikiMarkup.parse(rawPt[textKey] as String).text;
-      final line = SpeechLines.find(SpeechLinks.find(text, letters), letters, [
-        step.fen!,
-      ]).firstWhere((l) => cited.matches([for (final m in l.moves) m.uci]));
+      // A citação mais longa da linha: "1.Rf4" sozinho também começa igual.
+      final line =
+          SpeechLines.find(SpeechLinks.find(text, letters), letters, [
+                step.fen!,
+              ])
+              .where((l) => cited.matches([for (final m in l.moves) m.uci]))
+              .reduce((a, b) => b.length > a.length ? b : a);
       final tree = VariationTreeBuilder.fromSpeech(
         line: line,
         branches: cited.branches,
@@ -72,6 +88,16 @@ void main() {
       expect(branch.moves.first.move?.uci, isNot(line.moves[at].uci));
       expect(branch.comment, isNotEmpty);
       expect(en.alternative(id, stepId, branchId), isNotEmpty);
+      // A fala em inglês cita a mesma linha.
+      final lettersEn = SpeechLinks.lettersFor('en');
+      final textEn = WikiMarkup.parse(rawEn[textKey] as String).text;
+      expect(
+        SpeechLines.find(SpeechLinks.find(textEn, lettersEn), lettersEn, [
+          step.fen!,
+        ]).any((l) => cited.matches([for (final m in l.moves) m.uci])),
+        isTrue,
+        reason: 'a fala em inglês precisa citar a linha',
+      );
     });
   }
 }

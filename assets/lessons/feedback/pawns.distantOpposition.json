@@ -33366,7 +33366,7 @@
               "texts": [
                 "As casas-chave são casas que, ocupadas pelo rei, garantem a promoção do peão contra a melhor defesa. Para o peão de g3, são f5, g5 e h5. O problema é alcançar uma delas sem deixar o rei preto bloquear o caminho.",
                 "Para saber quem tem a oposição, com os reis na mesma coluna (ou na mesma fileira), conte as casas vazias entre eles. Se o número for ímpar (uma, três ou cinco) e for a vez do adversário, quem acabou de jogar tem a oposição. Com uma casa entre os reis, a oposição é direta; com três ou cinco, é distante.",
-                "Nesta posição, 1.Re4 deixa e5, e6 e e7 entre os reis, com as pretas na vez. Depois de 1...Rf7, 2.Rf5 alcança uma casa-chave. A contagem só ajuda quando leva o rei à casa de que ele precisa; os peões e as casas que eles controlam também contam.",
+                "Nesta posição, 1.Re4 deixa e5, e6 e e7 entre os reis, com as pretas na vez. Depois de 1...Rf7, 2.Rf5 alcança uma casa-chave. Se as pretas recuarem para f8, o plano é o mesmo: 1.Re4 Rf8 2.Rf5!, e o rei branco ocupa a casa-chave antes de o peão avançar. A contagem só ajuda quando leva o rei à casa de que ele precisa; os peões e as casas que eles controlam também contam.",
                 "{{Capablanca|jose-raul-capablanca}} enuncia a mesma regra ao contrário: com um número par de casas entre os reis, quem joga pode tomar a oposição."
               ],
               "variations": []
@@ -33384,7 +33384,7 @@
               "texts": [
                 "Key squares are squares which, once the king occupies them, guarantee the pawn’s promotion against the best defence. For the g3-pawn they are f5, g5 and h5. The problem is reaching one of them without letting the black king block the way.",
                 "To know who has the opposition, with the kings on the same file (or the same rank), count the empty squares between them. If the number is odd (one, three or five) and it is the opponent’s turn, the side that has just moved has the opposition. With one square between the kings the opposition is direct; with three or five it is distant.",
-                "In this position, 1.Ke4 leaves e5, e6 and e7 between the kings, with Black to move. After 1...Kf7, 2.Kf5 reaches a key square. Counting only helps when it takes the king to the square it needs; the pawns and the squares they control count too.",
+                "In this position, 1.Ke4 leaves e5, e6 and e7 between the kings, with Black to move. After 1...Kf7, 2.Kf5 reaches a key square. If Black retreats to f8, the plan is the same: 1.Ke4 Kf8 2.Kf5!, and the white king occupies the key square before the pawn advances. Counting only helps when it takes the king to the square it needs; the pawns and the squares they control count too.",
                 "{{Capablanca|jose-raul-capablanca}} states the same rule the other way round: with an even number of squares between the kings, the side to move can take the opposition."
               ],
               "variations": []
@@ -33808,7 +33808,7 @@
               "kind": "context",
               "title": "A posição",
               "texts": [
-                "Até aqui, os reis estavam na mesma coluna. Agora não estão, e a ligação entre eles é a diagonal. O lance 1.Re4 parece natural, mas, depois de 1...Re6, é o rei preto quem tem a oposição direta, e o peão de e3 não passa. A entrada correta é 1.Rf4: os reis ficam na diagonal f4, e5, d6, com uma casa entre eles, e a vez é das pretas. A partir daí, o rei branco responde a cada lance ficando com uma casa entre os reis, na mesma coluna ou na mesma fileira."
+                "Até aqui, os reis estavam na mesma coluna. Agora não estão, e a ligação entre eles é a diagonal. O lance 1.Re4 parece natural, mas, depois de 1...Re6, é o rei preto quem tem a oposição direta, e o peão de e3 não passa. A entrada correta é 1.Rf4: os reis ficam na diagonal f4, e5, d6, com uma casa entre eles, e a vez é das pretas. Depois de 1.Rf4 Re6, o rei branco responde com 2.Re4!, de frente, e as pretas precisam ceder. A partir daí, o rei branco responde a cada lance ficando com uma casa entre os reis, na mesma coluna ou na mesma fileira."
               ],
               "variations": []
             }
@@ -33823,7 +33823,7 @@
               "kind": "context",
               "title": "The position",
               "texts": [
-                "Until now the kings were on the same file. Now they are not, and the link between them is the diagonal. 1.Ke4 looks natural, but after 1...Ke6 it is the black king that has the direct opposition, and the e3-pawn does not get through. The correct entry is 1.Kf4: the kings stand on the f4-e5-d6 diagonal, with one square between them and Black to move. From there the white king answers every move by keeping one square between the kings, on the same file or the same rank."
+                "Until now the kings were on the same file. Now they are not, and the link between them is the diagonal. 1.Ke4 looks natural, but after 1...Ke6 it is the black king that has the direct opposition, and the e3-pawn does not get through. The correct entry is 1.Kf4: the kings stand on the f4-e5-d6 diagonal, with one square between them and Black to move. After 1.Kf4 Ke6, the white king answers with 2.Ke4!, face to face, and Black has to give way. From there the white king answers every move by keeping one square between the kings, on the same file or the same rank."
               ],
               "variations": []
             }
@@ -33891,10 +33891,10 @@
                       "1...Re6. O rei preto vai para a frente do peão, para bloquear a coluna e. Se as brancas jogassem o natural 2.e4?, as pretas empatariam com 2...Rf6! Com f5 entre os reis e as brancas na vez, a oposição direta passaria às pretas."
                     ],
                     "3": [
-                      "2.Re4. Agora os reis estão de frente, na coluna e, com uma casa entre eles: é a oposição direta, e as pretas jogam."
+                      "2.Re4! É o único lance que ganha: os reis ficam de frente, na coluna e, com uma casa entre eles, e as pretas jogam. É a oposição direta."
                     ],
                     "4": [
-                      "2...Rd6. Ele precisa ceder. Vai para d6, de onde ainda vigia d5 e e5."
+                      "2...Rd6. O rei preto precisa ceder e vai para d6, de onde ainda vigia d5 e e5; a casa f5 fica livre."
                     ],
                     "5": [
                       "3.Rf5. Esta é a casa-chave que ficou livre. Com o rei aqui, o peão de e3 coroa."
@@ -33959,10 +33959,10 @@
                       "1...Ke6. The black king moves in front of the pawn to block the e-file. If White played the natural 2.e4?, Black would draw with 2...Kf6! With f5 between the kings and White to move, the direct opposition would pass to Black."
                     ],
                     "3": [
-                      "2.Ke4. Now face to face on the e-file, one square in between: direct opposition, and Black to move."
+                      "2.Ke4! The only winning move: the kings stand face to face on the e-file, one square apart, and Black is to move. That is the direct opposition."
                     ],
                     "4": [
-                      "He has to give way. He goes to d6, from where he still guards d5 and e5."
+                      "The black king has to give way and goes to d6, from where it still guards d5 and e5; the f5-square is left free."
                     ],
                     "5": [
                       "3.Kf5. The key square that was left free. With the king here, the e3-pawn queens."
