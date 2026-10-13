@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "変化手順の次の手",
   "lessonPresentationClose": "閉じて盤面を見る",
   "speedrunTimeUntilDrawn": "引き分けまでの時間: {time}",
-  "speedrunContinueStage": "続ける · ステージ {stage}/{total}"
+  "speedrunContinueStage": "続ける · ステージ {stage}/{total}",
+  "lessonHideNextMoves": "次の手を隠す",
+  "lessonShowAllMoves": "すべての手を表示",
+  "lessonHiddenMoves": "隠れた手",
+  "lessonRevealNextMove": "次の手を表示する",
+  "lessonVariationEndBranch": "変化の終わり",
+  "lessonVariationEndLine": "ラインの終わり"
 }

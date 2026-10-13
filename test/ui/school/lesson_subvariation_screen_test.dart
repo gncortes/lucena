@@ -124,7 +124,8 @@ void main() {
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', 'en');
     final settings = SettingsCubit(
-      FakeSettingsRepository(const AppSettings()),
+      // T69: os lances ocultos têm teste próprio; aqui todos à vista.
+      FakeSettingsRepository(const AppSettings(lessonHiddenMoves: false)),
       languages: AppLanguage.selectable,
     );
     addTearDown(settings.close);

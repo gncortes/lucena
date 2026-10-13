@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Следующий ход варианта",
   "lessonPresentationClose": "Закрыть и посмотреть доску",
   "speedrunTimeUntilDrawn": "Время до ничьей: {time}",
-  "speedrunContinueStage": "Продолжить · этап {stage} из {total}"
+  "speedrunContinueStage": "Продолжить · этап {stage} из {total}",
+  "lessonHideNextMoves": "Скрыть следующие ходы",
+  "lessonShowAllMoves": "Показать все ходы",
+  "lessonHiddenMoves": "Скрытые ходы",
+  "lessonRevealNextMove": "открыть следующий ход",
+  "lessonVariationEndBranch": "Конец альтернативы",
+  "lessonVariationEndLine": "Конец линии"
 }

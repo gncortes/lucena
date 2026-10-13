@@ -1181,5 +1181,11 @@
   "historyEmptyFilteredSpeedruns": "[Ñö špéédŕûñš wîth théšé fîltéŕš. one two three]",
   "speedrunTimeUntilDrawn": "[Tîmé ûñtîl thé dŕåw: {time} one two three]",
   "speedrunContinueStage": "[Çöñtîñûé · štåĝé {stage} öf {total} one two three]",
-  "historyEmptyFilteredMarathons": "[Ñö måŕåthöñš wîth théšé fîltéŕš. one two three]"
+  "historyEmptyFilteredMarathons": "[Ñö måŕåthöñš wîth théšé fîltéŕš. one two three]",
+  "lessonHideNextMoves": "[Hîdé thé ñéxt mövéš one two]",
+  "lessonShowAllMoves": "[Šhöw åll mövéš one two]",
+  "lessonHiddenMoves": "[Hîddéñ mövéš one two]",
+  "lessonRevealNextMove": "[ŕévéål thé ñéxt mövé one two]",
+  "lessonVariationEndBranch": "[Éñd öf thé åltéŕñåtîvé one two three]",
+  "lessonVariationEndLine": "[Éñd öf thé lîñé one two]"
 }

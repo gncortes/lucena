@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Próximo lance da variante",
   "lessonPresentationClose": "Fechar e ver o tabuleiro",
   "speedrunTimeUntilDrawn": "Tempo até empatar: {time}",
-  "speedrunContinueStage": "Continuar · etapa {stage} de {total}"
+  "speedrunContinueStage": "Continuar · etapa {stage} de {total}",
+  "lessonHideNextMoves": "Ocultar os próximos lances",
+  "lessonShowAllMoves": "Mostrar todos os lances",
+  "lessonHiddenMoves": "Lances ocultos",
+  "lessonRevealNextMove": "revelar o próximo lance",
+  "lessonVariationEndBranch": "Fim da alternativa",
+  "lessonVariationEndLine": "Fim da linha"
 }

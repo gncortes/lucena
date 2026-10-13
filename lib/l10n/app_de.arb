@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Nächster Zug der Variante",
   "lessonPresentationClose": "Schließen und das Brett sehen",
   "speedrunTimeUntilDrawn": "Zeit bis zum Remis: {time}",
-  "speedrunContinueStage": "Weiter · Etappe {stage} von {total}"
+  "speedrunContinueStage": "Weiter · Etappe {stage} von {total}",
+  "lessonHideNextMoves": "Die nächsten Züge verbergen",
+  "lessonShowAllMoves": "Alle Züge zeigen",
+  "lessonHiddenMoves": "Verborgene Züge",
+  "lessonRevealNextMove": "den nächsten Zug aufdecken",
+  "lessonVariationEndBranch": "Ende der Alternative",
+  "lessonVariationEndLine": "Ende der Variante"
 }

@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Mossa successiva della variante",
   "lessonPresentationClose": "Chiudi e guarda la scacchiera",
   "speedrunTimeUntilDrawn": "Tempo fino alla patta: {time}",
-  "speedrunContinueStage": "Continua · tappa {stage} di {total}"
+  "speedrunContinueStage": "Continua · tappa {stage} di {total}",
+  "lessonHideNextMoves": "Nascondi le prossime mosse",
+  "lessonShowAllMoves": "Mostra tutte le mosse",
+  "lessonHiddenMoves": "Mosse nascoste",
+  "lessonRevealNextMove": "rivela la prossima mossa",
+  "lessonVariationEndBranch": "Fine dell'alternativa",
+  "lessonVariationEndLine": "Fine della linea"
 }

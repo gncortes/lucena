@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/variation_tree.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
@@ -17,6 +16,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/lesson_cubit.dart';
+
+export 'variation_strip.dart';
 
 /// O ritmo da demonstração, do spike `docs/spikes/T51-ritmo.md`: depois de
 /// cada fala, uma pausa; sem voz, um tempo de leitura pelo tamanho dela.
@@ -183,6 +184,7 @@ class VariationControls extends StatelessWidget {
     required this.onBack,
     required this.onForward,
     this.wrong = false,
+    this.inBranch = false,
     super.key,
   });
 
@@ -191,6 +193,9 @@ class VariationControls extends StatelessWidget {
 
   /// A variante é a linha errada da aula.
   final bool wrong;
+
+  /// O lance da vez está numa alternativa (muda a dica do ⏭ desativado).
+  final bool inBranch;
   final VoidCallback onExit;
   final VoidCallback onBack;
   final VoidCallback onForward;
@@ -219,253 +224,15 @@ class VariationControls extends StatelessWidget {
         _ControlButton(
           buttonKey: LessonKeys.variationForward,
           icon: Icons.skip_next_rounded,
-          tooltip: l10n.lessonVariationNext,
+          tooltip: canNext
+              ? l10n.lessonVariationNext
+              : inBranch
+              ? l10n.lessonVariationEndBranch
+              : l10n.lessonVariationEndLine,
           onPressed: canNext ? onForward : null,
           main: true,
         ),
       ],
-    );
-  }
-}
-
-/// A faixa do modo variante (T68, variante B do canvas): as linhas de lances
-/// (a principal e, recuadas, as alternativas), o lance da vez em destaque e,
-/// embaixo, o comentário daquele ponto. É o filho da folha do Viktor, que
-/// rola e esmaece o que não cabe; cada lance é um alvo de toque de 48 dp.
-class VariationStrip extends StatefulWidget {
-  const VariationStrip({
-    required this.tree,
-    required this.position,
-    required this.text,
-    required this.onSelect,
-    super.key,
-  });
-
-  final VariationTree tree;
-
-  /// O lance da vez.
-  final TreePosition position;
-
-  /// O comentário do ponto.
-  final String text;
-
-  /// Toque num lance: o tabuleiro vai à posição dele.
-  final ValueChanged<TreePosition> onSelect;
-
-  /// Recuo das alternativas: 4 de margem + 2 do filete + 10 de respiro
-  /// (canvas T68, `.svr`).
-  static const branchIndent = 16.0;
-
-  /// Alvo mínimo de toque de cada lance.
-  static const tapSize = 48.0;
-
-  /// O trecho abre com o lance da vez ("1...Re6. O rei…"), que a linha de
-  /// cima já mostra em destaque: a notação do começo sai do texto.
-  @visibleForTesting
-  static String withoutLeadingMove(String text) => text.replaceFirst(
-    RegExp(
-      r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
-    ),
-    '',
-  );
-
-  @override
-  State<VariationStrip> createState() => _VariationStripState();
-}
-
-class _VariationStripState extends State<VariationStrip> {
-  @override
-  void didUpdateWidget(VariationStrip oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.position == widget.position) return;
-    // O lance da vez fica à vista dentro da rolagem da folha.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final current = _currentElement;
-      if (current == null || !current.mounted) return;
-      Scrollable.ensureVisible(
-        current,
-        duration: AppMotion.of(context).state,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-      );
-    });
-  }
-
-  BuildContext? get _currentElement {
-    BuildContext? found;
-    void visit(Element element) {
-      if (found != null) return;
-      if (element.widget.key == LessonKeys.variationStripCurrent) {
-        found = element;
-        return;
-      }
-      element.visitChildren(visit);
-    }
-
-    (context as Element).visitChildren(visit);
-    return found;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final body = theme.textTheme.bodyLarge!;
-    final l10n = context.l10n;
-    final text = VariationStrip.withoutLeadingMove(widget.text);
-    final tree = widget.tree;
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.lg,
-        AppSpacing.sm,
-        AppSpacing.lg,
-        0,
-      ),
-      child: Semantics(
-        container: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final row in tree.rows) _row(context, row, body, colors, l10n),
-            if (text.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Divider(height: 1, thickness: 1, color: colors.outlineVariant),
-              const SizedBox(height: AppSpacing.sm),
-              Text(text, style: body.copyWith(color: colors.onSurface)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _row(
-    BuildContext context,
-    VariationRow row,
-    TextStyle body,
-    ColorScheme colors,
-    AppLocalizations l10n,
-  ) {
-    final branch = row.branch;
-    final children = <Widget>[
-      for (final move in row.moves)
-        _MoveButton(
-          key: branch == null
-              ? LessonKeys.variationMove(move.position.ply)
-              : LessonKeys.variationBranchMove(branch.id, move.position.ply),
-          shown: move.shown,
-          state: widget.tree.stateOf(move.position, widget.position),
-          branch: branch != null,
-          style: body,
-          onTap: () => widget.onSelect(move.position),
-        ),
-      if (row.result case final result?)
-        Semantics(
-          label: switch (result) {
-            VariationResult.draw => l10n.lessonLineResultDraw,
-          },
-          excludeSemantics: true,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: VariationStrip.tapSize,
-            ),
-            child: Center(
-              widthFactor: 1,
-              child: Text(
-                '\u2066${result.symbol}\u2069',
-                key: LessonKeys.variationResult(branch!.id),
-                style: body.copyWith(color: colors.onSurfaceVariant),
-              ),
-            ),
-          ),
-        ),
-    ];
-    final wrap = Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: children,
-    );
-    if (branch == null) return wrap;
-    final replaced = branch.at < widget.tree.main.length
-        ? widget.tree.rows
-              .expand((r) => r.moves)
-              .firstWhere((m) => m.position == TreePosition.main(branch.at + 1))
-              .label
-        : '';
-    return Semantics(
-      container: true,
-      label: l10n.lessonVariationAlternative(
-        replaced.replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), ''),
-      ),
-      child: Container(
-        key: LessonKeys.variationBranch(branch.id),
-        margin: const EdgeInsetsDirectional.only(start: 4),
-        padding: const EdgeInsetsDirectional.only(start: 10),
-        decoration: BoxDecoration(
-          border: BorderDirectional(
-            start: BorderSide(color: colors.outlineVariant, width: 2),
-          ),
-        ),
-        child: wrap,
-      ),
-    );
-  }
-}
-
-/// Um lance da faixa: o alvo de toque de 48 dp; o da vez em destaque.
-class _MoveButton extends StatelessWidget {
-  const _MoveButton({
-    required this.shown,
-    required this.state,
-    required this.branch,
-    required this.style,
-    required this.onTap,
-    super.key,
-  });
-
-  final String shown;
-  final VariationMoveState state;
-  final bool branch;
-  final TextStyle style;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final current = state == VariationMoveState.current;
-    final text = Text(
-      // Notação isolada da direção do texto (RTL); o leitor de tela lê o
-      // lance sem os caracteres de isolamento.
-      '\u2066$shown\u2069',
-      semanticsLabel: shown,
-      key: current ? LessonKeys.variationStripCurrent : null,
-      style: style.copyWith(
-        color: current
-            ? colors.primary
-            : branch
-            ? colors.onSurfaceVariant
-            : colors.onSurface,
-        fontWeight: current
-            ? FontWeight.w600
-            : branch
-            ? FontWeight.w400
-            : FontWeight.w500,
-        backgroundColor: current ? colors.primaryContainer : null,
-      ),
-    );
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppShape.small),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: VariationStrip.tapSize,
-          minHeight: VariationStrip.tapSize,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          child: Center(widthFactor: 1, child: text),
-        ),
-      ),
     );
   }
 }

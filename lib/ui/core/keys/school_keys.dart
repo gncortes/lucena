@@ -117,6 +117,13 @@ abstract final class LessonKeys {
   static const presentation = Key('lesson.presentation');
   static const presentationClose = Key('lesson.presentation.close');
   static const marksToggle = Key('lesson.marks');
+
+  /// Lances ocultos (T69): o botão do cabeçalho e o do canto da faixa.
+  static const hiddenMovesToggle = Key('lesson.hiddenMoves');
+  static const variationHiddenToggle = Key('lesson.variation.hiddenMoves');
+  static Key variationHiddenBlock(int row) =>
+      Key('lesson.variation.hidden.$row');
+  static const variationHiddenComment = Key('lesson.variation.hidden.comment');
   static const partSummary = Key('lesson.part.summary');
   static const allPartsDone = Key('lesson.part.allDone');
   static const retryButton = Key('lesson.retry');

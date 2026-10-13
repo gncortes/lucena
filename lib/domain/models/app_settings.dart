@@ -55,6 +55,10 @@ abstract class AppSettings with _$AppSettings {
     /// Nas aulas, as marcações do professor no tabuleiro (setas e casas).
     @Default(true) bool lessonMarks,
 
+    /// Nas aulas, no modo variante, os lances que o aluno ainda não viu ficam
+    /// cobertos (T69).
+    @Default(true) bool lessonHiddenMoves,
+
     /// A aba do Histórico em que o jogador parou.
     @Default(HistoryTab.games) HistoryTab historyTab,
 

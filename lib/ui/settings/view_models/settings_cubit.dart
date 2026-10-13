@@ -54,6 +54,13 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(lessonMarks: shown));
   }
 
+  /// Cobre ou mostra os lances ainda não vistos no modo variante (T69).
+  Future<void> setLessonHiddenMoves({required bool hidden}) {
+    return _update(
+      (state ?? const AppSettings()).copyWith(lessonHiddenMoves: hidden),
+    );
+  }
+
   /// Troca as preferências do relógio.
   Future<void> setClock(ClockSettings clock) {
     return _update((state ?? const AppSettings()).copyWith(clock: clock));

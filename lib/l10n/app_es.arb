@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Jugada siguiente de la variante",
   "lessonPresentationClose": "Cerrar y ver el tablero",
   "speedrunTimeUntilDrawn": "Tiempo hasta las tablas: {time}",
-  "speedrunContinueStage": "Continuar · etapa {stage} de {total}"
+  "speedrunContinueStage": "Continuar · etapa {stage} de {total}",
+  "lessonHideNextMoves": "Ocultar las próximas jugadas",
+  "lessonShowAllMoves": "Mostrar todas las jugadas",
+  "lessonHiddenMoves": "Jugadas ocultas",
+  "lessonRevealNextMove": "revelar la próxima jugada",
+  "lessonVariationEndBranch": "Fin de la alternativa",
+  "lessonVariationEndLine": "Fin de la línea"
 }

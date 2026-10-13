@@ -248,6 +248,20 @@ class VariationTree {
     return [for (var i = 1; i <= position.ply; i++) TreePosition.main(i)];
   }
 
+  /// Os lances que o aluno precisa ter visto para chegar a [position] (T69,
+  /// lances ocultos): como [pathTo] e, num ramo, também o lance da principal
+  /// que ele troca (`at + 1`), de onde a alternativa se explica.
+  List<TreePosition> revealPath(TreePosition position) {
+    final id = position.branch;
+    if (id == null) return pathTo(position);
+    final branch = branchOf(id)!;
+    return [
+      for (var i = 1; i <= branch.at + 1 && i <= main.length; i++)
+        TreePosition.main(i),
+      for (var k = 1; k <= position.ply; k++) TreePosition.branch(id, k),
+    ];
+  }
+
   /// O estado de [move] em relação ao lance da vez [current]: já jogado, o
   /// da vez, ou ainda por jogar. Quem mostra os lances usa isto para o
   /// destaque (e, depois, para ocultar os seguintes).

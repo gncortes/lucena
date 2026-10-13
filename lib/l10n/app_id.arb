@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Langkah berikutnya dalam varian",
   "lessonPresentationClose": "Tutup dan lihat papan",
   "speedrunTimeUntilDrawn": "Waktu hingga seri: {time}",
-  "speedrunContinueStage": "Lanjutkan · tahap {stage} dari {total}"
+  "speedrunContinueStage": "Lanjutkan · tahap {stage} dari {total}",
+  "lessonHideNextMoves": "Sembunyikan langkah berikutnya",
+  "lessonShowAllMoves": "Tampilkan semua langkah",
+  "lessonHiddenMoves": "Langkah tersembunyi",
+  "lessonRevealNextMove": "tampilkan langkah berikutnya",
+  "lessonVariationEndBranch": "Akhir alternatif",
+  "lessonVariationEndLine": "Akhir baris"
 }

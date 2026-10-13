@@ -1182,5 +1182,11 @@
   "lessonVariationNext": "Następny ruch wariantu",
   "lessonPresentationClose": "Zamknij i zobacz szachownicę",
   "speedrunTimeUntilDrawn": "Czas do remisu: {time}",
-  "speedrunContinueStage": "Kontynuuj · etap {stage} z {total}"
+  "speedrunContinueStage": "Kontynuuj · etap {stage} z {total}",
+  "lessonHideNextMoves": "Ukryj kolejne posunięcia",
+  "lessonShowAllMoves": "Pokaż wszystkie posunięcia",
+  "lessonHiddenMoves": "Ukryte posunięcia",
+  "lessonRevealNextMove": "odkryj następne posunięcie",
+  "lessonVariationEndBranch": "Koniec wariantu",
+  "lessonVariationEndLine": "Koniec linii"
 }
