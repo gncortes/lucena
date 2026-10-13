@@ -844,13 +844,18 @@ class _LessonScreenState extends State<LessonScreen>
                         _stage,
                       ]),
                       builder: (context, _) {
-                        final covered =
-                            _sheetMoving.value || _presentingModal.value;
                         final variation = _variation.value;
                         final authored = _authoredVariation;
-                        final inVariant =
-                            (variation != null || authored != null) &&
-                            _stage.value >= 3;
+                        final variantOn = variation != null || authored != null;
+                        // Entrando na variante, o rodapé da demo sai junto
+                        // com a folha e os controles novos só aparecem aos
+                        // 450 ms (etapa 3): nada fica parado no meio.
+                        final entering = variantOn && _stage.value < 3;
+                        final covered =
+                            _sheetMoving.value ||
+                            _presentingModal.value ||
+                            entering;
+                        final inVariant = variantOn && _stage.value >= 1;
                         // Na apresentação B o rodapé nasce oculto: sem
                         // animação de saída por cima do modal.
                         final hideTime = _presentingModal.value
