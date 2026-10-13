@@ -168,7 +168,7 @@ class DemoControls extends StatelessWidget {
           LessonKeys.demoBack,
           Icons.skip_previous_rounded,
           l10n.lessonDemoBack,
-          state.demoMove == 0 ? null : cubit.demoBack,
+          state.demoMove == 0 && !state.offScript ? null : cubit.demoBack,
         ),
         button(
           LessonKeys.demoPause,
@@ -180,8 +180,8 @@ class DemoControls extends StatelessWidget {
           LessonKeys.demoForward,
           Icons.skip_next_rounded,
           l10n.lessonDemoForward,
-          // Fora do roteiro, o lance seguinte é o do aluno (ou o botão de cima).
-          state.offScript ? null : cubit.demoForward,
+          // Fora do roteiro (pg. 2.5) segue ativo: volta ao roteiro e anda um.
+          cubit.demoForward,
           main: true,
           ring: ring,
         ),

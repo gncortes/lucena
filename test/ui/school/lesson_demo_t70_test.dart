@@ -14,7 +14,9 @@ import '../../../testing/fakes/fake_voice_repository.dart';
 
 import 'package:lucena/domain/use_cases/engine_fallback.dart';
 import 'package:lucena/domain/use_cases/position_assessment.dart';
+import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/widgets/typing_dots.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
 
@@ -31,10 +33,11 @@ void main() {
     int score = 900,
     bool throws = false,
     Duration typing = Duration.zero,
+    bool branch = false,
   }) async {
     final lesson = LessonCubit(
       lessons: FakeLessonRepository(
-        course: const Course(
+        course: Course(
           modules: [
             CourseModule(
               id: 'pieces',
@@ -44,6 +47,19 @@ void main() {
                   steps: [
                     DemoStep(
                       id: 'demo',
+                      lines: [
+                        if (branch)
+                          CitedLine(
+                            uci: ['c1c4', 'a2a1', 'c4c5'],
+                            branches: [
+                              CitedBranch(
+                                id: 'rook',
+                                at: 0,
+                                uci: ['c1c2', 'a2a1'],
+                              ),
+                            ],
+                          ),
+                      ],
                       fen: FakeEndgameLessonRepository.lucenaFen,
                       line: [
                         DemoMove(uci: 'c1c4'),
@@ -61,6 +77,7 @@ void main() {
           'pieces.demo.title': 'Demonstration',
           'pieces.demo.demo': 'Watch.',
           'pieces.demo.demo.m1': 'The rook moves.',
+          'pieces.demo.demo.alt.rook': 'This branch also works.',
         }),
       ),
       progress: FakeSchoolProgressRepository(),
@@ -136,6 +153,85 @@ void main() {
     expect(failed.state.offScript, isFalse);
   });
 
+  test('lance de um ramo dos dados segue o ramo, sem motor', () async {
+    final lesson = await build(
+      now: FakeNow(DateTime.utc(2026, 10, 13)),
+      branch: true,
+      throws: true,
+    );
+    await lesson.play(Move.parse('c1c2')!);
+    expect(lesson.state.offScript, isTrue);
+    expect(lesson.state.demoOff, ['c1c2', 'a2a1']);
+    expect(lesson.state.speech, 'This branch also works.');
+    expect(lesson.state.engineErrors, 0);
+    expect(lesson.state.typing, isFalse);
+    expect(lesson.state.demoPlaying, isFalse);
+    // Lance sem ramo continua indo ao motor.
+    final other = await build(
+      now: FakeNow(DateTime.utc(2026, 10, 13)),
+      branch: true,
+    );
+    await other.play(Move.parse('c1c3')!);
+    expect(other.state.note, LessonNote.alsoWins);
+  });
+
+  test('⏭ fora do roteiro volta ao roteiro e anda um lance, pausado', () async {
+    final lesson = await build(now: FakeNow(DateTime.utc(2026, 10, 13)));
+    await lesson.play(Move.parse('c1c2')!);
+    expect(lesson.state.offScript, isTrue);
+    await lesson.demoForward();
+    expect(lesson.state.offScript, isFalse);
+    expect(lesson.state.demoMove, 1);
+    expect(lesson.state.demoPlaying, isFalse);
+  });
+
+  testWidgets('erro do motor: a snackbar fica acima do rodapé da demo', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 740);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final lesson = await build(
+      now: FakeNow(DateTime.utc(2026, 10, 13)),
+      throws: true,
+      typing: const Duration(milliseconds: 300),
+    );
+    final speech = SpeechCubit(
+      FakeVoiceRepository(settings: const VoiceSettings(enabled: false)),
+    );
+    addTearDown(speech.close);
+    await speech.load();
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings(sound: false)),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: settings,
+        speechCubit: speech,
+        child: BlocProvider.value(value: lesson, child: const LessonScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    addTearDown(() => tester.pumpWidget(const SizedBox()));
+    final played = lesson.play(Move.parse('c1c2')!);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await played;
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    final snack = find.byKey(LessonKeys.engineErrorSnack);
+    expect(snack, findsOneWidget);
+    expect(
+      tester
+          .getRect(find.descendant(of: snack, matching: find.byType(Text)))
+          .bottom,
+      lessThanOrEqualTo(tester.getRect(find.byKey(LessonKeys.demoPause)).top),
+    );
+  });
+
   const sizes = [Size(360, 740), Size(412, 917)];
   for (final size in sizes) {
     testWidgets(
@@ -186,6 +282,12 @@ void main() {
         // A máquina pensa: três pontos na folha (pg. 2.3).
         await tester.pump(const Duration(milliseconds: 20));
         expect(find.byKey(LessonKeys.sheetTyping), findsOneWidget);
+        // Os pontinhos centralizados no lugar do texto, que some.
+        expect(
+          tester.getCenter(find.byType(TypingDots)).dx,
+          closeTo(size.width / 2, 1),
+        );
+        expect(find.text('Watch.'), findsNothing);
         await tester.pump(const Duration(milliseconds: 400));
         await played;
         await tester.pumpAndSettle();
@@ -207,13 +309,15 @@ void main() {
             greaterThanOrEqualTo(48),
           );
         }
-        // Fora do roteiro o ⏭ fica apagado.
+        // Fora do roteiro o ⏭ segue ativo (pg. 2.5).
         expect(
           tester
               .widget<IconButton>(find.byKey(LessonKeys.demoForward))
               .onPressed,
-          isNull,
+          isNotNull,
         );
+        expect(find.byKey(LessonV2Keys.freeBoardInvite), findsNothing);
+        expect(find.byKey(LessonV2Keys.openFreeBoard), findsNothing);
         await tester.tap(button);
         await tester.pumpAndSettle();
         expect(button, findsNothing);
