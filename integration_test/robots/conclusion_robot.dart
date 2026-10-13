@@ -127,6 +127,7 @@ class ConclusionRobot {
 
   /// No speedrun: o tempo da etapa que acabou de ser vencida.
   Future<void> expectStageTime(String time) async {
+    await waitConclusion();
     await $(ConclusionKeys.stageTime).scrollTo();
     // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo).
     expect(_lastText(ConclusionKeys.stageTime), endsWith(time));

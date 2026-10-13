@@ -172,6 +172,18 @@ class SpeedrunRobot {
     await back();
   }
 
+  /// No Histórico: a tentativa [index] (0 é a mais recente) mostra o bônus.
+  Future<void> expectHistoryBonus(int index) async {
+    await $(SpeedrunKeys.historyRun(index)).scrollTo();
+    expect(
+      find.descendant(
+        of: find.byKey(SpeedrunKeys.historyRun(index)),
+        matching: find.byKey(SpeedrunKeys.historyBonus),
+      ),
+      findsOneWidget,
+    );
+  }
+
   /// Na tela do speedrun: abre o histórico e toca na tentativa [index]: abre
   /// o resumo dela. Voltar leva ao histórico; mais um volta ao speedrun.
   Future<void> openHistory(int index) async {
