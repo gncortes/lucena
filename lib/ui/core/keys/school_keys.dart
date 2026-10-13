@@ -33,6 +33,9 @@ abstract final class LessonKeys {
   static const stepTimer = Key('lesson.step.timer');
   static const footer = Key('lesson.footer');
 
+  /// O esmaecer de 24 dp no topo do rodapé (fundo sólido abaixo dele).
+  static const footerFade = Key('lesson.footer.fade');
+
   /// O convite para jogar no Lichess e o botão que abre o site.
   static const lichessInvite = Key('lesson.lichessInvite');
   static const lichessButton = Key('lesson.lichessButton');
@@ -120,7 +123,7 @@ abstract final class StarChallengeKeys {
   static const screen = Key('starChallenge.screen');
   static const board = Key('starChallenge.board');
 
-  /// O "Vai!" flutuante, no canto de baixo, antes de começar.
+  /// O "Vai!" largo no rodapé, antes de começar.
   static const goButton = Key('starChallenge.go');
 
   /// O cartão do convite, sob o relógio, antes de começar.
@@ -128,13 +131,16 @@ abstract final class StarChallengeKeys {
   static const obstacles = Key('starChallenge.obstacles');
   static const timer = Key('starChallenge.timer');
 
+  /// O topo do bloco centrado: o relógio e o convite ou o resultado.
+  static const blockTop = Key('starChallenge.blockTop');
+
   /// O total de pontos no painel embaixo do tabuleiro.
   static const collected = Key('starChallenge.collected');
 
   /// O painel de pontos embaixo do tabuleiro.
   static const scoreboard = Key('starChallenge.scoreboard');
 
-  /// O selo do nível na barra.
+  /// O nível e o modo no subtítulo da barra do app.
   static const levelChip = Key('starChallenge.levelChip');
 
   /// Quantas estrelas de uma cor (`bronze`, `silver`, `gold`) foram pegas.
@@ -143,7 +149,7 @@ abstract final class StarChallengeKeys {
   static const earned = Key('starChallenge.earned');
   static const best = Key('starChallenge.best');
 
-  /// O "Jogar de novo" flutuante, no fim, no lugar do "Vai!".
+  /// O "Jogar de novo" no mesmo rodapé, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
   static const backButton = Key('starChallenge.back');
 

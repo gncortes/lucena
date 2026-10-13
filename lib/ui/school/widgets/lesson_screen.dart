@@ -23,15 +23,17 @@ import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/viktor_sheet.dart';
-import '../../core/widgets/one_line.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/school_keys.dart';
+import '../../core/keys/explanation_keys.dart';
+import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_progress.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_cubit.dart';
 import '../../core/board/exercise_layout.dart';
@@ -59,15 +61,6 @@ class _LessonScreenState extends State<LessonScreen>
     duration: AppMotion.component,
     value: 1,
   );
-
-  // O layout do tabuleiro: 0 resolvendo (no centro), 1 explicando (no alto,
-  // com a folha da fala). Uma animação só move o tabuleiro e traz a folha.
-  late final _mode = AnimationController(
-    vsync: this,
-    duration: AppMotion.component,
-    value: 1,
-  );
-  double _target = 1;
 
   ChessboardController? _board;
 
@@ -110,11 +103,6 @@ class _LessonScreenState extends State<LessonScreen>
   // tela (quando o passo troca e o tamanho dela é refeito): o aviso passa
   // para depois do quadro.
   final _sheetMoving = ValueNotifier(false);
-
-  // O cabeçalho do Viktor acima do tabuleiro: fica lá até a folha subir
-  // até ele ([_headerLimit], o pé dele na área); aí entra no topo da folha.
-  final _headerOnTop = ValueNotifier(true);
-  double _headerLimit = 0;
 
   // A altura medida dos botões que flutuam embaixo (com a margem acima
   // deles). Começa na prevista, até a primeira medida.
@@ -221,11 +209,9 @@ class _LessonScreenState extends State<LessonScreen>
     _board?.dispose();
     _sheet.dispose();
     _sheetMoving.dispose();
-    _headerOnTop.dispose();
     _footerHeight.dispose();
     _shake.dispose();
     _landing.dispose();
-    _mode.dispose();
     _elapsed.dispose();
     _flash.dispose();
     _variation.dispose();
@@ -264,25 +250,6 @@ class _LessonScreenState extends State<LessonScreen>
   // O estado anterior, para saber o que mudou.
   LessonState _previous = const LessonState();
 
-  /// O layout que o estado pede: 0 resolvendo, 1 explicando.
-  static double _targetOf(LessonState state) =>
-      state.fen != null && state.layout == LessonLayoutMode.solving ? 0 : 1;
-
-  /// Leva o tabuleiro ao layout [target]: animado, ou direto na abertura da
-  /// tela e com "reduzir movimento" ligado.
-  void _setMode(BuildContext context, double target, {required bool animate}) {
-    _target = target;
-    if (!animate || AppMotion.of(context).disabled) {
-      _mode.value = target;
-      return;
-    }
-    _mode.animateTo(
-      target,
-      duration: AppMotion.of(context).component,
-      curve: AppMotion.enter,
-    );
-  }
-
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
     if (state.fen != previous.fen ||
@@ -299,11 +266,6 @@ class _LessonScreenState extends State<LessonScreen>
     if (state.layout == LessonLayoutMode.solving) {
       _elapsed.value = cubit.stepElapsed;
     }
-    final target = _targetOf(state);
-    final modeChanged = target != _target;
-    if (modeChanged) {
-      _setMode(context, target, animate: previous.current != null);
-    }
     if (state.step != previous.step) {
       _illegal.reset();
       if (_sheet.isAttached) {
@@ -319,10 +281,9 @@ class _LessonScreenState extends State<LessonScreen>
       }
     }
     if (state.mistakes > previous.mistakes) _shake.forward(from: 0);
-    // O pouso do passo novo; com o tabuleiro já se movendo, só o movimento.
+    // O pouso do passo novo.
     if (previous.current != null &&
         state.current?.id != previous.current?.id &&
-        !modeChanged &&
         !AppMotion.of(context).disabled) {
       _landing.forward(from: 0);
     }
@@ -385,15 +346,6 @@ class _LessonScreenState extends State<LessonScreen>
       bases,
     );
     return _lines;
-  }
-
-  /// A primeira variante de verdade da fala (dois lances ou mais), para o
-  /// botão do rodapé.
-  SpeechLine? _mainLine(BuildContext context, LessonState state) {
-    for (final line in _linesOf(context, state)) {
-      if (line.length >= 2) return line;
-    }
-    return null;
   }
 
   /// O toque num trecho da fala: o lance de uma variante abre o tabuleiro
@@ -580,7 +532,6 @@ class _LessonScreenState extends State<LessonScreen>
         builder: (context, state) {
           if (state.fen != null && state.current != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
-            _setMode(context, _targetOf(state), animate: false);
             _elapsed.value = cubit.stepElapsed;
           }
           final lesson = state.lesson;
@@ -706,7 +657,6 @@ class _LessonScreenState extends State<LessonScreen>
                             viktor,
                             boardSettings,
                             board,
-                            bodyHeight: constraints.maxHeight,
                           ),
                         ),
                       ] else ...[
@@ -835,156 +785,99 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// Centro explícito descontando somente a barra de progresso acima.
-  /// O rodapé limita o tamanho, sem deslocar o centro nem encurtar a folha.
+  /// The board stays high in every lesson state, solving too (D15; the
+  /// centre rule of the play screens excludes lessons): top [gutter] below
+  /// the progress bar, as wide as the screen minus the gutters, and the
+  /// Viktor sheet with the rest of the screen.
   Widget _exerciseArea(
     BuildContext context,
     LessonState state,
     LessonStep step,
     Character? viktor,
     BoardSettings boardSettings,
-    ChessboardController board, {
-    required double bodyHeight,
-  }) => LayoutBuilder(
+    ChessboardController board,
+  ) => LayoutBuilder(
     builder: (context, box) {
       final area = Size(box.maxWidth, box.maxHeight);
-      final centerY =
-          BoardViewport.centerYOf(context) - (bodyHeight - area.height);
-      final centered = ExerciseLayout.solvingRect(
-        area,
-        footer: ViktorSheet.peekHeight,
-        centerY: centerY,
+      final side = ExerciseLayout.boardSize(area, footer: _sheetPeek);
+      final rect = Rect.fromLTWH(
+        (area.width - side) / 2,
+        ExerciseLayout.gutter,
+        side,
+        side,
       );
-      // Resolvendo, o tabuleiro fica no centro; explicando, sobe para o alto
-      // (com animação) e a folha da fala fica com o resto da tela.
-      final high = centered.shift(
-        Offset(0, ExerciseLayout.gutter - centered.top),
-      );
-      return AnimatedBuilder(
-        animation: _mode,
-        builder: (context, _) {
-          final rect = Rect.lerp(centered, high, _mode.value)!;
-          // O cabeçalho do Viktor acima do tabuleiro, só resolvendo e se couber;
-          // explicando (ou tela baixa), ele fica na folha.
-          final headerRoom =
-              _mode.value == 0 &&
-              rect.top >= _headerHeight + 2 * ExerciseLayout.gutter;
-          _headerLimit = rect.top - ExerciseLayout.gutter;
-          return Stack(
-            children: [
-              Positioned.fromRect(
-                rect: rect,
-                child: _boardArea(
-                  context,
-                  state,
-                  boardSettings,
-                  board,
-                  size: rect.width,
-                ),
-              ),
-              // A linha errada: o tabuleiro com a borda na cor de erro e o selo
-              // sobre a borda de cima.
-              Positioned.fromRect(
-                rect: rect,
-                child: IgnorePointer(
-                  child: ValueListenableBuilder(
-                    valueListenable: _variation,
-                    builder: (context, _, _) {
-                      if (!_wrongShown(state)) return const SizedBox.shrink();
-                      final error = Theme.of(context).colorScheme.error;
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned.fill(
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: error, width: 3),
-                              ),
-                            ),
-                          ),
-                          const PositionedDirectional(
-                            top: -14,
-                            start: 0,
-                            end: 0,
-                            child: Center(
-                              child: WrongLineBadge(key: LessonKeys.wrongLine),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-              if (viktor != null && headerRoom)
-                PositionedDirectional(
-                  start: 16,
-                  end: 16,
-                  top: rect.top - ExerciseLayout.gutter - _headerHeight,
-                  height: _headerHeight,
-                  child: ValueListenableBuilder(
-                    valueListenable: _headerOnTop,
-                    builder: (context, onTop, _) => IgnorePointer(
-                      ignoring: !onTop,
-                      child: AnimatedSlide(
-                        duration: AppMotion.of(context).component,
-                        curve: AppMotion.enter,
-                        offset: onTop ? Offset.zero : const Offset(0, .3),
-                        child: AnimatedOpacity(
-                          duration: AppMotion.of(context).component,
-                          opacity: onTop ? 1 : 0,
-                          child: _teacher(
-                            context,
-                            state,
-                            step,
-                            viktor,
-                            part: TeacherSpeechPart.header,
+      return Stack(
+        children: [
+          Positioned.fromRect(
+            rect: rect,
+            child: _boardArea(
+              context,
+              state,
+              boardSettings,
+              board,
+              size: rect.width,
+            ),
+          ),
+          // A linha errada: o tabuleiro com a borda na cor de erro e o selo
+          // sobre a borda de cima.
+          Positioned.fromRect(
+            rect: rect,
+            child: IgnorePointer(
+              child: ValueListenableBuilder(
+                valueListenable: _variation,
+                builder: (context, _, _) {
+                  if (!_wrongShown(state)) return const SizedBox.shrink();
+                  final error = Theme.of(context).colorScheme.error;
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: error, width: 3),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              Positioned.fill(
-                child: ValueListenableBuilder(
-                  valueListenable: _footerHeight,
-                  builder: (context, footer, _) => ViktorSheet(
-                    key: LessonKeys.viktorSheet,
-                    onTop: (top) => _headerOnTop.value = top > _headerLimit,
-                    top: rect.bottom + ExerciseLayout.gutter,
-                    controller: _sheet,
-                    scrollKey: LessonKeys.scroll,
-                    closeKey: LessonKeys.closeSheet,
-                    onMinimumChanged: (value) => _sheetMin = value,
-                    onMoving: (value) => _sheetMoving.value = value,
-                    padding: EdgeInsets.only(bottom: footer),
-                    children: [
-                      if (headerRoom)
-                        ValueListenableBuilder(
-                          valueListenable: _headerOnTop,
-                          builder: (context, onTop, _) => _speechSheet(
-                            context,
-                            state,
-                            step,
-                            viktor,
-                            headerOnTop: onTop,
-                          ),
-                        )
-                      else
-                        _speechSheet(context, state, step, viktor),
+                      const PositionedDirectional(
+                        top: -14,
+                        start: 0,
+                        end: 0,
+                        child: Center(
+                          child: WrongLineBadge(key: LessonKeys.wrongLine),
+                        ),
+                      ),
                     ],
-                  ),
-                ),
+                  );
+                },
               ),
-            ],
-          );
-        },
+            ),
+          ),
+          Positioned.fill(
+            child: ValueListenableBuilder(
+              valueListenable: _footerHeight,
+              builder: (context, footer, _) => ViktorSheet(
+                key: LessonKeys.viktorSheet,
+                top: rect.bottom + ExerciseLayout.gutter,
+                controller: _sheet,
+                scrollKey: LessonKeys.scroll,
+                closeKey: LessonKeys.closeSheet,
+                onMinimumChanged: (value) => _sheetMin = value,
+                onMoving: (value) => _sheetMoving.value = value,
+                padding: EdgeInsets.only(bottom: footer),
+                children: [_speechSheet(context, state, step, viktor)],
+              ),
+            ),
+          ),
+        ],
       );
     },
   );
 
-  /// A altura do cabeçalho do Viktor acima do tabuleiro (retrato de 56).
-  static const _headerHeight = 56.0;
+  /// Room kept below the board for the collapsed sheet: the shared peek plus
+  /// Viktor's header row (avatar 56 minus the 8 gap), now always in the sheet
+  /// (D15). Short screens (360×640) shrink the board so the first line of the
+  /// speech stays above the footer; 360×740 and 412×917 keep the full width.
+  static const _sheetPeek = ViktorSheet.peekHeight + 48;
 
   /// A fala do enunciado. No passo de pensar, antes de qualquer dica, o
   /// Viktor só diz quem joga e pede para pensar, curto (o tabuleiro fica no
@@ -1204,25 +1097,18 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// A folha da fala: o puxador, a faixa da tarefa (no passo de tocar) e o
-  /// balão do Viktor. A folha compartilhada controla expansão e rolagem.
-  /// [AnimatedSize], menos com movimento reduzido (com duração zero ele se
-  /// suja no próprio layout).
-  Widget _animatedSize(BuildContext context, Widget child) =>
-      AppMotion.of(context).disabled
-      ? child
-      : AnimatedSize(
-          duration: AppMotion.of(context).component,
-          curve: AppMotion.enter,
-          child: child,
-        );
-
   ExplanationPayload _explanationFor(BuildContext context, LessonState state) {
-    final payload =
+    final payload = wrongMoveSheetPayload(
+      demoSheetPayload(
         state.explanation ??
-        ExplanationPayload.context([?_baseSpeech(context, state)]);
+            ExplanationPayload.context([?_baseSpeech(context, state)]),
+        inDemo: state.current is DemoStep && state.demoMove > 0,
+      ),
+      correctMoveTitle: context.l10n.lessonCorrectMove,
+    );
     final attempted = state.attemptedSan ?? state.thinkMistake;
     if (attempted == null ||
+        (state.current is DemoStep && state.demoMove > 0) ||
         payload.explanations.any(
           (b) => b.kind == ExplanationKind.playedIncorrect,
         )) {
@@ -1240,15 +1126,25 @@ class _LessonScreenState extends State<LessonScreen>
         ExplanationBlock(
           id: 'played-unmapped',
           kind: ExplanationKind.playedIncorrect,
-          texts: ['$local: ${context.l10n.explanationDoesNotMeetGoal}.'],
+          texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
         ),
-        ...payload.explanations,
+        for (final block in payload.explanations)
+          // A explicação do lance certo ganha o título dela (D13–D16).
+          if (block.kind == ExplanationKind.context && block.title.isEmpty)
+            ExplanationBlock(
+              id: block.id,
+              kind: block.kind,
+              title: context.l10n.lessonCorrectMove,
+              texts: block.texts,
+              variations: block.variations,
+            )
+          else
+            block,
       ],
     );
   }
 
-  /// O Viktor da lição: inteiro, só o cabeçalho (acima do tabuleiro) ou só
-  /// o balão (na folha).
+  /// O Viktor da lição, na folha.
   Widget _teacher(
     BuildContext context,
     LessonState state,
@@ -1257,16 +1153,26 @@ class _LessonScreenState extends State<LessonScreen>
     required TeacherSpeechPart part,
   }) {
     final theme = Theme.of(context);
+    final prompting =
+        state.layout == LessonLayoutMode.solving && !state.wrongMove;
     return TeacherSpeech(
       part: part,
+      lessonV2: true,
+      // Pensar e passos de lance: a fala fica no balão cinza (PropV2LicaoPratica).
+      lessonPromptBubble:
+          step != null &&
+          prompting &&
+          (state.explanation == null ||
+              state.explanation?.state == ExplanationState.intro) &&
+          _authoredVariation == null,
+      onSoundSettings: () => showLessonSoundDialog(context),
       teacher: viktor,
-      explanation:
-          state.layout == LessonLayoutMode.solving && state.explanation == null
+      explanation: prompting && state.explanation == null
           ? null
           : _explanationFor(context, state),
       onVariation: _showAuthoredVariation,
       activeVariation: _authoredVariation,
-      text: state.layout == LessonLayoutMode.solving && step != null
+      text: prompting && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
       emotion: state.emotion,
@@ -1291,7 +1197,7 @@ class _LessonScreenState extends State<LessonScreen>
           final l10n = context.l10n;
           return IconButton(
             key: LessonKeys.marksToggle,
-            visualDensity: VisualDensity.compact,
+            visualDensity: VisualDensity.standard,
             tooltip: shown ? l10n.lessonHideMarks : l10n.lessonShowMarks,
             isSelected: shown,
             icon: const Icon(Icons.layers_clear_outlined),
@@ -1304,37 +1210,19 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// [headerOnTop]: nulo, a fala inteira na folha; senão, o cabeçalho fica
-  /// acima do tabuleiro (true) ou no topo da folha aberta (false).
+  /// The whole speech in the sheet: Viktor's header always on top of it.
   Widget _speechSheet(
     BuildContext context,
     LessonState state,
     LessonStep? step,
-    Character? viktor, {
-    bool? headerOnTop,
-  }) {
+    Character? viktor,
+  ) {
     return Column(
       children: [
         // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
         // exercício. No resto, o Viktor já diz o que fazer.
-        if (viktor != null && headerOnTop != null)
-          // O cabeçalho mora acima do tabuleiro; quando a folha sobe até
-          // ele, entra no topo dela (anima).
-          _animatedSize(
-            context,
-            headerOnTop
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: _teacher(
-                      context,
-                      state,
-                      step,
-                      viktor,
-                      part: TeacherSpeechPart.header,
-                    ),
-                  ),
-          ),
+        // A faixa da tarefa só no passo de tocar: lá a casa pedida é o
+        // exercício. No resto, o Viktor já diz o que fazer.
         if (viktor != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -1343,25 +1231,69 @@ class _LessonScreenState extends State<LessonScreen>
               state,
               step,
               viktor,
-              part: headerOnTop == null
-                  ? TeacherSpeechPart.all
-                  : TeacherSpeechPart.bubble,
+              part: TeacherSpeechPart.all,
             ),
           ),
         if (step is TapStep) _guide(context, state, step),
-        if (state.link case final reference?)
+        if ((state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
+            state.fen != null)
           Padding(
-            // No canto de início, logo abaixo do balão (alinhado à
-            // borda dele).
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
-            child: ReferenceLink(
-              key: LessonKeys.referenceLink,
-              reference: reference,
-              blackBelow: step?.side == Side.black,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Divider(),
+                const SizedBox(height: 8),
+                // End of the explanation (PropV2Licao*): 16/24 onSurfaceVariant.
+                Text(
+                  context.l10n.lessonFreeBoardInvite,
+                  key: LessonV2Keys.freeBoardInvite,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: 16,
+                    height: 1.5,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  key: LessonV2Keys.openFreeBoard,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  onPressed: () => context.push(
+                    Routes.freeBoardAt(
+                      _authoredVariation?.fen ??
+                          _variation.value?.fen ??
+                          state.fen!,
+                      view: (step?.side ?? Side.white).name,
+                    ),
+                  ),
+                  icon: const Icon(Icons.grid_on),
+                  label: Text(context.l10n.lessonOpenFreeBoard),
+                ),
+              ],
             ),
           ),
+        if (state.link case final reference?)
+          if (state.fen == null || !_isWikipedia(reference.url))
+            Padding(
+              // No canto de início, logo abaixo do balão (alinhado à
+              // borda dele).
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 16, 0),
+              child: ReferenceLink(
+                key: LessonKeys.referenceLink,
+                reference: reference,
+                blackBelow: step?.side == Side.black,
+              ),
+            ),
       ],
     );
+  }
+
+  bool _isWikipedia(String? url) {
+    final host = url == null ? null : Uri.tryParse(url)?.host.toLowerCase();
+    return host == 'wikipedia.org' ||
+        (host?.endsWith('.wikipedia.org') ?? false);
   }
 
   /// O esmaecer no fim da tela, por trás dos botões: a fala usa a tela até
@@ -1369,35 +1301,43 @@ class _LessonScreenState extends State<LessonScreen>
   /// faixa fina no fim esmaece até a cor do fundo, para ela não terminar
   /// cortada seco e dar para ver que continua (rolando, o fim dela sobe
   /// acima dos botões).
-  Widget _footer(BuildContext context, {required Widget child}) {
-    final background = Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      key: LessonKeys.footer,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            background.withValues(alpha: 0),
-            background.withValues(alpha: 0),
-            background,
-          ],
-          stops: const [0, 0.7, 1],
+  Widget _footer(BuildContext context, {required Widget child}) => KeyedSubtree(
+    key: LessonKeys.footer,
+    child: LessonFooterSurface(child: child),
+  );
+
+  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton centrado,
+  /// CompRodapeLicao `voltar-posicao`) sobe uma variante, ou sai dela se já
+  /// estiver na raiz. Ao contrário do rodapé dos botões flutuantes, o fundo
+  /// é sólido (o texto que rola não aparece atrás) com um esmaecer no topo.
+  Widget _variationFooter(BuildContext context, LessonState state) {
+    final cursor = _authoredVariation!;
+    final payload = state.explanation;
+    return _footer(
+      context,
+      child: Align(
+        heightFactor: 1,
+        child: TextButton.icon(
+          key: ExplanationKeys.restore,
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => _showAuthoredVariation(
+            cursor.variation.parentId == null
+                ? null
+                : payload?.parentCursor(cursor.variation),
+          ),
+          icon: const Icon(Icons.undo),
+          label: Text(context.l10n.lessonReturn),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-        child: child,
       ),
     );
   }
 
-  /// O texto do botão principal: "Ver explicação" no passo de pensar,
+  /// O texto do botão principal: "Explicação" no passo de pensar (D16),
   /// "Concluir" no último passo, "Continuar" no resto.
   String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
     final l10n = context.l10n;
     final isLast = state.step + 1 >= state.stepCount;
-    if (step is ThinkStep) return l10n.lessonSeeExplanation;
+    if (step is ThinkStep) return l10n.lessonExplanationShort;
     if (state.returnTo != null) return l10n.lessonBackToTest;
     if (isLast && state.part != null) return l10n.lessonFinishPart;
     return isLast ? l10n.lessonFinish : l10n.lessonContinue;
@@ -1411,14 +1351,7 @@ class _LessonScreenState extends State<LessonScreen>
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
     if (_authoredVariation != null) {
-      return _footer(
-        context,
-        child: TextButton.icon(
-          onPressed: () => _showAuthoredVariation(null),
-          icon: const Icon(Icons.undo),
-          label: Text(l10n.explanationReturn),
-        ),
-      );
+      return _variationFooter(context, state);
     }
     final step = state.current!;
     final colors = Theme.of(context).colorScheme;
@@ -1504,6 +1437,7 @@ class _LessonScreenState extends State<LessonScreen>
           // Na escola, sem cronômetro: o iniciante aprende sem pressa (os
           // desafios das estrelas, contra o relógio, têm o deles).
           if (state.endgame)
+            // Sem fundo de pílula (CompTimer do canvas): ícone e tempo soltos.
             StepTimer(key: LessonKeys.stepTimer, elapsed: _elapsed),
         ],
       ),
@@ -1537,14 +1471,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// Com o professor falando: voltar um passo, tentar de novo e continuar.
   Widget _actions(BuildContext context, LessonState state) {
     if (_authoredVariation != null) {
-      return _footer(
-        context,
-        child: TextButton.icon(
-          onPressed: () => _showAuthoredVariation(null),
-          icon: const Icon(Icons.undo),
-          label: Text(context.l10n.explanationReturn),
-        ),
-      );
+      return _variationFooter(context, state);
     }
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
@@ -1557,9 +1484,120 @@ class _LessonScreenState extends State<LessonScreen>
       );
     }
     final review = state.phase == StepPhase.failed && state.reviewStep != null;
-    final line = state.phase == StepPhase.waiting || review
-        ? null
-        : _mainLine(context, state);
+    if (state.phase == StepPhase.failed) {
+      VariationCursor? solution;
+      for (final block
+          in state.explanation?.explanations ?? const <ExplanationBlock>[]) {
+        if (block.kind != ExplanationKind.mainSolution &&
+            block.kind != ExplanationKind.playedCorrect &&
+            block.kind != ExplanationKind.otherSolutions) {
+          continue;
+        }
+        for (final variation in block.variations) {
+          if (variation.parentId != null) continue;
+          solution = state.explanation?.openVariation(variation);
+          if (solution != null) break;
+        }
+        if (solution != null) break;
+      }
+      final solutionCursor = solution;
+      Widget action(
+        Key key,
+        IconData icon,
+        String label,
+        VoidCallback? onPressed, {
+        bool primary = false,
+        bool tonal = false,
+      }) {
+        final style = FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          textStyle: Theme.of(context).textTheme.labelLarge,
+        );
+        final content = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(width: 8),
+            Flexible(child: Text(label, textAlign: TextAlign.center)),
+          ],
+        );
+        return Expanded(
+          child: primary
+              ? FilledButton(
+                  key: key,
+                  style: style,
+                  onPressed: onPressed,
+                  child: content,
+                )
+              : tonal
+              ? FilledButton.tonal(
+                  key: key,
+                  style: style,
+                  onPressed: onPressed,
+                  child: content,
+                )
+              : OutlinedButton(
+                  key: key,
+                  style: style.copyWith(
+                    backgroundColor: WidgetStatePropertyAll(colors.surface),
+                  ),
+                  onPressed: onPressed,
+                  child: content,
+                ),
+        );
+      }
+
+      return _footer(
+        context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                action(
+                  LessonKeys.backButton,
+                  Icons.arrow_back,
+                  l10n.lessonPrevious,
+                  state.canGoBack ? cubit.back : null,
+                ),
+                const SizedBox(width: 8),
+                action(
+                  LessonKeys.reviewPoint,
+                  Icons.auto_stories_outlined,
+                  l10n.lessonReviewIdea,
+                  review ? cubit.reviewPoint : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                action(
+                  LessonKeys.nextButton,
+                  Icons.lightbulb_outline,
+                  l10n.lessonSeeSolution,
+                  solutionCursor != null
+                      ? () => _showAuthoredVariation(solutionCursor)
+                      : state.canContinue
+                      ? cubit.next
+                      : null,
+                  tonal: true,
+                ),
+                const SizedBox(width: 8),
+                action(
+                  LessonKeys.retryButton,
+                  Icons.replay,
+                  l10n.lessonRetry,
+                  cubit.retry,
+                  primary: true,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
     return _footer(
       context,
       child: Row(
@@ -1580,54 +1618,33 @@ class _LessonScreenState extends State<LessonScreen>
             const SizedBox(width: 8),
           ],
           if (state.phase == StepPhase.waiting) _waiting(context),
-          // A variante citada na fala: o aluno anda por ela com as setas,
-          // sem ler a linha até o fim.
-          if (line != null)
-            Flexible(
-              flex: 4,
-              child: _FooterAction(
-                key: LessonKeys.variationShow,
-                onPressed: () => _showLine(context, SpeechLineCursor(line, 1)),
-                icon: Icons.call_split,
-                label: l10n.lessonVariationShow,
-                background: colors.surface,
-                foreground: colors.primary,
-              ),
-            ),
-          // O lance errado previsto: rever o ponto da lição que o explica.
-          if (review)
-            Flexible(
-              flex: 4,
-              child: _FooterAction(
-                key: LessonKeys.reviewPoint,
-                onPressed: cubit.reviewPoint,
-                icon: Icons.auto_stories_outlined,
-                label: l10n.lessonReviewPoint,
-                background: colors.surface,
-                foreground: colors.primary,
-              ),
-            ),
-          const Spacer(),
-          if (state.phase == StepPhase.failed)
-            FloatingActionButton.extended(
-              key: LessonKeys.retryButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              onPressed: cubit.retry,
-              icon: const Icon(Icons.replay),
-              label: Text(l10n.lessonRetry),
-            ),
+          if (!state.canContinue) const Spacer(),
+          // A pill like the FAB, but its label wraps at font 2.0 instead of
+          // overflowing the row (CompRodapeLicao `leitura`).
           if (state.canContinue)
-            FloatingActionButton.extended(
-              key: LessonKeys.nextButton,
-              heroTag: null,
-              shape: const StadiumBorder(),
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              onPressed: cubit.next,
-              label: Text(_nextLabel(context, state, step)),
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: FilledButton(
+                  key: LessonKeys.nextButton,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 56),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    elevation: 2,
+                    shape: const StadiumBorder(),
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  onPressed: cubit.next,
+                  child: Text(
+                    _nextLabel(context, state, step),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             ),
         ],
       ),
@@ -1637,6 +1654,77 @@ class _LessonScreenState extends State<LessonScreen>
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
+}
+
+/// Na demonstração, a folha mostra só a fala do lance (TelaLicaoDemoFim):
+/// a seção fixa de contexto ("A posição e o objetivo") não se repete.
+@visibleForTesting
+ExplanationPayload demoSheetPayload(
+  ExplanationPayload payload, {
+  required bool inDemo,
+}) {
+  if (!inDemo) return payload;
+  bool isSolution(ExplanationBlock b) =>
+      b.kind == ExplanationKind.mainSolution ||
+      b.kind == ExplanationKind.otherSolutions ||
+      b.kind == ExplanationKind.failedAlternatives;
+  final rest = [
+    for (final b in payload.explanations)
+      if (b.kind != ExplanationKind.context)
+        // Só a fala do lance: sem o título da seção nem as linhas de
+        // variante ("Esta continuação…", "Continuação: …").
+        if (isSolution(b))
+          ExplanationBlock(
+            id: b.id,
+            kind: ExplanationKind.context,
+            texts: b.texts,
+          )
+        else
+          b,
+  ];
+  if (payload.explanations.every((b) => b.kind == ExplanationKind.context)) {
+    return payload;
+  }
+  return ExplanationPayload(
+    positionId: payload.positionId,
+    reviewStepId: payload.reviewStepId,
+    state: payload.state,
+    explanations: rest,
+  );
+}
+
+/// Lance errado (PropV2LicaoPensarErrado): LANCE ERRADO, LANCE CERTO e
+/// TAMBÉM NÃO FUNCIONAM; sem a seção da posição e com a solução principal
+/// intitulada "Lance certo" em vez do título do conteúdo.
+@visibleForTesting
+ExplanationPayload wrongMoveSheetPayload(
+  ExplanationPayload payload, {
+  required String correctMoveTitle,
+}) {
+  if (payload.state != ExplanationState.incorrect ||
+      !payload.explanations.any(
+        (b) => b.kind == ExplanationKind.playedIncorrect,
+      )) {
+    return payload;
+  }
+  return ExplanationPayload(
+    positionId: payload.positionId,
+    reviewStepId: payload.reviewStepId,
+    state: payload.state,
+    explanations: [
+      for (final b in payload.explanations)
+        if (b.kind == ExplanationKind.mainSolution)
+          ExplanationBlock(
+            id: b.id,
+            kind: b.kind,
+            title: correctMoveTitle,
+            texts: b.texts,
+            variations: b.variations,
+          )
+        else if (!(b.kind == ExplanationKind.context && b.title.isNotEmpty))
+          b,
+    ],
+  );
 }
 
 /// Abre a próxima aula da trilha no lugar desta.
@@ -1675,13 +1763,13 @@ class _FooterAction extends StatelessWidget {
       textStyle: Theme.of(context).textTheme.labelLarge,
     ),
     onPressed: onPressed,
-    // O texto flexível de verdade: encolhe em vez de estourar.
+    // The label wraps (font 2.0) instead of shrinking or overflowing.
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 18),
         const SizedBox(width: AppSpacing.sm),
-        Flexible(child: OneLine(label)),
+        Flexible(child: Text(label, textAlign: TextAlign.center)),
       ],
     ),
   );

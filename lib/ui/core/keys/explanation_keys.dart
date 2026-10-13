@@ -6,6 +6,15 @@ abstract final class ExplanationKeys {
   static Key paragraph(String id, int index) =>
       ValueKey('explanation.paragraph.$id.$index');
   static Key variation(String id) => ValueKey('explanation.variation.$id');
+
+  /// The move of a variation line (the tappable SAN).
+  static Key move(String id) => ValueKey('explanation.move.$id');
+
+  /// The result of a variation line ("WINS", "DRAWS").
+  static Key outcome(String id) => ValueKey('explanation.outcome.$id');
+
+  /// The arrow that opens or closes the sub-variations of a line.
+  static Key expand(String id) => ValueKey('explanation.expand.$id');
   static const first = ValueKey('explanation.first');
   static const previous = ValueKey('explanation.previous');
   static const next = ValueKey('explanation.next');

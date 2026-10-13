@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
@@ -95,78 +98,146 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    return BlocConsumer<StarChallengeCubit, StarChallengeState>(
-      listener: _onState,
-      builder: (context, state) {
-        if (state.fen != null && _board == null) {
-          _board = ChessboardController(game: _gameData(state));
-        }
-        final piece = state.piece;
-        final level = state.level;
-        return Scaffold(
-          key: StarChallengeKeys.screen,
-          appBar: AppBar(
-            title: piece == null
-                ? null
-                : Text(l10n.starChallengeTitle(piece.name)),
-            actions: [
-              if (level != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(end: AppSpacing.lg),
-                  child: _LevelChip(level: level),
-                ),
-            ],
-          ),
-          body: BoardViewport(
-            usefulHeight: BoardViewport.usefulHeightOf(context),
-            child: SafeArea(
-              child: Builder(
-                builder: (context) => _body(context, state, boardSettings),
-              ),
-            ),
-          ),
-          // O botão do momento no canto de baixo: "Vai!" no convite e "Jogar
-          // de novo" no fim. Jogando, some (o Scaffold anima a saída).
-          floatingActionButton: _fab(context, state),
-        );
+    final cubit = context.read<StarChallengeCubit>();
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) cubit.leave();
       },
+      child: BlocConsumer<StarChallengeCubit, StarChallengeState>(
+        listener: _onState,
+        builder: (context, state) {
+          if (state.fen != null && _board == null) {
+            _board = ChessboardController(game: _gameData(state));
+          }
+          final piece = state.piece;
+          final level = state.level;
+          return Scaffold(
+            key: StarChallengeKeys.screen,
+            appBar: AppBar(
+              centerTitle: true,
+              toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
+                  .clamp(72.0, double.infinity),
+              title: piece == null ? null : _title(context, piece, level),
+            ),
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                SafeArea(
+                  child: Builder(
+                    builder: (context) => _body(context, state, boardSettings),
+                  ),
+                ),
+                if (_action(context, state) case final action?)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        border: Border(
+                          top: BorderSide(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                        ),
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: action,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget? _fab(BuildContext context, StarChallengeState state) {
+  /// Pergunta 2 do contrato (T65), opção A: o nível e o modo no subtítulo
+  /// ("Fácil · Caça às estrelas"). Para a opção B (o nível no título, sem
+  /// subtítulo), troque para `false`.
+  static const _levelInSubtitle = true;
+
+  /// O título centralizado (`CompTopBar back centralizado subtitulo`).
+  Widget _title(
+    BuildContext context,
+    ChallengePiece piece,
+    ChallengeLevel? level,
+  ) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final title = l10n.starChallengeTitle(piece.name);
+    final levelText = level == null ? null : levelName(l10n, level);
+    if (!_levelInSubtitle || levelText == null) {
+      return Text(
+        levelText == null ? title : '$title · $levelText',
+        key: levelText == null ? null : StarChallengeKeys.levelChip,
+        textAlign: TextAlign.center,
+      );
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(title, textAlign: TextAlign.center),
+        Text(
+          '$levelText · ${l10n.starChallengeIntroTitle}',
+          key: StarChallengeKeys.levelChip,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget? _action(BuildContext context, StarChallengeState state) {
     if (!state.ready) return null;
     final l10n = context.l10n;
     final cubit = context.read<StarChallengeCubit>();
+    // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
+    Widget label(String text) =>
+        FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
     return switch (state.phase) {
-      ChallengePhase.ready => FloatingActionButton.extended(
+      ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.play_arrow_rounded),
-        label: Text(l10n.starChallengeGo),
+        label: label(l10n.starChallengeGo),
         onPressed: cubit.start,
       ),
-      ChallengePhase.finished => FloatingActionButton.extended(
+      ChallengePhase.finished => FilledButton.icon(
         key: StarChallengeKeys.retryButton,
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: const Icon(Icons.replay_rounded),
-        label: Text(l10n.starChallengePlayAgain),
+        label: label(l10n.starChallengePlayAgain),
         onPressed: cubit.retry,
       ),
       ChallengePhase.running || ChallengePhase.paused => null,
     };
   }
 
-  /// A altura que o botão flutuante ocupa no pé da tela, com a margem dele.
-  static const _fabRoom = 56.0 + AppSpacing.lg + AppSpacing.xs;
+  /// A ação fixa, suas margens e a borda; a área segura fica fora da reserva.
+  /// O botão tem 52 ou a linha do rótulo, se for maior.
+  static double _actionRoom(TextScaler scaler) =>
+      max(52.0, scaler.scale(20).ceilToDouble()) + 8 + 8 + 1;
 
-  /// O espaço mínimo sob o tabuleiro: o placar (duas linhas de texto e as
-  /// margens) e, abaixo dele, o botão flutuante, que assim nunca cobre o
-  /// placar. Em celular comum ele já sobra; em tela baixa ou com fonte
-  /// grande, o tabuleiro diminui um pouco.
+  /// O placar sob o tabuleiro (duas linhas de texto e as margens). Na pausa
+  /// o aviso vai na sobra de baixo, sem mexer no bloco.
+  /// Cada linha arredonda para cima, como o texto pintado.
   static double _reserveBottom(TextScaler scaler) =>
-      3 * AppSpacing.sm + scaler.scale(36) + AppSpacing.sm + _fabRoom;
+      24 + scaler.scale(28).ceilToDouble() + scaler.scale(16).ceilToDouble();
 
   Widget _body(
     BuildContext context,
@@ -175,88 +246,160 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   ) {
     final board = _board;
     if (!state.ready || board == null) return const SizedBox.shrink();
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final star = state.star;
+    final scaler = MediaQuery.textScalerOf(context);
+    // Plain numbers occupy 24 dp at the default scale, plus 10/6 padding.
+    final timerHeight = 16 + scaler.scale(24).ceilToDouble();
     final lowTime =
         state.phase == ChallengePhase.running &&
         state.timeLeft <= const Duration(seconds: 10);
-    // O tabuleiro no centro do espaço útil (T64), entre a barra do app e o
-    // fim da área segura. Em cima, o relógio colado na barra do app e, sob
-    // ele, o convite ou o resultado; embaixo, o placar das estrelas, sempre
-    // no mesmo lugar, e o botão flutuante no canto.
+    // O bloco (relógio, convite ou resultado, tabuleiro e placar) centrado
+    // entre a barra do app e o rodapé, a sobra meio a meio (T65, "Centralizar
+    // igual"). Ao tocar em Vai!, o convite e o botão somem e o bloco é
+    // recentrado.
+    return LayoutBuilder(
+      builder: (context, box) {
+        final wanted =
+            timerHeight +
+            switch (state.phase) {
+              // O convite na altura do conteúdo dele (fonte, idioma, nota dos
+              // obstáculos), medida na largura de verdade.
+              ChallengePhase.ready => _IntroCard.heightFor(
+                context,
+                state.level!,
+                width: box.maxWidth - 2 * AppSpacing.screen,
+              ),
+              ChallengePhase.finished => scaler.scale(140),
+              _ => state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
+            };
+        // Fonte grande em tela baixa: o tabuleiro não passa de metade da
+        // largura para baixo; o que vem em cima ganha só a altura que sobra e
+        // rola.
+        final footer = _hasAction(state) ? _actionRoom(scaler) : 0.0;
+        final room =
+            box.maxHeight -
+            footer -
+            _reserveBottom(scaler) -
+            2 * AppSpacing.sm -
+            box.maxWidth / 2;
+        return _layout(
+          context,
+          state,
+          boardSettings,
+          board: board,
+          reserveTop: max(timerHeight, min(wanted, room)),
+          lowTime: lowTime,
+        );
+      },
+    );
+  }
+
+  static bool _hasAction(StarChallengeState state) =>
+      state.phase == ChallengePhase.ready ||
+      state.phase == ChallengePhase.finished;
+
+  Widget _layout(
+    BuildContext context,
+    StarChallengeState state,
+    BoardSettings boardSettings, {
+    required ChessboardController board,
+    required double reserveTop,
+    required bool lowTime,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    final star = state.star;
+    final scaler = MediaQuery.textScalerOf(context);
+    final withAction = _hasAction(state);
     return CenteredBoardLayout(
-      centerY: BoardViewport.centerYOf(context),
-      gutter: AppSpacing.sm,
-      reserveTop: 40,
-      // O relógio fica colado na barra do app, como antes, e não no tabuleiro.
-      topAlignment: Alignment.topCenter,
-      reserveBottom: _reserveBottom(MediaQuery.textScalerOf(context)),
+      balanced: true,
+      reserveTop: reserveTop,
+      // O topo do bloco tem a altura da reserva, colado no tabuleiro.
+      topAlignment: Alignment.bottomCenter,
+      reserveBottom: _reserveBottom(scaler),
       bottomAlignment: Alignment.topCenter,
-      // O relógio fica; a instrução rola na fonte normal quando falta altura.
-      // O placar e o tabuleiro mantêm tamanho e posição entre os estados.
+      // O lugar da ação fixa (o "Vai!" ou o "Jogar de novo", desenhados por
+      // cima, fora da área segura): o bloco centra acima dela.
+      footer: withAction ? SizedBox(height: _actionRoom(scaler)) : null,
+      // O relógio fica; o convite e o resultado rolam na fonte normal quando
+      // falta altura (fonte grande em tela baixa), sem cortar o cartão.
       shrinkSides: false,
-      top: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // O relógio e a barra do tempo.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  size: 20,
-                  color: lowTime ? colors.error : colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  clockText(state.timeLeft),
-                  key: StarChallengeKeys.timer,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                    color: lowTime ? colors.error : null,
+      top: ConstrainedBox(
+        key: StarChallengeKeys.blockTop,
+        constraints: BoxConstraints(maxHeight: reserveTop),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // O relógio e a barra do tempo.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: 20,
+                    color: lowTime ? colors.error : colors.onSurfaceVariant,
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                    child: LinearProgressIndicator(
-                      value: 1 - state.elapsedFraction,
-                      minHeight: 8,
-                      color: lowTime ? colors.error : colors.primary,
-                      backgroundColor: colors.surfaceContainerHighest,
+                  const SizedBox(width: 6),
+                  TimeDisplay(
+                    value: clockText(state.timeLeft),
+                    semanticsLabel:
+                        '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
+                        '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
+                    type: TimeDisplayType.countdown,
+                    size: TimeDisplaySize.inline,
+                    presentation: TimeDisplayPresentation.plain,
+                    state: lowTime
+                        ? TimeDisplayState.low
+                        : state.phase == ChallengePhase.running
+                        ? TimeDisplayState.active
+                        : state.phase == ChallengePhase.paused
+                        ? TimeDisplayState.paused
+                        : TimeDisplayState.normal,
+                    textKey: StarChallengeKeys.timer,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppShape.small),
+                      child: LinearProgressIndicator(
+                        value: 1 - state.elapsedFraction,
+                        minHeight: 8,
+                        color: lowTime ? colors.error : colors.primary,
+                        backgroundColor: colors.surfaceContainerHighest,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: _AboveContent(
+                  readable:
+                      state.phase == ChallengePhase.ready ||
+                      state.phase == ChallengePhase.finished,
+                  child: AnimatedSwitcher(
+                    duration: AppMotion.of(context).component,
+                    switchInCurve: AppMotion.enter,
+                    switchOutCurve: AppMotion.exit,
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.topCenter,
+                      children: [...previous, ?current],
+                    ),
+                    child: KeyedSubtree(
+                      key: ValueKey(
+                        state.phase == ChallengePhase.paused
+                            ? ChallengePhase.running
+                            : state.phase,
+                      ),
+                      child: _above(context, state),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Flexible(
-            child: _AboveContent(
-              readable: state.phase == ChallengePhase.ready,
-              child: AnimatedSwitcher(
-                duration: AppMotion.of(context).component,
-                switchInCurve: AppMotion.enter,
-                switchOutCurve: AppMotion.exit,
-                layoutBuilder: (current, previous) => Stack(
-                  alignment: Alignment.topCenter,
-                  children: [...previous, ?current],
-                ),
-                child: KeyedSubtree(
-                  key: ValueKey(
-                    state.phase == ChallengePhase.paused
-                        ? ChallengePhase.running
-                        : state.phase,
-                  ),
-                  child: _above(context, state),
-                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       board: LayoutBuilder(
         builder: (context, box) => Directionality(
@@ -304,7 +447,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         return Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.screen,
-            AppSpacing.xs,
+            0,
             AppSpacing.screen,
             0,
           ),
@@ -321,6 +464,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             child: Text(
               state.star?.name ?? ' ',
               key: StarChallengeKeys.starName,
+              // A casa é notação: "e4" também em árabe.
+              textDirection: TextDirection.ltr,
               style: theme.textTheme.displaySmall?.copyWith(
                 color: starColor(state.starKind),
                 fontWeight: FontWeight.w800,
@@ -378,31 +523,22 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     }
   }
 
-  /// Sob o tabuleiro: o placar das estrelas, sempre no mesmo lugar e do mesmo
-  /// tamanho (no convite, jogando e no fim), e embaixo dele, jogando, "sua
-  /// vez" ou "em pausa".
+  /// Sob o tabuleiro: o placar das estrelas, seguido do aviso quando em pausa.
   Widget _below(BuildContext context, StarChallengeState state) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final playing =
-        state.phase == ChallengePhase.running ||
-        state.phase == ChallengePhase.paused;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
       child: Column(
         children: [
           // Ouro, prata, bronze e o total, que pulam a cada estrela.
           StarScoreboard(counts: state.byKind, points: state.points),
-          const SizedBox(height: AppSpacing.sm),
-          Expanded(
-            child: SingleChildScrollView(
-              child: AnimatedOpacity(
-                opacity: playing ? 1 : 0,
-                duration: AppMotion.of(context).state,
+          if (state.phase == ChallengePhase.paused) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Flexible(
+              child: SingleChildScrollView(
                 child: Text(
-                  state.phase == ChallengePhase.paused
-                      ? l10n.starChallengePaused
-                      : l10n.exerciseYourMove,
+                  l10n.starChallengePaused,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -410,7 +546,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -447,31 +583,100 @@ class _AboveContentState extends State<_AboveContent> {
             child: widget.child,
           ),
         )
-      : ShrinkToFit(alignment: Alignment.topCenter, child: widget.child);
+      : widget.child;
 }
 
-/// O convite: o nome do jogo e a regra, num cartão com a estrela de ouro.
+/// O convite (`CompInfoCard estilo=estrela`): o nome do jogo e a regra,
+/// num cartão com a estrela de ouro. A altura é a do conteúdo, sem rolagem
+/// interna; [heightFor] faz a mesma conta para a tela reservar o espaço.
 class _IntroCard extends StatelessWidget {
   const _IntroCard({required this.level});
 
   final ChallengeLevel level;
 
+  static const _padding = AppSpacing.insideCard;
+  static const _border = 1.0;
+
+  /// O círculo da estrela: 22 do ícone e 4 de cada lado (CompInfoCard).
+  static const _badge = 22 + 2 * AppSpacing.xs;
+
+  static TextStyle? _titleStyle(ThemeData theme) =>
+      theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
+
+  static TextStyle? _bodyStyle(ThemeData theme) => theme.textTheme.bodyMedium;
+
+  static TextStyle? _noteStyle(ThemeData theme) => theme.textTheme.bodySmall
+      ?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+
+  /// A altura do cartão com a largura [width] (sem as margens da tela),
+  /// medindo os textos como o [Text] mede: estilo padrão, escala da fonte,
+  /// negrito do sistema, direção e idioma.
+  static double heightFor(
+    BuildContext context,
+    ChallengeLevel level, {
+    required double width,
+  }) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final base = DefaultTextStyle.of(context).style;
+    final bold = MediaQuery.boldTextOf(context);
+    final inner = max(0.0, width - 2 * (_padding + _border));
+    double measure(String text, TextStyle? style, double maxWidth) {
+      final merged = bold
+          ? base
+                .merge(style)
+                .merge(const TextStyle(fontWeight: FontWeight.bold))
+          : base.merge(style);
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: merged),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        locale: Localizations.maybeLocaleOf(context),
+        textHeightBehavior: DefaultTextStyle.of(context).textHeightBehavior,
+      )..layout(maxWidth: max(0.0, maxWidth));
+      final height = painter.height;
+      painter.dispose();
+      return height;
+    }
+
+    final title = measure(
+      l10n.starChallengeIntroTitle,
+      _titleStyle(theme),
+      inner - _badge - AppSpacing.sm,
+    );
+    var height =
+        2 * (_padding + _border) +
+        max(_badge, title) +
+        AppSpacing.sm +
+        measure(
+          l10n.starChallengeIntroBody(level.seconds),
+          _bodyStyle(theme),
+          inner,
+        );
+    if (level.obstacles > 0) {
+      height +=
+          AppSpacing.xs +
+          measure(l10n.starChallengeObstacles, _noteStyle(theme), inner);
+    }
+    return height;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final gold = starColor(StarKind.gold);
     return Container(
       key: StarChallengeKeys.intro,
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
+      padding: const EdgeInsets.all(_padding),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
+        color: starCardColor(theme),
         borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: gold.withValues(alpha: 0.5)),
+        border: Border.all(color: gold.withValues(alpha: 0.5), width: _border),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -488,9 +693,7 @@ class _IntroCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.starChallengeIntroTitle,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: _titleStyle(theme),
                 ),
               ),
             ],
@@ -498,7 +701,7 @@ class _IntroCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.starChallengeIntroBody(level.seconds),
-            style: theme.textTheme.bodyMedium,
+            style: _bodyStyle(theme),
           ),
           // Com peões no tabuleiro: eles só atrapalham, não se capturam.
           if (level.obstacles > 0) ...[
@@ -506,42 +709,10 @@ class _IntroCard extends StatelessWidget {
             Text(
               l10n.starChallengeObstacles,
               key: StarChallengeKeys.obstacles,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+              style: _noteStyle(theme),
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-/// O selo do nível, na cor dele.
-class _LevelChip extends StatelessWidget {
-  const _LevelChip({required this.level});
-
-  final ChallengeLevel level;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      key: StarChallengeKeys.levelChip,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: levelColor(level),
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Text(
-        levelName(context.l10n, level),
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-        ),
       ),
     );
   }

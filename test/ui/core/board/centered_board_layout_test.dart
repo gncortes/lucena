@@ -14,6 +14,7 @@ void main() {
     double footerHeight = 80,
     double? centerY,
     double? minBoardSide,
+    bool measureBlock = false,
   }) async {
     tester.view.physicalSize = screen;
     tester.view.devicePixelRatio = 1;
@@ -25,6 +26,8 @@ void main() {
           body: CenteredBoardLayout(
             centerY: centerY,
             minBoardSide: minBoardSide,
+            balanced: measureBlock,
+            measureBlock: measureBlock,
             gutter: 8,
             top: SizedBox(key: BoardLayoutKeys.top, height: topHeight),
             board: const ColoredBox(
@@ -131,4 +134,20 @@ void main() {
     expect(centering.board.center.dy, 400);
     expect(centering.roomAbove, closeTo(centering.maxRoomAbove, 0.001));
   });
+
+  for (final screen in [const Size(360, 740), const Size(412, 917)]) {
+    testWidgets('T65 $screen: o bloco medido tem o mesmo vão em cima e '
+        'embaixo', (tester) async {
+      await pump(tester, screen, topHeight: 40, measureBlock: true);
+      final appBarEnd = tester.getBottomLeft(find.byType(AppBar)).dy;
+      final top = tester.getRect(find.byKey(BoardLayoutKeys.top));
+      final board = tester.getRect(find.byKey(BoardLayoutKeys.board));
+      final bottom = tester.getRect(find.byKey(BoardLayoutKeys.bottom));
+      final footer = tester.getRect(find.byKey(BoardLayoutKeys.footer));
+      expect(board.top - top.bottom, closeTo(8, 0.01));
+      expect(bottom.top - board.bottom, closeTo(8, 0.01));
+      expect(top.top - appBarEnd, closeTo(footer.top - bottom.bottom, 1));
+      expect(board.width, screen.width);
+    });
+  }
 }

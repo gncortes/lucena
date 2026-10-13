@@ -35,7 +35,10 @@ class _SchoolScreenState extends State<SchoolScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _scrolledLesson != lesson) return;
       final target = _currentLesson.currentContext;
-      if (target != null) {
+      final box = target?.findRenderObject();
+      // Embaixo de outra tela (o app reabriu num desafio), a lista não foi
+      // desenhada: não há o que rolar.
+      if (target != null && box is RenderBox && box.hasSize) {
         Scrollable.ensureVisible(target, alignment: 0.4);
       }
     });

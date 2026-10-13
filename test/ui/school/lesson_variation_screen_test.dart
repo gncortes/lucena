@@ -8,6 +8,10 @@ import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.d
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/ui/core/keys/explanation_keys.dart';
@@ -22,6 +26,7 @@ import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 
 class _AuthoredFeedback extends EmptyExerciseFeedbackRepository
@@ -54,6 +59,8 @@ void main() {
     WidgetTester tester,
     String intro, {
     ExerciseFeedbackRepository? feedback,
+    SpeechCubit? speechCubit,
+    String? movePrompt,
   }) async {
     tester.view.physicalSize = const Size(400, 1100);
     tester.view.devicePixelRatio = 1;
@@ -64,6 +71,7 @@ void main() {
           texts: LessonTexts.fromJson({
             ...FakeEndgameLessonRepository.sampleTexts.toJson(),
             'rook.lucena.intro': intro,
+            'rook.lucena.bridge': ?movePrompt,
           }),
         ),
         FakeEndgameProgressRepository(),
@@ -84,6 +92,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
+        speechCubit: speechCubit,
         child: BlocProvider.value(value: cubit, child: const LessonScreen()),
       ),
     );
@@ -131,12 +140,15 @@ void main() {
     expect(find.byKey(LessonKeys.variationExit), findsNothing);
   });
 
-  testWidgets('o botão do rodapé abre a variante e as setas andam por ela', (
+  testWidgets('o lance no texto abre a variante e as setas andam por ela', (
     tester,
   ) async {
-    await pump(tester, said);
+    final cubit = await pump(tester, said);
+    final originalStep = cubit.state.step;
+    final originalReached = cubit.state.reached;
     final start = fen(tester);
-    await press(tester, LessonKeys.variationShow);
+    expect(find.byKey(LessonKeys.variationShow), findsNothing);
+    await tapText(tester, 'Rd1+');
     // O primeiro lance já jogado.
     expect(fen(tester), startsWith('1K1k4/1P6/8/8/8/8/r7/3R4'));
     // A linha deste passo não é a errada: sem o selo.
@@ -155,13 +167,77 @@ void main() {
     expect(fen(tester), startsWith('1K6/1P2k3/8/8/8/8/r7/3R4'));
     await press(tester, LessonKeys.variationExit);
     expect(fen(tester), start);
-    expect(find.byKey(LessonKeys.variationShow), findsOneWidget);
+    expect(find.byKey(LessonKeys.variationShow), findsNothing);
+    expect(cubit.state.step, originalStep);
+    expect(cubit.state.reached, originalReached);
   });
 
   testWidgets('fala sem variante: sem o botão', (tester) async {
     await pump(tester, 'This is the Lucena position.');
     expect(find.byKey(LessonKeys.variationShow), findsNothing);
   });
+
+  testWidgets('long speech remains readable behind the elapsed timer', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final cubit = await pump(
+      tester,
+      said,
+      movePrompt: List.filled(30, 'Build the bridge.').join(' '),
+    );
+    await cubit.next();
+    await tester.pumpAndSettle();
+    final timer = find.byKey(LessonKeys.stepTimer);
+    expect(timer, findsOneWidget);
+    expect(
+      tester
+          .getRect(timer)
+          .overlaps(tester.getRect(find.byKey(LessonKeys.hintButton))),
+      isFalse,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'lesson header opens dedicated sound panel and mute survives the next step',
+    (tester) async {
+      final voice = FakeVoiceRepository(
+        settings: const VoiceSettings(enabled: true, charactersMuted: true),
+      );
+      final speech = SpeechCubit(voice);
+      addTearDown(speech.close);
+      await speech.load();
+      final cubit = await pump(tester, said, speechCubit: speech);
+      expect(voice.spoken, isNotEmpty);
+      await press(tester, VoiceKeys.speakButton);
+      expect(find.byKey(LessonSoundKeys.dialog), findsOneWidget);
+      expect(find.text("Viktor's voice"), findsOneWidget);
+      await press(tester, LessonSoundKeys.speed(1.5));
+      expect(voice.settings.speed, 1.5);
+      await press(tester, LessonSoundKeys.sound);
+      expect(speech.state.speaking, isNull);
+      final count = voice.spoken.length;
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.charactersMuted, isTrue);
+      await press(tester, LessonSoundKeys.close);
+      await cubit.next();
+      await tester.pumpAndSettle();
+      expect(voice.spoken, hasLength(count));
+      await press(tester, VoiceKeys.speakButton);
+      expect(
+        tester.widget<Switch>(find.byKey(LessonSoundKeys.sound)).value,
+        isFalse,
+      );
+      expect(
+        tester.widget<Switch>(find.byKey(LessonSoundKeys.teacherVoice)).value,
+        isTrue,
+      );
+      expect(find.byKey(LessonSoundKeys.speeds), findsNothing);
+      await press(tester, LessonSoundKeys.close);
+    },
+  );
 
   testWidgets(
     'authored replay switches origins and returns without changing lesson progress',
@@ -215,9 +291,7 @@ void main() {
       await select('main');
       expect(fen(tester), primary.open()!.fen);
       expect(identical(cubit.state, snapshot), isTrue);
-      await tester.ensureVisible(find.byKey(ExplanationKeys.last));
-      await press(tester, ExplanationKeys.last);
-      expect(fen(tester), primary.open()!.at(3).fen);
+      expect(find.byKey(ExplanationKeys.last), findsNothing);
       tester.widget<TeacherSpeech>(find.byType(TeacherSpeech).last).onSpoken!(
         const SpeechLink(start: 0, end: 2, text: 'd4', square: Square.d4),
       );
@@ -236,6 +310,92 @@ void main() {
       await tester.ensureVisible(find.byKey(ExplanationKeys.restore));
       await press(tester, ExplanationKeys.restore);
       expect(fen(tester), start);
+      expect(identical(cubit.state, snapshot), isTrue);
+    },
+  );
+  testWidgets(
+    'single-ply child returns to its parent origin separately from the lesson',
+    (tester) async {
+      const origin = '6k1/8/8/8/8/8/3P4/7K w - - 0 1';
+      final parent = ExplanationVariation(
+        id: 'A',
+        label: 'A',
+        outcome: VariationOutcome.accepted,
+        texts: ['Advance the pawn two squares.'],
+        originFen: origin,
+        movesUci: ['d2d4'],
+        movesSan: ['1.d4'],
+        validated: true,
+      );
+      final child = ExplanationVariation(
+        id: 'A.1',
+        label: 'A.1',
+        parentId: 'A',
+        parentPly: 0,
+        outcome: VariationOutcome.accepted,
+        texts: ['Advance the pawn one square.'],
+        originFen: origin,
+        movesUci: ['d2d3'],
+        movesSan: ['1.d3'],
+        validated: true,
+      );
+      final payload = ExplanationPayload(
+        positionId: 'intro',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'main',
+            kind: ExplanationKind.mainSolution,
+            variations: [parent, child],
+          ),
+        ],
+      );
+      final cubit = await pump(
+        tester,
+        'Explore the alternatives.',
+        feedback: _AuthoredFeedback(payload),
+      );
+      final snapshot = cubit.state;
+      final lessonFen = fen(tester);
+      expect(lessonFen, isNot(origin));
+      Future<void> activate(Key key) async {
+        await tester.ensureVisible(find.byKey(key));
+        await press(tester, key);
+      }
+
+      await activate(ExplanationKeys.variation('A'));
+      expect(fen(tester), parent.open()!.fen);
+      await activate(ExplanationKeys.variation('A.1'));
+      expect(fen(tester), child.open()!.fen);
+      expect(find.byKey(ExplanationKeys.first), findsNothing);
+      expect(find.byKey(ExplanationKeys.parent), findsNothing);
+      // O "Voltar" do rodapé (sem fundo) volta à linha pai primeiro.
+      final back = tester.widget<TextButton>(
+        find.byKey(ExplanationKeys.restore),
+      );
+      expect(back.style?.backgroundColor, isNull);
+      // Canvas voltar-posicao: centrado, sobre fundo sólido com esmaecer no
+      // topo (o texto que rola não aparece atrás).
+      final width =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      expect(
+        tester.getCenter(find.byKey(ExplanationKeys.restore)).dx,
+        closeTo(width / 2, 1),
+      );
+      final fade = tester.widget<DecoratedBox>(
+        find.byKey(LessonKeys.footerFade),
+      );
+      final gradient =
+          (fade.decoration as BoxDecoration).gradient! as LinearGradient;
+      expect(gradient.colors.first.a, 0);
+      expect(gradient.colors.last.a, 1);
+      expect(tester.getSize(find.byKey(LessonKeys.footerFade)).height, 24);
+      await activate(ExplanationKeys.restore);
+      expect(fen(tester), payload.parentCursor(child)!.fen);
+      expect(fen(tester), origin);
+      expect(identical(cubit.state, snapshot), isTrue);
+      await activate(ExplanationKeys.restore);
+      expect(fen(tester), lessonFen);
       expect(identical(cubit.state, snapshot), isTrue);
     },
   );

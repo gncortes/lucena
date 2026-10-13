@@ -11,6 +11,7 @@ abstract final class BlindKeys {
 
   /// O espaço do tabuleiro, entre a barra do app e o painel de baixo.
   static const boardArea = Key('blind.boardArea');
+  static const compactArea = Key('blind.compactArea');
   static const heard = Key('blind.heard');
   static const lastMoves = Key('blind.lastMoves');
   static const toggleMoves = Key('blind.toggleMoves');

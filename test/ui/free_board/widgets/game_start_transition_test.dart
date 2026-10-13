@@ -36,6 +36,7 @@ import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
 import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/balanced_block.dart';
 
 /// Começar a partida na Nova partida: o tabuleiro de cima desliza e cresce
 /// até o centro da partida (um tabuleiro só no ar, sem girar), e o resto da
@@ -186,20 +187,14 @@ void main() {
       expect(flights[i].width, closeTo(flights[i].height, 0.5));
     }
 
-    // A chegada usa o centro real entre as barras do sistema, inclusive
-    // a área da AppBar, como as demais telas de jogo.
+    // A chegada fica entre o fim da barra de título e o início das ações.
     final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea));
-    final media = MediaQuery.of(
-      tester.element(find.byKey(FreeBoardKeys.board)),
-    );
+    final appBar = tester.getRect(find.byType(AppBar));
+    final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
     expect(board.center.dx, closeTo(area.center.dx, 1));
-    expect(
-      board.center.dy,
-      closeTo(
-        (media.padding.top + media.size.height - media.padding.bottom) / 2,
-        1,
-      ),
-    );
+    expectBalancedBlock(tester, board);
+    expect(board.top, greaterThanOrEqualTo(appBar.bottom));
+    expect(board.bottom, lessThanOrEqualTo(actions.top));
     expect(find.byType(StaticChessboard), findsNothing);
     expect(find.byKey(GameSetupKeys.preview), findsNothing);
 

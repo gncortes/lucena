@@ -573,6 +573,10 @@
     "description": "Title of the panel that asks to confirm resigning."
   },
   "gameResigned": "Resignation",
+  "gameSeeResult": "See the result",
+  "@gameSeeResult": {
+    "description": "Button under the board when the game against the machine is over; opens the result screen."
+  },
   "@gameResigned": {
     "description": "Reason the game ended: the player resigned."
   },
@@ -5203,9 +5207,9 @@
   "@starChallengeIntroTitle": {
     "description": "Title of the card before starting a star challenge: the name of the game."
   },
-  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away. The gold one fades first, which is why it is worth more.",
+  "starChallengeIntroBody": "You have {seconds} seconds. Take your piece to each star before it fades away.",
   "@starChallengeIntroBody": {
-    "description": "Card before starting a star challenge: the rule in one or two friendly sentences (take the piece to each star before it fades; the gold one fades first and is worth more).",
+    "description": "Card before starting a star challenge: the rule in two short friendly sentences (how many seconds; take the piece to each star before it fades). The scoreboard already shows what each star is worth.",
     "placeholders": {
       "seconds": {
         "type": "int"
@@ -5230,8 +5234,6 @@
       }
     }
   },
-  "speedrunQuitProgress": "Give up this speedrun? You lose the {count} stages won.",
-  "@speedrunQuitProgress": {"description": "Warning before abandoning a speedrun, including completed stages.", "placeholders": {"count": {"type": "int"}}},
   "emptyFirstEndgame": "Play my first endgame",
   "@emptyFirstEndgame": {
     "description": "Primary action inviting a player with no game history to choose their first endgame."
@@ -5334,6 +5336,8 @@
   "explanationUnavailable": "This line is unavailable.",
   "explanationFirst": "Start of line",
   "explanationPrevious": "Previous move",
+  "explanationParent": "Return to parent variation",
+  "@explanationParent": {"description": "Explanation panel: leave the current branch and return to its immediate parent variation, which may itself be a variation"},
   "explanationNext": "Next move",
   "explanationLast": "End of line",
   "explanationReturn": "Return to position",
@@ -5351,5 +5355,101 @@
   "@explanationPrevious": {"description": "Explanation panel: Previous"},
   "@explanationNext": {"description": "Explanation panel: Next"},
   "@explanationLast": {"description": "Explanation panel: Last"},
-  "@explanationReturn": {"description": "Explanation panel: Return"}
+  "@explanationReturn": {"description": "Explanation panel: Return"},
+  "gameChallengeTitle": "{opponent} Challenge",
+  "gameDrawOfferTitle": "Offer a draw?",
+  "gameDrawOfferHint": "Your opponent can accept or decline the offer.",
+  "gameSoundAndVoice": "Sound and voice",
+  "gameSpeechHint": "You can turn off {opponent}’s comments whenever you like.",
+  "gameSpeechAdjust": "Adjust",
+  "lessonReviewIdea": "Review the idea",
+  "lessonSeeSolution": "View solution",
+  "@gameChallengeTitle": {
+    "description": "Title of a Journey game against the named opponent.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "@gameDrawOfferTitle": {
+    "description": "Title of the confirmation sheet before offering a draw."
+  },
+  "@gameDrawOfferHint": {
+    "description": "Explains that offering a draw does not immediately end the game."
+  },
+  "@gameSoundAndVoice": {
+    "description": "Title of the in-game sound and voice dialog."
+  },
+  "@gameSpeechHint": {
+    "description": "Suggestion after dismissing three distinct opponent comments; at most once every seven days.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "@gameSpeechAdjust": {
+    "description": "Snackbar action opening the sound and voice preferences."
+  },
+  "@lessonReviewIdea": {
+    "description": "Lesson error footer action to revisit the associated lesson idea."
+  },
+  "@lessonSeeSolution": {
+    "description": "Lesson error footer action to show the solution while keeping retry available."
+  },
+  "lessonIncorrectMove": "Incorrect move",
+  "lessonCorrectMove": "Correct move",
+  "lessonFailedAlternatives": "These do not work either",
+  "@lessonIncorrectMove": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonCorrectMove": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonFailedAlternatives": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "lessonStillUnsure": "Still unsure?",
+  "lessonOpenFreeBoard": "Open in the free board",
+  "lessonExplanationShort": "Explanation",
+  "lessonFreeBoardInvite": "Still unsure? Test other ideas from this position, from your side of the board.",
+  "@lessonStillUnsure": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonOpenFreeBoard": {
+    "description": "Canvas V2 lesson feedback heading; presentation only."
+  },
+  "@lessonExplanationShort": {
+    "description": "Main button of a lesson think step (D16): one word that opens Viktor's explanation."
+  },
+  "@lessonFreeBoardInvite": {
+    "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
+  },
+  "lessonReturn": "Back",
+  "@lessonReturn": {"description": "Short label for returning to the lesson from its explanation."},
+  "lessonTeacherVoice": "Viktor's voice",
+  "@lessonTeacherVoice": {"description": "Teacher voice toggle in the lesson sound dialog."},
+  "lessonTeacherVoiceHint": "Read the explanations aloud",
+  "@lessonTeacherVoiceHint": {"description": "Explains automatic lesson narration."},
+  "lessonSoundHint": "Piece sounds and Viktor’s voice",
+  "@lessonSoundHint": {"description": "Describes the global sound toggle in a lesson."},
+  "lessonSoundOn": "Sound and voice: on, speed {speed}",
+  "lessonSoundOff": "Sound and voice: off",
+  "@lessonSoundOn": {"description": "Accessible label for the enabled lesson sound button and its localized speed.", "placeholders": {"speed": {"type": "String"}}},
+  "@lessonSoundOff": {"description": "Accessible label for the disabled lesson sound button."},
+  "gameDrawOfferHintNamed": "{name} can accept or decline. If they decline, the game goes on.",
+  "@gameDrawOfferHintNamed": {"description": "Draw offer sheet: what happens after the player offers a draw to the named opponent character.", "placeholders": {"name": {"type": "String"}}},
+  "gameKeepPlaying": "Keep playing",
+  "@gameKeepPlaying": {"description": "Secondary button of the resign and draw sheets: closes the sheet and the game goes on."},
+  "speedrunQuitHint": "{count, plural, =0{The attempt ends here and stays in your history.} =1{You lose the stage you won in this attempt.} other{You lose the {count} stages you won in this attempt.}}",
+  "@speedrunQuitHint": {"description": "Hint of the sheet that confirms leaving a speedrun in the middle: what is lost, by how many stages were already won in this attempt.", "placeholders": {"count": {"type": "int"}}},
+  "gameSoundLabelOn": "Sound",
+  "gameSoundLabelOff": "No sound",
+  "@gameSoundLabelOn": {
+    "description": "Label under the sound button of the game actions bar while the sound is on."
+  },
+  "@gameSoundLabelOff": {
+    "description": "Label under the sound button of the game actions bar while the sound is off."
+  }
 }

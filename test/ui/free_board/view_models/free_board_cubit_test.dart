@@ -1343,7 +1343,7 @@ void main() {
       expect(games.snapshot, isNotNull);
 
       now.advance(const Duration(seconds: 5));
-      await cubit.quitSpeedrun();
+      await cubit.quitSpeedrun(confirmed: true);
 
       expect((await speedruns.attempt(attempt.id))!.abandonedAt, now());
       expect(games.snapshot, isNull);
@@ -1351,6 +1351,21 @@ void main() {
       // Depois de sair, nada mais mexe na partida.
       cubit.play(NormalMove.fromUci('c1h1'));
       expect(cubit.state.moves, isEmpty);
+    });
+
+    test('cancelar a saída não grava desistência nem apaga a etapa', () async {
+      final attempt = await speedruns.start('rung.1000', now());
+      final cubit = stage(attempt.id);
+      addTearDown(cubit.close);
+      await cubit.open();
+
+      await cubit.quitSpeedrun(confirmed: false);
+
+      expect((await speedruns.attempt(attempt.id))!.abandonedAt, isNull);
+      expect(games.snapshot, isNotNull);
+      // A partida segue viva: ainda aceita lance.
+      cubit.play(NormalMove.fromUci('c1h1'));
+      expect(cubit.state.moves, isNotEmpty);
     });
 
     test('tentar de novo depois de perder começa uma tentativa nova', () async {

@@ -5,10 +5,18 @@ class FakeStarChallengeRepository implements StarChallengeRepository {
   FakeStarChallengeRepository([this.saved = const StarChallengeProgress()]);
 
   StarChallengeProgress saved;
+  OpenStarChallenge? opened;
 
   @override
   Future<StarChallengeProgress> load() async => saved;
 
   @override
   Future<void> save(StarChallengeProgress progress) async => saved = progress;
+
+  @override
+  Future<OpenStarChallenge?> open() async => opened;
+
+  @override
+  Future<void> setOpen(OpenStarChallenge? challenge) async =>
+      opened = challenge;
 }

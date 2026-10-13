@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
@@ -441,7 +442,12 @@ void main() {
       await pump(tester);
       await tester.runAsync(() => lesson.play(move('a1a6')));
       await tester.pumpAndSettle();
-      expect(find.byKey(LessonKeys.reviewPoint), findsNothing);
+      expect(
+        tester
+            .widget<OutlinedButton>(find.byKey(LessonKeys.reviewPoint))
+            .onPressed,
+        isNull,
+      );
       expect(
         find.textContaining(
           'what the lesson showed about “Back rank”',
@@ -507,7 +513,16 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.wrongLine), findsNothing);
-    await tester.tap(find.byKey(LessonKeys.variationShow));
+    expect(find.byKey(LessonKeys.variationShow), findsNothing);
+    final action = tester
+        .widgetList<Semantics>(find.byType(Semantics))
+        .expand(
+          (w) =>
+              w.properties.customSemanticsActions?.entries ??
+              const <MapEntry<CustomSemanticsAction, VoidCallback>>[],
+        )
+        .singleWhere((entry) => entry.key.label?.contains('1.Ra7') ?? false);
+    action.value.call();
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.wrongLine), findsOneWidget);
     expect(find.byKey(LessonKeys.wrongLineControls), findsOneWidget);

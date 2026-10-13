@@ -1,4 +1,4 @@
-/// Os raios de borda do app (T51, G3): quatro valores, nada escrito à mão. O
+/// Os raios de borda do app (T51, G3): valores compartilhados, nada escrito à mão. O
 /// teste `test/ui/core/motion_usage_test.dart` acusa raio com número fora
 /// destes.
 abstract final class AppShape {
@@ -10,6 +10,9 @@ abstract final class AppShape {
 
   /// Cartões, painéis, balões.
   static const large = 16.0;
+
+  /// Diálogos e folhas da proposta V2.
+  static const extraLarge = 28.0;
 
   /// Pílulas e retratos redondos: maior que qualquer meia altura.
   static const full = 999.0;

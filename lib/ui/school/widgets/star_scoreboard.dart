@@ -24,22 +24,23 @@ class StarScoreboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     return Container(
       key: StarChallengeKeys.scoreboard,
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHigh,
+        color: starCardColor(theme),
         borderRadius: BorderRadius.circular(AppShape.large),
       ),
       child: Row(
         children: [
-          for (final kind in StarKind.values.reversed)
+          for (final kind in StarKind.values.reversed) ...[
             Expanded(
               child: _KindCounter(kind: kind, count: counts[kind] ?? 0),
             ),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(child: _Total(points: points)),
+            const SizedBox(width: AppSpacing.xs),
+          ],
+          _Total(points: points),
         ],
       ),
     );
@@ -70,6 +71,7 @@ class _KindCounter extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _Fit(
@@ -91,6 +93,7 @@ class _KindCounter extends StatelessWidget {
                   '$value',
                   key: StarChallengeKeys.kindCount(kind.name),
                   style: theme.textTheme.titleLarge?.copyWith(
+                    height: 28 / 22,
                     fontWeight: FontWeight.w800,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -103,6 +106,7 @@ class _KindCounter extends StatelessWidget {
           child: Text(
             context.l10n.starChallengeWorth(kind.points),
             style: theme.textTheme.labelMedium?.copyWith(
+              height: 16 / 12,
               color: colors.onSurfaceVariant,
             ),
           ),
@@ -132,6 +136,7 @@ class _Total extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _Fit(
@@ -143,6 +148,7 @@ class _Total extends StatelessWidget {
                   '$value',
                   key: StarChallengeKeys.collected,
                   style: theme.textTheme.titleLarge?.copyWith(
+                    height: 28 / 22,
                     color: colors.onPrimaryContainer,
                     fontWeight: FontWeight.w800,
                     fontFeatures: const [FontFeature.tabularFigures()],
@@ -155,6 +161,7 @@ class _Total extends StatelessWidget {
             child: Text(
               context.l10n.starChallengePointsLabel(points),
               style: theme.textTheme.labelMedium?.copyWith(
+                height: 16 / 12,
                 color: colors.onPrimaryContainer,
               ),
             ),

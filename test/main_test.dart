@@ -22,11 +22,14 @@ import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
+import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/domain/models/star_challenge.dart';
 
 import '../testing/fakes/fake_now.dart';
 import '../testing/fakes/fake_ongoing_game_repository.dart';
 import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
+import '../testing/fakes/fake_star_challenge_repository.dart';
 import '../testing/test_dependencies.dart';
 
 void main() {
@@ -41,6 +44,7 @@ void main() {
     FakeProfileRepository? profile,
     FakeNow? now,
     FakeOngoingGameRepository? games,
+    FakeStarChallengeRepository? stars,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -49,6 +53,7 @@ void main() {
           settingsRepository: settings,
           profileRepository: profile,
           ongoingGameRepository: games,
+          starChallengeRepository: stars,
         ),
       ),
     );
@@ -62,6 +67,32 @@ void main() {
     await pumpApp(tester);
 
     expect(find.byKey(HomeKeys.screen), findsOneWidget);
+  });
+
+  testWidgets('fechado à força no meio do desafio das estrelas, reabre no '
+      'Pronto do mesmo desafio e nível; ao sair, não reabre mais', (
+    tester,
+  ) async {
+    // No tamanho do celular, como no aparelho.
+    tester.view.physicalSize = const Size(412, 917) * 3;
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final stars = FakeStarChallengeRepository()
+      ..opened = const OpenStarChallenge(
+        ChallengePiece.knight,
+        ChallengeLevel.medium,
+      );
+    await pumpApp(tester, stars: stars);
+
+    expect(find.byKey(StarChallengeKeys.screen), findsOneWidget);
+    expect(find.byKey(StarChallengeKeys.goButton), findsOneWidget);
+    expect(stars.opened?.key, 'knight.medium');
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(StarChallengeKeys.listScreen), findsOneWidget);
+    expect(stars.opened, isNull);
   });
 
   testWidgets('entrega às telas o relógio da composição', (tester) async {

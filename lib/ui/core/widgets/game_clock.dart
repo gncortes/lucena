@@ -2,12 +2,10 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
-import '../board/board_settings_ui.dart';
-import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import 'game_entrance.dart';
+import 'time_display.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,
 /// na ponta, o relógio ou de quem é a vez. Só apresentação: quem usa dá os
@@ -23,6 +21,8 @@ class PlayerEntry {
     this.turnLabel,
     this.turnKey,
     this.portrait,
+    this.detail,
+    this.detailKey,
   });
 
   final Side side;
@@ -40,6 +40,11 @@ class PlayerEntry {
 
   /// Retrato do personagem, quando existe; os demais jogadores usam o peão.
   final Widget? portrait;
+
+  /// A linha embaixo do nome (`Nível 1000`, o rating do jogador). Só aparece
+  /// na fileira [PlayersRow.detailed].
+  final String? detail;
+  final Key? detailKey;
 }
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
@@ -51,11 +56,16 @@ class PlayersRow extends StatelessWidget {
     required this.board,
     this.enterClocks = false,
     this.compactClocks = false,
+    this.detailed = false,
     super.key,
   });
 
   /// Altura da fileira, para a tela reservar o espaço do tabuleiro.
   static const height = 56.0;
+
+  /// Altura da fileira com a linha de detalhe: retrato 44 com 12 em cima e
+  /// embaixo (CompJogador, `padding: 12px 16px`).
+  static const detailedHeight = 68.0;
 
   final List<PlayerEntry> players;
 
@@ -69,6 +79,13 @@ class PlayersRow extends StatelessWidget {
   /// Dois relógios junto do tabuleiro em telas pequenas.
   final bool compactClocks;
 
+  /// A variante da partida V2 (CompJogador): 68 de altura, margem 16 e a
+  /// linha de detalhe embaixo do nome. Desligada, a fileira de 56 de antes.
+  final bool detailed;
+
+  double get _height => detailed ? detailedHeight : height;
+  double get _margin => detailed ? 16 : 12;
+
   @override
   Widget build(BuildContext context) {
     // Relógios juntos: um único retrato do adversário e seu nome, sem
@@ -78,9 +95,9 @@ class PlayersRow extends StatelessWidget {
         players.any((player) => player.portrait != null)) {
       final character = players.firstWhere((player) => player.portrait != null);
       return SizedBox(
-        height: height,
+        height: _height,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: _margin),
           child: Semantics(
             container: true,
             label: character.name,
@@ -90,12 +107,10 @@ class PlayersRow extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ExcludeSemantics(
-                    child: Text(
-                      character.name,
-                      maxLines: 1,
+                    child: _nameAndDetail(
+                      context,
+                      character,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -129,9 +144,9 @@ class PlayersRow extends StatelessWidget {
     }
     final single = players.length == 1;
     return SizedBox(
-      height: height,
+      height: _height,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: EdgeInsets.symmetric(horizontal: _margin),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -146,6 +161,54 @@ class PlayersRow extends StatelessWidget {
     );
   }
 
+  /// O nome e, na variante [detailed], a linha de detalhe embaixo, em
+  /// `onSurfaceVariant`. As duas linhas cortam com reticências; com fonte
+  /// grande, a escala para no que cabe na altura da fileira (o relógio e o
+  /// tabuleiro não mudam de lugar).
+  Widget _nameAndDetail(
+    BuildContext context,
+    PlayerEntry player, {
+    required TextOverflow overflow,
+  }) {
+    final theme = Theme.of(context);
+    final nameStyle = theme.textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
+    final name = Text(
+      player.name,
+      maxLines: 1,
+      overflow: overflow,
+      softWrap: false,
+      style: nameStyle,
+    );
+    final detail = player.detail;
+    if (!detailed || detail == null || detail.isEmpty) return name;
+    final detailStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    double line(TextStyle? style) =>
+        (style?.fontSize ?? 14) * (style?.height ?? 1.2);
+    final maxScale = detailedHeight / (line(nameStyle) + line(detailStyle));
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: maxScale,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          name,
+          Text(
+            detail,
+            key: player.detailKey,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            style: detailStyle,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _entering(Widget clock) => enterClocks
       ? GameEntrance(part: GameEntrancePart.clock, child: clock)
       : clock;
@@ -156,7 +219,6 @@ class PlayersRow extends StatelessWidget {
     required bool showName,
     bool mirrored = false,
   }) {
-    final theme = Theme.of(context);
     final time = player.time;
     final turn = player.turnLabel;
     final children = [
@@ -165,17 +227,15 @@ class PlayersRow extends StatelessWidget {
       if (showName)
         Expanded(
           child: ExcludeSemantics(
-            child: Text(
-              player.name,
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+            child: _nameAndDetail(
+              context,
+              player,
+              overflow: detailed ? TextOverflow.ellipsis : TextOverflow.fade,
             ),
           ),
         ),
+      if (showName && detailed && (time != null || turn != null))
+        const SizedBox(width: 12),
       if (time != null)
         _entering(
           GameClock(
@@ -201,9 +261,8 @@ class PlayersRow extends StatelessWidget {
   }
 }
 
-/// O retrato do lado: o peão dele, no conjunto de peças escolhido, sobre uma
-/// casa escura do tabuleiro (onde as peças das duas cores aparecem bem, no
-/// tema claro e no escuro).
+/// O retrato do lado sem personagem: ícone de pessoa sobre primaryContainer,
+/// como no CompJogador do canvas.
 class PlayerPortrait extends StatelessWidget {
   const PlayerPortrait({required this.side, required this.board, super.key});
 
@@ -214,21 +273,21 @@ class PlayerPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pawn = side == Side.white ? PieceKind.whitePawn : PieceKind.blackPawn;
+    final colors = Theme.of(context).colorScheme;
+    // CompJogador do canvas: quadrado primaryContainer com o icone de pessoa.
     return Container(
       width: _size,
       height: _size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: board.colors.scheme.darkSquare,
+        color: colors.primaryContainer,
         borderRadius: BorderRadius.circular(AppShape.small),
       ),
-      // A imagem da peça já vem centralizada no próprio quadro.
       child: ExcludeSemantics(
-        child: Image(
-          image: board.pieces.assets[pawn]!,
-          width: _size * 0.8,
-          height: _size * 0.8,
+        child: Icon(
+          Icons.person,
+          size: _size * 0.64,
+          color: colors.onPrimaryContainer,
         ),
       ),
     );
@@ -269,7 +328,7 @@ class TurnBadge extends StatelessWidget {
 /// O relógio de um lado (T51, A1: o mesmo na partida e no às cegas): uma
 /// caixa compacta com o tempo alinhado à direita. A
 /// caixa tem a cor do lado (clara para as brancas, escura para as pretas); a
-/// de quem está na vez fica acesa, com o ícone de relógio, e a outra apagada.
+/// de quem está na vez ganha contorno e o ícone, sem mudar a cor do lado.
 class GameClock extends StatelessWidget {
   const GameClock({
     this.timeKey,
@@ -298,59 +357,35 @@ class GameClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isLow = time < ClockEngine.lowTime;
-    final (background, foreground) = switch ((running && isLow, side)) {
-      // Pouco tempo na vez de jogar: a caixa fica vermelha.
-      (true, _) => (colors.error, colors.onError),
-      (false, Side.white) => (_light, _dark),
-      (false, Side.black) => (_dark, _light),
-    };
-    return AnimatedOpacity(
-      duration: AppMotion.state,
-      opacity: running ? 1 : 0.55,
-      child: AnimatedContainer(
-        duration: AppMotion.state,
-        width: width,
-        height: _height,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(AppShape.small),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        // Os números do relógio são sempre da esquerda para a direita.
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Row(
-            children: [
-              AnimatedOpacity(
-                duration: AppMotion.state,
-                opacity: running ? 1 : 0,
-                child: Icon(
-                  Icons.av_timer_outlined,
-                  size: 18,
-                  color: foreground,
-                ),
+    final value = ClockFormat.format(time);
+    final foreground = side == Side.white ? _dark : _light;
+    // O adaptador conserva a geometria da faixa e os décimos do relógio;
+    // o componente comum possui caixa, borda, ícone e cores por lado.
+    return SizedBox(
+      width: width,
+      height: _height,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: TimeDisplay(
+          value: value,
+          semanticsLabel: value,
+          type: TimeDisplayType.clock,
+          // Relógio parado: 55% de opacidade, como o CompTempo estado=parado.
+          state: running ? TimeDisplayState.active : TimeDisplayState.paused,
+          side: side,
+          width: width,
+          valueWidget: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: ClockText(
+              value,
+              key: timeKey,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w700,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerRight,
-                  child: ClockText(
-                    ClockFormat.format(time),
-                    key: timeKey,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w700,
-                      // Algarismos da mesma largura: o texto não treme ao
-                      // contar.
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

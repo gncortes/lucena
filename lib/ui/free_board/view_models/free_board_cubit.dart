@@ -146,6 +146,11 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       tick();
     }
     _changed();
+    // O rating do jogador, na linha de detalhe da faixa dele.
+    final rating = await _reporter?.currentRating();
+    if (rating != null && !isClosed) {
+      emit(state.copyWith(userRating: rating));
+    }
     await _saving;
   }
 
@@ -442,9 +447,12 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// O jogador saiu do speedrun no meio: a tentativa termina aqui (fica no
   /// histórico, sem recorde) e a etapa que estava no tabuleiro não fica
   /// guardada para depois.
-  Future<void> quitSpeedrun() async {
+  ///
+  /// Só encerra com [confirmed] verdadeiro: a folha de sair devolveu "sim"
+  /// de forma explícita. Cancelar (ou fechar a folha) nunca grava nada.
+  Future<void> quitSpeedrun({required bool confirmed}) async {
     final attemptId = state.mode.speedrunAttemptId;
-    if (attemptId == null || _left) return;
+    if (!confirmed || attemptId == null || _left) return;
     _left = true;
     final now = _now();
     final clock = state.clock;
@@ -473,7 +481,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         clock: clock,
         mode: state.mode,
         now: _now(),
-      ),
+      ).copyWith(userRating: state.userRating),
     );
     _changed();
   }

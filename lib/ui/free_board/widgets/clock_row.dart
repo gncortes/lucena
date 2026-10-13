@@ -24,8 +24,9 @@ class ClockRow extends StatelessWidget {
     super.key,
   });
 
-  /// Altura da fileira, para a tela reservar o espaço do tabuleiro.
-  static const height = PlayersRow.height;
+  /// Altura da fileira, para a tela reservar o espaço do tabuleiro: a da
+  /// faixa com a linha de detalhe (CompJogador, 68).
+  static const height = PlayersRow.detailedHeight;
 
   final List<Side> sides;
   final FreeBoardState state;
@@ -57,12 +58,27 @@ class ClockRow extends StatelessWidget {
           : side == Side.white
           ? l10n.sideWhite
           : l10n.sideBlack;
+      // Embaixo do nome: o nível do personagem e o rating do jogador
+      // (CompJogador, `Nível 1000` e `1164`). O Stockfish não tem nível, e
+      // o nome do Maia sem personagem já o traz.
+      final level = mode.level;
+      final rating = state.userRating;
+      final detail = side == mode.machineSide
+          ? (character != null && !(talk?.isEngine ?? false) && level != null
+                ? l10n.journeyOpponentLevel('$level')
+                : null)
+          : side == mode.userSide && mode.opponent.isMachine && rating != null
+          ? '$rating'
+          : null;
       final clock = state.clock;
       return PlayerEntry(
+        detail: detail,
+        detailKey: FreeBoardKeys.playerDetail(side),
         side: side,
         name: name,
         time: clock == null ? null : state.timeOf(side),
-        running: clock?.running == side,
+        // Partida acabada: nenhum relógio ativo (TimeDisplayState.paused).
+        running: state.end == null && clock?.running == side,
         clockKey: FreeBoardKeys.clock(side),
         timeKey: FreeBoardKeys.clockTime(side),
         turnKey: FreeBoardKeys.turn,
@@ -91,6 +107,7 @@ class ClockRow extends StatelessWidget {
       board: board,
       enterClocks: true,
       compactClocks: sides.length == 2,
+      detailed: true,
     );
   }
 }

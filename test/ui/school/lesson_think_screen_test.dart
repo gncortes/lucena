@@ -4,6 +4,9 @@ import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
+import 'package:lucena/domain/models/explanation.dart';
+import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
@@ -12,6 +15,7 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:dartchess/dartchess.dart';
 
@@ -21,6 +25,23 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+
+class _ThinkFeedback extends EmptyExerciseFeedbackRepository
+    implements ExplanationRepository {
+  const _ThinkFeedback(this.payload);
+  final ExplanationPayload payload;
+  @override
+  Future<ExplanationPayload?> findPayload({
+    required String lessonId,
+    required String exerciseId,
+    required String kind,
+    required int turn,
+    required String fen,
+    required String language,
+    required ExplanationState state,
+    String? playedUci,
+  }) async => payload.forState(state, playedUci: playedUci);
+}
 
 /// T60: o modo exercício da lição. Resolvendo, o enunciado curto em cima, o
 /// tabuleiro no centro e o cronômetro (contando para cima) no canto de
@@ -85,6 +106,8 @@ void main() {
     double scale = 1.0,
     bool systemBars = false,
     bool reducedMotion = false,
+    ExerciseFeedbackRepository? feedback,
+    LessonTexts? promptTexts,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -92,10 +115,11 @@ void main() {
     addTearDown(tester.view.reset);
     final cubit = LessonCubit(
       source: EndgameLessonSource(
-        FakeEndgameLessonRepository(trail: trail, texts: texts),
+        FakeEndgameLessonRepository(trail: trail, texts: promptTexts ?? texts),
         FakeEndgameProgressRepository(),
       ),
       characters: FakeCharacterRepository(),
+      feedback: feedback,
       opponent: FakeOpponentRepository(),
       now: now,
       replyDelay: Duration.zero,
@@ -151,6 +175,161 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Pensar keeps its bubble until entering the next step', (
+    tester,
+  ) async {
+    final cubit = await pump(tester);
+    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      ),
+    );
+    expect(teacher().lessonPromptBubble, isTrue);
+    final speech = find.byKey(LessonKeys.speech);
+    final bubble = tester
+        .widgetList<Container>(
+          find.ancestor(of: speech, matching: find.byType(Container)),
+        )
+        .firstWhere((widget) => widget.decoration is BoxDecoration);
+    final colors = Theme.of(tester.element(speech)).colorScheme;
+    expect(
+      (bubble.decoration! as BoxDecoration).color,
+      colors.surfaceContainerHighest,
+    );
+    expect(
+      bubble.padding,
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+    );
+    await cubit.next();
+    await tester.pumpAndSettle();
+    // Passo de lance (PropV2LicaoPratica): a fala também fica no balão cinza.
+    expect(cubit.state.step, 1);
+    expect(teacher().lessonPromptBubble, isTrue);
+    final moveBubble = tester
+        .widgetList<Container>(
+          find.ancestor(
+            of: find.byKey(LessonKeys.speech),
+            matching: find.byType(Container),
+          ),
+        )
+        .firstWhere((widget) => widget.decoration is BoxDecoration);
+    expect(
+      (moveBubble.decoration! as BoxDecoration).color,
+      colors.surfaceContainerHighest,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'Pensar authored intro keeps one bubble and excludes variations',
+    (tester) async {
+      final line = ExplanationVariation(
+        id: 'main',
+        label: '1.Rc4',
+        outcome: VariationOutcome.accepted,
+        texts: const ['The rook moves.'],
+        originFen: fen,
+        movesUci: const ['c1c4'],
+        movesSan: const ['1.Rc4'],
+        validated: true,
+      );
+      final cubit = await pump(
+        tester,
+        feedback: _ThinkFeedback(
+          ExplanationPayload(
+            positionId: 'think',
+            state: ExplanationState.intro,
+            explanations: [
+              ExplanationBlock(
+                id: 'context',
+                kind: ExplanationKind.context,
+                texts: [
+                  'First context paragraph.',
+                  'Second context paragraph.',
+                ],
+              ),
+              ExplanationBlock(
+                id: 'solution',
+                kind: ExplanationKind.mainSolution,
+                texts: const ['The solution.'],
+                variations: [line],
+              ),
+            ],
+          ),
+        ),
+      );
+      TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+        ),
+      );
+      expect(cubit.state.explanation?.state, ExplanationState.intro);
+      expect(teacher().lessonPromptBubble, isTrue);
+      expect(
+        teacher().explanation?.explanations.single.kind,
+        ExplanationKind.context,
+      );
+      final step = cubit.state.step;
+      teacher().onVariation!(line.open());
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      teacher().onVariation!(null);
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isTrue);
+      expect(cubit.state.step, step);
+      await cubit.next();
+      await tester.pumpAndSettle();
+      // Passo de lance: o balão também vale (PropV2LicaoPratica).
+      expect(teacher().lessonPromptBubble, isTrue);
+      teacher().onVariation!(line.open());
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isFalse);
+      teacher().onVariation!(null);
+      await tester.pumpAndSettle();
+      expect(teacher().lessonPromptBubble, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Pensar SAN replay and restore retain prompt and progress', (
+    tester,
+  ) async {
+    final cubit = await pump(
+      tester,
+      promptTexts: LessonTexts.fromJson({
+        ...texts.toJson(),
+        'rook.lucena.think.hint1': 'Consider 1.Rc4.',
+      }),
+    );
+    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+      ),
+    );
+    final step = cubit.state.step;
+    final reached = cubit.state.reached;
+    await cubit.moreHint();
+    await tester.pumpAndSettle();
+    final link = SpeechLinks.find(
+      'Consider 1.Rc4.',
+      SpeechLinks.english,
+    ).single;
+    teacher().onLink!(link);
+    await tester.pumpAndSettle();
+    expect(find.byKey(LessonKeys.variationExit), findsOneWidget);
+    expect(teacher().lessonPromptBubble, isTrue);
+    teacher().onLink!(link);
+    await tester.pumpAndSettle();
+    expect(find.byKey(LessonKeys.variationExit), findsNothing);
+    expect(teacher().lessonPromptBubble, isTrue);
+    expect(cubit.state.step, step);
+    expect(cubit.state.reached, reached);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('B5: recolhida mantém ações após alterar altura da tela', (
     tester,
   ) async {
@@ -173,11 +352,18 @@ void main() {
     }
   });
 
-  void expectCentered(WidgetTester tester) {
+  void expectBoardAboveSpeech(WidgetTester tester) {
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final size = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(board.center.dx, closeTo(size.width / 2, 1));
-    expect(board.center.dy, closeTo(size.height / 2, 1));
+    final progress = tester.getRect(find.byKey(LessonKeys.progress));
+    expect(board.top, greaterThanOrEqualTo(progress.bottom));
+    expect(board.top - progress.bottom, lessThanOrEqualTo(16));
+    final teacher = find.byWidgetPredicate(
+      (widget) =>
+          widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+    );
+    expect(tester.getTopLeft(teacher).dy, greaterThan(board.bottom));
     expect(find.byKey(LessonKeys.prompt), findsNothing);
     expect(
       tester.getRect(find.byKey(LessonKeys.scroll)).top,
@@ -242,11 +428,21 @@ void main() {
     await pump(tester);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.byKey(LessonKeys.prompt), findsNothing);
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     // O cronômetro no canto inferior direito, do zero.
-    final timer = tester.getRect(find.byKey(LessonKeys.stepTimer));
+    final timerFinder = find.byKey(LessonKeys.stepTimer);
+    final timer = tester.getRect(timerFinder);
+    // Sem fundo de pílula (CompTimer): ícone e tempo soltos, margem 16.
     expect(timer.right, closeTo(400 - 16, 1));
+    expect(
+      tester
+          .widgetList<Material>(
+            find.ancestor(of: timerFinder, matching: find.byType(Material)),
+          )
+          .any((m) => m.shape is StadiumBorder),
+      isFalse,
+    );
     expect(timer.bottom, greaterThan(board.bottom));
     expect(timerText(tester), '0:00');
 
@@ -266,7 +462,8 @@ void main() {
     tester,
   ) async {
     await pump(tester, locale: const Locale('ar'));
-    final timer = tester.getRect(find.byKey(LessonKeys.stepTimer));
+    final timerFinder = find.byKey(LessonKeys.stepTimer);
+    final timer = tester.getRect(timerFinder);
     expect(timer.left, closeTo(16, 1));
     final board = tester.getRect(find.byKey(LessonKeys.board));
     expect(board.center.dx, closeTo(200, 1));
@@ -293,10 +490,30 @@ void main() {
         expect(rect.right, lessThanOrEqualTo(size.width), reason: '$key');
         expect(find.byKey(key).hitTestable(), findsOneWidget, reason: '$key');
       }
-      // Os botões da mesma altura.
-      for (final key in keys.take(2)) {
-        expect(tester.getRect(find.byKey(key)).height, 56, reason: '$key');
-      }
+      // Round buttons 56; the main one at least that, its label wrapping
+      // (never shrunk by a FittedBox nor cut).
+      expect(tester.getRect(find.byKey(LessonKeys.moreHintButton)).height, 56);
+      expect(
+        tester.getRect(find.byKey(LessonKeys.nextButton)).height,
+        greaterThanOrEqualTo(56),
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(LessonKeys.nextButton),
+          matching: find.byType(FittedBox),
+        ),
+        findsNothing,
+      );
+      final label = tester.renderObject<RenderParagraph>(
+        find.descendant(
+          of: find.descendant(
+            of: find.byKey(LessonKeys.nextButton),
+            matching: find.byType(Text),
+          ),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(label.didExceedMaxLines, isFalse);
       // Lado a lado, sem se cobrir.
       for (var i = 1; i < keys.length; i++) {
         expect(
@@ -326,7 +543,7 @@ void main() {
     // mudou de altura, então o centro também), com o cronômetro do zero.
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(timerText(tester), '0:00');
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
   });
 
@@ -365,7 +582,7 @@ void main() {
     // Explicando, o tabuleiro sobe (mesmo tamanho) e a folha fica com o resto.
     final raised = tester.getRect(find.byKey(LessonKeys.board));
     expect(raised.size, centered.size);
-    expect(raised.top, lessThan(centered.top));
+    expect(raised.top, closeTo(centered.top, 1));
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.text('Perfect, that is the bridge.'), findsOneWidget);
     expect(
@@ -379,21 +596,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'think')), findsOneWidget);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expectCentered(tester);
+    expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
     expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
   });
   for (final size in [
     const Size(360, 640),
+    const Size(360, 740),
     const Size(360, 800),
+    const Size(384, 832),
+    const Size(393, 873),
     const Size(412, 915),
+    const Size(414, 896),
   ]) {
     testWidgets(
-      'B5 $size: pensar e jogar no centro; explicar sobe o tabuleiro',
+      'D15 $size: pensar, jogar e explicar mantêm tabuleiro acima do Viktor',
       (tester) async {
         final cubit = await pump(tester, size: size, systemBars: true);
         final board = tester.getRect(find.byKey(LessonKeys.board));
-        expect(board.center.dy, closeTo((52 + size.height - 24) / 2, 1));
+        expectBoardAboveSpeech(tester);
         expect(board.width, greaterThanOrEqualTo(200));
         expect(find.byKey(LessonKeys.prompt), findsNothing);
         expect(
@@ -406,7 +627,8 @@ void main() {
         void raised() {
           final rect = tester.getRect(find.byKey(LessonKeys.board));
           expect(rect.size, board.size);
-          expect(rect.top, lessThan(board.top));
+          expect(rect.top, closeTo(board.top, 1));
+          expectBoardAboveSpeech(tester);
         }
 
         await cubit.next();

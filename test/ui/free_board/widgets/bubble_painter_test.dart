@@ -23,4 +23,19 @@ void main() {
     expect(path.contains(const Offset(196, 10)), isFalse);
     expect(path.contains(const Offset(4, 10)), isTrue);
   });
+
+  test('na partida a ponta sai de baixo, acima do retrato', () {
+    final path = BubblePainter.pathFor(size, tail: 10, tailBelow: true);
+    expect(path.getBounds(), const Rect.fromLTWH(0, 0, 200, 80));
+    expect(path.contains(const Offset(22, 78)), isTrue);
+    expect(path.contains(const Offset(100, 78)), isFalse);
+    final rtl = BubblePainter.pathFor(
+      size,
+      tail: 10,
+      tailBelow: true,
+      tailOnRight: true,
+    );
+    expect(rtl.contains(const Offset(178, 78)), isTrue);
+    expect(rtl.contains(const Offset(22, 78)), isFalse);
+  });
 }

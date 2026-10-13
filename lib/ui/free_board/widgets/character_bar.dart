@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/free_board_keys.dart';
+import '../../settings/view_models/settings_cubit.dart';
+import 'sound_dialog.dart';
+import 'clock_row.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -60,28 +63,15 @@ class CharacterBar extends StatelessWidget {
     // Retrato pequeno: a fala também diminui, para caber no balão.
     final small = avatarSize < 72;
     if (speechTop case final top?) {
-      return SizedBox(
-        height: playerRow == null ? heightFor(avatarSize) : 56,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            if (playerRow != null)
-              KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
-            else
-              CharacterBar(
-                talk: talk.copyWith(clearLine: true),
-                avatarSize: avatarSize,
-                showName: showName,
-              ),
-            if (line != null)
-              PositionedDirectional(
-                start: avatarSize + 16,
-                end: 12,
-                top: top,
-                height: 80,
-                child: _TransientSpeech(
-                  key: ValueKey(line.id),
-                  text: line.text,
+      return _SpeechOverlay(
+        top: top,
+        speech: line == null
+            ? null
+            : _TransientSpeech(
+                key: ValueKey(line.id),
+                text: line.text,
+                child: GameEntrance(
+                  part: GameEntrancePart.speech,
                   child: _spoken(
                     context,
                     line.id,
@@ -95,12 +85,24 @@ class CharacterBar extends StatelessWidget {
                       ),
                       monospace: talk.isEngine,
                       small: small,
+                      tailBelow: true,
                       opacity: .94,
+                      onDismiss: () => context.read<TalkCubit>().dismissLine(
+                        lineId: line.id,
+                      ),
                     ),
                   ),
                 ),
               ),
-          ],
+        child: SizedBox(
+          height: playerRow == null ? heightFor(avatarSize) : ClockRow.height,
+          child: playerRow != null
+              ? KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
+              : CharacterBar(
+                  talk: talk.copyWith(clearLine: true),
+                  avatarSize: avatarSize,
+                  showName: showName,
+                ),
         ),
       );
     }
@@ -200,14 +202,62 @@ class CharacterBar extends StatelessWidget {
       speech: speech,
       text: text,
       // Calado pelo botão de som da partida, o balão só aparece.
-      auto: !speech.state.settings.charactersMuted,
+      auto:
+          (context.watch<SettingsCubit?>()?.state?.sound ?? true) &&
+          !speech.state.settings.charactersMuted,
       speakerId: talk.character!.id,
       child: bubble,
     );
   }
 }
 
-/// A fala flutua sem receber toques nem mudar o tamanho da faixa. A duração
+/// A camada ocupa o Overlay da rota: o X continua recebendo toques mesmo
+/// quando a fala está acima da faixa do jogador, fora da área dessa faixa.
+class _SpeechOverlay extends StatefulWidget {
+  const _SpeechOverlay({
+    required this.top,
+    required this.speech,
+    required this.child,
+  });
+  final double top;
+  final Widget? speech;
+  final Widget child;
+
+  @override
+  State<_SpeechOverlay> createState() => _SpeechOverlayState();
+}
+
+class _SpeechOverlayState extends State<_SpeechOverlay> {
+  final _controller = OverlayPortalController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.show();
+  }
+
+  @override
+  Widget build(BuildContext context) => OverlayPortal.overlayChildLayoutBuilder(
+    controller: _controller,
+    overlayChildBuilder: (context, info) {
+      if (widget.speech == null) return const SizedBox.shrink();
+      final origin = MatrixUtils.transformPoint(
+        info.childPaintTransform,
+        Offset(12, widget.top),
+      );
+      return Positioned(
+        left: origin.dx,
+        top: origin.dy,
+        width: math.max(0, info.childSize.width - 24),
+        height: 80,
+        child: widget.speech!,
+      );
+    },
+    child: widget.child,
+  );
+}
+
+/// A fala flutua sem mudar o tamanho da faixa. A duração
 /// acompanha a leitura; o esmaecer respeita a preferência de movimento.
 class _TransientSpeech extends StatefulWidget {
   const _TransientSpeech({required this.text, required this.child, super.key});
@@ -254,6 +304,7 @@ class _TransientSpeechState extends State<_TransientSpeech> {
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
+    ignoring: !_visible,
     child: ExcludeSemantics(
       excluding: !_visible,
       child: AnimatedOpacity(
@@ -265,33 +316,57 @@ class _TransientSpeechState extends State<_TransientSpeech> {
   );
 }
 
-/// O botão de som do personagem, na barra da partida: cala a voz dele (e a
-/// fala que estiver no meio) ou volta a ouvi-la. A escolha fica gravada. Sem
-/// voz no idioma do app, não aparece.
+/// Som e voz num único botão; a velocidade aparece apenas com a voz ativa.
 class CharacterSoundButton extends StatelessWidget {
   const CharacterSoundButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final speech = TeacherSpeech.speechOf(context);
-    if (speech == null) return const SizedBox.shrink();
-    return BlocBuilder<SpeechCubit, SpeechState>(
-      bloc: speech,
-      builder: (context, state) {
-        final language = Localizations.localeOf(context).toLanguageTag();
-        if (!state.availableFor(language)) return const SizedBox.shrink();
-        final heard = state.charactersHeard;
-        return IconButton(
+    final speech = context.watch<SpeechCubit>().state;
+    final settings = context.watch<SettingsCubit>().state;
+    final sound = settings?.sound ?? true;
+    final heard =
+        sound && (settings?.characterTalk ?? true) && speech.charactersHeard;
+    final language = Localizations.localeOf(context).toLanguageTag();
+    final l10n = context.l10n;
+    return Tooltip(
+      message: l10n.gameSoundAndVoice,
+      child: SizedBox(
+        height: 56,
+        child: TextButton(
           key: FreeBoardKeys.soundButton,
-          isSelected: heard,
-          icon: const Icon(Icons.volume_off_outlined),
-          selectedIcon: const Icon(Icons.volume_up_outlined),
-          tooltip: heard
-              ? context.l10n.characterSoundOff
-              : context.l10n.characterSoundOn,
-          onPressed: () => speech.setCharactersHeard(heard: !heard),
-        );
-      },
+          onPressed: () => showGameSoundDialog(context),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Badge(
+                isLabelVisible: heard && speech.availableFor(language),
+                label: Text(l10n.voiceSpeedValue(speech.settings.speed)),
+                child: Icon(
+                  sound ? Icons.volume_up_outlined : Icons.volume_off_outlined,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Flexible(
+                child: Text(
+                  sound ? l10n.gameSoundLabelOn : l10n.gameSoundLabelOff,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -342,14 +417,18 @@ class _Bubble extends StatelessWidget {
     required this.monospace,
     required this.small,
     this.opacity = 1,
+    this.tailBelow = false,
+    this.onDismiss,
   });
 
+  final VoidCallback? onDismiss;
   final String lineId;
   final String text;
   final String semantics;
   final bool monospace;
   final bool small;
   final double opacity;
+  final bool tailBelow;
 
   static const _tail = 10.0;
 
@@ -372,30 +451,49 @@ class _Bubble extends StatelessWidget {
           shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
           tail: _tail,
           tailOnRight: rtl,
+          tailBelow: tailBelow,
         ),
         child: Padding(
           padding: EdgeInsetsDirectional.fromSTEB(
-            _tail + 12,
+            tailBelow ? 12 : _tail + 12,
             small ? 8 : 10,
             12,
-            small ? 8 : 10,
+            (small ? 8 : 10) + (tailBelow ? _tail : 0),
           ),
-          child: Semantics(
-            liveRegion: true,
-            label: semantics,
-            excludeSemantics: true,
-            child: TypewriterText(
-              text,
-              key: FreeBoardKeys.speechText(lineId),
-              maxLines: 3,
-              style: style?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w600,
-                height: 1.25,
-                fontFamily: monospace ? 'monospace' : null,
-                letterSpacing: monospace ? 0.5 : null,
+          child: Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  liveRegion: true,
+                  label: semantics,
+                  excludeSemantics: true,
+                  child: TypewriterText(
+                    text,
+                    key: FreeBoardKeys.speechText(lineId),
+                    maxLines: 3,
+                    style: style?.copyWith(
+                      color: foreground,
+                      fontWeight: FontWeight.w600,
+                      height: 1.25,
+                      fontFamily: monospace ? 'monospace' : null,
+                      letterSpacing: monospace ? 0.5 : null,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              if (onDismiss != null)
+                SizedBox.square(
+                  dimension: 44,
+                  child: IconButton(
+                    key: FreeBoardKeys.speechClose,
+                    padding: EdgeInsets.zero,
+                    tooltip: MaterialLocalizations.of(context)
+                        .closeButtonTooltip,
+                    onPressed: onDismiss,
+                    icon: const Icon(Icons.close, size: 20),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -411,12 +509,14 @@ class BubblePainter extends CustomPainter {
     required this.shadow,
     required this.tail,
     required this.tailOnRight,
+    this.tailBelow = false,
   });
 
   final Color color;
   final Color shadow;
   final double tail;
   final bool tailOnRight;
+  final bool tailBelow;
 
   static const _radius = 14.0;
 
@@ -426,7 +526,28 @@ class BubblePainter extends CustomPainter {
     Size size, {
     required double tail,
     bool tailOnRight = false,
+    bool tailBelow = false,
   }) {
+    if (tailBelow) {
+      final bottom = size.height - tail;
+      final path = Path()
+        ..addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.width, bottom),
+            const Radius.circular(_radius),
+          ),
+        );
+      final x = tailOnRight ? size.width - 22 : 22.0;
+      return Path.combine(
+        PathOperation.union,
+        path,
+        Path()
+          ..moveTo(x - 8, bottom - 1)
+          ..lineTo(x, size.height)
+          ..lineTo(x + 8, bottom - 1)
+          ..close(),
+      );
+    }
     final width = size.width - tail;
     final height = size.height;
     final r = math.min(_radius, math.min(width, height) / 2);
@@ -460,7 +581,12 @@ class BubblePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = pathFor(size, tail: tail, tailOnRight: tailOnRight);
+    final path = pathFor(
+      size,
+      tail: tail,
+      tailOnRight: tailOnRight,
+      tailBelow: tailBelow,
+    );
     canvas
       ..drawShadow(path, shadow, 3, false)
       ..drawPath(path, Paint()..color = color);
@@ -468,7 +594,11 @@ class BubblePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BubblePainter old) =>
-      old.color != color || old.tailOnRight != tailOnRight;
+      old.color != color ||
+      old.shadow != shadow ||
+      old.tail != tail ||
+      old.tailOnRight != tailOnRight ||
+      old.tailBelow != tailBelow;
 }
 
 /// Um texto que aparece letra por letra, como alguém falando. O espaço do

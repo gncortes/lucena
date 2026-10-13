@@ -84,6 +84,7 @@ class _LucenaAppState extends State<LucenaApp> {
     final conclusion = await widget.dependencies.conclusionRepository.pending();
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
+    final stars = await widget.dependencies.starChallengeRepository.open();
     if (!mounted) return;
     final resume = game != null && game.reopensOnLaunch;
     final lesson = school.ongoing;
@@ -101,6 +102,8 @@ class _LucenaAppState extends State<LucenaApp> {
             ? Routes.endgameLessonSteps(endgameLesson.lessonId)
             : exercise != null
             ? Routes.endgameExercise(exercise.$1, exercise.$2.exerciseId)
+            : stars != null
+            ? Routes.starChallenge(stars.piece.name, stars.level.name)
             : Routes.home,
       );
     });

@@ -1,6 +1,7 @@
 import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show Bidi;
 
 import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
@@ -12,12 +13,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/app_settings.dart';
+import '../../../domain/models/game_review.dart';
+import '../review/move_quality_ui.dart';
 import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../../wiki/view_models/wiki_links_cubit.dart';
 import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
@@ -49,6 +54,8 @@ class TeacherSpeech extends StatelessWidget {
   const TeacherSpeech({
     this.part = TeacherSpeechPart.all,
     this.explanation,
+    this.lessonV2 = false,
+    this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
     required this.teacher,
@@ -63,6 +70,7 @@ class TeacherSpeech extends StatelessWidget {
     this.onLink,
     this.onSpoken,
     this.headerAction,
+    this.onSoundSettings,
     this.onClose,
     this.closeKey,
     super.key,
@@ -70,6 +78,10 @@ class TeacherSpeech extends StatelessWidget {
 
   final Character teacher;
   final ExplanationPayload? explanation;
+  final bool lessonV2;
+
+  /// Pensar keeps its speech bubble; explanation sections remain unboxed.
+  final bool lessonPromptBubble;
   final ValueChanged<VariationCursor?>? onVariation;
   final VariationCursor? activeVariation;
 
@@ -87,6 +99,9 @@ class TeacherSpeech extends StatelessWidget {
   /// Um botão a mais no cabeçalho, antes dos de voz (ex.: as marcações da
   /// lição).
   final Widget? headerAction;
+
+  /// Lesson V2 opens its dedicated sound panel without changing preferences.
+  final VoidCallback? onSoundSettings;
 
   /// Um ✕ no canto do balão, que fecha a fala (ex.: a história da revisão).
   final VoidCallback? onClose;
@@ -160,13 +175,40 @@ class TeacherSpeech extends StatelessWidget {
       child: _layout(context, avatar),
     );
     if (speech == null) return content;
-    return AutoSpeak(
+    final soundEnabled = _soundEnabled(context);
+    final speakingContent = AutoSpeak(
       speech: speech,
       text: text,
-      auto: speaks,
+      auto: speaks && soundEnabled,
       speakerId: teacher.id,
       child: content,
     );
+    final settings = _settingsOf(context);
+    if (!_stacked || settings == null) return speakingContent;
+    return BlocListener<SettingsCubit, AppSettings?>(
+      bloc: settings,
+      listenWhen: (before, after) =>
+          (before?.sound ?? true) && !(after?.sound ?? true),
+      listener: (_, _) => speech.stopIf(text),
+      child: speakingContent,
+    );
+  }
+
+  SettingsCubit? _settingsOf(BuildContext context) {
+    try {
+      return context.read<SettingsCubit>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  bool _soundEnabled(BuildContext context) {
+    if (!_stacked) return true;
+    try {
+      return context.watch<SettingsCubit>().state?.sound ?? true;
+    } on ProviderNotFoundException {
+      return true;
+    }
   }
 
   /// A voz do app, se houver (fora do app, nos testes de um widget só, não
@@ -192,6 +234,7 @@ class TeacherSpeech extends StatelessWidget {
   /// O nome e, havendo voz no idioma, o botão de áudio.
   Widget _header(BuildContext context) {
     final speech = speechOf(context);
+    final soundEnabled = _soundEnabled(context);
     final text = _plain;
     final action = headerAction;
     if (speech == null || text == null) {
@@ -217,12 +260,79 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
+            if (lessonV2) {
+              final audible =
+                  soundEnabled &&
+                  state.settings.enabled &&
+                  state.availableFor(language);
+              final colors = Theme.of(context).colorScheme;
+              return IconButton(
+                key: VoiceKeys.speakButton,
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                tooltip: audible
+                    ? context.l10n.lessonSoundOn(
+                        context.l10n.voiceSpeedValue(state.settings.speed),
+                      )
+                    : context.l10n.lessonSoundOff,
+                onPressed: onSoundSettings,
+                icon: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        audible
+                            ? Icons.volume_up_outlined
+                            : Icons.volume_off_outlined,
+                      ),
+                      if (audible)
+                        PositionedDirectional(
+                          start: -4,
+                          top: -4,
+                          child: ExcludeSemantics(
+                            child: Container(
+                              height: 16,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                borderRadius: BorderRadius.circular(
+                                  AppShape.full,
+                                ),
+                              ),
+                              child: Text(
+                                context.l10n.voiceSpeedValue(
+                                  state.settings.speed,
+                                ),
+                                // Decorative badge: the button tooltip exposes
+                                // the full speed using the user's text scale.
+                                textScaler: TextScaler.noScaling,
+                                style: TextStyle(
+                                  color: colors.onPrimary,
+                                  fontSize: 10,
+                                  height: 1.6,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            }
             // Sem voz no idioma, o botão de som continua à vista: o toque
             // leva aos ajustes de voz, onde se instala uma.
             if (!state.availableFor(language)) {
               return IconButton(
                 key: VoiceKeys.speakButton,
-                visualDensity: VisualDensity.compact,
+                visualDensity: lessonV2
+                    ? VisualDensity.standard
+                    : VisualDensity.compact,
                 tooltip: context.l10n.voiceSection,
                 icon: const Icon(Icons.volume_off_outlined),
                 onPressed: () => context.push(Routes.settingsVoice),
@@ -234,26 +344,32 @@ class TeacherSpeech extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // A velocidade da voz: cada toque passa para a próxima.
-                TextButton(
-                  key: VoiceKeys.speedButton,
-                  style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    minimumSize: const Size(48, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
+                if (soundEnabled && state.settings.enabled)
+                  TextButton(
+                    key: VoiceKeys.speedButton,
+                    style: TextButton.styleFrom(
+                      visualDensity: lessonV2
+                          ? VisualDensity.standard
+                          : VisualDensity.compact,
+                      minimumSize: Size(48, lessonV2 ? 48 : 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    onPressed: soundEnabled ? speech.nextSpeed : null,
+                    child: Tooltip(
+                      message: l10n.voiceSpeed,
+                      child: Text(l10n.voiceSpeedValue(state.settings.speed)),
+                    ),
                   ),
-                  onPressed: speech.nextSpeed,
-                  child: Tooltip(
-                    message: l10n.voiceSpeed,
-                    child: Text(l10n.voiceSpeedValue(state.settings.speed)),
-                  ),
-                ),
                 // Onde ele fala sozinho, um botão só: ligado, um toque cala
                 // a voz dele (a escolha fica gravada); desligado, liga e já
                 // fala. Nos outros balões, ouvir e parar.
                 if (speaks)
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: lessonV2
+                        ? VisualDensity.standard
+                        : VisualDensity.compact,
                     tooltip: state.settings.enabled
                         ? l10n.voiceAutoOff(teacher.name)
                         : l10n.voiceAutoOn(teacher.name),
@@ -261,11 +377,21 @@ class TeacherSpeech extends StatelessWidget {
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const Icon(Icons.volume_off_outlined),
                     onPressed: () async {
+                      if (_stacked &&
+                          !(_settingsOf(context)?.state?.sound ?? true)) {
+                        return;
+                      }
                       if (state.settings.enabled) {
                         await speech.setEnabled(enabled: false);
                         return;
                       }
                       await speech.setEnabled(enabled: true);
+                      if (!context.mounted ||
+                          !speech.state.settings.enabled ||
+                          (_stacked &&
+                              !(_settingsOf(context)?.state?.sound ?? true))) {
+                        return;
+                      }
                       await speech.say(
                         text,
                         speakerId: teacher.id,
@@ -276,16 +402,20 @@ class TeacherSpeech extends StatelessWidget {
                 else
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: VisualDensity.compact,
+                    visualDensity: lessonV2
+                        ? VisualDensity.standard
+                        : VisualDensity.compact,
                     tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
                     isSelected: speaking,
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const Icon(Icons.stop_circle_outlined),
-                    onPressed: () => speech.toggle(
-                      text,
-                      speakerId: teacher.id,
-                      language: language,
-                    ),
+                    onPressed: soundEnabled
+                        ? () => speech.toggle(
+                            text,
+                            speakerId: teacher.id,
+                            language: language,
+                          )
+                        : null,
                   ),
               ],
             );
@@ -318,7 +448,7 @@ class TeacherSpeech extends StatelessWidget {
               Expanded(child: _header(context)),
             ],
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: lessonV2 && !lessonPromptBubble ? 8 : 2),
           _closable(context),
         ],
       );
@@ -360,12 +490,24 @@ class TeacherSpeech extends StatelessWidget {
   /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
   Widget _closable(BuildContext context) {
     final onClose = this.onClose;
-    if (onClose == null || _plain == null) return _speech(context);
+    Widget speech = _speech(context);
+    if (lessonPromptBubble && _plain != null) {
+      speech = Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
+        child: speech,
+      );
+    }
+    if (onClose == null || _plain == null) return speech;
     final colors = Theme.of(context).colorScheme;
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _speech(context),
+        speech,
         PositionedDirectional(
           // No ensino, a ponta do balão fica em cima: o ✕ desce com ela.
           top: (_stacked ? _tail.height : 0) - 20,
@@ -400,6 +542,7 @@ class TeacherSpeech extends StatelessWidget {
       var paragraphIndex = 0;
       return ExplanationCards(
         payload: payload,
+        lessonV2: lessonV2,
         onVariation: onVariation,
         activeCursor: activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
@@ -430,21 +573,26 @@ class TeacherSpeech extends StatelessWidget {
             ),
         groupedParagraph: (paragraphs) {
           final text = paragraphs.map((p) => p.text).join('\n\n');
+          ExplanationVariation? originOf(SpeechLink link) {
+            var start = 0;
+            for (final paragraph in paragraphs) {
+              final end = start + WikiMarkup.plain(paragraph.text).length;
+              if (link.start >= start && link.start < end) {
+                return paragraph.variation;
+              }
+              start = end + 2;
+            }
+            return null;
+          }
+
           return _bubble(
             context,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
+            emphasizeFirstParagraph: lessonV2 && !lessonPromptBubble,
+            originOf: originOf,
             onLinkOverride: (link) {
-              var start = 0;
-              ExplanationVariation? origin;
-              for (final paragraph in paragraphs) {
-                final end = start + WikiMarkup.plain(paragraph.text).length;
-                if (link.start >= start && link.start < end) {
-                  origin = paragraph.variation;
-                  break;
-                }
-                start = end + 2;
-              }
+              final origin = originOf(link);
               final cursor = link.isMove
                   ? payload.cursorForNotation(
                       link.text,
@@ -469,6 +617,7 @@ class TeacherSpeech extends StatelessWidget {
           context,
           WikiMarkup.parse(text),
           useBubbleKey: paragraphIndex++ == 0,
+          originOf: (_) => variation,
           onLinkOverride: variation == null
               ? null
               : (link) {
@@ -527,6 +676,7 @@ class TeacherSpeech extends StatelessWidget {
     String text,
     Text words,
     bool Function(int)? onTapAt,
+    int Function(int) toDrawn,
   ) {
     final speech = speechOf(context);
     if (speech == null) return _TypedText(text: words, onTapAt: onTapAt);
@@ -548,7 +698,13 @@ class TeacherSpeech extends StatelessWidget {
         onTapAt: onTapAt,
         paced: paced,
         speaking: state.isSpeaking(text),
-        revealed: state.isSpeaking(text) ? state.revealed : null,
+        // The voice counts in the source text; the clip, in the drawn one.
+        revealed: state.isSpeaking(text)
+            ? switch (state.revealed) {
+                final revealed? => toDrawn(revealed),
+                null => null,
+              }
+            : null,
       ),
     );
   }
@@ -557,7 +713,9 @@ class TeacherSpeech extends StatelessWidget {
     BuildContext context,
     MarkedText marked, {
     bool useBubbleKey = true,
+    bool emphasizeFirstParagraph = false,
     ValueChanged<SpeechLink>? onLinkOverride,
+    ExplanationVariation? Function(SpeechLink)? originOf,
   }) {
     final text = marked.text;
     final theme = Theme.of(context);
@@ -567,7 +725,8 @@ class TeacherSpeech extends StatelessWidget {
     final wiki = wikiOf(context);
     final pages = [
       for (final mark in marked.marks)
-        if (wiki.url(mark.key, language) case final url?) (mark, url),
+        if (!lessonV2)
+          if (wiki.url(mark.key, language) case final url?) (mark, url),
     ];
     final onLink = onLinkOverride ?? this.onLink;
     final links = onLink == null
@@ -583,7 +742,11 @@ class TeacherSpeech extends StatelessWidget {
               ))
                 link,
           ];
-    final style = theme.textTheme.bodyLarge;
+    final section = lessonV2;
+    final style = theme.textTheme.bodyLarge?.copyWith(
+      fontSize: section ? 16 : null,
+      height: section ? 1.5 : null,
+    );
     // As casas e os lances em seminegrito, na cor primária: tocáveis sem
     // parecer link de site.
     final linkStyle = TextStyle(
@@ -596,34 +759,150 @@ class TeacherSpeech extends StatelessWidget {
       decoration: TextDecoration.underline,
       decorationColor: theme.colorScheme.primary,
     );
+    bool isActiveMove(SpeechLink link) {
+      final active = activeVariation;
+      if (!lessonV2 || !link.isMove || active == null) return false;
+      final origin = originOf?.call(link);
+      final cursor = explanation?.cursorForNotation(
+        link.text,
+        preferred: origin,
+        strictPreferred: origin != null,
+      );
+      return cursor != null &&
+          cursor.variation.id == active.variation.id &&
+          cursor.fen == active.fen &&
+          cursor.ply == active.ply;
+    }
+
+    Color moveColor(SpeechLink link) {
+      if (!lessonV2) return theme.colorScheme.primary;
+      // Contrato §3.4: a cor da qualidade é a da lista (MoveQualityUi).
+      final notation = link.text;
+      final quality = notation.endsWith('??')
+          ? MoveQuality.blunder
+          : notation.endsWith('?!')
+          ? MoveQuality.inaccuracy
+          : notation.endsWith('?')
+          ? MoveQuality.mistake
+          : notation.endsWith('!!')
+          ? MoveQuality.great
+          : notation.endsWith('!')
+          ? MoveQuality.best
+          : null;
+      return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
+    }
+
+    final firstParagraphEnd = text.contains('\n\n')
+        ? text.indexOf('\n\n')
+        : text.length;
+    Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
+      if (!lessonV2) {
+        yield TextSpan(text: value);
+        return;
+      }
+      final paragraphs = value.split('\n\n');
+      var consumed = 0;
+      for (final (index, paragraph) in paragraphs.indexed) {
+        if (index > 0) {
+          yield const TextSpan(text: '\n');
+          yield const TextSpan(
+            text: '\n',
+            style: TextStyle(fontSize: 8, height: 1),
+          );
+        }
+        yield TextSpan(
+          text: paragraph,
+          style:
+              emphasizeFirstParagraph && offset + consumed < firstParagraphEnd
+              ? const TextStyle(fontWeight: FontWeight.w500)
+              : null,
+        );
+        consumed += paragraph.length + 2;
+      }
+    }
+
     final spans = [
-      for (final link in links) (link.start, link.end, linkStyle),
+      for (final link in links)
+        (
+          link.start,
+          link.end,
+          linkStyle.copyWith(
+            color: moveColor(link),
+            backgroundColor: isActiveMove(link)
+                ? theme.colorScheme.primaryContainer
+                : null,
+          ),
+        ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
-    final words = spans.isEmpty
+    // Authored fallback prose keeps its own reading direction while the
+    // surrounding controls follow the selected app locale.
+    final direction = lessonV2
+        ? Bidi.detectRtlDirectionality(text)
+              ? TextDirection.rtl
+              : TextDirection.ltr
+        : null;
+    // In an RTL paragraph the move number after an Arabic letter would be
+    // reordered ("Ke3.1"): each notation is isolated as LTR (LRI…PDI). The
+    // drawn text then differs from the source; [offsets] maps the two.
+    final offsets = _BidiOffsets(
+      lessonV2 && (direction ?? Directionality.of(context)) == TextDirection.rtl
+          ? [
+              for (final link in SpeechLinks.find(
+                text,
+                SpeechLinks.lettersFor(language),
+              ))
+                (link.start, link.end),
+            ]
+          : const [],
+    );
+    InlineSpan? styledSpans() {
+      if (spans.isEmpty && !lessonV2) return null;
+      final breaks = <int>{
+        0,
+        text.length,
+        for (final (start, end, _) in spans) ...[start, end],
+        for (final (start, end) in offsets.ranges) ...[start, end],
+      }.toList()..sort();
+      return TextSpan(
+        children: [
+          for (var i = 0; i < breaks.length; i++) ...[
+            if (offsets.endsAt(breaks[i])) const TextSpan(text: _pdi),
+            if (offsets.startsAt(breaks[i])) const TextSpan(text: _lri),
+            if (i + 1 < breaks.length)
+              if (spans
+                      .where(
+                        (span) => span.$1 <= breaks[i] && span.$2 > breaks[i],
+                      )
+                      .firstOrNull
+                  case final span?)
+                TextSpan(
+                  text: text.substring(breaks[i], breaks[i + 1]),
+                  style: span.$3,
+                )
+              else
+                ...plainSpans(
+                  text.substring(breaks[i], breaks[i + 1]),
+                  breaks[i],
+                ),
+          ],
+        ],
+      );
+    }
+
+    final rich = styledSpans();
+    final words = rich == null
         ? Text(text, key: useBubbleKey ? bubbleKey : null, style: style)
         : Text.rich(
-            TextSpan(
-              children: [
-                for (final (index, (start, end, spanStyle))
-                    in spans.indexed) ...[
-                  TextSpan(
-                    text: text.substring(
-                      index == 0 ? 0 : spans[index - 1].$2,
-                      start,
-                    ),
-                  ),
-                  TextSpan(text: text.substring(start, end), style: spanStyle),
-                ],
-                TextSpan(text: text.substring(spans.last.$2)),
-              ],
-            ),
+            rich,
             key: useBubbleKey ? bubbleKey : null,
             style: style,
+            textDirection: direction,
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
-    bool tapAt(int offset) {
+    bool tapAt(int drawn) {
+      final offset = offsets.toSource(drawn);
       for (final (mark, url) in pages) {
         if (offset >= mark.start && offset < mark.end) {
           showExternalPage(context, url);
@@ -642,18 +921,22 @@ class TeacherSpeech extends StatelessWidget {
     final tappable = spans.isEmpty ? null : tapAt;
     final bubble = Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: _stacked
-            ? BorderRadius.circular(AppShape.large)
-            : const BorderRadiusDirectional.only(
-                topEnd: Radius.circular(AppShape.large),
-                bottomStart: Radius.circular(AppShape.large),
-                bottomEnd: Radius.circular(AppShape.large),
-                topStart: Radius.circular(AppShape.small),
-              ),
-      ),
+      padding: section
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: section
+          ? null
+          : BoxDecoration(
+              color: color,
+              borderRadius: _stacked
+                  ? BorderRadius.circular(AppShape.large)
+                  : const BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(AppShape.large),
+                      bottomStart: Radius.circular(AppShape.large),
+                      bottomEnd: Radius.circular(AppShape.large),
+                      topStart: Radius.circular(AppShape.small),
+                    ),
+            ),
       child: Semantics(
         liveRegion: true,
         label: context.l10n.characterSays(teacher.name, text),
@@ -676,14 +959,17 @@ class TeacherSpeech extends StatelessWidget {
           links: links,
           onLink: onSpoken,
           child: typed
-              ? _typed(context, text, words, tappable)
+              ? _typed(context, text, words, tappable, offsets.toDrawn)
               : tappable == null
               ? words
               : _LinkTapper(text: words, onTapAt: tappable),
         ),
       ),
     );
-    if (!_stacked || _compact(context) || part == TeacherSpeechPart.bubble) {
+    if (section ||
+        !_stacked ||
+        _compact(context) ||
+        part == TeacherSpeechPart.bubble) {
       return bubble;
     }
     return Column(
@@ -699,6 +985,43 @@ class TeacherSpeech extends StatelessWidget {
         bubble,
       ],
     );
+  }
+}
+
+const _lri = '\u2066';
+const _pdi = '\u2069';
+
+/// The LTR isolates wrapped around notations in an RTL paragraph, and the map
+/// between offsets in the drawn text (with the isolates) and in the source
+/// text (what Semantics, the voice and the links use).
+class _BidiOffsets {
+  _BidiOffsets(this.ranges)
+    : _inserts = [
+        for (final (start, end) in ranges) ...[start, end],
+      ]..sort();
+
+  /// Source ranges isolated as LTR, in order and without overlap.
+  final List<(int, int)> ranges;
+
+  /// Source offsets before which one isolate character is drawn.
+  final List<int> _inserts;
+
+  bool startsAt(int offset) => ranges.any((range) => range.$1 == offset);
+  bool endsAt(int offset) => ranges.any((range) => range.$2 == offset);
+
+  /// The drawn offset of the source character at [source].
+  int toDrawn(int source) =>
+      source + _inserts.where((insert) => insert <= source).length;
+
+  /// The source offset of the drawn character at [drawn]; an isolate maps to
+  /// the edge of the notation it wraps.
+  int toSource(int drawn) {
+    for (final (index, insert) in _inserts.indexed) {
+      final at = insert + index;
+      if (drawn == at) return insert;
+      if (drawn < at) return drawn - index;
+    }
+    return drawn - _inserts.length;
   }
 }
 
@@ -803,6 +1126,7 @@ class _TypedTextState extends State<_TypedText>
   late final AnimationController _controller;
   TextPainter? _painter;
   double? _width;
+  double? _minWidth;
 
   int get _length => _span.toPlainText().length;
 
@@ -825,6 +1149,14 @@ class _TypedTextState extends State<_TypedText>
   @override
   void didUpdateWidget(_TypedText old) {
     super.didUpdateWidget(old);
+    // Another text (or direction) in the same place: measure it again.
+    if (old.text.textSpan != widget.text.textSpan ||
+        old.text.data != widget.text.data ||
+        old.text.textDirection != widget.text.textDirection ||
+        old.text.style != widget.text.style) {
+      _painter?.dispose();
+      _painter = null;
+    }
     final revealed = widget.revealed;
     if (revealed != null && revealed != old.revealed && _length > 0) {
       // A voz conta onde está: o texto vai até a palavra falada.
@@ -855,21 +1187,28 @@ class _TypedTextState extends State<_TypedText>
   }
 
   /// As linhas do texto na largura [width], medidas como o [Text] as desenha.
-  TextPainter _measure(BuildContext context, double width) {
+  TextPainter _measure(BuildContext context, BoxConstraints constraints) {
+    final width = constraints.maxWidth;
     final cached = _painter;
-    if (cached != null && _width == width) return cached;
+    if (cached != null &&
+        _width == width &&
+        _minWidth == constraints.minWidth) {
+      return cached;
+    }
     cached?.dispose();
     var style = DefaultTextStyle.of(context).style.merge(widget.text.style);
     if (MediaQuery.boldTextOf(context)) {
       style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
     }
     _width = width;
+    _minWidth = constraints.minWidth;
     return _painter = TextPainter(
       text: TextSpan(style: style, children: [_span]),
-      textDirection: Directionality.of(context),
+      textDirection: widget.text.textDirection ?? Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       locale: Localizations.maybeLocaleOf(context),
-    )..layout(maxWidth: width);
+      // Same width as the RenderParagraph, so RTL lines line up with it.
+    )..layout(minWidth: constraints.minWidth, maxWidth: width);
   }
 
   @override
@@ -882,7 +1221,7 @@ class _TypedTextState extends State<_TypedText>
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        final painter = _measure(context, constraints.maxWidth);
+        final painter = _measure(context, constraints);
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           // Numa casa ou lance já à vista, o toque vale nele (mesmo com a
@@ -963,15 +1302,21 @@ class _LinkTapper extends StatelessWidget {
           if (MediaQuery.boldTextOf(context)) {
             style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
           }
-          final painter = TextPainter(
-            text: TextSpan(
-              style: style,
-              children: [text.textSpan ?? TextSpan(text: text.data)],
-            ),
-            textDirection: Directionality.of(context),
-            textScaler: MediaQuery.textScalerOf(context),
-            locale: Localizations.maybeLocaleOf(context),
-          )..layout(maxWidth: constraints.maxWidth);
+          final painter =
+              TextPainter(
+                text: TextSpan(
+                  style: style,
+                  children: [text.textSpan ?? TextSpan(text: text.data)],
+                ),
+                textDirection: text.textDirection ?? Directionality.of(context),
+                textScaler: MediaQuery.textScalerOf(context),
+                locale: Localizations.maybeLocaleOf(context),
+                // Same width as the RenderParagraph: a tight box (RTL text aligned
+                // to the right of it) must not be measured shrink-wrapped.
+              )..layout(
+                minWidth: constraints.minWidth,
+                maxWidth: constraints.maxWidth,
+              );
           if (!_tapNear(painter, details.localPosition, onTapAt)) {
             SpeechTextTapNotification().dispatch(context);
           }

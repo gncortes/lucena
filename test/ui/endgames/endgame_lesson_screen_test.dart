@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/endgame_lesson_screen.dart';
@@ -223,5 +224,72 @@ void main() {
     );
     expect(find.byKey(EndgameLessonKeys.inReview), findsOneWidget);
     expect(find.textContaining('under review'), findsOneWidget);
+  });
+
+  testWidgets('abertura: só o capítulo atual mostra a descrição', (
+    tester,
+  ) async {
+    final sample = FakeEndgameLessonRepository.sample.lessons.first;
+    const steps = [
+      TalkStep(id: 'a', fen: FakeEndgameLessonRepository.lucenaFen),
+    ];
+    final multi = EndgameLesson(
+      id: sample.id,
+      module: sample.module,
+      lesson: Lesson.parted(
+        id: sample.id,
+        parts: const [
+          LessonPart(id: 'p1', steps: steps),
+          LessonPart(id: 'p2', steps: steps),
+        ],
+      ),
+      exercises: sample.exercises,
+      passScore: sample.passScore,
+      keyPositions: sample.keyPositions,
+      practice: sample.practice,
+      references: sample.references,
+    );
+    final texts = LessonTexts.fromJson({
+      ...FakeEndgameLessonRepository.sampleTexts.toJson(),
+      '${sample.id}.part.p1.title': 'First',
+      '${sample.id}.part.p1.summary': 'Summary of the first.',
+      '${sample.id}.part.p2.title': 'Second',
+      '${sample.id}.part.p2.summary': 'Summary of the second.',
+    });
+    final cubit = EndgameLessonCubit(
+      lessons: FakeEndgameLessonRepository(
+        trail: EndgameTrail(
+          modules: [
+            EndgameModule(id: multi.module, lessons: [multi]),
+          ],
+        ),
+        texts: texts,
+      ),
+      progress: FakeEndgameProgressRepository(),
+      journey: FakeJourneyRepository(),
+      characters: FakeCharacterRepository(),
+    );
+    addTearDown(cubit.close);
+    await cubit.load(multi.id, 'en');
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings()),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: const EndgameLessonScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('First'), findsOneWidget);
+    expect(find.text('Second'), findsOneWidget);
+    expect(find.text('Summary of the first.'), findsOneWidget);
+    expect(find.text('Summary of the second.'), findsNothing);
   });
 }
