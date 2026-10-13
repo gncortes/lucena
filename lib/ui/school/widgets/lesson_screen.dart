@@ -453,16 +453,29 @@ class _LessonScreenState extends State<LessonScreen>
               preferred: _authoredVariation?.variation,
             )
           : null;
+      final cited = cursor == null ? _citedCursor(context, state, link) : null;
       if (cursor != null) {
         _showAuthoredVariation(cursor);
-      } else {
+        return;
+      }
+      if (cited != null) {
+        _showAuthoredVariation(cited.$1);
+        _goTo(TreePosition.branch(cited.$2, 1));
+        return;
+      }
+      // A fala do passo mostrada junto da explicação (o passo revisto): o
+      // lance é de uma linha citada nela, que abre com as alternativas.
+      final spoken = _authoredVariation == null && link.isMove
+          ? SpeechLines.lineOf(_linesOf(context, state), link)
+          : null;
+      if (spoken == null) {
         _flash.toggle(
           link,
           fen: _authoredVariation?.fen ?? state.fen,
           color: Theme.of(context).colorScheme.primary,
         );
+        return;
       }
-      return;
     }
     final line = link.isMove
         ? SpeechLines.lineOf(_linesOf(context, state), link)
@@ -482,6 +495,58 @@ class _LessonScreenState extends State<LessonScreen>
       fen: _variation.value?.fen ?? state.fen ?? state.current?.fen,
       color: Theme.of(context).colorScheme.primary,
     );
+  }
+
+  List<CitedBranchSource>? _cited;
+  Lesson? _citedLesson;
+
+  /// As alternativas citadas da aula (em qualquer passo), para a explicação.
+  List<CitedBranchSource> _citedSources(LessonState state) {
+    final lesson = state.lesson;
+    if (lesson == null) return const [];
+    if (!identical(_citedLesson, lesson)) {
+      _citedLesson = lesson;
+      _cited = VariationTreeBuilder.citedSources(lesson.steps);
+    }
+    return _cited!;
+  }
+
+  /// O toque num lance solto da explicação ("2.g4?") que é o 1º de uma
+  /// alternativa citada: a variante da explicação que passa pela posição de
+  /// onde ela sai, aberta nesse ponto, e o id da alternativa.
+  (VariationCursor, String)? _citedCursor(
+    BuildContext context,
+    LessonState state,
+    SpeechLink link,
+  ) {
+    final payload = state.explanation;
+    if (payload == null || !link.isMove) return null;
+    String plain(String value) => value.replaceAll(RegExp(r'[?!\s]'), '');
+    final numbered = RegExp(r'^\d+\.').hasMatch(link.text);
+    final wanted = plain(link.text);
+    final letters = MoveNotation.letters.pieceLetters(context.l10n) ?? const {};
+    final variations = [
+      ?_authoredVariation?.variation,
+      for (final block in payload.explanations) ...block.variations,
+    ];
+    for (final source in _citedSources(state)) {
+      var label = VariationTreeBuilder.firstLabel(source, letters);
+      if (label == null) continue;
+      label = plain(label);
+      if (!numbered) label = label.replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), '');
+      if (label != wanted) continue;
+      for (final variation in variations) {
+        final cursor = payload.openVariation(variation);
+        if (cursor == null) continue;
+        for (var ply = 0; ply <= cursor.moves.length; ply++) {
+          if (VariationTreeBuilder.placeOf(cursor.fens[ply]) ==
+              VariationTreeBuilder.placeOf(source.fen)) {
+            return (cursor.at(ply), source.branch.id);
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /// O tabuleiro na variante, no lance do [cursor]; a folha sai para baixo
@@ -511,9 +576,14 @@ class _LessonScreenState extends State<LessonScreen>
     final line = _variation.value?.line;
     if (authored != null && state.explanation != null) {
       if (!identical(_treeKey, authored.variation)) {
+        final lessonId = state.lesson?.id ?? '';
         _tree = VariationTreeBuilder.fromExplanation(
           payload: state.explanation!,
           cursor: authored,
+          cited: _citedSources(state),
+          letters: MoveNotation.letters.pieceLetters(context.l10n) ?? const {},
+          comment: (stepId, id, ply) =>
+              state.texts.alternative(lessonId, stepId, id, ply),
         );
         _treeKey = authored.variation;
       }
