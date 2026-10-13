@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "소리 없음",
   "lessonVariationClose": "변화 수순을 닫고 설명으로 돌아가기",
   "lessonVariationPrevious": "변화 수순의 이전 수",
-  "lessonVariationNext": "변화 수순의 다음 수"
+  "lessonVariationNext": "변화 수순의 다음 수",
+  "lessonPresentationClose": "닫고 보드 보기"
 }

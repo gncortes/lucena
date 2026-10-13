@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Sans son",
   "lessonVariationClose": "Fermer la variante et revenir à l'explication",
   "lessonVariationPrevious": "Coup précédent de la variante",
-  "lessonVariationNext": "Coup suivant de la variante"
+  "lessonVariationNext": "Coup suivant de la variante",
+  "lessonPresentationClose": "Fermer et voir l'échiquier"
 }

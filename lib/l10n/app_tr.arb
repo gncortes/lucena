@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Sessiz",
   "lessonVariationClose": "Varyantı kapat ve açıklamaya dön",
   "lessonVariationPrevious": "Varyantta önceki hamle",
-  "lessonVariationNext": "Varyantta sonraki hamle"
+  "lessonVariationNext": "Varyantta sonraki hamle",
+  "lessonPresentationClose": "Kapat ve tahtayı gör"
 }

@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Senza suono",
   "lessonVariationClose": "Chiudi la variante e torna alla spiegazione",
   "lessonVariationPrevious": "Mossa precedente della variante",
-  "lessonVariationNext": "Mossa successiva della variante"
+  "lessonVariationNext": "Mossa successiva della variante",
+  "lessonPresentationClose": "Chiudi e guarda la scacchiera"
 }

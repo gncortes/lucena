@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "サウンドなし",
   "lessonVariationClose": "変化手順を閉じて解説に戻る",
   "lessonVariationPrevious": "変化手順の前の手",
-  "lessonVariationNext": "変化手順の次の手"
+  "lessonVariationNext": "変化手順の次の手",
+  "lessonPresentationClose": "閉じて盤面を見る"
 }

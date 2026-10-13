@@ -89,8 +89,8 @@ void main() {
     ) async {
       final cubit = await open(tester, part, const Size(360, 640));
       expect(cubit.state.presenting, isTrue);
-      expect(find.byKey(LessonKeys.closeSheet), findsOneWidget);
-      await tester.tap(find.byKey(LessonKeys.closeSheet));
+      expect(find.byKey(LessonKeys.presentationClose), findsOneWidget);
+      await tester.tap(find.byKey(LessonKeys.presentationClose));
       await tester.pumpAndSettle();
       expect(cubit.state.presenting, isFalse);
     });
@@ -101,7 +101,7 @@ void main() {
   ) async {
     final cubit = await open(tester, 'defend', const Size(412, 917));
     if (cubit.state.presenting) {
-      expect(find.byKey(LessonKeys.closeSheet), findsOneWidget);
+      expect(find.byKey(LessonKeys.presentationClose), findsOneWidget);
     } else {
       final scroll = tester.state<ScrollableState>(
         find.descendant(

@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Sem som",
   "lessonVariationClose": "Fechar a variante e voltar à explicação",
   "lessonVariationPrevious": "Lance anterior da variante",
-  "lessonVariationNext": "Próximo lance da variante"
+  "lessonVariationNext": "Próximo lance da variante",
+  "lessonPresentationClose": "Fechar e ver o tabuleiro"
 }

@@ -19,6 +19,8 @@ class ViktorSheet extends StatefulWidget {
     this.controller,
     this.scrollKey = ViktorSheetKeys.scroll,
     this.closeKey = ViktorSheetKeys.close,
+    this.closeTooltip,
+    this.modalKey,
     this.onExpanded,
     this.onMoving,
     this.onTop,
@@ -57,6 +59,13 @@ class ViktorSheet extends StatefulWidget {
   final DraggableScrollableController? controller;
   final Key scrollKey;
   final Key closeKey;
+
+  /// Rótulo do X (dica e leitor de tela); sem ele, o "Fechar" do sistema.
+  final String? closeTooltip;
+
+  /// Marca a folha na tela enquanto ela é um modal (a apresentação B): um
+  /// quadro transparente sobre a folha, sem remontar o conteúdo.
+  final Key? modalKey;
   final ValueChanged<bool>? onExpanded;
 
   /// A folha está entre recolhida e aberta (arrastando ou animando): quem
@@ -362,11 +371,20 @@ class _ViktorSheetState extends State<ViktorSheet> {
                 opacity: _expanded ? 1 : 0,
                 child: SheetCloseButton(
                   key: widget.closeKey,
+                  tooltip: widget.closeTooltip,
                   onPressed: _close,
                 ),
               ),
             ),
           ),
+          if (widget.modalKey case final key?)
+            PositionedDirectional(
+              start: 0,
+              end: 0,
+              bottom: 0,
+              top: height * (1 - extent),
+              child: IgnorePointer(child: SizedBox.expand(key: key)),
+            ),
         ],
       );
     },

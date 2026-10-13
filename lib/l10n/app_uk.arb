@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Без звуку",
   "lessonVariationClose": "Закрити варіант і повернутися до пояснення",
   "lessonVariationPrevious": "Попередній хід варіанта",
-  "lessonVariationNext": "Наступний хід варіанта"
+  "lessonVariationNext": "Наступний хід варіанта",
+  "lessonPresentationClose": "Закрити й подивитися на дошку"
 }

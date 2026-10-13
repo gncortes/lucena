@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "بی‌صدا",
   "lessonVariationClose": "بستن واریانت و بازگشت به توضیح",
   "lessonVariationPrevious": "حرکت قبلی واریانت",
-  "lessonVariationNext": "حرکت بعدی واریانت"
+  "lessonVariationNext": "حرکت بعدی واریانت",
+  "lessonPresentationClose": "بستن و دیدن صفحه"
 }

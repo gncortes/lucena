@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Kein Ton",
   "lessonVariationClose": "Variante schließen und zur Erklärung zurückkehren",
   "lessonVariationPrevious": "Vorheriger Zug der Variante",
-  "lessonVariationNext": "Nächster Zug der Variante"
+  "lessonVariationNext": "Nächster Zug der Variante",
+  "lessonPresentationClose": "Schließen und das Brett sehen"
 }

@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Tanpa suara",
   "lessonVariationClose": "Tutup varian dan kembali ke penjelasan",
   "lessonVariationPrevious": "Langkah sebelumnya dalam varian",
-  "lessonVariationNext": "Langkah berikutnya dalam varian"
+  "lessonVariationNext": "Langkah berikutnya dalam varian",
+  "lessonPresentationClose": "Tutup dan lihat papan"
 }

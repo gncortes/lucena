@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Bez dźwięku",
   "lessonVariationClose": "Zamknij wariant i wróć do wyjaśnienia",
   "lessonVariationPrevious": "Poprzedni ruch wariantu",
-  "lessonVariationNext": "Następny ruch wariantu"
+  "lessonVariationNext": "Następny ruch wariantu",
+  "lessonPresentationClose": "Zamknij i zobacz szachownicę"
 }

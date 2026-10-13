@@ -1044,7 +1044,15 @@ class _LessonScreenState extends State<LessonScreen>
                     top: rect.bottom + ExerciseLayout.gutter,
                     controller: _sheet,
                     scrollKey: LessonKeys.scroll,
-                    closeKey: LessonKeys.closeSheet,
+                    closeKey: _presentingModal.value
+                        ? LessonKeys.presentationClose
+                        : LessonKeys.closeSheet,
+                    closeTooltip: _presentingModal.value
+                        ? context.l10n.lessonPresentationClose
+                        : null,
+                    modalKey: _presentingModal.value
+                        ? LessonKeys.presentation
+                        : null,
                     onMinimumChanged: (value) => _sheetMin = value,
                     onMoving: (value) => _sheetMoving.value = value,
                     onExpanded: _onSheetExpanded,

@@ -218,6 +218,67 @@ void main() {
     expect(identical(tester.element(typed.first), speech), isTrue);
   });
 
+  testWidgets(
+    'faixa aberta pelo lance da explicação: texto do lance, ou o da variante '
+    'quando o lance não tem texto próprio',
+    (tester) async {
+      final primary = ExplanationVariation(
+        id: 'main',
+        label: '1.Rd1+',
+        outcome: VariationOutcome.accepted,
+        texts: ['The rook checks before making a shield.'],
+        explanationByPly: {
+          2: ['The king leaves the file.'],
+        },
+        originFen: '1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1',
+        movesUci: ['c1d1', 'd8e7', 'd1d4'],
+        movesSan: ['1.Rd1+', '1...Ke7', '2.Rd4'],
+        validated: true,
+      );
+      final payload = ExplanationPayload(
+        positionId: 'intro',
+        state: ExplanationState.review,
+        explanations: [
+          ExplanationBlock(
+            id: 'main',
+            kind: ExplanationKind.mainSolution,
+            variations: [primary],
+          ),
+        ],
+      );
+      await pump(tester, said, feedback: _AuthoredFeedback(payload));
+      await tester.drag(find.byKey(LessonKeys.scroll), const Offset(0, -700));
+      await tester.pumpAndSettle();
+      String stripText() => tester
+          .widgetList<Text>(
+            find.descendant(
+              of: find.byKey(LessonKeys.variationStrip),
+              matching: find.byType(Text),
+            ),
+          )
+          .map((text) => text.data)
+          .whereType<String>()
+          .join();
+      void link(String notation) =>
+          tester.widget<TeacherSpeech>(find.byType(TeacherSpeech).last).onLink!(
+            SpeechLink(
+              start: 0,
+              end: notation.length,
+              text: notation,
+              isMove: true,
+              square: Square.e7,
+            ),
+          );
+      link('1...Ke7');
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
+      expect(stripText(), 'The king leaves the file.');
+      link('1.Rd1+');
+      await tester.pumpAndSettle();
+      expect(stripText(), 'The rook checks before making a shield.');
+    },
+  );
+
   testWidgets('fala sem variante: sem o botão', (tester) async {
     await pump(tester, 'This is the Lucena position.');
     expect(find.byKey(LessonKeys.variationShow), findsNothing);

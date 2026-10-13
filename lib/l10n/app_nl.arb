@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Geen geluid",
   "lessonVariationClose": "Sluit de variant en ga terug naar de uitleg",
   "lessonVariationPrevious": "Vorige zet van de variant",
-  "lessonVariationNext": "Volgende zet van de variant"
+  "lessonVariationNext": "Volgende zet van de variant",
+  "lessonPresentationClose": "Sluiten en het bord zien"
 }

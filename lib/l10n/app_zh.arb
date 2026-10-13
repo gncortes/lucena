@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "静音",
   "lessonVariationClose": "关闭变着并返回讲解",
   "lessonVariationPrevious": "变着中的上一步",
-  "lessonVariationNext": "变着中的下一步"
+  "lessonVariationNext": "变着中的下一步",
+  "lessonPresentationClose": "关闭并查看棋盘"
 }

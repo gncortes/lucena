@@ -1895,6 +1895,55 @@ void main() {
       expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
     });
 
+    testWidgets('o selo é região viva com o texto do resultado', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine,
+      );
+      await moveNow(tester, 'h1', 'h8');
+      final data = tester
+          .getSemantics(
+            find
+                .ancestor(
+                  of: find.byKey(FreeBoardKeys.endFlash),
+                  matching: find.byType(Semantics),
+                )
+                .first,
+          )
+          .getSemanticsData();
+      expect(data.flagsCollection.isLiveRegion, isTrue);
+      expect(data.label, 'You won!');
+      handle.dispose();
+    });
+
+    testWidgets('Maratona vencida: a pausa entre etapas é de 1,6 s', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine.copyWith(
+          opponent: OpponentKind.maia,
+          level: 1000,
+          positionId: null,
+          speedrunId: 'marathon.queen',
+          speedrunAttemptId: 1,
+          speedrunStage: 0,
+        ),
+      );
+      await moveNow(tester, 'h1', 'h8');
+      await tester.pump(const Duration(milliseconds: 1400));
+      expect(find.byType(FreeBoardScreen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+      expect(find.byType(FreeBoardScreen), findsNothing);
+    });
+
     testWidgets('reduzir movimento: só fade, sem escala', (tester) async {
       tester.platformDispatcher.accessibilityFeaturesTestValue =
           const FakeAccessibilityFeatures(disableAnimations: true);

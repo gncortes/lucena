@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "بلا صوت",
   "lessonVariationClose": "إغلاق التفريعة والعودة إلى الشرح",
   "lessonVariationPrevious": "النقلة السابقة في التفريعة",
-  "lessonVariationNext": "النقلة التالية في التفريعة"
+  "lessonVariationNext": "النقلة التالية في التفريعة",
+  "lessonPresentationClose": "إغلاق ومشاهدة اللوح"
 }

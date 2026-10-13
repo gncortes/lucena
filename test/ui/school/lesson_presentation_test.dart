@@ -127,13 +127,43 @@ void main() {
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final sheet = tester.getRect(find.byKey(LessonKeys.scroll));
     expect(sheet.top, lessThan(board.bottom), reason: 'cobre o tabuleiro');
-    expect(find.byKey(LessonKeys.closeSheet), findsOneWidget);
-    await tester.tap(find.byKey(LessonKeys.closeSheet));
+    expect(find.byKey(LessonKeys.presentation), findsOneWidget);
+    expect(
+      tester.getRect(find.byKey(LessonKeys.presentation)).top,
+      lessThan(board.bottom),
+    );
+    expect(find.byKey(LessonKeys.presentationClose), findsOneWidget);
+    expect(find.byTooltip('Close and see the board'), findsOneWidget);
+    await tester.tap(find.byKey(LessonKeys.presentationClose));
     await tester.pumpAndSettle();
     expect(cubit.state.presenting, isFalse);
     final after = tester.getRect(find.byKey(LessonKeys.scroll));
     expect(after.top, greaterThanOrEqualTo(board.bottom));
+    expect(find.byKey(LessonKeys.presentation), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('barra: o valor anima e o rótulo do passo se mantém', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, const Size(412, 917));
+    double value() => tester
+        .widget<LinearProgressIndicator>(find.byKey(LessonKeys.progress))
+        .value!;
+    final handle = tester.ensureSemantics();
+    expect(find.bySemanticsLabel('Step 1 of 3'), findsOneWidget);
+    final before = value();
+    expect(find.byType(TweenAnimationBuilder<double>), findsWidgets);
+    cubit.next();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 40));
+    final mid = value();
+    await tester.pumpAndSettle();
+    final end = value();
+    expect(end, greaterThan(before));
+    expect(mid, inExclusiveRange(before, end), reason: 'anima, não salta');
+    expect(find.bySemanticsLabel('Step 2 of 3'), findsOneWidget);
+    handle.dispose();
   });
 
   testWidgets('caso B sem voz: fecha sozinha no tempo de leitura (até 8 s)', (

@@ -1107,5 +1107,6 @@
   "gameSoundLabelOff": "Không âm thanh",
   "lessonVariationClose": "Đóng biến và quay lại phần giải thích",
   "lessonVariationPrevious": "Nước đi trước trong biến",
-  "lessonVariationNext": "Nước đi tiếp theo trong biến"
+  "lessonVariationNext": "Nước đi tiếp theo trong biến",
+  "lessonPresentationClose": "Đóng và xem bàn cờ"
 }
