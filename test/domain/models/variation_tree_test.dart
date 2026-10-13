@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/variation_tree.dart';
 
 TreeMove m(String label) => TreeMove(label: label, fen: 'fen $label');
@@ -90,31 +89,6 @@ void main() {
     expect(
       tree.stateOf(const TreePosition.branch('x', 2), current),
       VariationMoveState.upcoming,
-    );
-  });
-
-  test('checkpoint da variante: ida e volta no JSON', () {
-    const variation = VariationCheckpoint(
-      source: VariationCheckpoint.speech,
-      step: 'intro',
-      line: 0,
-      branch: 'd2',
-      ply: 1,
-      open: true,
-    );
-    final checkpoint = LessonCheckpoint(
-      lessonId: 'l',
-      step: 0,
-      variation: variation,
-    );
-    final back = LessonCheckpoint.fromJson(checkpoint.toJson())!;
-    expect(back.variation, variation);
-    expect(back, checkpoint);
-    expect(
-      LessonCheckpoint.fromJson(
-        const LessonCheckpoint(lessonId: 'l', step: 0).toJson(),
-      )!.variation,
-      isNull,
     );
   });
 }

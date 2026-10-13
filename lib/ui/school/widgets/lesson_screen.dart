@@ -95,8 +95,6 @@ class _LessonScreenState extends State<LessonScreen>
   // A folha da faixa (segunda ViktorSheet, só no modo variante) e se está
   // aberta; a variante salva no checkpoint (T68).
   final _variationSheet = DraggableScrollableController();
-  bool _variationOpen = false;
-  bool _restoreHandled = false;
 
   // A entrada na variante segue a sequência do canvas: a folha sai, o
   // tabuleiro anda, entra a faixa e, por fim, os controles. [_stage] conta
@@ -320,7 +318,6 @@ class _LessonScreenState extends State<LessonScreen>
       cleared = _authoredVariation != null;
       _authoredVariation = null;
       _branch.value = null;
-      _variationOpen = false;
     }
     _previous = state;
     final cubit = context.read<LessonCubit>();
@@ -376,7 +373,6 @@ class _LessonScreenState extends State<LessonScreen>
         return;
       }
       _branch.value = null;
-      _variationOpen = false;
       _variation.value = null;
     }
     if (state.fen == null || state.current == null) {
@@ -495,7 +491,6 @@ class _LessonScreenState extends State<LessonScreen>
         resetPremove: true,
       );
     });
-    _persistVariation();
   }
 
   /// A árvore da faixa para a variante aberta (guardada enquanto for a mesma).
@@ -575,119 +570,6 @@ class _LessonScreenState extends State<LessonScreen>
       animate: !AppMotion.of(context).disabled,
       resetPremove: true,
     );
-    _persistVariation();
-  }
-
-  /// Grava a variante aberta (ou nenhuma) no checkpoint do passo.
-  void _persistVariation() {
-    final cubit = context.read<LessonCubit>();
-    final step = cubit.state.current;
-    final position = _position;
-    if (step == null || position == null) {
-      unawaited(cubit.saveVariation(null));
-      return;
-    }
-    VariationCheckpoint? saved;
-    if (_authoredVariation case final authored?) {
-      saved = VariationCheckpoint(
-        source: VariationCheckpoint.explanation,
-        step: step.id,
-        id: authored.variation.id,
-        branch: position.branch,
-        ply: position.ply,
-        open: _variationOpen,
-      );
-    } else if (_variation.value case final line?) {
-      final index = _linesOf(context, cubit.state).indexOf(line.line);
-      if (index >= 0) {
-        saved = VariationCheckpoint(
-          source: VariationCheckpoint.speech,
-          step: step.id,
-          line: index,
-          branch: position.branch,
-          ply: position.ply,
-          open: _variationOpen,
-        );
-      }
-    }
-    unawaited(cubit.saveVariation(saved));
-  }
-
-  /// Reabre a variante salva (fechou o app com ela aberta): mesmo nó e, se
-  /// estava arrastada, a folha aberta. Linha que não resolve mais: sem variante.
-  void _restoreVariation(LessonState state) {
-    final saved = state.restoredVariation;
-    if (saved == null) {
-      _restoreHandled = false;
-      return;
-    }
-    if (_restoreHandled || state.current?.id != saved.step) return;
-    if (saved.source == VariationCheckpoint.explanation &&
-        state.explanation == null) {
-      return;
-    }
-    _restoreHandled = true;
-    _variationOpen = saved.open;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final current = context.read<LessonCubit>().state;
-      TreePosition? target;
-      if (saved.source == VariationCheckpoint.speech) {
-        final lines = _linesOf(context, current);
-        final index = saved.line;
-        if (index == null || index < 0 || index >= lines.length) {
-          unawaited(context.read<LessonCubit>().saveVariation(null));
-          return;
-        }
-        final line = lines[index];
-        _variation.value = SpeechLineCursor(line, 0);
-      } else {
-        final variation = current.explanation?.explanations
-            .expand((block) => block.variations)
-            .where((v) => v.id == saved.id)
-            .firstOrNull;
-        final cursor = variation == null
-            ? null
-            : current.explanation!.openVariation(variation);
-        if (cursor == null) {
-          unawaited(context.read<LessonCubit>().saveVariation(null));
-          return;
-        }
-        _authoredVariation = cursor;
-      }
-      final tree = _syncTree();
-      target = saved.branch == null
-          ? TreePosition.main(saved.ply)
-          : TreePosition(saved.branch, saved.ply);
-      if (tree == null || !tree.contains(target)) {
-        target = TreePosition.main(
-          tree == null ? 0 : saved.ply.clamp(0, tree.main.length),
-        );
-      }
-      setState(() {});
-      _enterVariant(false, () {});
-      _goTo(target);
-      if (saved.open) _expandVariationSheet(attempts: 5);
-    });
-  }
-
-  void _expandVariationSheet({required int attempts}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || attempts <= 0) return;
-      if (!_variationSheet.isAttached) {
-        _expandVariationSheet(attempts: attempts - 1);
-        return;
-      }
-      if (AppMotion.of(context).disabled) {
-        _variationSheet.jumpTo(1);
-        return;
-      }
-      _variationSheet.animateTo(
-        1,
-        duration: AppMotion.of(context).component,
-        curve: AppMotion.enter,
-      );
-    });
   }
 
   void _cancelEntry() {
@@ -741,11 +623,9 @@ class _LessonScreenState extends State<LessonScreen>
       _cancelEntry();
       _speechHeld = false;
       _stage.value = 0;
-      _variationOpen = false;
     }
     setState(() => _authoredVariation = cursor);
     _syncTree();
-    _persistVariation();
     final state = context.read<LessonCubit>().state;
     if (cursor == null) {
       _board?.updatePosition(
@@ -783,9 +663,7 @@ class _LessonScreenState extends State<LessonScreen>
     _stage.value = 0;
     _branch.value = null;
     _variation.value = null;
-    _variationOpen = false;
     _syncTree();
-    _persistVariation();
     final state = context.read<LessonCubit>().state;
     if (state.fen == null || state.current == null) {
       return;
@@ -1195,7 +1073,6 @@ class _LessonScreenState extends State<LessonScreen>
         box.maxHeight - rect.bottom - ExerciseLayout.gutter,
       );
       _openPresentation(context, state, step, area, rect);
-      _restoreVariation(state);
       return Stack(
         children: [
           Positioned.fromRect(
@@ -1325,10 +1202,6 @@ class _LessonScreenState extends State<LessonScreen>
                       scrollKey: LessonKeys.variationStripScroll,
                       closeKey: LessonKeys.variationSheetClose,
                       closeTooltip: context.l10n.lessonPresentationClose,
-                      onExpanded: (open) {
-                        _variationOpen = open;
-                        _persistVariation();
-                      },
                       padding: EdgeInsets.only(
                         bottom: _footerHeight.value + _endGap,
                       ),

@@ -95,12 +95,7 @@ class LessonState {
     this.wrongMove = false,
     this.solutionSeen = false,
     this.presenting = false,
-    this.restoredVariation,
   });
-
-  /// A variante que estava aberta quando o app fechou (T68): a tela reabre
-  /// no mesmo nó, uma vez. Só vem do checkpoint; não muda a cada lance.
-  final VariationCheckpoint? restoredVariation;
 
   /// A abertura de um passo de exercício (T65 §8): o Viktor apresenta o
   /// objetivo e o relógio do passo ainda não começou. Não é salvo: fechar o
@@ -421,8 +416,6 @@ class LessonState {
     bool? solutionSeen,
     bool? presenting,
     bool clearAttemptedSan = false,
-    VariationCheckpoint? restoredVariation,
-    bool clearRestoredVariation = false,
   }) => LessonState(
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
@@ -477,10 +470,6 @@ class LessonState {
             ? false
             : this.wrongMove),
     presenting: presenting ?? this.presenting,
-    restoredVariation: clearRestoredVariation
-        ? null
-        : restoredVariation ??
-              (step != null || fen != null ? null : this.restoredVariation),
     solutionSeen:
         solutionSeen ??
         (step != null || fen != null ? false : this.solutionSeen),
@@ -811,7 +800,10 @@ class LessonCubit extends Cubit<LessonState> {
           full.part(part ?? '') ??
           full.part(saved?.part ?? '') ??
           full.parts.first;
-      if (saved?.part != opened.id) saved = null;
+      // Fechar o app de verdade reabre no INÍCIO da parte em que o aluno
+      // estava (decisão do Gabriel, 2026-10-13): o passo salvo é lido, mas
+      // não se usa. O segundo plano não passa por aqui (fica em memória).
+      saved = null;
       lesson = full.only(opened);
     }
     Character? viktor;
@@ -839,11 +831,6 @@ class LessonCubit extends Cubit<LessonState> {
           saved,
         ),
       );
-      if (saved.variation case final variation?
-          when variation.step == state.current?.id) {
-        _variationNow = variation;
-        emit(state.copyWith(restoredVariation: variation));
-      }
       // Fechou na Solução vista: volta nela (só se o erro voltou também).
       if (saved.solutionSeen && state.showsMistake && state.result == null) {
         emit(state.copyWith(solutionSeen: true));
@@ -2176,19 +2163,6 @@ class LessonCubit extends Cubit<LessonState> {
     return restored;
   }
 
-  // A variante aberta na faixa (T68), guardada no checkpoint do passo.
-  VariationCheckpoint? _variationNow;
-
-  /// A tela avisa a variante aberta (ou nula, ao sair): vai para o
-  /// checkpoint, que reabre a faixa no mesmo nó.
-  Future<void> saveVariation(VariationCheckpoint? variation) {
-    _variationNow = variation;
-    if (state.restoredVariation != null) {
-      emit(state.copyWith(clearRestoredVariation: true));
-    }
-    return _save();
-  }
-
   Future<void> _save() async {
     final lesson = state.lesson;
     if (lesson == null || state.finished) {
@@ -2230,7 +2204,6 @@ class LessonCubit extends Cubit<LessonState> {
     attemptedSan: state.attemptedSan,
     thinkMistake: state.thinkMistake,
     solutionSeen: state.solutionSeen,
-    variation: _variationNow?.step == state.current?.id ? _variationNow : null,
   );
 
   Position? _position() {

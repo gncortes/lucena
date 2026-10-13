@@ -403,10 +403,9 @@ void main() {
     );
   });
 
-  testWidgets('fechar o app com o ramo e o painel abertos: reabre no mesmo nó '
-      'e com a folha aberta', (tester) async {
-    final progress = FakeEndgameProgressRepository();
-    await pump(tester, progress: progress);
+  testWidgets('segundo plano e volta: mantém variante, ramo, lance e painel '
+      'aberto', (tester) async {
+    await pump(tester);
     await openLine(tester);
     await tapKey(tester, d2);
     await tester.drag(
@@ -414,34 +413,33 @@ void main() {
       const Offset(0, -600),
     );
     await tester.pumpAndSettle();
-    final saved = progress.saved.ongoing!.variation!;
-    expect(saved.source, VariationCheckpoint.speech);
-    expect(saved.branch, 'd2');
-    expect(saved.ply, 1);
-    expect(saved.open, isTrue);
-    // Fecha à força e abre de novo.
-    await tester.pumpWidget(const SizedBox());
-    await pump(tester, progress: progress);
+    final handle = find.descendant(
+      of: find.byKey(LessonKeys.variationSheet),
+      matching: find.byKey(ViktorSheetKeys.handle),
+    );
+    final openTop = tester.getRect(handle).top;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
     expect(current(tester), '2.Rd2?');
     expect(boardFen(tester), replay(['c1d1', 'd8e7', 'd1d2']));
     expect(comment(tester), 'Slow.');
-    expect(
-      tester.getRect(find.byKey(LessonKeys.variationSheetClose)).top,
-      greaterThanOrEqualTo(0),
-    );
-    expect(
-      tester
-          .widget<AnimatedOpacity>(
-            find
-                .ancestor(
-                  of: find.byKey(LessonKeys.variationSheetClose),
-                  matching: find.byType(AnimatedOpacity),
-                )
-                .first,
-          )
-          .opacity,
-      1,
-    );
+    expect(tester.getRect(handle).top, closeTo(openTop, 1));
+  });
+
+  testWidgets('fechar o app de verdade: reabre no início da parte, fora da '
+      'variante', (tester) async {
+    final progress = FakeEndgameProgressRepository();
+    await pump(tester, progress: progress);
+    await openLine(tester);
+    await tapKey(tester, d2);
+    // O processo morre: tela e cubit novos com o mesmo repositório.
+    await tester.pumpWidget(const SizedBox());
+    final again = await pump(tester, progress: progress);
+    expect(again.state.step, 0);
+    expect(find.byKey(LessonKeys.variationStrip), findsNothing);
+    expect(boardFen(tester), start);
   });
 }

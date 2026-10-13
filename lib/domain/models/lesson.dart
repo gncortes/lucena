@@ -651,95 +651,6 @@ class LessonAttempt {
   int get hashCode => Object.hash(step, id, kind, fen, turn, uci, incorrect);
 }
 
-/// A variante aberta na faixa (T68), para reabrir no mesmo nó:
-/// `{"source":"speech","step":"i1","line":0,"branch":"g4","ply":1,"open":true}`
-/// (`source` `explanation` usa `id` da variante no lugar de `line`).
-class VariationCheckpoint {
-  const VariationCheckpoint({
-    required this.source,
-    required this.step,
-    this.line,
-    this.id,
-    this.branch,
-    this.ply = 0,
-    this.open = false,
-  });
-
-  static const speech = 'speech';
-  static const explanation = 'explanation';
-
-  /// `speech` (linha citada na fala) ou `explanation` (variante do painel).
-  final String source;
-
-  /// O id do passo em que a variante foi aberta.
-  final String step;
-
-  /// Índice da linha entre as que a fala do passo cita (`speech`).
-  final int? line;
-
-  /// O id da variante (`explanation`).
-  final String? id;
-
-  /// O ramo onde o aluno está; nulo, a linha principal.
-  final String? branch;
-
-  /// Lances jogados na linha principal, ou lance do ramo.
-  final int ply;
-
-  /// O painel da faixa estava aberto (arrastado).
-  final bool open;
-
-  VariationCheckpoint copyWith({bool? open}) => VariationCheckpoint(
-    source: source,
-    step: step,
-    line: line,
-    id: id,
-    branch: branch,
-    ply: ply,
-    open: open ?? this.open,
-  );
-
-  Map<String, dynamic> toJson() => {
-    'source': source,
-    'step': step,
-    'line': ?line,
-    'id': ?id,
-    'branch': ?branch,
-    'ply': ply,
-    'open': open,
-  };
-
-  static VariationCheckpoint? fromJson(Object? json) {
-    if (json is! Map) return null;
-    final source = json['source'];
-    final step = json['step'];
-    if (source is! String || step is! String) return null;
-    return VariationCheckpoint(
-      source: source,
-      step: step,
-      line: json['line'] as int?,
-      id: json['id'] as String?,
-      branch: json['branch'] as String?,
-      ply: json['ply'] as int? ?? 0,
-      open: json['open'] as bool? ?? false,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      other is VariationCheckpoint &&
-      other.source == source &&
-      other.step == step &&
-      other.line == line &&
-      other.id == id &&
-      other.branch == branch &&
-      other.ply == ply &&
-      other.open == open;
-
-  @override
-  int get hashCode => Object.hash(source, step, line, id, branch, ply, open);
-}
-
 /// Onde o aluno parou dentro de uma aula: o passo e o tabuleiro dele.
 class LessonCheckpoint {
   const LessonCheckpoint({
@@ -765,13 +676,11 @@ class LessonCheckpoint {
     this.attemptedSan,
     this.thinkMistake,
     this.solutionSeen = false,
-    this.variation,
   });
 
   final String lessonId;
 
   /// A variante aberta na faixa (T68); nula, nenhuma.
-  final VariationCheckpoint? variation;
 
   /// The student asked for the solution of the failed step (T65 §4): the app
   /// reopens on the "solution seen" screen.
@@ -864,7 +773,6 @@ class LessonCheckpoint {
     attemptedSan: attemptedSan,
     thinkMistake: thinkMistake,
     solutionSeen: solutionSeen,
-    variation: variation,
   );
 
   Map<String, dynamic> toJson() => {
@@ -890,7 +798,6 @@ class LessonCheckpoint {
     'attemptedSan': ?attemptedSan,
     'thinkMistake': ?thinkMistake,
     if (solutionSeen) 'solutionSeen': true,
-    'variation': ?variation?.toJson(),
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -927,7 +834,6 @@ class LessonCheckpoint {
       attemptedSan: json['attemptedSan'] as String?,
       thinkMistake: json['thinkMistake'] as String?,
       solutionSeen: json['solutionSeen'] as bool? ?? false,
-      variation: VariationCheckpoint.fromJson(json['variation']),
     );
   }
 
@@ -953,8 +859,7 @@ class LessonCheckpoint {
       other.reviewStep == reviewStep &&
       other.attemptedSan == attemptedSan &&
       other.thinkMistake == thinkMistake &&
-      other.solutionSeen == solutionSeen &&
-      other.variation == variation;
+      other.solutionSeen == solutionSeen;
 
   @override
   int get hashCode => Object.hash(
@@ -979,7 +884,6 @@ class LessonCheckpoint {
       attemptedSan,
       thinkMistake,
       solutionSeen,
-      variation,
     ),
   );
 
