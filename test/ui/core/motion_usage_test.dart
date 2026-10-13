@@ -37,11 +37,6 @@ void main() {
     'lib/ui/core/widgets/character_speech.dart': {
       'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
     },
-    'lib/ui/core/widgets/typing_dots.dart': {
-      'cycle = Duration(milliseconds: 1200)': 'ciclo dos pontinhos (T70)',
-      'stagger = Duration(milliseconds: 150)': 'defasagem dos pontinhos (T70)',
-      'MediaQuery.disableAnimationsOf': 'pontos parados sem animações',
-    },
     'lib/ui/core/widgets/teacher_speech.dart': {
       'Duration(milliseconds: (_length': 'ritmo de leitura da fala',
     },
@@ -88,6 +83,13 @@ void main() {
     },
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',
+    },
+    'lib/ui/core/widgets/typing_dots.dart': {
+      'cycle = Duration(milliseconds: 1200)':
+          'ciclo dos pontinhos de digitando',
+      'stagger = Duration(milliseconds: 150)': 'defasagem entre os pontinhos',
+      'MediaQuery.disableAnimationsOf(context)':
+          'sem animação os pontinhos ficam parados, não só mais curtos',
     },
     'lib/ui/tour/widgets/tour_demos.dart': {
       'const Duration(milliseconds:': 'coreografia das demonstrações do tour',

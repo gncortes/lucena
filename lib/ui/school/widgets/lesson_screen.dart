@@ -33,6 +33,7 @@ import '../../core/keys/school_keys.dart';
 import '../../core/keys/lesson_v2_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/step_timer.dart';
+import '../../core/widgets/typing_dots.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -171,6 +172,7 @@ class _LessonScreenState extends State<LessonScreen>
   final _demoRing = ValueNotifier<double?>(null);
   Duration? _lastTickElapsed;
   String? _demoAt;
+  String? _ringFor;
   bool _demoSpoke = false;
 
   bool _background = false;
@@ -231,10 +233,27 @@ class _LessonScreenState extends State<LessonScreen>
     }
     switch (state.current) {
       case DemoStep(:final line)
-          when state.demoPlaying && state.demoMove < line.length:
+          when state.demoPlaying &&
+              !state.offScript &&
+              !state.typing &&
+              state.demoMove < line.length:
         _paceDemo(cubit, state, delta);
+      case DemoStep(:final line) when state.demoMove < line.length:
+        _freezeDemo(state);
       default:
         _demoRing.value = null;
+    }
+  }
+
+  /// Pausada (ou fora do roteiro), a demonstração congela o ritmo (T70, crit.
+  /// 19): o anel fica parado onde estava e, ao retomar, a contagem recomeça.
+  /// Num lance novo (⏭ ou ⏮ na mão) o anel zera e fica parado.
+  void _freezeDemo(LessonState state) {
+    _demoAt = null;
+    final at = '${state.current!.id}:${state.demoMove}';
+    if (_ringFor != at || (_demoRing.value ?? 0) < 0) {
+      _ringFor = at;
+      _demoRing.value = 0;
     }
   }
 
@@ -247,6 +266,7 @@ class _LessonScreenState extends State<LessonScreen>
       return;
     }
     final at = '${state.current!.id}:${state.demoMove}';
+    _ringFor = at;
     if (_demoAt != at) {
       _demoAt = at;
       _demoSpoke = false;
@@ -325,11 +345,25 @@ class _LessonScreenState extends State<LessonScreen>
       );
     }
     final position = GameRules.fromFen(fen);
+    // Na demonstração (T70, ponto 2) o aluno joga só o lado dele e na vez
+    // dele, pausada ou não; o lance pausa a demonstração.
+    final demoTurn =
+        step is DemoStep &&
+        position != null &&
+        state.phase == StepPhase.active &&
+        !state.typing &&
+        position.turn == side;
     return GameData(
       fen: fen,
-      playerSide: position == null ? PlayerSide.none : player,
+      playerSide: position == null
+          ? PlayerSide.none
+          : demoTurn
+          ? (side == Side.white ? PlayerSide.white : PlayerSide.black)
+          : player,
       sideToMove: position?.turn ?? side,
-      validMoves: position == null ? const {} : GameRules.legalMoves(position),
+      validMoves: position == null || (step is DemoStep && !demoTurn)
+          ? const {}
+          : GameRules.legalMoves(position),
       lastMove: state.lastMove,
       kingSquareInCheck: position == null
           ? null
@@ -356,6 +390,17 @@ class _LessonScreenState extends State<LessonScreen>
     }
     _previous = state;
     final cubit = context.read<LessonCubit>();
+    // O motor deu erro inesperado: a peça já voltou, avisa (crit. 8e).
+    if (state.engineErrors > previous.engineErrors) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            key: LessonKeys.engineErrorSnack,
+            content: Text(context.l10n.lessonEngineError),
+          ),
+        );
+    }
     // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
     // tabuleiro nasce aqui, antes do primeiro tique). Saindo para a fala, ele
     // fica parado no tempo final até sumir.
@@ -898,7 +943,27 @@ class _LessonScreenState extends State<LessonScreen>
     return _baseSpeech(context, state);
   }
 
+  /// A fala genérica do app (l10n) que o cubit pediu no lugar de [speech].
+  String? _noteText(BuildContext context, LessonState state) {
+    final l10n = context.l10n;
+    // O adversário do aluno: o lado que responde.
+    final opponent = (state.current?.side ?? Side.white) == Side.white
+        ? l10n.blindBlack
+        : l10n.blindWhite;
+    return switch (state.note) {
+      LessonNote.engineMove => l10n.lessonEngineMove(opponent),
+      LessonNote.engineReply => l10n.lessonEngineReply(opponent),
+      LessonNote.alsoWins => l10n.lessonEngineAlsoWins,
+      LessonNote.alsoHolds => l10n.lessonEngineAlsoHolds,
+      LessonNote.alsoWinsShowMain => l10n.lessonEngineAlsoWinsShowMain,
+      LessonNote.alsoHoldsShowMain => l10n.lessonEngineAlsoHoldsShowMain,
+      LessonNote.alsoCorrect || null => null,
+    };
+  }
+
   String? _baseSpeech(BuildContext context, LessonState state) {
+    final noted = _noteText(context, state);
+    if (noted != null) return noted;
     if (!state.genericMistake) return state.speech;
     final lesson = state.lesson;
     final part = state.part;
@@ -1775,6 +1840,8 @@ class _LessonScreenState extends State<LessonScreen>
   /// A apresentação acaba com a fala (ou, sem voz, no tempo de leitura).
   void _pacePresentation(LessonCubit cubit, LessonState state, Duration delta) {
     if (!_presentExpanded) return;
+    // Demonstração pausada congela também o recolhimento da folha (T70).
+    if (state.current is DemoStep && !state.demoPlaying) return;
     final speech = TeacherSpeech.speechOf(context)?.state;
     final text = state.step < 0
         ? ''
@@ -2179,7 +2246,9 @@ class _LessonScreenState extends State<LessonScreen>
           : _explanationFor(context, state),
       onVariation: _showAuthoredVariation,
       activeVariation: _speechHeld ? null : _authoredVariation,
-      text: prompting && step != null
+      text: state.typing
+          ? ''
+          : prompting && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
       emotion: state.emotion,
@@ -2252,6 +2321,19 @@ class _LessonScreenState extends State<LessonScreen>
               step,
               viktor,
               part: TeacherSpeechPart.all,
+            ),
+          ),
+        // A máquina responde ao lance do aluno na demonstração: três pontos
+        // no lugar do comentário (T70, pg. 2.3).
+        if (state.typing)
+          Padding(
+            key: LessonKeys.sheetTyping,
+            padding: const EdgeInsetsDirectional.fromSTEB(28, 0, 16, 12),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TypingDots(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         if (step is TapStep) _guide(context, state, step),
