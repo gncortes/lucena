@@ -243,4 +243,124 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.offset, 0);
   });
+
+  group('lista rolável (faixa fixa, linhas rolam)', () {
+    VariationBranch branch(String id, int at) => VariationBranch(
+      id: id,
+      at: at,
+      moves: [m('${at + 1}.g4?'), m('Rg6')],
+      result: VariationResult.draw,
+    );
+
+    Future<void> show(
+      WidgetTester tester,
+      TreePosition position, {
+      double maxHeight = 220,
+      bool disableAnimations = false,
+    }) async {
+      tester.view
+        ..physicalSize = const Size(360, 780)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        TestApp(
+          child: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(360, 780),
+              disableAnimations: disableAnimations,
+            ),
+            child: Scaffold(
+              body: VariationStrip(
+                tree: tree(branches: [branch('a', 1), branch('b', 3)]),
+                position: position,
+                text: 'Comment.',
+                onSelect: (_) {},
+                maxHeight: maxHeight,
+                onToggleHidden: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    ScrollPosition listPosition(WidgetTester tester) => tester
+        .state<ScrollableState>(
+          find.descendant(
+            of: find.byKey(LessonKeys.variationStripList),
+            matching: find.byType(Scrollable),
+          ),
+        )
+        .position;
+
+    /// A barra pinta o polegar? Só o pintor dela, sem o que há dentro.
+    bool thumbDrawn(WidgetTester tester) {
+      final finder = find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.foregroundPainter is ScrollbarPainter,
+      );
+      final paint = tester.widget<CustomPaint>(finder.first);
+      final size = tester.getSize(finder.first);
+      final canvas = TestRecordingCanvas();
+      paint.foregroundPainter!.paint(canvas, size);
+      return canvas.invocations.any(
+        (call) =>
+            call.invocation.memberName == #drawRRect ||
+            call.invocation.memberName == #drawRect,
+      );
+    }
+
+    testWidgets('o lance da vez sobe ao alto da lista; cabeçalho e botão '
+        'ficam; a barra aparece', (tester) async {
+      await show(tester, const TreePosition.main(1));
+      expect(listPosition(tester).maxScrollExtent, greaterThan(0));
+      expect(listPosition(tester).pixels, 0);
+      await show(tester, const TreePosition.main(5));
+      await tester.pumpAndSettle();
+      final listTop = tester
+          .getTopLeft(find.byKey(LessonKeys.variationStripList))
+          .dy;
+      final currentTop = tester
+          .getTopLeft(find.byKey(LessonKeys.variationStripCurrent))
+          .dy;
+      final position = listPosition(tester);
+      expect(position.pixels, greaterThan(0));
+      expect(
+        currentTop - listTop < 48 ||
+            position.pixels == position.maxScrollExtent,
+        isTrue,
+        reason: 'currentTop=$currentTop listTop=$listTop',
+      );
+      expect(find.byKey(LessonKeys.variationMove(1)), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.byKey(LessonKeys.variationMove(1))).dy,
+        lessThan(listTop),
+      );
+      expect(find.byKey(LessonKeys.variationHiddenToggle), findsOneWidget);
+      expect(
+        thumbDrawn(tester),
+        isTrue,
+        reason: 'barra fixa com conteúdo fora de vista',
+      );
+      // Voltar ao primeiro lance leva a lista ao começo.
+      await show(tester, const TreePosition.main(1));
+      await tester.pumpAndSettle();
+      expect(listPosition(tester).pixels, 0);
+    });
+
+    testWidgets('tudo cabe: não rola e não há barra', (tester) async {
+      await show(tester, const TreePosition.main(5), maxHeight: 900);
+      await tester.pumpAndSettle();
+      expect(listPosition(tester).maxScrollExtent, 0);
+      expect(listPosition(tester).pixels, 0);
+      expect(thumbDrawn(tester), isFalse);
+    });
+
+    testWidgets('sem animação, a rolagem pula direto', (tester) async {
+      await show(tester, const TreePosition.main(1), disableAnimations: true);
+      await show(tester, const TreePosition.main(5), disableAnimations: true);
+      await tester.pump();
+      await tester.pump();
+      expect(listPosition(tester).pixels, greaterThan(0));
+    });
+  });
 }

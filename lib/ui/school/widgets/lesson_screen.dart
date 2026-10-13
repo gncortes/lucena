@@ -1382,43 +1382,56 @@ class _LessonScreenState extends State<LessonScreen>
                   duration: AppMotion.of(context).state,
                   child: IgnorePointer(
                     ignoring: strip == null,
-                    child: ViktorSheet(
-                      key: LessonKeys.variationSheet,
-                      top: rect.bottom + ExerciseLayout.gutter,
-                      controller: _variationSheet,
-                      scrollKey: LessonKeys.variationStripScroll,
-                      closeKey: LessonKeys.variationSheetClose,
-                      closeTooltip: context.l10n.lessonPresentationClose,
-                      padding: EdgeInsets.only(
-                        bottom: _footerHeight.value + _endGap,
+                    child: LayoutBuilder(
+                      builder: (context, box) => ViktorSheet(
+                        key: LessonKeys.variationSheet,
+                        top: rect.bottom + ExerciseLayout.gutter,
+                        controller: _variationSheet,
+                        scrollKey: LessonKeys.variationStripScroll,
+                        closeKey: LessonKeys.variationSheetClose,
+                        closeTooltip: context.l10n.lessonPresentationClose,
+                        padding: EdgeInsets.only(
+                          bottom: _footerHeight.value + _endGap,
+                        ),
+                        children: [
+                          if (strip != null)
+                            Builder(
+                              builder: (context) {
+                                final hide = context.select(
+                                  (SettingsCubit cubit) =>
+                                      cubit.state?.lessonHiddenMoves ?? true,
+                                );
+                                return VariationStrip(
+                                  key: LessonKeys.variationStrip,
+                                  tree: strip.tree,
+                                  position: strip.position,
+                                  text: strip.text,
+                                  onSelect: _goTo,
+                                  hideUnseen: hide,
+                                  revealed: _seenSet,
+                                  revealing: _revealing,
+                                  onReveal: _revealRow,
+                                  onToggleHidden: () => context
+                                      .read<SettingsCubit>()
+                                      .setLessonHiddenMoves(hidden: !hide),
+                                  // Folha recolhida: do alto dela ao rodapé,
+                                  // menos a alça (12), o respiro de cima (8)
+                                  // e o corte de 4 dp da máscara.
+                                  maxHeight: max(
+                                    120.0,
+                                    box.maxHeight -
+                                        (rect.bottom + ExerciseLayout.gutter) -
+                                        _footerHeight.value -
+                                        _endGap -
+                                        24,
+                                  ),
+                                );
+                              },
+                            )
+                          else
+                            const SizedBox(width: double.infinity),
+                        ],
                       ),
-                      children: [
-                        if (strip != null)
-                          Builder(
-                            builder: (context) {
-                              final hide = context.select(
-                                (SettingsCubit cubit) =>
-                                    cubit.state?.lessonHiddenMoves ?? true,
-                              );
-                              return VariationStrip(
-                                key: LessonKeys.variationStrip,
-                                tree: strip.tree,
-                                position: strip.position,
-                                text: strip.text,
-                                onSelect: _goTo,
-                                hideUnseen: hide,
-                                revealed: _seenSet,
-                                revealing: _revealing,
-                                onReveal: _revealRow,
-                                onToggleHidden: () => context
-                                    .read<SettingsCubit>()
-                                    .setLessonHiddenMoves(hidden: !hide),
-                              );
-                            },
-                          )
-                        else
-                          const SizedBox(width: double.infinity),
-                      ],
                     ),
                   ),
                 ),

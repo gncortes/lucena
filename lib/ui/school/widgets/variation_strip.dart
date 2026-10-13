@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../../../domain/models/variation_tree.dart';
 import '../../core/keys/school_keys.dart';
@@ -62,6 +63,7 @@ class VariationStrip extends StatefulWidget {
     this.revealing,
     this.onReveal,
     this.onToggleHidden,
+    this.maxHeight,
     super.key,
   });
 
@@ -90,6 +92,11 @@ class VariationStrip extends StatefulWidget {
 
   /// O botão do canto da faixa; nulo, sem botão.
   final VoidCallback? onToggleHidden;
+
+  /// Altura máxima do cabeçalho mais a lista de linhas (o que cabe na folha
+  /// recolhida, acima do rodapé). Acima disso a lista rola por dentro, com o
+  /// cabeçalho fixo; nulo, sem limite.
+  final double? maxHeight;
 
   /// Recuo das alternativas: 4 de margem + 2 do filete + 10 de respiro
   /// (canvas T68, `.svr`).
@@ -122,28 +129,60 @@ class VariationStrip extends StatefulWidget {
 }
 
 class _VariationStripState extends State<VariationStrip> {
+  final _scroll = ScrollController();
+  final _listBox = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _follow(animate: false),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
   @override
   void didUpdateWidget(VariationStrip oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.position == widget.position) return;
-    // O lance da vez fica à vista dentro da rolagem da folha, no alto.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final current = _currentElement;
-      if (current == null || !current.mounted) return;
-      // Só rola se o lance da vez não está à vista, o mínimo para vê-lo:
-      // revelar um lance não leva o cabeçalho da faixa para fora do painel.
-      for (final policy in const [
-        ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-        ScrollPositionAlignmentPolicy.keepVisibleAtStart,
-      ]) {
-        Scrollable.ensureVisible(
-          current,
-          duration: AppMotion.of(context).state,
-          alignmentPolicy: policy,
-        );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _follow(animate: true));
+  }
+
+  /// A lista de linhas rola para o lance da vez ficar no alto dela; o
+  /// cabeçalho (linha 0 e o botão) fica fora da lista e não se mexe. Sem
+  /// sobra de conteúdo, `maxScrollExtent` é 0 e nada rola.
+  void _follow({required bool animate}) {
+    if (!mounted || !_scroll.hasClients) return;
+    final list = _listBox.currentContext?.findRenderObject();
+    final current = _currentElement?.findRenderObject();
+    var target = 0.0;
+    if (list != null && current != null && current.attached) {
+      var inside = false;
+      for (RenderObject? node = current; node != null; node = node.parent) {
+        if (identical(node, list)) {
+          inside = true;
+          break;
+        }
       }
-    });
+      final viewport = RenderAbstractViewport.maybeOf(current);
+      if (inside && viewport != null) {
+        target = viewport.getOffsetToReveal(current, 0).offset;
+      }
+    }
+    final position = _scroll.position;
+    target = target.clamp(position.minScrollExtent, position.maxScrollExtent);
+    if ((target - position.pixels).abs() < .5) return;
+    final motion = AppMotion.of(context);
+    if (!animate || motion.disabled) {
+      _scroll.jumpTo(target);
+    } else {
+      _scroll.animateTo(target, duration: motion.state, curve: AppMotion.move);
+    }
   }
 
   BuildContext? get _currentElement {
@@ -160,6 +199,21 @@ class _VariationStripState extends State<VariationStrip> {
     (context as Element).visitChildren(visit);
     return found;
   }
+
+  Widget _row(int index, VariationRow row, TextStyle body, bool hasButton) =>
+      _StripRow(
+        tree: widget.tree,
+        row: row,
+        index: index,
+        current: widget.position,
+        style: body,
+        hideUnseen: widget.hideUnseen,
+        revealed: widget.revealed,
+        revealing: widget.revealing,
+        reserveEnd: index == 0 && hasButton ? VariationStrip.tapSize : 0,
+        onSelect: widget.onSelect,
+        onReveal: widget.onReveal,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -191,27 +245,40 @@ class _VariationStripState extends State<VariationStrip> {
                 children: [
                   SizedBox(
                     width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        for (final (index, row) in tree.rows.indexed)
-                          _StripRow(
-                            tree: tree,
-                            row: row,
-                            index: index,
-                            current: widget.position,
-                            style: body,
-                            hideUnseen: widget.hideUnseen,
-                            revealed: widget.revealed,
-                            revealing: widget.revealing,
-                            reserveEnd: index == 0 && button != null
-                                ? VariationStrip.tapSize
-                                : 0,
-                            onSelect: widget.onSelect,
-                            onReveal: widget.onReveal,
-                          ),
-                      ],
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: widget.maxHeight ?? double.infinity,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (tree.rows.isNotEmpty)
+                            _row(0, tree.rows.first, body, button != null),
+                          if (tree.rows.length > 1)
+                            Flexible(
+                              child: Scrollbar(
+                                controller: _scroll,
+                                thumbVisibility: true,
+                                child: SingleChildScrollView(
+                                  key: LessonKeys.variationStripList,
+                                  controller: _scroll,
+                                  child: Column(
+                                    key: _listBox,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      for (final (index, row)
+                                          in tree.rows.indexed.skip(1))
+                                        _row(index, row, body, button != null),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                   if (button != null)

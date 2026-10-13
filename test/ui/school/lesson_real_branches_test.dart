@@ -57,10 +57,11 @@ void main() {
     String stepId, {
     bool trimmed = true,
     String part = 'distant',
+    Size size = const Size(412, 917),
   }) async {
     tester.view
       ..devicePixelRatio = 1
-      ..physicalSize = const Size(412, 917);
+      ..physicalSize = size;
     addTearDown(tester.view.reset);
     final step = trimmed
         ? real.lesson.steps.firstWhere((s) => s.id == stepId)
@@ -380,4 +381,46 @@ void main() {
       );
     },
   );
+
+  testWidgets('faixa (capablanca, 360x780): ao avançar, o lance da vez sobe '
+      'ao alto da lista; cabeçalho e barra ficam', (tester) async {
+    await pump(tester, 'capablanca', size: const Size(360, 780));
+    await tapMove(tester, '2.Re3!');
+    final list = find.byKey(LessonKeys.variationStripList);
+    expect(list, findsOneWidget);
+    final listTop = tester.getTopLeft(list).dy;
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(of: list, matching: find.byType(Scrollable)),
+    );
+    for (var i = 0; i < 8; i++) {
+      final current = find.byKey(LessonKeys.variationStripCurrent);
+      final rowTop = tester.getTopLeft(current).dy;
+      final position = scrollable.position;
+      // Com conteúdo abaixo, o lance da vez fica a menos de 48 dp do alto
+      // da lista; no fim da lista, ele só não passa do que cabe.
+      expect(
+        rowTop < listTop ||
+            rowTop - listTop < 48 ||
+            position.pixels == position.maxScrollExtent,
+        isTrue,
+        reason:
+            'passo $i: rowTop=$rowTop listTop=$listTop '
+            'px=${position.pixels} max=${position.maxScrollExtent}',
+      );
+      // O lance da vez na linha do cabeçalho: a lista fica no começo.
+      if (rowTop < listTop) expect(position.pixels, 0);
+      expect(find.byKey(LessonKeys.variationHiddenToggle), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.byKey(LessonKeys.variationMove(1))).dy,
+        lessThan(listTop),
+      );
+      final forward = tester.widget<IconButton>(
+        find.byKey(LessonKeys.variationForward),
+      );
+      if (forward.onPressed == null) break;
+      await tester.tap(find.byKey(LessonKeys.variationForward));
+      await tester.pumpAndSettle();
+    }
+    expect(tester.takeException(), isNull);
+  });
 }
