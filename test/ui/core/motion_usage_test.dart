@@ -67,6 +67,8 @@ void main() {
     'lib/ui/school/widgets/lesson_screen.dart': {
       'Timer.periodic(const Duration(milliseconds: 250)':
           'cronômetro do passo e ritmo da demonstração: tempo, não animação',
+      '_pacePresentation(cubit, state, const Duration(milliseconds: 250))':
+          'um tique do cronômetro na apresentação: tempo, não animação',
     },
     'lib/ui/school/widgets/lesson_part_widgets.dart': {
       'tick = Duration(milliseconds: 250)':

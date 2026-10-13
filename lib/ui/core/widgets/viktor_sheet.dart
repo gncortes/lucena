@@ -47,6 +47,11 @@ class ViktorSheet extends StatefulWidget {
   /// Altura reservada em todos os estados para texto acima das ações.
   static const peekHeight = 160.0;
 
+  /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
+  /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
+  /// (LICOES-V2 §5).
+  static const openGap = 76.0;
+
   final double top;
   final List<Widget> children;
   final DraggableScrollableController? controller;
@@ -76,7 +81,6 @@ class _ViktorSheetState extends State<ViktorSheet> {
   /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
   /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
   /// (LICOES-V2 §5). Calculado no layout.
-  static const _openGap = 76.0;
   double _maximum = .95;
   double _minimum = .2;
   double? _extent;
@@ -189,7 +193,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final height = box.maxHeight;
-      _maximum = (1 - _openGap / height).clamp(.02, 1.0);
+      _maximum = (1 - ViktorSheet.openGap / height).clamp(.02, 1.0);
       _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
       final area = Size(box.maxWidth, height);
       final geometryChanged =

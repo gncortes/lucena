@@ -113,4 +113,36 @@ void main() {
     }
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('B: a folha sobe até o fim do texto, sem vão vazio embaixo', (
+    tester,
+  ) async {
+    for (final (part, size) in [
+      ('defend', const Size(412, 917)),
+      ('lateral', const Size(360, 640)),
+    ]) {
+      final cubit = await open(tester, part, size);
+      if (!cubit.state.presenting) continue;
+      await tester.pumpAndSettle(const Duration(milliseconds: 100));
+      if (!cubit.state.presenting) {
+        await tester.pump(const Duration(milliseconds: 1));
+      }
+      final sheet = tester.getRect(find.byKey(LessonKeys.scroll));
+      final lowest = tester
+          .widgetList<Text>(
+            find.descendant(
+              of: find.byKey(LessonKeys.scroll),
+              matching: find.byType(Text),
+            ),
+          )
+          .map((text) => tester.getRect(find.byWidget(text)).bottom)
+          .reduce((a, b) => a > b ? a : b);
+      expect(
+        sheet.bottom - lowest,
+        lessThan(48),
+        reason: '$part: fim do texto junto do fim da folha',
+      );
+      expect(sheet.top, greaterThanOrEqualTo(76));
+    }
+  });
 }

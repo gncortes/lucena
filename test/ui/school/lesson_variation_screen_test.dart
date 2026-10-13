@@ -200,6 +200,16 @@ void main() {
     // A faixa: lances da linha, o da vez em destaque, texto do Viktor.
     expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
     expect(find.byKey(LessonKeys.variationStripCurrent), findsOneWidget);
+    // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 de cada lado.
+    final board = tester.getRect(find.byKey(LessonKeys.board));
+    final strip = tester.getRect(find.byKey(LessonKeys.variationStrip));
+    expect(strip.top, board.bottom + 16);
+    expect(strip.left, 16);
+    expect(
+      tester.view.physicalSize.width / tester.view.devicePixelRatio -
+          strip.right,
+      16,
+    );
     // Sem ir antes do primeiro lance: o anterior só desliga em 0.
     await press(tester, LessonKeys.variationExit);
     expect(find.byKey(LessonKeys.variationStrip), findsNothing);

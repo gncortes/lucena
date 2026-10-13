@@ -135,4 +135,15 @@ void main() {
     expect(after.top, greaterThanOrEqualTo(board.bottom));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('caso B sem voz: fecha sozinha no tempo de leitura (até 8 s)', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, const Size(360, 640));
+    expect(cubit.state.presenting, isTrue);
+    await tester.pump(const Duration(seconds: 9));
+    await tester.pumpAndSettle();
+    expect(cubit.state.presenting, isFalse);
+    expect(find.byKey(LessonKeys.footer), findsOneWidget);
+  });
 }

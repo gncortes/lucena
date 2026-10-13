@@ -82,6 +82,14 @@ class _LessonScreenState extends State<LessonScreen>
 
   final _variation = ValueNotifier<SpeechLineCursor?>(null);
 
+  // A entrada na variante segue a sequência do canvas: a folha sai, o
+  // tabuleiro anda, entra a faixa e, por fim, os controles. [_stage] conta
+  // quantos passos já valem (3: tudo à vista); a fala só troca com a folha
+  // já fora ([_speechHeld] segura o texto do passo até lá).
+  final _stage = ValueNotifier<int>(0);
+  final _entryTimers = <Timer>[];
+  bool _speechHeld = false;
+
   // As variantes da fala mostrada, guardadas pela fala e pelas posições.
   String? _linesKey;
   List<SpeechLine> _lines = const [];
@@ -171,7 +179,8 @@ class _LessonScreenState extends State<LessonScreen>
       _elapsed.value = cubit.stepElapsed;
     }
     if (state.presenting && _presentingModal.value) {
-      _pacePresentation(cubit, state, delta);
+      // O relógio do passo está parado na apresentação: o tempo vem do tick.
+      _pacePresentation(cubit, state, const Duration(milliseconds: 250));
     }
     switch (state.current) {
       case DemoStep(:final line)
@@ -243,6 +252,8 @@ class _LessonScreenState extends State<LessonScreen>
     _presentingModal.dispose();
     _flash.dispose();
     _variation.dispose();
+    _stage.dispose();
+    _cancelEntry();
     super.dispose();
   }
 
@@ -446,17 +457,68 @@ class _LessonScreenState extends State<LessonScreen>
   /// (fica montada, com o tamanho e a rolagem) e a faixa e os controles entram.
   void _showLine(BuildContext context, SpeechLineCursor cursor) {
     _flash.clear();
+    final entering = _variation.value == null && _authoredVariation == null;
     _variation.value = cursor;
-    _board?.updatePosition(
-      _lineGame(cursor),
-      animate: true,
-      resetPremove: true,
-    );
+    _enterVariant(entering, () {
+      _board?.updatePosition(
+        _lineGame(cursor),
+        animate: true,
+        resetPremove: true,
+      );
+    });
+  }
+
+  void _cancelEntry() {
+    for (final timer in _entryTimers) {
+      timer.cancel();
+    }
+    _entryTimers.clear();
+  }
+
+  /// Entrar na variante: a folha sai (300 ms), o tabuleiro anda, a faixa
+  /// entra 100 ms depois e os controles aos 450 ms. Dentro da variante, ou
+  /// sem movimento, tudo vale já.
+  void _enterVariant(bool entering, VoidCallback showBoard) {
+    _cancelEntry();
+    if (!entering || AppMotion.of(context).disabled) {
+      _speechHeld = false;
+      _stage.value = 3;
+      showBoard();
+      return;
+    }
+    final sheet = AppMotion.of(context).component;
+    _stage.value = 0;
+    _speechHeld = true;
+    _entryTimers
+      ..add(
+        Timer(sheet, () {
+          if (!mounted) return;
+          setState(() => _speechHeld = false);
+          showBoard();
+          _stage.value = 1;
+        }),
+      )
+      ..add(Timer(sheet + AppMotion.of(context).state, () => _stage.value = 2))
+      ..add(
+        Timer(
+          sheet + AppMotion.of(context).state + AppMotion.of(context).component,
+          () => _stage.value = 3,
+        ),
+      );
   }
 
   void _showAuthoredVariation(VariationCursor? cursor) {
     _flash.clear();
+    final entering =
+        cursor != null &&
+        _variation.value == null &&
+        _authoredVariation == null;
     _variation.value = null;
+    if (cursor == null) {
+      _cancelEntry();
+      _speechHeld = false;
+      _stage.value = 0;
+    }
     setState(() => _authoredVariation = cursor);
     final state = context.read<LessonCubit>().state;
     if (cursor == null) {
@@ -467,20 +529,22 @@ class _LessonScreenState extends State<LessonScreen>
       );
     } else {
       final position = GameRules.fromFen(cursor.fen);
-      _board?.updatePosition(
-        GameData(
-          fen: cursor.fen,
-          playerSide: PlayerSide.none,
-          sideToMove: position?.turn ?? Side.white,
-          validMoves: const {},
-          lastMove: cursor.lastMove,
-          kingSquareInCheck: position == null
-              ? null
-              : GameRules.checkedKing(position),
-        ),
-        animate: true,
-        resetPremove: true,
-      );
+      _enterVariant(entering, () {
+        _board?.updatePosition(
+          GameData(
+            fen: cursor.fen,
+            playerSide: PlayerSide.none,
+            sideToMove: position?.turn ?? Side.white,
+            validMoves: const {},
+            lastMove: cursor.lastMove,
+            kingSquareInCheck: position == null
+                ? null
+                : GameRules.checkedKing(position),
+          ),
+          animate: true,
+          resetPremove: true,
+        );
+      });
     }
   }
 
@@ -489,6 +553,8 @@ class _LessonScreenState extends State<LessonScreen>
     if (_variation.value == null) {
       return;
     }
+    _cancelEntry();
+    _stage.value = 0;
     _variation.value = null;
     final state = context.read<LessonCubit>().state;
     if (state.fen == null || state.current == null) {
@@ -775,13 +841,21 @@ class _LessonScreenState extends State<LessonScreen>
                         _sheetMoving,
                         _variation,
                         _presentingModal,
+                        _stage,
                       ]),
                       builder: (context, _) {
                         final covered =
                             _sheetMoving.value || _presentingModal.value;
                         final variation = _variation.value;
                         final authored = _authoredVariation;
-                        final inVariant = variation != null || authored != null;
+                        final inVariant =
+                            (variation != null || authored != null) &&
+                            _stage.value >= 3;
+                        // Na apresentação B o rodapé nasce oculto: sem
+                        // animação de saída por cima do modal.
+                        final hideTime = _presentingModal.value
+                            ? Duration.zero
+                            : AppMotion.of(context).component;
                         // Os botões saem só enquanto a folha anda (arrasto
                         // ou animação) e voltam quando ela para, recolhida
                         // ou aberta: a fala rola por baixo deles.
@@ -790,13 +864,13 @@ class _LessonScreenState extends State<LessonScreen>
                           child: ExcludeSemantics(
                             excluding: covered,
                             child: AnimatedSlide(
-                              duration: AppMotion.of(context).component,
+                              duration: hideTime,
                               curve: AppMotion.exit,
                               offset: covered
                                   ? const Offset(0, 1)
                                   : Offset.zero,
                               child: AnimatedOpacity(
-                                duration: AppMotion.of(context).component,
+                                duration: hideTime,
                                 opacity: covered ? 0 : 1,
                                 child: _SizeReporter(
                                   onSize: _onFooterSize,
@@ -962,35 +1036,45 @@ class _LessonScreenState extends State<LessonScreen>
               },
               child: ValueListenableBuilder(
                 valueListenable: _footerHeight,
-                builder: (context, footer, _) => ViktorSheet(
-                  key: LessonKeys.viktorSheet,
-                  top: rect.bottom + ExerciseLayout.gutter,
-                  controller: _sheet,
-                  scrollKey: LessonKeys.scroll,
-                  closeKey: LessonKeys.closeSheet,
-                  onMinimumChanged: (value) => _sheetMin = value,
-                  onMoving: (value) => _sheetMoving.value = value,
-                  onExpanded: _onSheetExpanded,
-                  padding: EdgeInsets.only(bottom: footer + _endGap),
-                  children: [
-                    KeyedSubtree(
-                      key: _speechContent,
-                      child: _speechSheet(context, state, step, viktor),
+                builder: (context, footer, _) => ListenableBuilder(
+                  listenable: _presentingModal,
+                  // Na apresentação B não há rodapé: o texto vai até o fim.
+                  builder: (context, _) => ViktorSheet(
+                    key: LessonKeys.viktorSheet,
+                    top: rect.bottom + ExerciseLayout.gutter,
+                    controller: _sheet,
+                    scrollKey: LessonKeys.scroll,
+                    closeKey: LessonKeys.closeSheet,
+                    onMinimumChanged: (value) => _sheetMin = value,
+                    onMoving: (value) => _sheetMoving.value = value,
+                    onExpanded: _onSheetExpanded,
+                    padding: EdgeInsets.only(
+                      bottom: (_presentingModal.value ? 0 : footer) + _endGap,
                     ),
-                  ],
+                    children: [
+                      KeyedSubtree(
+                        key: _speechContent,
+                        child: _speechSheet(context, state, step, viktor),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
           // A faixa da variante: os lances, o da vez em destaque, e o texto.
           PositionedDirectional(
-            top: rect.bottom + ExerciseLayout.gutter,
-            start: ExerciseLayout.gutter,
-            end: ExerciseLayout.gutter,
-            child: ValueListenableBuilder(
-              valueListenable: _variation,
-              builder: (context, line, _) {
-                final strip = _stripOf(context, state, line);
+            // Canvas var_trecho: 16 dp abaixo do tabuleiro e 16 dos lados.
+            top: rect.bottom + AppSpacing.lg,
+            start: AppSpacing.lg,
+            end: AppSpacing.lg,
+            child: ListenableBuilder(
+              listenable: Listenable.merge([_variation, _stage]),
+              builder: (context, _) {
+                final line = _variation.value;
+                final strip = _stage.value >= 2
+                    ? _stripOf(context, state, line)
+                    : null;
                 return AnimatedOpacity(
                   opacity: strip == null ? 0 : 1,
                   duration: AppMotion.of(context).state,
@@ -1096,13 +1180,31 @@ class _LessonScreenState extends State<LessonScreen>
       _presentExpanded = false;
       _presentingModal.value = true;
       if (!_sheet.isAttached) return;
+      // A folha sobe até a altura do texto (alça, conteúdo e respiro final),
+      // no máximo até os 76 dp livres no alto (LICOES-V2 §5, §8).
+      final ceiling = 1 - ViktorSheet.openGap / area.height;
+      final wanted = (_handleHeight + content + _endGap) / area.height;
+      // Texto curto: a folha ainda sobe um pouco, para ser o modal com o X
+      // (abrir é passar de 3% do mínimo).
+      final target = wanted
+          .clamp(min(_sheetMin + .04, ceiling), ceiling)
+          .toDouble();
       if (AppMotion.of(context).disabled) {
-        _sheet.jumpTo(1);
+        _sheet.jumpTo(target);
+        _presentExpanded = true;
       } else {
-        _sheet.animateTo(
-          1,
-          duration: AppMotion.of(context).panel,
-          curve: AppMotion.enter,
+        unawaited(
+          _sheet
+              .animateTo(
+                target,
+                duration: AppMotion.of(context).panel,
+                curve: AppMotion.enter,
+              )
+              .then((_) {
+                if (mounted && _presentingModal.value) {
+                  _presentExpanded = true;
+                }
+              }),
         );
       }
     });
@@ -1525,7 +1627,7 @@ class _LessonScreenState extends State<LessonScreen>
           ? null
           : _explanationFor(context, state),
       onVariation: _showAuthoredVariation,
-      activeVariation: _authoredVariation,
+      activeVariation: _speechHeld ? null : _authoredVariation,
       text: prompting && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
