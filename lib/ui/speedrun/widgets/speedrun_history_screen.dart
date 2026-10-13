@@ -190,11 +190,14 @@ class _Chip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
+          const SizedBox(width: 6),
           Flexible(
             child: Text(
               label,
-              style: theme.textTheme.labelLarge?.copyWith(color: color),
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 13,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -218,7 +221,9 @@ class _Numbers extends StatelessWidget {
     final locale = Localizations.localeOf(context).toString();
     final best = state.best;
     final bestAt = state.bestAt?.toLocal();
-    final muted = theme.textTheme.bodyMedium?.copyWith(
+    final muted = theme.textTheme.bodySmall?.copyWith(
+      fontSize: 13,
+      height: 18 / 13,
       color: colors.onSurfaceVariant,
     );
     final attempts = state.runs.length;
@@ -231,6 +236,8 @@ class _Numbers extends StatelessWidget {
           '$value',
           textDirection: TextDirection.ltr,
           style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 20,
+            height: 24 / 20,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -347,7 +354,9 @@ class _RunRow extends StatelessWidget {
     final endedAt = entry.endedAt.toLocal();
     final total = speedrun.stages.length;
     final stage = entry.stage.clamp(1, total);
-    final muted = theme.textTheme.bodyMedium?.copyWith(
+    final muted = theme.textTheme.bodySmall?.copyWith(
+      fontSize: 13,
+      height: 18 / 13,
       color: colors.onSurfaceVariant,
     );
     final time = runTime(context, recordTime(speedrun, entry.run.total));
@@ -396,19 +405,27 @@ class _RunRow extends StatelessWidget {
                         size: TimeDisplaySize.inline,
                       )
                     else
-                      Row(
-                        children: [
-                          Icon(icon, size: 18, color: colors.onSurfaceVariant),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              stopped,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: colors.onSurfaceVariant,
+                      // A altura da pílula do tempo: todas as linhas iguais.
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 28),
+                        child: Row(
+                          children: [
+                            Icon(
+                              icon,
+                              size: 18,
+                              color: colors.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                stopped,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     const SizedBox(height: 2),
                     Text(
@@ -426,6 +443,7 @@ class _RunRow extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
               // Espelha sozinha no RTL.
               Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],

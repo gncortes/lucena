@@ -404,6 +404,36 @@ void main() {
         ),
       );
       expect(time.value, '0:45.0');
+      // A seta espelha sozinha: no RTL continua chevron_right.
+      expect(find.byIcon(Icons.chevron_left), findsNothing);
+    });
+
+    testWidgets('chip do nível contornado e "+N de rating" em negrito', (
+      tester,
+    ) async {
+      await pump(tester);
+      final chip = tester.widget<Container>(
+        find
+            .ancestor(
+              of: find.text('Iniciante'),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      final decoration = chip.decoration! as BoxDecoration;
+      expect(decoration.color, isNull);
+      expect(decoration.border, isNotNull);
+      expect(decoration.borderRadius, BorderRadius.circular(8));
+      final bonus = tester.widget<Text>(
+        find.descendant(
+          of: find.byKey(SpeedrunKeys.historyBonus),
+          matching: find.byType(Text),
+        ),
+      );
+      final spans = (bonus.textSpan! as TextSpan).children!.cast<TextSpan>();
+      expect(spans.first.text, '+70 de rating');
+      expect(spans.first.style?.fontWeight, FontWeight.w700);
+      expect(spans.last.style?.fontWeight, isNull);
     });
   });
 }
