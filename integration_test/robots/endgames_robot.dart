@@ -93,14 +93,29 @@ class EndgamesRobot {
     await $.pumpAndSettle();
   }
 
+  /// A parte [id] da aula aberta, pelo cartão dela (qualquer parte abre).
+  Future<void> openPart(String id) async {
+    await _show(EndgameLessonKeys.part(id)).tap();
+    await $(LessonKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+  }
+
   /// Faz a lição inteira: "continuar" nas falas, os lances ensinados nos
   /// passos de lance e, nos de jogar, os lances de [play] (por passo) contra
   /// a máquina dos cenários.
   Future<void> completeSteps(
     EndgameLesson lesson, {
     required Map<String, List<String>> play,
+  }) => completePart(lesson, lesson.lesson.steps, play: play);
+
+  /// Faz os passos [steps] da lição de [lesson], como [completeSteps], até a
+  /// tela do fim (da aula ou da parte).
+  Future<void> completePart(
+    EndgameLesson lesson,
+    List<LessonStep> steps, {
+    Map<String, List<String>> play = const {},
   }) async {
-    for (final step in lesson.lesson.steps) {
+    for (final step in steps) {
       await _step(LessonKeys.step(lesson.id, step.id));
       switch (step) {
         case MoveStep(:final line):
