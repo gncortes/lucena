@@ -87,6 +87,10 @@ void main() {
       expect(branch.result, VariationResult.draw);
       expect(branch.moves.first.move?.uci, isNot(line.moves[at].uci));
       expect(branch.comment, isNotEmpty);
+      // A resposta destacada tem fala própria ("Este lance segura o
+      // empate"), sem repetir o lance tocado.
+      expect(branch.commentAt(2), isNot(branch.comment));
+      expect(branch.commentAt(2), startsWith('Este '));
       expect(en.alternative(id, stepId, branchId), isNotEmpty);
       // A fala em inglês cita a mesma linha.
       final lettersEn = SpeechLinks.lettersFor('en');
