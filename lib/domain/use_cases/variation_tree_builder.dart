@@ -4,6 +4,7 @@ import '../models/explanation.dart';
 import '../models/lesson.dart';
 import '../models/variation_tree.dart';
 import 'speech_lines.dart';
+import 'speech_links.dart';
 
 /// Uma alternativa citada no JSON da aula (`CitedLine.branches`) com a posição
 /// de onde ela sai: a explicação (LANCE CERTO) a mostra no ponto em que a
@@ -92,6 +93,69 @@ abstract final class VariationTreeBuilder {
       }
     }
     return result;
+  }
+
+  /// A fala cita um lance solto que é o começo de uma alternativa da linha
+  /// citada do [step] ("Com 3.g4? ... 3.g4 Rg6 4.g5 Rxg5", depois do lance
+  /// errado): a linha citada inteira (para a faixa abrir a alternativa
+  /// recuada, com o `?` e o `=`) e a alternativa. Nulo se a fala já é uma
+  /// linha citada, ou se nenhuma alternativa sai dali.
+  static ({SpeechLine line, CitedBranch branch})? lineOfBranch(
+    LessonStep step,
+    SpeechLine spoken, [
+    Map<String, String> letters = const {},
+  ]) {
+    final start = step.fen;
+    if (start == null || spoken.moves.isEmpty) return null;
+    final ucis = [for (final move in spoken.moves) move.uci];
+    if (step.lines.any((l) => l.matches(ucis))) return null;
+    for (final cited in step.lines) {
+      for (final branch in cited.branches) {
+        if (branch.at < 0 || branch.at > cited.uci.length) continue;
+        if (branch.uci.isEmpty || branch.uci.first != ucis.first) continue;
+        final fen = _play(start, cited.uci.take(branch.at));
+        if (fen == null || _place(fen) != _place(spoken.fens.first)) continue;
+        final line = _mainLine(start, cited, letters);
+        if (line != null) return (line: line, branch: branch);
+      }
+    }
+    return null;
+  }
+
+  static SpeechLine? _mainLine(
+    String start,
+    CitedLine cited,
+    Map<String, String> letters,
+  ) {
+    Position position;
+    try {
+      position = Chess.fromSetup(Setup.parseFen(start));
+    } on FenException {
+      return null;
+    } on PositionSetupException {
+      return null;
+    }
+    final fens = [position.fen];
+    final moves = <Move>[];
+    final links = <SpeechLink>[];
+    for (final text in cited.uci) {
+      final move = Move.parse(text);
+      if (move == null || !position.isLegal(move)) return null;
+      final (next, san) = position.makeSan(move);
+      final local = _localize(san, letters);
+      links.add(
+        SpeechLink(
+          start: links.length,
+          end: links.length + 1,
+          text: local,
+          isMove: true,
+        ),
+      );
+      moves.add(move);
+      fens.add(next.fen);
+      position = next;
+    }
+    return SpeechLine(links: links, fens: fens, moves: moves);
   }
 
   /// O rótulo do 1º lance da alternativa ("2.g4?"), como a faixa o escreve.

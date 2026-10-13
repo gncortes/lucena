@@ -201,4 +201,46 @@ void main() {
     expect(find.byKey(LessonKeys.variationHiddenBlock(0)), findsNothing);
     expect(find.byKey(LessonKeys.variationHiddenToggle), findsNothing);
   });
+
+  testWidgets('trocar o lance da vez com tudo à vista não rola o painel '
+      '(o cabeçalho da faixa fica)', (tester) async {
+    VariationBranch branch(String id, int at) => VariationBranch(
+      id: id,
+      at: at,
+      moves: [m('${at + 1}.g4?'), m('Rg6')],
+      result: VariationResult.draw,
+    );
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    final t = tree(branches: [branch('a', 1), branch('b', 3)]);
+    Future<void> show(TreePosition position) => tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: SizedBox(
+            height: 330,
+            child: SingleChildScrollView(
+              controller: controller,
+              child: VariationStrip(
+                tree: t,
+                position: position,
+                text: List.filled(120, 'texto').join(' '),
+                onSelect: (_) {},
+                hideUnseen: false,
+                revealed: const {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    tester.view
+      ..physicalSize = const Size(360, 740)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await show(const TreePosition.main(1));
+    expect(controller.position.maxScrollExtent, greaterThan(100));
+    await show(const TreePosition.main(5));
+    await tester.pumpAndSettle();
+    expect(controller.offset, 0);
+  });
 }

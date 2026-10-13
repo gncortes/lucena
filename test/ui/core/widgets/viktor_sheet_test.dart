@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
 import 'package:lucena/ui/core/theme/app_shape.dart';
@@ -264,5 +267,73 @@ void main() {
     final header = tester.getRect(find.byKey(ViktorSheetKeys.header));
     expect(header.height, 48);
     expect(tester.getSize(find.byType(CharacterAvatar)), const Size(28, 28));
+  });
+
+  testWidgets('recolhida: abaixo do corte entre linhas nada da linha seguinte '
+      'aparece (nem o topo das letras)', (tester) async {
+    tester.view
+      ..physicalSize = const Size(360, 640)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final boundary = GlobalKey();
+    await tester.pumpWidget(
+      TestApp(
+        child: RepaintBoundary(
+          key: boundary,
+          child: Scaffold(
+            body: LayoutBuilder(
+              builder: (context, box) => ViktorSheet(
+                // 4 linhas de 24 dp e meia: a 4ª cruza o fim recolhido.
+                top: box.maxHeight - 100,
+                children: [
+                  Text(
+                    List.filled(80, 'Éllh').join(' '),
+                    key: const Key('text'),
+                    style: const TextStyle(fontSize: 16, height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.byKey(const Key('text')),
+    );
+    final origin = paragraph.localToGlobal(Offset.zero).dy;
+    final lines = paragraph.getBoxesForSelection(
+      TextSelection(
+        baseOffset: 0,
+        extentOffset: paragraph.text.toPlainText().length,
+      ),
+    );
+    // A 1ª linha que não cabe inteira acima do fim (640 - 4).
+    final crossing = lines.firstWhere((b) => origin + b.bottom > 640 - 4);
+    final cut = (origin + crossing.top).floor();
+    final image = (await tester.runAsync(() async {
+      final object =
+          boundary.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      return object.toImage();
+    }))!;
+    final bytes = (await tester.runAsync(
+      () => image.toByteData(format: ui.ImageByteFormat.rawRgba),
+    ))!;
+    int pixel(int x, int y) {
+      final o = (y * image.width + x) * 4;
+      return bytes.getUint32(o);
+    }
+
+    final background = pixel(8, 639);
+    var stray = 0;
+    for (var y = cut; y < 640; y++) {
+      for (var x = 16; x < 340; x++) {
+        if (pixel(x, y) != background) {
+          stray++;
+        }
+      }
+    }
+    expect(stray, 0, reason: 'pixels de texto abaixo do corte em y=$cut');
   });
 }

@@ -486,7 +486,21 @@ class _LessonScreenState extends State<LessonScreen>
       if (open != null && identical(open.line, line) && open.ply == ply) {
         _exitLine();
       } else {
-        _showLine(context, SpeechLineCursor(line, ply));
+        final step = state.current;
+        final letters =
+            MoveNotation.letters.pieceLetters(context.l10n) ?? const {};
+        final of = step == null
+            ? null
+            : VariationTreeBuilder.lineOfBranch(step, line, letters);
+        if (of == null) {
+          _showLine(context, SpeechLineCursor(line, ply));
+        } else {
+          // O lance solto é o começo de uma alternativa da aula: abre a
+          // linha citada na alternativa (recuada, com ? e =).
+          final id = of.branch.id;
+          _showLine(context, SpeechLineCursor(of.line, of.branch.at));
+          _goTo(TreePosition.branch(id, min(ply, of.branch.uci.length)));
+        }
       }
       return;
     }
@@ -561,7 +575,7 @@ class _LessonScreenState extends State<LessonScreen>
     _markSeen(_position);
     _enterVariant(entering, () {
       _board?.updatePosition(
-        _lineGame(cursor),
+        _branchGame() ?? _lineGame(cursor),
         animate: !AppMotion.of(this.context).disabled,
         resetPremove: true,
       );
@@ -640,22 +654,37 @@ class _LessonScreenState extends State<LessonScreen>
       _variation.value = SpeechLineCursor(line.line, mainPly);
     }
     _branch.value = branch == null ? null : target;
-    final fen = tree.fenAt(target);
-    final position = GameRules.fromFen(fen);
     _board?.updatePosition(
-      GameData(
-        fen: fen,
-        playerSide: PlayerSide.none,
-        sideToMove: position?.turn ?? Side.white,
-        validMoves: const {},
-        lastMove: tree.lastMoveAt(target),
-        kingSquareInCheck: position == null
-            ? null
-            : GameRules.checkedKing(position),
-      ),
+      _treeGame(tree, target),
       animate: !AppMotion.of(context).disabled,
       resetPremove: true,
     );
+  }
+
+  /// O tabuleiro DEPOIS do lance [target] da árvore (o lance da vez).
+  GameData _treeGame(VariationTree tree, TreePosition target) {
+    final fen = tree.fenAt(target);
+    final position = GameRules.fromFen(fen);
+    return GameData(
+      fen: fen,
+      playerSide: PlayerSide.none,
+      sideToMove: position?.turn ?? Side.white,
+      validMoves: const {},
+      lastMove: tree.lastMoveAt(target),
+      kingSquareInCheck: position == null
+          ? null
+          : GameRules.checkedKing(position),
+    );
+  }
+
+  /// Ao entrar na variante o tabuleiro só anda depois da folha sair; se nesse
+  /// meio-tempo o aluno já foi a um ramo, vale a posição dele, não a da
+  /// principal (o `showBoard` atrasado desfazia o `_goTo`).
+  GameData? _branchGame() {
+    final target = _branch.value;
+    final tree = _tree;
+    if (target == null || tree == null || !tree.contains(target)) return null;
+    return _treeGame(tree, target);
   }
 
   bool get _hideUnseen =>
@@ -736,6 +765,33 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   void _showAuthoredVariation(VariationCursor? cursor) {
+    // A linha do erro ("3.g4? Rg6 4.g5") é a alternativa da aula: abre a
+    // linha citada com a alternativa recuada, com o ? e o =.
+    if (cursor != null && _authoredVariation == null) {
+      final state = context.read<LessonCubit>().state;
+      final step = state.current;
+      final of = step == null
+          ? null
+          : VariationTreeBuilder.lineOfBranch(
+              step,
+              SpeechLine(
+                links: const [],
+                fens: cursor.fens,
+                moves: cursor.moves,
+              ),
+              MoveNotation.letters.pieceLetters(context.l10n) ?? const {},
+            );
+      if (of != null) {
+        _showLine(context, SpeechLineCursor(of.line, of.branch.at));
+        _goTo(
+          TreePosition.branch(
+            of.branch.id,
+            cursor.ply.clamp(1, of.branch.uci.length),
+          ),
+        );
+        return;
+      }
+    }
     _flash.clear();
     final entering =
         cursor != null &&
@@ -762,16 +818,17 @@ class _LessonScreenState extends State<LessonScreen>
       final position = GameRules.fromFen(cursor.fen);
       _enterVariant(entering, () {
         _board?.updatePosition(
-          GameData(
-            fen: cursor.fen,
-            playerSide: PlayerSide.none,
-            sideToMove: position?.turn ?? Side.white,
-            validMoves: const {},
-            lastMove: cursor.lastMove,
-            kingSquareInCheck: position == null
-                ? null
-                : GameRules.checkedKing(position),
-          ),
+          _branchGame() ??
+              GameData(
+                fen: cursor.fen,
+                playerSide: PlayerSide.none,
+                sideToMove: position?.turn ?? Side.white,
+                validMoves: const {},
+                lastMove: cursor.lastMove,
+                kingSquareInCheck: position == null
+                    ? null
+                    : GameRules.checkedKing(position),
+              ),
           animate: !AppMotion.of(context).disabled,
           resetPremove: true,
         );

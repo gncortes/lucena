@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -168,6 +170,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// As casas do tabuleiro da lição (1º campo do FEN).
+  String boardPlacement(WidgetTester tester) => tester
+      .widget<Chessboard>(find.byType(Chessboard))
+      .controller
+      .fen
+      .split(' ')
+      .first;
+
   void expectBranch(WidgetTester tester, String id) {
     expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
     expect(find.byKey(LessonKeys.variationBranch(id)), findsOneWidget);
@@ -289,6 +299,11 @@ void main() {
     expect(cubit.state.explanation, isNotNull);
     await tapMove(tester, '2.g4?');
     expectBranch(tester, 'g4');
+    expect(
+      boardPlacement(tester),
+      '8/5k2/8/8/4K1P1/8/8/8',
+      reason: 'depois de 2.g4',
+    );
   });
 
   testWidgets('depois do LANCE CERTO, a fala do intro: 1.Re4 abre o ramo', (
@@ -323,4 +338,46 @@ void main() {
     );
     expectBranch(tester, 'g4');
   });
+
+  testWidgets(
+    'convert (erro): tocar em 3.g4? abre o ramo g4, recuado, com ? e =',
+    (tester) async {
+      final cubit = await pump(tester, 'convert');
+      await tester.runAsync(() async {
+        for (final move in ['d3e4', 'e4e5']) {
+          await cubit.play(Move.parse(move)!);
+          await Future<void>.delayed(const Duration(milliseconds: 200));
+        }
+      });
+      for (var i = 0; i < 4; i++) {
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+      unawaited(cubit.play(Move.parse('g3g4')!));
+      for (var i = 0; i < 6; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+      await tapMove(tester, '3.g4?');
+      expectBranch(tester, 'g4');
+      // Recuado e com o glifo: o ramo da aula, não a linha solta da fala.
+      expect(
+        find.descendant(
+          of: find.byKey(LessonKeys.variationBranchMove('g4', 1)),
+          matching: find.textContaining('3.g4?'),
+        ),
+        findsOneWidget,
+      );
+      // O tabuleiro mostra a posição DEPOIS do lance destacado.
+      expect(
+        boardPlacement(tester),
+        '8/5k2/8/4K3/6P1/8/8/8',
+        reason: 'depois de 3.g4',
+      );
+    },
+  );
 }

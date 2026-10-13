@@ -131,11 +131,18 @@ class _VariationStripState extends State<VariationStrip> {
       if (!mounted) return;
       final current = _currentElement;
       if (current == null || !current.mounted) return;
-      Scrollable.ensureVisible(
-        current,
-        duration: AppMotion.of(context).state,
-        alignment: 0,
-      );
+      // Só rola se o lance da vez não está à vista, o mínimo para vê-lo:
+      // revelar um lance não leva o cabeçalho da faixa para fora do painel.
+      for (final policy in const [
+        ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+      ]) {
+        Scrollable.ensureVisible(
+          current,
+          duration: AppMotion.of(context).state,
+          alignmentPolicy: policy,
+        );
+      }
     });
   }
 

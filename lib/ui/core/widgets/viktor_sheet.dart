@@ -129,10 +129,12 @@ class _ViktorSheetState extends State<ViktorSheet> {
   /// corte sobe ao topo dela (360×640: a 4ª linha não fica cortada ao meio).
   /// Um botão (forma com até [_atomic] dp) cruzando [y] sai inteiro: não
   /// aparece pela metade acima do rodapé (demo pausada com texto longo).
-  double _lineCut(double y, {double slack = 4}) {
+  /// Nula se nenhuma linha nem botão toca o corte nem os 4 dp do esmaecido.
+  double? _lineCut(double y, {double slack = 4}) {
     final maskElement = _maskKey.currentContext;
     final mask = maskElement?.findRenderObject();
-    if (maskElement == null || mask is! RenderBox || !mask.attached) return y;
+    if (maskElement == null || mask is! RenderBox || !mask.attached)
+      return null;
     double? cut;
     void visit(RenderObject node) {
       if (cut != null) return;
@@ -142,7 +144,9 @@ class _ViktorSheetState extends State<ViktorSheet> {
           (node is RenderParagraph ||
               (node is RenderPhysicalShape && node.size.height <= _atomic))) {
         final origin = node.localToGlobal(Offset.zero, ancestor: mask).dy;
-        if (origin >= y || origin + node.size.height <= y) return;
+        if (origin >= y + _fadeLength || origin + node.size.height <= y) {
+          return;
+        }
         if (node is! RenderParagraph) {
           cut = origin;
           return;
@@ -152,7 +156,9 @@ class _ViktorSheetState extends State<ViktorSheet> {
           TextSelection(baseOffset: 0, extentOffset: length),
         )) {
           final top = origin + box.top, bottom = origin + box.bottom;
-          if (top < y && bottom > y) {
+          // A linha que começa nos 4 dp do esmaecido também conta: o topo
+          // das letras apareceria no degradê.
+          if (top < y + _fadeLength && bottom > y) {
             cut = bottom - y <= slack ? bottom : top;
             return;
           }
@@ -163,11 +169,14 @@ class _ViktorSheetState extends State<ViktorSheet> {
     }
 
     mask.visitChildren(visit);
-    return cut ?? y;
+    return cut;
   }
 
   /// Maior altura de forma tratada como um botão só no corte do recolhido.
   static const _atomic = 64.0;
+
+  /// Comprimento do degradê do corte do recolhido.
+  static const _fadeLength = 4.0;
 
   ScrollController? _scroll;
 
@@ -342,16 +351,25 @@ class _ViktorSheetState extends State<ViktorSheet> {
                             final tight = header > visible - 12;
                             // O corte cai entre linhas: no topo da linha que
                             // não cabe (ou no fim da que cabe), nunca no meio.
-                            final cut = _expanded || tight
-                                ? visible - 4
-                                : math.max(header, _lineCut(visible - 4));
+                            final plain = visible - 4;
+                            final line = _expanded || tight
+                                ? null
+                                : _lineCut(plain);
+                            final cut = line == null
+                                ? plain
+                                : math.max(header, line);
+                            // Corte numa fronteira de linha: o esmaecido
+                            // fica antes dela (na folga da linha de cima) e
+                            // abaixo do corte nada da linha seguinte
+                            // aparece, nem o topo das letras.
+                            final atLine = line != null;
                             final start = math.min(
                               rect.height,
-                              tight ? header : cut,
+                              tight ? header : (atLine ? cut - 2 : cut),
                             );
                             final end = math.min(
                               rect.height,
-                              tight ? header : cut + 4,
+                              tight ? header : (atLine ? cut : cut + 4),
                             );
                             return LinearGradient(
                               begin: Alignment.topCenter,
