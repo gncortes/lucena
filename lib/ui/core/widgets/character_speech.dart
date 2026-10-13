@@ -251,13 +251,12 @@ TextStyle? _bubbleStyle(
   required bool monospace,
 }) {
   final theme = Theme.of(context);
-  final dark = theme.brightness == Brightness.dark;
   final style = small
       ? theme.textTheme.bodyMedium
       : theme.textTheme.titleMedium;
   return style?.copyWith(
-    color: dark ? Colors.white : const Color(0xFF1F1F1F),
-    fontWeight: FontWeight.w600,
+    color: theme.colorScheme.onSurface,
+    fontWeight: FontWeight.w400,
     height: 1.25,
     fontFamily: monospace ? 'monospace' : null,
     letterSpacing: monospace ? 0.5 : null,
@@ -309,6 +308,7 @@ class SpeechBubble extends StatelessWidget {
     this.lead,
     this.maxLines = 3,
     this.shrink = false,
+    this.fillWidth = false,
     this.onOverflow,
     this.onTap,
     super.key,
@@ -329,6 +329,9 @@ class SpeechBubble extends StatelessWidget {
   final int maxLines;
   final bool shrink;
 
+  /// O balão ocupa a largura toda, mesmo com texto curto.
+  final bool fillWidth;
+
   /// Avisa se o texto não cabe nas [maxLines] (o toque abre o balão grande).
   final ValueChanged<bool>? onOverflow;
   final VoidCallback? onTap;
@@ -339,7 +342,7 @@ class SpeechBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dark = theme.brightness == Brightness.dark;
-    final background = dark ? const Color(0xFF3A3A3C) : Colors.white;
+    final background = theme.colorScheme.surfaceContainerLowest;
     final rtl = Directionality.of(context) == TextDirection.rtl;
     final style = _bubbleStyle(context, small: small, monospace: monospace);
     final vertical = small ? 8.0 : 10.0;
@@ -353,50 +356,56 @@ class SpeechBubble extends StatelessWidget {
           key: bubbleKey,
           painter: BubblePainter(
             color: background.withValues(alpha: opacity),
-            shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
+            shadow: theme.colorScheme.shadow.withValues(
+              alpha: dark ? 0.4 : 0.12,
+            ),
             tail: tail,
             tailOnRight: rtl,
             tailBelow: tailBelow,
             tailInset: tailInset,
           ),
           child: Padding(
+            // Largura toda: o balão não encolhe até o texto.
             padding: EdgeInsetsDirectional.fromSTEB(
               startPad,
               vertical,
               12,
               vertical + (tailBelow ? tail : 0),
             ),
-            child: typing
-                ? SizedBox(
-                    height: (style?.fontSize ?? 14) * 1.25,
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: KeyedSubtree(
-                        key: typingKey,
-                        child: const TypingDots(),
-                      ),
-                    ),
-                  )
-                : LayoutBuilder(
-                    builder: (context, box) {
-                      _report(context, box, style);
-                      return Semantics(
-                        liveRegion: true,
-                        label: semantics,
-                        excludeSemantics: true,
-                        child: TypewriterText(
-                          text,
-                          key: textKey,
-                          maxLines: maxLines,
-                          shrink: shrink,
-                          prefix: lead == null
-                              ? null
-                              : _leadSpan(context, lead!, style),
-                          style: style,
+            child: SizedBox(
+              width: fillWidth ? double.infinity : null,
+              child: typing
+                  ? SizedBox(
+                      height: (style?.fontSize ?? 14) * 1.25,
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: KeyedSubtree(
+                          key: typingKey,
+                          child: const TypingDots(),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, box) {
+                        _report(context, box, style);
+                        return Semantics(
+                          liveRegion: true,
+                          label: semantics,
+                          excludeSemantics: true,
+                          child: TypewriterText(
+                            text,
+                            key: textKey,
+                            maxLines: maxLines,
+                            shrink: shrink,
+                            prefix: lead == null
+                                ? null
+                                : _leadSpan(context, lead!, style),
+                            style: style,
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ),
       ),
@@ -538,6 +547,7 @@ class _ExpandableSpeechState extends State<ExpandableSpeech> {
       lead: w.lead,
       maxLines: w.maxLines,
       shrink: w.shrink,
+      fillWidth: true,
       onOverflow: expanded ? null : _setOverflow,
       onTap: _overflow && !w.typing ? () => w.onExpandedChanged(true) : null,
     );
@@ -593,8 +603,10 @@ class _ExpandableSpeechState extends State<ExpandableSpeech> {
             child: CustomPaint(
               key: w.bubbleKey ?? FreeBoardKeys.speechBubble,
               painter: BubblePainter(
-                color: dark ? const Color(0xFF3A3A3C) : Colors.white,
-                shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
+                color: theme.colorScheme.surfaceContainerLowest,
+                shadow: theme.colorScheme.shadow.withValues(
+                  alpha: dark ? 0.4 : 0.12,
+                ),
                 tail: SpeechBubble.tail,
                 tailOnRight: Directionality.of(context) == TextDirection.rtl,
                 tailBelow: true,
@@ -628,7 +640,7 @@ class _ExpandableSpeechState extends State<ExpandableSpeech> {
                           ],
                         ),
                         key: w.textKey,
-                        style: style?.copyWith(fontWeight: FontWeight.w500),
+                        style: style,
                       ),
                     ),
                   ),
@@ -658,11 +670,11 @@ class _CloseButton extends StatelessWidget {
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colors.surfaceContainerLowest,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: .2),
+                  color: colors.shadow.withValues(alpha: .2),
                   blurRadius: 6,
                   offset: const Offset(0, 1),
                 ),

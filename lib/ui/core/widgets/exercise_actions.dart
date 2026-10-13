@@ -97,31 +97,39 @@ class ExerciseActions extends StatelessWidget {
     ];
     final maxWidth =
         actions.length * actionWidth + (actions.length - 1).clamp(0, 1) * gap;
-    return Padding(
-      padding: padding,
-      child: Row(
-        children: [
-          ?hint,
-          if (fill)
-            ...buttons.isEmpty
-                ? const <Widget>[]
-                : [Expanded(child: Row(children: buttons))]
-          else if (buttons.isNotEmpty)
-            Expanded(
-              child: Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    start: hint == null ? 0 : gap,
-                  ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxWidth),
-                    child: Row(children: buttons),
+    final colors = Theme.of(context).colorScheme;
+    // Rodapé sobre superfície branca com divisória em cima (pg. 3.1/4.7).
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLowest,
+        border: Border(top: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Padding(
+        padding: padding,
+        child: Row(
+          children: [
+            ?hint,
+            if (fill)
+              ...buttons.isEmpty
+                  ? const <Widget>[]
+                  : [Expanded(child: Row(children: buttons))]
+            else if (buttons.isNotEmpty)
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      start: hint == null ? 0 : gap,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxWidth),
+                      child: Row(children: buttons),
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
