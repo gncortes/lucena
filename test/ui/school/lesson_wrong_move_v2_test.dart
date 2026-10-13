@@ -149,6 +149,20 @@ void main() {
     expect(find.text('CORRECT MOVE'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'think mistake: Ver resposta leads to the correct state with its title',
+    (tester) async {
+      final cubit = await open(2);
+      await show(tester, cubit, const Size(360, 740));
+      await tester.runAsync(() => cubit.play(move('a1b1')));
+      await tester.pumpAndSettle();
+      // T70: o erro abre o ramo; "Ver resposta" leva ao estado correto, que
+      // traz o título do lance correto.
+      await tester.runAsync(() => cubit.showAnswer());
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonKeys.correctTitle), findsOneWidget);
+    },
+  );
 
   testWidgets('Continue keeps 16 dp from the right edge', (tester) async {
     final cubit = await open(0);

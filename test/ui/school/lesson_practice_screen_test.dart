@@ -111,7 +111,7 @@ void main() {
       // A Dica fala no balão, com o selo.
       await tester.tap(find.byKey(LessonKeys.hintButton));
       await tester.pumpAndSettle();
-      expect(find.text('Dica do Viktor.'), findsOneWidget);
+      expect(find.textContaining('Dica do Viktor.'), findsOneWidget);
       // O lance: pontinhos enquanto a máquina responde, depois o comentário.
       await tester.runAsync(() async {
         final done = cubit.play(mv('e2e4'));

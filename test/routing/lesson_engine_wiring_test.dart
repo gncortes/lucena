@@ -11,7 +11,9 @@ void main() {
     final engines = RegExp(r'engine:\s*_engineFallback\(context\)')
         .allMatches(source)
         .length;
+    // A tela da lição também recebe o motor (ramo jogável do pensar).
+    final screens = RegExp(r'\bLessonScreen\(').allMatches(source).length;
     expect(creations, greaterThan(0));
-    expect(engines, creations);
+    expect(engines, creations + screens);
   });
 }

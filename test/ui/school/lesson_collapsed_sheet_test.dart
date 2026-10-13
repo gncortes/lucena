@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' as io;
 import 'dart:ui' as ui;
 
@@ -91,9 +92,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Passa para a explicação do passo de pensar (o card "A posição").
+  /// Passa para o estado correto do passo de pensar ("Ver resposta").
   Future<void> hints(WidgetTester tester) async {
-    await tester.tap(find.text('Explicação'));
+    unawaited(
+      tester
+          .element(find.byType(LessonScreen))
+          .read<LessonCubit>()
+          .showAnswer(),
+    );
     await tester.pumpAndSettle();
   }
 

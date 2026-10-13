@@ -483,7 +483,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       engine: _engineFallback(context),
                       practiceV2: true,
                     )..load(id, _language(context)),
-                    child: LessonScreen(key: ValueKey('lesson.$id')),
+                    child: LessonScreen(
+                      key: ValueKey('lesson.$id'),
+                      engine: _engineFallback(context),
+                    ),
                   );
                 },
               ),
@@ -603,7 +606,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           engine: _engineFallback(context),
                           practiceV2: true,
                         )..load(id, _language(context), part: part),
-                        child: LessonScreen(key: ValueKey('lesson.$id.$part')),
+                        child: LessonScreen(
+                          key: ValueKey('lesson.$id.$part'),
+                          engine: _engineFallback(context),
+                        ),
                       );
                     },
                   ),

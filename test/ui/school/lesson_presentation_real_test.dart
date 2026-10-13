@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
@@ -144,41 +143,39 @@ void main() {
           .reduce((a, b) => a > b ? a : b);
       expect(
         sheet.bottom - lowest,
-        lessThan(48),
+        // Texto curto (T70 A2: "Sua vez" e os links): a folha ainda sobe o
+        // mínimo do modal (3% acima do recolhido), com respiro final.
+        lessThan(96),
         reason: '$part: fim do texto junto do fim da folha',
       );
       expect(sheet.top, greaterThanOrEqualTo(76));
     }
   });
 
-  testWidgets('360x640 recolhido: 3 linhas do enunciado inteiras, sem corte', (
-    tester,
-  ) async {
-    final cubit = await open(tester, 'defend', const Size(360, 640));
-    if (cubit.state.presenting) {
-      await tester.tap(find.byKey(LessonKeys.presentationClose));
-      await tester.pumpAndSettle();
-    }
-    final speech = find.descendant(
-      of: find.byKey(LessonKeys.speech),
-      matching: find.byType(RichText),
-    );
-    final paragraph = tester.renderObject<RenderParagraph>(speech.first);
-    final box = paragraph
-        .getBoxesForSelection(
-          const TextSelection(baseOffset: 0, extentOffset: 1),
-        )
-        .first;
-    final line = box.bottom - box.top;
-    final text = tester.getRect(speech.first);
-    // O que fica visível: da folha até o rodapé, menos o respiro de 12 dp e o
-    // esmaecer de 12 dp (o texto precisa terminar antes do esmaecer).
-    final footerTop = tester.getRect(find.byKey(LessonKeys.footer)).top;
-    final clearBottom = footerTop - 12 - 12;
-    final visibleLines = ((clearBottom - text.top) / line).floor();
-    expect(visibleLines, greaterThanOrEqualTo(3));
-    // E o card (9 dp abaixo da terceira linha) também termina antes do fade.
-    expect(text.top + 3 * line + 9, lessThanOrEqualTo(clearBottom));
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    '360x640 recolhido: a frase e o link do enunciado cabem sem corte',
+    (tester) async {
+      final cubit = await open(tester, 'defend', const Size(360, 640));
+      if (cubit.state.presenting) {
+        await tester.tap(find.byKey(LessonKeys.presentationClose));
+        await tester.pumpAndSettle();
+      }
+      // T70 A2 (360x640 fica fora da matriz do lote: o 2º link rola): a frase "Sua vez" e o link do enunciado ficam inteiros acima do
+      // rodapé (menos o respiro de 12 dp e o esmaecer de 12 dp).
+      final clearBottom =
+          tester.getRect(find.byKey(LessonKeys.footer)).top - 12 - 12;
+      for (final key in [
+        LessonKeys.yourTurnLine,
+        LessonKeys.fullStatementLink,
+      ]) {
+        expect(find.byKey(key), findsOneWidget, reason: '$key');
+        expect(
+          tester.getRect(find.byKey(key)).bottom,
+          lessThanOrEqualTo(clearBottom),
+          reason: '$key',
+        );
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

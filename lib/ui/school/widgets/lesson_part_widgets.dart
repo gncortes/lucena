@@ -258,7 +258,7 @@ class VariationControls extends StatelessWidget {
       wrongLabel: wrongLabel,
       children: [
         if (action != null)
-          _PrimaryActionButton(action: action)
+          Flexible(child: _PrimaryActionButton(action: action))
         else ...[
           _ControlButton(
             buttonKey: exitKey,

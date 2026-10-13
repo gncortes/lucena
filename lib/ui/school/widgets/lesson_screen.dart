@@ -17,6 +17,8 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/branch_move.dart';
+import '../../../domain/use_cases/engine_fallback.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/models/variation_tree.dart';
 import '../../../domain/use_cases/speech_lines.dart';
@@ -46,11 +48,18 @@ import 'lesson_practice.dart';
 import 'star_shape.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/text_link.dart';
+import '../../../domain/models/endgame_position.dart';
+import 'failed_moves_list.dart';
 
 /// Uma aula com o Viktor: tabuleiro fixo no centro e fala na folha abaixo.
 /// A folha expandida cobre o jogo sem alterar sua geometria.
 class LessonScreen extends StatefulWidget {
-  const LessonScreen({super.key});
+  const LessonScreen({super.key, this.engine});
+
+  /// O motor que responde ao lance fora dos dados (T70, crit. 8 e 9c). Sem
+  /// ele, a peça volta e a folha avisa.
+  final EngineFallback? engine;
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -59,6 +68,17 @@ class LessonScreen extends StatefulWidget {
 class _LessonScreenState extends State<LessonScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   // O tabuleiro entra a cada passo novo com um esmaecer curto.
+  // T70: "Ver enunciado completo" aberto pelo link (mostra "Ocultar"); o
+  // enunciado forçado enquanto a folha mede para abrir sozinha; a linha do
+  // lance errado aberta no modo variante; árvores e falas das linhas do think.
+  bool _statementShown = false;
+  bool _forceStatement = false;
+  bool _autoUser = false;
+  bool _wrongBranch = false;
+  String? _wrongHandled;
+  final _lineTrees = Expando<VariationTree>();
+  final _lineTexts = Expando<List<String>>();
+
   late final _landing = AnimationController(
     vsync: this,
     duration: AppMotion.component,
@@ -100,6 +120,7 @@ class _LessonScreenState extends State<LessonScreen>
   final _seen = <String, Set<TreePosition>>{};
   String? _seenId;
   final _seenTick = ValueNotifier<int>(0);
+  final _engineThinking = ValueNotifier<bool>(false);
   RevealEvent? _revealing;
 
   // A folha da faixa (segunda ViktorSheet, só no modo variante) e se está
@@ -322,6 +343,7 @@ class _LessonScreenState extends State<LessonScreen>
     _flash.dispose();
     _variation.dispose();
     _seenTick.dispose();
+    _engineThinking.dispose();
     _branch.dispose();
     _variationSheet.dispose();
     _stage.dispose();
@@ -391,19 +413,19 @@ class _LessonScreenState extends State<LessonScreen>
     }
     _previous = state;
     final cubit = context.read<LessonCubit>();
-    // O motor deu erro inesperado: a peça já voltou, avisa (crit. 8e).
-    if (state.engineErrors > previous.engineErrors) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            key: LessonKeys.engineErrorSnack,
-            behavior: SnackBarBehavior.floating,
-            // Acima do rodapé da demonstração, sem cobrir os controles.
-            margin: EdgeInsets.fromLTRB(16, 0, 16, _footerHeight.value + 8),
-            content: Text(context.l10n.lessonEngineError),
-          ),
-        );
+    if (state.engineErrors > previous.engineErrors) _showEngineError();
+    if (state.thinkPlayed == null || state.correct) {
+      _wrongHandled = null;
+    } else if (_wrongPending(state)) {
+      final key = '${state.step}|${state.thinkPlayed}';
+      if (_wrongHandled != key) {
+        _wrongHandled = key;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && !context.read<LessonCubit>().isClosed) {
+            _enterWrongBranch(context.read<LessonCubit>().state);
+          }
+        });
+      }
     }
     // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
     // tabuleiro nasce aqui, antes do primeiro tique). Saindo para a fala, ele
@@ -446,6 +468,7 @@ class _LessonScreenState extends State<LessonScreen>
       }
       _branch.value = null;
       _variation.value = null;
+      _wrongBranch = false;
     }
     if (state.fen == null || state.current == null) {
       return;
@@ -672,13 +695,16 @@ class _LessonScreenState extends State<LessonScreen>
         final ucis = [for (final move in line.moves) move.uci];
         final cited = step.lines.where((l) => l.matches(ucis)).firstOrNull;
         final lessonId = state.lesson?.id ?? '';
-        _tree = VariationTreeBuilder.fromSpeech(
-          line: line,
-          branches: cited?.branches ?? const [],
-          letters: MoveNotation.letters.pieceLetters(context.l10n) ?? const {},
-          comment: (id, ply) =>
-              state.texts.alternative(lessonId, step.id, id, ply),
-        );
+        _tree =
+            _lineTrees[line] ??
+            VariationTreeBuilder.fromSpeech(
+              line: line,
+              branches: cited?.branches ?? const [],
+              letters:
+                  MoveNotation.letters.pieceLetters(context.l10n) ?? const {},
+              comment: (id, ply) =>
+                  state.texts.alternative(lessonId, step.id, id, ply),
+            );
         _treeKey = line;
       }
       _seenId =
@@ -728,11 +754,22 @@ class _LessonScreenState extends State<LessonScreen>
   GameData _treeGame(VariationTree tree, TreePosition target) {
     final fen = tree.fenAt(target);
     final position = GameRules.fromFen(fen);
+    final student = _studentSide();
+    final playable =
+        student != null &&
+        position != null &&
+        position.turn == student &&
+        target.branch == null &&
+        _variation.value != null &&
+        _lineTrees[_variation.value!.line] != null &&
+        _seenSet.contains(target);
     return GameData(
       fen: fen,
-      playerSide: PlayerSide.none,
+      playerSide: playable
+          ? (student == Side.white ? PlayerSide.white : PlayerSide.black)
+          : PlayerSide.none,
       sideToMove: position?.turn ?? Side.white,
-      validMoves: const {},
+      validMoves: playable ? GameRules.legalMoves(position) : const {},
       lastMove: tree.lastMoveAt(target),
       kingSquareInCheck: position == null
           ? null
@@ -908,6 +945,7 @@ class _LessonScreenState extends State<LessonScreen>
     _stage.value = 0;
     _branch.value = null;
     _variation.value = null;
+    _wrongBranch = false;
     _syncTree();
     final state = context.read<LessonCubit>().state;
     if (state.fen == null || state.current == null) {
@@ -920,6 +958,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// que o JSON do passo marca, ou a demonstração marcada.
   bool _wrongShown(LessonState state) {
     if (_branch.value != null) return false;
+    if (_wrongBranch && _variation.value != null) return true;
     final cursor = _variation.value;
     if (cursor == null) return state.wrongDemo;
     return state.current?.wrongLine([
@@ -947,26 +986,8 @@ class _LessonScreenState extends State<LessonScreen>
     return _baseSpeech(context, state);
   }
 
-  /// A fala genérica do app (l10n) que o cubit pediu no lugar de [speech].
-  String? _noteText(BuildContext context, LessonState state) {
-    final l10n = context.l10n;
-    // O adversário do aluno: o lado que responde.
-    final opponent = (state.current?.side ?? Side.white) == Side.white
-        ? l10n.blindBlack
-        : l10n.blindWhite;
-    return switch (state.note) {
-      LessonNote.engineMove => l10n.lessonEngineMove(opponent),
-      LessonNote.engineReply => l10n.lessonEngineReply(opponent),
-      LessonNote.alsoWins => l10n.lessonEngineAlsoWins,
-      LessonNote.alsoHolds => l10n.lessonEngineAlsoHolds,
-      LessonNote.alsoWinsShowMain => l10n.lessonEngineAlsoWinsShowMain,
-      LessonNote.alsoHoldsShowMain => l10n.lessonEngineAlsoHoldsShowMain,
-      LessonNote.alsoCorrect || null => null,
-    };
-  }
-
   String? _baseSpeech(BuildContext context, LessonState state) {
-    final noted = _noteText(context, state);
+    final noted = _noteText(context, state, state.current);
     if (noted != null) return noted;
     if (!state.genericMistake) return state.speech;
     final lesson = state.lesson;
@@ -1096,15 +1117,19 @@ class _LessonScreenState extends State<LessonScreen>
     // O prático novo (T70): move/play no layout da tela de exercício.
     final practice =
         context.read<LessonCubit>().practiceV2 &&
+        !state.finished &&
         (step is MoveStep || step is PlayStep);
+    // Fora do AnimatedSwitcher: o esmaecer montaria dois tabuleiros no mesmo
+    // controlador.
+    if (practice && viktor != null && hasBoard) {
+      return _practice(context, state, viktor, boardSettings, board);
+    }
     return AnimatedSwitcher(
       duration: AppMotion.component,
       child: state.finished && state.part != null
           ? PartFinished(key: LessonKeys.finished, state: state)
           : state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
-          : practice && viktor != null && hasBoard
-          ? _practice(context, state, viktor, boardSettings, board)
           : LayoutBuilder(
               builder: (context, constraints) => Stack(
                 children: [
@@ -1243,7 +1268,12 @@ class _LessonScreenState extends State<LessonScreen>
                                           child: child,
                                         ),
                                     child: KeyedSubtree(
-                                      key: ValueKey((state.layout, inVariant)),
+                                      key: ValueKey((
+                                        state.layout,
+                                        inVariant,
+                                        state.correct,
+                                        _wrongBranch,
+                                      )),
                                       child: inVariant
                                           ? KeyedSubtree(
                                               key: LessonKeys.footer,
@@ -1255,6 +1285,20 @@ class _LessonScreenState extends State<LessonScreen>
                                                   previous: false,
                                                 ),
                                                 wrong: _wrongShown(state),
+                                                wrongLabel: _wrongBranch
+                                                    ? context
+                                                          .l10n
+                                                          .lessonIncorrectMove
+                                                    : null,
+                                                primaryAction: _wrongBranch
+                                                    ? VariationPrimaryAction(
+                                                        label: context
+                                                            .l10n
+                                                            .lessonShowAnswer,
+                                                        onPressed:
+                                                            _answerFromBranch,
+                                                      )
+                                                    : null,
                                                 inBranch: _branch.value != null,
                                                 onExit: () => variation != null
                                                     ? _exitLine()
@@ -1267,6 +1311,9 @@ class _LessonScreenState extends State<LessonScreen>
                                                     _step(previous: false),
                                               ),
                                             )
+                                          : _isThinkPrompt(state) ||
+                                                _thinkOrigin(state)
+                                          ? _thinkFooter(context, state)
                                           : state.layout ==
                                                     LessonLayoutMode.solving &&
                                                 !state.wrongMove
@@ -1381,12 +1428,17 @@ class _LessonScreenState extends State<LessonScreen>
                           ),
                         ),
                       ),
-                      const PositionedDirectional(
+                      PositionedDirectional(
                         top: -14,
                         start: 0,
                         end: 0,
                         child: Center(
-                          child: WrongLineBadge(key: LessonKeys.wrongLine),
+                          child: WrongLineBadge(
+                            key: LessonKeys.wrongLine,
+                            label: _wrongBranch
+                                ? context.l10n.lessonIncorrectMove
+                                : null,
+                          ),
                         ),
                       ),
                     ],
@@ -1466,6 +1518,7 @@ class _LessonScreenState extends State<LessonScreen>
               _stage,
               _footerHeight,
               _seenTick,
+              _engineThinking,
             ]),
             builder: (context, _) {
               final strip = _stage.value >= 2 ? _stripOf(context, state) : null;
@@ -1503,6 +1556,7 @@ class _LessonScreenState extends State<LessonScreen>
                                   tree: strip.tree,
                                   position: strip.position,
                                   text: strip.text,
+                                  typing: _engineThinking.value,
                                   onSelect: _goTo,
                                   hideUnseen: hide,
                                   revealed: _seenSet,
@@ -1569,6 +1623,14 @@ class _LessonScreenState extends State<LessonScreen>
     }
     final line = _variation.value;
     if (line == null) return null;
+    if (_lineTexts[line.line] case final texts? when position.branch == null) {
+      final at = position.ply - 1;
+      return (
+        tree: tree,
+        position: position,
+        text: at >= 0 && at < texts.length ? texts[at] : '',
+      );
+    }
     final step = state.current;
     final said = step == null
         ? null
@@ -1611,6 +1673,7 @@ class _LessonScreenState extends State<LessonScreen>
     final layoutChanged =
         state.layout != previous.layout ||
         state.wrongMove != previous.wrongMove;
+    if (stepChanged) _statementShown = false;
     if (stepChanged ||
         (_autoOpen && (state.fen != previous.fen || layoutChanged))) {
       _cancelAuto();
@@ -1647,6 +1710,9 @@ class _LessonScreenState extends State<LessonScreen>
         ? _promptText(context, state, step)
         : _said(context, state);
     _autoLength = text?.length ?? 0;
+    // Pensar: a folha mede o enunciado inteiro para abrir (A1); recolhida,
+    // volta à frase curta (A2).
+    if (prompting && step is ThinkStep) _forceStatement = true;
     _measureThenOpen(++_autoGen, null, 0);
   }
 
@@ -1666,6 +1732,8 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _cancelAuto() {
     _autoGen++;
+    // A medida do enunciado inteiro acabou junto com a abertura.
+    if (_forceStatement && mounted) setState(() => _forceStatement = false);
     _autoOpen = false;
     _autoSettled = false;
     _autoTimer?.cancel();
@@ -1685,7 +1753,10 @@ class _LessonScreenState extends State<LessonScreen>
         _openAuto(height);
         return;
       }
-      if (tries >= 60) return;
+      if (tries >= 60) {
+        _clearForce();
+        return;
+      }
       _measureThenOpen(gen, ready ? height : null, tries + 1);
     });
     WidgetsBinding.instance.scheduleFrame();
@@ -1693,18 +1764,29 @@ class _LessonScreenState extends State<LessonScreen>
 
   void _openAuto(double content) {
     final area = _areaHeight;
-    if (area == null || area <= 0 || _presentingModal.value) return;
+    if (area == null || area <= 0 || _presentingModal.value) {
+      _clearForce();
+      return;
+    }
     final fixed = _handleHeight + content + _footerHeight.value;
     // Cabe na folha recolhida: ela não abre.
-    if (fixed / area <= _sheetMin + .001) return;
+    if (fixed / area <= _sheetMin + .001) {
+      _clearForce();
+      return;
+    }
     final ceiling = max(_sheetMin, 1 - ViktorSheet.openGap / area);
     final target = ((fixed + _endGap) / area)
         .clamp(_sheetMin, ceiling)
         .toDouble();
-    if (target <= _sheetMin + .03) return;
-    _autoOpen = true;
+    if (target <= _sheetMin + .03) {
+      _clearForce();
+      return;
+    }
+    final byUser = _autoUser;
+    _autoOpen = !byUser;
     final gen = _autoGen;
     void settled() {
+      _clearForce();
       // Aberta no tamanho do texto (nem recolhida nem no máximo): os botões
       // ficam à vista, já que a folha parou.
       if (!mounted || !_autoOpen || gen != _autoGen) return;
@@ -1726,7 +1808,7 @@ class _LessonScreenState extends State<LessonScreen>
             .then((_) => settled()),
       );
     }
-    _startAutoTimer(ViktorSheet.readingTime(_autoLength));
+    if (!byUser) _startAutoTimer(ViktorSheet.readingTime(_autoLength));
   }
 
   void _startAutoTimer(Duration left) {
@@ -1873,6 +1955,9 @@ class _LessonScreenState extends State<LessonScreen>
   /// A folha abriu ou fechou: na apresentação B, abrir arma o fim e
   /// recolher (o X) encerra.
   void _onSheetExpanded(bool expanded) {
+    if (!expanded && _statementShown && mounted) {
+      setState(() => _statementShown = false);
+    }
     if (!_presentingModal.value) return;
     if (expanded) {
       _presentExpanded = true;
@@ -1996,13 +2081,6 @@ class _LessonScreenState extends State<LessonScreen>
     LessonState state,
     LessonStep step,
   ) {
-    if (step is ThinkStep && state.hintsShown == 0) {
-      final l10n = context.l10n;
-      return [
-        l10n.lessonThinkTurn(step.turn == Side.white ? 'white' : 'black'),
-        l10n.lessonThinkCalm(step.ask.name),
-      ].join(' ');
-    }
     return _said(context, state);
   }
 
@@ -2099,9 +2177,13 @@ class _LessonScreenState extends State<LessonScreen>
               shapes: previewFen != null
                   ? _flash.shapesFor(previewFen)
                   : {...shapes, ..._flash.shapesFor(state.fen ?? step.fen)},
-              onMove: (move, {viaDragAndDrop}) => _authoredVariation == null
-                  ? context.read<LessonCubit>().play(move)
-                  : null,
+              onMove: (move, {viaDragAndDrop}) {
+                if (_variation.value != null) {
+                  unawaited(_onVariantMove(move));
+                } else if (_authoredVariation == null) {
+                  context.read<LessonCubit>().play(move);
+                }
+              },
               // No passo de tocar, o toque na casa é a resposta.
               onTouchedSquare: step is TapStep && previewFen == null
                   ? (square) => context.read<LessonCubit>().tap(square.name)
@@ -2269,6 +2351,7 @@ class _LessonScreenState extends State<LessonScreen>
     LessonStep? step,
     Character viktor, {
     required TeacherSpeechPart part,
+    String? text,
   }) {
     final theme = Theme.of(context);
     final prompting =
@@ -2292,9 +2375,10 @@ class _LessonScreenState extends State<LessonScreen>
       activeVariation: _speechHeld ? null : _authoredVariation,
       text: state.typing
           ? ''
-          : prompting && step != null
-          ? _promptText(context, state, step)
-          : _said(context, state),
+          : text ??
+                (prompting && step != null
+                    ? _promptText(context, state, step)
+                    : _said(context, state)),
       emotion: state.emotion,
       avatarSize: 56,
       compactInSheet: false,
@@ -2345,6 +2429,592 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
+  // --- T70: folha do aprendizado (pensar, erro e estado correto) ---
+
+  /// O passo de pensar em resolução, sem lance feito: A1/A2/A3.
+  bool _isThinkPrompt(LessonState state) =>
+      state.current is ThinkStep &&
+      state.layout == LessonLayoutMode.solving &&
+      !state.wrongMove;
+
+  /// A fala vem de um passo de pensar (acerto, erro com ramo ou
+  /// "Ver resposta").
+  bool _thinkOrigin(LessonState state) =>
+      state.correct ||
+      (state.thinkPlayed != null && state.current is! ThinkStep);
+
+  /// O erro com ramo: modo variante com "Ver resposta" no rodapé.
+  bool _wrongPending(LessonState state) =>
+      !state.correct &&
+      state.thinkPlayed != null &&
+      state.current is! ThinkStep;
+
+  ThinkStep? _thinkOf(LessonState state) {
+    final steps = state.lesson?.steps;
+    if (steps == null) return null;
+    if (state.current case final ThinkStep think) return think;
+    final previous = state.step - 1;
+    if (previous >= 0 && steps[previous] is ThinkStep) {
+      return steps[previous] as ThinkStep;
+    }
+    return null;
+  }
+
+  bool _isDrawLesson(LessonState state) => (state.lesson?.steps ?? const [])
+      .any((step) => step is PlayStep && step.goal == PlayGoal.draw);
+
+  String _sideWord(BuildContext context, Side side) =>
+      side == Side.white ? context.l10n.blindWhite : context.l10n.blindBlack;
+
+  String _localSan(BuildContext context, String san) {
+    final letters = MoveNotation.letters.pieceLetters(context.l10n)!;
+    return san.replaceAllMapped(
+      RegExp('[KQRBN]'),
+      (match) => letters[match[0]] ?? match[0]!,
+    );
+  }
+
+  /// A1/A2/A3: o cabeçalho do Viktor e, embaixo, a frase curta (recolhida)
+  /// ou o enunciado inteiro (aberta), com os links de 48 dp.
+  Widget _thinkPrompt(
+    BuildContext context,
+    LessonState state,
+    LessonStep? step,
+    Character viktor,
+  ) {
+    final cubit = context.read<LessonCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _teacher(context, state, step, viktor, part: TeacherSpeechPart.header),
+        Builder(
+          builder: (context) {
+            final l10n = context.l10n;
+            final theme = Theme.of(context);
+            final expanded =
+                _statementShown ||
+                _forceStatement ||
+                ViktorSheet.expandedOf(context);
+            final think = _thinkOf(state);
+            final style = theme.textTheme.bodyLarge?.copyWith(
+              fontSize: 16,
+              height: 1.5,
+            );
+            final note = _noteText(context, state, think);
+            Widget? first;
+            if (state.typing) {
+              first = const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TypingDots(key: LessonKeys.sheetTyping),
+                ),
+              );
+            } else if (state.wrongNotice) {
+              first = Text(
+                l10n.lessonWrongMoveTryAnother,
+                key: LessonKeys.wrongMoveNotice,
+                style: style,
+              );
+            } else if (note != null) {
+              first = Text(note, key: LessonKeys.speech, style: style);
+            }
+            final statement = _said(context, state) ?? '';
+            final Widget body;
+            if (!expanded) {
+              body =
+                  first ??
+                  Text(
+                    l10n.lessonYourTurnPlay(
+                      _sideWord(context, think?.side ?? Side.white),
+                    ),
+                    key: LessonKeys.yourTurnLine,
+                    style: style,
+                  );
+            } else if (first == null) {
+              body = _teacher(
+                context,
+                state,
+                step,
+                viktor,
+                part: TeacherSpeechPart.bubble,
+              );
+            } else {
+              final rest = statement.split('\n').skip(1).join('\n').trim();
+              body = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  first,
+                  if (rest.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    _teacher(
+                      context,
+                      state,
+                      step,
+                      viktor,
+                      part: TeacherSpeechPart.bubble,
+                      text: rest,
+                    ),
+                  ],
+                ],
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                body,
+                if (!expanded)
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextLink(
+                      key: LessonKeys.fullStatementLink,
+                      label: l10n.lessonSeeFullStatement,
+                      onTap: _showStatement,
+                    ),
+                  )
+                else if (_statementShown)
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextLink(
+                      key: LessonKeys.fullStatementLink,
+                      label: l10n.lessonHideStatement,
+                      onTap: _hideStatement,
+                    ),
+                  ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextLink(
+                    key: LessonKeys.showAnswerLink,
+                    label: l10n.lessonShowAnswer,
+                    onTap: () => unawaited(cubit.showAnswer()),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  /// O comentário da vez quando o motor ou o "também é correto" falam.
+  String? _noteText(
+    BuildContext context,
+    LessonState state,
+    LessonStep? think,
+  ) {
+    final l10n = context.l10n;
+    final opponent = (think?.side ?? Side.white).opposite;
+    return switch (state.note) {
+      LessonNote.alsoCorrect => l10n.lessonAlsoCorrect(
+        _localSan(context, state.noteSan ?? ''),
+      ),
+      LessonNote.engineMove => l10n.lessonEngineMove(
+        _sideWord(context, opponent),
+      ),
+      LessonNote.engineReply => l10n.lessonEngineReply(
+        _sideWord(context, opponent),
+      ),
+      LessonNote.alsoWins => l10n.lessonEngineAlsoWins,
+      LessonNote.alsoHolds => l10n.lessonEngineAlsoHolds,
+      LessonNote.alsoWinsShowMain => l10n.lessonEngineAlsoWinsShowMain,
+      LessonNote.alsoHoldsShowMain => l10n.lessonEngineAlsoHoldsShowMain,
+      null => null,
+    };
+  }
+
+  /// "Ver enunciado completo": a folha abre até o enunciado inteiro e o link
+  /// vira "Ocultar enunciado" (não persiste).
+  void _showStatement() {
+    _cancelAuto();
+    setState(() {
+      _statementShown = true;
+      _forceStatement = true;
+    });
+    _autoUser = true;
+    _measureThenOpen(++_autoGen, null, 0);
+  }
+
+  void _hideStatement() {
+    setState(() => _statementShown = false);
+    if (!_sheet.isAttached) return;
+    if (AppMotion.of(context).disabled) {
+      _sheet.jumpTo(_sheetMin);
+    } else {
+      unawaited(
+        _sheet.animateTo(
+          _sheetMin,
+          duration: AppMotion.of(context).component,
+          curve: AppMotion.enter,
+        ),
+      );
+    }
+  }
+
+  void _clearForce() {
+    _autoUser = false;
+    if (_forceStatement && mounted) setState(() => _forceStatement = false);
+  }
+
+  /// O estado correto (crit. 7): título, explicação curta com o link da
+  /// completa e "Alternativas que falham".
+  Widget _correctSheet(
+    BuildContext context,
+    LessonState state,
+    LessonStep? step,
+    Character viktor,
+  ) {
+    final l10n = context.l10n;
+    final cubit = context.read<LessonCubit>();
+    final lesson = state.lesson;
+    final title = lesson == null
+        ? null
+        : (state.part == null
+              ? state.texts.lessonTitle(lesson.id)
+              : state.texts.partTitle(lesson.id, state.part!.id) ??
+                    state.texts.lessonTitle(lesson.id));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _teacher(context, state, step, viktor, part: TeacherSpeechPart.header),
+        if (title != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: Text(
+              title,
+              key: LessonKeys.correctTitle,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+        _teacher(context, state, step, viktor, part: TeacherSpeechPart.bubble),
+        if (state.fullSpeech != null)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextLink(
+              key: LessonKeys.fullExplanationLink,
+              label: l10n.lessonSeeFullExplanation,
+              onTap: cubit.showFullExplanation,
+            ),
+          ),
+        if (state.alternatives.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.md),
+          FailedMovesList(
+            alternatives: state.alternatives,
+            onOpen: _openAlternative,
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Os lances da linha de [uci] (o do aluno e o que vem depois), dos dados
+  /// da aula: variação da explicação, demonstração errada da parte.
+  List<String> _branchUcis(LessonState state, String uci) {
+    for (final variation
+        in state.explanation?.variations ?? const <ExplanationVariation>[]) {
+      if (variation.parentId == null &&
+          variation.firstUci == uci &&
+          variation.movesUci.isNotEmpty) {
+        return List.of(variation.movesUci);
+      }
+    }
+    final think = _thinkOf(state);
+    final steps = state.lesson?.steps;
+    final position = think == null ? null : GameRules.fromFen(think.fen);
+    final move = Move.parse(uci);
+    if (think != null && steps != null && position != null && move != null) {
+      final after = GameRules.play(position, move)?.position.fen;
+      String? key(String? fen) => fen?.split(' ').take(4).join(' ');
+      final index = steps.indexOf(think);
+      for (final other in steps.skip(index + 1)) {
+        if (other is ThinkStep) break;
+        if (other is DemoStep && other.wrong && key(other.fen) == key(after)) {
+          return [uci, for (final m in other.line) m.uci];
+        }
+      }
+    }
+    return [uci];
+  }
+
+  /// A linha do passo de pensar no modo variante: [ucis] a partir da posição
+  /// do passo; [texts] são os comentários por lance.
+  bool _openThinkLine(
+    LessonState state,
+    List<String> ucis,
+    List<String> texts, {
+    required bool wrong,
+  }) {
+    final think = _thinkOf(state);
+    final start = think == null ? null : GameRules.fromFen(think.fen);
+    if (think == null || start == null) return false;
+    var position = start;
+    final fens = [think.fen];
+    final moves = <Move>[];
+    final main = <TreeMove>[];
+    for (final uci in ucis) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : GameRules.play(position, move);
+      if (move == null || played == null) break;
+      final dots = position.turn == Side.white ? '.' : '...';
+      final mark = wrong && moves.isEmpty ? '?' : '';
+      main.add(
+        TreeMove(
+          label: '${position.fullmoves}$dots${played.san}$mark',
+          fen: played.position.fen,
+          move: move,
+        ),
+      );
+      moves.add(move);
+      fens.add(played.position.fen);
+      position = played.position;
+    }
+    if (moves.isEmpty) return false;
+    final line = SpeechLine(links: const [], fens: fens, moves: moves);
+    _lineTrees[line] = VariationTree(startFen: think.fen, main: main);
+    _lineTexts[line] = texts;
+    _wrongBranch = wrong;
+    _showLine(context, SpeechLineCursor(line, 1));
+    if (wrong && moves.length > 1) {
+      final motion = AppMotion.of(context);
+      if (motion.disabled) {
+        _goTo(const TreePosition.main(2));
+      } else {
+        _entryTimers.add(
+          Timer(
+            motion.component +
+                motion.state +
+                motion.component +
+                motion.component,
+            () {
+              if (mounted && identical(_variation.value?.line, line)) {
+                _goTo(const TreePosition.main(2));
+              }
+            },
+          ),
+        );
+      }
+    }
+    return true;
+  }
+
+  /// O erro com ramo: abre o modo variante na linha do aluno e a refutação
+  /// anda sozinha (crit. 4–5).
+  void _enterWrongBranch(LessonState state) {
+    final played = state.thinkPlayed;
+    if (played == null || _variation.value != null) return;
+    final ucis = state.engineLine.isNotEmpty
+        ? state.engineLine
+        : _branchUcis(state, played);
+    final think = _thinkOf(state);
+    final opponent = (think?.side ?? Side.white).opposite;
+    final l10n = context.l10n;
+    final said = (_said(context, state) ?? '')
+        .split('\n')
+        .where((p) => p.trim().isNotEmpty)
+        .toList();
+    final engine = state.engineLine.isNotEmpty;
+    final texts = [
+      engine
+          ? l10n.lessonEngineMove(_sideWord(context, opponent))
+          : (said.isEmpty ? '' : said.first),
+      engine
+          ? l10n.lessonEngineReply(_sideWord(context, opponent))
+          : said.skip(1).join('\n'),
+    ];
+    _openThinkLine(state, ucis, texts, wrong: true);
+  }
+
+  /// Toque numa alternativa que falha (estado correto): o ramo abre no modo
+  /// variante, sem selo nem refutação automática.
+  void _openAlternative(String uci) {
+    final cubit = context.read<LessonCubit>();
+    final state = cubit.state;
+    final alternative = state.alternatives
+        .where((a) => a.uci == uci)
+        .firstOrNull;
+    final label = alternative?.label ?? uci;
+    final ucis = _branchUcis(state, uci);
+    final texts = [
+      context.l10n.lessonThinkMistakeGeneric(_localSan(context, label)),
+    ];
+    // A folha sai para a linha entrar (o toque nela a deixou "em movimento").
+    _cancelAuto();
+    _snapSheet();
+    if (_openThinkLine(state, ucis, texts, wrong: false)) {
+      cubit.markSeen(uci);
+    }
+  }
+
+  /// O lado do aluno na linha do passo de pensar aberta.
+  Side? _studentSide() {
+    final line = _variation.value?.line;
+    if (line == null || _lineTrees[line] == null) return null;
+    return _thinkOf(context.read<LessonCubit>().state)?.side;
+  }
+
+  /// Ramificação jogável (crit. 9b/9c): o lance do aluno no modo variante.
+  Future<void> _onVariantMove(Move move) async {
+    final tree = _tree;
+    final position = _position;
+    final line = _variation.value?.line;
+    if (tree == null || position == null || line == null) return;
+    void revert() => _board?.updatePosition(
+      _treeGame(tree, position),
+      animate: false,
+      resetPremove: true,
+    );
+    final target = BranchMove.match(tree, position, move.uci);
+    if (target != null) {
+      _goTo(target);
+      _replyAfter(tree, target);
+      return;
+    }
+    final engine = widget.engine;
+    final before = GameRules.fromFen(tree.fenAt(position));
+    final played = before == null ? null : GameRules.play(before, move);
+    final student = _studentSide();
+    if (position.branch != null ||
+        engine == null ||
+        before == null ||
+        played == null ||
+        student == null) {
+      revert();
+      if (position.branch == null && engine == null) _showEngineError();
+      return;
+    }
+    revert();
+    final state = context.read<LessonCubit>().state;
+    _engineThinking.value = true;
+    final answer = await engine.respond(
+      played.position,
+      student: student,
+      mustWin: !_isDrawLesson(state),
+    );
+    if (mounted) _engineThinking.value = false;
+    if (!mounted || _position != position || _tree == null) return;
+    switch (answer.verdict) {
+      case EngineVerdict.failed:
+        revert();
+        _showEngineError();
+      case EngineVerdict.keeps:
+        revert();
+        if (tree.canNext(position)) _goTo(tree.next(position));
+      case EngineVerdict.loses:
+        final reply = answer.reply;
+        final afterReply = reply == null
+            ? null
+            : GameRules.play(played.position, reply);
+        if (reply == null || afterReply == null) {
+          revert();
+          _showEngineError();
+          return;
+        }
+        final l10n = context.l10n;
+        final id = 'engine-${position.ply}-${move.uci}';
+        String dots(Position p) => p.turn == Side.white ? '.' : '...';
+        final branch = VariationBranch(
+          id: id,
+          at: position.ply,
+          moves: [
+            TreeMove(
+              label: '${before.fullmoves}${dots(before)}${played.san}',
+              fen: played.position.fen,
+              move: move,
+            ),
+            TreeMove(
+              label:
+                  '${played.position.fullmoves}${dots(played.position)}${afterReply.san}',
+              fen: afterReply.position.fen,
+              move: reply,
+            ),
+          ],
+          commentByPly: {
+            1: l10n.lessonEngineMove(_sideWord(context, student.opposite)),
+            2: l10n.lessonEngineReply(_sideWord(context, student.opposite)),
+          },
+        );
+        final grown = VariationTree(
+          startFen: tree.startFen,
+          main: tree.main,
+          branches: [...tree.branches, branch],
+        );
+        _tree = grown;
+        _lineTrees[line] = grown;
+        _goTo(TreePosition.branch(id, 1));
+        _replyAfter(grown, TreePosition.branch(id, 1));
+    }
+  }
+
+  /// O adversário responde ao lance do aluno: o próximo lance da árvore anda
+  /// sozinho (240 ms; na hora sem animações).
+  void _replyAfter(VariationTree tree, TreePosition at) {
+    final student = _studentSide();
+    final next = tree.canNext(at) ? tree.next(at) : null;
+    final position = GameRules.fromFen(tree.fenAt(at));
+    if (next == null || student == null || position?.turn == student) return;
+    final motion = AppMotion.of(context);
+    void go() {
+      if (mounted && _position == at) _goTo(next);
+    }
+
+    if (motion.disabled) {
+      go();
+    } else {
+      _entryTimers.add(Timer(motion.component, go));
+    }
+  }
+
+  /// "Ver resposta" do rodapé do erro: fecha o ramo e abre o estado correto.
+  void _answerFromBranch() {
+    _cancelEntry();
+    _stage.value = 0;
+    _branch.value = null;
+    _variation.value = null;
+    _wrongBranch = false;
+    _syncTree();
+    unawaited(context.read<LessonCubit>().showAnswer());
+  }
+
+  void _showEngineError() {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          key: LessonKeys.engineErrorSnack,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.fromLTRB(16, 0, 16, _footerHeight.value + 8),
+          content: Text(context.l10n.lessonEngineError),
+        ),
+      );
+  }
+
+  /// O rodapé do passo de pensar e do que sai dele: ✕ ⏮ ⏭, ou, no erro com
+  /// ramo, [Ver resposta] ⏮ ⏭.
+  Widget _thinkFooter(BuildContext context, LessonState state) {
+    final l10n = context.l10n;
+    final cubit = context.read<LessonCubit>();
+    return KeyedSubtree(
+      key: LessonKeys.footer,
+      child: VariationControls(
+        canPrevious: state.canGoBack,
+        canNext: state.correct,
+        exitKey: LessonKeys.lessonExitButton,
+        exitTooltip: l10n.lessonExit,
+        onExit: () => unawaited(Navigator.of(context).maybePop()),
+        onBack: cubit.back,
+        onForward: cubit.next,
+        primaryAction: _wrongPending(state)
+            ? VariationPrimaryAction(
+                label: l10n.lessonShowAnswer,
+                onPressed: _answerFromBranch,
+              )
+            : null,
+      ),
+    );
+  }
+
   /// The whole speech in the sheet: Viktor's header always on top of it.
   Widget _speechSheet(
     BuildContext context,
@@ -2359,20 +3029,25 @@ class _LessonScreenState extends State<LessonScreen>
         if (viktor != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: _teacher(
-              context,
-              state,
-              step,
-              viktor,
-              // Digitando: só o cabeçalho; os pontinhos tomam o lugar do texto.
-              part: state.typing
-                  ? TeacherSpeechPart.header
-                  : TeacherSpeechPart.all,
-            ),
+            child: _isThinkPrompt(state)
+                ? _thinkPrompt(context, state, step, viktor)
+                : _thinkOrigin(state) && state.correct
+                ? _correctSheet(context, state, step, viktor)
+                : _teacher(
+                    context,
+                    state,
+                    step,
+                    viktor,
+                    // Digitando: só o cabeçalho; os pontinhos tomam o lugar
+                    // do texto.
+                    part: state.typing
+                        ? TeacherSpeechPart.header
+                        : TeacherSpeechPart.all,
+                  ),
           ),
         // A máquina responde ao lance do aluno na demonstração: três pontos
         // centralizados no lugar do comentário (T70, pg. 2.3).
-        if (state.typing)
+        if (state.typing && step is DemoStep)
           Padding(
             key: LessonKeys.sheetTyping,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -2416,14 +3091,16 @@ class _LessonScreenState extends State<LessonScreen>
                     minimumSize: const Size.fromHeight(48),
                   ),
                   onPressed: () => context.push(
-                    Routes.freeBoardAt(
+                    Routes.setup(
                       (_branch.value != null
                               ? _tree?.fenAt(_branch.value!)
                               : null) ??
                           _authoredVariation?.fen ??
                           _variation.value?.fen ??
                           state.fen!,
-                      view: (step?.side ?? Side.white).name,
+                      goal: _isDrawLesson(state)
+                          ? PositionGoal.draw.code
+                          : PositionGoal.win.code,
                     ),
                   ),
                   icon: const Icon(Icons.grid_on),
