@@ -117,51 +117,50 @@ void main() {
   }
 
   for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
-    testWidgets(
-      'seletor do canvas 111×36 tem três alvos em $direction',
-      (tester) async {
-        final semantics = tester.ensureSemantics();
-        try {
-          await pump(tester, direction: direction);
-          final picker = find.byType(SegmentedButton<BlindView>);
-          expect(tester.getSize(picker), const Size(111, 36));
+    testWidgets('seletor do canvas 111×36 tem três alvos em $direction', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await pump(tester, direction: direction);
+        final picker = find.byType(SegmentedButton<BlindView>);
+        expect(tester.getSize(picker), const Size(111, 36));
+        expect(
+          tester
+              .widget<Icon>(find.byKey(BlindKeys.view(BlindView.hidden)))
+              .icon,
+          Icons.visibility_off_outlined,
+        );
+        for (final view in BlindView.values) {
+          final icon = find.byKey(BlindKeys.view(view));
+          final node = tester.getSemantics(icon);
+          expect(node.rect.size, const Size(37, 36));
           expect(
-            tester
-                .widget<Icon>(find.byKey(BlindKeys.view(BlindView.hidden)))
-                .icon,
-            Icons.visibility_off_outlined,
+            node.getSemanticsData().hasAction(SemanticsAction.tap),
+            isTrue,
           );
-          for (final view in BlindView.values) {
-            final icon = find.byKey(BlindKeys.view(view));
-            final node = tester.getSemantics(icon);
-            expect(node.rect.size, const Size(37, 36));
-            expect(
-              node.getSemanticsData().hasAction(SemanticsAction.tap),
-              isTrue,
+          tester
+              .renderObject(icon)
+              .owner!
+              .semanticsOwner!
+              .performAction(node.id, SemanticsAction.tap);
+          await tester.pumpAndSettle();
+          expect(cubit.state.view, view);
+          for (final dx in [-15.0, 15.0]) {
+            cubit.setView(
+              view == BlindView.board ? BlindView.hidden : BlindView.board,
             );
-            tester
-                .renderObject(icon)
-                .owner!
-                .semanticsOwner!
-                .performAction(node.id, SemanticsAction.tap);
+            await tester.pumpAndSettle();
+            await tester.tapAt(tester.getCenter(icon) + Offset(dx, 0));
             await tester.pumpAndSettle();
             expect(cubit.state.view, view);
-            for (final dx in [-15.0, 15.0]) {
-              cubit.setView(
-                view == BlindView.board ? BlindView.hidden : BlindView.board,
-              );
-              await tester.pumpAndSettle();
-              await tester.tapAt(tester.getCenter(icon) + Offset(dx, 0));
-              await tester.pumpAndSettle();
-              expect(cubit.state.view, view);
-            }
           }
-          expect(tester.takeException(), isNull);
-        } finally {
-          semantics.dispose();
         }
-      },
-    );
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
   }
 
   for (final mode in [ThemeMode.light, ThemeMode.dark]) {

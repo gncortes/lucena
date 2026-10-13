@@ -1098,9 +1098,11 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   ExplanationPayload _explanationFor(BuildContext context, LessonState state) {
-    final payload =
-        state.explanation ??
-        ExplanationPayload.context([?_baseSpeech(context, state)]);
+    final payload = demoSheetPayload(
+      state.explanation ??
+          ExplanationPayload.context([?_baseSpeech(context, state)]),
+      inDemo: state.current is DemoStep && state.demoMove > 0,
+    );
     final attempted = state.attemptedSan ?? state.thinkMistake;
     if (attempted == null ||
         payload.explanations.any(
@@ -1318,6 +1320,30 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
+  /// Dentro de uma variante: o "Voltar" do rodapé (TextButton sem fundo,
+  /// como no canvas) sobe uma variante, ou sai dela se já estiver na raiz.
+  Widget _variationFooter(BuildContext context, LessonState state) {
+    final cursor = _authoredVariation!;
+    final payload = state.explanation;
+    return _footer(
+      context,
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: TextButton.icon(
+          key: ExplanationKeys.restore,
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => _showAuthoredVariation(
+            cursor.variation.parentId == null
+                ? null
+                : payload?.parentCursor(cursor.variation),
+          ),
+          icon: const Icon(Icons.undo),
+          label: Text(context.l10n.lessonReturn),
+        ),
+      ),
+    );
+  }
+
   /// O texto do botão principal: "Explicação" no passo de pensar (D16),
   /// "Concluir" no último passo, "Continuar" no resto.
   String _nextLabel(BuildContext context, LessonState state, LessonStep step) {
@@ -1337,19 +1363,7 @@ class _LessonScreenState extends State<LessonScreen>
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
     if (_authoredVariation != null) {
-      return _footer(
-        context,
-        child: TextButton.icon(
-          key: ExplanationKeys.restore,
-          style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            minimumSize: const Size.fromHeight(48),
-          ),
-          onPressed: () => _showAuthoredVariation(null),
-          icon: const Icon(Icons.undo),
-          label: Text(l10n.lessonReturn),
-        ),
-      );
+      return _variationFooter(context, state);
     }
     final step = state.current!;
     final colors = Theme.of(context).colorScheme;
@@ -1469,19 +1483,7 @@ class _LessonScreenState extends State<LessonScreen>
   /// Com o professor falando: voltar um passo, tentar de novo e continuar.
   Widget _actions(BuildContext context, LessonState state) {
     if (_authoredVariation != null) {
-      return _footer(
-        context,
-        child: TextButton.icon(
-          key: ExplanationKeys.restore,
-          style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            minimumSize: const Size.fromHeight(48),
-          ),
-          onPressed: () => _showAuthoredVariation(null),
-          icon: const Icon(Icons.undo),
-          label: Text(context.l10n.lessonReturn),
-        ),
-      );
+      return _variationFooter(context, state);
     }
     final l10n = context.l10n;
     final cubit = context.read<LessonCubit>();
@@ -1664,6 +1666,28 @@ class _LessonScreenState extends State<LessonScreen>
   /// O espaço que os botões flutuantes tomam embaixo: a fala rola até
   /// passar deles.
   static const _actionsHeight = 96.0;
+}
+
+/// Na demonstração, a folha mostra só a fala do lance (TelaLicaoDemoFim):
+/// a seção fixa de contexto ("A posição e o objetivo") não se repete.
+@visibleForTesting
+ExplanationPayload demoSheetPayload(
+  ExplanationPayload payload, {
+  required bool inDemo,
+}) {
+  if (!inDemo) return payload;
+  final rest = payload.explanations
+      .where((b) => b.kind != ExplanationKind.context)
+      .toList();
+  if (rest.isEmpty || rest.length == payload.explanations.length) {
+    return payload;
+  }
+  return ExplanationPayload(
+    positionId: payload.positionId,
+    reviewStepId: payload.reviewStepId,
+    state: payload.state,
+    explanations: rest,
+  );
 }
 
 /// Abre a próxima aula da trilha no lugar desta.

@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/explanation.dart';
+import '../../../domain/models/game_review.dart';
 import '../keys/explanation_keys.dart';
+import '../review/move_quality_ui.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_shape.dart';
 
@@ -194,6 +196,89 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           )
           .toList();
 
+  /// Cor do lance citado (contrato 3.4): pelo símbolo de qualidade; sem
+  /// símbolo, `primary`. Linha que perde sem símbolo sai como erro grave.
+  Color _moveColor(BuildContext context, ExplanationVariation variation) {
+    final theme = Theme.of(context);
+    final san = variation.movesSan.first;
+    final quality = san.endsWith('??')
+        ? MoveQuality.blunder
+        : san.endsWith('?!')
+        ? MoveQuality.inaccuracy
+        : san.endsWith('?')
+        ? MoveQuality.mistake
+        : san.endsWith('!')
+        ? MoveQuality.great
+        : variation.outcome == VariationOutcome.losing
+        ? MoveQuality.blunder
+        : null;
+    return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
+  }
+
+  Widget _v2Title(
+    BuildContext context,
+    ExplanationBlock block,
+    ExplanationVariation variation,
+    bool principal,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final move = Text(
+      variation.movesSan.first,
+      style: TextStyle(
+        fontWeight: FontWeight.w700,
+        color: _moveColor(context, variation),
+      ),
+    );
+    if (!principal) return move;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '${variation.label}) ',
+          style: TextStyle(fontWeight: FontWeight.w700, color: colors.tertiary),
+        ),
+        Flexible(child: move),
+      ],
+    );
+  }
+
+  /// O resultado da linha em caixa alta, à direita: sempre em "Também não
+  /// funcionam"; nas outras seções só quando difere do esperado (aceito).
+  List<Widget> _v2Result(
+    BuildContext context,
+    ExplanationBlock block,
+    ExplanationVariation variation,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final failed = block.kind == ExplanationKind.failedAlternatives;
+    final show = failed || variation.outcome != VariationOutcome.accepted;
+    if (!show) return const [];
+    final text = variation.outcomeText ?? _outcome(context, variation.outcome);
+    return [
+      if (!failed && variation.outcome == VariationOutcome.losing)
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 4),
+          child: Icon(
+            Icons.warning_amber_rounded,
+            size: 16,
+            color: colors.error,
+          ),
+        ),
+      Padding(
+        padding: const EdgeInsetsDirectional.only(start: 8, end: 4),
+        child: Text(
+          text.toUpperCase(),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontSize: 12,
+            height: 16 / 12,
+            fontWeight: FontWeight.w700,
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+      ),
+    ];
+  }
+
   Widget _line(
     BuildContext context,
     ExplanationBlock block,
@@ -242,14 +327,18 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        labelled
-                            ? principal
-                                  ? '${variation.label}) ${variation.movesSan.first}'
-                                  : variation.movesSan.first
-                            : variation.label,
-                      ),
+                      child: widget.lessonV2 && labelled
+                          ? _v2Title(context, block, variation, principal)
+                          : Text(
+                              labelled
+                                  ? principal
+                                        ? '${variation.label}) ${variation.movesSan.first}'
+                                        : variation.movesSan.first
+                                  : variation.label,
+                            ),
                     ),
+                    if (widget.lessonV2 && labelled)
+                      ..._v2Result(context, block, variation),
                     if (expandable)
                       Icon(expanded ? Icons.expand_less : Icons.expand_more),
                   ],
@@ -290,14 +379,33 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     );
   }
 
+  /// Ordem do canvas: o contexto da posição abre, "Também não funcionam"
+  /// fecha e o resto segue a ordem do conteúdo. O contexto que ganhou o
+  /// título "Lance certo" (folha do lance errado) fica onde está.
+  List<ExplanationBlock> _ordered(BuildContext context) {
+    final correct = context.l10n.lessonCorrectMove;
+    final all = widget.payload.explanations;
+    bool isPosition(ExplanationBlock b) =>
+        b.kind == ExplanationKind.context &&
+        b.title.isNotEmpty &&
+        b.title != correct;
+    return [
+      ...all.where(isPosition),
+      ...all.where(
+        (b) => !isPosition(b) && b.kind != ExplanationKind.failedAlternatives,
+      ),
+      ...all.where((b) => b.kind == ExplanationKind.failedAlternatives),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!widget.lessonV2) return _legacyBuild(context);
-    final cursor = _cursor;
+    final blocks = _ordered(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final (index, block) in widget.payload.explanations.indexed)
+        for (final (index, block) in blocks.indexed)
           Padding(
             key: ExplanationKeys.block(block.id),
             padding: const EdgeInsets.only(bottom: 16),
@@ -310,7 +418,9 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
-                      (block.title.isEmpty
+                      (block.title.isEmpty ||
+                                  block.kind ==
+                                      ExplanationKind.failedAlternatives
                               ? _title(context, block.kind)
                               : block.title)
                           .toUpperCase(),
@@ -338,62 +448,6 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                   Text(
                     context.l10n.explanationUnavailable,
                     key: ExplanationKeys.unavailable,
-                  ),
-                if (cursor != null &&
-                    cursor.variation.parentId != null &&
-                    block.variations.any(
-                      (variation) => variation.id == cursor.variation.id,
-                    ))
-                  TextButton.icon(
-                    key: ExplanationKeys.parent,
-                    onPressed: () =>
-                        _move(widget.payload.parentCursor(cursor.variation)),
-                    icon: const Icon(Icons.chevron_left),
-                    label: Text(context.l10n.explanationParent),
-                  ),
-                // Authored text need not mention every verified ply. Keep
-                // replay access until the replacement interaction is defined.
-                if (cursor != null &&
-                    cursor.moves.length > 1 &&
-                    block.variations.any(
-                      (variation) => variation.id == cursor.variation.id,
-                    ))
-                  Wrap(
-                    spacing: 4,
-                    children: [
-                      IconButton(
-                        key: ExplanationKeys.first,
-                        tooltip: context.l10n.explanationFirst,
-                        onPressed: cursor.canPrevious
-                            ? () => _move(cursor.at(0))
-                            : null,
-                        icon: const Icon(Icons.first_page),
-                      ),
-                      IconButton(
-                        key: ExplanationKeys.previous,
-                        tooltip: context.l10n.explanationPrevious,
-                        onPressed: cursor.canPrevious
-                            ? () => _move(cursor.previous())
-                            : null,
-                        icon: const Icon(Icons.chevron_left),
-                      ),
-                      IconButton(
-                        key: ExplanationKeys.next,
-                        tooltip: context.l10n.explanationNext,
-                        onPressed: cursor.canNext
-                            ? () => _move(cursor.next())
-                            : null,
-                        icon: const Icon(Icons.chevron_right),
-                      ),
-                      IconButton(
-                        key: ExplanationKeys.last,
-                        tooltip: context.l10n.explanationLast,
-                        onPressed: cursor.canNext
-                            ? () => _move(cursor.at(cursor.moves.length))
-                            : null,
-                        icon: const Icon(Icons.last_page),
-                      ),
-                    ],
                   ),
               ],
             ),

@@ -291,9 +291,7 @@ void main() {
       await select('main');
       expect(fen(tester), primary.open()!.fen);
       expect(identical(cubit.state, snapshot), isTrue);
-      await tester.ensureVisible(find.byKey(ExplanationKeys.last));
-      await press(tester, ExplanationKeys.last);
-      expect(fen(tester), primary.open()!.at(3).fen);
+      expect(find.byKey(ExplanationKeys.last), findsNothing);
       tester.widget<TeacherSpeech>(find.byType(TeacherSpeech).last).onSpoken!(
         const SpeechLink(start: 0, end: 2, text: 'd4', square: Square.d4),
       );
@@ -370,10 +368,15 @@ void main() {
       await activate(ExplanationKeys.variation('A.1'));
       expect(fen(tester), child.open()!.fen);
       expect(find.byKey(ExplanationKeys.first), findsNothing);
-      await activate(ExplanationKeys.parent);
+      expect(find.byKey(ExplanationKeys.parent), findsNothing);
+      // O "Voltar" do rodapé (sem fundo) volta à linha pai primeiro.
+      final back = tester.widget<TextButton>(
+        find.byKey(ExplanationKeys.restore),
+      );
+      expect(back.style?.backgroundColor, isNull);
+      await activate(ExplanationKeys.restore);
       expect(fen(tester), payload.parentCursor(child)!.fen);
       expect(fen(tester), origin);
-      expect(find.byKey(ExplanationKeys.parent), findsNothing);
       expect(identical(cubit.state, snapshot), isTrue);
       await activate(ExplanationKeys.restore);
       expect(fen(tester), lessonFen);
